@@ -1,25 +1,69 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+// eslint.config.mjs
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import nextPlugin from "@next/eslint-plugin-next";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import eslintConfigPrettier from "eslint-config-prettier";
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+export default [
+  // Main app code
+  {
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
+    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "*.d.ts", "next-env.d.ts"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+      globals: {
+        React: true,
+        JSX: true,
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      "no-unused-vars": "warn",
+      "@next/next/no-img-element": "off",
+    },
+  },
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Config files (ignored)
   {
     ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
+      "eslint.config.mjs",
+      "postcss.config.mjs",
+      "tailwind.config.{js,cjs,mjs}",
+      "husky/**",
+      "*.config.js",
+      "*.config.cjs",
+      "*.config.mjs",
+      "*.config.ts",
     ],
   },
-];
 
-export default eslintConfig;
+  // Tests
+  {
+    files: ["**/__tests__/**/*.{ts,tsx,js,jsx}", "**/*.{test,spec}.{ts,tsx,js,jsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-console": "off",
+      "no-unused-expressions": "off",
+    },
+  },
+
+  // Scripts
+  {
+    files: ["scripts/**/*.{js,ts}"],
+    rules: {
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-console": "off",
+    },
+  },
+
+  // Prettier LAST (disables conflicting formatting rules)
+  eslintConfigPrettier,
+];
