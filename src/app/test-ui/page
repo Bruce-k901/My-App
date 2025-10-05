@@ -1,0 +1,80 @@
+"use client";
+
+import {
+  AuthLayout,
+  Heading,
+  Button,
+  Input,
+  Label,
+  FormError,
+  FormGroup,
+  Alert,
+  Spinner,
+  LinkButton,
+  Card,
+} from "../../components/ui";
+
+export default function TestUIPage() {
+  return (
+    <AuthLayout>
+      <Heading level={1}>UI Component Test</Heading>
+
+      <Card className="space-y-4">
+        {/* Buttons */}
+        <div>
+          <Heading level={3}>Buttons</Heading>
+          <div className="flex gap-2">
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="danger">Danger</Button>
+          </div>
+        </div>
+
+        {/* Link Buttons */}
+        <div>
+          <Heading level={3}>LinkButtons</Heading>
+          <div className="flex gap-2">
+            <LinkButton href="/" variant="primary">Primary Link</LinkButton>
+            <LinkButton href="/" variant="secondary">Secondary Link</LinkButton>
+            <LinkButton href="/" variant="danger">Danger Link</LinkButton>
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div>
+          <Heading level={3}>Inputs</Heading>
+          <FormGroup>
+            <Label htmlFor="testEmail">Email</Label>
+            <Input id="testEmail" type="email" placeholder="Enter email" />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="testPassword">Password</Label>
+            <Input id="testPassword" type="password" placeholder="Enter password" />
+          </FormGroup>
+        </div>
+
+        {/* Alerts */}
+        <div>
+          <Heading level={3}>Alerts</Heading>
+          <Alert type="info">This is an info alert.</Alert>
+          <Alert type="success">This is a success alert.</Alert>
+          <Alert type="error">This is an error alert.</Alert>
+          <Alert type="warning">This is a warning alert.</Alert>
+        </div>
+
+        {/* FormError */}
+        <div>
+          <Heading level={3}>FormError</Heading>
+          <FormError type="error">This is an error message.</FormError>
+          <FormError type="success">This is a success message.</FormError>
+        </div>
+
+        {/* Spinner */}
+        <div>
+          <Heading level={3}>Spinner</Heading>
+          <Spinner />
+        </div>
+      </Card>
+    </AuthLayout>
+  );
+}

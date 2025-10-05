@@ -1,0 +1,14 @@
+{
+  "tailwindCSS.includeLanguages": {
+    "postcss": "css",
+    "typescript": "javascript",
+    "typescriptreact": "javascriptreact",
+    "javascript": "javascript",
+    "javascriptreact": "javascriptreact"
+  },
+
+  // Ignore unknown at-rules (like @tailwind) from the built-in CSS linter
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
+}

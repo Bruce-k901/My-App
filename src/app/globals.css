@@ -1,26 +1,132 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ----------------------------- */
+/* Base theme and typography     */
+/* ----------------------------- */
+
+body {
+  @apply font-sans text-white;
+  background: radial-gradient(circle at 20% 30%, #0b0d13 0%, #090a0f 80%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+p {
+  font-weight: 400;
+  color: #cbd5e1;
+}
+
+/* ----------------------------- */
+/* Glass Buttons                 */
+/* ----------------------------- */
+
+@layer components {
+  .btn-glass {
+    @apply relative inline-block px-6 py-3 rounded-full font-semibold text-[15px] text-white transition-all duration-300 border border-white/15 backdrop-blur-md;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 6px rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(236, 72, 153, 0.25), rgba(37, 99, 235, 0.2));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .btn-glass:hover::before {
+    opacity: 1;
+  }
+
+  .btn-glass:hover {
+    @apply border-magenta-400;
+    transform: scale(1.04);
+    box-shadow:
+      0 0 16px rgba(236, 72, 153, 0.25),
+      0 0 24px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-glass:active {
+    transform: scale(0.97);
+  }
+}
+@layer components {
+  .btn-glass-cta {
+    @apply relative inline-block px-8 py-4 rounded-full font-semibold text-[16px] text-white transition-all duration-300 border border-white/20 backdrop-blur-lg;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 0 8px rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-glass-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(236, 72, 153, 0.35), rgba(37, 99, 235, 0.3));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .btn-glass-cta:hover::before {
+    opacity: 1;
+  }
+
+  .btn-glass-cta:hover {
+    @apply border-magenta-400;
+    transform: scale(1.05);
+    box-shadow:
+      0 0 20px rgba(236, 72, 153, 0.3),
+      0 0 30px rgba(37, 99, 235, 0.25);
+  }
+
+  .btn-glass-cta:active {
+    transform: scale(0.97);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ----------------------------- */
+/* Dropdown Animation             */
+/* ----------------------------- */
+
+@keyframes dropdownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-enter {
+  animation: dropdownFade 0.3s ease-out forwards;
+}
+
+/* ----------------------------- */
+/* Hover Glow for Links           */
+/* ----------------------------- */
+
+.hover-glow:hover {
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.4);
+}
+/* Fix for gradient header clipping on all hero sections */
+.hero-title {
+  padding-top: 0.25rem; /* adds small breathing room */
+  padding-bottom: 0.25rem; /* prevents bottom clipping */
+  line-height: 1.1; /* keeps headings compact but safe */
 }
