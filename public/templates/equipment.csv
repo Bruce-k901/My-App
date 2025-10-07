@@ -1,0 +1,6 @@
+name,type,serial,service_interval_days,supplier,warranty_expiry,site_id
+Fridge 1,Refrigeration,ABC123,90,Polar,2026-03-01,
+Freezer 2,Refrigeration,XYZ789,120,Foster,2026-06-15,
+Grill,Cooking,GRILL42,180,Lincat,,
+Coffee Machine,Beverage,CFM-77,90,La Marzocco,2025-11-30,
+Extractor Fan,HVAC,FAN-555,365,FlaktGroup,,

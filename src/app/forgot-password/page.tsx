@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui";
-import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
+import { AuthLayout } from "@/components/layouts";
 import { supabase } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
@@ -33,67 +33,68 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <MarketingSubPageLayout>
-      <section className="flex items-center justify-center py-12 px-6">
-        <div className="w-full max-w-md">
-          <Card className="bg-[#141823] border-neutral-800 text-white shadow-[0_0_20px_rgba(236,72,153,0.18)] p-6">
-            <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
-                Reset your password
-              </h1>
-              <p className="text-slate-300 text-sm mt-2">
-                Enter your work email and we’ll send a secure reset link.
-              </p>
-            </div>
+    <AuthLayout>
+      {/* Autofill fix for dark mode */}
+      <style jsx global>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px rgba(17, 19, 25, 0.8) inset !important;
+          -webkit-text-fill-color: #fff !important;
+          caret-color: #fff !important;
+          transition: background-color 9999s ease-in-out 0s;
+        }
+      `}</style>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-slate-400 text-sm mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="you@company.com"
-                  className="w-full rounded-xl px-4 py-3 bg-[#191c26] border border-neutral-800 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
-                />
-              </div>
+      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+          Reset your password
+        </h1>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-full py-3 font-semibold text-white border border-neutral-800 bg-[#191c26] hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.35)]"
-              >
-                {loading ? "Sending…" : "Send reset link"}
-              </button>
-            </form>
+        <p className="text-center text-gray-400 mb-8 text-sm">
+          Enter your work email and we’ll send a secure reset link.
+        </p>
 
-            {message && <p className="mt-4 text-center text-sm text-green-400">{message}</p>}
-            {error && <p className="mt-4 text-center text-sm text-red-400">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@company.com"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
 
-            <div className="text-center mt-6">
-              <Link
-                href="/login"
-                className="text-magenta-400 hover:text-magenta-300 text-sm transition-colors"
-              >
-                Back to login
-              </Link>
-              <div className="mt-2">
-                <Link
-                  href="/"
-                  className="text-slate-400 hover:text-white text-sm transition-colors"
-                >
-                  Back to home
-                </Link>
-              </div>
-              <p className="text-slate-500 text-xs mt-4">
-                Didn’t receive the email? Check your spam folder.
-              </p>
-            </div>
-          </Card>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full py-3 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.4)]"
+          >
+            {loading ? "Sending…" : "Send reset link"}
+          </button>
+        </form>
+
+        {message && (
+          <p className="mt-4 text-center text-sm text-green-400" role="status">{message}</p>
+        )}
+        {error && (
+          <p className="mt-4 text-center text-sm text-red-400" role="alert">{error}</p>
+        )}
+
+        <div className="text-center mt-6">
+          <Link href="/login" className="text-magenta-400 hover:text-magenta-300 text-sm transition-colors">
+            Back to login
+          </Link>
+          <p className="text-slate-500 text-xs mt-4">
+            Didn’t receive the email? Check your spam folder.
+          </p>
         </div>
-      </section>
-    </MarketingSubPageLayout>
+      </Card>
+    </AuthLayout>
   );
 }

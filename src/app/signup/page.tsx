@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui";
-import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
+import { AuthLayout } from "@/components/layouts";
 import { supabase } from "@/lib/supabase";
 import { Eye, EyeOff, Sparkles } from "lucide-react";
 
@@ -12,6 +12,7 @@ export default function SignupPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -37,6 +38,7 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     const { error } = await supabase.auth.signUp({
       email: form.email,
@@ -52,117 +54,151 @@ export default function SignupPage() {
     });
 
     setLoading(false);
-    if (error) alert(error.message);
+    if (error) setError(error.message);
     else router.push("/login");
   };
 
   return (
-    <MarketingSubPageLayout>
-      <section className="flex items-center justify-center px-6 py-10 bg-[#0b0d13]">
-        {/* Autofill Fix */}
-        <style jsx global>{`
-          input:-webkit-autofill,
-          input:-webkit-autofill:hover,
-          input:-webkit-autofill:focus,
-          input:-webkit-autofill:active {
-            box-shadow: 0 0 0px 1000px rgba(17, 19, 25, 0.8) inset !important;
-            -webkit-text-fill-color: #fff !important;
-            caret-color: #fff !important;
-            transition: background-color 9999s ease-in-out 0s;
-          }
-        `}</style>
+    <AuthLayout>
+      {/* Autofill fix for dark mode */}
+      <style jsx global>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px rgba(17, 19, 25, 0.8) inset !important;
+          -webkit-text-fill-color: #fff !important;
+          caret-color: #fff !important;
+          transition: background-color 9999s ease-in-out 0s;
+        }
+      `}</style>
 
-        <div className="w-full max-w-md">
-          <Card className="bg-[#141823]/90 backdrop-blur border border-neutral-800 shadow-[0_10px_30px_rgba(0,0,0,0.35)] p-8 rounded-2xl">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-3 bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent">
-              Create your Checkly account
-            </h1>
+      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+          Create your Checkly account
+        </h1>
 
-            <p className="text-center text-slate-300 mb-6 text-sm">
-              Start your free 14-day trial — no credit card required
-            </p>
+        <p className="text-center text-gray-400 mb-8 text-sm">
+          Start your free 14-day trial — no credit card required
+        </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {[
-                { name: "name", placeholder: "Full Name", type: "text", required: true },
-                {
-                  name: "company",
-                  placeholder: "Business or Company Name",
-                  type: "text",
-                  required: true,
-                },
-                {
-                  name: "sites",
-                  placeholder: "Number of Sites / Locations",
-                  type: "number",
-                  required: true,
-                },
-                {
-                  name: "phone",
-                  placeholder: "Phone Number (optional)",
-                  type: "tel",
-                  required: false,
-                },
-                { name: "email", placeholder: "Work Email", type: "email", required: true },
-              ].map((field) => (
-                <input
-                  key={field.name}
-                  {...field}
-                  value={form[field.name as keyof typeof form]}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-4 py-3 bg-[#191c26] border border-neutral-800 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 autofill:shadow-[inset_0_0_0_1000px_rgba(17,19,25,0.8)]"
-                />
-              ))}
+        {error && (
+          <p className="text-red-500 text-sm mb-4" role="alert">
+            {error}
+          </p>
+        )}
 
-              {/* Password Field */}
-              <div className="relative">
-                <input
-                  name="password"
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-xl px-4 py-3 bg-[#191c26] border border-neutral-800 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-3 text-slate-400 hover:text-magenta-400 transition"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Full Name</label>
+            <input
+              name="name"
+              type="text"
+              value={form.name}
+              onChange={handleChange}
+              required
+              placeholder="Your name"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
 
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Business or Company Name</label>
+            <input
+              name="company"
+              type="text"
+              value={form.company}
+              onChange={handleChange}
+              required
+              placeholder="Company"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Number of Sites / Locations</label>
+            <input
+              name="sites"
+              type="number"
+              value={form.sites}
+              onChange={handleChange}
+              required
+              placeholder="e.g. 3"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Phone Number (optional)</label>
+            <input
+              name="phone"
+              type="tel"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="(555) 555-5555"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Work Email</label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="you@company.com"
+              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-400 text-sm mb-2">Password</label>
+            <div className="relative">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={handleChange}
+                required
+                placeholder="Password"
+                className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+              />
               <button
                 type="button"
-                onClick={generatePassword}
-                className="flex items-center gap-2 text-sm text-magenta-400 hover:text-magenta-300 transition mx-auto mt-1"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                aria-label="Toggle password visibility"
               >
-                <Sparkles size={16} /> Generate secure password
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
+            </div>
+            <button
+              type="button"
+              onClick={generatePassword}
+              className="flex items-center gap-2 text-sm text-magenta-400 hover:text-magenta-300 transition mx-auto mt-1"
+            >
+              <Sparkles size={16} /> Generate secure password
+            </button>
+          </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-neutral-800 bg-[#191c26] hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.35)]"
-              >
-                {loading ? "Creating Account..." : "Create Account"}
-              </button>
-            </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.4)]"
+          >
+            {loading ? "Creating Account..." : "Create Account"}
+          </button>
+        </form>
 
-            <p className="text-center text-slate-400 mt-6 text-sm">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-magenta-400 hover:text-magenta-300 transition-colors"
-              >
-                Log in
-              </Link>
-            </p>
-          </Card>
-        </div>
-      </section>
-    </MarketingSubPageLayout>
+        <p className="text-center text-gray-400 mt-6 text-sm">
+          Already have an account?{" "}
+          <Link href="/login" className="text-magenta-400 hover:text-magenta-300 transition-colors">
+            Log in
+          </Link>
+        </p>
+      </Card>
+    </AuthLayout>
   );
 }

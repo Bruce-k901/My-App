@@ -4,6 +4,7 @@ import nextPlugin from "@next/eslint-plugin-next";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier";
+import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
   // Main app code
@@ -23,10 +24,17 @@ export default [
     plugins: {
       "@typescript-eslint": tseslint,
       "@next/next": nextPlugin,
+      "react-hooks": reactHooks,
     },
     rules: {
-      "no-unused-vars": "warn",
+      "no-unused-vars": [
+        "warn",
+        { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+      ],
       "@next/next/no-img-element": "off",
+      // Enforce React Hooks best practices and avoid missing deps warnings
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
     },
   },
 

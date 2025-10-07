@@ -34,3 +34,36 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Notifications & Digest
+
+This app integrates Supabase for realtime notifications and scheduled daily digests.
+
+### Edge Functions
+
+- `send_daily_digest`: Compiles a 24-hour summary per site and creates in-app notifications, optionally sending emails via SendGrid.
+
+### Environment Variables
+
+Add to `.env.local`:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SENDGRID_KEY` (optional, enables outbound digest emails)
+
+### Scheduling Daily Digest (Supabase Cron)
+
+Configure a daily schedule at `06:00 UTC` via Supabase Dashboard:
+
+1. Deploy the `send_daily_digest` function.
+2. In Dashboard → Edge Functions → Schedules, add:
+   - Name: `daily-digest`
+   - Cron: `0 6 * * *`
+   - Function: `send_daily_digest`
+3. Set function environment variables as needed (e.g. `SENDGRID_KEY`).
+
+Notes:
+
+- In-app notifications are created regardless of email configuration.
+- Email delivery is skipped if `SENDGRID_KEY` is not set.
+- Notifications older than 14 days are auto-archived by the function.

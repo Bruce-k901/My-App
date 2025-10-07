@@ -29,7 +29,7 @@ export default function FeaturesPage() {
             </h1>
           </div>
           <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base">
-            Explore the core capabilities of Checkly and the pitfalls they solve.
+            Everything your kitchen, store, and head office need in one place. Real-time logs, automated alerts, and ready-to-show reports. Less firefighting, more running your business.
           </p>
         </div>
       </section>

@@ -23,13 +23,11 @@ export default function MultiSiteDashboardPage() {
           <div className="flex items-center justify-center mb-4">
             <Globe2 className="w-8 h-8 text-magenta-400 mr-3" />
             <h1 className="pt-1 pb-1 leading-tight text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
-              Multi-Site Dashboards
+              Everything your kitchen, store, and head office need in one place
             </h1>
           </div>
           <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base">
-            Manage every site from one screen. Checkly brings all your kitchens, cafés, and outlets
-            together — live data, performance trends, and compliance status in real time, without
-            endless spreadsheets.
+            Real-time logs, automated alerts, and ready-to-show reports. Less firefighting, more running your business..
           </p>
         </div>
       </section>

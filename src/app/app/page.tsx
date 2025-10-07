@@ -1,64 +1,86 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import logo from "@/assets/checkly_logo_touching_blocks.png";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui";
+import AppHeader from "@/components/layouts/AppHeader";
+import { supabase } from "@/lib/supabase";
 
 export default function AppHome() {
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data?.session;
+      if (!session) {
+        router.replace("/login");
+      } else if (mounted) {
+        setUserEmail(session.user.email ?? null);
+      }
+      setChecking(false);
+    };
+    check();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) router.replace("/login");
+      else setUserEmail(session.user.email ?? null);
+    });
+    return () => {
+      mounted = false;
+      sub?.subscription.unsubscribe();
+    };
+  }, [router]);
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-white">
+        <p className="text-slate-400">Loading…</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-checkly-light text-checkly-dark min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="w-full border-b border-gray-200 bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image src={logo} alt="Logo" width={140} height={40} priority />
-          </div>
-          <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link href="/" className="text-checkly-gray hover:text-checkly-blue transition">
-              Home
-            </Link>
-            <Link href="#help" className="text-checkly-gray hover:text-checkly-blue transition">
-              Help
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
-        <div className="max-w-md w-full bg-white shadow-md rounded-2xl p-8 border border-gray-100">
-          <h1 className="text-2xl font-heading font-semibold text-center mb-6">Welcome back</h1>
-          <form className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-checkly-blue"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-checkly-blue"
-            />
-            <button
-              type="submit"
-              className="w-full py-2 rounded-lg bg-checkly-blue text-white font-semibold hover:opacity-90 transition"
-            >
-              Sign In
-            </button>
-          </form>
-          <p className="text-center text-sm text-checkly-gray mt-4">
-            Don’t have an account?{" "}
-            <Link href="/signup" className="text-checkly-magenta hover:underline font-medium">
-              Sign up
-            </Link>
+    <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
+      <AppHeader />
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="flex flex-col items-center justify-center text-center px-6 py-12">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
+            Welcome back{userEmail ? `, ${userEmail}` : ""}
+          </h1>
+          <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base mt-3">
+            Your operational hub — quick links to the areas you use most.
           </p>
-        </div>
-      </main>
+        </section>
 
-      {/* Footer */}
-      <footer className="text-center text-sm text-checkly-gray py-4 border-t border-gray-200">
-        © {new Date().getFullYear()} MyApp. All rights reserved.
-      </footer>
+        {/* Quick Actions */}
+        <section className="px-6 pb-12">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { href: "/dashboard", title: "Dashboard", desc: "Overview & live status" },
+              { href: "/assets", title: "Assets", desc: "Register & maintenance" },
+              { href: "/reports", title: "Reports", desc: "Compliance & analytics" },
+              { href: "/settings", title: "Settings", desc: "Teams & preferences" },
+            ].map(({ href, title, desc }) => (
+              <Card
+                key={href}
+                className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all duration-200"
+              >
+                <p className="text-base font-semibold mb-1 text-magenta-400">{title}</p>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">{desc}</p>
+                <Link href={href} className="btn-glass-cta inline-block text-sm">
+                  Open {title}
+                </Link>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

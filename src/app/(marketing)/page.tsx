@@ -1,5 +1,3 @@
-"use client";
-
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import Link from "next/link";
 

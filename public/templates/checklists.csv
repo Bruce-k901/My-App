@@ -1,0 +1,6 @@
+name,daypart,frequency,role
+Opening Checks,opening,daily,kitchen
+Pre-Service Prep,pre-service,daily,kitchen
+Closing Routine,post-service,daily,foh
+Weekly Deep Clean,opening,weekly,kitchen
+Monthly Inventory,opening,monthly,bar
