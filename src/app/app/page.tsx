@@ -25,7 +25,7 @@ export default function AppHome() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <div className="max-w-md w-full bg-white shadow-md rounded-2xl p-8 border border-gray-100">
           <h1 className="text-2xl font-heading font-semibold text-center mb-6">Welcome back</h1>
           <form className="space-y-4">

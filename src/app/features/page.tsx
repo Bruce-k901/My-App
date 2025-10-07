@@ -16,7 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function WhyIndexPage() {
+export default function FeaturesPage() {
   return (
     <MarketingSubPageLayout>
       {/* HERO */}
@@ -25,11 +25,11 @@ export default function WhyIndexPage() {
           <div className="flex items-center justify-center mb-4">
             <LayoutDashboard className="w-8 h-8 text-magenta-400 mr-3" />
             <h1 className="pt-1 pb-1 leading-tight text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
-              Why Checkly
+              Features
             </h1>
           </div>
           <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base">
-            The pitfalls operations teams face — and how Checkly solves them.
+            Explore the core capabilities of Checkly and the pitfalls they solve.
           </p>
         </div>
       </section>
@@ -191,7 +191,7 @@ export default function WhyIndexPage() {
 
           <div className="text-center mt-10">
             <h3 className="text-xl font-semibold mb-4 text-white">
-              Want the same results across all sites?
+              Ready to streamline operations and compliance?
             </h3>
             <Link href="/signup" className="btn-glass-cta">
               Get Started

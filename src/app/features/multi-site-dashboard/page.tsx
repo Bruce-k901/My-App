@@ -18,7 +18,7 @@ export default function MultiSiteDashboardPage() {
   return (
     <MarketingSubPageLayout>
       {/* HERO */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-16 bg-[#0b0d13]">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
             <Globe2 className="w-8 h-8 text-magenta-400 mr-3" />
@@ -34,102 +34,110 @@ export default function MultiSiteDashboardPage() {
         </div>
       </section>
 
-      {/* PITFALLS */}
-      <section className="bg-[#0b0d13] py-12 text-center border-t border-neutral-800">
+      {/* PAIRED PITFALLS + FEATURES */}
+      <section className="bg-[#0b0d13] py-10 border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-semibold mb-10 text-white">Common Multi-Site Pitfalls</h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+          <h2 className="text-2xl font-semibold mb-8 text-white text-center">
+            What it fixes — and how Checkly helps
+          </h2>
+          <div className="space-y-6">
             {[
               {
-                icon: Building2,
-                title: "Inconsistent Standards",
-                text: "Every site runs slightly differently, making it impossible to track brand or service consistency.",
+                pitfall: {
+                  icon: ClipboardX,
+                  title: "Scattered Reporting",
+                  text: "Managers compile performance data manually — slow, inconsistent, and error-prone.",
+                },
+                feature: {
+                  icon: CheckCircle2,
+                  title: "Group-Wide Dashboards",
+                  text: "Live data for every site — maintenance, safety, and task completion in one clean dashboard.",
+                },
               },
               {
-                icon: ClipboardX,
-                title: "Scattered Reporting",
-                text: "Managers compile performance data manually across sites — slow, inconsistent, and error-prone.",
+                pitfall: {
+                  icon: BarChart3,
+                  title: "No Group Performance Insight",
+                  text: "Leadership can’t compare sites or drive improvements across the group.",
+                },
+                feature: {
+                  icon: TrendingUp,
+                  title: "Compare Performance at a Glance",
+                  text: "Spot top sites and support those falling behind to raise the standard consistently.",
+                },
               },
               {
-                icon: AlertTriangle,
-                title: "Blind Spots",
-                text: "Head office can’t see where compliance is slipping until something goes wrong.",
+                pitfall: {
+                  icon: AlertTriangle,
+                  title: "Blind Spots",
+                  text: "Compliance slips aren’t visible until something goes wrong.",
+                },
+                feature: {
+                  icon: BarChart3,
+                  title: "Visual Metrics & Reports",
+                  text: "Turn daily checks into insight — compliance scores, uptime trends, and staff performance.",
+                },
               },
               {
-                icon: Users,
-                title: "Unclear Accountability",
-                text: "No central visibility means head chefs and site managers avoid ownership when targets aren’t met.",
+                pitfall: {
+                  icon: Database,
+                  title: "Disconnected Systems",
+                  text: "Logs, maintenance, and tasks sit in different tools, impossible to analyse together.",
+                },
+                feature: {
+                  icon: Database,
+                  title: "One Source of Truth",
+                  text: "Checkly consolidates records so decisions are based on facts, not guesswork.",
+                },
               },
               {
-                icon: Database,
-                title: "Disconnected Systems",
-                text: "Temperature logs, maintenance, and tasks sit in different tools — impossible to analyse together.",
+                pitfall: {
+                  icon: Users,
+                  title: "Unclear Accountability",
+                  text: "Without central visibility, ownership is fuzzy and outcomes drift.",
+                },
+                feature: {
+                  icon: Users,
+                  title: "Clear Accountability",
+                  text: "Assign roles and monitor outcomes — everyone knows their part and progress is visible.",
+                },
               },
               {
-                icon: BarChart3,
-                title: "No Group Performance Insight",
-                text: "Without consolidated dashboards, leadership can’t compare sites or drive improvements group-wide.",
+                pitfall: {
+                  icon: Building2,
+                  title: "Inconsistent Standards",
+                  text: "Every site runs slightly differently, jeopardising brand consistency.",
+                },
+                feature: {
+                  icon: TrendingUp,
+                  title: "Standardise and Scale",
+                  text: "Use dashboards and templates to align sites — works for single locations too.",
+                },
               },
-            ].map(({ icon: Icon, title, text }) => (
-              <li
-                key={title}
-                className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all"
-              >
-                <div className="flex items-center space-x-2 mb-2">
-                  <Icon className="w-5 h-5 text-magenta-400" />
-                  <p className="text-base font-semibold text-white">{title}</p>
+            ].map(({ pitfall, feature }) => (
+              <div key={pitfall.title} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Pitfall (left) */}
+                <div className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <pitfall.icon className="w-5 h-5 text-magenta-400" />
+                    <p className="text-base font-semibold text-white">{pitfall.title}</p>
+                  </div>
+                  <p className="text-slate-400 text-sm leading-relaxed">{pitfall.text}</p>
                 </div>
-                <p className="text-slate-400 text-sm leading-relaxed">{text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
 
-      {/* BENEFITS */}
-      <section className="bg-[#0b0d13] py-16 text-center border-t border-neutral-800">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-semibold mb-10 text-white">How Checkly Helps</h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            {[
-              {
-                icon: CheckCircle2,
-                title: "Group-Wide Dashboards",
-                text: "View live data from every site — maintenance, safety, and task completion in one clean dashboard.",
-              },
-              {
-                icon: TrendingUp,
-                title: "Compare Performance at a Glance",
-                text: "See which sites excel and where support is needed, helping you raise the group standard consistently.",
-              },
-              {
-                icon: BarChart3,
-                title: "Visual Metrics & Reports",
-                text: "Turn daily checks into actionable insight — compliance scores, uptime trends, and staff performance.",
-              },
-              {
-                icon: Database,
-                title: "All Data, One Source of Truth",
-                text: "Eliminate fragmented systems. Checkly consolidates every record so decisions are based on facts, not guesswork.",
-              },
-              {
-                icon: Users,
-                title: "Clear Accountability",
-                text: "Assign roles and monitor outcomes across sites — everyone knows their part and progress is visible.",
-              },
-            ].map(({ icon: Icon, title, text }) => (
-              <li
-                key={title}
-                className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all"
-              >
-                <div className="flex items-center space-x-2 mb-2">
-                  <Icon className="w-5 h-5 text-magenta-400" />
-                  <p className="text-base font-semibold text-magenta-400">{title}</p>
+                {/* Feature (right) */}
+                <div className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <feature.icon className="w-5 h-5 text-magenta-400" />
+                    <p className="text-base font-semibold text-magenta-400">{feature.title}</p>
+                  </div>
+                  <p className="text-slate-400 text-sm leading-relaxed">{feature.text}</p>
                 </div>
-                <p className="text-slate-400 text-sm leading-relaxed">{text}</p>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* CTA */}
           <div className="text-center mt-10">
             <h3 className="text-xl font-semibold mb-4 text-white">
               Run every site like your best site.

@@ -19,7 +19,7 @@ export default function MaintenancePPMPage() {
   return (
     <MarketingSubPageLayout>
       {/* HERO */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-16 bg-[#0b0d13]">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
             <Wrench className="w-8 h-8 text-magenta-400 mr-3" />
@@ -36,7 +36,7 @@ export default function MaintenancePPMPage() {
       </section>
 
       {/* PITFALLS */}
-      <section className="bg-[#0b0d13] py-12 text-center border-t border-neutral-800">
+      <section className="bg-[#0b0d13] py-8 text-center border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-semibold mb-10 text-white">Common Maintenance Pitfalls</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
@@ -88,7 +88,7 @@ export default function MaintenancePPMPage() {
       </section>
 
       {/* BENEFITS + CTA */}
-      <section className="bg-[#0b0d13] py-16 text-center border-t border-neutral-800">
+      <section className="bg-[#0b0d13] py-10 text-center border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-semibold mb-10 text-white">How Checkly Helps</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">

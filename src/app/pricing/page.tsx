@@ -8,25 +8,22 @@ export default function PricingPage() {
   return (
     <MarketingSubPageLayout>
       {/* HERO */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-16 bg-[#0b0d13]">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold leading-[1.35] pb-2 mb-12 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
             Less paperwork. More progress.
           </h1>
-          <p className="text-gray-300 text-lg mb-8">
+          <p className="text-gray-300 text-lg mt-4 mb-8">
             Keep your sites compliant, your teams organised, and your fridges under control. Try
             Checkly free for 14 days — no credit card needed.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/signup"
-              className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
-            >
+            <Link href="/signup" className="btn-glass-cta">
               Start Free Trial
             </Link>
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-xl border border-gray-500 text-gray-200 hover:bg-gray-800 transition"
+              className="px-6 py-3 rounded-xl border-2 border-magenta-400 text-magenta-200 hover:bg-magenta-600/20 transition"
             >
               Book a Demo
             </Link>
@@ -35,7 +32,7 @@ export default function PricingPage() {
       </section>
 
       {/* PRICING GRID */}
-      <section className="px-6 py-20 bg-[#0e1016] text-gray-200">
+      <section className="px-6 py-12 bg-[#0e1016] text-gray-200">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* STARTER */}
           <div className="rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/10">
@@ -57,10 +54,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/signup"
-              className="block text-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
-            >
+            <Link href="/signup" className="block text-center btn-glass-cta">
               Start Free Trial
             </Link>
           </div>
@@ -90,10 +84,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/signup"
-              className="block text-center px-6 py-3 rounded-xl bg-magenta-500 hover:bg-magenta-600 text-black font-semibold transition"
-            >
+            <Link href="/signup" className="block text-center btn-glass-cta">
               Start Free Trial
             </Link>
           </div>
@@ -120,10 +111,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/contact"
-              className="block text-center px-6 py-3 rounded-xl border border-gray-500 text-gray-200 hover:bg-gray-800 transition"
-            >
+            <Link href="/contact" className="block text-center btn-glass-cta">
               Contact Sales
             </Link>
           </div>
@@ -131,7 +119,7 @@ export default function PricingPage() {
       </section>
 
       {/* ADD-ONS */}
-      <section className="px-6 py-20 bg-[#0b0d13] text-gray-200">
+      <section className="px-6 py-12 bg-[#0b0d13] text-gray-200">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-8 text-white">Optional Add-ons</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
@@ -158,7 +146,7 @@ export default function PricingPage() {
       </section>
 
       {/* CTA */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-16 bg-[#0e1016]">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0e1016]">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
           Ready to take your operation digital?
         </h2>
@@ -167,16 +155,10 @@ export default function PricingPage() {
           group.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="/signup"
-            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
-          >
+          <Link href="/signup" className="btn-glass-cta">
             Start Free Trial
           </Link>
-          <Link
-            href="/contact"
-            className="px-6 py-3 rounded-xl border border-gray-500 text-gray-200 hover:bg-gray-800 transition"
-          >
+          <Link href="/contact" className="btn-glass-cta">
             Contact Sales
           </Link>
         </div>
