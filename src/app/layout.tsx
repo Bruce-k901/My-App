@@ -2,8 +2,8 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
-import { AppContextProvider } from "@/context/AppContext";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import Footer from "@/components/layouts/Footer";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -22,7 +22,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-neutral-950 text-white font-sans">
         <QueryProvider>
           <ToastProvider>
-            <AppContextProvider>{children}</AppContextProvider>
+            {children}
+            <Footer />
           </ToastProvider>
         </QueryProvider>
       </body>

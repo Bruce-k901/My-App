@@ -19,9 +19,8 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      // You can adjust this to the route that will handle updating the password
-      // after the recovery link is clicked.
-      redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/reset-password`,
+      // Direct recovery to the token-handling page that re-establishes session
+      redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/new-password`,
     });
 
     setLoading(false);

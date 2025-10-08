@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 type Role = "staff" | "manager" | "admin" | null;
 
@@ -28,6 +28,7 @@ const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export function AppContextProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [state, setState] = useState<AppContextValue>({
     loading: true,
     userId: null,
@@ -51,7 +52,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
         const { data: sessionData } = await supabase.auth.getSession();
         const session = sessionData?.session;
         if (!session) {
-          router.replace("/login");
+          // Do not redirect here; server-side middleware gates protected routes.
           setState((s) => ({ ...s, loading: false }));
           return;
         }
@@ -161,18 +162,39 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           error: e?.message ?? "Unexpected error loading context",
         }));
       }
-  }, [router]);
+  }, [router, pathname]);
 
   useEffect(() => {
     fetchAll();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) router.replace("/login");
+      // Re-fetch context on auth changes; rely on middleware for redirects.
+      if (session) {
+        fetchAll();
+      } else {
+        setState((s) => ({
+          ...s,
+          loading: false,
+          userId: null,
+          email: null,
+          role: null,
+          companyId: null,
+          company: null,
+          siteId: null,
+          site: null,
+          tasks: [],
+          incidents: [],
+          temperatureLogs: [],
+          assets: [],
+          error: null,
+          requiresSetup: false,
+        }));
+      }
     });
     return () => {
       sub?.subscription.unsubscribe();
     };
-  }, [fetchAll, router]);
+  }, [fetchAll]);
 
   const value = useMemo(() => state, [state]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
