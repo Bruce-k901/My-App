@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import GlassCard from "@/components/ui/GlassCard";
 import { CheckCircle2 } from "lucide-react";
-import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 
 export default function PricingPage() {
   return (
-    <MarketingSubPageLayout>
+    <>
       {/* HERO */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="max-w-3xl mx-auto">
@@ -35,7 +35,7 @@ export default function PricingPage() {
       <section className="px-6 py-12 bg-[#0e1016] text-gray-200">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* STARTER */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/10 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition flex flex-col min-h-[480px]">
+          <GlassCard className="max-w-none flex flex-col min-h-[480px] hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]">
             <h3 className="text-2xl font-semibold text-white mb-2">Starter</h3>
             <p className="text-gray-400 mb-6">For single cafés, restaurants, or bakeries</p>
             <p className="text-4xl font-bold text-blue-400 mb-2">£40</p>
@@ -57,10 +57,10 @@ export default function PricingPage() {
             <Link href="/signup" className="block text-center btn-glass-cta mt-auto">
               Start Free Trial
             </Link>
-          </div>
+          </GlassCard>
 
           {/* PRO */}
-          <div className="rounded-2xl bg-white/10 backdrop-blur-md p-8 border-2 border-magenta-400 shadow-lg relative hover:border-magenta-400/70 hover:shadow-[0_0_22px_rgba(236,72,153,0.45)] transition flex flex-col min-h-[480px]">
+          <GlassCard className="max-w-none relative flex flex-col min-h-[480px] hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]">
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-3 py-1 rounded-full text-sm font-semibold">
               Most Popular
             </div>
@@ -87,10 +87,10 @@ export default function PricingPage() {
             <Link href="/signup" className="block text-center btn-glass-cta mt-auto">
               Start Free Trial
             </Link>
-          </div>
+          </GlassCard>
 
           {/* ENTERPRISE */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/10 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition flex flex-col min-h-[480px]">
+          <GlassCard className="max-w-none flex flex-col min-h-[480px] hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]">
             <h3 className="text-2xl font-semibold text-white mb-2">Enterprise</h3>
             <p className="text-gray-400 mb-6">For hotels, schools, and multi-venue operators</p>
             <p className="text-4xl font-bold text-blue-400 mb-2">Custom</p>
@@ -114,7 +114,7 @@ export default function PricingPage() {
             <Link href="/contact" className="block text-center btn-glass-cta mt-auto">
               Contact Sales
             </Link>
-          </div>
+          </GlassCard>
         </div>
       </section>
 
@@ -163,6 +163,6 @@ export default function PricingPage() {
           </Link>
         </div>
       </section>
-    </MarketingSubPageLayout>
+    </>
   );
 }

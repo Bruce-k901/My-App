@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import GlassCard from "@/components/ui/GlassCard";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import {
   Shield,
@@ -23,13 +24,12 @@ export default function FeaturesPage() {
       <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
-            <LayoutDashboard className="w-8 h-8 text-magenta-400 mr-3" />
             <h1 className="pt-1 pb-1 leading-tight text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
-              Features
+              Because running a food business shouldn’t feel like firefighting
             </h1>
           </div>
           <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base">
-            Everything your kitchen, store, and head office need in one place. Real-time logs, automated alerts, and ready-to-show reports. Less firefighting, more running your business.
+            From missed checks to broken fridges, we’ve seen the chaos. Here’s how Checkly turns it into calm.
           </p>
         </div>
       </section>
@@ -164,27 +164,24 @@ export default function FeaturesPage() {
                 },
               },
             ].map(({ pitfall, feature }) => (
-              <div
-                key={pitfall.title}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch"
-              >
+              <div key={pitfall.title} className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
                 {/* Left: Pitfall card */}
-                <div className="bg-magenta-500/10 rounded-2xl p-5 border border-magenta-500/30 hover:border-magenta-500/50 hover:bg-magenta-500/15 transition-all text-left">
+                <GlassCard className="text-left max-w-none border-magenta-500/30 hover:border-magenta-500/50 bg-magenta-500/10 hover:bg-magenta-500/15">
                   <div className="flex items-center space-x-2 mb-2">
                     <pitfall.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-white">{pitfall.title}</p>
                   </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{pitfall.text}</p>
-                </div>
+                </GlassCard>
 
                 {/* Right: Feature card */}
-                <div className="bg-green-500/10 rounded-2xl p-5 border border-green-500/30 hover:border-green-500/50 hover:bg-green-500/15 transition-all text-left">
+                <GlassCard className="text-left max-w-none border-green-500/30 hover:border-green-500/50 bg-green-500/10 hover:bg-green-500/15">
                   <div className="flex items-center space-x-2 mb-2">
                     <feature.icon className="w-5 h-5 text-green-400" />
                     <p className="text-base font-semibold text-green-400">{feature.title}</p>
                   </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{feature.text}</p>
-                </div>
+                </GlassCard>
               </div>
             ))}
           </div>

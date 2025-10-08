@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Card } from "@/components/ui";
+import GlassCard from "@/components/ui/GlassCard";
 import { AuthLayout } from "@/components/layouts";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -33,6 +34,8 @@ export default function SignupPage() {
       password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
     setForm({ ...form, password });
+    setShowPassword(true);
+    setGenerated(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,8 +76,8 @@ export default function SignupPage() {
         }
       `}</style>
 
-      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+      <GlassCard>
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent">
           Create your Checkly account
         </h1>
 
@@ -98,7 +101,7 @@ export default function SignupPage() {
               onChange={handleChange}
               required
               placeholder="Your name"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -111,7 +114,7 @@ export default function SignupPage() {
               onChange={handleChange}
               required
               placeholder="Company"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -124,7 +127,7 @@ export default function SignupPage() {
               onChange={handleChange}
               required
               placeholder="e.g. 3"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -136,7 +139,7 @@ export default function SignupPage() {
               value={form.phone}
               onChange={handleChange}
               placeholder="(555) 555-5555"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -149,7 +152,7 @@ export default function SignupPage() {
               onChange={handleChange}
               required
               placeholder="you@company.com"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -163,13 +166,13 @@ export default function SignupPage() {
                 onChange={handleChange}
                 required
                 placeholder="Password"
-                className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
-                aria-label="Toggle password visibility"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -181,6 +184,16 @@ export default function SignupPage() {
             >
               <Sparkles size={16} /> Generate secure password
             </button>
+            {generated && (
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(form.password)}
+                className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-300 transition mx-auto mt-2"
+                aria-label="Copy generated password"
+              >
+                <Clipboard size={14} /> Copy generated password
+              </button>
+            )}
           </div>
 
           <button
@@ -198,7 +211,13 @@ export default function SignupPage() {
             Log in
           </Link>
         </p>
-      </Card>
+        <p className="mt-8 text-center text-xs text-gray-500">
+          By continuing, you agree to our {""}
+          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+          {" "}and{" "}
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+        </p>
+      </GlassCard>
     </AuthLayout>
   );
 }

@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthLayout } from "@/components/layouts";
-import { Card } from "@/components/ui";
+import GlassCard from "@/components/ui/GlassCard";
 import { supabase } from "@/lib/supabase";
 import { handlePostLogin } from "@/lib/auth";
+import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -13,6 +14,9 @@ export default function ResetPasswordPage() {
   const [canReset, setCanReset] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +35,17 @@ export default function ResetPasswordPage() {
 
     return () => sub?.subscription.unsubscribe();
   }, []);
+
+  const generatePassword = () => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    let newPass = "";
+    for (let i = 0; i < 14; i++) {
+      newPass += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    setPassword(newPass);
+    setShowPassword(true);
+    setGenerated(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,8 +98,8 @@ export default function ResetPasswordPage() {
         }
       `}</style>
 
-      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+      <GlassCard>
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent">
           Set a new password
         </h1>
 
@@ -102,28 +117,65 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-400 text-sm mb-2">New password</label>
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Choose a strong password"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Choose a strong password"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={generatePassword}
+              className="flex items-center gap-2 text-sm text-magenta-400 hover:text-magenta-300 transition mx-auto mt-1"
+            >
+              <Sparkles size={16} /> Generate secure password
+            </button>
+            {generated && (
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(password)}
+                className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-300 transition mx-auto mt-2"
+                aria-label="Copy generated password"
+              >
+                <Clipboard size={14} /> Copy generated password
+              </button>
+            )}
           </div>
 
           <div>
             <label className="block text-gray-400 text-sm mb-2">Confirm password</label>
-            <input
-              type="password"
-              name="confirm"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              placeholder="Re-enter your password"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
-            />
+            <div className="relative">
+              <input
+                type={showConfirm ? "text" : "password"}
+                name="confirm"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                placeholder="Re-enter your password"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                aria-label={showConfirm ? "Hide password" : "Show password"}
+              >
+                {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <button
@@ -154,7 +206,14 @@ export default function ResetPasswordPage() {
             Back to login
           </button>
         </div>
-      </Card>
+
+        <p className="mt-8 text-center text-xs text-gray-500">
+          By continuing, you agree to our {""}
+          <a href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</a>
+          {" "}and{" "}
+          <a href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</a>.
+        </p>
+      </GlassCard>
     </AuthLayout>
   );
 }

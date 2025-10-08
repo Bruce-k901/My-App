@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { AuthLayout } from "@/components/layouts";
-import { Card } from "@/components/ui";
+import GlassCard from "@/components/ui/GlassCard";
 
 export default function LogoutPage() {
   return (
     <AuthLayout>
-      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+      <GlassCard className="text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent">
           You’ve been logged out
         </h1>
 
@@ -25,11 +25,17 @@ export default function LogoutPage() {
 
         <Link
           href="/"
-          className="w-full inline-block rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-white/10 transition-all duration-300"
+          className="w-full inline-block rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-black/20 transition-all duration-300"
         >
           Back to home
         </Link>
-      </Card>
+        <p className="mt-8 text-center text-xs text-gray-500">
+          By continuing, you agree to our {""}
+          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+          {" "}and{" "}
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+        </p>
+      </GlassCard>
     </AuthLayout>
   );
 }

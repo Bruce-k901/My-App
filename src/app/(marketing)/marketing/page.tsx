@@ -1,11 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 
 export default function MarketingPage() {
   return (
-    <MarketingSubPageLayout>
+    <>
       {/* HERO */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-10">
         <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6">
@@ -72,6 +69,6 @@ export default function MarketingPage() {
           </div>
         </div>
       </footer>
-    </MarketingSubPageLayout>
+    </>
   );
 }

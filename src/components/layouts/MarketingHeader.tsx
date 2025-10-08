@@ -24,6 +24,9 @@ export default function MarketingHeader() {
       >
         Features
       </Link>
+      <Link href="/why-checkly" className="text-slate-200 hover:text-magenta-400 transition">
+        Why Checkly
+      </Link>
       <Link href="/pricing" className="text-slate-200 hover:text-magenta-400 transition">
         Pricing
       </Link>

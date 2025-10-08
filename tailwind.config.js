@@ -8,6 +8,12 @@ module.exports = {
         sans: ["var(--font-manrope)", "Manrope", "Inter", "system-ui", "sans-serif"],
       },
       colors: {
+        // App theme aliases for marketing pages
+        "checkly-blue": "#2563eb",
+        "checkly-magenta": "#ec4899",
+        "checkly-dark": "#0b0d13",
+        "checkly-light": "#e5e7eb",
+        "checkly-gray": "#64748b",
         magenta: {
           400: "#f472b6",
           500: "#ec4899",

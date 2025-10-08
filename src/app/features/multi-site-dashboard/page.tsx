@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Globe2,
   Building2,
   BarChart3,
   ClipboardX,
@@ -12,6 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
+import GlassCard from "@/components/ui/GlassCard";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 
 export default function MultiSiteDashboardPage() {
@@ -21,7 +21,6 @@ export default function MultiSiteDashboardPage() {
       <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
-            <Globe2 className="w-8 h-8 text-magenta-400 mr-3" />
             <h1 className="pt-1 pb-1 leading-tight text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
               Everything your kitchen, store, and head office need in one place
             </h1>
@@ -115,22 +114,22 @@ export default function MultiSiteDashboardPage() {
             ].map(({ pitfall, feature }) => (
               <div key={pitfall.title} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Pitfall (left) */}
-                <div className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all">
+                <GlassCard className="text-left max-w-none hover:border-magenta-500/40">
                   <div className="flex items-center space-x-2 mb-2">
                     <pitfall.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-white">{pitfall.title}</p>
                   </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{pitfall.text}</p>
-                </div>
+                </GlassCard>
 
                 {/* Feature (right) */}
-                <div className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all">
+                <GlassCard className="text-left max-w-none hover:border-magenta-500/40">
                   <div className="flex items-center space-x-2 mb-2">
                     <feature.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-magenta-400">{feature.title}</p>
                   </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{feature.text}</p>
-                </div>
+                </GlassCard>
               </div>
             ))}
           </div>

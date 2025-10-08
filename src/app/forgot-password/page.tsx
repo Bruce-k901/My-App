@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Card } from "@/components/ui";
+import GlassCard from "@/components/ui/GlassCard";
 import { AuthLayout } from "@/components/layouts";
 import { supabase } from "@/lib/supabase";
 
@@ -47,8 +47,8 @@ export default function ForgotPasswordPage() {
         }
       `}</style>
 
-      <Card className="w-full max-w-md bg-[#111319]/80 backdrop-blur-lg border border-white/10 shadow-lg p-8 rounded-2xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+      <GlassCard>
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent">
           Reset your password
         </h1>
 
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@company.com"
-              className="w-full rounded-xl px-4 py-3 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -94,7 +94,14 @@ export default function ForgotPasswordPage() {
             Didn’t receive the email? Check your spam folder.
           </p>
         </div>
-      </Card>
+
+        <p className="mt-8 text-center text-xs text-gray-500">
+          By continuing, you agree to our {""}
+          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+          {" "}and{" "}
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+        </p>
+      </GlassCard>
     </AuthLayout>
   );
 }
