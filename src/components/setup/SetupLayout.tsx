@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import SetupHeader from "./SetupHeader";
 import { useAppContext } from "@/context/AppContext";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { useRouter } from "next/navigation";
 
 function ProgressBar({ status }: { status: string | null | undefined }) {
   const order = [
@@ -30,7 +31,16 @@ function ProgressBar({ status }: { status: string | null | undefined }) {
 }
 
 export default function SetupLayout({ children, stepLabel, activeStep }: { children: React.ReactNode; stepLabel?: string; activeStep?: string }) {
-  const { company } = useAppContext();
+  const { company, role } = useAppContext();
+  const router = useRouter();
+
+  // Auto-redirect: if a company exists and at least one site is present,
+  // send the user straight to the dashboard to continue managing.
+  useEffect(() => {
+    if (!company?.id) return;
+    // Send users straight to the dashboard once a company exists
+    router.replace("/dashboard");
+  }, [company?.id, router]);
   return (
     <ToastProvider>
       <div className="min-h-screen bg-neutral-950 text-white">
