@@ -201,12 +201,27 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
     const fetchCompany = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
-
-      const { data: existingCompany, error } = await supabase
+      let existingCompany: any = null;
+      let error: any = null;
+      // Try fetching by company_id first; fallback to owner_id if column doesn't exist
+      const byCompanyId = await supabase
         .from("companies")
         .select("*")
         .eq("company_id", user.id)
         .single();
+      if (byCompanyId?.data) {
+        existingCompany = byCompanyId.data;
+      } else if (byCompanyId?.error && /company_id/.test(String(byCompanyId.error?.message))) {
+        const byOwnerId = await supabase
+          .from("companies")
+          .select("*")
+          .eq("owner_id", user.id)
+          .single();
+        if (byOwnerId?.data) existingCompany = byOwnerId.data;
+        error = byOwnerId?.error;
+      } else {
+        error = byCompanyId?.error;
+      }
       if (existingCompany) {
         console.log("Existing company found:", existingCompany);
         setExistingCompanyId(existingCompany.id);
@@ -266,9 +281,9 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       if (!user) throw new Error("No user logged in");
 
       // Upsert company for this user (insert or update by primary key)
-      const payload: any = {
+      const payloadCompanyId: any = {
         id: existingCompanyId || undefined,
-        company_id: user.id, // ensure this matches Supabase column name
+        company_id: user.id,
         name: company.name.trim(),
         legal_name: (company.legal_name || "").trim() || null,
         vat_number: (company.vat_number || "").trim() || null,
@@ -280,10 +295,31 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
         industry: company.industry.trim(),
       };
 
-      const { error: upsertError } = await supabase
+      // Try upsert using company_id; if column doesn't exist, fallback to owner_id
+      const upsertCompanyId = await supabase
         .from("companies")
-        .upsert(payload, { onConflict: "id" });
-      if (upsertError) throw upsertError;
+        .upsert(payloadCompanyId, { onConflict: "id" });
+      if (upsertCompanyId.error && /company_id/.test(String(upsertCompanyId.error?.message))) {
+        const payloadOwnerId: any = {
+          id: existingCompanyId || undefined,
+          owner_id: user.id,
+          name: company.name.trim(),
+          legal_name: (company.legal_name || "").trim() || null,
+          vat_number: (company.vat_number || "").trim() || null,
+          phone: (company.phone || "").trim() || null,
+          website: (company.website || "").trim() || null,
+          company_number: company.company_number.trim(),
+          country: company.country.trim(),
+          contact_email: (company.contact_email || "").trim(),
+          industry: company.industry.trim(),
+        };
+        const upsertOwnerId = await supabase
+          .from("companies")
+          .upsert(payloadOwnerId, { onConflict: "id" });
+        if (upsertOwnerId.error) throw upsertOwnerId.error;
+      } else if (upsertCompanyId.error) {
+        throw upsertCompanyId.error;
+      }
       setMessage("Company saved successfully.");
       setSavedOnce(true);
       if (advance) router.push("/setup/sites");
