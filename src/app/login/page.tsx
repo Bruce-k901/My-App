@@ -7,6 +7,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import { AuthLayout } from "@/components/layouts";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { handlePostLogin } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +32,14 @@ export default function LoginPage() {
         setError(signInError.message || "Login failed. Please check your credentials.");
         return;
       }
-      router.push("/dashboard");
+      // Ensure session is ready and route based on setup status
+      const { data } = await supabase.auth.getUser();
+      const userId = data?.user?.id;
+      if (userId) {
+        await handlePostLogin(userId, router);
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (_e) {
       setError("Network issue while logging in. Please retry.");
     } finally {

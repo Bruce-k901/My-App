@@ -140,3 +140,20 @@ p {
   padding-bottom: 0.25rem; /* prevents bottom clipping */
   line-height: 1.1; /* keeps headings compact but safe */
 }
+
+/* ----------------------------- */
+/* Simple Glass Button            */
+/* ----------------------------- */
+.glass-button {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+.glass-button:hover {
+  background: rgba(236, 72, 153, 0.25); /* stronger magenta tint on hover */
+  border-color: rgba(236, 72, 153, 0.5);
+  box-shadow:
+    0 0 18px rgba(236, 72, 153, 0.35),
+    0 0 26px rgba(37, 99, 235, 0.25);
+}

@@ -1,24 +1,35 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
-export default function NewPasswordPage() {
+export default function NewPasswordClient({
+  searchParams,
+}: {
+  searchParams?: { access_token?: string; refresh_token?: string };
+}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
-  const searchParams = useSearchParams();
+  const params = useSearchParams();
 
   useEffect(() => {
     const hash = typeof window !== "undefined" ? window.location.hash : "";
-    // Support both hash fragment tokens and query params
-    const params = hash && hash.includes("access_token")
+    // Support both hash fragment tokens and query params passed from Server Component
+    const urlParams = hash && hash.includes("access_token")
       ? new URLSearchParams(hash.replace("#", ""))
-      : searchParams;
+      : undefined;
 
-    const access_token = params?.get("access_token");
-    const refresh_token = params?.get("refresh_token");
+    const access_token =
+      urlParams?.get("access_token") ??
+      params?.get("access_token") ??
+      searchParams?.access_token ??
+      null;
+    const refresh_token =
+      urlParams?.get("refresh_token") ??
+      params?.get("refresh_token") ??
+      searchParams?.refresh_token ??
+      null;
 
     if (access_token && refresh_token) {
       supabase.auth
@@ -28,8 +39,7 @@ export default function NewPasswordPage() {
     } else {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [params, searchParams]);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();

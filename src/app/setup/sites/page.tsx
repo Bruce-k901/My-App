@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { AppContextProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SetupLayout from "@/components/setup/SetupLayout";
@@ -62,9 +63,22 @@ function SitesContent() {
 
   if (!companyId) {
     return (
-      <SetupLayout stepLabel="Step 2 of 5">
-        <div className="text-slate-300">Create your company first, then add sites.</div>
-        <Link href="/setup" className="btn-gradient mt-4 inline-block">Create Company</Link>
+      <SetupLayout>
+        <div className="bg-[#14161d] border border-gray-800 rounded-2xl p-6 shadow-sm mt-4 text-center">
+          <p className="text-slate-300 text-sm">Create your company first, then add sites.</p>
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <Link
+              href="/setup/company"
+              className="bg-gradient-to-r from-magenta-500 to-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition"
+            >
+              Create Company
+            </Link>
+            <Link href="#" className="text-gray-400 text-sm hover:text-gray-300 flex items-center space-x-1">
+              <span>Finish later</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
       </SetupLayout>
     );
   }
@@ -126,8 +140,8 @@ function SitesContent() {
 
   return (
     <SetupLayout stepLabel="Step 2 of 5">
-      <h2 className="text-xl font-semibold mb-2">Add your sites</h2>
-      <p className="text-slate-300 mb-6">Each site can have its own checklists, team, and equipment.</p>
+      <h2 className="text-xl font-semibold mb-2 text-center">Add your sites</h2>
+      <p className="text-slate-300 mb-6 text-center">Each site can have its own checklists, team, and equipment.</p>
 
       <div className="mb-4">
         <button className="btn-glass" onClick={() => setFormOpen((o) => !o)}>

@@ -1,13 +1,13 @@
 "use client";
 
-import CompanySetupWizard from "@/components/setup/CompanySetupWizard";
 import SetupLayout from "@/components/setup/SetupLayout";
 import { AppContextProvider } from "@/context/AppContext";
+import CompanySetupWizard from "@/components/setup/CompanySetupWizard";
 
-export default function SetupPage() {
+export default function CompanySetupPage() {
   return (
     <AppContextProvider>
-      <SetupLayout>
+      <SetupLayout activeStep="company" stepLabel="Company Details — Step 1 of 5">
         <CompanySetupWizard />
       </SetupLayout>
     </AppContextProvider>

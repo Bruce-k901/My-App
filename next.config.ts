@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   turbopack: {},
 
   reactStrictMode: true,
+  // App Router is enabled by default in Next 15; no experimental flag needed
+  // Ensure SSR build (not static export)
+  output: "standalone",
 
   eslint: {
     ignoreDuringBuilds: true,

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   MapPin,
@@ -19,23 +20,24 @@ export default function CompanySetupWizard() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [completed, setCompleted] = useState<{ [k: string]: boolean }>({});
+  const [canGoSites, setCanGoSites] = useState(false);
   const next = () => setStep((s) => Math.min(s + 1, 4));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
   const markDone = (key: string) => setCompleted((c) => ({ ...c, [key]: true }));
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
       {/* Hero */}
-      <section className="px-6 py-10 border-b border-neutral-800 bg-gradient-to-r from-magenta-400/10 to-blue-400/10">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent">
+      <section className="flex flex-col items-center justify-center text-center w-full px-6 py-5 bg-gradient-to-r from-magenta-400/10 to-blue-400/10">
+        <div className="max-w-5xl mx-auto flex flex-col items-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight leading-tight bg-gradient-to-r from-magenta-500 to-blue-500 text-transparent bg-clip-text">
             Welcome — Let’s set up your company
           </h1>
-          <p className="text-slate-300">
+          <p className="text-base text-gray-300 mb-4 max-w-2xl leading-snug">
             A quick guided setup to configure your organisation, sites, people, and assets.
           </p>
-          <div className="mt-6 flex items-center gap-2 text-xs text-slate-400">
+          <div className="mt-2 flex items-center justify-center space-x-2">
             {[0, 1, 2, 3, 4].map((i) => (
-              <span key={i} className={`h-1 w-10 rounded ${i <= step ? "bg-magenta-400" : "bg-slate-700"}`} />
+              <span key={i} className={`h-1 w-12 rounded-full ${i <= step ? "bg-magenta-500" : "bg-gray-700"}`} />
             ))}
           </div>
         </div>
@@ -50,6 +52,7 @@ export default function CompanySetupWizard() {
               setBusy={setBusy}
               setError={setError}
               userId={userId}
+              onGateSites={(v: boolean) => setCanGoSites(v)}
               onDone={async () => {
                 markDone("company");
                 await refresh();
@@ -113,18 +116,19 @@ export default function CompanySetupWizard() {
         {error && <p className="text-red-400 mt-4">{error}</p>}
 
         <div className="mt-8 flex items-center justify-between">
-          <button onClick={prev} disabled={step === 0} className="text-slate-400 hover:text-white">
+          <button
+            onClick={prev}
+            disabled={step === 0}
+            className="px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white transition-all duration-300"
+          >
             Back
           </button>
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span className={`px-2 py-1 rounded ${completed.company ? "bg-green-700" : "bg-neutral-800"}`}>Company</span>
-            <span className={`px-2 py-1 rounded ${completed.site ? "bg-green-700" : "bg-neutral-800"}`}>Site</span>
-            <span className={`px-2 py-1 rounded ${completed.templates ? "bg-green-700" : "bg-neutral-800"}`}>Templates</span>
-            <span className={`px-2 py-1 rounded ${completed.people ? "bg-green-700" : "bg-neutral-800"}`}>People</span>
-            <span className={`px-2 py-1 rounded ${completed.assets ? "bg-green-700" : "bg-neutral-800"}`}>Assets</span>
-          </div>
-          <Link href="/dashboard" className="btn-gradient inline-flex items-center gap-2">
-            Finish later <ArrowRight className="w-4 h-4" />
+          <Link
+            href="/setup/sites"
+            className={`px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 transition-all duration-300 inline-flex items-center gap-2 ${step === 0 && !canGoSites ? "opacity-50 pointer-events-none" : "hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"}`}
+            aria-disabled={step === 0 && !canGoSites}
+          >
+            Sites <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </main>
@@ -163,51 +167,314 @@ function Card({ title, icon, children }: { title: string; icon: React.ReactNode;
   );
 }
 
-function CompanyForm({ busy, setBusy, setError, userId, onDone }: any) {
-  const [name, setName] = useState("");
-  const [industry, setIndustry] = useState("");
+function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: any) {
+  const router = useRouter();
+  const [company, setCompany] = useState({
+    name: "",
+    legal_name: "",
+    vat_number: "",
+    phone: "",
+    website: "",
+    company_number: "",
+    country: "United Kingdom",
+    contact_email: "",
+    industry: "",
+  });
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
+  const [savedOnce, setSavedOnce] = useState(false);
+
+  const requiredComplete = [company.name, company.industry, company.country, company.contact_email, company.company_number].every(
+    (v) => v && v.trim().length > 0
+  );
+
+  useEffect(() => {
+    if (typeof onGateSites === "function") {
+      onGateSites(savedOnce && requiredComplete);
+    }
+  }, [savedOnce, requiredComplete, onGateSites]);
+
+  // Pre-populate company info if the user already has one
+  useEffect(() => {
+    const fetchCompany = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+
+      const { data: existingCompany, error } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("owner_id", user.id)
+        .single();
+      if (existingCompany) {
+        console.log("Existing company found:", existingCompany);
+        setCompany({
+          name: existingCompany.name ?? "",
+          legal_name: existingCompany.legal_name ?? "",
+          vat_number: existingCompany.vat_number ?? "",
+          phone: existingCompany.phone ?? "",
+          website: existingCompany.website ?? "",
+          company_number: existingCompany.company_number ?? "",
+          country: existingCompany.country ?? "United Kingdom",
+          contact_email: existingCompany.contact_email ?? "",
+          industry: existingCompany.industry ?? "",
+        });
+        setSavedOnce(true);
+        setMessage("Loaded existing company.");
+      } else if (error && (error as any).code !== "PGRST116") {
+        console.error("Error fetching company:", (error as any).message);
+      }
+      setLoading(false);
+    };
+    fetchCompany();
+     
+  }, []);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await doSubmit(true);
+  };
+  const doSubmit = async (advance: boolean) => {
     setError(null);
     setFieldError(null);
     setBusy(true);
     try {
-      if (!name || name.trim().length < 2) {
+      if (!company.name || company.name.trim().length < 2) {
         setFieldError("Please enter your company name (at least 2 characters).");
         return;
       }
-      const { data, error } = await supabase
-        .from("companies")
-        .insert({ name, industry, created_by: userId })
-        .select("id")
-        .single();
-      if (error) throw error;
-      const companyId = data.id;
-      const { error: pErr } = await supabase
-        .from("profiles")
-        .update({ company_id: companyId, role: "admin" })
-        .eq("id", userId);
-      if (pErr) throw pErr;
-      setMessage("Company created.");
-      await onDone();
+      if (!company.industry || company.industry.trim().length < 2) {
+        setFieldError("Please select your industry.");
+        return;
+      }
+      if (!company.country || company.country.trim().length < 2) {
+        setFieldError("Please select your country.");
+        return;
+      }
+      if (!company.contact_email || company.contact_email.trim().length < 5) {
+        setFieldError("Please enter a contact email.");
+        return;
+      }
+      if (!company.company_number || company.company_number.trim().length < 2) {
+        setFieldError("Please enter your company number.");
+        return;
+      }
+      // get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("No user logged in");
+
+      // if no company exists for this user, insert new one
+      const payload: any = {
+        name: company.name.trim(),
+        industry: company.industry.trim(),
+        country: company.country.trim(),
+        contact_email: company.contact_email.trim() || user.email,
+        company_number: company.company_number.trim(),
+        vat_number: (company.vat_number || "").trim() || null,
+        owner_id: user.id,
+      };
+
+      const { error: rpcError } = await supabase.rpc("upsert_company", {
+        p_owner_id: user.id,
+        p_name: payload.name,
+        p_country: payload.country,
+      });
+      if (rpcError) {
+        console.warn("upsert_company RPC failed, falling back to direct insert:", rpcError.message);
+        const { error: insertError } = await supabase.from("companies").insert(payload);
+        if (insertError) throw insertError;
+      } else {
+        const { error: updateError } = await supabase
+          .from("companies")
+          .update({
+            industry: payload.industry,
+            contact_email: payload.contact_email,
+            company_number: payload.company_number,
+            vat_number: payload.vat_number,
+          })
+          .eq("owner_id", user.id);
+        if (updateError) throw updateError;
+      }
+      setMessage("Company saved successfully.");
+      setSavedOnce(true);
+      if (advance) router.push("/setup/sites");
+      else alert("Company saved successfully");
     } catch (err: any) {
-      setError(err?.message ?? "Failed to create company");
+      setError(err?.message ?? "Failed to save company");
+      alert(`Save failed: ${err?.message}`);
     } finally {
       setBusy(false);
     }
   };
   return (
-    <Card title="Create Company" icon={<Building2 className="w-6 h-6 text-magenta-400" />}>
-      <form onSubmit={submit} className="space-y-3">
-        <input className="input" placeholder="Company name" value={name} onChange={(e) => setName(e.target.value)} />
-        {fieldError && <p className="text-red-400 text-xs">{fieldError}</p>}
-        <input className="input" placeholder="Industry" value={industry} onChange={(e) => setIndustry(e.target.value)} />
-        <button disabled={busy || !name} className="btn-gradient">Create Company</button>
-        {message && <p className="text-green-500 text-sm">{message}</p>}
-      </form>
-    </Card>
+    <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-w-5xl mx-auto pt-16">
+      {/* Company Name */}
+      <div className="col-span-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Company Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Enter company name"
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.name}
+          onChange={(e) => setCompany({ ...company, name: e.target.value })}
+        />
+      </div>
+
+      {/* Industry Dropdown */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Industry <span className="text-red-500">*</span>
+        </label>
+        <select
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.industry}
+          onChange={(e) => setCompany({ ...company, industry: e.target.value })}
+        >
+          <option value="" disabled>
+            Select industry
+          </option>
+          <option>Hospitality</option>
+          <option>Education</option>
+          <option>Healthcare</option>
+          <option>Retail</option>
+          <option>Manufacturing</option>
+          <option>Construction</option>
+          <option>Technology</option>
+          <option>Finance</option>
+          <option>Public Sector</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      {/* Country Dropdown */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Country <span className="text-red-500">*</span>
+        </label>
+        <select
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.country}
+          onChange={(e) => setCompany({ ...company, country: e.target.value })}
+        >
+          <option value="" disabled>
+            Select country
+          </option>
+          <option>United Kingdom</option>
+          <option>United States</option>
+          <option>Austria</option>
+          <option>Belgium</option>
+          <option>Bulgaria</option>
+          <option>Croatia</option>
+          <option>Cyprus</option>
+          <option>Czech Republic</option>
+          <option>Denmark</option>
+          <option>Estonia</option>
+          <option>Finland</option>
+          <option>France</option>
+          <option>Germany</option>
+          <option>Greece</option>
+          <option>Hungary</option>
+          <option>Iceland</option>
+          <option>Ireland</option>
+          <option>Italy</option>
+          <option>Latvia</option>
+          <option>Lithuania</option>
+          <option>Luxembourg</option>
+          <option>Malta</option>
+          <option>Netherlands</option>
+          <option>Norway</option>
+          <option>Poland</option>
+          <option>Portugal</option>
+          <option>Romania</option>
+          <option>Slovakia</option>
+          <option>Slovenia</option>
+          <option>Spain</option>
+          <option>Sweden</option>
+          <option>Switzerland</option>
+        </select>
+      </div>
+
+      {/* Company Number */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Company Number <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Registered company number"
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.company_number}
+          onChange={(e) => setCompany({ ...company, company_number: e.target.value })}
+        />
+      </div>
+
+      {/* VAT Number */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          VAT Number (optional)
+        </label>
+        <input
+          type="text"
+          placeholder="If applicable"
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.vat_number}
+          onChange={(e) => setCompany({ ...company, vat_number: e.target.value })}
+        />
+      </div>
+
+      {/* Contact Email */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Contact Email <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="email"
+          placeholder="name@company.com"
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:border-magenta-500 focus:outline-none"
+          value={company.contact_email}
+          onChange={(e) => setCompany({ ...company, contact_email: e.target.value })}
+        />
+      </div>
+
+      {/* Logo Upload */}
+      <div className="col-span-2">
+        <label className="block text-sm font-medium text-gray-300 mb-2">Company Logo</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="w-full bg-[#0f1119] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 cursor-pointer file:mr-4 file:rounded-md file:border-0 file:bg-magenta-600 file:text-white file:px-4 file:py-2 hover:file:bg-magenta-500 transition"
+        />
+      </div>
+
+      {/* Messages */}
+      {(fieldError || message) && (
+        <div className="col-span-2">
+          {fieldError && <p className="text-red-400 text-xs">{fieldError}</p>}
+          {message && <p className="text-green-500 text-sm">{message}</p>}
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="col-span-2 flex justify-end space-x-4 mt-10">
+        <button
+          type="button"
+          onClick={() => doSubmit(false)}
+          className="glass-button text-white px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
+          disabled={busy || !requiredComplete}
+        >
+          Save
+        </button>
+        <button
+          type="submit"
+          className="glass-button text-white px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
+          disabled={busy || !requiredComplete}
+        >
+          Save and Continue
+        </button>
+      </div>
+    </form>
   );
 }
 

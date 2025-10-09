@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import SetupHeader from "./SetupHeader";
 import { useAppContext } from "@/context/AppContext";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 
@@ -21,32 +23,34 @@ function ProgressBar({ status }: { status: string | null | undefined }) {
   const index = status ? order.indexOf(status) : 0;
   const pct = index < 0 ? 0 : (index / (order.length - 1)) * 100;
   return (
-    <div className="w-full h-2 bg-neutral-800 rounded">
-      <div className="h-2 bg-gradient-to-r from-magenta-400 to-blue-400 rounded" style={{ width: `${pct}%` }} />
+    <div className="w-full h-[6px] rounded">
+      <div className="h-[6px] bg-gradient-to-r from-magenta-400 to-blue-400 rounded" style={{ width: `${pct}%` }} />
     </div>
   );
 }
 
-export default function SetupLayout({ children, stepLabel }: { children: React.ReactNode; stepLabel?: string }) {
+export default function SetupLayout({ children, stepLabel, activeStep }: { children: React.ReactNode; stepLabel?: string; activeStep?: string }) {
   const { company } = useAppContext();
   return (
     <ToastProvider>
       <div className="min-h-screen bg-neutral-950 text-white">
-        <header className="px-6 py-6 border-b border-neutral-800 bg-[#0f1220]">
+        <header className="px-6 py-3 bg-[#0f1220]">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold">{company?.name ?? "Company Setup"}</h1>
-                {stepLabel && <p className="text-xs text-slate-400 mt-1">{stepLabel}</p>}
-              </div>
-            </div>
-            <div className="mt-4">
-              <ProgressBar status={company?.setup_status} />
-            </div>
+            <SetupHeader />
           </div>
         </header>
-        <main className="px-6 py-8">
-          <div className="max-w-5xl mx-auto">{children}</div>
+        <main className="px-6 py-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-3 flex flex-col items-center text-center">
+              {company?.name && (
+                <h1 className="text-2xl font-semibold">{company.name}</h1>
+              )}
+              <div className="mt-3 w-full max-w-md">
+                <ProgressBar status={company?.setup_status} />
+              </div>
+            </div>
+            {children}
+          </div>
         </main>
       </div>
     </ToastProvider>

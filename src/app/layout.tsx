@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { AppContextProvider } from "@/context/AppContext";
 import Footer from "@/components/layouts/Footer";
 
 const manrope = Manrope({
@@ -22,8 +23,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-neutral-950 text-white font-sans">
         <QueryProvider>
           <ToastProvider>
-            {children}
-            <Footer />
+            <AppContextProvider>
+              {children}
+              <Footer />
+            </AppContextProvider>
           </ToastProvider>
         </QueryProvider>
       </body>
