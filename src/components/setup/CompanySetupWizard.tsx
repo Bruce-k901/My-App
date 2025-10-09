@@ -205,7 +205,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       const { data: existingCompany, error } = await supabase
         .from("companies")
         .select("*")
-        .eq("owner_id", user.id)
+        .eq("company_id", user.id)
         .single();
       if (existingCompany) {
         console.log("Existing company found:", existingCompany);
@@ -268,7 +268,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       // Upsert company for this user (insert or update by primary key)
       const payload: any = {
         id: existingCompanyId || undefined,
-        owner_id: user.id,
+        company_id: user.id,
         name: company.name.trim(),
         legal_name: (company.legal_name || "").trim() || null,
         vat_number: (company.vat_number || "").trim() || null,
