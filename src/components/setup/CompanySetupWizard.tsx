@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/ToastProvider";
 import { useAppContext } from "@/context/AppContext";
 
 export default function CompanySetupWizard() {
@@ -169,6 +170,7 @@ function Card({ title, icon, children }: { title: string; icon: React.ReactNode;
 
 function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: any) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [company, setCompany] = useState({
     name: "",
     legal_name: "",
@@ -276,32 +278,63 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       // Save company using standard company_id with fallback to owner_id on schema error
       async function saveCompany(userId: string) {
-        const payload: any = {
-          id: existingCompanyId || undefined,
-          company_id: userId,
-          name: company.name.trim(),
-          legal_name: (company.legal_name || "").trim() || null,
-          vat_number: (company.vat_number || "").trim() || null,
-          phone: (company.phone || "").trim() || null,
-          website: (company.website || "").trim() || null,
-          company_number: company.company_number.trim(),
-          country: company.country.trim(),
-          contact_email: (company.contact_email || "").trim(),
-          industry: company.industry.trim(),
-        };
-        const { error } = await supabase
+        // Prefetch existing by company_id to reuse its id and avoid duplicates
+        const { data: existingCompany } = await supabase
           .from("companies")
-          .upsert(payload, { onConflict: "id" });
-        if (error && (error as any).code === "42703") {
-          // Fallback for environments still using owner_id
-          const { error: fallbackError } = await supabase
+          .select("*")
+          .eq("company_id", userId)
+          .maybeSingle();
+
+        try {
+          const { error } = await supabase
             .from("companies")
             .upsert(
-              { ...payload, company_id: undefined, owner_id: userId },
-              { onConflict: "id" }
+              {
+                company_id: userId,
+                name: company.name.trim(),
+                legal_name: (company.legal_name || "").trim() || null,
+                vat_number: (company.vat_number || "").trim() || null,
+                phone: (company.phone || "").trim() || null,
+                website: (company.website || "").trim() || null,
+                company_number: company.company_number.trim(),
+                country: company.country.trim(),
+                contact_email: (company.contact_email || "").trim(),
+                industry: company.industry.trim(),
+                id: existingCompany?.id || undefined,
+              },
+              { onConflict: "name", ignoreDuplicates: false }
             );
-          if (fallbackError) throw fallbackError;
-        } else if (error) {
+
+          if (error && (error as any).code === "42703") {
+            // Fallback for environments still using owner_id
+            const { error: fallbackError } = await supabase
+              .from("companies")
+              .upsert(
+                {
+                  owner_id: userId,
+                  name: company.name.trim(),
+                  legal_name: (company.legal_name || "").trim() || null,
+                  vat_number: (company.vat_number || "").trim() || null,
+                  phone: (company.phone || "").trim() || null,
+                  website: (company.website || "").trim() || null,
+                  company_number: company.company_number.trim(),
+                  country: company.country.trim(),
+                  contact_email: (company.contact_email || "").trim(),
+                  industry: company.industry.trim(),
+                  id: existingCompany?.id || undefined,
+                },
+                { onConflict: "name", ignoreDuplicates: false }
+              );
+            if (fallbackError) throw fallbackError;
+          } else if (error) {
+            throw error;
+          }
+        } catch (error: any) {
+          if (String(error?.message || "").toLowerCase().includes("duplicate key")) {
+            showToast({ title: "Duplicate name", description: "A company with this name already exists.", type: "error" });
+          } else {
+            showToast({ title: "Save failed", description: error?.message || "Unexpected error saving company.", type: "error" });
+          }
           throw error;
         }
       }
