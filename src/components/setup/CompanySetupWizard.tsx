@@ -268,7 +268,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       // Upsert company for this user (insert or update by primary key)
       const payload: any = {
         id: existingCompanyId || undefined,
-        company_id: user.id,
+        company_id: user.id, // ensure this matches Supabase column name
         name: company.name.trim(),
         legal_name: (company.legal_name || "").trim() || null,
         vat_number: (company.vat_number || "").trim() || null,
@@ -276,7 +276,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
         website: (company.website || "").trim() || null,
         company_number: company.company_number.trim(),
         country: company.country.trim(),
-        contact_email: company.contact_email.trim() || user.email,
+        contact_email: (company.contact_email || "").trim(),
         industry: company.industry.trim(),
       };
 
