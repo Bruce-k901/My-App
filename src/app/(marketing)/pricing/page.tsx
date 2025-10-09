@@ -3,6 +3,7 @@
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
 import { CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui";
 
 export default function PricingPage() {
   return (
@@ -18,14 +19,11 @@ export default function PricingPage() {
             Checkly free for 14 days — no credit card needed.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/signup" className="btn-glass-cta">
-              Start Free Trial
+            <Link href="/signup">
+              <Button variant="primary">Start Free Trial</Button>
             </Link>
-            <Link
-              href="/contact"
-              className="px-6 py-3 rounded-xl border-2 border-magenta-400 text-magenta-200 hover:bg-magenta-600/20 transition"
-            >
-              Book a Demo
+            <Link href="/contact">
+              <Button variant="primary">Book a Demo</Button>
             </Link>
           </div>
         </div>
@@ -54,8 +52,8 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/signup" className="block text-center btn-glass-cta mt-auto">
-              Start Free Trial
+            <Link href="/signup" className="block text-center mt-auto">
+              <Button variant="primary" fullWidth>Start Free Trial</Button>
             </Link>
           </GlassCard>
 
@@ -84,8 +82,8 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/signup" className="block text-center btn-glass-cta mt-auto">
-              Start Free Trial
+            <Link href="/signup" className="block text-center mt-auto">
+              <Button variant="primary" fullWidth>Start Free Trial</Button>
             </Link>
           </GlassCard>
 
@@ -111,8 +109,8 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/contact" className="block text-center btn-glass-cta mt-auto">
-              Contact Sales
+            <Link href="/contact" className="block text-center mt-auto">
+              <Button variant="primary" fullWidth>Contact Sales</Button>
             </Link>
           </GlassCard>
         </div>
@@ -155,11 +153,11 @@ export default function PricingPage() {
           group.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/signup" className="btn-glass-cta">
-            Start Free Trial
+          <Link href="/signup">
+            <Button variant="primary">Start Free Trial</Button>
           </Link>
-          <Link href="/contact" className="btn-glass-cta">
-            Contact Sales
+          <Link href="/contact">
+            <Button variant="primary">Contact Sales</Button>
           </Link>
         </div>
       </section>

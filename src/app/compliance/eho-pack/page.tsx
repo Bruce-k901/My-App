@@ -14,6 +14,7 @@ function daysAgo(n: number) {
 
 function EHOForm({ onChange }: { onChange: (v: { siteId: string; start: string; end: string; include: Include }) => void }) {
   const { role, companyId, siteId } = useAppContext();
+  const { isRoleGuardEnabled } = require("@/lib/featureFlags");
   const [sites, setSites] = useState<{ id: string; name: string }[]>([]);
   const [selectedSite, setSelectedSite] = useState<string>(siteId || "");
   const [start, setStart] = useState<string>(daysAgo(7));
@@ -26,14 +27,20 @@ function EHOForm({ onChange }: { onChange: (v: { siteId: string; start: string; 
       const { data } = await supabase.from("sites").select("id,name").eq("company_id", companyId).order("name");
       const list = (data || []) as { id: string; name: string }[];
       // Scope restrictions
-      if (role === "staff" && siteId) {
-        setSites(list.filter((s) => s.id === siteId));
-        setSelectedSite(siteId);
-        setStart(daysAgo(7));
-      } else if (role === "manager" && siteId) {
-        setSites(list.filter((s) => s.id === siteId));
-        setSelectedSite(siteId);
+      if (isRoleGuardEnabled()) {
+        if (role === "staff" && siteId) {
+          setSites(list.filter((s) => s.id === siteId));
+          setSelectedSite(siteId);
+          setStart(daysAgo(7));
+        } else if (role === "manager" && siteId) {
+          setSites(list.filter((s) => s.id === siteId));
+          setSelectedSite(siteId);
+        } else {
+          setSites(list);
+          setSelectedSite(siteId || list[0]?.id || "");
+        }
       } else {
+        // Role guard disabled: show all sites
         setSites(list);
         setSelectedSite(siteId || list[0]?.id || "");
       }

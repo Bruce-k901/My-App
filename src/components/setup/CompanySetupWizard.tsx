@@ -125,7 +125,7 @@ export default function CompanySetupWizard() {
             Back
           </button>
           <Link
-            href="/setup/sites"
+            href="/sites"
             className={`px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 transition-all duration-300 inline-flex items-center gap-2 ${step === 0 && !canGoSites ? "opacity-50 pointer-events-none" : "hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"}`}
             aria-disabled={step === 0 && !canGoSites}
           >
@@ -188,9 +188,8 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [savedOnce, setSavedOnce] = useState(false);
 
-  const requiredComplete = [company.name, company.industry, company.country, company.contact_email, company.company_number].every(
-    (v) => v && v.trim().length > 0
-  );
+  // Updated flow: step is complete if a company created during signup exists
+  const requiredComplete = Boolean(existingCompanyId || (company.name && company.name.trim().length > 0));
 
   useEffect(() => {
     if (typeof onGateSites === "function") {
@@ -201,23 +200,29 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
   // Pre-populate company info if the user already has one
   useEffect(() => {
     async function fetchCompany(userId: string) {
-      try {
-        const { data, error } = await supabase
-          .from("companies")
-          .select("*")
-          .eq("company_id", userId)
-          .single();
-        if (error && (error as any).code === "42703") throw new Error("Missing company_id column");
-        return data as any;
-      } catch {
-        // Temporary fallback for legacy rows
-        const { data } = await supabase
-          .from("companies")
-          .select("*")
-          .eq("owner_id", userId)
-          .single();
-        return data as any;
-      }
+      // New primary: user_id (signup flow). Fallbacks: company_id, owner_id
+      const byUserId = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const missingUserIdCol = (byUserId.error as any)?.code === "42703";
+      if (!missingUserIdCol && byUserId.data) return byUserId.data as any;
+
+      const byCompanyId = await supabase
+        .from("companies")
+        .select("*")
+        .eq("company_id", userId)
+        .maybeSingle();
+      const missingCompanyIdCol = (byCompanyId.error as any)?.code === "42703";
+      if (!missingCompanyIdCol && byCompanyId.data) return byCompanyId.data as any;
+
+      const byOwnerId = await supabase
+        .from("companies")
+        .select("*")
+        .eq("owner_id", userId)
+        .maybeSingle();
+      return byOwnerId.data as any;
     }
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -237,7 +242,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
           industry: existingCompany.industry ?? "",
         });
         setSavedOnce(true);
-        setMessage("Loaded existing company.");
+        setMessage("Loaded your business from signup.");
       }
       setLoading(false);
     });
@@ -251,102 +256,27 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
     setFieldError(null);
     setBusy(true);
     try {
-      if (!company.name || company.name.trim().length < 2) {
-        setFieldError("Please enter your company name (at least 2 characters).");
-        return;
-      }
-      if (!company.industry || company.industry.trim().length < 2) {
-        setFieldError("Please select your industry.");
-        return;
-      }
-      if (!company.country || company.country.trim().length < 2) {
-        setFieldError("Please select your country.");
-        return;
-      }
-      if (!company.contact_email || company.contact_email.trim().length < 5) {
-        setFieldError("Please enter a contact email.");
-        return;
-      }
-      if (!company.company_number || company.company_number.trim().length < 2) {
-        setFieldError("Please enter your company number.");
-        return;
-      }
-      // get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) throw new Error("No user logged in");
 
-      // Save company using standard company_id with fallback to owner_id on schema error
-      async function saveCompany(userId: string) {
-        // Prefetch existing by company_id to reuse its id and avoid duplicates
-        const { data: existingCompany } = await supabase
-          .from("companies")
-          .select("*")
-          .eq("company_id", userId)
-          .maybeSingle();
-
-        try {
-          const { error } = await supabase
-            .from("companies")
-            .upsert(
-              {
-                company_id: userId,
-                name: company.name.trim(),
-                legal_name: (company.legal_name || "").trim() || null,
-                vat_number: (company.vat_number || "").trim() || null,
-                phone: (company.phone || "").trim() || null,
-                website: (company.website || "").trim() || null,
-                company_number: company.company_number.trim(),
-                country: company.country.trim(),
-                contact_email: (company.contact_email || "").trim(),
-                industry: company.industry.trim(),
-                id: existingCompany?.id || undefined,
-              },
-              { onConflict: "name", ignoreDuplicates: false }
-            );
-
-          if (error && (error as any).code === "42703") {
-            // Fallback for environments still using owner_id
-            const { error: fallbackError } = await supabase
-              .from("companies")
-              .upsert(
-                {
-                  owner_id: userId,
-                  name: company.name.trim(),
-                  legal_name: (company.legal_name || "").trim() || null,
-                  vat_number: (company.vat_number || "").trim() || null,
-                  phone: (company.phone || "").trim() || null,
-                  website: (company.website || "").trim() || null,
-                  company_number: company.company_number.trim(),
-                  country: company.country.trim(),
-                  contact_email: (company.contact_email || "").trim(),
-                  industry: company.industry.trim(),
-                  id: existingCompany?.id || undefined,
-                },
-                { onConflict: "name", ignoreDuplicates: false }
-              );
-            if (fallbackError) throw fallbackError;
-          } else if (error) {
-            throw error;
-          }
-        } catch (error: any) {
-          if (String(error?.message || "").toLowerCase().includes("duplicate key")) {
-            showToast({ title: "Duplicate name", description: "A company with this name already exists.", type: "error" });
-          } else {
-            showToast({ title: "Save failed", description: error?.message || "Unexpected error saving company.", type: "error" });
-          }
-          throw error;
-        }
+      const { data: existing } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!existing) {
+        showToast({ title: "No company found", description: "Please create your business on the signup page.", type: "error" });
+        return;
       }
-
-      await saveCompany(user.id);
-      setMessage("Company saved successfully.");
+      setExistingCompanyId(existing.id);
       setSavedOnce(true);
-      if (advance) router.push("/setup/sites");
-      else alert("Company saved successfully");
+      setMessage("Company found — continuing setup without duplicate entry.");
+      if (advance && typeof onDone === "function") {
+        await onDone();
+      }
     } catch (err: any) {
-      setError(err?.message ?? "Failed to save company");
-      alert(`Save failed: ${err?.message}`);
+      setError(err?.message ?? "Failed to load company");
     } finally {
       setBusy(false);
     }

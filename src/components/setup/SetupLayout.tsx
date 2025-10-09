@@ -31,15 +31,17 @@ function ProgressBar({ status }: { status: string | null | undefined }) {
 }
 
 export default function SetupLayout({ children, stepLabel, activeStep }: { children: React.ReactNode; stepLabel?: string; activeStep?: string }) {
-  const { company, role } = useAppContext();
+  const { company } = useAppContext();
   const router = useRouter();
 
-  // Auto-redirect: if a company exists and at least one site is present,
-  // send the user straight to the dashboard to continue managing.
   useEffect(() => {
-    if (!company?.id) return;
-    // Send users straight to the dashboard once a company exists
-    router.replace("/dashboard");
+    // Retire setup pages: always redirect away.
+    // If a company exists, send to dashboard; otherwise send to signup.
+    if (company?.id) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/signup");
+    }
   }, [company?.id, router]);
   return (
     <ToastProvider>

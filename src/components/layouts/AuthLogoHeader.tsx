@@ -9,7 +9,14 @@ export default function AuthLogoHeader() {
     <header className="sticky top-0 z-50 bg-[#0b0e17]/95 backdrop-blur border-b border-slate-800 text-white shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
       <div className="max-w-7xl mx-auto flex items-center justify-center px-10 py-5">
         <Link href="/" className="flex items-center">
-          <Image src={logo as any} alt="Checkly logo" width={240} height={60} priority className="object-contain" />
+          <Image
+            src={logo as any}
+            alt="Checkly logo"
+            width={240}
+            height={60}
+            priority
+            className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
+          />
         </Link>
       </div>
     </header>

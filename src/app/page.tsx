@@ -1,5 +1,6 @@
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import Link from "next/link";
+import { Button } from "@/components/ui";
 
 export default function HomePage() {
   return (
@@ -84,8 +85,8 @@ export default function HomePage() {
         <h3 className="text-2xl font-semibold mb-4 text-white">
           Bring structure, calm, and compliance to your operation.
         </h3>
-        <Link href="/signup" className="btn-glass-cta">
-          Start Free Trial
+        <Link href="/signup">
+          <Button variant="primary">Start Free Trial</Button>
         </Link>
       </section>
     </MarketingSubPageLayout>

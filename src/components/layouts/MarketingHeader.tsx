@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import SharedHeaderBase from "./SharedHeaderBase";
+import Button from "../ui/Button";
 
 export default function MarketingHeader() {
   return (
     <SharedHeaderBase
       cta={
         <>
-          <Link href="/signup" className="btn-glass-cta">
-            Sign up
+          <Link href="/signup">
+            <Button variant="primary">Sign up</Button>
           </Link>
-          <Link href="/login" className="btn-glass-cta">
-            Login
+          <Link href="/login">
+            <Button variant="primary">Login</Button>
           </Link>
         </>
       }

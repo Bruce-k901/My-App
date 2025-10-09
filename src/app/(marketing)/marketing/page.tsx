@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui";
 
 export default function MarketingPage() {
   return (
@@ -13,17 +14,11 @@ export default function MarketingPage() {
           workflow precise, and your users happy.
         </p>
         <div className="flex gap-4">
-          <Link
-            href="/signup"
-            className="px-6 py-3 rounded-lg text-lg font-semibold bg-checkly-blue text-white hover:opacity-90"
-          >
-            Get Started
+          <Link href="/signup">
+            <Button variant="primary">Get Started</Button>
           </Link>
-          <Link
-            href="/login"
-            className="px-6 py-3 rounded-lg text-lg font-semibold bg-checkly-magenta text-white hover:opacity-90"
-          >
-            Login
+          <Link href="/login">
+            <Button variant="primary">Login</Button>
           </Link>
         </div>
       </section>

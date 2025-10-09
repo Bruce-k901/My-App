@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
 import dynamic from "next/dynamic";
 import { getUserContext } from "@/lib/userContext";
+import { isRoleGuardEnabled } from "@/lib/featureFlags";
 
 const StaffDashboard = dynamic(() => import("@/components/dashboard/StaffDashboard"), { ssr: false });
 const ManagerDashboard = dynamic(() => import("@/components/dashboard/ManagerDashboard"), { ssr: false });
@@ -90,6 +91,10 @@ export default function DashboardRouter() {
     );
   }
 
+  if (!isRoleGuardEnabled()) {
+    // With role guard disabled, default to Admin dashboard for full access
+    return <AdminDashboard /> as any;
+  }
   if (role === "manager") return <ManagerDashboard /> as any;
   if (role === "admin") return <AdminDashboard /> as any;
   return <StaffDashboard /> as any;

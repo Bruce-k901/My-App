@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui";
+import { Button } from "@/components/ui";
+import GlassCard from "@/components/ui/GlassCard";
 import AppHeader from "@/components/layouts/AppHeader";
 import { supabase } from "@/lib/supabase";
 
@@ -67,16 +69,13 @@ export default function AppHome() {
               { href: "/reports", title: "Reports", desc: "Compliance & analytics" },
               { href: "/settings", title: "Settings", desc: "Teams & preferences" },
             ].map(({ href, title, desc }) => (
-              <Card
-                key={href}
-                className="bg-[#141823] rounded-2xl p-5 border border-neutral-800 hover:border-magenta-500/40 hover:bg-[#191c26] transition-all duration-200"
-              >
+              <GlassCard key={href} className="p-5">
                 <p className="text-base font-semibold mb-1 text-magenta-400">{title}</p>
                 <p className="text-slate-400 text-sm leading-relaxed mb-4">{desc}</p>
-                <Link href={href} className="btn-glass-cta inline-block text-sm">
-                  Open {title}
+                <Link href={href}>
+                  <Button variant="primary" className="text-sm">Open {title}</Button>
                 </Link>
-              </Card>
+              </GlassCard>
             ))}
           </div>
         </section>

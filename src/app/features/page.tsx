@@ -3,6 +3,7 @@
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
+import { Button } from "@/components/ui";
 import {
   Shield,
   ClipboardCheck,
@@ -166,7 +167,7 @@ export default function FeaturesPage() {
             ].map(({ pitfall, feature }) => (
               <div key={pitfall.title} className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
                 {/* Left: Pitfall card */}
-                <GlassCard className="text-left max-w-none border-magenta-500/30 hover:border-magenta-500/50 bg-magenta-500/10 hover:bg-magenta-500/15">
+                <GlassCard className="text-left max-w-none">
                   <div className="flex items-center space-x-2 mb-2">
                     <pitfall.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-white">{pitfall.title}</p>
@@ -175,7 +176,7 @@ export default function FeaturesPage() {
                 </GlassCard>
 
                 {/* Right: Feature card */}
-                <GlassCard className="text-left max-w-none border-green-500/30 hover:border-green-500/50 bg-green-500/10 hover:bg-green-500/15">
+                <GlassCard className="text-left max-w-none">
                   <div className="flex items-center space-x-2 mb-2">
                     <feature.icon className="w-5 h-5 text-green-400" />
                     <p className="text-base font-semibold text-green-400">{feature.title}</p>
@@ -190,8 +191,8 @@ export default function FeaturesPage() {
             <h3 className="text-xl font-semibold mb-4 text-white">
               Ready to streamline operations and compliance?
             </h3>
-            <Link href="/signup" className="btn-glass-cta">
-              Get Started
+            <Link href="/signup">
+              <Button variant="primary">Get Started</Button>
             </Link>
           </div>
         </div>

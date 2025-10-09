@@ -1,15 +1,21 @@
 "use client";
 
-import CompanySetupWizard from "@/components/setup/CompanySetupWizard";
-import SetupLayout from "@/components/setup/SetupLayout";
-import { AppContextProvider } from "@/context/AppContext";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabaseClient";
 
 export default function SetupPage() {
-  return (
-    <AppContextProvider>
-      <SetupLayout>
-        <CompanySetupWizard />
-      </SetupLayout>
-    </AppContextProvider>
-  );
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      // Retire setup: redirect authenticated users to dashboard; otherwise to signup
+      if (data?.user?.id) router.replace("/dashboard");
+      else router.replace("/signup");
+    })();
+  }, [router, supabase]);
+
+  return null;
 }

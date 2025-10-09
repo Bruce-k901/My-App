@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AppContextProvider, useAppContext } from "@/context/AppContext";
@@ -18,7 +19,8 @@ export default function SitesSetupPage() {
 }
 
 function SitesContent() {
-  const { companyId, refresh } = useAppContext();
+  const router = useRouter();
+  const { companyId, refresh, role, siteId } = useAppContext();
   const browserTz = useMemo(() => {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/London";
@@ -48,7 +50,8 @@ function SitesContent() {
       if (!companyId) return;
       try {
         const { data } = await supabase.from("sites").select("*").eq("company_id", companyId);
-        setSites(data || []);
+        const loaded = data || [];
+        setSites(role === "admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
       } catch {}
       try {
         const { data: profs } = await supabase
@@ -59,7 +62,7 @@ function SitesContent() {
       } catch {}
       setFormOpen(!sites || sites.length === 0);
     })();
-  }, [companyId]);
+  }, [companyId, role, siteId]);
 
   if (!companyId) {
     return (
@@ -83,27 +86,33 @@ function SitesContent() {
     );
   }
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent, continueNext?: boolean) => {
     e.preventDefault();
     setBusy(true);
     setError(null);
     setMessage(null);
     try {
       let siteId = editingId;
-      if (editingId) {
-        const { error: upErr } = await supabase
-          .from("sites")
-          .update({ name, address, timezone, open_time: openTime, close_time: closeTime, manager_id: managerId, phone })
-          .eq("id", editingId);
-        if (upErr) throw upErr;
-      } else {
-        const { data, error } = await supabase
-          .from("sites")
-          .insert({ company_id: companyId, name, address, timezone, open_time: openTime, close_time: closeTime, manager_id: managerId, phone })
-          .select("id")
-          .single();
-        if (error) throw error;
-        siteId = data.id;
+      const payload: any = {
+        id: editingId ?? undefined,
+        company_id: companyId,
+        name,
+        address,
+        timezone,
+        open_time: openTime,
+        close_time: closeTime,
+        manager_id: managerId,
+        phone,
+      };
+      const { data: upsertData, error: upsertErr } = await supabase
+        .from("sites")
+        .upsert([payload], { onConflict: "id" })
+        .select("id")
+        .single();
+      if (upsertErr) throw upsertErr;
+      siteId = upsertData?.id ?? siteId;
+
+      if (!editingId) {
         // Trigger edge function to create defaults
         try {
           await supabase.functions.invoke("create_site_defaults", { body: { site_id: siteId, company_id: companyId } });
@@ -127,8 +136,10 @@ function SitesContent() {
       setManagerId(null);
       setPhone("");
       const { data: sitesRes } = await supabase.from("sites").select("*").eq("company_id", companyId);
-      setSites(sitesRes || []);
+      const loaded = sitesRes || [];
+      setSites(role === "admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
       await refresh();
+      if (continueNext) router.push("/setup/team");
     } catch (err: any) {
       const errMsg = err?.message ?? "Failed to create site";
       setError(errMsg);
@@ -143,14 +154,16 @@ function SitesContent() {
       <h2 className="text-xl font-semibold mb-2 text-center">Add your sites</h2>
       <p className="text-slate-300 mb-6 text-center">Each site can have its own checklists, team, and equipment.</p>
 
-      <div className="mb-4">
-        <button className="btn-glass" onClick={() => setFormOpen((o) => !o)}>
-          {formOpen ? "Hide Form" : "+ Add Site"}
-        </button>
-      </div>
+      {role === "admin" && (
+        <div className="mb-4">
+          <button className="btn-glass" onClick={() => setFormOpen((o) => !o)}>
+            {formOpen ? "Hide Form" : "+ Add Site"}
+          </button>
+        </div>
+      )}
 
-      {formOpen && (
-        <form onSubmit={submit} className="space-y-3 rounded-lg border border-neutral-800 p-4 bg-[#0f1220]">
+      {role === "admin" && formOpen && (
+        <form onSubmit={(e) => submit(e)} className="space-y-3 rounded-lg border border-neutral-800 p-4 bg-[#0f1220]">
           <input className="input" placeholder="Site name" value={name} onChange={(e) => setName(e.target.value)} />
           <textarea className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -176,7 +189,10 @@ function SitesContent() {
             </select>
             <input className="input" placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
-          <button disabled={busy || !name || !address} className="btn-gradient">{editingId ? "Update Site" : "Save Site"}</button>
+          <div className="flex gap-3">
+            <button type="submit" disabled={busy || !name || !address} className="btn-gradient">{editingId ? "Update Site" : "Save"}</button>
+            <button type="button" disabled={busy || !name || !address} className="btn-glass" onClick={(e) => submit(e as any, true)}>Save & Continue</button>
+          </div>
           {message && <p className="text-green-500 text-sm mt-2">{message}</p>}
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </form>
@@ -192,28 +208,32 @@ function SitesContent() {
               <div key={s.id} className="rounded border border-neutral-800 p-3 bg-[#0f1220] flex items-center justify-between">
                 <div>
                   <p className="font-medium">{s.name}</p>
-                  <p className="text-xs text-slate-400">TZ: {s.timezone} • Open {s.open_time} → Close {s.close_time}</p>
+                  <p className="text-xs text-slate-400">{s.address}</p>
+                  <p className="text-xs text-slate-400">Status: {s.active === false ? "Inactive" : "Active"} • TZ: {s.timezone} • Open {s.open_time} → Close {s.close_time}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="btn-glass" onClick={() => {
-                    setEditingId(s.id);
-                    setFormOpen(true);
-                    setName(s.name || "");
-                    setAddress(s.address || "");
-                    setTimezone(s.timezone || browserTz);
-                    setOpenTime(s.open_time || "08:00");
-                    setCloseTime(s.close_time || "22:00");
-                    setManagerId(s.manager_id || null);
-                    setPhone(s.phone || "");
-                  }}>Edit</button>
-                  <button className="btn-glass" onClick={async () => {
-                    try {
-                      await supabase.from("sites").delete().eq("id", s.id);
-                      const { data: sitesRes } = await supabase.from("sites").select("*").eq("company_id", companyId);
-                      setSites(sitesRes || []);
-                    } catch {}
-                  }}>Delete</button>
-                </div>
+                {role === "admin" && (
+                  <div className="flex items-center gap-2">
+                    <button className="btn-glass" onClick={() => {
+                      setEditingId(s.id);
+                      setFormOpen(true);
+                      setName(s.name || "");
+                      setAddress(s.address || "");
+                      setTimezone(s.timezone || browserTz);
+                      setOpenTime(s.open_time || "08:00");
+                      setCloseTime(s.close_time || "22:00");
+                      setManagerId(s.manager_id || null);
+                      setPhone(s.phone || "");
+                    }}>Edit</button>
+                    <button className="btn-glass" onClick={async () => {
+                      try {
+                        await supabase.from("sites").delete().eq("id", s.id);
+                        const { data: sitesRes } = await supabase.from("sites").select("*").eq("company_id", companyId);
+                        const loaded = sitesRes || [];
+                        setSites(role === "admin" ? loaded : siteId ? loaded.filter((x: any) => x.id === siteId) : loaded);
+                      } catch {}
+                    }}>Delete</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

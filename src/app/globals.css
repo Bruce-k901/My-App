@@ -11,6 +11,17 @@ body {
   background: radial-gradient(circle at 20% 30%, #0b0d13 0%, #090a0f 80%);
 }
 
+/* Smooth scrollbar behaviour; hide when not needed */
+html {
+  overflow-y: auto;
+}
+
+/* Hide scrollbar track in WebKit browsers while preserving wheel scroll */
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
 h1,
 h2,
 h3 {
@@ -156,4 +167,78 @@ p {
   box-shadow:
     0 0 18px rgba(236, 72, 153, 0.35),
     0 0 26px rgba(37, 99, 235, 0.25);
+}
+
+/* ----------------------------- */
+/* Dashboard-specific tweaks      */
+/* ----------------------------- */
+/* Hide global footer on dashboard pages to prevent body scrollbar */
+.dashboard-page + footer {
+  display: none;
+}
+
+/* Utility: hide scrollbars within a container but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* ----------------------------- */
+/* Polishing: Fade-in + Blink     */
+/* ----------------------------- */
+@keyframes softFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-soft {
+  animation: softFadeIn 300ms ease-out both;
+}
+
+@keyframes blinkPulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
+  }
+}
+
+.blink-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #ec4899; /* pink */
+  animation: blinkPulse 1.2s ease-in-out infinite;
+}
+
+.textarea-hover-glow:hover {
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+}
+
+/* Optional: pulsing glow for active icons */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.55);
+  }
+}
+
+.active-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
 }

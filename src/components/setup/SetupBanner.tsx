@@ -10,10 +10,10 @@ export default function SetupBanner() {
     <div className="bg-[#141823] border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-6 py-3 text-sm text-slate-300 flex items-center justify-between">
         <p>
-          Company setup incomplete. Finish creating company and sites to unlock full dashboard.
+          Getting started checklist available. You can add sites, invite your team, and import templates.
         </p>
         <Link href="/setup" className="btn-gradient text-xs">
-          Go to Setup
+          Open Checklist
         </Link>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui";
 import GlassCard from "@/components/ui/GlassCard";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 
@@ -114,7 +115,7 @@ export default function MultiSiteDashboardPage() {
             ].map(({ pitfall, feature }) => (
               <div key={pitfall.title} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Pitfall (left) */}
-                <GlassCard className="text-left max-w-none hover:border-magenta-500/40">
+                <GlassCard className="text-left max-w-none">
                   <div className="flex items-center space-x-2 mb-2">
                     <pitfall.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-white">{pitfall.title}</p>
@@ -123,7 +124,7 @@ export default function MultiSiteDashboardPage() {
                 </GlassCard>
 
                 {/* Feature (right) */}
-                <GlassCard className="text-left max-w-none hover:border-magenta-500/40">
+                <GlassCard className="text-left max-w-none">
                   <div className="flex items-center space-x-2 mb-2">
                     <feature.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-magenta-400">{feature.title}</p>
@@ -139,8 +140,8 @@ export default function MultiSiteDashboardPage() {
             <h3 className="text-xl font-semibold mb-4 text-white">
               Run every site like your best site.
             </h3>
-            <Link href="/signup" className="btn-glass-cta">
-              Get Started
+            <Link href="/signup">
+              <Button variant="primary">Get Started</Button>
             </Link>
           </div>
         </div>

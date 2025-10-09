@@ -25,7 +25,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
               alt={logoAlt ?? "Company logo"}
               width={160}
               height={40}
-              className="object-contain"
+              className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
               loading="eager"
             />
           ) : (
@@ -35,7 +35,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
               width={160}
               height={40}
               priority
-              className="object-contain"
+              className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
             />
           )}
         </Link>

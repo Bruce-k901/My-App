@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
+import { isRoleGuardEnabled } from "@/lib/featureFlags";
 
 export default function RoleHeader() {
   const { role } = useAppContext();
-
   const common = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/tasks", label: "Tasks" },
@@ -22,11 +22,13 @@ export default function RoleHeader() {
     { href: "/settings", label: "Settings" },
   ];
 
-  const items = [
-    ...common,
-    ...(role === "manager" || role === "admin" ? compliance : []),
-    ...(role === "admin" ? admin : []),
-  ];
+  const items = isRoleGuardEnabled()
+    ? [
+        ...common,
+        ...(role === "manager" || role === "admin" ? compliance : []),
+        ...(role === "admin" ? admin : []),
+      ]
+    : [...common, ...compliance, ...admin];
 
   return (
     <header className="border-b border-neutral-800 bg-[#0b0d13]">

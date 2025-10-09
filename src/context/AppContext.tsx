@@ -13,6 +13,7 @@ interface AppContextValue {
   role: Role;
   companyId: string | null;
   company: any | null;
+  profile: any | null;
   siteId: string | null;
   site: any | null;
   tasks: any[];
@@ -22,6 +23,7 @@ interface AppContextValue {
   error: string | null;
   requiresSetup: boolean;
   refresh: () => Promise<void>;
+  setCompany: (company: any | null) => void;
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
@@ -36,6 +38,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
     role: null,
     companyId: null,
     company: null,
+    profile: null,
     siteId: null,
     site: null,
     tasks: [],
@@ -45,6 +48,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
     error: null,
     requiresSetup: false,
     refresh: async () => {},
+    setCompany: () => {},
   });
 
   const fetchAll = useCallback(async () => {
@@ -139,6 +143,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           role,
           companyId,
           company,
+          profile: { id: userId, role, site_id: siteId, company_id: companyId, email },
           siteId,
           site,
           tasks: tasksRes.data ?? [],
@@ -180,6 +185,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           role: null,
           companyId: null,
           company: null,
+          profile: null,
           siteId: null,
           site: null,
           tasks: [],
@@ -196,7 +202,14 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
     };
   }, [fetchAll]);
 
-  const value = useMemo(() => state, [state]);
+  const setCompanyCtx = useCallback((company: any | null) => {
+    setState((s) => ({ ...s, company }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...state, refresh: fetchAll, setCompany: setCompanyCtx }),
+    [state, fetchAll, setCompanyCtx]
+  );
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
