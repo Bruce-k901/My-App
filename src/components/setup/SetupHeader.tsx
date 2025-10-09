@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function SetupHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const steps = [
     { label: "Companies", href: "/setup" },
     { label: "Sites", href: "/setup/sites" },
@@ -13,6 +15,12 @@ export default function SetupHeader() {
     { label: "People", href: "/setup/team" },
     { label: "Assets", href: "/setup/equipment" },
   ];
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    router.replace("/logout");
+  };
   return (
     <div className="flex items-center justify-between">
       <Link href="/setup" className="flex items-center">
@@ -35,6 +43,13 @@ export default function SetupHeader() {
             </Link>
           );
         })}
+        <button
+          onClick={logout}
+          className="text-sm px-3 py-1 rounded-full border border-white/20 transition-all duration-300 bg-transparent text-slate-300 hover:bg-black/20"
+          aria-label="Logout"
+        >
+          Logout
+        </button>
       </nav>
     </div>
   );
