@@ -180,6 +180,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
     contact_email: "",
     industry: "",
   });
+  const [existingCompanyId, setExistingCompanyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -208,6 +209,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
         .single();
       if (existingCompany) {
         console.log("Existing company found:", existingCompany);
+        setExistingCompanyId(existingCompany.id);
         setCompany({
           name: existingCompany.name ?? "",
           legal_name: existingCompany.legal_name ?? "",
@@ -263,38 +265,25 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       if (userError) throw userError;
       if (!user) throw new Error("No user logged in");
 
-      // if no company exists for this user, insert new one
+      // Upsert company for this user (insert or update by primary key)
       const payload: any = {
+        id: existingCompanyId || undefined,
+        owner_id: user.id,
         name: company.name.trim(),
-        industry: company.industry.trim(),
+        legal_name: (company.legal_name || "").trim() || null,
+        vat_number: (company.vat_number || "").trim() || null,
+        phone: (company.phone || "").trim() || null,
+        website: (company.website || "").trim() || null,
+        company_number: company.company_number.trim(),
         country: company.country.trim(),
         contact_email: company.contact_email.trim() || user.email,
-        company_number: company.company_number.trim(),
-        vat_number: (company.vat_number || "").trim() || null,
-        owner_id: user.id,
+        industry: company.industry.trim(),
       };
 
-      const { error: rpcError } = await supabase.rpc("upsert_company", {
-        p_owner_id: user.id,
-        p_name: payload.name,
-        p_country: payload.country,
-      });
-      if (rpcError) {
-        console.warn("upsert_company RPC failed, falling back to direct insert:", rpcError.message);
-        const { error: insertError } = await supabase.from("companies").insert(payload);
-        if (insertError) throw insertError;
-      } else {
-        const { error: updateError } = await supabase
-          .from("companies")
-          .update({
-            industry: payload.industry,
-            contact_email: payload.contact_email,
-            company_number: payload.company_number,
-            vat_number: payload.vat_number,
-          })
-          .eq("owner_id", user.id);
-        if (updateError) throw updateError;
-      }
+      const { error: upsertError } = await supabase
+        .from("companies")
+        .upsert(payload, { onConflict: "id" });
+      if (upsertError) throw upsertError;
       setMessage("Company saved successfully.");
       setSavedOnce(true);
       if (advance) router.push("/setup/sites");
@@ -306,6 +295,13 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       setBusy(false);
     }
   };
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto pt-16">
+        <p className="text-slate-300">Loading…</p>
+      </div>
+    );
+  }
   return (
     <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-w-5xl mx-auto pt-16">
       {/* Company Name */}
