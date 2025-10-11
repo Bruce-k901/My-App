@@ -21,16 +21,17 @@ export function Tooltip({ children }: { children: React.ReactNode }) {
 export function TooltipTrigger({ asChild = false, children, onHoverChange }: { asChild?: boolean; children: React.ReactNode; onHoverChange?: (hover: boolean) => void }) {
   const child = React.Children.only(children as any) as React.ReactElement;
   if (asChild && React.isValidElement(child)) {
-    return React.cloneElement(child, {
+    return React.cloneElement(child as React.ReactElement<any>, {
+      ...(child.props as any),
       onMouseEnter: (e: any) => {
-        child.props.onMouseEnter?.(e);
+        (child.props as any).onMouseEnter?.(e);
         onHoverChange?.(true);
       },
       onMouseLeave: (e: any) => {
-        child.props.onMouseLeave?.(e);
+        (child.props as any).onMouseLeave?.(e);
         onHoverChange?.(false);
       },
-    });
+    } as any);
   }
   return (
     <span

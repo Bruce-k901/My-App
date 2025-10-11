@@ -5,6 +5,7 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AppContextProvider } from "@/context/AppContext";
 import Footer from "@/components/layouts/Footer";
+import ClientAuthProvider from "@/components/ClientAuthProvider";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <QueryProvider>
           <ToastProvider>
             <AppContextProvider>
+              <ClientAuthProvider />
               {children}
               <Footer />
             </AppContextProvider>

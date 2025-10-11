@@ -147,12 +147,12 @@ export default function BusinessDetailsTab() {
           .from("companies")
           .update(payload)
           .eq("id", form.id)
-          .select()
+          .select("*")
           .single()
       : await supabase
           .from("companies")
           .insert([payload])
-          .select()
+          .select("*")
           .single();
 
     if (result.error) {

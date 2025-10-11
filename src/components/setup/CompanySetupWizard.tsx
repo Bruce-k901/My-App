@@ -125,7 +125,7 @@ export default function CompanySetupWizard() {
             Back
           </button>
           <Link
-            href="/sites"
+            href="/dashboard/sites"
             className={`px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 transition-all duration-300 inline-flex items-center gap-2 ${step === 0 && !canGoSites ? "opacity-50 pointer-events-none" : "hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"}`}
             aria-disabled={step === 0 && !canGoSites}
           >

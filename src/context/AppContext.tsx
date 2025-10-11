@@ -86,6 +86,19 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           companyId = (session.user.app_metadata?.company_id as string) ?? null;
         }
 
+        // Fallback: if companyId is missing, try owner company by user_id
+        if (!companyId) {
+          try {
+            const { data: ownerCompanies } = await supabase
+              .from("companies")
+              .select("id,setup_status")
+              .eq("user_id", userId)
+              .limit(1);
+            const ownerCompany = ownerCompanies?.[0] ?? null;
+            companyId = (ownerCompany?.id as string | undefined) ?? companyId;
+          } catch {}
+        }
+
         // Load company and current site
         let company: any | null = null;
         let site: any | null = null;
@@ -158,6 +171,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
             null,
           requiresSetup,
           refresh: fetchAll,
+          setCompany: state.setCompany,
         };
         setState(nextState);
       } catch (e: any) {

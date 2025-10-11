@@ -8,13 +8,12 @@ type Contractor = {
   id?: string;
   company_id: string;
   category: string;
-  contractor_name: string;
+  name: string;
   contact_name?: string | null;
   email?: string | null;
   phone?: string | null;
-  emergency_phone?: string | null;
+  ooh?: string | null;
   address?: string | null;
-  linked_sites?: string[] | null; // uuid[]
   contract_start?: string | null;
   contract_expiry?: string | null;
   contract_file?: string | null;
@@ -25,13 +24,12 @@ function emptyContractor(companyId: string): Contractor {
   return {
     company_id: companyId,
     category: "",
-    contractor_name: "",
+    name: "",
     contact_name: "",
     email: "",
     phone: "",
-    emergency_phone: "",
+    ooh: "",
     address: "",
-    linked_sites: [],
     contract_start: null,
     contract_expiry: null,
     contract_file: null,
@@ -54,13 +52,54 @@ export default function ContractorsTable() {
       try {
         const { data, error } = await supabase
           .from("maintenance_contractors")
-          .select("*")
+          .select("id, company_id, category, name, contact_name, email, phone, ooh, address, contract_start, contract_expiry, notes")
           .eq("company_id", companyId)
-          .order("contractor_name");
+          .order("name");
         if (error) throw error;
-        setRows(((data || []) as any) as Contractor[]);
+        const ui = (data || []).map((row: any) => ({
+          id: row.id,
+          company_id: row.company_id,
+          category: row.category || "",
+          name: row.name || "",
+          contact_name: row.contact_name || "",
+          email: row.email || "",
+          phone: row.phone || "",
+          ooh: row.ooh || "",
+          address: row.address || "",
+          contract_start: row.contract_start || null,
+          contract_expiry: row.contract_expiry || null,
+          notes: row.notes || "",
+        })) as Contractor[];
+        console.log("Loaded contractors (table):", ui);
+        setRows(ui);
       } catch (e: any) {
-        setError(e?.message || "Failed to load contractors");
+        console.warn("Primary contractor query failed, trying legacy columns:", e?.message);
+        try {
+          const { data: legacyData, error: legacyError } = await supabase
+            .from("maintenance_contractors")
+            .select("id, company_id, category, contractor_name, contact_name, email, phone, emergency_phone, address, contract_start, contract_expiry, notes")
+            .eq("company_id", companyId)
+            .order("contractor_name");
+          if (legacyError) throw legacyError;
+          const uiLegacy = (legacyData || []).map((row: any) => ({
+            id: row.id,
+            company_id: row.company_id,
+            category: row.category || "",
+            name: row.contractor_name || "",
+            contact_name: row.contact_name || "",
+            email: row.email || "",
+            phone: row.phone || "",
+            ooh: row.emergency_phone || "",
+            address: row.address || "",
+            contract_start: row.contract_start || null,
+            contract_expiry: row.contract_expiry || null,
+            notes: row.notes || "",
+          })) as Contractor[];
+          console.log("Loaded contractors (legacy table mapping):", uiLegacy);
+          setRows(uiLegacy);
+        } catch (legacyErr: any) {
+          setError(legacyErr?.message || "Failed to load contractors");
+        }
       } finally {
         setLoading(false);
       }
@@ -94,9 +133,42 @@ export default function ContractorsTable() {
     setSaving(true);
     setError(null);
     try {
-      const payload = { ...editing, company_id: companyId } as any;
-      const { data, error } = await supabase.from("maintenance_contractors").upsert(payload).select("*");
-      if (error) throw error;
+      const payload = {
+        id: editing.id,
+        company_id: companyId,
+        category: editing.category,
+        name: editing.name,
+        contact_name: editing.contact_name || null,
+        email: editing.email || null,
+        phone: editing.phone || null,
+        ooh: editing.ooh || null,
+        address: editing.address || null,
+        contract_start: editing.contract_start || null,
+        contract_expiry: editing.contract_expiry || null,
+        notes: editing.notes || null,
+      } as any;
+      let { data, error } = await supabase.from("maintenance_contractors").upsert(payload).select("*");
+      if (error) {
+        console.warn("Primary upsert failed, trying legacy payload:", error?.message);
+        const legacyPayload = {
+          id: editing.id,
+          company_id: companyId,
+          category: editing.category,
+          contractor_name: editing.name,
+          contact_name: editing.contact_name || null,
+          email: editing.email || null,
+          phone: editing.phone || null,
+          emergency_phone: editing.ooh || null,
+          address: editing.address || null,
+          contract_start: editing.contract_start || null,
+          contract_expiry: editing.contract_expiry || null,
+          notes: editing.notes || null,
+        } as any;
+        const res2 = await supabase.from("maintenance_contractors").upsert(legacyPayload).select("*");
+        data = res2.data;
+        error = res2.error as any;
+        if (error) throw error;
+      }
       const saved = (data?.[0] || payload) as Contractor;
       setRows((prev) => {
         const idx = prev.findIndex((r) => r.id === saved.id);
@@ -146,7 +218,7 @@ export default function ContractorsTable() {
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-white/[0.06]">
                 <td className="px-3 py-2 text-white/90">{r.category}</td>
-                <td className="px-3 py-2 text-white">{r.contractor_name}</td>
+                <td className="px-3 py-2 text-white">{r.name}</td>
                 <td className="px-3 py-2 text-slate-300">{r.contact_name || "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.email || "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.phone || "—"}</td>
@@ -191,8 +263,8 @@ export default function ContractorsTable() {
                 <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-slate-300">Contractor Name</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.contractor_name} onChange={(e) => setEditing({ ...editing, contractor_name: e.target.value })} />
+                <span className="text-sm text-slate-300">Name</span>
+                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-slate-300">Contact Name</span>
@@ -207,8 +279,8 @@ export default function ContractorsTable() {
                 <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-slate-300">Emergency Phone</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.emergency_phone || ""} onChange={(e) => setEditing({ ...editing, emergency_phone: e.target.value })} />
+                <span className="text-sm text-slate-300">OOH Contact</span>
+                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white" value={editing.ooh || ""} onChange={(e) => setEditing({ ...editing, ooh: e.target.value })} />
               </label>
               <label className="md:col-span-2 flex flex-col gap-1">
                 <span className="text-sm text-slate-300">Address</span>

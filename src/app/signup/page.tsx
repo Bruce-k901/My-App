@@ -78,7 +78,7 @@ export default function SignupPage() {
   return (
     <MarketingSubPageLayout>
       <main className="flex flex-col items-center justify-center min-h-screen px-6 py-10">
-        <GlassCard variant="dark" className="py-8 px-6">
+        <GlassCard className="py-8 px-6">
           <form onSubmit={handleSignup} className="w-full max-w-[460px] space-y-4">
             <h1 className="text-3xl font-semibold text-center mb-4">Create Your Account</h1>
 

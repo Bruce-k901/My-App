@@ -16,7 +16,7 @@ export default function RoleHeader() {
     { href: "/compliance", label: "Compliance" },
   ];
   const admin = [
-    { href: "/sites", label: "Sites" },
+    { href: "/dashboard/sites", label: "Sites" },
     { href: "/teams", label: "Teams" },
     { href: "/reports", label: "Reports" },
     { href: "/settings", label: "Settings" },

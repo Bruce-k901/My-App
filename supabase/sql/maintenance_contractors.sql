@@ -39,11 +39,16 @@ create policy if not exists maintenance_contractors_select_company
   on public.maintenance_contractors
   for select
   using (
+    -- Any company member can read contractors; also allow company owners
     exists (
       select 1 from public.profiles p
       where p.id = auth.uid()
         and p.company_id = maintenance_contractors.company_id
-        and p.role in ('owner','admin')
+    )
+    or exists (
+      select 1 from public.companies c
+      where c.id = maintenance_contractors.company_id
+        and (c.user_id = auth.uid() or c.created_by = auth.uid())
     )
   );
 

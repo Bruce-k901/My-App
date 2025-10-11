@@ -1,0 +1,43 @@
+export const mockContractors = [
+  {
+    id: 1,
+    name: "Bright Sparks Electrical",
+    email: "hello@brightsparks.co.uk",
+    phone: "0207 123 4567",
+    ooh: "07700 900321",
+    sites: ["Toynbee Street", "Kings Cross Kiosk"],
+    hourly_rate: 55,
+    callout_fee: 75,
+    region: "London",
+    specialty: "Electrical",
+    notes: "Preferred vendor for central sites.",
+  },
+  {
+    id: 2,
+    name: "NorthWest Plumbing Co.",
+    email: "jobs@nwplumbing.co.uk",
+    phone: "0161 555 2211",
+    ooh: "07700 900322",
+    sites: ["Manchester Depot", "Bristol Harbour Outlet"],
+    hourly_rate: 48.5,
+    callout_fee: 60,
+    region: "North West",
+    specialty: "Plumbing",
+    notes: "Handles emergency callouts within 2 hours.",
+  },
+  {
+    id: 3,
+    name: "SafeHeat HVAC",
+    email: "support@safeheat.co.uk",
+    phone: "0117 333 8888",
+    ooh: "07700 900323",
+    sites: ["Brighton Beach Cafe", "Toynbee Street"],
+    hourly_rate: 62,
+    callout_fee: 85,
+    region: "South",
+    specialty: "HVAC",
+    notes: "Seasonal maintenance contracts available.",
+  },
+];
+
+export type Contractor = typeof mockContractors[number];
