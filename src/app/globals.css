@@ -14,6 +14,17 @@ body {
   background: radial-gradient(circle at 20% 30%, #0b0d13 0%, #090a0f 80%);
 }
 
+/* Disable browser autofill overlay and preserve dark theme styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  background-color: transparent !important;
+  -webkit-text-fill-color: inherit !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+  caret-color: inherit !important;
+}
+
 /* Smooth scrollbar behaviour; hide when not needed */
 html {
   overflow-y: auto;

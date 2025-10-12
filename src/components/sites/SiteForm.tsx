@@ -35,6 +35,17 @@ export default function SiteForm({ open, onClose, onSaved, initial, companyId, u
     floor_area: undefined as number | undefined,
     opening_date: "",
     status: "active",
+    // NEW: operating schedule + closures to match expanded view
+    days_open: {
+      monday: { open: false, from: "", to: "" },
+      tuesday: { open: false, from: "", to: "" },
+      wednesday: { open: false, from: "", to: "" },
+      thursday: { open: false, from: "", to: "" },
+      friday: { open: false, from: "", to: "" },
+      saturday: { open: false, from: "", to: "" },
+      sunday: { open: false, from: "", to: "" },
+    },
+    yearly_closures: [] as any[],
   });
 
   useEffect(() => {
@@ -55,6 +66,19 @@ export default function SiteForm({ open, onClose, onSaved, initial, companyId, u
         floor_area: initial.floor_area ?? undefined,
         opening_date: initial.opening_date || "",
         status: initial.status || "active",
+        // NEW: hydrate from existing record if present
+        days_open: initial.days_open || {
+          monday: { open: false, from: "", to: "" },
+          tuesday: { open: false, from: "", to: "" },
+          wednesday: { open: false, from: "", to: "" },
+          thursday: { open: false, from: "", to: "" },
+          friday: { open: false, from: "", to: "" },
+          saturday: { open: false, from: "", to: "" },
+          sunday: { open: false, from: "", to: "" },
+        },
+        yearly_closures: Array.isArray(initial.yearly_closures)
+          ? initial.yearly_closures
+          : (() => { try { return JSON.parse(initial.yearly_closures || "[]"); } catch { return []; } })(),
       });
     } else {
       setForm((prev: any) => ({ ...prev, status: "active" }));
@@ -253,6 +277,176 @@ export default function SiteForm({ open, onClose, onSaved, initial, companyId, u
             </label>
           </div>
 
+          {/* Operating schedule (per-day) */}
+          <div className="space-y-3 border-t border-white/[0.08] pt-4 mt-2">
+            <h3 className="text-sm font-semibold text-white">Operating Schedule (per-day)</h3>
+            {([
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday",
+            ] as const).map((day) => {
+              const label: Record<typeof day, string> = {
+                monday: "Monday",
+                tuesday: "Tuesday",
+                wednesday: "Wednesday",
+                thursday: "Thursday",
+                friday: "Friday",
+                saturday: "Saturday",
+                sunday: "Sunday",
+              } as any;
+              const val = (form.days_open as any)[day] || { open: false, from: "", to: "" };
+              const fromHM = splitHM(val.from);
+              const toHM = splitHM(val.to);
+              const disabled = !val.open;
+              return (
+                <div key={day} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(val.open)}
+                      onChange={(e) => {
+                        const next = { ...(form.days_open as any) };
+                        next[day] = { ...val, open: e.target.checked };
+                        setForm({ ...form, days_open: next });
+                      }}
+                    />
+                    <span className="text-sm text-slate-300">Open on {label[day]}</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-400">From</span>
+                    <select
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-2 py-2 text-white"
+                      value={fromHM.h}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        const next = { ...(form.days_open as any) };
+                        const h = e.target.value;
+                        const m = fromHM.m || "00";
+                        next[day] = { ...val, from: `${h}:${m}` };
+                        setForm({ ...form, days_open: next });
+                      }}
+                    >
+                      {HOURS.map((h) => (
+                        <option key={h} value={h}>{h}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-2 py-2 text-white"
+                      value={fromHM.m}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        const next = { ...(form.days_open as any) };
+                        const h = fromHM.h || "00";
+                        const m = e.target.value;
+                        next[day] = { ...val, from: `${h}:${m}` };
+                        setForm({ ...form, days_open: next });
+                      }}
+                    >
+                      {MINUTES.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-400">To</span>
+                    <select
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-2 py-2 text-white"
+                      value={toHM.h}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        const next = { ...(form.days_open as any) };
+                        const h = e.target.value;
+                        const m = toHM.m || "00";
+                        next[day] = { ...val, to: `${h}:${m}` };
+                        setForm({ ...form, days_open: next });
+                      }}
+                    >
+                      {HOURS.map((h) => (
+                        <option key={h} value={h}>{h}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-2 py-2 text-white"
+                      value={toHM.m}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        const next = { ...(form.days_open as any) };
+                        const h = toHM.h || "00";
+                        const m = e.target.value;
+                        next[day] = { ...val, to: `${h}:${m}` };
+                        setForm({ ...form, days_open: next });
+                      }}
+                    >
+                      {MINUTES.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Yearly closures */}
+          <div className="space-y-3 border-t border-white/[0.08] pt-4">
+            <h3 className="text-sm font-semibold text-white">Yearly Closures</h3>
+            <div className="space-y-2">
+              {(form.yearly_closures as any[]).map((c, idx) => (
+                <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                  <label className="flex flex-col gap-1">
+                    <span className="text-sm text-slate-300">Closure Date</span>
+                    <input
+                      type="date"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+                      value={(c?.date as string) || ""}
+                      onChange={(e) => {
+                        const next = [...(form.yearly_closures as any[])];
+                        next[idx] = { ...c, date: e.target.value };
+                        setForm({ ...form, yearly_closures: next });
+                      }}
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1 md:col-span-2">
+                    <span className="text-sm text-slate-300">Reason</span>
+                    <input
+                      className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+                      value={(c?.reason as string) || ""}
+                      onChange={(e) => {
+                        const next = [...(form.yearly_closures as any[])];
+                        next[idx] = { ...c, reason: e.target.value };
+                        setForm({ ...form, yearly_closures: next });
+                      }}
+                    />
+                  </label>
+                  <div>
+                    <button
+                      type="button"
+                      className="px-3 py-2 rounded-lg bg-white/[0.08] border border-white/[0.12] text-white text-sm hover:bg-white/[0.14]"
+                      onClick={() => {
+                        const next = [...(form.yearly_closures as any[])];
+                        next.splice(idx, 1);
+                        setForm({ ...form, yearly_closures: next });
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="px-3 py-2 rounded-lg bg-white/[0.08] border border-white/[0.12] text-white text-sm hover:bg-white/[0.14]"
+                onClick={() => setForm({ ...form, yearly_closures: ([...((form.yearly_closures as any[]) || []), { date: "", reason: "" }]) })}
+              >
+                Add Closure
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
@@ -274,3 +468,23 @@ export default function SiteForm({ open, onClose, onSaved, initial, companyId, u
     </div>
   );
 }
+
+// Helpers used by schedule UI (matching expanded view behavior)
+const splitHM = (val?: string) => {
+  const [h, m] = (val || "").split(":");
+  return { h: h || "", m: m || "" };
+};
+const roundToQuarter = (value: string) => {
+  if (!value) return value;
+  const [hhStr, mmStr] = value.split(":");
+  const hh = Number(hhStr);
+  const mm = Number(mmStr);
+  let rounded = Math.round(mm / 15) * 15;
+  let newHour = hh;
+  if (rounded === 60) { newHour = (hh + 1) % 24; rounded = 0; }
+  const h = String(newHour).padStart(2, "0");
+  const m = String(rounded).padStart(2, "0");
+  return `${h}:${m}`;
+};
+const HOURS = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, "0"));
+const MINUTES = ["00", "15", "30", "45"];

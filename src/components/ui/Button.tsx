@@ -4,7 +4,7 @@ import Spinner from "./Spinner";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
-  variant?: "primary" | "ghost" | "destructive";
+  variant?: "primary" | "ghost" | "destructive" | "secondary";
   fullWidth?: boolean;
   loading?: boolean;
 };
@@ -26,6 +26,11 @@ export default function Button({ children, className, variant = "primary", fullW
     ),
     ghost: "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
     destructive: "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
+    secondary: cn(
+      "bg-checkly-magenta text-white",
+      "hover:bg-pink-600",
+      "border border-transparent",
+    ),
   } as const;
 
   const content = loading ? (

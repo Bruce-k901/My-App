@@ -196,9 +196,10 @@ export default function ContractorsTable() {
         <div className="text-slate-200">Maintenance Contractors</div>
         <button
           onClick={openNew}
-          className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14] text-sm"
+          className="w-10 h-10 rounded-md bg-pink-500/20 border border-pink-500/40 text-pink-300 hover:bg-pink-500/30 flex items-center justify-center text-2xl font-semibold leading-none"
+          aria-label="Add Contractor"
         >
-          Add Contractor
+          +
         </button>
       </div>
       <div className="overflow-x-auto">

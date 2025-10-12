@@ -71,7 +71,7 @@ export default function BusinessDetailsTab() {
 
       const { data: profileRow } = await supabase
         .from("profiles")
-        .select("company_id")
+        .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
         .eq("id", user.id)
         .maybeSingle();
 

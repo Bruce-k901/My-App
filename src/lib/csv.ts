@@ -152,3 +152,29 @@ export function validateEquipmentRows(rows: any[]): { valid: any[]; errors: Vali
   });
   return { valid, errors };
 }
+
+// Fixed headers for user profile CSV exports to ensure stability
+export const userCsvHeaders = [
+  "id",
+  "email",
+  "full_name",
+  "company_id",
+  "site_id",
+  "role",
+  "position_title",
+  "boh_foh",
+  "last_login",
+  "pin_code",
+];
+
+// Guard and normalization for user CSV building
+export function normalizeUsersForCsv(data: any[]): any[] {
+  if (!Array.isArray(data) || !data.length) return [];
+  return data.map((d) => {
+    const row: any = {};
+    for (const h of userCsvHeaders) {
+      row[h] = d?.[h] ?? null;
+    }
+    return row;
+  });
+}

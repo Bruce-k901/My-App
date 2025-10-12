@@ -5,7 +5,7 @@ export async function handlePostLogin(userId: string, router: AppRouterInstance)
   try {
     const { data: profile, error: pErr } = await supabase
       .from("profiles")
-      .select("company_id, site_id, role")
+      .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
       .eq("id", userId)
       .single();
     if (pErr || !profile) {

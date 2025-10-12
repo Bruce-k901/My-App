@@ -11,7 +11,7 @@ export async function getUserContext(): Promise<{ profile: Profile; company: Com
 
   const { data: profile, error: pErr } = await supabase
     .from("profiles")
-    .select("company_id, site_id, role")
+    .select("id, email, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
     .eq("id", userId)
     .single();
   if (pErr || !profile) throw new Error("Profile not found");

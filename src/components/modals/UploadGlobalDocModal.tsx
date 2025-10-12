@@ -8,7 +8,8 @@ import { useToast } from "@/components/ui/ToastProvider";
 
 type Props = {
   onClose?: () => void;
-  onSuccess?: () => void;
+  // Provide the newly inserted document id so the caller can highlight it
+  onSuccess?: (newDocId?: string) => void;
 };
 
 export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
@@ -76,11 +77,12 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
       .replace(/\s+/g, "_");
     // Sanitize the filename before upload
     const sanitizedFileName = sanitizeFileName(form.file.name);
-    const filePath = `${folder}/${sanitizedFileName}`;
+    // Company-scoped path to satisfy storage RLS and keep tenants isolated
+    const filePath = `${companyId}/${folder}/${sanitizedFileName}`;
 
     // Quick check: ensure we have an authenticated user
-    const { data } = await supabase.auth.getUser();
-    console.log("User for upload:", data);
+    const { data: authData } = await supabase.auth.getUser();
+    console.log("User for upload:", authData);
 
     // 1. upload file to storage
     const { error: uploadError } = await supabase.storage
@@ -98,19 +100,22 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
       return;
     }
 
-    // 2. insert metadata
-    const { error: insertError } = await supabase
+    // 2. insert metadata and return the inserted id for highlight
+    const { data: inserted, error: insertError } = await supabase
       .from("global_documents")
       .insert({
         category: form.category,
-        // Keep user-facing name untouched
-        name: form.name,
+        // Use the file name to match schema expectations
+        name: form.file?.name || form.name,
         version: form.version,
         expiry_date: form.expiry_date || null,
         notes: form.notes,
         file_path: filePath,
         company_id: companyId,
-      });
+        uploaded_by: authData?.user?.id || null,
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
       setError(insertError.message);
@@ -121,7 +126,7 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
 
     setLoading(false);
     showToast("Document uploaded successfully!", "success");
-    onSuccess?.();
+    onSuccess?.(inserted?.id);
     onClose?.();
   };
 

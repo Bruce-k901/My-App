@@ -13,8 +13,7 @@ import { useRouter } from "next/navigation";
 type Site = { id: string; name: string };
 type Profile = {
   id: string;
-  first_name: string;
-  last_name: string;
+  full_name: string;
   email: string;
   role: "staff" | "manager" | "admin";
   site_id: string | null;
@@ -45,7 +44,11 @@ function TeamContent() {
     try {
       const [{ data: sitesRes, error: sitesErr }, { data: teamRes, error: teamErr }] = await Promise.all([
         supabase.from("sites").select("id, name").eq("company_id", companyId),
-        supabase.from("profiles").select("*").eq("company_id", companyId).neq("role", "admin"),
+        supabase
+          .from("profiles")
+          .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+          .eq("company_id", companyId)
+          .neq("role", "admin"),
       ]);
       if (sitesErr) throw sitesErr;
       if (teamErr) throw teamErr;

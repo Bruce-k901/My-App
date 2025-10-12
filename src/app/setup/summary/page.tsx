@@ -103,7 +103,7 @@ function SummaryContent() {
         try {
           const { data: profilesAgain } = await supabase
             .from("profiles")
-            .select("id,site_id")
+            .select("id, email, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
             .eq("company_id", companyId);
           (profilesAgain || []).forEach((p: any) => {
             if (p.site_id) teamBySite[p.site_id] = (teamBySite[p.site_id] || 0) + 1;

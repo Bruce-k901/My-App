@@ -51,7 +51,11 @@ export default function DashboardSidebar() {
       <nav className="flex flex-col gap-3 items-center">
         {filtered.map(({ label, href, icon: Icon }) => {
           const isDashboard = href === "/dashboard";
-          const isActive = isDashboard ? pathname === "/dashboard" : pathname.startsWith(href);
+          // For items under /dashboard/<segment>, also treat top-level /<segment> as active
+          const segment = href.startsWith("/dashboard/") ? href.slice("/dashboard".length) : href; // e.g. "/organization"
+          const isActive = isDashboard
+            ? pathname === "/dashboard"
+            : pathname.startsWith(href) || (!!segment && pathname.startsWith(segment));
           return (
             <div key={href} className="relative group">
               <Link

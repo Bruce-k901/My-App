@@ -7,7 +7,7 @@ import CompanySetupWizard from "@/components/setup/CompanySetupWizard";
 export default function CompanySetupPage() {
   return (
     <AppContextProvider>
-      <SetupLayout activeStep="company" stepLabel="Company Details — Step 1 of 5">
+      <SetupLayout stepLabel="Company Details — Step 1 of 5">
         <CompanySetupWizard />
       </SetupLayout>
     </AppContextProvider>

@@ -8,3 +8,4 @@ export { default as Heading } from "./Heading";
 export { default as Alert } from "./Alert";
 export { default as FormError } from "./FormError";
 export { default as FormGroup } from "./FormGroup";
+export { default as Select } from "./Select";

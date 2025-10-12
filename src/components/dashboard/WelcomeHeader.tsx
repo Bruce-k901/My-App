@@ -29,10 +29,10 @@ export default function WelcomeHeader() {
       if (!user) return;
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name")
+        .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
         .eq("id", user.id)
         .single();
-      if (profile?.first_name) setFirstName(profile.first_name);
+      if (profile?.full_name) setFirstName(profile.full_name.split(" ")[0]);
     }
     fetchUser();
   }, []);
