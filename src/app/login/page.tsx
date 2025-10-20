@@ -25,7 +25,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
@@ -33,8 +33,14 @@ export default function LoginPage() {
         setError(signInError.message || "Login failed. Please check your credentials.");
         return;
       }
-      // On successful login, navigate directly to dashboard
-      router.replace("/dashboard");
+      
+      // Use the proper post-login flow to handle user setup and routing
+      const userId = data?.user?.id;
+      if (userId) {
+        await handlePostLogin(userId, router);
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (_e) {
       setError("Network issue while logging in. Please retry.");
     } finally {

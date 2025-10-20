@@ -648,7 +648,7 @@ function AssetsForm({ busy, setBusy, setError, companyId, siteId, onDone }: any)
         return;
       }
       const { error } = await supabase
-        .from("assets")
+        .from("assets_redundant")
         .insert({ company_id: companyId, site_id: siteId, name, type, serial_no: serial, status: "active" });
       if (error) throw error;
       setMessage("Asset added.");

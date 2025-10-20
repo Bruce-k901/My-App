@@ -10,12 +10,8 @@ export default function Input({ className, ...props }: InputProps) {
     <input
       {...props}
       className={cn(
-        // Global input glow tokens
-        "w-full h-11 rounded-md px-4 text-white placeholder:text-white/40",
-        "bg-white/[0.03] border border-white/[0.15]",
-        "transition-all duration-150 ease-in-out",
-        "hover:border-white/25 hover:bg-white/[0.05] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
-        "focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none",
+        "flex h-10 w-full rounded-md bg-neutral-900 border border-neutral-800 text-white text-sm px-3 py-2",
+        "placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pink-500 focus-visible:border-pink-500",
         className,
       )}
     />

@@ -3,40 +3,40 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import SiteForm from "@/components/sites/SiteForm";
+import SiteFormNew from "@/components/sites/SiteFormNew";
 import SiteToolbar from "@/components/sites/SiteToolbar";
-import SiteAccordion from "@/components/sites/SiteAccordion";
-import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
+import SiteCard from "@/components/sites/SiteCard";
+import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
-type Site = {
-  id?: string;
-  company_id: string;
+interface Site {
+  id: string;
   name: string;
-  site_code?: string | null;
-  site_type?: string | null;
   address_line1?: string | null;
   address_line2?: string | null;
   city?: string | null;
   postcode?: string | null;
-  country?: string | null;
-  contact_name?: string | null;
-  contact_email?: string | null;
-  contact_phone?: string | null;
+  gm_user_id?: string | null;
+  gm_name?: string | null;
+  gm_phone?: string | null;
+  gm_email?: string | null;
   region?: string | null;
-  floor_area?: number | null;
-  opening_date?: string | null;
   status?: string | null;
-  created_by?: string | null;
-};
+  company_id?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
 
 export default function OrganizationSitesPage() {
   const { profile, loading: ctxLoading } = useAppContext();
   const [sites, setSites] = useState<Site[]>([]);
+  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string | null}>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<Site | null>(null);
+  const [activeSite, setActiveSite] = useState<Site | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -49,19 +49,49 @@ export default function OrganizationSitesPage() {
     if (!profile?.company_id) return;
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase
-      .from("sites")
-      .select("*")
-      .eq("company_id", profile.company_id)
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error("Error fetching sites:", error);
-      setError("Failed to load sites");
-      setSites([]);
-    } else {
-      setSites((data as Site[]) || []);
+
+    try {
+      // Sites query with embedded planned closures
+      const { data, error } = await supabase
+        .from("sites")
+        .select(`
+          id,
+          name,
+          address_line1,
+          address_line2,
+          city,
+          postcode,
+          gm_user_id,
+          region,
+          status,
+          company_id,
+          created_at,
+          updated_at,
+          operating_schedule,
+          planned_closures:site_closures (
+            id,
+            is_active,
+            closure_start,
+            closure_end,
+            notes
+          )
+        `)
+        .eq("company_id", profile.company_id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching sites:", error);
+        setError("Failed to load sites");
+        setSites([]);
+      } else {
+        setSites(data || []);
+      }
+    } catch (err: any) {
+      console.error("Error in fetchSites:", err);
+      setError("Failed to load data");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [profile?.company_id]);
 
   useEffect(() => {
@@ -82,11 +112,33 @@ export default function OrganizationSitesPage() {
     await fetchSites();
   };
 
+  // Filter sites based on search term
+  const filteredSites = sites.filter(site => {
+    if (!searchTerm) return true;
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      site.name?.toLowerCase().includes(searchLower) ||
+      site.address_line1?.toLowerCase().includes(searchLower) ||
+      site.city?.toLowerCase().includes(searchLower) ||
+      site.postcode?.toLowerCase().includes(searchLower) ||
+      site.gm_name?.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
-    <OrgContentWrapper
+    <EntityPageLayout
       title="Sites"
-      actions={
-        <SiteToolbar inline sites={sites} companyId={profile?.company_id || ""} onRefresh={fetchSites} showBack={false} />
+      onSearch={setSearchTerm}
+      searchPlaceholder="Search sites..."
+      customActions={
+        <SiteToolbar 
+          inline 
+          sites={sites} 
+          companyId={profile?.company_id || ""} 
+          onRefresh={fetchSites} 
+          showBack={false}
+          onAddSite={() => setFormOpen(true)}
+        />
       }
     >
       {error && (
@@ -97,22 +149,47 @@ export default function OrganizationSitesPage() {
 
       {ctxLoading || loading ? (
         <div className="text-slate-400">Loading sites…</div>
-      ) : sites.length === 0 ? (
-        <p className="text-gray-400">No sites yet. Add one to get started.</p>
+      ) : filteredSites.length === 0 ? (
+        searchTerm ? (
+          <p className="text-gray-400">No sites found matching "{searchTerm}".</p>
+        ) : (
+          <p className="text-gray-400">No sites yet. Add one to get started.</p>
+        )
       ) : (
-        <SiteAccordion sites={sites} onRefresh={fetchSites} />
+        <div className="space-y-4">
+          {filteredSites.map((site) => (
+            <SiteCard 
+              key={site.id} 
+              site={site} 
+              onEdit={(site) => setActiveSite(site as Site)}
+            />
+          ))}
+        </div>
       )}
 
       {formOpen && (
-        <SiteForm
+        <SiteFormNew
           open={formOpen}
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
           initial={editing || null}
           companyId={profile?.company_id || ""}
-          userId={userId || undefined}
+
         />
       )}
-    </OrgContentWrapper>
+
+      {activeSite && (
+        <SiteFormNew
+          open={true}
+          initial={activeSite}
+          onClose={() => setActiveSite(null)}
+          onSaved={() => {
+            setActiveSite(null);
+            fetchSites();
+          }}
+          companyId={profile?.company_id || ""}
+        />
+      )}
+    </EntityPageLayout>
   );
 }

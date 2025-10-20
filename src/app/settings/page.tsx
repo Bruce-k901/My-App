@@ -1,11 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
-import { supabase } from "@/lib/supabase";
-import { ToastProvider, useToast } from "@/components/ui/ToastProvider";
-import Image from "next/image";
-import logoFallback from "@/assets/checkly_logo_touching_blocks.png";
+import { useState, useEffect, useMemo } from 'react';
+import { useAppContext } from '@/context/AppContext';
+import { supabase } from '@/lib/supabaseClient';
+import { useToast } from '@/components/ui/ToastProvider';
+import { AppContextProvider } from '@/context/AppContext';
+import { ToastProvider } from '@/components/ui/ToastProvider';
+import CheckboxCustom from '@/components/ui/CheckboxCustom';
+
+import Image from 'next/image';
+import logoFallback from '@/assets/checkly_logo_touching_blocks.png';
 
 type ProfileSettings = {
   user_id: string;
@@ -193,13 +197,25 @@ function SettingsInner() {
 
         <div className="flex items-center justify-between p-4 rounded border border-neutral-800 bg-[#0f1220]">
           <div>
+            <p className="font-medium">Include Tasks</p>
+            <p className="text-sm text-slate-400">Include task completion status in digest.</p>
+          </div>
+          <CheckboxCustom
+            checked={settings.include_tasks}
+            onChange={(checked: boolean) => update("include_tasks", checked)}
+            size={20}
+          />
+        </div>
+
+        <div className="flex items-center justify-between p-4 rounded border border-neutral-800 bg-[#0f1220]">
+          <div>
             <p className="font-medium">Temperature Warnings</p>
             <p className="text-sm text-slate-400">Include failed temperature logs in digest.</p>
           </div>
-          <input
-            type="checkbox"
+          <CheckboxCustom
             checked={settings.notify_temperature_warnings}
-            onChange={(e) => update("notify_temperature_warnings", e.target.checked)}
+            onChange={(checked: boolean) => update("notify_temperature_warnings", checked)}
+            size={20}
           />
         </div>
 
@@ -208,10 +224,10 @@ function SettingsInner() {
             <p className="font-medium">Sound / Vibration on New Alerts</p>
             <p className="text-sm text-slate-400">Play a sound and vibrate (mobile) when a new notification arrives.</p>
           </div>
-          <input
-            type="checkbox"
+          <CheckboxCustom
             checked={settings.sound_vibration}
-            onChange={(e) => update("sound_vibration", e.target.checked)}
+            onChange={(checked: boolean) => update("sound_vibration", checked)}
+            size={20}
           />
         </div>
       </div>

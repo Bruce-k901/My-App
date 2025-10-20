@@ -9,7 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
 import Link from "next/link";
@@ -23,7 +23,6 @@ type ReportData = {
 };
 
 export default function EHOReportPage() {
-  const supabase = createClientComponentClient();
   const { role } = useAppContext();
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

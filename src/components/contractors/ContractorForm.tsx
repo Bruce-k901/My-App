@@ -1,143 +1,213 @@
 "use client";
 
-import React from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import Label from "@/components/ui/Label";
+import Select from "@/components/ui/Select";
 
-export type ContractorFormValue = {
-  category?: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  ooh?: string;
-  sites: string[];
-  hourly_rate?: string | number;
-  callout_fee?: string | number;
-  notes?: string;
-};
+// Simple UK postcode validator
+const UK_POSTCODE_REGEX = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/;
 
 type Props = {
-  value: ContractorFormValue;
-  onChange: (next: ContractorFormValue) => void;
-  sites?: string[];
+  form: any;
+  setForm: (form: any) => void;
+  isEditing?: boolean;
 };
 
-export default function ContractorForm({ value, onChange, sites = [] }: Props) {
+export default function ContractorForm({ form, setForm, isEditing = false }: Props) {
+  const [postcodeError, setPostcodeError] = useState("");
+
+  function validatePostcode(postcode: string) {
+    if (!postcode) return setPostcodeError("");
+    setPostcodeError(UK_POSTCODE_REGEX.test(postcode) ? "" : "Invalid UK postcode format");
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { id, value } = e.target;
+    const cleanValue = id === "postcode" ? value.toUpperCase().trim() : value;
+    setForm({ ...form, [id]: cleanValue });
+    if (id === "postcode") validatePostcode(cleanValue);
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-3">
-      <Field label="Category" required>
-        <input
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.category || ""}
-          onChange={(e) => onChange({ ...value, category: e.target.value })}
-        />
-      </Field>
-      <Field label="Name" required>
-        <input
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.name}
-          onChange={(e) => onChange({ ...value, name: e.target.value })}
-        />
-      </Field>
-      <Field label="Email">
-        <input
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.email || ""}
-          onChange={(e) => onChange({ ...value, email: e.target.value })}
-        />
-      </Field>
-      <Field label="Phone">
-        <input
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.phone || ""}
-          onChange={(e) => onChange({ ...value, phone: e.target.value })}
-        />
-      </Field>
-      <Field label="OOH contact">
-        <input
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.ooh || ""}
-          onChange={(e) => onChange({ ...value, ooh: e.target.value })}
-        />
-      </Field>
-  <div className="flex flex-col gap-2">
-        <span className="text-sm text-slate-300">Sites serviced</span>
-        <div className="flex flex-wrap gap-2">
-          {sites.map((s) => {
-            const active = value.sites.includes(s);
-            const base = "px-3 py-1.5 rounded-full text-xs border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50";
-            const onClasses = "bg-white/[0.12] border-white/[0.2] text-pink-300 shadow-[0_0_8px_rgba(236,72,153,0.25)]";
-            const offClasses = "bg-white/[0.06] border-white/[0.1] text-white/90 hover:bg-white/[0.1]";
-            return (
-              <button
-                key={s}
-                type="button"
-                className={`${base} ${active ? onClasses : offClasses}`}
-                onClick={() => {
-                  const next = new Set(value.sites);
-                  if (active) next.delete(s); else next.add(s);
-                  onChange({ ...value, sites: Array.from(next) });
-                }}
-                aria-pressed={active}
-                aria-label={`Toggle services for ${s}`}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight") {
-                    e.preventDefault();
-                    const nextEl = (e.currentTarget.nextElementSibling as HTMLElement | null);
-                    nextEl?.focus();
-                  } else if (e.key === "ArrowLeft") {
-                    e.preventDefault();
-                    const prevEl = (e.currentTarget.previousElementSibling as HTMLElement | null);
-                    prevEl?.focus();
-                  }
-                  // Space/Enter naturally trigger onClick on buttons; no need to handle here.
-                }}
-              >
-                {s}
-              </button>
-            );
-          })}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+      {/* Left column - Company + Contact + Rate fields */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <Label htmlFor="name" className="text-white/80">
+            Company Name <span className="text-red-400">*</span>
+          </Label>
+          <input
+            id="name"
+            value={form.name || ""}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+          />
         </div>
-        <p className="text-xs text-slate-400">Toggle to enable services per site.</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Field label="Hourly rate (£)">
+
+        <div>
+          <Label htmlFor="email" className="text-white/80">Email</Label>
           <input
-            type="number"
-            step="0.01"
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-            value={String(value.hourly_rate || "")}
-            onChange={(e) => onChange({ ...value, hourly_rate: e.target.value })}
+            id="email"
+            type="email"
+            value={form.email || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
           />
-        </Field>
-        <Field label="Callout fee (£)">
+        </div>
+
+        <div>
+          <Label htmlFor="phone" className="text-white/80">Phone</Label>
           <input
-            type="number"
-            step="0.01"
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-            value={String(value.callout_fee || "")}
-            onChange={(e) => onChange({ ...value, callout_fee: e.target.value })}
+            id="phone"
+            value={form.phone || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
           />
-        </Field>
+        </div>
+
+        <div>
+          <Label htmlFor="ooh" className="text-white/80">Out-of-Hours Number</Label>
+          <input
+            id="ooh"
+            value={form.ooh || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="hourly_rate" className="text-white/80">Hourly Rate (£)</Label>
+            <input
+              id="hourly_rate"
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.hourly_rate || ""}
+              onChange={handleChange}
+              className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+            />
+          </div>
+          <div>
+            <Label htmlFor="callout_fee" className="text-white/80">Callout Fee (£)</Label>
+            <input
+              id="callout_fee"
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.callout_fee || ""}
+              onChange={handleChange}
+              className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+            />
+          </div>
+        </div>
       </div>
-      <Field label="Notes">
-        <textarea
-          rows={3}
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
-          value={value.notes || ""}
-          onChange={(e) => onChange({ ...value, notes: e.target.value })}
-        />
-      </Field>
+
+      {/* Right column - Category + Postcode + Notes */}
+      <div className="flex flex-col gap-4">
+        <ContractorCategorySelect form={form} setForm={setForm} />
+
+        <div>
+          <Label htmlFor="postcode" className="text-white/80">Postcode</Label>
+          <input
+            id="postcode"
+            value={form.postcode || ""}
+            onChange={handleChange}
+            placeholder="e.g. SW1A 1AA"
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+          />
+          {postcodeError && <p className="text-red-400 text-sm mt-1">{postcodeError}</p>}
+        </div>
+
+        <div>
+          <Label htmlFor="service_description" className="text-white/80">Service Description</Label>
+          <textarea
+            id="service_description"
+            value={form.service_description || ""}
+            onChange={(e) => setForm({ ...form, service_description: e.target.value })}
+            placeholder="Describe the services this contractor provides..."
+            rows={3}
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none resize-none"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="website" className="text-white/80">Website</Label>
+          <input
+            id="website"
+            type="url"
+            value={form.website || ""}
+            onChange={handleChange}
+            placeholder="https://example.com"
+            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+          />
+        </div>
+
+        {isEditing && (form.created_at || form.updated_at) && (
+          <div className="text-xs text-white/60 space-y-1">
+            {form.created_at && <div>Created: {new Date(form.created_at).toLocaleDateString()}</div>}
+            {form.updated_at && <div>Updated: {new Date(form.updated_at).toLocaleDateString()}</div>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+/* ---------------------------------------------------- */
+/* CATEGORY SELECT (GLOBAL, NO COMPANY FILTER) */
+function ContractorCategorySelect({
+  form,
+  setForm,
+}: {
+  form: any;
+  setForm: (form: any) => void;
+}) {
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const { data, error } = await supabase
+          .from("contractor_categories")
+          .select("id, name")
+          .order("name");
+
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (err) {
+        console.warn("Failed to load categories:", err);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
+
   return (
-    <label className="flex flex-col gap-1">
-      <span className="text-sm text-slate-300">
-        {label}
-        {required ? " *" : ""}
-      </span>
-      {children}
-    </label>
+    <div>
+      <Label htmlFor="category" className="text-white/80">
+        Category <span className="text-red-400">*</span>
+      </Label>
+      <Select
+        value={form.category || ""}
+        options={categories.map((c) => ({ label: c.name, value: c.name }))}
+        onValueChange={(value) => setForm({ ...form, category: value })}
+        placeholder={
+          loading
+            ? "Loading categories..."
+            : categories.length === 0
+            ? "No categories available"
+            : "Select category"
+        }
+        disabled={loading}
+        className="mt-1"
+      />
+    </div>
   );
 }

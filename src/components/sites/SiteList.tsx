@@ -42,7 +42,7 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                   </button>
                 </td>
                 <td className="px-4 py-2 text-sm text-white">{s.name || "—"}</td>
-                <td className="px-4 py-2 text-sm text-slate-300">{s.site_type || "—"}</td>
+                <td className="px-4 py-2 text-sm text-slate-300">—</td>
                 <td className="px-4 py-2 text-sm text-slate-300">{s.city || "—"}</td>
                 <td className="px-4 py-2 text-sm text-slate-300">{s.region || "—"}</td>
                 <td className="px-4 py-2 text-sm text-slate-300">{s.status || "—"}</td>
@@ -79,12 +79,12 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                           <p className="text-white">{[s.city, s.postcode].filter(Boolean).join(" ") || "—"}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Country</p>
-                          <p className="text-white">{s.country || "—"}</p>
+                          <p className="text-slate-400">Region</p>
+                          <p className="text-white">{s.region || "—"}</p>
                         </div>
                         <div>
                           <p className="text-slate-400">Type</p>
-                          <p className="text-white">{s.site_type || "—"}</p>
+                          <p className="text-white">—</p>
                         </div>
                         <div>
                           <p className="text-slate-400">Region</p>
@@ -92,15 +92,15 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                         </div>
                         <div>
                           <p className="text-slate-400">Floor Area</p>
-                          <p className="text-white">{s.floor_area ?? "—"}</p>
+                          <p className="text-white">—</p>
                         </div>
                         <div>
                           <p className="text-slate-400">Opening Date</p>
-                          <p className="text-white">{s.opening_date || "—"}</p>
+                          <p className="text-white">—</p>
                         </div>
                         <div>
                           <p className="text-slate-400">Contact</p>
-                          <p className="text-white">{[s.contact_name, s.contact_email, s.contact_phone].filter(Boolean).join(" • ") || "—"}</p>
+                          <p className="text-white">—</p>
                         </div>
                       </div>
                       <div className="mt-4 flex items-center justify-end gap-2">

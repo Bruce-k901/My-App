@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
-import SiteForm from "@/components/sites/SiteForm";
+import SiteFormNew from "@/components/sites/SiteFormNew";
 import { useToast } from "@/components/ui/ToastProvider";
 
 type Site = Record<string, any>;
@@ -119,14 +119,13 @@ export default function SiteDetailPage() {
         )}
 
         {formOpen && (
-          <SiteForm
-            open={formOpen}
-            onClose={() => setFormOpen(false)}
-            onSaved={handleSaved}
-            initial={site || null}
-            companyId={profile?.company_id || ""}
-            userId={userId || undefined}
-          />
+          <SiteFormNew
+              open={formOpen}
+              onClose={() => setFormOpen(false)}
+              onSaved={handleSaved}
+              initial={site || null}
+              companyId={profile?.company_id || ""}
+            />
         )}
       </div>
     </div>

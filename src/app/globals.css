@@ -256,3 +256,60 @@ p {
 .active-glow {
   animation: pulse-glow 2s infinite ease-in-out;
 }
+
+/* Optional global magenta glow for primary buttons */
+.btn-glow-magenta:hover {
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.35);
+}
+
+/* ----------------------------- */
+/* Validation cues (global)       */
+/* ----------------------------- */
+@keyframes invalid-shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.invalid-shake {
+  animation: invalid-shake 180ms ease-in-out 1;
+}
+
+.glow-invalid {
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 72, 153, 0.6),
+    0 0 12px rgba(236, 72, 153, 0.45);
+}
+
+.outline-magenta {
+  outline: 2px solid rgba(236, 72, 153, 0.7);
+  outline-offset: 0;
+}
+
+/* ----------------------------- */
+/* Remove numeric input spinners */
+/* ----------------------------- */
+
+/* Remove numeric spinners (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove numeric spinners (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
+}

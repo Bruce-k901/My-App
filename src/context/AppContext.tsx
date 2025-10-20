@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import { supabase } from "@/lib/supabase";
 import { useRouter, usePathname } from "next/navigation";
 
-type Role = "staff" | "manager" | "admin" | null;
+type Role = "staff" | "manager" | "admin" | "owner" | null;
 
 interface AppContextValue {
   loading: boolean;
@@ -53,7 +53,20 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
 
   const fetchAll = useCallback(async () => {
       try {
-        const { data: sessionData } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        // Handle session errors gracefully
+        if (sessionError) {
+          console.warn('Session error:', sessionError.message);
+          if (sessionError.message.includes('Invalid Refresh Token') || 
+              sessionError.message.includes('Refresh Token Not Found')) {
+            console.log('Invalid refresh token detected, clearing session...');
+            await supabase.auth.signOut();
+            setState((s) => ({ ...s, loading: false, error: 'Session expired. Please log in again.' }));
+            return;
+          }
+        }
+        
         const session = sessionData?.session;
         if (!session) {
           // Do not redirect here; server-side middleware gates protected routes.
@@ -74,19 +87,23 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
         let role: Role = null;
         let siteId: string | null = null;
         let companyId: string | null = null;
+        console.log("🔍 DEBUG AppContext - profiles query result:", { profilesErr, profiles });
         if (!profilesErr && profiles && profiles.length > 0) {
           const p = profiles[0] as any;
           role = (p.role as Role) ?? null;
           siteId = (p.site_id as string) ?? null;
           companyId = (p.company_id as string) ?? null;
+          console.log("🔍 DEBUG AppContext - from profiles table:", { role, siteId, companyId });
         } else {
           // fallback to auth user metadata
           role = (session.user.app_metadata?.role as Role) ?? null;
           siteId = (session.user.user_metadata?.site_id as string) ?? null;
           companyId = (session.user.app_metadata?.company_id as string) ?? null;
+          console.log("🔍 DEBUG AppContext - from auth metadata:", { role, siteId, companyId });
         }
 
         // Fallback: if companyId is missing, try owner company by user_id
+        console.log("🔍 DEBUG AppContext - before owner company fallback, companyId:", companyId);
         if (!companyId) {
           try {
             const { data: ownerCompanies } = await supabase
@@ -95,7 +112,9 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
               .eq("user_id", userId)
               .limit(1);
             const ownerCompany = ownerCompanies?.[0] ?? null;
+            console.log("🔍 DEBUG AppContext - owner company query result:", ownerCompanies);
             companyId = (ownerCompany?.id as string | undefined) ?? companyId;
+            console.log("🔍 DEBUG AppContext - after owner company fallback, companyId:", companyId);
           } catch {}
         }
 
@@ -143,11 +162,17 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
               .match(filters)
               .order("recorded_at", { ascending: false })
               .limit(20),
-            supabase.from("assets").select("*").match(filters).limit(20),
+            // Let RLS policies handle asset filtering - no frontend filters
+            supabase.from("assets_redundant").select("*").limit(20),
           ]);
         }
 
         const requiresSetup = role === "admin" && (!companyId || sitesCount === 0 || company?.setup_status !== "active");
+
+        console.log("🔍 DEBUG AppContext - final values before setState:", { 
+          userId, email, role, companyId, siteId, 
+          profileObject: { id: userId, role, site_id: siteId, company_id: companyId, email }
+        });
 
         const nextState: AppContextValue = {
           loading: false,
@@ -181,7 +206,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           error: e?.message ?? "Unexpected error loading context",
         }));
       }
-  }, [router, pathname]);
+  }, [router, pathname, state.setCompany]);
 
   useEffect(() => {
     fetchAll();
@@ -216,8 +241,8 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
     };
   }, [fetchAll]);
 
-  const setCompanyCtx = useCallback((company: any | null) => {
-    setState((s) => ({ ...s, company }));
+  const setCompanyCtx = useCallback((_company: any | null) => {
+    setState((s) => ({ ...s, company: _company }));
   }, []);
 
   const value = useMemo(

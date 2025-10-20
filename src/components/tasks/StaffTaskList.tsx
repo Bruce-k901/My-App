@@ -1,8 +1,10 @@
-"use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAppContext } from "@/context/AppContext";
-import { useToast } from "@/components/ui/ToastProvider";
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
+import { useAppContext } from '@/context/AppContext';
+import { supabase } from '@/lib/supabaseClient';
+import { useToast } from '@/components/ui/ToastProvider';
+import CheckboxCustom from '@/components/ui/CheckboxCustom';
 
 type Task = {
   id: string;
@@ -205,10 +207,10 @@ export default function StaffTaskList() {
                   <li key={t.id} className="flex flex-col gap-2 rounded border border-neutral-800 bg-[#191c26] p-3">
                     <div className="flex items-center justify-between">
                       <label className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
+                        <CheckboxCustom
                           checked={t.status === "completed"}
-                          onChange={(e) => toggleComplete(t, e.target.checked)}
+                          onChange={(checked: boolean) => toggleComplete(t, checked)}
+                          size={16}
                         />
                         <span className={`text-sm ${statusColor(t.status)}`}>{t.name}</span>
                       </label>

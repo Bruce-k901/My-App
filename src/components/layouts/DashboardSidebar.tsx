@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Building2,
   Users,
+  Archive,
   ClipboardList,
   Box,
   Wrench,
@@ -22,7 +23,6 @@ import { isRoleGuardEnabled } from "@/lib/featureFlags";
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
   { label: "Organization", href: "/dashboard/organization", icon: Building2 },
-  { label: "Users", href: "/dashboard/users", icon: Users },
   { label: "Tasks", href: "/dashboard/tasks", icon: ClipboardList },
   { label: "Assets", href: "/dashboard/assets", icon: Box },
   { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench },

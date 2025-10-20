@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* UI Component Utilities using @apply */
+@layer components {
+  /* Button Base Styles */
+  .btn-base {
+    @apply bg-transparent transition-all duration-200;
+  }
+
+  /* Primary Magenta Button */
+  .btn-primary {
+    @apply btn-base border border-[#EC4899] text-[#EC4899] rounded-lg p-2;
+    @apply hover:shadow-[0_0_12px_rgba(236,72,153,0.7)];
+  }
+
+  /* Primary Magenta Button with Glass Effect */
+  .btn-primary-glass {
+    @apply btn-base border border-[#EC4899] text-[#EC4899] rounded-xl px-4 py-2;
+    @apply bg-white/5 backdrop-blur-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)];
+  }
+
+  /* Archive/Orange Button */
+  .btn-archive {
+    @apply btn-base border border-[#F97316] text-[#F97316] rounded-lg p-2;
+    @apply hover:shadow-[0_0_12px_rgba(249,115,22,0.7)];
+  }
+
+  /* Input Field Styles */
+  .input-default {
+    @apply w-full h-10 rounded-lg bg-[#151518] border border-white/10 px-3 text-gray-100;
+  }
+
+  .input-with-icon {
+    @apply input-default pr-10;
+  }
+
+  /* Icon Button Positions */
+  .icon-absolute {
+    @apply absolute right-2 top-1/2 -translate-y-1/2;
+  }
+
+  .icon-archive-position {
+    @apply absolute bottom-0 right-0;
+  }
+
+  /* Layout Utilities */
+  .separator-line {
+    @apply border-t border-[#1F2937];
+  }
+
+  .button-group {
+    @apply flex justify-between items-center pt-4 relative;
+  }
+
+  .pin-field-container {
+    @apply flex gap-2 items-center;
+  }
+
+  .pin-field-width {
+    @apply flex-1 max-w-[200px];
+  }
+}

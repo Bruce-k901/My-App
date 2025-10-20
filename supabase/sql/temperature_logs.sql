@@ -3,8 +3,8 @@
 CREATE TABLE IF NOT EXISTS public.temperature_logs (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   company_id uuid REFERENCES public.companies(id),
-  site_id uuid REFERENCES public.sites(id),
-  asset_id uuid REFERENCES public.assets(id),
+  site_id uuid REFERENCES public.sites_redundant(id),
+  asset_id uuid REFERENCES public.assets_redundant(id),
   recorded_by uuid REFERENCES public.profiles(id),
   reading numeric NOT NULL,
   unit text DEFAULT '°C',

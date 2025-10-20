@@ -9,7 +9,7 @@ import ContractorCard from "@/components/contractors/ContractorCard";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/ToastProvider";
-import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
+import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
 type Contractor = {
   id: string;
@@ -22,6 +22,8 @@ type Contractor = {
   hourly_rate?: number;
   callout_fee?: number;
   notes?: string;
+  site_ids?: string[];
+  site_names?: string[]; // site names for display
 };
 
 export default function ContractorsPage() {
@@ -42,35 +44,114 @@ export default function ContractorsPage() {
     if (!companyId) return;
     setLoading(true);
     setError(null);
+    try {
+      const { data, error } = await supabase
+        .from("contractors")
+        .select(`
+          id,
+          name,
+          phone,
+          email,
+          postcode,
+          region,
+          ooh,
+          hourly_rate,
+          callout_fee,
+          notes,
+          category
+        `)
+        .eq("company_id", companyId)
+        .order("name", { ascending: true });
 
-    const { data, error } = await supabase
-      .from("maintenance_contractors")
-      .select("id, contractor_name, category, contact_name, email, phone, emergency_phone, hourly_rate, callout_fee, notes")
-      .eq("company_id", companyId)
-      .order("contractor_name", { ascending: true });
+      if (error) throw error;
 
-    if (error) {
-      console.error("Error loading contractors:", error.message);
-      setError(error.message);
+      const mapped = (data || []).map((row: any) => ({
+        id: row.id,
+        name: row.name || "(Unnamed Contractor)",
+        category: row.category || "—",
+        email: row.email || "",
+        phone: row.phone || "",
+        postcode: row.postcode || "",
+        region: row.region || "—",
+        ooh: row.ooh || "",
+        hourly_rate: row.hourly_rate ?? null,
+        callout_fee: row.callout_fee ?? null,
+        notes: row.notes || "",
+        site_names: [], // Remove ghost field reference
+        site_count: 0, // Remove ghost field reference
+      }));
+      mapped.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
+      setContractors(mapped);
       setLoading(false);
-      return;
-    }
+    } catch (err: any) {
+      console.warn("Primary contractor view failed, falling back to base tables:", err?.message);
+      const { data: base, error: baseErr } = await supabase
+        .from("contractors")
+        .select(`
+          id,
+          name,
+          phone,
+          email,
+          ooh,
+          postcode,
+          hourly_rate,
+          callout_fee,
+          notes,
+          company_id,
+          category
+        `)
+        .eq("company_id", companyId)
+        .order("name", { ascending: true });
+      if (baseErr) {
+        console.error("Error loading contractors (fallback):", baseErr?.message);
+        setError(baseErr.message);
+        setLoading(false);
+        return;
+      }
 
-    const mapped = (data || []).map((row: any) => ({
-      id: row.id,
-      name: row.contractor_name || row.contact_name || "(Unnamed Contractor)",
-      category: row.category || "—",
-      contact_name: row.contact_name || "",
-      email: row.email || "",
-      phone: row.phone || "",
-      ooh: row.emergency_phone || "",
-      hourly_rate: row.hourly_rate ?? null,
-      callout_fee: row.callout_fee ?? null,
-      notes: row.notes || "",
-    }));
-    mapped.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
-    setContractors(mapped);
-    setLoading(false);
+      const contractorIds = (base || []).map((c: any) => c.id).filter(Boolean);
+      const { data: links } = await supabase
+        .from("contractor_sites")
+        .select("contractor_id, site_id")
+        .in("contractor_id", contractorIds);
+      const { data: sites } = await supabase
+        .from("sites")
+        .select("id, site_name")
+        .eq("company_id", companyId);
+      const { data: categories } = await supabase
+        .from("contractor_categories")
+        .select("id, name")
+        .eq("company_id", companyId);
+
+      const siteNameById: Record<string, string> = Object.fromEntries((sites || []).map((s: any) => [s.id, s.site_name]));
+      const catById: Record<string, string> = Object.fromEntries((categories || []).map((c: any) => [c.id, c.name]));
+      const linkedByContractor: Record<string, string[]> = {};
+      (links || []).forEach((l: any) => {
+        const arr = linkedByContractor[l.contractor_id] || (linkedByContractor[l.contractor_id] = []);
+        const nm = siteNameById[l.site_id];
+        if (nm) arr.push(nm);
+      });
+
+      const mapped = (base || []).map((row: any) => ({
+        id: row.id,
+        name: row.name || "(Unnamed Contractor)",
+        category: catById[row.category_id] || "—",
+        category_id: row.category_id || null,
+        email: row.email || "",
+        phone: row.phone || "",
+        postcode: row.postcode || "",
+        region: row.region || "—",
+        ooh: row.ooh || "",
+        hourly_rate: row.hourly_rate ?? null,
+        callout_fee: row.callout_fee ?? null,
+        notes: row.notes || "",
+        site_names: (linkedByContractor[row.id] || []).filter(Boolean),
+        site_count: (linkedByContractor[row.id] || []).filter(Boolean).length,
+      }));
+      mapped.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
+      setContractors(mapped);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -212,7 +293,7 @@ export default function ContractorsPage() {
             try {
               const payload = {
                 company_uuid: companyId,
-                name: row.name || row.contractor_name || "",
+                name: row.name || row.name || "",
                 email: row.email || null,
                 phone: row.phone || null,
                 ooh: row.ooh || row.emergency_phone || null,
@@ -250,53 +331,21 @@ export default function ContractorsPage() {
   };
 
   return (
-    <OrgContentWrapper
+    <EntityPageLayout
       title="Contractors"
-      actions={
-        <>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name"
-            className="w-44 bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white placeholder:text-slate-400"
-          />
-          <button
-            className="w-10 h-10 rounded-md bg-pink-500/20 border border-pink-500/40 text-pink-300 hover:bg-pink-500/30 flex items-center justify-center text-2xl font-semibold leading-none"
-            onClick={() => setOpenAdd(true)}
-            aria-label="Add Contractor"
-          >
-            +
-          </button>
-          <button
-            className="px-4 py-2 rounded-md bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.1]"
-            onClick={handleUploadClick}
-            disabled={uploading}
-          >
-            {uploading ? "Uploading…" : "Upload CSV"}
-          </button>
-          <button
-            className="px-4 py-2 rounded-md bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.1]"
-            onClick={handleDownload}
-          >
-            Download Excel
-          </button>
-          <button
-            className="px-4 py-2 rounded-md bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.1]"
-            onClick={handleContractorCsvDownload}
-          >
-            Download CSV
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,text/csv"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </>
-      }
+      searchPlaceholder="Search"
+      onSearch={(v) => setQuery(v)}
+      onAdd={() => setOpenAdd(true)}
+      onDownload={handleDownload}
+      onUpload={handleUploadClick}
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,text/csv"
+        className="hidden"
+        onChange={handleFileChange}
+      />
       {loading ? (
         <p className="text-slate-400">Loading contractors...</p>
       ) : error ? (
@@ -304,7 +353,7 @@ export default function ContractorsPage() {
       ) : contractors.length === 0 ? (
         <p className="text-slate-400">No contractors yet. Add one to get started.</p>
       ) : (
-        <div className="flex flex-col gap-3 w-full max-w-3xl mx-auto">
+        <div className="flex flex-col gap-3 w-full max-w-6xl mx-auto">
           {filtered.map((c) => (
             <ContractorCard
               key={c.id}
@@ -319,14 +368,14 @@ export default function ContractorsPage() {
       )}
 
       <AddContractorModal
-        open={openAdd}
+        isOpen={openAdd}
         onClose={() => {
           setOpenAdd(false);
           setEditing(null);
         }}
-        onSaved={handleSaved}
-        initial={editing || undefined}
+        onSuccess={handleSaved}
+        contractor={editing || undefined}
       />
-    </OrgContentWrapper>
+    </EntityPageLayout>
   );
 }

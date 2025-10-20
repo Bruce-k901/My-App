@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { AlertTriangle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -17,7 +17,7 @@ type Breakdown = {
 
 export default function EmergencyBreakdowns() {
   const [data, setData] = useState<Breakdown[]>([]);
-  const supabase = createClientComponentClient();
+  // Remove: const supabase = createClientComponentClient();
 
   useEffect(() => {
     async function fetchBreakdowns() {

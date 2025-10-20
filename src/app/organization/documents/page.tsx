@@ -1,10 +1,10 @@
 import DocumentsPoliciesSection from "@/components/organisation/DocumentsPoliciesSection";
-import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
+import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
 export default function OrganizationDocumentsPage() {
   return (
-    <OrgContentWrapper title="Documents/Policies">
+    <EntityPageLayout title="Documents/Policies" searchPlaceholder="Search">
       <DocumentsPoliciesSection />
-    </OrgContentWrapper>
+    </EntityPageLayout>
   );
 }

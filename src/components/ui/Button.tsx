@@ -4,17 +4,25 @@ import Spinner from "./Spinner";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
-  variant?: "primary" | "ghost" | "destructive" | "secondary";
+  variant?: "primary" | "ghost" | "destructive" | "secondary" | "outline";
   fullWidth?: boolean;
   loading?: boolean;
 };
 
-export default function Button({ children, className, variant = "primary", fullWidth, loading, disabled, ...props }: ButtonProps) {
+export function Button({
+  children,
+  className,
+  variant = "primary",
+  fullWidth,
+  loading,
+  disabled,
+  ...props
+}: ButtonProps) {
   const base = cn(
     "inline-flex items-center justify-center",
     "h-11 rounded-[0.6rem] px-6 text-sm font-medium",
     "transition-all duration-150 ease-in-out active:scale-95",
-    "disabled:opacity-40",
+    "disabled:opacity-40"
   );
 
   const variants = {
@@ -22,14 +30,21 @@ export default function Button({ children, className, variant = "primary", fullW
       "bg-white/[0.06] border border-white/[0.1] text-white",
       "hover:bg-white/[0.12] hover:border-white/[0.25]",
       "shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-[0_0_14px_rgba(236,72,153,0.25)]",
-      "transition-all duration-150 ease-in-out backdrop-blur-md",
+      "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
-    ghost: "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
-    destructive: "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
+    ghost:
+      "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
+    destructive:
+      "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
     secondary: cn(
       "bg-checkly-magenta text-white",
       "hover:bg-pink-600",
-      "border border-transparent",
+      "border border-transparent"
+    ),
+    outline: cn(
+      "bg-transparent text-white border border-white/[0.2]",
+      "hover:border-pink-500/40 hover:bg-white/[0.05]",
+      "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
   } as const;
 
@@ -52,3 +67,5 @@ export default function Button({ children, className, variant = "primary", fullW
     </button>
   );
 }
+
+export default Button;

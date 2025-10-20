@@ -3,38 +3,39 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import SiteForm from "@/components/sites/SiteForm";
+import SiteFormNew from "@/components/sites/SiteFormNew";
 import SiteToolbar from "@/components/sites/SiteToolbar";
 import SiteAccordion from "@/components/sites/SiteAccordion";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 
-type Site = {
-  id?: string;
-  company_id: string;
-  name: string;
-  site_code?: string | null;
-  site_type?: string | null;
-  address_line1?: string | null;
-  address_line2?: string | null;
-  city?: string | null;
-  postcode?: string | null;
-  country?: string | null;
-  contact_name?: string | null;
-  contact_email?: string | null;
-  contact_phone?: string | null;
-  region?: string | null;
-  floor_area?: number | null;
-  opening_date?: string | null;
-  status?: string | null;
-  created_by?: string | null;
-};
+interface Site {
+    id: string;
+    name: string;
+    address_line1?: string | null;
+    address_line2?: string | null;
+    city?: string | null;
+    postcode?: string | null;
+    gm_user_id?: string | null;
+    region?: string | null;
+    status?: string | null;
+    company_id?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    profiles?: {
+      id: string;
+      full_name: string | null;
+      phone_number: string | null;
+      email: string | null;
+    } | null;
+  }
 
 export default function OrganizationSitesPage() {
   const { profile, loading: ctxLoading } = useAppContext();
   const [sites, setSites] = useState<Site[]>([]);
+  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, role?: string, position_title?: string, site_id?: string, company_id: string}>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [editing, setEditing] = useState<Site | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -49,19 +50,36 @@ export default function OrganizationSitesPage() {
     if (!profile?.company_id) return;
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase
-      .from("sites")
-      .select("*")
-      .eq("company_id", profile.company_id)
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error("Error fetching sites:", error);
-      setError("Failed to load sites");
+
+    try {
+      const [siteRes, gmRes] = await Promise.all([
+        supabase
+          .from("sites")
+          .select(`
+            *,
+            gm:profiles!gm_user_id ( id, full_name, email, role )
+          `)
+          .eq("company_id", profile.company_id)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("profiles")
+          .select("id, full_name, email, role, position_title, site_id, company_id")
+          .eq("company_id", profile.company_id)
+          .or("position_title.ilike.%manager%,role.ilike.%manager%")
+      ]);
+
+      if (siteRes.error) throw siteRes.error;
+      if (gmRes.error) throw gmRes.error;
+
+      setSites(siteRes.data as Site[]);
+      setGmList(gmRes.data || []);
+    } catch (err: any) {
+      console.error("Error fetching sites or GMs:", err);
+      setError("Failed to load sites or managers");
       setSites([]);
-    } else {
-      setSites((data as Site[]) || []);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [profile?.company_id]);
 
   useEffect(() => {
@@ -77,16 +95,27 @@ export default function OrganizationSitesPage() {
   }, [ctxLoading, profile?.company_id]);
 
   const handleSaved = async () => {
-    setFormOpen(false);
+    setShowAddModal(false);
     setEditing(null);
     await fetchSites();
   };
+
+  // Debug logs
+  console.log("Sites:", sites);
+  console.log("GM List:", gmList);
 
   return (
     <OrgContentWrapper
       title="Sites"
       actions={
-        <SiteToolbar inline sites={sites} companyId={profile?.company_id || ""} onRefresh={fetchSites} showBack={false} />
+        <SiteToolbar 
+          inline 
+          sites={sites} 
+          companyId={profile?.company_id || ""} 
+          onRefresh={fetchSites} 
+          showBack={false}
+          onAddSite={() => setShowAddModal(true)}
+        />
       }
     >
       {error && (
@@ -100,17 +129,18 @@ export default function OrganizationSitesPage() {
       ) : sites.length === 0 ? (
         <p className="text-gray-400">No sites yet. Add one to get started.</p>
       ) : (
-        <SiteAccordion sites={sites} onRefresh={fetchSites} />
+        <SiteAccordion sites={sites} gmList={gmList} onRefresh={fetchSites} />
       )}
 
-      {formOpen && (
-        <SiteForm
-          open={formOpen}
-          onClose={() => setFormOpen(false)}
+      {/* Add Site Modal - rendered at page level for proper centering */}
+      {showAddModal && (
+        <SiteFormNew
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
           onSaved={handleSaved}
           initial={editing || null}
           companyId={profile?.company_id || ""}
-          userId={userId || undefined}
+          gmList={gmList}
         />
       )}
     </OrgContentWrapper>

@@ -6,6 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 import FiltersSidebar, { Filters } from "./components/FiltersSidebar";
 import TaskList from "./components/TaskList";
 import TaskPreviewDrawer from "./components/TaskPreviewDrawer";
+import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
 function TasksPageInner() {
   const { siteId } = useAppContext();
@@ -88,7 +89,9 @@ function TasksPageInner() {
 export default function TasksPage() {
   return (
     <Suspense fallback={<div className="p-4">Loading tasks…</div>}>
-      <TasksPageInner />
+      <EntityPageLayout title="Tasks" searchPlaceholder="Search">
+        <TasksPageInner />
+      </EntityPageLayout>
     </Suspense>
   );
 }

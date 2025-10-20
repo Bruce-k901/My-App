@@ -12,16 +12,16 @@ returns table(
 )
 language sql
 as $$
-  -- Map to maintenance_contractors schema
+  -- Map to contractors_redundant schema
   select
-    mc.contractor_name as name,
+    mc.name as name,
     mc.email,
     mc.phone,
     mc.emergency_phone as ooh,
     mc.hourly_rate,
     mc.callout_fee,
     mc.notes
-  from public.maintenance_contractors mc
+  from public.contractors_redundant mc
   where mc.company_id = company_uuid
 
   union all

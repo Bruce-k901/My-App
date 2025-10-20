@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button, Input, Select } from "@/components/ui";
 import { useToast } from "@/components/ui/ToastProvider";
+import { Eye, EyeOff } from "lucide-react";
 
 interface AddUserModalProps {
   open: boolean;
@@ -23,10 +24,52 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
     role: "staff",
     position_title: "",
     boh_foh: "FOH",
+    site_id: null as string | null,
   });
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
+
+  type Site = { id: string; name: string };
+  const [sites, setSites] = useState<Site[]>([]);
+  const [loadingSites, setLoadingSites] = useState(false);
+
+  // Load sites for the company and optionally preselect
+  // If only one site exists, preselect it automatically
+  // Also, if a site is passed from context, honor it as default
+  React.useEffect(() => {
+    let mounted = true;
+    async function loadSites() {
+      if (!open || !companyId) return;
+      try {
+        setLoadingSites(true);
+        const { data, error } = await supabase
+          .from("sites")
+          .select("id,name")
+          .eq("company_id", companyId);
+        if (error) throw error;
+        const list = (data || []) as Site[];
+        if (!mounted) return;
+        setSites(list);
+        // Determine default selection
+        const incoming = selectedSiteId ?? siteId ?? null;
+        if (incoming && !form.site_id) {
+          setForm((f) => ({ ...f, site_id: incoming }));
+        } else if (list.length === 1 && !form.site_id) {
+          setForm((f) => ({ ...f, site_id: list[0].id }));
+        }
+      } catch (e) {
+        console.error("Failed to load sites", e);
+      } finally {
+        if (mounted) setLoadingSites(false);
+      }
+    }
+    loadSites();
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, companyId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,7 +122,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         phone_number: form.phone_number,
         pin_code: form.pin_code,
         company_id: companyId,
-        site_id: selectedSiteId ?? siteId ?? null,
+        site_id: form.site_id ?? selectedSiteId ?? siteId ?? null,
         role: form.role,
         position_title: form.position_title,
         boh_foh: form.boh_foh,
@@ -135,89 +178,181 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
     setSaving(false);
   }
 
+  const updateForm = (updates: Partial<typeof form>) => {
+    setForm(prev => ({ ...prev, ...updates }));
+  };
+
+  const [showPin, setShowPin] = useState(false);
+
+  const roleOptions = ["staff", "manager", "admin", "owner"];
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div 
+        className="absolute inset-0 bg-black/60" 
+        onClick={(e) => {
+          // Only close if clicking directly on the backdrop, not on any dropdown content
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }} 
+      />
       <div className="relative w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-4 shadow-xl">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-white">Add New User</h2>
           <button className="text-slate-300 hover:text-white" onClick={onClose}>×</button>
         </div>
-        <form onSubmit={handleSubmit} className="grid gap-3">
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">Full Name</label>
-            <Input
-              value={form.full_name}
-              onChange={(e: any) => setForm({ ...form, full_name: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">Email</label>
-            <Input
-              type="email"
-              value={form.email}
-              onChange={(e: any) => setForm({ ...form, email: e.target.value })}
-              autoComplete="off"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">Phone Number</label>
-            <Input
-              type="tel"
-              value={form.phone_number}
-              onChange={(e: any) => setForm({ ...form, phone_number: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">4-Digit Code</label>
-            <div className="flex items-center gap-2">
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Full Name */}
+            <div>
+              <label className="text-xs text-neutral-400">Full Name</label>
               <Input
-                type="text"
-                inputMode="numeric"
-                maxLength={4}
-                pattern={"\\d{4}"}
-                value={form.pin_code}
-                onChange={(e: any) => setForm({ ...form, pin_code: e.target.value })}
-                className="flex-1"
-                autoComplete="off"
+                value={form.full_name}
+                onChange={(e) => updateForm({ full_name: e.target.value })}
               />
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setForm({ ...form, pin_code: String(Math.floor(1000 + Math.random() * 9000)) })}
-              >
-                Generate
-              </Button>
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="text-xs text-neutral-400">Email</label>
+              <Input
+                value={form.email}
+                onChange={(e) => updateForm({ email: e.target.value })}
+              />
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="text-xs text-neutral-400">Role</label>
+              <Select
+                value={form.role}
+                options={roleOptions}
+                onValueChange={(val) => {
+                  console.log("Role select fired:", val);
+                  updateForm({ role: val });
+                }}
+                placeholder="Select role…"
+              />
+            </div>
+
+            {/* Position */}
+            <div>
+              <label className="text-xs text-neutral-400">Position</label>
+              <Select
+                value={form.position_title}
+                options={[
+                  { label: "General Manager", value: "general_manager" },
+                  { label: "Assistant Manager", value: "assistant_manager" },
+                  { label: "Head Chef", value: "head_chef" },
+                  { label: "Sous Chef", value: "sous_chef" },
+                  { label: "Staff", value: "staff" },
+                  { label: "Owner", value: "owner" },
+                  { label: "Admin", value: "admin" },
+                  { label: "Head Office", value: "head_office" },
+                ]}
+                onValueChange={(val) => updateForm({ position_title: val })}
+                placeholder="Select position…"
+              />
+            </div>
+
+            {/* BOH/FOH */}
+            <div>
+              <label className="text-xs text-neutral-400">BOH/FOH</label>
+              <Select
+                value={form.boh_foh ? form.boh_foh.toUpperCase() : ""}
+                options={["BOH", "FOH"]}
+                onValueChange={(val) => {
+                  setForm({ ...form, boh_foh: val.toLowerCase() });
+                }}
+                placeholder="Select…"
+              />
+            </div>
+
+            {/* Mobile */}
+            <div>
+              <label className="text-xs text-neutral-400">Mobile Number</label>
+              <Input
+                type="tel"
+                value={form.phone_number}
+                onChange={(e) => updateForm({ phone_number: e.target.value })}
+              />
+            </div>
+
+            {/* Home Site */}
+            <div>
+              <label className="text-xs text-neutral-400">Home Site</label>
+              <Select
+                value={form.site_id || ""}
+                options={sites.map((s) => ({ label: s.name, value: s.id }))}
+                onValueChange={(val) => updateForm({ site_id: val })}
+                placeholder="Select site…"
+              />
+            </div>
+
+            {/* PIN Code */}
+            <div>
+              <label className="text-xs text-neutral-400">PIN Code</label>
+              <div className="flex gap-2 mt-1 items-center">
+                <div className="relative flex-1">
+                  <Input
+                    className="pr-10"
+                    type={showPin ? "text" : "password"}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={form.pin_code}
+                    onChange={(e) => {
+                      const sanitized = String(e.target.value).replace(/\D/g, "").slice(0, 4);
+                      updateForm({ pin_code: sanitized });
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-pink-400"
+                  >
+                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+                  onClick={() => {
+                    const code = Math.floor(1000 + Math.random() * 9000).toString();
+                    updateForm({ pin_code: code });
+                  }}
+                >
+                  Generate
+                </Button>
+              </div>
             </div>
           </div>
-          <Select
-            label="Role"
-            value={form.role}
-            onValueChange={(v: string) => setForm({ ...form, role: v })}
-            options={["staff", "manager", "admin", "owner"]}
-          />
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">Position</label>
-            <Input
-              value={form.position_title}
-              onChange={(e: any) => setForm({ ...form, position_title: e.target.value })}
-            />
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              variant="ghost"
+              className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="ghost"
+              className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+              onClick={handleSubmit}
+              disabled={saving}
+            >
+              {saving ? "Saving…" : "Save"}
+            </Button>
           </div>
-          <Select
-            label="Area"
-            value={form.boh_foh}
-            onValueChange={(v: string) => setForm({ ...form, boh_foh: v })}
-            options={["BOH", "FOH"]}
-          />
+
           {error && (
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-red-400 mt-2">{error}</p>
           )}
-          <Button type="submit" variant="primary" className="w-full" loading={saving} disabled={saving}>
-            Save User
-          </Button>
         </form>
       </div>
     </div>

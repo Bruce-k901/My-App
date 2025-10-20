@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS public.tasks (
   notes text NULL,
   photo_url text NULL,
   photo_path text NULL,
+  -- PPM Integration columns
+  task_type text DEFAULT 'general' CHECK (task_type IN ('general', 'ppm', 'incident', 'maintenance')),
+  linked_ppm_id uuid NULL REFERENCES public.ppm_schedule(id) ON DELETE SET NULL,
+  linked_asset_id uuid NULL REFERENCES public.assets_redundant(id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -23,6 +27,9 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 -- Helpful indexes
 CREATE INDEX IF NOT EXISTS idx_tasks_site_due ON public.tasks (site_id, due_date);
 CREATE INDEX IF NOT EXISTS idx_tasks_company_due ON public.tasks (company_id, due_date);
+CREATE INDEX IF NOT EXISTS idx_tasks_ppm_id ON public.tasks (linked_ppm_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_asset_id ON public.tasks (linked_asset_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_type ON public.tasks (task_type);
 
 -- Row Level Security
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;

@@ -27,9 +27,16 @@ module.exports = {
           900: "#171717",
           950: "#0b0d13",
         },
+        // Consistent card styling tokens
+        background: "#111827",
+        border: "#1F2937",
+        accent: "#EC4899",
       },
       boxShadow: {
         glow: "0 0 16px rgba(236,72,153,0.6)",
+        // Consistent magenta glow shadows
+        magenta: "0 0 0 1px rgba(236,72,153,0.55), 0 0 12px rgba(236,72,153,0.35)",
+        magentaSm: "0 0 8px #ec4899",
       },
       keyframes: {
         dropdownFade: {
@@ -39,6 +46,9 @@ module.exports = {
       },
       animation: {
         dropdownFade: "dropdownFade 0.3s ease-out forwards",
+      },
+      fontVariantNumeric: {
+        tabular: 'tabular-nums',
       },
     },
   },

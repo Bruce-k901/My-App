@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { ClipboardList, AlertTriangle, ThumbsDown, Activity } from "lucide-react";
 import { format } from "date-fns";
 import { useAppContext } from "@/context/AppContext";
+import { supabase } from "@/lib/supabase";
 
 type Incident = {
   id: string;
@@ -27,7 +28,7 @@ export default function IncidentLog() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
+  // Remove: const supabase = createClientComponentClient();
   const { companyId } = useAppContext();
 
   async function loadIncidents() {

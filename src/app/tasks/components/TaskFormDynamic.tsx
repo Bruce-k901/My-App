@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import CheckboxCustom from "@/components/ui/CheckboxCustom";
 
 type Item = {
   id: string;
@@ -64,7 +65,11 @@ export default function TaskFormDynamic({ task }: { task: any }) {
     if (item.input_type === "checkbox") {
       return (
         <label className="flex items-center space-x-2">
-          <input type="checkbox" checked={!!val} onChange={(e) => onChange(key, e.target.checked)} className="w-4 h-4" />
+          <CheckboxCustom
+            checked={!!val}
+            onChange={(checked: boolean) => onChange(key, checked)}
+            size={16}
+          />
           <span className="text-sm">{label}</span>
         </label>
       );

@@ -10,10 +10,10 @@ export default function SetupBanner() {
     <div className="bg-[#141823] border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-6 py-3 text-sm text-slate-300 flex items-center justify-between">
         <p>
-          Getting started checklist available. You can add sites, invite your team, and import templates.
+          You can add sites, invite your team, and import templates from the dashboard.
         </p>
-        <Link href="/setup" className="btn-gradient text-xs">
-          Open Checklist
+        <Link href="/dashboard" className="btn-gradient text-xs">
+          Go to Dashboard
         </Link>
       </div>
     </div>

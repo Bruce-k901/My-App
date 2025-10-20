@@ -54,21 +54,7 @@ export default function DashboardRouter() {
     (async () => {
       try {
         const { profile, company, site } = await getUserContext();
-        if (company.setup_status !== "active") {
-          const next = company.setup_status === "new"
-            ? "/setup/sites"
-            : company.setup_status === "sites_added"
-            ? "/setup/team"
-            : company.setup_status === "team_added"
-            ? "/setup/checklists"
-            : company.setup_status === "checklists_added"
-            ? "/setup/equipment"
-            : company.setup_status === "equipment_added"
-            ? "/setup/summary"
-            : "/setup/sites";
-          router.replace(next);
-          return;
-        }
+        // Setup pages have been retired - skip setup status checks
         setRole(profile.role || "staff");
         const data = await preloadData(profile.role, company.id, site?.id ?? null);
         if (!alive) return;

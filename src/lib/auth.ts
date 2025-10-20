@@ -9,7 +9,7 @@ export async function handlePostLogin(userId: string, router: AppRouterInstance)
       .eq("id", userId)
       .single();
     if (pErr || !profile) {
-      router.replace("/setup/company");
+      router.replace("/dashboard");
       return;
     }
 
@@ -19,26 +19,12 @@ export async function handlePostLogin(userId: string, router: AppRouterInstance)
       .eq("id", profile.company_id)
       .single();
     if (cErr || !company) {
-      router.replace("/setup/company");
+      router.replace("/dashboard");
       return;
     }
 
-    if (company.setup_status !== "active") {
-      const next = company.setup_status === "new"
-        ? "/setup/sites"
-        : company.setup_status === "sites_added"
-        ? "/setup/team"
-        : company.setup_status === "team_added"
-        ? "/setup/checklists"
-        : company.setup_status === "checklists_added"
-        ? "/setup/equipment"
-        : company.setup_status === "equipment_added"
-        ? "/setup/summary"
-        : "/setup/sites";
-      router.replace(next);
-    } else {
-      router.replace("/dashboard");
-    }
+    // Setup pages have been retired - always go to dashboard
+    router.replace("/dashboard");
   } catch (_e) {
     router.replace("/login");
   }

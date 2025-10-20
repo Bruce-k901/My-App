@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 
 export default function WelcomeHeader() {
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
 
-  const supabase = createClientComponentClient();
+  // Remove: const supabase = createClientComponentClient();
 
   useEffect(() => {
     const tick = () => {

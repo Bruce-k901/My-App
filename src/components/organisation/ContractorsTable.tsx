@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
+import { Button } from "@/components/ui/Button";
 
 type Contractor = {
   id?: string;
@@ -18,6 +19,7 @@ type Contractor = {
   contract_expiry?: string | null;
   contract_file?: string | null;
   notes?: string | null;
+  regions_covered?: string[];
 };
 
 function emptyContractor(companyId: string): Contractor {
@@ -51,7 +53,7 @@ export default function ContractorsTable() {
       if (!companyId) return;
       try {
         const { data, error } = await supabase
-          .from("maintenance_contractors")
+          .from("contractors")
           .select("id, company_id, category, name, contact_name, email, phone, ooh, address, contract_start, contract_expiry, notes")
           .eq("company_id", companyId)
           .order("name");
@@ -76,16 +78,16 @@ export default function ContractorsTable() {
         console.warn("Primary contractor query failed, trying legacy columns:", e?.message);
         try {
           const { data: legacyData, error: legacyError } = await supabase
-            .from("maintenance_contractors")
-            .select("id, company_id, category, contractor_name, contact_name, email, phone, emergency_phone, address, contract_start, contract_expiry, notes")
+            .from("contractors")
+            .select("id, company_id, category, name, contact_name, email, phone, emergency_phone, address, contract_start, contract_expiry, notes")
             .eq("company_id", companyId)
-            .order("contractor_name");
+            .order("name");
           if (legacyError) throw legacyError;
           const uiLegacy = (legacyData || []).map((row: any) => ({
             id: row.id,
             company_id: row.company_id,
             category: row.category || "",
-            name: row.contractor_name || "",
+            name: row.name || "",
             contact_name: row.contact_name || "",
             email: row.email || "",
             phone: row.phone || "",
@@ -121,7 +123,7 @@ export default function ContractorsTable() {
   const remove = async (row: Contractor) => {
     if (!row.id) return;
     try {
-      await supabase.from("maintenance_contractors").delete().eq("id", row.id);
+      await supabase.from("contractors").delete().eq("id", row.id);
       setRows((prev) => prev.filter((r) => r.id !== row.id));
     } catch (e: any) {
       setError(e?.message || "Failed to delete contractor");
@@ -147,14 +149,20 @@ export default function ContractorsTable() {
         contract_expiry: editing.contract_expiry || null,
         notes: editing.notes || null,
       } as any;
-      let { data, error } = await supabase.from("maintenance_contractors").upsert(payload).select("*");
+      let { data, error } = await supabase
+        .from("contractors")
+        .upsert(payload)
+        .select("*");
+      
+      console.log("UPSERT result", data);
+      
       if (error) {
         console.warn("Primary upsert failed, trying legacy payload:", error?.message);
         const legacyPayload = {
           id: editing.id,
           company_id: companyId,
           category: editing.category,
-          contractor_name: editing.name,
+          name: editing.name,
           contact_name: editing.contact_name || null,
           email: editing.email || null,
           phone: editing.phone || null,
@@ -164,7 +172,13 @@ export default function ContractorsTable() {
           contract_expiry: editing.contract_expiry || null,
           notes: editing.notes || null,
         } as any;
-        const res2 = await supabase.from("maintenance_contractors").upsert(legacyPayload).select("*");
+        const res2 = await supabase
+          .from("contractors")
+          .upsert(legacyPayload)
+          .select("*")
+          .throwOnError();
+        
+        console.log("LEGACY UPSERT result", res2.data);
         data = res2.data;
         error = res2.error as any;
         if (error) throw error;
@@ -208,6 +222,7 @@ export default function ContractorsTable() {
             <tr className="text-left text-slate-300">
               <th className="px-3 py-2">Category</th>
               <th className="px-3 py-2">Name</th>
+              <th className="px-3 py-2">Region</th>
               <th className="px-3 py-2">Contact</th>
               <th className="px-3 py-2">Email</th>
               <th className="px-3 py-2">Phone</th>
@@ -220,31 +235,34 @@ export default function ContractorsTable() {
               <tr key={r.id} className="border-t border-white/[0.06]">
                 <td className="px-3 py-2 text-white/90">{r.category}</td>
                 <td className="px-3 py-2 text-white">{r.name}</td>
+                <td className="px-3 py-2 text-slate-300">{r.regions_covered?.[0] || "Unknown"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.contact_name || "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.email || "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.phone || "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{r.contract_expiry || "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => openEdit(r)}
-                      className="px-2 py-1 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14]"
+                      className="px-2 py-1 text-xs"
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="destructive"
                       onClick={() => remove(r)}
-                      className="px-2 py-1 rounded bg-red-500/80 border border-red-400/40 text-white hover:bg-red-500"
+                      className="px-2 py-1 text-xs"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td className="px-3 py-6 text-slate-400" colSpan={7}>No contractors added yet.</td>
+                <td className="px-3 py-6 text-slate-400" colSpan={8}>No contractors added yet.</td>
               </tr>
             )}
           </tbody>
@@ -301,9 +319,12 @@ export default function ContractorsTable() {
               </label>
             </div>
             <div className="mt-4 flex gap-3 justify-end">
-              <button onClick={() => setModalOpen(false)} className="px-3 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12]">Cancel</button>
-              <button onClick={save} disabled={saving} className="px-3 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12]">{saving ? "Saving…" : "Save"}</button>
-              <button onClick={save} disabled={saving} className="px-3 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12]">{saving ? "Saving…" : "Save & Continue"}</button>
+              <Button variant="secondary" onClick={() => setModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={save} loading={saving}>
+                Save
+              </Button>
             </div>
           </div>
         </div>

@@ -82,7 +82,7 @@ function EquipmentContent() {
       let assetRows: Asset[] = [];
       if (siteIds.length > 0) {
         const { data: aRows, error: aErr } = await supabase
-          .from("assets")
+          .from("assets_redundant")
           .select("id, company_id, site_id, name, type, serial_no, service_interval, last_service_date, supplier, warranty_expiry, certificate_url")
           .in("site_id", siteIds);
         if (aErr) throw aErr;
@@ -181,7 +181,7 @@ function EquipmentForm({ companyId, sites, onAdded }: { companyId: string; sites
     setSaving(true);
     try {
       const { data: newAsset, error } = await supabase
-        .from("assets")
+        .from("assets_redundant")
         .insert({
           company_id: companyId,
           site_id: siteId,
@@ -205,7 +205,7 @@ function EquipmentForm({ companyId, sites, onAdded }: { companyId: string; sites
           .upload(filePath, certificateFile, { upsert: true });
         if (!uploadErr) {
           const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${filePath}`;
-          await supabase.from("assets").update({ certificate_url: publicUrl }).eq("id", newAsset.id);
+          await supabase.from("assets_redundant").update({ certificate_url: publicUrl }).eq("id", newAsset.id);
         }
       }
 
@@ -286,7 +286,7 @@ function CSVImporter({ companyId, sites, onAdded }: { companyId: string; sites: 
         return;
       }
 
-      const { data: inserted, error } = await supabase.from("assets").insert(payload).select();
+      const { data: inserted, error } = await supabase.from("assets_redundant").insert(payload).select();
       if (error) throw error;
 
       for (const a of inserted ?? []) {
@@ -336,7 +336,7 @@ function EquipmentList({ companyId, sites, assets, onChanged, loading }: { compa
     if (Object.keys(patch).length === 0) return;
     setSavingId(id);
     try {
-      const { error } = await supabase.from("assets").update(patch).eq("id", id).eq("company_id", companyId);
+      const { error } = await supabase.from("assets_redundant").update(patch).eq("id", id).eq("company_id", companyId);
       if (error) throw error;
 
       // If service interval or last service changed, update next_due
@@ -373,7 +373,7 @@ function EquipmentList({ companyId, sites, assets, onChanged, loading }: { compa
     if (!confirm(`Delete equipment "${a.name}"?`)) return;
     try {
       await supabase.from("maintenance_logs").delete().eq("asset_id", a.id).eq("company_id", companyId);
-      const { error } = await supabase.from("assets").delete().eq("id", a.id).eq("company_id", companyId);
+      const { error } = await supabase.from("assets_redundant").delete().eq("id", a.id).eq("company_id", companyId);
       if (error) throw error;
       showToast({ title: "Deleted", description: "Equipment deleted", type: "success" });
       onChanged();

@@ -1,132 +1,197 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ContractorForm, { ContractorFormValue } from "./ContractorForm";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
+import { Button } from "@/components/ui/Button";
+import ContractorForm from "./ContractorForm";
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  onSaved?: (c: any) => void;
-  sites?: string[];
-  initial?: (Partial<ContractorFormValue> & { id?: string });
+type Prefill = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  postcode?: string;
+  ooh?: string;
+  hourly_rate?: number | null;
+  callout_fee?: number | null;
+  service_description?: string;
+  website?: string;
 };
 
-export default function AddContractorModal({ open, onClose, onSaved, sites = [], initial }: Props) {
-  const [form, setForm] = useState<ContractorFormValue>({
-    category: "",
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  contractor?: any;
+  prefill?: Prefill;
+};
+
+export default function AddContractorModal({ isOpen, onClose, onSuccess, contractor, prefill }: Props) {
+  const { companyId } = useAppContext();
+  const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     ooh: "",
-    sites: [],
+    category: "",
+    service_description: "",
+    postcode: "",
     hourly_rate: "",
     callout_fee: "",
-    notes: "",
+    website: "",
+    created_at: null,
+    updated_at: null,
   });
-  const { companyId } = useAppContext();
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setForm((prev) => ({
-        category: initial?.category || prev.category || "",
-        name: initial?.name || prev.name || "",
-        email: initial?.email || prev.email || "",
-        phone: initial?.phone || prev.phone || "",
-        ooh: initial?.ooh || prev.ooh || "",
-        sites: initial?.sites || prev.sites || [],
-        hourly_rate: initial?.hourly_rate ?? prev.hourly_rate ?? "",
-        callout_fee: initial?.callout_fee ?? prev.callout_fee ?? "",
-        notes: initial?.notes || prev.notes || "",
-      }));
+    if (!isOpen) return;
+    
+    const isEdit = !!contractor?.id;
+    
+    if (isEdit) {
+      setForm({
+        name: contractor.name || "",
+        email: contractor.email || "",
+        phone: contractor.phone || "",
+        ooh: contractor.ooh || contractor.emergency_phone || "",
+        category: contractor.category || "",
+        service_description: contractor.service_description || contractor.notes || "",
+        postcode: contractor.postcode || "",
+        hourly_rate: contractor.hourly_rate || "",
+        callout_fee: contractor.callout_fee || "",
+        website: contractor.website || "",
+        created_at: contractor.created_at || null,
+        updated_at: contractor.updated_at || null,
+      });
+    } else if (prefill) {
+      setForm({
+        name: prefill.name || "",
+        email: prefill.email || "",
+        phone: prefill.phone || "",
+        ooh: prefill.ooh || "",
+        category: "",
+        service_description: prefill.service_description || "",
+        postcode: prefill.postcode || "",
+        hourly_rate: prefill.hourly_rate !== null && prefill.hourly_rate !== undefined ? String(prefill.hourly_rate) : "",
+        callout_fee: prefill.callout_fee !== null && prefill.callout_fee !== undefined ? String(prefill.callout_fee) : "",
+        website: prefill.website || "",
+        created_at: null,
+        updated_at: null,
+      });
     } else {
       setForm({
-        category: "",
         name: "",
         email: "",
         phone: "",
         ooh: "",
-        sites: [],
+        category: "",
+        service_description: "",
+        postcode: "",
         hourly_rate: "",
         callout_fee: "",
-        notes: "",
+        website: "",
+        created_at: null,
+        updated_at: null,
       });
     }
-  }, [open, initial]);
+  }, [isOpen, contractor, prefill]);
 
-  if (!open) return null;
+  const showToast = (msg: string) => alert(msg);
 
-  const save = async () => {
-    setError(null);
-    const name = (form.name || "").trim();
-    const category = (form.category || "").trim();
-    if (!name || !category) {
-      setError("Category and Name are required.");
+  const handleSave = async () => {
+    if (!form.name.trim()) {
+      showToast("Please enter a contractor name");
       return;
     }
+
     if (!companyId) {
-      setError("Missing company context.");
+      showToast("Company context missing — please refresh or reselect company.");
       return;
     }
+
+    setLoading(true);
 
     try {
-      const payload = {
-        id: initial?.id,
-        contractor_name: name,
-        category,
-        contact_name: (form as any).contact_name || null,
-        email: form.email || null,
-        phone: form.phone || null,
-        emergency_phone: form.ooh || null,
-        notes: form.notes || null,
-        hourly_rate: form.hourly_rate ? Number(form.hourly_rate) : null,
-        callout_fee: form.callout_fee ? Number(form.callout_fee) : null,
+      const contractorData = {
         company_id: companyId,
-      } as any;
+        name: form.name.trim(),
+        email: form.email?.trim() || null,
+        phone: form.phone?.trim() || null,
+        ooh: form.ooh?.trim() || null,
+        postcode: form.postcode?.trim() || null,
+        hourly_rate: form.hourly_rate !== null && form.hourly_rate !== "" ? Number(form.hourly_rate) : null,
+        callout_fee: form.callout_fee !== null && form.callout_fee !== "" ? Number(form.callout_fee) : null,
+        notes: form.service_description || null,
+        website: form.website || null,
+        // category and region will be set by triggers if not provided
+      };
 
-      const { error: upsertErr } = await supabase
-        .from("maintenance_contractors")
-        .upsert(payload)
-        .select("*");
-      if (upsertErr) throw upsertErr;
+      console.log("companyId:", companyId, "contractorData:", contractorData);
 
-      onSaved?.(payload);
+      if (contractor?.id) {
+        const { data: updated, error: uerr } = await supabase
+          .from("contractors")
+          .update(contractorData)
+          .eq("id", contractor.id)
+          .select("*")
+          .throwOnError();
+        
+        console.log("UPDATE result", updated);
+        if (uerr) throw uerr;
+      } else {
+        const { data: inserted, error: ierr } = await supabase
+          .from("contractors")
+          .insert(contractorData)
+          .select("*")
+          .throwOnError();
+        
+        console.log("INSERT result", inserted);
+        if (ierr) throw ierr;
+      }
+
+      onSuccess();
       onClose();
-    } catch (e: any) {
-      setError(e?.message || "Failed to save contractor");
-      console.error(e);
+    } catch (err) {
+      console.error("Error saving contractor:", err);
+      showToast("Failed to save contractor. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-4 shadow-xl">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-white">{initial ? "Edit Contractor" : "Add Contractor"}</h2>
-          <button className="text-slate-300 hover:text-white" onClick={onClose}>×</button>
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        // Only close if clicking directly on the backdrop, not on dropdown content
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-xl font-semibold text-white mb-6">
+          {contractor ? "Edit Contractor" : "Add Contractor"}
+        </h2>
+
+        <ContractorForm form={form} setForm={setForm} isEditing={!!contractor?.id} />
+
+        <div className="flex justify-end gap-3 mt-6">
+          <Button 
+            variant="ghost" 
+            className="border border-white/[0.1] hover:border-white/[0.25] hover:bg-white/[0.07]" 
+            onClick={onClose} 
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSave} disabled={loading}>
+            {loading ? "Saving..." : "Save Contractor"}
+          </Button>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto pr-1">
-          <ContractorForm value={form} onChange={setForm} sites={sites} />
-        </div>
-        <div className="mt-4 sticky bottom-0 bg-slate-900 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
-          <div className="text-xs text-slate-400">
-            {!form.name.trim() || !((form.category || "").trim()) ? "Enter Category and Name to enable save." : null}
-          </div>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] text-sm" onClick={onClose}>Cancel</button>
-            <button
-              className="px-3 py-1.5 rounded bg-pink-500/20 border border-pink-500/40 text-pink-300 hover:bg-pink-500/30 text-sm"
-              onClick={save}
-              disabled={!form.name.trim() || !((form.category || "").trim())}
-            >
-              Save & Close
-            </button>
-          </div>
-        </div>
-        {error && <div className="mt-2 text-red-400 text-sm">{error}</div>}
       </div>
     </div>
   );
