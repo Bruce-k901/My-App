@@ -1,3 +1,7 @@
+// 🔒 USERS MODULE LOCKED - "users_final_stable"
+// Do not modify unless schema changes require it.
+// Last verified: working save/update + header link UX (mailto/tel)
+
 'use client';
 
 import CardHeader from '@/components/ui/CardHeader';
