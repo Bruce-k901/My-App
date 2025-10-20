@@ -89,10 +89,10 @@ export default function UserEntityCard({
               <div>
                 <label className="text-xs text-neutral-400">Role</label>
                 <Select
-                  value={editForm.role}
+                  value={editForm.app_role}
                   options={roleOptions}
                   onValueChange={(val: string) => {
-                    onEditFormChange({ role: val });
+                    onEditFormChange({ app_role: val });
                     onRoleChange(user.id, val);
                   }}
                 />
@@ -122,9 +122,9 @@ export default function UserEntityCard({
               <div>
                 <label className="text-xs text-neutral-400">Site</label>
                 <Select
-                  value={editForm.site_name}
+                  value={editForm.home_site}
                   options={siteOptions}
-                  onValueChange={(val: string) => onEditFormChange({ site_name: val })}
+                  onValueChange={(val: string) => onEditFormChange({ home_site: val })}
                 />
               </div>
 

@@ -18,8 +18,8 @@ type ProfileRow = {
   full_name: string | null;
   company_id: string | null;
   site_id: string | null;
-  home_site_id: string | null;
-  role: string | null;
+  home_site_id: string | null; // Fixed: use home_site_id as the actual column name
+  app_role: string | null;
   position_title: string | null;
   boh_foh: string | null;
   last_login: string | null;
@@ -50,7 +50,7 @@ export default function OrganizationUsersPage() {
   const [editForm, setEditForm] = useState<{
     full_name: string;
     email: string;
-    role: string;
+    app_role: string;
     position_title: string;
     site_name: string;
     pin_code: string;
@@ -61,7 +61,7 @@ export default function OrganizationUsersPage() {
   const [newUser, setNewUser] = useState<{
     full_name: string;
     email: string;
-    role: string;
+    app_role: string;
     position_title: string;
     site_name: string;
     pin_code: string;
@@ -70,7 +70,7 @@ export default function OrganizationUsersPage() {
   }>({
     full_name: "",
     email: "",
-    role: "",
+    app_role: "",
     position_title: "",
     site_name: "",
     pin_code: "",
@@ -99,7 +99,10 @@ export default function OrganizationUsersPage() {
     [sites]
   );
   const roleOptions = useMemo(
-    () => Array.from(new Set([...(Object.keys(roleHierarchy) || []), "admin"])),
+    () => Array.from(new Set([...(Object.keys(roleHierarchy) || []), "Admin"])).map(role => ({
+      label: role,
+      value: role
+    })),
     []
   );
   const positionOptions = [
@@ -120,6 +123,18 @@ export default function OrganizationUsersPage() {
     return t === "BOH" || t === "FOH" ? t : null;
   };
 
+  const normRole = (v?: string | null) => {
+    if (!v) return null;
+    const t = String(v).trim().toLowerCase();
+    switch (t) {
+      case "staff": return "Staff";
+      case "manager": return "Manager";
+      case "admin": return "Admin";
+      case "owner": return "Owner";
+      default: return null;
+    }
+  };
+
   const loadUsers = async () => {
     if (!companyId) return;
     setLoading(true);
@@ -128,7 +143,7 @@ export default function OrganizationUsersPage() {
         supabase
           .from("profiles")
           .select(
-            "id,email,full_name,company_id,site_id,home_site_id,role,position_title,boh_foh,last_login,pin_code,phone_number"
+            "id,email,full_name,company_id,site_id,home_site_id,app_role,position_title,boh_foh,last_login,pin_code,phone_number"
           )
           .eq("company_id", companyId),
         supabase.from("sites").select("id,name").eq("company_id", companyId),
@@ -166,7 +181,7 @@ export default function OrganizationUsersPage() {
       const vals = [
         p.full_name ?? "",
         p.email ?? "",
-        p.role ?? "",
+        p.app_role ?? "",
         p.position_title ?? "",
         siteNameById[p.home_site_id ?? p.site_id ?? ""] ?? "",
       ].map((x) => x.toLowerCase());
@@ -180,9 +195,9 @@ export default function OrganizationUsersPage() {
     setEditForm({
       full_name: row.full_name ?? "",
       email: row.email ?? "",
-      role: row.role ?? "",
+      app_role: row.app_role ?? "",
       position_title: row.position_title ?? "",
-      site_name: siteNameById[row.home_site_id ?? row.site_id ?? ""] || "",
+      home_site: row.home_site_id ?? row.site_id ?? "", // Use UUID directly for dropdown
       pin_code: row.pin_code ?? "",
       boh_foh: normBohFoh(row.boh_foh) ?? "",
       phone_number: row.phone_number ?? "",
@@ -194,24 +209,26 @@ export default function OrganizationUsersPage() {
     try {
       setSavingId(userId);
 
-      const homeId =
-        editForm.site_name
-          ? sites.find((s) => s.name.toLowerCase() === editForm.site_name.toLowerCase())?.id ?? null
-          : null;
+      const payload = { 
+        full_name: editForm.full_name?.trim() || null, 
+        email: editForm.email?.trim() || null, 
+        phone_number: editForm.phone_number?.trim() || null, 
+        app_role: editForm.app_role,                // "Owner" | "Admin" | "Manager" | "Staff" 
+        position_title: editForm.position_title || null, 
+        home_site_id: editForm.home_site || null,   // UUID from dropdown 
+        pin_code: editForm.pin_code || null,        // PIN code
+      }; 
+      
+      const { data, error } = await supabase 
+        .from("profiles") 
+        .update(payload) 
+        .eq("id", userId) 
+        .select() 
+        .single(); 
+      
+      console.log("SAVE payload:", payload); 
+      if (error) console.error("SAVE error:", error);
 
-      const payload: Partial<ProfileRow> = {
-        full_name: editForm.full_name || null,
-        email: editForm.email || null,
-        role: editForm.role || null,
-        position_title: editForm.position_title || null,
-        pin_code: editForm.pin_code || null,
-        boh_foh: normBohFoh(editForm.boh_foh),
-        phone_number: editForm.phone_number || null,
-        home_site_id: homeId,
-        site_id: homeId, // keep the two in sync so other pages work
-      };
-
-      const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
       if (error) throw error;
 
       showToast({ title: "User updated", type: "success" });
@@ -232,17 +249,20 @@ export default function OrganizationUsersPage() {
   const handleRoleChange = async (userId: string, newRole: string) => {
     console.log("handleRoleChange called:", { userId, newRole });
     
+    // Normalize the role value before processing
+    const normalizedRole = normRole(newRole) || newRole;
+    
     // update UI immediately
     setProfiles(prev =>
       prev.map(u =>
-        u.id === userId ? { ...u, role: newRole } : u
+        u.id === userId ? { ...u, app_role: normalizedRole } : u
       )
     );
 
     // persist to Supabase
     const { data, error } = await supabase
       .from("profiles")
-      .update({ role: newRole })
+      .update({ app_role: normalizedRole })
       .eq("id", userId)
       .select();
 
@@ -279,7 +299,7 @@ export default function OrganizationUsersPage() {
       const { error } = await supabase.from("profiles").insert({
         full_name: newUser.full_name || null,
         email: newUser.email || null,
-        role: newUser.role || null,
+        role: normRole(newUser.app_role) || newUser.app_role || null,
         position_title: newUser.position_title || null,
         home_site_id: homeId,
         site_id: homeId, // sync on create too
@@ -296,7 +316,7 @@ export default function OrganizationUsersPage() {
       setNewUser({
         full_name: "",
         email: "",
-        role: "",
+        app_role: "",
         position_title: "",
         site_name: "",
         boh_foh: "",
@@ -433,7 +453,7 @@ export default function OrganizationUsersPage() {
           const userData = {
             email: values[headerMap.email] || '',
             full_name: values[headerMap.name] || '',
-            role: values[headerMap.role] || '',
+            app_role: values[headerMap.role] || '',
             position_title: values[headerMap.position] || '',
             phone_number: values[headerMap.phone] || '',
             company_id: companyId,
@@ -495,7 +515,7 @@ export default function OrganizationUsersPage() {
     const rows = filtered.map((u) => [
       u.full_name || "",
       u.email || "",
-      u.role || "",
+      u.app_role || "",
       u.position_title || "",
       siteNameById[u.home_site_id ?? u.site_id ?? ""] || "",
       u.last_login ? new Date(u.last_login).toISOString() : "",
@@ -519,9 +539,9 @@ export default function OrganizationUsersPage() {
       title={viewArchived ? "Archived Users" : "Users"}
       searchPlaceholder="Search users..."
       onSearch={setQuery}
-      onAdd={() => setShowAddUser(true)}
-      onUpload={handleUploadCSV}
-      onDownload={handleDownloadCSV}
+      onAdd={viewArchived ? undefined : () => setShowAddUser(true)}
+      onUpload={viewArchived ? undefined : handleUploadCSV}
+      onDownload={viewArchived ? undefined : handleDownloadCSV}
       customActions={
         <Tooltip.Provider delayDuration={100}>
           <Tooltip.Root key={viewArchived ? "chevron" : "archive"}>
@@ -534,18 +554,20 @@ export default function OrganizationUsersPage() {
                 {viewArchived ? <ChevronLeft className="h-5 w-5" /> : <Archive className="h-5 w-5" />}
               </IconButton>
             </Tooltip.Trigger>
-            <Tooltip.Content
-              side="top"
-              align="center"
-              sideOffset={6}
-              className={`rounded-md px-2 py-1 text-sm font-medium bg-neutral-900 border shadow-[0_0_6px] ${
-                viewArchived
-                  ? "border-fuchsia-400 text-fuchsia-400 shadow-[0_0_6px_#e879f9]"
-                  : "border-orange-400 text-orange-400 shadow-[0_0_6px_#fb923c]"
-              }`}
-            >
-              {viewArchived ? "Users" : "Archived"}
-            </Tooltip.Content>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                side="top"
+                align="center"
+                sideOffset={6}
+                className={`text-xs px-2 py-1 rounded-md border shadow-[0_0_10px] bg-[#0f0f12] transition z-50 ${
+                  viewArchived
+                    ? "border-[#EC4899] text-[#EC4899] shadow-[0_0_10px_rgba(236,72,153,0.7)]"
+                    : "border-orange-400 text-orange-400 shadow-[0_0_6px_#fb923c]"
+                }`}
+              >
+                {viewArchived ? "Back to Users" : "Archived"}
+              </Tooltip.Content>
+            </Tooltip.Portal>
           </Tooltip.Root>
         </Tooltip.Provider>
       }
@@ -579,9 +601,9 @@ export default function OrganizationUsersPage() {
                   <div>
                     <label className="text-xs text-neutral-400">Role</label>
                     <Select
-                      value={newUser.role}
+                      value={newUser.app_role}
                       options={roleOptions}
-                      onValueChange={(val: string) => setNewUser((u) => ({ ...u, role: val }))}
+                      onValueChange={(val: string) => setNewUser((u) => ({ ...u, app_role: val }))}
                       placeholder="Select role…"
                     />
                   </div>
@@ -686,7 +708,7 @@ export default function OrganizationUsersPage() {
                <p className="text-slate-400">No archived users found.</p>
              ) : (
                archivedUsers.map((user) => (
-                 <div key={user.id} className="border border-neutral-700 bg-neutral-900/60 rounded-xl p-4 text-neutral-300">
+                 <div key={user.id} className="border border-neutral-700 bg-neutral-900/60 rounded-xl p-4 text-neutral-300 hover:border-orange-500 hover:shadow-[0_0_12px_rgba(249,115,22,0.6)] transition-all duration-200">
                    <div className="flex justify-between items-center">
                      <span className="font-semibold">{user.full_name || user.email || "—"}</span>
                      <span className="text-xs text-neutral-500">
@@ -694,7 +716,7 @@ export default function OrganizationUsersPage() {
                      </span>
                    </div>
                    <p className="text-sm text-neutral-400 mt-1">
-                     {user.position || user.position_title || "—"} • {user.role || user.app_role || "—"}
+                     {user.position || user.position_title || "—"} • {user.app_role || user.role || "—"}
                    </p>
                    <p className="text-sm text-neutral-400">{user.email}</p>
                    <button
@@ -741,7 +763,7 @@ export default function OrganizationUsersPage() {
                      onToggle={() => expandedId === p.id ? setExpandedId(null) : openEditor(p)}
                      editForm={editForm}
                      onEditFormChange={(updates) => setEditForm((f: any) => ({ ...f, ...updates }))}
-                     roleOptions={roleOptions.map(role => ({ label: role, value: role }))}
+                     roleOptions={roleOptions}
                      onRoleChange={handleRoleChange}
                      onSave={() => handleSave(p.id)}
                      onCancel={() => { setExpandedId(null); setEditForm(null); }}
@@ -751,7 +773,7 @@ export default function OrganizationUsersPage() {
                        const code = Math.floor(1000 + Math.random() * 9000).toString();
                        setEditForm((f: any) => ({ ...f, pin_code: code }));
                      }}
-                     siteOptions={sites.map((s) => ({ label: s.name, value: s.name }))}
+                     siteOptions={sites.map((s) => ({ label: s.name, value: s.id }))}
                      onArchive={handleArchive}
                      onUnarchive={() => {}} // Add unarchive handler if needed
                    />
