@@ -583,7 +583,7 @@ function ImportTemplates({ busy, setBusy, setError, companyId, siteId, onDone }:
 
 function InvitePeople({ busy, setBusy, setError, companyId, siteId, onDone }: any) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("staff");
+  const [role, setRole] = useState("Staff");
   const [message, setMessage] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const submit = async (e: React.FormEvent) => {
@@ -617,9 +617,9 @@ function InvitePeople({ busy, setBusy, setError, companyId, siteId, onDone }: an
         <input className="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         {emailError && <p className="text-red-400 text-xs">{emailError}</p>}
         <select className="input" value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="staff">Staff</option>
-          <option value="manager">Manager</option>
-          <option value="admin">Admin</option>
+          <option value="Staff">Staff</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
         </select>
         <button disabled={busy || !email || !companyId} className="btn-gradient">Invite</button>
         {message && <p className="text-green-500 text-sm">{message}</p>}

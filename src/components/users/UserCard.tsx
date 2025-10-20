@@ -44,7 +44,7 @@ export default function UserCard({ user }: { user: any }) {
           </p>
         )}
 
-        <p>Role: {user.role}</p>
+        <p>Role: {user.app_role}</p>
 
         {user.home_site_id && (
           <p>

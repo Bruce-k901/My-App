@@ -57,11 +57,11 @@ export function usePPMCalendarData(currentDate: Date) {
 
       const { data: userRole } = await supabase
         .from('user_roles')
-        .select('company_id, role')
+        .select('company_id, app_role')
         .eq('user_id', user.id)
         .single()
 
-      if (!userRole || !['admin', 'owner', 'manager'].includes(userRole.role)) {
+      if (!userRole || !['admin', 'owner', 'manager'].includes(userRole.app_role)) {
         setLoading(false)
         return []
       }

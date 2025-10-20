@@ -9,7 +9,7 @@ interface TeamMember {
   id: string;
   full_name: string;
   email: string;
-  role: "staff" | "manager" | "admin";
+  app_role: "staff" | "manager" | "admin";
   site_id: string | null;
   active?: boolean;
 }
@@ -401,14 +401,14 @@ export default function TeamTable({ team, sites, onUpdated, onRemoved }: TeamTab
               </td>
               <td className="p-3">
                 <select
-                  value={m.role}
-                  onChange={(e) => updateMember(m.id, { role: e.target.value as any })}
+                  value={m.app_role}
+                  onChange={(e) => updateMember(m.id, { app_role: e.target.value as any })}
                   className="input"
                   disabled={busyId === m.id}
                 >
-                  <option value="staff">Staff</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Admin">Admin</option>
                 </select>
               </td>
               <td className="p-3">

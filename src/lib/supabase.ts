@@ -1,7 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 
+// Environment variable validation
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  const missingVars = [];
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) missingVars.push('NEXT_PUBLIC_SUPABASE_URL');
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  
+  console.error(`❌ Missing Supabase environment variables: ${missingVars.join(', ')}`);
+  console.error('📋 To fix this:');
+  console.error('1. Copy .env.template to .env.local');
+  console.error('2. Add your real Supabase credentials');
+  console.error('3. Restart the development server');
+  console.error('4. For production: Update Vercel Environment Variables');
+  
+  throw new Error(`Missing required environment variables: ${missingVars.join(', ')}. Check .env.local or Vercel config.`);
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 // Create a singleton Supabase client with enhanced session persistence
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

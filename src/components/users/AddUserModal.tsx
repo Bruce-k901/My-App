@@ -21,7 +21,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
     email: "",
     phone_number: "",
     pin_code: "",
-    role: "staff",
+    app_role: "Staff",
     position_title: "",
     boh_foh: "FOH",
     site_id: null as string | null,
@@ -123,7 +123,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         pin_code: form.pin_code,
         company_id: companyId,
         site_id: form.site_id ?? selectedSiteId ?? siteId ?? null,
-        role: form.role,
+        role: normRole(form.app_role) || form.app_role,
         position_title: form.position_title,
         boh_foh: form.boh_foh,
       };
@@ -184,7 +184,19 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
   const [showPin, setShowPin] = useState(false);
 
-  const roleOptions = ["staff", "manager", "admin", "owner"];
+  const roleOptions = ["Staff", "Manager", "Admin", "Owner"];
+
+  const normRole = (v?: string | null) => {
+    if (!v) return null;
+    const t = String(v).trim().toLowerCase();
+    switch (t) {
+      case "staff": return "Staff";
+      case "manager": return "Manager";
+      case "admin": return "Admin";
+      case "owner": return "Owner";
+      default: return null;
+    }
+  };
 
   if (!open) return null;
 
@@ -228,11 +240,11 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
             <div>
               <label className="text-xs text-neutral-400">Role</label>
               <Select
-                value={form.role}
+                value={form.app_role}
                 options={roleOptions}
                 onValueChange={(val) => {
                   console.log("Role select fired:", val);
-                  updateForm({ role: val });
+                  updateForm({ app_role: val });
                 }}
                 placeholder="Select role…"
               />

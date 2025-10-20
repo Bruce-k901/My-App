@@ -15,7 +15,7 @@ type Profile = {
   id: string;
   full_name: string;
   email: string;
-  role: "staff" | "manager" | "admin";
+  app_role: "staff" | "manager" | "admin";
   site_id: string | null;
   active?: boolean;
 };

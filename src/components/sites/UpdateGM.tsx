@@ -16,7 +16,7 @@ type GM = {
   full_name: string;
   email: string;
   phone?: string | null;
-  home_site?: string | null;
+  home_site_id?: string | null;
   company_id?: string | null;
 };
 

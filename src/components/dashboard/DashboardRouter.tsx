@@ -55,8 +55,8 @@ export default function DashboardRouter() {
       try {
         const { profile, company, site } = await getUserContext();
         // Setup pages have been retired - skip setup status checks
-        setRole(profile.role || "staff");
-        const data = await preloadData(profile.role, company.id, site?.id ?? null);
+        setRole(profile.app_role || "staff");
+        const data = await preloadData(profile.app_role, company.id, site?.id ?? null);
         if (!alive) return;
         setPreload(data);
         setReady(true);
@@ -81,7 +81,7 @@ export default function DashboardRouter() {
     // With role guard disabled, default to Admin dashboard for full access
     return <AdminDashboard /> as any;
   }
-  if (role === "manager") return <ManagerDashboard /> as any;
-  if (role === "admin") return <AdminDashboard /> as any;
+  if (role === "Manager") return <ManagerDashboard /> as any;
+  if (role === "Admin") return <AdminDashboard /> as any;
   return <StaffDashboard /> as any;
 }

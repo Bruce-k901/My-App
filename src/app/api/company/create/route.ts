@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     // Link the creating user to the company as admin
     const { error: pErr } = await supabaseAdmin
       .from("profiles")
-      .update({ company_id: company.id, role: "admin" })
+      .update({ company_id: company.id, app_role: "admin" })
       .eq("id", user_id);
     if (pErr) {
       return NextResponse.json({ error: pErr.message }, { status: 400 });

@@ -34,7 +34,7 @@ export default function SitesPage() {
   const { profile, loading: ctxLoading } = useAppContext();
   const { showToast } = useToast();
   const [sites, setSites] = useState<Site[]>([]);
-  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string, home_site?: string, company_id?: string}>>([]);
+  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string, home_site_id?: string, company_id?: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -68,7 +68,7 @@ export default function SitesPage() {
         .order("created_at", { ascending: false }),
       supabase
         .from("gm_index")
-        .select("id, full_name, email, phone, home_site, company_id")
+        .select("id, full_name, email, phone, home_site_id, company_id")
         .eq("company_id", queryCompanyId)
         .order("full_name", { ascending: true })
     ]);
@@ -95,7 +95,7 @@ export default function SitesPage() {
         full_name: gm.full_name,
         email: gm.email,
         phone: gm.phone,
-        home_site: gm.home_site,
+        home_site_id: gm.home_site_id,
         company_id: gm.company_id,
       }));
       setGmList(gmList);

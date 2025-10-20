@@ -30,8 +30,8 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
 
       const { data, error } = await supabase
         .from("gm_index")
-        .select("full_name, email, phone, home_site")
-        .eq("home_site", site.id)
+        .select("full_name, email, phone, home_site_id")
+        .eq("home_site_id", site.id)
         .maybeSingle();
 
       if (error) console.warn("GM fetch error:", error.message);
@@ -44,33 +44,43 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
   return (
     <EntityCard
       title={
-        <div>
-          <div className="text-lg font-semibold">{site.name}</div>
-
-          {/* Address line with uppercase postcode */}
-          <div className="text-sm text-gray-400">
-            {[site.address_line1, site.address_line2, site.city]
-              .filter(Boolean)
-              .join(", ")}
-            {site.postcode ? ` • ${site.postcode.toUpperCase()}` : ""}
+        <div className="flex justify-between items-center w-full">
+          {/* Left side - Site info */}
+          <div className="header-left">
+            <div className="text-lg font-semibold">{site.name}</div>
+            <div className="text-sm text-gray-400">
+              {[site.address_line1, site.address_line2, site.city]
+                .filter(Boolean)
+                .join(", ")}
+              {site.postcode ? ` • ${site.postcode.toUpperCase()}` : ""}
+            </div>
           </div>
 
-          {/* GM contact row */}
-          {gm && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5 text-xs text-gray-400 mt-1">
-              <span>{gm.full_name}</span>
-              {gm.phone && (
-                <span className="flex items-center gap-1">
-                  <Phone size={12} className="text-gray-500" /> {gm.phone}
-                </span>
-              )}
-              {gm.email && (
-                <span className="flex items-center gap-1 truncate">
-                  <Mail size={12} className="text-gray-500" /> {gm.email}
-                </span>
-              )}
-            </div>
-          )}
+          {/* GM Info Container (Invisible Box) */}
+          <div className="gm-info-container flex items-center gap-2" style={{
+            visibility: gm ? 'visible' : 'hidden',
+            minWidth: '120px'
+          }}>
+            {gm && (
+              <>
+                <span className="gm-name text-sm font-medium text-gray-400">{gm.full_name}</span>
+                <a
+                  href={`mailto:${gm.email}`}
+                  className="gm-email text-sm text-gray-400 hover:text-magenta-400 hover:shadow-[0_0_6px_#EC4899] transition-all duration-200 no-underline cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {gm.email}
+                </a>
+                <a
+                  href={`tel:${gm.phone}`}
+                  className="gm-phone text-sm text-gray-400 hover:text-magenta-400 hover:shadow-[0_0_6px_#EC4899] transition-all duration-200 no-underline cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {gm.phone}
+                </a>
+              </>
+            )}
+          </div>
         </div>
       }
       onHeaderClick={toggleCard}

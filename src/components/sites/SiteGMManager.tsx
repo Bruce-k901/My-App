@@ -7,7 +7,7 @@ interface GM {
   full_name: string;
   email: string;
   phone: string;
-  home_site: string | null;
+  home_site_id: string | null;
   company_id: string;
 }
 
@@ -36,8 +36,8 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
 
       const { data: gmData } = await supabase
         .from("gm_index")
-        .select("full_name, email, phone, home_site")
-        .eq("home_site", site.id)
+        .select("id, full_name, email, phone, home_site_id, company_id")
+        .eq("home_site_id", site.id)
         .maybeSingle();
 
       if (gmData) {
@@ -47,16 +47,24 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
     fetchCurrentGM();
   }, [site?.id]);
 
-  // 2. Load all available GMs
+  // 2. Load all available GMs from profiles table
   useEffect(() => {
     const fetchGMs = async () => {
       const { data, error } = await supabase
-        .from("gm_index")
-        .select("id, full_name, email, phone, home_site, company_id")
+        .from("profiles")
+        .select("id, full_name, email, phone, company_id")
         .eq("company_id", companyId)
+        .eq("app_role", "Manager")
         .order("full_name", { ascending: true });
 
-      if (!error) setGmList(data || []);
+      if (!error) {
+        // Transform profiles data to match GM interface
+        const transformedData = data?.map(profile => ({
+          ...profile,
+          home_site_id: null // profiles don't have home_site_id set initially
+        })) || [];
+        setGmList(transformedData);
+      }
     };
     fetchGMs();
   }, [companyId]);
@@ -98,19 +106,19 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
       )}
 
       {/* GM Selection and Save */}
-      <div className="flex items-center gap-2 justify-start">
-        <div className="w-1/2">
+      <div className="flex items-end gap-3">
+        <div className="flex-1">
           <label className="block text-sm text-gray-400 mb-1">General Manager</label>
           <select
-            className="bg-surface-dark text-gray-100 border border-gray-700 w-full rounded-md text-sm p-2"
+            className="bg-neutral-800 text-white border border-neutral-700 w-full rounded-md text-sm p-2 focus:outline-none focus:ring-2 focus:ring-magenta-500 hover:border-magenta-400 transition-colors"
             value={selectedGM?.id || ""}
             onChange={(e) =>
               setSelectedGM(gmList.find((gm) => gm.id === e.target.value) || null)
             }
           >
-            <option value="">Select a manager</option>
+            <option value="" className="bg-neutral-800 text-white">Select a manager</option>
             {gmList.map((gm) => (
-              <option key={gm.id} value={gm.id}>
+              <option key={gm.id} value={gm.id} className="bg-neutral-800 text-white hover:bg-magenta-500">
                 {gm.full_name}
               </option>
             ))}
@@ -120,8 +128,8 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
         <Button
           onClick={handleSaveGM}
           disabled={saving || !selectedGM}
-          variant="magentaOutline"
-          className="ml-2 hover:shadow-magentaGlow"
+          variant="outline"
+          className="hover:shadow-magentaGlow"
         >
           {saving ? "Saving..." : "Save & Sync"}
         </Button>

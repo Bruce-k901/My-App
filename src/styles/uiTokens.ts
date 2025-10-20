@@ -26,49 +26,19 @@ export const colors = {
 // Button Variants
 export const buttonVariants = {
   // Primary magenta buttons (Save, Cancel, Generate, PIN toggle)
-  primary: `
-    border border-[${colors.primary.magenta}] 
-    text-[${colors.primary.magenta}] 
-    hover:shadow-[0_0_12px_rgba(${colors.primary.magentaRgba},0.7)] 
-    rounded-lg p-2 bg-transparent 
-    transition-all duration-200
-  `.replace(/\s+/g, ' ').trim(),
+  primary: 'border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg p-2 bg-transparent transition-all duration-200',
 
   // Primary magenta with glass effect (Generate button)
-  primaryGlass: `
-    border border-[${colors.primary.magenta}] 
-    text-[${colors.primary.magenta}] 
-    bg-white/5 backdrop-blur-sm 
-    hover:shadow-[0_0_12px_rgba(${colors.primary.magentaRgba},0.7)]
-    rounded-xl px-4 py-2
-    transition-all duration-200
-  `.replace(/\s+/g, ' ').trim(),
+  primaryGlass: 'border border-[#EC4899] text-[#EC4899] bg-white/5 backdrop-blur-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-xl px-4 py-2 transition-all duration-200',
 
   // Archive/Orange buttons
-  archive: `
-    border border-[${colors.secondary.orange}] 
-    text-[${colors.secondary.orange}] 
-    hover:shadow-[0_0_12px_rgba(${colors.secondary.orangeRgba},0.7)] 
-    rounded-lg p-2 bg-transparent
-    transition-all duration-200
-  `.replace(/\s+/g, ' ').trim(),
+  archive: 'border border-[#F97316] text-[#F97316] hover:shadow-[0_0_12px_rgba(249,115,22,0.7)] rounded-lg p-2 bg-transparent transition-all duration-200',
 } as const;
 
 // Input Field Variants
 export const inputVariants = {
-  default: `
-    w-full h-10 rounded-lg 
-    bg-[${colors.neutral.dark}] 
-    border border-white/10 
-    px-3 text-gray-100
-  `.replace(/\s+/g, ' ').trim(),
-
-  withIcon: `
-    w-full h-10 rounded-lg 
-    bg-[${colors.neutral.dark}] 
-    border border-white/10 
-    px-3 pr-10 text-gray-100
-  `.replace(/\s+/g, ' ').trim(),
+  default: 'w-full h-10 rounded-lg bg-[#151518] border border-white/10 px-3 text-gray-100',
+  withIcon: 'w-full h-10 rounded-lg bg-[#151518] border border-white/10 px-3 pr-10 text-gray-100',
 } as const;
 
 // Layout Utilities
@@ -96,11 +66,8 @@ export const components = {
   saveButton: buttonVariants.primary,
   cancelButton: buttonVariants.primary,
   generateButton: buttonVariants.primaryGlass,
-  archiveButton: cn(buttonVariants.archive, iconButton.archivePosition),
-  pinToggleButton: cn(
-    `text-[${colors.primary.magenta}] hover:text-[#ff5faf]`,
-    iconButton.absolute
-  ),
+  archiveButton: `${buttonVariants.archive} ${iconButton.archivePosition}`,
+  pinToggleButton: `text-[#EC4899] hover:text-[#ff5faf] ${iconButton.absolute}`,
   pinField: inputVariants.withIcon,
   standardInput: inputVariants.default,
 } as const;

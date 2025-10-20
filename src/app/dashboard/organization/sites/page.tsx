@@ -55,10 +55,7 @@ export default function OrganizationSitesPage() {
       const [siteRes, gmRes] = await Promise.all([
         supabase
           .from("sites")
-          .select(`
-            *,
-            gm:profiles!gm_user_id ( id, full_name, email, role )
-          `)
+          .select("*")
           .eq("company_id", profile.company_id)
           .order("created_at", { ascending: false }),
         supabase

@@ -28,11 +28,11 @@ function EHOForm({ onChange }: { onChange: (v: { siteId: string; start: string; 
       const list = (data || []) as { id: string; name: string }[];
       // Scope restrictions
       if (isRoleGuardEnabled()) {
-        if (role === "staff" && siteId) {
+        if (role === "Staff" && siteId) {
           setSites(list.filter((s) => s.id === siteId));
           setSelectedSite(siteId);
           setStart(daysAgo(7));
-        } else if (role === "manager" && siteId) {
+        } else if (role === "Manager" && siteId) {
           setSites(list.filter((s) => s.id === siteId));
           setSelectedSite(siteId);
         } else {

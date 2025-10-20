@@ -373,8 +373,8 @@ function ChecklistBuilder({
             onChange={(e) => update("role_required", e.target.value)}
             style={{ width: "100%", padding: 8, border: "1px solid #e5e7eb", borderRadius: 8 }}
           >
-            <option value="staff">Staff</option>
-            <option value="manager">Manager</option>
+            <option value="Staff">Staff</option>
+            <option value="Manager">Manager</option>
           </select>
         </div>
         <div>
@@ -523,8 +523,8 @@ function TemplateList({
               defaultValue={t.role_required}
               onChange={(e) => updateDraft(t.id as string, "role_required", e.target.value)}
             >
-              <option value="staff">Staff</option>
-              <option value="manager">Manager</option>
+              <option value="Staff">Staff</option>
+              <option value="Manager">Manager</option>
             </select>
           </div>
           <div>

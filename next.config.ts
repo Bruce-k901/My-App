@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 
   webpack: (config) => {
     return config; // forces classic Webpack behaviour

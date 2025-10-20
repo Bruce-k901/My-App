@@ -1,7 +1,7 @@
 export const roleHierarchy: Record<string, number> = {
-  owner: 3,
-  manager: 2,
-  staff: 1,
+  Owner: 3,
+  Manager: 2,
+  Staff: 1,
 };
 
 export const canAccess = (userRole: string, requiredRole: string) => {

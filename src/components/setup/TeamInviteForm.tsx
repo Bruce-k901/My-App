@@ -17,7 +17,7 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("staff");
+  const [role, setRole] = useState("Staff");
   const [siteId, setSiteId] = useState<string>(sites?.[0]?.id ?? "");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<{ [k: string]: string | null }>({});
@@ -62,7 +62,7 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
       setFirstName("");
       setLastName("");
       setEmail("");
-      setRole("staff");
+      setRole("Staff");
       setSiteId(sites?.[0]?.id ?? "");
     } catch (err: any) {
       showToast({ title: "Invite failed", description: err?.message ?? "Failed to invite user", type: "error" });
@@ -99,9 +99,9 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
         <div>
           <label className="block text-xs text-slate-400 mb-1">Role</label>
           <select value={role} onChange={(e) => setRole(e.target.value)} className="input">
-            <option value="staff">Staff</option>
-            <option value="manager">Manager</option>
-            <option value="admin">Admin</option>
+            <option value="Staff">Staff</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
           </select>
           {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
         </div>

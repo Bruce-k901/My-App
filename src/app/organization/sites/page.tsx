@@ -51,8 +51,8 @@ export default function OrganizationSitesPage() {
     setError(null);
 
     try {
-      // Sites query with embedded planned closures
-      const { data, error } = await supabase
+      // First, fetch sites with planned closures (no GM profile join)
+      const { data: sitesData, error: sitesError } = await supabase
         .from("sites")
         .select(`
           id,
@@ -79,13 +79,35 @@ export default function OrganizationSitesPage() {
         .eq("company_id", profile.company_id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching sites:", error);
+      if (sitesError) {
+        console.error("Error fetching sites:", sitesError);
         setError("Failed to load sites");
         setSites([]);
-      } else {
-        setSites(data || []);
+        return;
       }
+
+      // Then fetch GM data separately from gm_index
+      const gmIds = sitesData?.map(s => s.gm_user_id).filter(Boolean) || [];
+      let gmMap = new Map();
+
+      if (gmIds.length > 0) {
+        const { data: gmsData, error: gmsError } = await supabase
+          .from("gm_index")
+          .select("id, full_name, email, phone")
+          .in("id", gmIds);
+
+        if (!gmsError && gmsData) {
+          gmMap = new Map(gmsData.map(g => [g.id, g]));
+        }
+      }
+
+      // Enrich sites with GM data
+      const enrichedSites = sitesData?.map(site => ({
+        ...site,
+        gm_profile: gmMap.get(site.gm_user_id) || null,
+      })) || [];
+
+      setSites(enrichedSites);
     } catch (err: any) {
       console.error("Error in fetchSites:", err);
       setError("Failed to load data");

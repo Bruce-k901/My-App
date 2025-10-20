@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-type Profile = { company_id: string; site_id: string | null; role: string };
+type Profile = { company_id: string; site_id: string | null; app_role: string };
 type Company = { id: string; name: string; setup_status: string };
 type Site = { id: string; name: string; timezone?: string | null } | null;
 
@@ -11,7 +11,7 @@ export async function getUserContext(): Promise<{ profile: Profile; company: Com
 
   const { data: profile, error: pErr } = await supabase
     .from("profiles")
-    .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+    .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
     .eq("id", userId)
     .single();
   if (pErr || !profile) throw new Error("Profile not found");

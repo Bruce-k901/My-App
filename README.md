@@ -1,5 +1,79 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## 🧠 ENVIRONMENT SETUP FOR ALL FUTURE BUILDS
+
+### Quick Start
+
+1. **Duplicate `.env.template` → `.env.local`**
+2. **Add real Supabase credentials**
+3. **Restart local server (`npm run dev`)**
+4. **Never commit `.env.local`**
+5. **Ensure Vercel Environment Variables are up to date**
+
+### Required Environment Variables
+
+The following variables must be configured in `.env.local` for local development:
+
+```bash
+# Supabase Configuration (Required)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+SUPABASE_URL=https://your-project.supabase.co
+
+# External APIs
+COMPANIES_HOUSE_KEY=your_companies_house_api_key
+
+# Application Environment
+NEXT_PUBLIC_APP_ENV=development
+
+# Optional: Email notifications
+SENDGRID_KEY=your_sendgrid_api_key
+```
+
+### Environment Setup Process
+
+1. **Copy the template file:**
+   ```bash
+   cp .env.template .env.local
+   ```
+
+2. **Get your Supabase credentials:**
+   - Go to your [Supabase Dashboard](https://supabase.com/dashboard)
+   - Select your project
+   - Go to Settings → API
+   - Copy the Project URL and anon/service_role keys
+
+3. **Update `.env.local` with real values**
+
+4. **Restart the development server:**
+   ```bash
+   npm run dev
+   ```
+
+### Production Deployment (Vercel)
+
+For production builds, add the same environment variables in:
+**Vercel → Project → Settings → Environment Variables**
+
+Set variables for both **Production** and **Preview** environments.
+
+### Version Tagging with Environment Context
+
+When creating stable releases, include environment variable documentation:
+
+```bash
+git tag -a v1.0.0 -m "
+Stable release v1.0.0
+Required env vars:
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY  
+- SUPABASE_SERVICE_ROLE_KEY
+- COMPANIES_HOUSE_KEY
+"
+git push origin v1.0.0
+```
+
 ## Getting Started
 
 First, run the development server:

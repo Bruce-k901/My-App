@@ -1,14 +1,10 @@
-// 🔒 USERS MODULE LOCKED - "users_final_stable"
-// Do not modify unless schema changes require it.
-// Last verified: working save/update + header link UX (mailto/tel)
-
 'use client';
 
 import CardHeader from '@/components/ui/CardHeader';
 import { Button, Input, Select } from '@/components/ui';
 import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
 import { useState } from 'react';
-import { components } from '@/styles/uiTokens';
+import { components, layout } from '@/styles/uiTokens';
 import '@/styles/globals.css';
 
 interface UserEntityCardProps {
@@ -158,25 +154,25 @@ export default function UserEntityCard({
               {/* PIN Code */}
               <div>
                 <label className="text-xs text-neutral-400">PIN Code</label>
-                <div className="pin-field-container">
-                  <div className="relative pin-field-width">
+                <div className={layout.pinFieldContainer}>
+                  <div className={`relative ${layout.pinFieldWidth}`}>
                     <input
                       type={showPin ? "text" : "password"}
                       value={editForm.pin_code || ""}
                       onChange={(e) => onEditFormChange({ pin_code: e.target.value })}
-                      className="input-with-icon"
+                      className={components.pinField}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPin(!showPin)}
-                      className="icon-absolute text-[#EC4899] hover:text-[#ff5faf]"
+                      className={components.pinToggleButton}
                     >
                       {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                   <button
                     onClick={onPinGenerate}
-                    className="btn-primary-glass"
+                    className={components.generateButton}
                   >
                     Generate
                   </button>
@@ -185,17 +181,17 @@ export default function UserEntityCard({
             </div>
 
             {/* Action Buttons */}
-            <div className="button-group">
+            <div className={layout.buttonGroup}>
               <button
                 onClick={onSave}
-                className="btn-primary"
+                className={components.saveButton}
               >
                 <Save size={18} />
               </button>
 
               <button
                 onClick={onCancel}
-                className="btn-primary"
+                className={components.cancelButton}
               >
                 <X size={18} />
               </button>
@@ -204,14 +200,14 @@ export default function UserEntityCard({
               {user.archived ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className="btn-archive icon-archive-position"
+                  className={components.archiveButton}
                 >
                   <Archive size={18} />
                 </button>
               ) : (
                 <button
                   onClick={() => onArchive(user.id)}
-                  className="btn-archive icon-archive-position"
+                  className={components.archiveButton}
                 >
                   <Archive size={18} />
                 </button>

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import { supabase } from "@/lib/supabase";
 import { useRouter, usePathname } from "next/navigation";
 
-type Role = "staff" | "manager" | "admin" | "owner" | null;
+type Role = "Staff" | "Manager" | "Admin" | "Owner" | null;
 
 interface AppContextValue {
   loading: boolean;
@@ -90,7 +90,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
         console.log("🔍 DEBUG AppContext - profiles query result:", { profilesErr, profiles });
         if (!profilesErr && profiles && profiles.length > 0) {
           const p = profiles[0] as any;
-          role = (p.role as Role) ?? null;
+          role = (p.app_role as Role) ?? null;
           siteId = (p.site_id as string) ?? null;
           companyId = (p.company_id as string) ?? null;
           console.log("🔍 DEBUG AppContext - from profiles table:", { role, siteId, companyId });
@@ -167,7 +167,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
           ]);
         }
 
-        const requiresSetup = role === "admin" && (!companyId || sitesCount === 0 || company?.setup_status !== "active");
+        const requiresSetup = role === "Admin" && (!companyId || sitesCount === 0 || company?.setup_status !== "active");
 
         console.log("🔍 DEBUG AppContext - final values before setState:", { 
           userId, email, role, companyId, siteId, 
