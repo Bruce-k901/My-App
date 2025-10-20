@@ -47,22 +47,24 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
     fetchCurrentGM();
   }, [site?.id]);
 
-  // 2. Load all available GMs from profiles table
+  // 2. Load all available GMs from gm_index table
   useEffect(() => {
     const fetchGMs = async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, phone, company_id")
+      const { data: gmList, error } = await supabase
+        .from("gm_index")
+        .select("id, full_name")
         .eq("company_id", companyId)
-        .eq("app_role", "Manager")
         .order("full_name", { ascending: true });
 
-      if (!error) {
-        // Transform profiles data to match GM interface
-        const transformedData = data?.map(profile => ({
-          ...profile,
-          home_site_id: null // profiles don't have home_site_id set initially
-        })) || [];
+      if (!error && gmList) {
+        // Transform gm_index data to match GM interface
+        const transformedData = gmList.map(gm => ({
+          ...gm,
+          email: "", // Not fetched in this phase
+          phone: "", // Not fetched in this phase
+          home_site_id: null,
+          company_id: companyId
+        }));
         setGmList(transformedData);
       }
     };

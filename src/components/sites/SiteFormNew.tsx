@@ -2,6 +2,8 @@
 
 console.log("⚙️ RENDERING SiteFormNew (expected)");
 
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import SiteFormBase from "./SiteFormBase";
 
 type SiteFormProps = {
@@ -15,7 +17,30 @@ type SiteFormProps = {
 
 export default function SiteFormNew({ open, onClose, onSaved, initial, companyId, gmList }: SiteFormProps) {
   console.log("🔥 SITEFORMNEW - Component called with props:", { open, companyId, initial });
-  console.log("🔥 SITEFORMNEW - gmList received:", gmList?.length, gmList);
+  
+  const [gmListState, setGmListState] = useState([]);
+
+  useEffect(() => {
+    if (!open || !companyId) return;
+
+    const loadGMList = async () => {
+      console.log("GM fetch triggered, companyId:", companyId);
+      const { data, error } = await supabase
+        .from("gm_index")
+        .select("id, full_name, email, phone, home_site, position_title")
+        .eq("company_id", companyId);
+
+      if (error) console.error("GM fetch error:", error);
+      else {
+        console.log("GM list loaded:", data?.length, "data:", data);
+        setGmListState(data || []);
+      }
+    };
+
+    loadGMList();
+  }, [open, companyId]);
+
+  console.log("🔥 SITEFORMNEW - gmListState current:", gmListState);
   
   if (!open) {
     console.log("🔥 SITEFORMNEW - Not rendering because open=false");
@@ -31,7 +56,7 @@ export default function SiteFormNew({ open, onClose, onSaved, initial, companyId
       onClose={onClose}
       onSaved={onSaved}
       companyId={companyId}
-      gmList={gmList}
+      gmList={gmListState}
     />
   );
 }

@@ -29,7 +29,6 @@
     "typescript": "javascript",
     "typescriptreact": "javascriptreact"
   },
-  "search.useIgnoreFiles": true,
   "search.useGlobalIgnoreFiles": false,
   "search.useParentIgnoreFiles": false
 }

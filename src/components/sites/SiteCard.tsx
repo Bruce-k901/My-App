@@ -30,13 +30,26 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
 
       const { data, error } = await supabase
         .from("gm_index")
-        .select("full_name, email, phone, home_site_id")
-        .eq("home_site_id", site.id)
-        .maybeSingle();
+        .select("id, full_name, email, phone, home_site, position_title")
+        .eq("home_site", site.id)
+        .ilike("position_title", "%general%manager%"); // case-insensitive match for "General Manager"
 
-      if (error) console.warn("GM fetch error:", error.message);
-      else if (!data) console.log(`No GM assigned for site: ${site.name}`);
-      else setGm(data);
+      if (error) {
+        console.error("GM fetch error:", error.message);
+      } else if (data && data.length > 0) {
+        const gm = data[0]; // take the first matching GM
+        console.log("GM found:", gm);
+        setGm({
+          id: gm.id,
+          full_name: gm.full_name,
+          email: gm.email ?? "",
+          phone: gm.phone ?? "",
+          home_site: gm.home_site
+        });
+      } else {
+        console.log(`No GM found for site: ${site.name}`);
+        setGm(null);
+      }
     };
     fetchGM();
   }, [site?.id]);

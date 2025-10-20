@@ -59,22 +59,55 @@ type FormData = {
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList: propGmList, onDelete }: SiteFormBaseProps) {
+export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList, onDelete }: SiteFormBaseProps) {
+  console.log("🔥 Received gmList prop:", gmList);
   const { showToast } = useToast();
   const [operatingScheduleOpen, setOperatingScheduleOpen] = useState(mode === "new");
   const [loading, setLoading] = useState(false);
-  const [gmList, setGmList] = useState<Array<{
-    [x: string]: any;id: string, full_name: string, email: string, role?: string | null, position_title?: string | null, site_id?: string | null, phone?: string | null
-}>>(propGmList || []);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [newClosure, setNewClosure] = useState({ start: "", end: "" });
   
   // GM expansion state
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGM, setSelectedGM] = useState("");
+  const [gmEditMode, setGmEditMode] = useState(false);
 
   // Debug logging for gmList prop
-  console.log("gmList prop in SiteFormBase:", propGmList?.length, propGmList?.[0]);
+  console.log("🔥 Received gmList prop:", gmList);
+
+  // GM fetch function
+  const loadGMForSite = async (siteId: string) => {
+    console.log("Loading GM for site:", siteId);
+    const { data, error } = await supabase
+      .from("gm_index")
+      .select("id, full_name, email, phone, home_site, position_title")
+      .eq("home_site", siteId)
+      .ilike("position_title", "%general%manager%");
+
+    console.log("GM query result:", { data, error, siteId });
+
+    if (error) {
+      console.error("GM fetch error:", error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      const gm = data[0];
+      console.log("GM loaded into modal:", gm);
+      setFormData(prev => {
+        console.log("After GM load, formData.gm_name:", gm.full_name);
+        return {
+          ...prev,
+          gm_user_id: gm.id,
+          gm_name: gm.full_name || "",
+          gm_email: gm.email || "",
+          gm_phone: gm.phone || ""
+        };
+      });
+    } else {
+      console.log("No GM found for site:", siteId, "Data:", data);
+    }
+  };
 
   // Default schedule setup as specified in the brief
   const defaultSchedule = {
@@ -94,6 +127,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         ...initialData,
         operating_schedule: { ...defaultSchedule, ...initialData.operating_schedule },
         planned_closures: initialData?.planned_closures ?? [],
+        // Initialize GM fields to empty strings to prevent undefined issues
+        gm_name: initialData?.gm_name || "",
+        gm_email: initialData?.gm_email || "",
+        gm_phone: initialData?.gm_phone || "",
+        gm_user_id: initialData?.gm_user_id || "",
       };
     }
 
@@ -102,6 +140,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       ...initialData,
       operating_schedule: defaultSchedule,
       planned_closures: initialData?.planned_closures ?? [],
+      // Initialize GM fields to empty strings to prevent undefined issues
+      gm_name: initialData?.gm_name || "",
+      gm_email: initialData?.gm_email || "",
+      gm_phone: initialData?.gm_phone || "",
+      gm_user_id: initialData?.gm_user_id || "",
     };
   });
 
@@ -152,6 +195,32 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       }));
     }
   }, [initialData]);
+
+  // Phase 1: Minimal Proof-of-Life Query
+  useEffect(() => {
+    const loadGMName = async () => {
+      console.log("🔍 Testing GM fetch for site:", initialData?.id);
+      const { data, error } = await supabase
+        .from("gm_index") // keep gm_index for now
+        .select("full_name")
+        .eq("home_site", initialData?.id)
+        .ilike("position_title", "%general%manager%")
+        .limit(1)
+        .single();
+
+      if (error) {
+        console.error("GM name fetch error:", error);
+      } else {
+        console.log("✅ GM name data:", data);
+        setFormData(prev => ({
+          ...prev,
+          gm_name: data?.full_name || "",
+        }));
+      }
+    };
+
+    if (initialData?.id) loadGMName();
+  }, [initialData?.id]);
 
   // Data loading effect for edit mode
   useEffect(() => {
@@ -238,6 +307,15 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
               gm_user_id: site.gm_user_id || "",
               operating_schedule: mergedSchedule
             }));
+
+            console.log("After site load:", site);
+            
+            // Debug logs to check GM lookup logic
+            console.log("initialData.gm_user_id:", initialData?.gm_user_id);
+            console.log("gmList:", gmList);
+            
+            // Load GM data after site data is set
+            await loadGMForSite(site.id);
           }
         } catch (error) {
           console.error("Error loading site data:", error);
@@ -252,36 +330,6 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
     loadData();
   }, [mode, initialData?.id, showToast, companyId]);
-
-  // Set GM list from props
-  useEffect(() => {
-    if (propGmList?.length) setGmList(propGmList);
-  }, [propGmList]);
-
-  useEffect(() => {
-    if (initialData && gmList?.length) {
-      // Match by gm_user_id from the site data
-      const gm = gmList.find(g => g.id === initialData.gm_user_id);
-
-      if (gm) {
-        setFormData(prev => ({
-          ...prev,
-          gm_user_id: gm.id,
-          gm_name: gm.full_name ?? "",
-          gm_email: gm.email ?? "",
-          gm_phone: gm.phone ?? "",
-        }));
-      } else {
-        setFormData(prev => ({
-          ...prev,
-          gm_user_id: "",
-          gm_name: "",
-          gm_email: "",
-          gm_phone: "",
-        }));
-      }
-    }
-  }, [initialData, gmList]);
 
   // Helper functions for operating schedule
   const isEmpty = (dayObj: FormData["operating_schedule"][string]) => {
@@ -538,8 +586,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         address_line1: formData.address_line1.trim(),
         address_line2: formData.address2?.trim() || null,
         postcode: formData.postcode.trim(),
-        city: formData.city?.trim() || null,
-        region: formData.region?.trim() || null,
+        city: formData.city && typeof formData.city === 'string' ? formData.city.trim() : null,
+        region: formData.region && typeof formData.region === 'string' ? formData.region.trim() : null,
         status: formData.status,
         gm_user_id: formData.gm_user_id ? formData.gm_user_id.trim() : null,
         operating_schedule: cleanedSchedule
@@ -714,21 +762,25 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
           {/* Management Contact */}
           <section className="mt-6 border-t border-neutral-800 pt-6">
+            {/* Header with Update GM button on the left */}
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xl font-semibold text-white">Management Contact</h3>
-              <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="px-3 py-1.5 border border-pink-500 text-pink-500 hover:bg-pink-500/10 rounded-md text-sm transition-colors"
-              >
-                Update GM
-              </button>
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-semibold text-white">Management Contact</h3>
+                <button
+                  type="button"
+                  onClick={() => setGmEditMode((v) => !v)}
+                  className="px-3 py-1.5 border border-pink-500 text-pink-500 hover:bg-pink-500/10 rounded-md text-sm transition-colors"
+                  aria-pressed={gmEditMode}
+                >
+                  {gmEditMode ? "Cancel" : "Update GM"}
+                </button>
+              </div>
             </div>
-            
-            {/* Management Contact Section */}
-            <div className="flex flex-col w-full">
-              {/* Row 1 – static GM info */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            {/* Single row: GM Name | Select a Manager | Save & Sync */}
+            <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
+                {/* GM Name (read-only) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">General Manager</label>
                   <input
@@ -739,47 +791,36 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                     className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">GM Phone</label>
-                  <input
-                  type="tel"
-                  readOnly
-                  value={formData.gm_phone || ""}
-                  placeholder="No phone"
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white"
-                />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">GM Email</label>
-                  <input
-                    type="email"
-                    readOnly
-                    value={formData.gm_email || ""}
-                    placeholder="No email"
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white"
-                  />
-                </div>
-              </div>
 
-              {/* Row 2 – reserved expansion zone */}
-              <div
-                id="gmExpandZone"
-                className={`transition-all duration-300 overflow-hidden ${
-                  isOpen ? "max-h-40 mt-3 pt-3 border-t border-white/10" : "max-h-0"
-                }`}
-              >
-                {/* The UpdateGM UI */}
-                {isOpen && (
-                  <SiteGMManager 
-                    site={{ id: formData.id || "", name: formData.name, company_id: companyId }}
-                    companyId={companyId}
-                    onSaved={() => {
-                      // Refresh the form data after GM assignment
-                      if (onSaved) onSaved();
-                      setIsOpen(false);
-                    }}
-                  />
-                )}
+                {/* Select a Manager (disabled until Update GM toggled) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Select a Manager</label>
+                  <select
+                    value={formData.gm_user_id || ""}
+                    onChange={(e) => handleGMChange(e.target.value)}
+                    disabled={!gmEditMode}
+                    className={`w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <option value="">Select a manager</option>
+                    {(gmList || []).map((gm) => (
+                      <option key={gm.id} value={gm.id}>
+                        {gm.full_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Save & Sync (disabled until Update GM toggled and a selection exists) */}
+                <div className="flex">
+                  <button
+                    type="button"
+                    onClick={handleUpdate}
+                    disabled={!gmEditMode || !formData.gm_user_id}
+                    className="ml-auto px-4 py-2 border border-pink-600 text-pink-600 rounded-lg hover:shadow-lg hover:shadow-pink-600/50 hover:border-pink-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Save &amp; Sync
+                  </button>
+                </div>
               </div>
             </div>
           </section>

@@ -1,7 +1,7 @@
 'use client';
 
 import CardHeader from '@/components/ui/CardHeader';
-import { Button, Input, Select } from '@/components/ui';
+import { Input, Select } from '@/components/ui';
 import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
 import { useState } from 'react';
 import { components, layout } from '@/styles/uiTokens';
