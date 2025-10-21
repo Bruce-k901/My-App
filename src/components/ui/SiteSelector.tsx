@@ -58,7 +58,7 @@ export default function SiteSelector({
       value={value || ""}
       onChange={(e) => onChange(e.target.value || null)}
       className={`
-        h-11 px-3 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white
+        h-10 px-3 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white
         focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50
         hover:bg-white/[0.08] transition-colors
         ${className}

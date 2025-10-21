@@ -2,6 +2,7 @@
 
 import { useState, useEffect, memo } from "react";
 import EntityCard from "@/components/ui/EntityCard";
+import CardHeader from "@/components/ui/CardHeader";
 import CardChevron from "@/components/ui/CardChevron";
 import { Pencil, Mail, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -16,9 +17,11 @@ interface SiteCardProps {
 function SiteCard({ site, onEdit }: SiteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [gm, setGm] = useState<{
+    id: string;
     full_name: string;
     phone: string;
     email: string;
+    home_site: string;
   } | null>(null);
 
   const toggleCard = () => setIsOpen((prev) => !prev);
@@ -54,52 +57,37 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
     fetchGM();
   }, [site?.id]);
 
+  // Create subtitle with address and contact details
+  const createSubtitle = () => {
+    const addressParts = [site.address_line1, site.address_line2, site.city]
+      .filter(Boolean)
+      .join(", ");
+    const address = site.postcode ? `${addressParts} • ${site.postcode.toUpperCase()}` : addressParts;
+    
+    if (gm) {
+      return `${address} • ${gm.full_name} • ${gm.email} • ${gm.phone}`;
+    }
+    return address;
+  };
+
   return (
     <EntityCard
       title={
-        <div className="flex justify-between items-center w-full">
-          {/* Left side - Site info */}
-          <div className="header-left">
-            <div className="text-lg font-semibold">{site.name}</div>
-            <div className="text-sm text-gray-400">
-              {[site.address_line1, site.address_line2, site.city]
-                .filter(Boolean)
-                .join(", ")}
-              {site.postcode ? ` • ${site.postcode.toUpperCase()}` : ""}
-            </div>
-          </div>
-
-          {/* GM Info Container (Invisible Box) */}
-          <div className="gm-info-container flex items-center gap-2" style={{
-            visibility: gm ? 'visible' : 'hidden',
-            minWidth: '120px'
-          }}>
-            {gm && (
-              <>
-                <span className="gm-name text-sm font-medium text-gray-400">{gm.full_name}</span>
-                <a
-                  href={`mailto:${gm.email}`}
-                  className="gm-email text-sm text-gray-400 hover:text-magenta-400 hover:shadow-[0_0_6px_#EC4899] transition-all duration-200 no-underline cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {gm.email}
-                </a>
-                <a
-                  href={`tel:${gm.phone}`}
-                  className="gm-phone text-sm text-gray-400 hover:text-magenta-400 hover:shadow-[0_0_6px_#EC4899] transition-all duration-200 no-underline cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {gm.phone}
-                </a>
-              </>
-            )}
-          </div>
-        </div>
+        <CardHeader
+          title={site.name}
+          subtitle={createSubtitle()}
+          showChevron={false}
+          onToggle={toggleCard}
+          expanded={isOpen}
+        />
       }
       onHeaderClick={toggleCard}
       rightActions={
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-          <CardChevron isOpen={isOpen} onToggle={toggleCard} />
+          <CardChevron 
+            isOpen={isOpen} 
+            onToggle={toggleCard}
+          />
         </div>
       }
     >
@@ -135,36 +123,52 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
               <div className="font-semibold text-gray-200">Operating Schedule</div>
               <table className="mt-1 w-auto border-collapse text-gray-300">
                 <tbody>
-                  {Object.entries(site.operating_schedule).map(([day, info]) => {
-                    if (!info || typeof info !== "object") return null;
+                  {(() => {
+                    const weekdayOrder = [
+                      "Monday",
+                      "Tuesday", 
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ];
 
-                    const formatTime = (obj: any) => {
-                      if (!obj || typeof obj !== "object") return "—";
-                      const { hh, mm } = obj;
-                      if (hh == null || mm == null) return "—";
-                      return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
-                    };
-
-                    const infoTyped = info as any;
-                    const open = formatTime(infoTyped.open);
-                    const close = formatTime(infoTyped.close);
-                    const active = infoTyped.active ?? true;
-
-                    return (
-                      <tr key={day} className={!active ? "text-gray-500" : ""}>
-                        <td className="pr-6 capitalize">{day}:</td>
-                        <td className="tabular-nums">
-                          {active ? (
-                            <>
-                              {open} <span className="px-1 text-gray-500">→</span> {close}
-                            </>
-                          ) : (
-                            "Closed"
-                          )}
-                        </td>
-                      </tr>
+                    const orderedSchedule = Object.entries(site.operating_schedule).sort(
+                      ([dayA], [dayB]) => weekdayOrder.indexOf(dayA) - weekdayOrder.indexOf(dayB)
                     );
-                  })}
+
+                    return orderedSchedule.map(([day, info]) => {
+                      if (!info || typeof info !== "object") return null;
+
+                      const formatTime = (obj: any) => {
+                        if (!obj || typeof obj !== "object") return "—";
+                        const { hh, mm } = obj;
+                        if (hh == null || mm == null) return "—";
+                        return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+                      };
+
+                      const infoTyped = info as any;
+                      const open = formatTime(infoTyped.open);
+                      const close = formatTime(infoTyped.close);
+                      const active = infoTyped.active ?? true;
+
+                      return (
+                        <tr key={day} className={!active ? "text-gray-500" : ""}>
+                          <td className="pr-6 capitalize">{day}:</td>
+                          <td className="tabular-nums">
+                            {active ? (
+                              <>
+                                {open} <span className="px-1 text-gray-500">→</span> {close}
+                              </>
+                            ) : (
+                              "Closed"
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
                 </tbody>
               </table>
             </div>

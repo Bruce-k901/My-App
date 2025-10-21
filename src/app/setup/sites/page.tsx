@@ -56,7 +56,7 @@ function SitesContent() {
       try {
         const { data: profs } = await supabase
           .from("profiles")
-          .select("id, email, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+          .select("id, email, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
           .eq("company_id", companyId);
         setManagers((profs || []).filter((p: any) => p.role === "manager"));
       } catch {}

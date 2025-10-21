@@ -36,44 +36,69 @@ export default function EntityPageLayout({
   };
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 lg:px-12 py-6 text-white">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold">{title}</h1>
-        
-        <div className="flex items-center gap-3">
-          {/* Site selector and search inputs */}
-          <div className="flex items-center gap-2">
-            {siteSelector}
-            <Input 
+    <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 lg:px-12 py-3 text-white">
+      {/* Header */}
+      <div className="flex items-center justify-between w-full mb-4">
+        {/* Left side - Title and Search */}
+        <div className="flex items-center gap-4">
+          {title && <h1 className="text-3xl font-semibold text-white flex-shrink-0">{title}</h1>}
+          
+          {/* Search area */}
+          <div className="flex items-center gap-3">
+            {/* Site Selector */}
+            {siteSelector && siteSelector}
+            
+            {/* Search Input */}
+            <input 
+              type="text"
               value={q} 
               onChange={handleChange} 
-              placeholder={searchPlaceholder} 
-              className="w-[192px]" 
+              placeholder={searchPlaceholder}
+              className="h-10 px-3 rounded-md border border-neutral-700 bg-transparent text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-pink-400 w-[192px]" 
             />
           </div>
+        </div>
+
+        {/* Right side - Action Buttons */}
+        <div className="flex items-center gap-2">
+          {/* Custom Actions */}
+          {customActions}
           
-          {/* Action buttons */}
-          <div className="flex items-center gap-2">
-            {customActions}
-            {onAdd && (
-              <IconButton ariaLabel="Add" onClick={() => {
+          {/* Add Button */}
+          {onAdd && (
+            <button 
+              onClick={() => {
                 console.log("🔥 ENTITY LAYOUT - Add button clicked");
                 onAdd();
-              }} variant="magentaOutline">
-                <Plus className="h-5 w-5" />
-              </IconButton>
-            )}
-            {onDownload && (
-              <IconButton ariaLabel="Download CSV" onClick={onDownload}>
-                <Download className="h-5 w-5" />
-              </IconButton>
-            )}
-            {onUpload && (
-              <IconButton ariaLabel="Upload CSV" onClick={onUpload}>
-                <Upload className="h-5 w-5" />
-              </IconButton>
-            )}
-          </div>
+              }}
+              className="h-10 w-10 flex items-center justify-center rounded-md border border-pink-400 text-pink-400 hover:bg-pink-500/10 transition-all"
+              aria-label="Add"
+            >
+              <span className="text-lg leading-none">+</span>
+            </button>
+          )}
+          
+          {/* Download Button */}
+          {onDownload && (
+            <button 
+              onClick={onDownload}
+              className="h-10 w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
+              aria-label="Download CSV"
+            >
+              <Download className="h-4 w-4" />
+            </button>
+          )}
+          
+          {/* Upload Button */}
+          {onUpload && (
+            <button 
+              onClick={onUpload}
+              className="h-10 w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
+              aria-label="Upload CSV"
+            >
+              <Upload className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -89,7 +114,7 @@ export { IconButton };
 
 function IconButton({ children, onClick, ariaLabel, variant = "neutral" }: { children: React.ReactNode; onClick?: () => void; ariaLabel: string; variant?: "neutral" | "magentaOutline" | "orangeOutline" }) {
   const base = cn(
-    "inline-flex items-center justify-center",
+    "flex items-center justify-center",
     "h-11 w-11 rounded-lg",
     "transition-colors duration-150 ease-in-out",
     "hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]",

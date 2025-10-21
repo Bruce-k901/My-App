@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
+import { updateGM } from "@/lib/updateGM";
 import { ChevronUp } from "lucide-react";
-import { fetchLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
+import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
 import CheckboxCustom from "@/components/ui/CheckboxCustom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -60,7 +61,8 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList, onDelete }: SiteFormBaseProps) {
-  console.log("🔥 Received gmList prop:", gmList);
+  console.log("� Rendered", "SiteFormBase");
+  console.log("�🔥 Received gmList prop:", gmList);
   const { showToast } = useToast();
   const [operatingScheduleOpen, setOperatingScheduleOpen] = useState(mode === "new");
   const [loading, setLoading] = useState(false);
@@ -71,6 +73,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGM, setSelectedGM] = useState("");
   const [gmEditMode, setGmEditMode] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Debug logging for gmList prop
   console.log("🔥 Received gmList prop:", gmList);
@@ -406,41 +409,23 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     }
   };
 
-  const handleUpdate = async () => {
-    if (!selectedGM || !initialData?.id) return;
-    
-    setLoading(true);
+  const handleSaveAndSync = async () => {
     try {
-      // Call the update_gm_link RPC to sync with database
-      const { error } = await supabase.rpc("update_gm_link", {
-        site_id: initialData.id,
-        gm_id: selectedGM,
-      });
+      setIsSaving(true);
 
-      if (error) {
-        throw error;
-      }
+      console.log("Save button clicked", formData.id, formData.gm_user_id);
+      console.log("Saving GM", formData.id, formData.gm_user_id);
+      
+      await updateGM(formData.id, formData.gm_user_id);
 
-      // After successful RPC call, update form data with selected GM details
-      const selectedGMData = gmList.find(gm => gm.id === selectedGM);
-      if (selectedGMData) {
-        setFormData(prev => ({
-          ...prev,
-          gm_user_id: selectedGMData.id,
-          gm_name: selectedGMData.full_name,
-          gm_email: selectedGMData.email,
-          gm_phone: selectedGMData.phone ?? "",
-        }));
-      }
-        
-      showToast("GM updated successfully", "success");
-      setIsOpen(false); // Collapse the expansion zone
-      setSelectedGM(""); // Reset selection
-    } catch (error) {
-      console.error("Error updating GM:", error);
-      showToast("Failed to update GM", "error");
+      showToast("GM saved and synced", "success");
+      setGmEditMode(false);
+      onSaved?.();
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to save GM", "error");
     } finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -544,16 +529,15 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   // Auto-populate city and region from postcode
   useEffect(() => {
     if (formData.postcode && isValidPostcodeForLookup(formData.postcode)) {
-      fetchLocationFromPostcode(formData.postcode).then((res) => {
-        if (res.city || res.region) {
-          setFormData((prev) => ({
-            ...prev,
-            city: res.city,
-            region: res.region,
-          }));
-          showToast("City and region auto-filled", "success");
-        }
-      });
+      const { city, region } = getLocationFromPostcode(formData.postcode);
+      if (city && region) {
+        setFormData((prev) => ({
+          ...prev,
+          city,
+          region,
+        }));
+        showToast("City and region auto-filled", "success");
+      }
     }
   }, [formData.postcode, showToast]);
 
@@ -592,6 +576,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         gm_user_id: formData.gm_user_id ? formData.gm_user_id.trim() : null,
         operating_schedule: cleanedSchedule
       };
+
+      console.log("Saving site data:", formData.city, formData.region);
 
       // Upsert site data
       const { data: siteResult, error: siteError } = await supabase
@@ -814,11 +800,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 <div className="flex">
                   <button
                     type="button"
-                    onClick={handleUpdate}
-                    disabled={!gmEditMode || !formData.gm_user_id}
+                    onClick={handleSaveAndSync}
+                    disabled={!gmEditMode || !formData.gm_user_id || isSaving}
                     className="ml-auto px-4 py-2 border border-pink-600 text-pink-600 rounded-lg hover:shadow-lg hover:shadow-pink-600/50 hover:border-pink-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Save &amp; Sync
+                    {isSaving ? "Saving..." : "Save & Sync"}
                   </button>
                 </div>
               </div>

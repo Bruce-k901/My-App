@@ -80,7 +80,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
         // Try to load role/site/company from profiles; fallback to user metadata
         const { data: profiles, error: profilesErr } = await supabase
           .from("profiles")
-          .select("id, email, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+          .select("id, email, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
           .eq("id", userId)
           .limit(1);
 

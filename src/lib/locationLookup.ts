@@ -1,66 +1,43 @@
 /**
  * Location lookup utilities for auto-populating city and region from postcode
- * Uses postcodes.io API for UK postcode lookups
+ * Uses local postcode prefix mapping for instant UK postcode lookups
  */
+
+import { postcodeMap } from "./postcodeMap";
 
 export interface LocationData {
   city: string;
   region: string;
 }
 
-// Cache for postcode prefix lookups to avoid hammering the API
-const cache = new Map<string, LocationData>();
-
 /**
- * Fetches location data (city and region) from a UK postcode using postcodes.io API
- * @param postcode - The postcode to lookup (e.g., "SW1A 1AA")
- * @returns Promise resolving to LocationData with city and region, or empty strings if lookup fails
+ * Returns city and region for a UK postcode based on its prefix.
+ * This replaces the old postcodes.io API call with instant local lookup.
+ * @param postcode - The postcode to lookup (e.g., "SW1A 1AA", "EH5 9AZ")
+ * @returns LocationData with city and region, or null values if prefix not found
  */
-export async function fetchLocationFromPostcode(postcode: string): Promise<LocationData> {
+export function getLocationFromPostcode(postcode: string): LocationData {
   if (!postcode) return { city: "", region: "" };
 
-  // Strip spaces, uppercase, extract prefix
-  const clean = postcode.replace(/\s+/g, "").toUpperCase();
-  const prefix = clean.replace(/[0-9][A-Z]*$/, ""); // grab everything before numeric part, e.g. "EH2" from "EH22QP"
+  // Strip spaces, uppercase for clean lookup
+  const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
 
-  // Check cache first for prefix lookups
-  if (cache.has(prefix)) {
-    console.log(`Using cached result for prefix: ${prefix}`);
-    return cache.get(prefix)!;
+  // Try 2-letter prefix first, then 1-letter fallback
+  const two = cleaned.slice(0, 2);
+  const one = cleaned.slice(0, 1);
+  const entry = postcodeMap[two] || postcodeMap[one];
+
+  if (entry) {
+    return { city: entry.city, region: entry.region };
   }
 
-  try {
-    // 1. Try full postcode first
-    let response = await fetch(`https://api.postcodes.io/postcodes/${clean}`);
-    let result: LocationData;
-    
-    if (!response.ok) {
-      // 2. Fallback to outcode (prefix)
-      console.warn(`Postcode ${clean} not found, trying outcode ${prefix}`);
-      response = await fetch(`https://api.postcodes.io/outcodes/${prefix}`);
-    }
+  console.warn(`Postcode prefix not found: ${cleaned}`);
+  return { city: "", region: "" };
+}
 
-    if (!response.ok) {
-      console.warn(`Outcode lookup failed for ${prefix}: ${response.status}`);
-      return { city: "", region: "" };
-    }
-
-    const data = await response.json();
-    const apiResult = data.result || {};
-
-    result = {
-      city: apiResult.admin_district || apiResult.parliamentary_constituency || "",
-      region: apiResult.region || apiResult.country || "",
-    };
-
-    // Cache the result by prefix to avoid repeated API calls for same area
-    cache.set(prefix, result);
-    
-    return result;
-  } catch (err) {
-    console.error("Postcode lookup failed:", err);
-    return { city: "", region: "" };
-  }
+// Legacy function name for backward compatibility - now just calls the new function
+export async function fetchLocationFromPostcode(postcode: string): Promise<LocationData> {
+  return getLocationFromPostcode(postcode);
 }
 
 /**

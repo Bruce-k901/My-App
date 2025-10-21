@@ -33,7 +33,7 @@ export default function TeamTable({ team, sites, onUpdated, onRemoved }: TeamTab
         .from("profiles")
         .update(patch)
         .eq("id", id)
-        .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+        .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
         .single();
       if (error) throw error;
       onUpdated(data as any);

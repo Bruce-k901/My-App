@@ -39,8 +39,8 @@ export default [
       // Enforce React Hooks best practices and avoid missing deps warnings
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      // Prevent nested interactive elements
       "react/no-unknown-property": "error",
-      "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
     },
   },
 

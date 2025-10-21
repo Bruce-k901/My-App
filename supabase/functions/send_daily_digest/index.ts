@@ -19,7 +19,7 @@ Deno.serve(async () => {
   // 1. Get managers/admins and their preferences
   const { data: recipients, error: rErr } = await supabase
     .from("profiles")
-    .select("id,email,company_id,site_id,role")
+    .select("id,email,company_id,site_id,app_role")
     .in("role", ["manager", "admin"]);
   if (rErr) return new Response(`Recipient error: ${rErr.message}`, { status: 500 });
 

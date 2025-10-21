@@ -50,7 +50,7 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
       // Fetch the upserted profile record to reflect in UI
       const { data: profileRes } = await supabase
         .from("profiles")
-        .select("id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code")
+        .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
         .eq("company_id", companyId)
         .eq("email", email)
         .limit(1);

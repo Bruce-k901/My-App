@@ -36,7 +36,7 @@ export default function Select({
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency
-            "w-full h-11 rounded-md px-4 text-left text-white relative",
+            "w-full h-10 rounded-md px-4 text-left text-white relative",
             "bg-white/[0.05] border border-white/[0.1]",
             "transition-all duration-150 ease-in-out",
             "hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
