@@ -3,6 +3,7 @@
 import React from "react";
 import DashboardSidebar from "@/components/layouts/DashboardSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
+import DashboardProvider from "@/components/providers/DashboardProvider";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 ml-20 overflow-y-auto px-10 py-6 md:px-16">
         {/* Header */}
         <DashboardHeader />
-        {children}
+        <DashboardProvider>
+          {children}
+        </DashboardProvider>
       </main>
     </div>
   );

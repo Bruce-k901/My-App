@@ -46,10 +46,10 @@ export default function UserCard({ user }: { user: any }) {
 
         <p>Role: {user.app_role}</p>
 
-        {user.home_site_id && (
+        {user.home_site && (
           <p>
             <MapPin size={14} className="inline mr-1" />
-            Home Site: {user.home_site_name || user.home_site_id}
+            Home Site: {user.home_site_name || user.home_site}
           </p>
         )}
 

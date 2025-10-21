@@ -18,7 +18,7 @@ type Contractor = {
   contact_name?: string;
   email?: string;
   phone?: string;
-  ooh?: string;
+  ooh_phone?: string;
   hourly_rate?: number;
   callout_fee?: number;
   notes?: string;
@@ -45,111 +45,48 @@ export default function ContractorsPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from("contractors")
+      const { data: contractors, error } = await supabase
+        .from('contractors')
         .select(`
           id,
           name,
-          phone,
           email,
-          postcode,
+          phone,
+          ooh_phone,
           region,
-          ooh,
-          hourly_rate,
+          website,
           callout_fee,
-          notes,
-          category
+          hourly_rate,
+          postcode,
+          contractor_categories ( name, description )
         `)
-        .eq("company_id", companyId)
-        .order("name", { ascending: true });
+        .eq('is_active', true)
+        .eq('company_id', companyId)
+        .order('name', { ascending: true });
 
       if (error) throw error;
 
-      const mapped = (data || []).map((row: any) => ({
+      const mapped = (contractors || []).map((row: any) => ({
         id: row.id,
         name: row.name || "(Unnamed Contractor)",
-        category: row.category || "—",
+        category: row.contractor_categories?.name || "—",
         email: row.email || "",
         phone: row.phone || "",
+        ooh_phone: row.ooh_phone || "",
         postcode: row.postcode || "",
         region: row.region || "—",
-        ooh: row.ooh || "",
+        website: row.website || "",
         hourly_rate: row.hourly_rate ?? null,
         callout_fee: row.callout_fee ?? null,
-        notes: row.notes || "",
-        site_names: [], // Remove ghost field reference
-        site_count: 0, // Remove ghost field reference
+        site_names: [], // Will be populated later if needed
+        site_count: 0, // Will be populated later if needed
       }));
-      mapped.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
+      
       setContractors(mapped);
       setLoading(false);
     } catch (err: any) {
-      console.warn("Primary contractor view failed, falling back to base tables:", err?.message);
-      const { data: base, error: baseErr } = await supabase
-        .from("contractors")
-        .select(`
-          id,
-          name,
-          phone,
-          email,
-          ooh,
-          postcode,
-          hourly_rate,
-          callout_fee,
-          notes,
-          company_id,
-          category
-        `)
-        .eq("company_id", companyId)
-        .order("name", { ascending: true });
-      if (baseErr) {
-        console.error("Error loading contractors (fallback):", baseErr?.message);
-        setError(baseErr.message);
-        setLoading(false);
-        return;
-      }
-
-      const contractorIds = (base || []).map((c: any) => c.id).filter(Boolean);
-      const { data: links } = await supabase
-        .from("contractor_sites")
-        .select("contractor_id, site_id")
-        .in("contractor_id", contractorIds);
-      const { data: sites } = await supabase
-        .from("sites")
-        .select("id, site_name")
-        .eq("company_id", companyId);
-      const { data: categories } = await supabase
-        .from("contractor_categories")
-        .select("id, name")
-        .eq("company_id", companyId);
-
-      const siteNameById: Record<string, string> = Object.fromEntries((sites || []).map((s: any) => [s.id, s.site_name]));
-      const catById: Record<string, string> = Object.fromEntries((categories || []).map((c: any) => [c.id, c.name]));
-      const linkedByContractor: Record<string, string[]> = {};
-      (links || []).forEach((l: any) => {
-        const arr = linkedByContractor[l.contractor_id] || (linkedByContractor[l.contractor_id] = []);
-        const nm = siteNameById[l.site_id];
-        if (nm) arr.push(nm);
-      });
-
-      const mapped = (base || []).map((row: any) => ({
-        id: row.id,
-        name: row.name || "(Unnamed Contractor)",
-        category: catById[row.category_id] || "—",
-        category_id: row.category_id || null,
-        email: row.email || "",
-        phone: row.phone || "",
-        postcode: row.postcode || "",
-        region: row.region || "—",
-        ooh: row.ooh || "",
-        hourly_rate: row.hourly_rate ?? null,
-        callout_fee: row.callout_fee ?? null,
-        notes: row.notes || "",
-        site_names: (linkedByContractor[row.id] || []).filter(Boolean),
-        site_count: (linkedByContractor[row.id] || []).filter(Boolean).length,
-      }));
-      mapped.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
-      setContractors(mapped);
+      console.error("Error loading contractors:", err?.message);
+      setError(err.message);
       setLoading(false);
     }
   };
@@ -174,7 +111,7 @@ export default function ContractorsPage() {
   const handleDownload = async () => {
     const { data, error } = await supabase
       .from('contractors')
-      .select('name, email, phone, ooh, hourly_rate, callout_fee, notes')
+      .select('name, email, phone, ooh_phone, hourly_rate, callout_fee, notes')
       .eq('company_id', companyId)
       .order('name', { ascending: true })
 
@@ -200,7 +137,7 @@ export default function ContractorsPage() {
       return
     }
 
-    const fields = ['name','email','phone','ooh','hourly_rate','callout_fee','notes']
+    const fields = ['name','email','phone','ooh_phone','hourly_rate','callout_fee','notes']
     const normalized = rows.map((r) => {
       const obj: Record<string, any> = {}
       for (const f of fields) obj[f] = r?.[f] ?? ''
@@ -229,7 +166,7 @@ export default function ContractorsPage() {
     try {
       const { data, error } = await supabase
         .from('contractors')
-        .select('name, email, phone, ooh, hourly_rate, callout_fee, notes')
+        .select('name, email, phone, ooh_phone, hourly_rate, callout_fee, notes')
         .eq('company_id', companyId)
         .order('name', { ascending: true })
 
@@ -296,7 +233,7 @@ export default function ContractorsPage() {
                 name: row.name || row.name || "",
                 email: row.email || null,
                 phone: row.phone || null,
-                ooh: row.ooh || row.emergency_phone || null,
+                ooh_phone: row.ooh_phone || row.ooh || row.emergency_phone || null,
                 hourly_rate: row.hourly_rate === undefined || row.hourly_rate === null || String(row.hourly_rate).trim() === "" ? null : Number(row.hourly_rate),
                 callout_fee: row.callout_fee === undefined || row.callout_fee === null || String(row.callout_fee).trim() === "" ? null : Number(row.callout_fee),
                 notes: row.notes || null,
@@ -347,11 +284,38 @@ export default function ContractorsPage() {
         onChange={handleFileChange}
       />
       {loading ? (
-        <p className="text-slate-400">Loading contractors...</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mb-4"></div>
+          <p className="text-slate-400">Loading contractors...</p>
+        </div>
       ) : error ? (
-        <p className="text-red-400">Error: {error}</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="text-red-400 mb-2">⚠️</div>
+          <p className="text-red-400 font-medium">Error loading contractors</p>
+          <p className="text-slate-400 text-sm mt-1">{error}</p>
+          <button 
+            onClick={loadContractors}
+            className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       ) : contractors.length === 0 ? (
-        <p className="text-slate-400">No contractors yet. Add one to get started.</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="text-slate-400 mb-4 text-4xl">👷</div>
+          <p className="text-slate-400 font-medium mb-2">No contractors found</p>
+          <p className="text-slate-500 text-sm mb-4">
+            {query ? `No contractors match "${query}"` : "Add your first contractor to get started"}
+          </p>
+          {!query && (
+            <button 
+              onClick={() => setOpenAdd(true)}
+              className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+            >
+              Add First Contractor
+            </button>
+          )}
+        </div>
       ) : (
         <div className="flex flex-col gap-3 w-full max-w-6xl mx-auto">
           {filtered.map((c) => (

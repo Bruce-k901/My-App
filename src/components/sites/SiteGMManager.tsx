@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/Button";
+import { updateGM } from "@/lib/updateGM";
 
 interface GM {
   id: string;
   full_name: string;
   email: string;
   phone: string;
-  home_site_id: string | null;
+  home_site: string | null;
   company_id: string;
 }
 
@@ -24,6 +25,7 @@ interface SiteGMManagerProps {
 }
 
 export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManagerProps) {
+  console.log("🔍 Rendered", "SiteGMManager");
   const [gmList, setGmList] = useState<GM[]>([]);
   const [selectedGM, setSelectedGM] = useState<GM | null>(null);
   const [currentGM, setCurrentGM] = useState<GM | null>(null);
@@ -36,8 +38,8 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
 
       const { data: gmData } = await supabase
         .from("gm_index")
-        .select("id, full_name, email, phone, home_site_id, company_id")
-        .eq("home_site_id", site.id)
+        .select("id, full_name, email, phone, home_site, company_id")
+      .eq("home_site", site.id)
         .maybeSingle();
 
       if (gmData) {
@@ -62,7 +64,7 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
           ...gm,
           email: "", // Not fetched in this phase
           phone: "", // Not fetched in this phase
-          home_site_id: null,
+          home_site: null,
           company_id: companyId
         }));
         setGmList(transformedData);
@@ -76,15 +78,14 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
     if (!selectedGM || !site?.id) return;
 
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ home_site_id: site.id })
-      .eq("id", selectedGM.id);
-
-    if (error) console.error("Error updating GM:", error.message);
-    else onSaved?.(); // trigger re-fetch after mirror refresh
-
-    setSaving(false);
+    try {
+      await updateGM(site.id, selectedGM.id);
+      onSaved?.(); // trigger re-fetch after mirror refresh
+    } catch (error) {
+      console.error("Error updating GM:", error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

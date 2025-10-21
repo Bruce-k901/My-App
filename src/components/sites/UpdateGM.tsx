@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { ChevronUp } from "lucide-react";
+import { updateGM } from "@/lib/updateGM";
 
 type GM = {
   id: string;
   full_name: string;
   email: string;
   phone?: string | null;
-  home_site_id?: string | null;
+  home_site?: string | null;
   company_id?: string | null;
 };
 
@@ -28,6 +23,7 @@ type UpdateGMProps = {
 };
 
 export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false }: UpdateGMProps) {
+  console.log("🔍 Rendered", "UpdateGM");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGM, setSelectedGM] = useState(currentGM || "");
   const [loading, setLoading] = useState(false);
@@ -41,17 +37,9 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc("update_gm_link", {
-        site_id: siteId,
-        gm_id: selectedGM,
-      });
-
-      if (error) {
-        showToast(`Error updating GM: ${error.message}`, "error");
-      } else {
-        showToast("GM updated successfully", "success");
-        setIsOpen(false); // only close the expanded section
-      }
+      await updateGM(siteId, selectedGM);
+      showToast("GM updated successfully", "success");
+      setIsOpen(false); // only close the expanded section
     } catch (err) {
       showToast("Failed to update GM", "error");
     } finally {

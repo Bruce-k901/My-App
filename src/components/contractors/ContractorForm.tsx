@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import Label from "@/components/ui/Label";
 import Select from "@/components/ui/Select";
+import { supabase } from "@/lib/supabase";
+import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
 
 // Simple UK postcode validator
 const UK_POSTCODE_REGEX = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/;
@@ -16,132 +17,260 @@ type Props = {
 
 export default function ContractorForm({ form, setForm, isEditing = false }: Props) {
   const [postcodeError, setPostcodeError] = useState("");
+  const [lookupResults, setLookupResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!form.name || form.name.length < 2) return;
+
+    const delay = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/companyEnrich?query=${encodeURIComponent(form.name)}`);
+        const data = await res.json();
+
+        if (data.website) {
+          console.log("Website found:", data.website);
+          setForm((prev) => ({
+            ...prev,
+            website: data.website,
+            address: data.address_line || prev.address,
+            postcode: data.postcode || prev.postcode,
+          }));
+        }
+      } catch (err) {
+        console.warn("Company enrich failed", err);
+      }
+    }, 500); // half-second debounce for typing
+
+    return () => clearTimeout(delay);
+  }, [form.name]);
+
+  // Auto-populate region from postcode
+  useEffect(() => {
+    if (form.postcode && isValidPostcodeForLookup(form.postcode)) {
+      const { region } = getLocationFromPostcode(form.postcode);
+      if (region && region !== form.region) {
+        setForm((prev) => ({
+          ...prev,
+          region,
+        }));
+      }
+    }
+  }, [form.postcode]);
 
   function validatePostcode(postcode: string) {
     if (!postcode) return setPostcodeError("");
     setPostcodeError(UK_POSTCODE_REGEX.test(postcode) ? "" : "Invalid UK postcode format");
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { id, value } = e.target;
-    const cleanValue = id === "postcode" ? value.toUpperCase().trim() : value;
-    setForm({ ...form, [id]: cleanValue });
-    if (id === "postcode") validatePostcode(cleanValue);
-  }
+  // Live search as user types
+  useEffect(() => {
+    if (!query || query.length < 2) {
+      setLookupResults([]);
+      return;
+    }
+
+    const delay = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/companyLookup?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        setLookupResults(data.results || []);
+      } catch (err) {
+        console.error("Lookup failed", err);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [query]);
+
+  const handleSelect = async (selected: any) => {
+    setForm((prev) => ({
+      ...prev,
+      name: selected.name,
+      postcode: selected.postcode || "",
+      address: selected.address_line || "",
+      region: selected.region || "",
+    }));
+    setLookupResults([]);
+
+    try {
+      const res = await fetch(`/api/companyEnrich?query=${encodeURIComponent(selected.name)}`);
+      const data = await res.json();
+
+      setForm((prev) => ({
+        ...prev,
+        website: data.website || prev.website,
+        address: data.address_line || prev.address,
+        postcode: data.postcode || prev.postcode,
+      }));
+    } catch (err) {
+      console.warn("Company enrich failed", err);
+    }
+  };
+
+
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-      {/* Left column - Company + Contact + Rate fields */}
-      <div className="flex flex-col gap-4">
-        <div>
-          <Label htmlFor="name" className="text-white/80">
-            Company Name <span className="text-red-400">*</span>
-          </Label>
-          <input
-            id="name"
-            value={form.name || ""}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
-          />
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+      {/* LEFT COLUMN */}
+      <div className="space-y-3">
         <div>
-          <Label htmlFor="email" className="text-white/80">Email</Label>
-          <input
-            id="email"
-            type="email"
-            value={form.email || ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="phone" className="text-white/80">Phone</Label>
-          <input
-            id="phone"
-            value={form.phone || ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="ooh" className="text-white/80">Out-of-Hours Number</Label>
-          <input
-            id="ooh"
-            value={form.ooh || ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="hourly_rate" className="text-white/80">Hourly Rate (£)</Label>
+          <label className="block text-sm font-medium text-gray-300">Company Name *</label>
+          <div className="space-y-1 relative">
             <input
-              id="hourly_rate"
+              type="text"
+              value={form.name || ""}
+              onChange={(e) => {
+                setForm({ ...form, name: e.target.value });
+                setQuery(e.target.value);
+              }}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              placeholder="Start typing company name..."
+            />
+            {loading && <div className="absolute right-3 top-8 text-xs text-gray-400">...</div>}
+
+            {lookupResults.length > 0 && (
+              <ul className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-md w-full mt-1 max-h-60 overflow-y-auto">
+                {lookupResults.map((r: any) => (
+                  <li
+                    key={r.id}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSelect(r)}
+                  >
+                    <div className="font-medium text-gray-800">{r.name}</div>
+                    {r.address_line && (
+                      <div className="text-xs text-gray-500 truncate">{r.address_line}</div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Address</label>
+          <input
+            type="text"
+            value={form.address || ""}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Postcode</label>
+            <input
+              type="text"
+              value={form.postcode || ""}
+              onChange={(e) => {
+                const cleanValue = e.target.value.toUpperCase().trim();
+                setForm({ ...form, postcode: cleanValue });
+                validatePostcode(cleanValue);
+              }}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            />
+            {postcodeError && <p className="text-red-400 text-sm mt-1">{postcodeError}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Region</label>
+            <input
+              type="text"
+              value={form.region || ""}
+              onChange={(e) => setForm({ ...form, region: e.target.value })}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Website</label>
+          <input
+            type="url"
+            placeholder="https://example.com"
+            value={form.website || ""}
+            onChange={(e) => setForm({ ...form, website: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Callout Fee (£)</label>
+            <input
               type="number"
               step="0.01"
               min="0"
-              value={form.hourly_rate || ""}
-              onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+              placeholder="0.00"
+              value={form.callout_fee || ""}
+              onChange={(e) => setForm({ ...form, callout_fee: e.target.value })}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
             />
           </div>
           <div>
-            <Label htmlFor="callout_fee" className="text-white/80">Callout Fee (£)</Label>
+            <label className="block text-sm font-medium text-gray-300">Hourly Rate (£)</label>
             <input
-              id="callout_fee"
               type="number"
               step="0.01"
               min="0"
-              value={form.callout_fee || ""}
-              onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+              placeholder="0.00"
+              value={form.hourly_rate || ""}
+              onChange={(e) => setForm({ ...form, hourly_rate: e.target.value })}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
             />
           </div>
         </div>
       </div>
 
-      {/* Right column - Category + Postcode + Notes */}
-      <div className="flex flex-col gap-4">
+      {/* RIGHT COLUMN */}
+      <div className="space-y-3">
         <ContractorCategorySelect form={form} setForm={setForm} />
 
-        <div>
-          <Label htmlFor="postcode" className="text-white/80">Postcode</Label>
-          <input
-            id="postcode"
-            value={form.postcode || ""}
-            onChange={handleChange}
-            placeholder="e.g. SW1A 1AA"
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
-          />
-          {postcodeError && <p className="text-red-400 text-sm mt-1">{postcodeError}</p>}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Telephone</label>
+            <input
+              type="text"
+              value={form.phone || ""}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">OOH Phone</label>
+            <input
+              type="text"
+              value={form.ooh_phone || ""}
+              onChange={(e) => setForm({ ...form, ooh_phone: e.target.value })}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            />
+          </div>
         </div>
 
         <div>
-          <Label htmlFor="service_description" className="text-white/80">Service Description</Label>
+          <label className="block text-sm font-medium text-gray-300">Email</label>
+          <input
+            type="email"
+            value={form.email || ""}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Service Description</label>
           <textarea
-            id="service_description"
-            value={form.service_description || ""}
-            onChange={(e) => setForm({ ...form, service_description: e.target.value })}
+            rows={5}
             placeholder="Describe the services this contractor provides..."
-            rows={3}
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none resize-none"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="website" className="text-white/80">Website</Label>
-          <input
-            id="website"
-            type="url"
-            value={form.website || ""}
-            onChange={handleChange}
-            placeholder="https://example.com"
-            className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.1] text-white placeholder:text-white/40 focus:ring-2 focus:ring-pink-500/40 focus:outline-none"
+            value={form.notes || ""}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
           />
         </div>
 
@@ -191,23 +320,17 @@ function ContractorCategorySelect({
 
   return (
     <div>
-      <Label htmlFor="category" className="text-white/80">
-        Category <span className="text-red-400">*</span>
-      </Label>
-      <Select
-        value={form.category || ""}
-        options={categories.map((c) => ({ label: c.name, value: c.name }))}
-        onValueChange={(value) => setForm({ ...form, category: value })}
-        placeholder={
-          loading
-            ? "Loading categories..."
-            : categories.length === 0
-            ? "No categories available"
-            : "Select category"
-        }
-        disabled={loading}
-        className="mt-1"
-      />
+      <label className="block text-sm font-medium text-gray-300">Category *</label>
+      <select
+        value={form.category_id || ""}
+        onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+        className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+      >
+        <option value="">Select category</option>
+        {categories.map((c) => (
+          <option key={c.id} value={c.id}>{c.name}</option>
+        ))}
+      </select>
     </div>
   );
 }

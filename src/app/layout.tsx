@@ -19,6 +19,15 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  // Filter console spam in development
+  if (process.env.NODE_ENV === "development") {
+    const originalLog = console.log;
+    console.log = (...args) => {
+      if (args[0]?.toString().includes("GoTrueClient")) return;
+      originalLog(...args);
+    };
+  }
+
   return (
     <html lang="en" className={manrope.variable}>
       <body className="bg-neutral-950 text-white font-sans">

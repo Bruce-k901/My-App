@@ -8,7 +8,7 @@ export interface ArchivedUser {
   position_title: string | null;
   company_id: string | null;
   site_id: string | null;
-  home_site_id?: string | null;
+  home_site?: string | null;
   boh_foh?: string | null;
   phone_number?: string | null;
   pin_code?: string | null;

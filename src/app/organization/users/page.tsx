@@ -18,7 +18,7 @@ type ProfileRow = {
   full_name: string | null;
   company_id: string | null;
   site_id: string | null;
-  home_site_id: string | null; // Fixed: use home_site_id as the actual column name
+  home_site: string | null; // Fixed: use home_site as the actual column name
   app_role: string | null;
   position_title: string | null;
   boh_foh: string | null;
@@ -143,7 +143,7 @@ export default function OrganizationUsersPage() {
         supabase
           .from("profiles")
           .select(
-            "id,email,full_name,company_id,site_id,home_site_id,app_role,position_title,boh_foh,last_login,pin_code,phone_number"
+            "id,email,full_name,company_id,site_id,home_site,app_role,position_title,boh_foh,last_login,pin_code,phone_number"
           )
           .eq("company_id", companyId),
         supabase.from("sites").select("id,name").eq("company_id", companyId),
@@ -183,7 +183,7 @@ export default function OrganizationUsersPage() {
         p.email ?? "",
         p.app_role ?? "",
         p.position_title ?? "",
-        siteNameById[p.home_site_id ?? p.site_id ?? ""] ?? "",
+        siteNameById[p.home_site ?? p.site_id ?? ""] ?? "",
       ].map((x) => x.toLowerCase());
       return vals.some((v) => v.includes(q));
     });
@@ -197,7 +197,7 @@ export default function OrganizationUsersPage() {
       email: row.email ?? "",
       app_role: row.app_role ?? "",
       position_title: row.position_title ?? "",
-      home_site: row.home_site_id ?? row.site_id ?? "", // Use UUID directly for dropdown
+      home_site: row.home_site ?? row.site_id ?? "", // Use UUID directly for dropdown
       pin_code: row.pin_code ?? "",
       boh_foh: normBohFoh(row.boh_foh) ?? "",
       phone_number: row.phone_number ?? "",
@@ -215,7 +215,7 @@ export default function OrganizationUsersPage() {
         phone_number: editForm.phone_number?.trim() || null, 
         app_role: editForm.app_role,                // "Owner" | "Admin" | "Manager" | "Staff" 
         position_title: editForm.position_title || null, 
-        home_site_id: editForm.home_site || null,   // UUID from dropdown 
+        home_site: editForm.home_site || null,   // UUID from dropdown 
         pin_code: editForm.pin_code || null,        // PIN code
       }; 
       
@@ -301,7 +301,7 @@ export default function OrganizationUsersPage() {
         email: newUser.email || null,
         role: normRole(newUser.app_role) || newUser.app_role || null,
         position_title: newUser.position_title || null,
-        home_site_id: homeId,
+        home_site: homeId,
         site_id: homeId, // sync on create too
         boh_foh: normBohFoh(newUser.boh_foh),
         pin_code: newUser.pin_code || null,
@@ -517,7 +517,7 @@ export default function OrganizationUsersPage() {
       u.email || "",
       u.app_role || "",
       u.position_title || "",
-      siteNameById[u.home_site_id ?? u.site_id ?? ""] || "",
+      siteNameById[u.home_site ?? u.site_id ?? ""] || "",
       u.last_login ? new Date(u.last_login).toISOString() : "",
     ]);
     const csv = [headers, ...rows]
@@ -747,7 +747,7 @@ export default function OrganizationUsersPage() {
                <p className="text-slate-400">No users found.</p>
              ) : (
                filtered.map((p) => {
-                 const homeName = siteNameById[p.home_site_id ?? p.site_id ?? ""] || "Unassigned";
+                 const homeName = siteNameById[p.home_site ?? p.site_id ?? ""] || "Unassigned";
                  const subtitle = [
                    p.email,
                    p.phone_number,

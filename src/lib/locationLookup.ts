@@ -51,6 +51,124 @@ export function isValidPostcodeForLookup(postcode: string): boolean {
 }
 
 /**
+ * Derives region from postcode prefix for Companies House API integration
+ * @param postcode - The postcode to derive region from
+ * @returns string region name or "Unknown" if not found
+ */
+export function deriveRegionFromPostcode(postcode: string = "") {
+  const prefix = postcode.trim().split(" ")[0].toUpperCase();
+
+  const regions: Record<string, string> = {
+    // London & Southeast
+    E: "London",
+    EC: "London",
+    WC: "London",
+    N: "London",
+    NW: "London",
+    W: "London",
+    SW: "London",
+    SE: "London",
+    EN: "London",
+    IG: "London",
+    RM: "London",
+    BR: "London",
+    CR: "London",
+    DA: "London",
+    HA: "London",
+    KT: "London",
+    SM: "London",
+    TW: "London",
+    UB: "London",
+    WD: "London",
+
+    // South East & South
+    GU: "South East",
+    RH: "South East",
+    TN: "South East",
+    BN: "South East",
+    PO: "South East",
+    SO: "South East",
+    RG: "South East",
+    SL: "South East",
+    ME: "South East",
+    CT: "South East",
+    OX: "South East",
+    HP: "South East",
+    LU: "South East",
+
+    // South West
+    BS: "South West",
+    BA: "South West",
+    TR: "South West",
+    PL: "South West",
+    TA: "South West",
+    EX: "South West",
+    TQ: "South West",
+
+    // Midlands
+    B: "West Midlands",
+    CV: "West Midlands",
+    DY: "West Midlands",
+    WS: "West Midlands",
+    WV: "West Midlands",
+    NG: "East Midlands",
+    LE: "East Midlands",
+    DE: "East Midlands",
+    LN: "East Midlands",
+
+    // North
+    M: "North West",
+    L: "North West",
+    CH: "North West",
+    WA: "North West",
+    BL: "North West",
+    BB: "North West",
+    PR: "North West",
+    FY: "North West",
+    OL: "North West",
+    SK: "North West",
+    HX: "North West",
+    HD: "North West",
+    WF: "Yorkshire",
+    LS: "Yorkshire",
+    YO: "Yorkshire",
+    HU: "Yorkshire",
+    DN: "Yorkshire",
+
+    // North East
+    NE: "North East",
+    SR: "North East",
+    DH: "North East",
+    DL: "North East",
+    TS: "North East",
+
+    // Scotland
+    G: "Scotland",
+    EH: "Scotland",
+    FK: "Scotland",
+    KY: "Scotland",
+    AB: "Scotland",
+    DD: "Scotland",
+    IV: "Scotland",
+    PH: "Scotland",
+    KW: "Scotland",
+    HS: "Scotland",
+
+    // Wales
+    CF: "Wales",
+    NP: "Wales",
+    SA: "Wales",
+    LL: "Wales",
+
+    // Northern Ireland
+    BT: "Northern Ireland",
+  };
+
+  const found = Object.entries(regions).find(([k]) => prefix.startsWith(k));
+  return found ? found[1] : "Unknown";
+}
+
+/**
  * Formats a postcode to standard UK format (uppercase with single space)
  * @param postcode - The postcode to format
  * @returns Formatted postcode string

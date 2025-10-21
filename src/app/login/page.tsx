@@ -10,6 +10,22 @@ import { Input, Button } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
 import { handlePostLogin } from "@/lib/auth";
 
+async function preloadDashboardData() {
+  const preloadQueries = [
+    supabase.from("sites").select("*"),
+    supabase.from("assets").select("*"),
+    supabase.from("contractors").select("*"),
+    supabase.from("profiles").select("*")
+  ];
+
+  try {
+    const results = await Promise.all(preloadQueries);
+    sessionStorage.setItem("checkly-preload", JSON.stringify(results));
+  } catch (err) {
+    console.warn("Preload failed", err);
+  }
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -33,6 +49,9 @@ export default function LoginPage() {
         setError(signInError.message || "Login failed. Please check your credentials.");
         return;
       }
+      
+      // Trigger background preload for dashboard data
+      await preloadDashboardData();
       
       // Use the proper post-login flow to handle user setup and routing
       const userId = data?.user?.id;
