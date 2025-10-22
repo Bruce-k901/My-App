@@ -8,7 +8,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 2. **Add real Supabase credentials**
 3. **Restart local server (`npm run dev`)**
 4. **Never commit `.env.local`**
-5. **Ensure Vercel Environment Variables are up to date**
 
 ### Required Environment Variables
 
@@ -51,29 +50,6 @@ SENDGRID_KEY=your_sendgrid_api_key
    npm run dev
    ```
 
-### Production Deployment (Vercel)
-
-For production builds, add the same environment variables in:
-**Vercel → Project → Settings → Environment Variables**
-
-Set variables for both **Production** and **Preview** environments.
-
-### Version Tagging with Environment Context
-
-When creating stable releases, include environment variable documentation:
-
-```bash
-git tag -a v1.0.0 -m "
-Stable release v1.0.0
-Required env vars:
-- NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY  
-- SUPABASE_SERVICE_ROLE_KEY
-- COMPANIES_HOUSE_KEY
-"
-git push origin v1.0.0
-```
-
 ## Getting Started
 
 First, run the development server:
@@ -92,7 +68,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load fonts.
 
 ## Learn More
 
@@ -102,12 +78,6 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ## Notifications & Digest
 

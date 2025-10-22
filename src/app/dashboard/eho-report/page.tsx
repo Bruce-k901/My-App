@@ -42,7 +42,7 @@ export default function EHOReportPage() {
       }
     }
     // Only enforce role-based restriction when the feature flag is enabled
-    if (isRoleGuardEnabled() && role && role !== "admin" && role !== "manager") {
+    if (isRoleGuardEnabled() && role && role !== "Admin" && role !== "Manager") {
       setError("You do not have permission to view this report.");
       setLoading(false);
       return;

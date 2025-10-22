@@ -5,7 +5,8 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AppContextProvider } from "@/context/AppContext";
 import Footer from "@/components/layouts/Footer";
-import ClientAuthProvider from "@/components/ClientAuthProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import RouteLogger from "@/components/RouteLogger";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -19,7 +20,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // Filter console spam in development
+  // kill GoTrueClient spam in dev logs
   if (process.env.NODE_ENV === "development") {
     const originalLog = console.log;
     console.log = (...args) => {
@@ -34,9 +35,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <QueryProvider>
           <ToastProvider>
             <AppContextProvider>
-              <ClientAuthProvider />
-              {children}
-              <Footer />
+              {/* Auth provider wraps the actual app tree */}
+              <AuthProvider>
+                <RouteLogger />
+                {children}
+                <Footer />
+              </AuthProvider>
             </AppContextProvider>
           </ToastProvider>
         </QueryProvider>

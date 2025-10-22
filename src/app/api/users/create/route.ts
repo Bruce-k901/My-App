@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       email,
       company_id,
       site_id,
-      role,
+      app_role,
       position_title,
       boh_foh,
       phone_number,
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       email,
       company_id,
       site_id,
-      role,
+      app_role,
       position_title,
       boh_foh,
       phone_number,
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const newUserId = crypto.randomUUID();
     console.log("🟢 Generated local user ID:", newUserId);
 
-    const roleValue = String(role || "staff").toLowerCase();
+    const roleValue = String(app_role || "staff").toLowerCase();
 
     const { error: insertError } = await admin.from("profiles").insert({
       id: newUserId,
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       email: String(email).toLowerCase(),
       company_id,
       site_id: site_id ?? null,
-      role: roleValue,
+      app_role: roleValue,
       position_title: position_title ?? null,
       boh_foh: boh_foh ?? null,
       phone_number: phone_number ?? null,

@@ -1,0 +1,75 @@
+Frontend Table Names Found:
+=============================
+
+Core Tables:
+- sites
+- assets
+- contractors
+- profiles
+- companies
+- tasks
+- incidents
+- temperature_logs
+- notifications
+- archived_assets
+- ppm_schedules (fixed from ppm_schedule)
+
+PPM Related:
+- ppm_schedule (found in PPMDrawer.tsx and ppm.ts - NEEDS FIXING)
+- ppm_service_events
+- ppm_history
+
+Task Related:
+- task_events
+- task_photos (storage)
+- checklist_items
+- checklist_templates
+- site_checklists
+
+Maintenance/Compliance:
+- maintenance_logs
+- breakdowns
+- incident_reports
+- incident_photos (storage)
+
+EHO/Compliance:
+- policies
+- risk_assessments
+- coshh_register
+
+Settings/Config:
+- profile_settings
+- user_roles
+- gm_index
+- site_closures
+
+Storage Buckets:
+- certificates (storage)
+- company_logos (storage)
+- global_docs (storage)
+- reports (storage)
+
+Library/Templates:
+- task_library
+- contractor_categories
+
+Documents:
+- global_documents
+- global_docs (storage)
+
+Archive:
+- archived_users
+
+Uptime:
+- asset_uptime_report
+
+POTENTIAL MISMATCHES TO CHECK:
+==============================
+1. ppm_schedule (in PPMDrawer.tsx, ppm.ts) - should be ppm_schedules
+2. incident_reports vs incidents - check if both exist
+3. global_documents vs global_docs - check consistency
+4. maintenance_logs - verify table exists
+5. breakdowns - verify table exists
+6. policies, risk_assessments, coshh_register - verify these exist
+7. asset_uptime_report - verify this exists
+8. ppm_history - verify this exists

@@ -18,7 +18,7 @@ type SiteFormProps = {
 export default function SiteFormNew({ open, onClose, onSaved, initial, companyId, gmList }: SiteFormProps) {
   console.log("🔥 SITEFORMNEW - Component called with props:", { open, companyId, initial });
   
-  const [gmListState, setGmListState] = useState([]);
+  const [gmListState, setGmListState] = useState<Array<{id: any; full_name: any; email: any; phone: any; home_site: any; position_title: any;}>>([]);
 
   useEffect(() => {
     if (!open || !companyId) return;

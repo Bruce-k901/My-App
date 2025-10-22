@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AuthLayout } from "@/components/layouts";
 import GlassCard from "@/components/ui/GlassCard";
 import { supabase } from "@/lib/supabase";
-import { handlePostLogin } from "@/lib/auth";
+import { redirectToDashboard } from "@/lib/auth";
 import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
 
 export default function ResetPasswordPage() {
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
       setTimeout(async () => {
         const { data } = await supabase.auth.getUser();
         const userId = data?.user?.id;
-        if (userId) await handlePostLogin(userId, router);
+        if (userId) redirectToDashboard(router);
         else router.replace("/dashboard");
       }, 1200);
     }

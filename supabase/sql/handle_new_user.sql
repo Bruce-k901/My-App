@@ -7,7 +7,7 @@ security definer set search_path = public
 as $$
 begin
   -- Create a profile record for the new user
-  insert into public.profiles (id, email, full_name, role, position_title)
+  insert into public.profiles (id, email, full_name, app_role, position_title)
   values (
     new.id,
     new.email,

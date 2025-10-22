@@ -25,8 +25,8 @@ export default function RoleHeader() {
   const items = isRoleGuardEnabled()
     ? [
         ...common,
-        ...(role === "manager" || role === "admin" ? compliance : []),
-        ...(role === "admin" ? admin : []),
+        ...(role === "Manager" || role === "Admin" ? compliance : []),
+        ...(role === "Admin" ? admin : []),
       ]
     : [...common, ...compliance, ...admin];
 

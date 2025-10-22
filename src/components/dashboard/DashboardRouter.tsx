@@ -15,7 +15,7 @@ type Preload = Record<string, any>;
 
 async function preloadData(role: string, companyId: string, siteId?: string | null): Promise<Preload> {
   switch (role) {
-    case "staff": {
+    case "Staff": {
       const [{ data: tasks }, { data: incidents }, { data: temperature }] = await Promise.all([
         supabase.from("tasks").select("*").eq("site_id", siteId ?? ""),
         supabase.from("incidents").select("*").eq("site_id", siteId ?? ""),
@@ -23,14 +23,14 @@ async function preloadData(role: string, companyId: string, siteId?: string | nu
       ]);
       return { tasks: tasks ?? [], incidents: incidents ?? [], temperature: temperature ?? [] };
     }
-    case "manager": {
+    case "Manager": {
       const [{ data: siteTasks }, { data: maintenance }] = await Promise.all([
         supabase.from("tasks").select("*").eq("site_id", siteId ?? ""),
         supabase.from("maintenance_logs").select("*").eq("site_id", siteId ?? ""),
       ]);
       return { siteTasks: siteTasks ?? [], maintenance: maintenance ?? [] };
     }
-    case "admin": {
+    case "Admin": {
       const [{ data: sites }, { data: reports }] = await Promise.all([
         supabase.from("sites").select("id, name").eq("company_id", companyId),
         supabase.from("incidents").select("*").eq("company_id", companyId),
@@ -46,7 +46,7 @@ export default function DashboardRouter() {
   const router = useRouter();
   const { showToast } = useToast();
   const [ready, setReady] = useState(false);
-  const [role, setRole] = useState<string>("staff");
+  const [role, setRole] = useState<string>("Staff");
   const [preload, setPreload] = useState<Preload>({});
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function DashboardRouter() {
       try {
         const { profile, company, site } = await getUserContext();
         // Setup pages have been retired - skip setup status checks
-        setRole(profile.app_role || "staff");
+        setRole(profile.app_role || "Staff");
         const data = await preloadData(profile.app_role, company.id, site?.id ?? null);
         if (!alive) return;
         setPreload(data);

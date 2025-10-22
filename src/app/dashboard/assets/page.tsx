@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import SiteSelector from "@/components/ui/SiteSelector";
 import Link from "next/link";
 import { Plus, Upload, Download } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Asset = {
   id: string;
@@ -36,21 +37,17 @@ type Asset = {
 
 export default function AssetsPage() {
   const { profile, loading: ctxLoading } = useAppContext();
+  const { user, loading: authLoading } = useAuth();
+  
+  // Wait for auth to load before proceeding
+  if (authLoading) return null;
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<Asset | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
-
-  useEffect(() => {
-    (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      setUserId(userRes?.user?.id || null);
-    })();
-  }, []);
 
   const fetchAssets = async () => {
     console.log("Fetching assets...");

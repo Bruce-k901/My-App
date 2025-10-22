@@ -34,7 +34,7 @@ async function debugAuthState() {
     console.log('\n2️⃣ Checking user profile...');
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, email, full_name, company_id, site_id, role, position_title, boh_foh, last_login, pin_code')
+      .select('id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code')
       .eq('id', session.user.id)
       .single();
     

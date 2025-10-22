@@ -9,6 +9,14 @@ import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locatio
 // Simple UK postcode validator
 const UK_POSTCODE_REGEX = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/;
 
+interface LookupResult {
+  id: string;
+  name: string;
+  address_line?: string;
+  postcode?: string;
+  website?: string;
+}
+
 type Props = {
   form: any;
   setForm: (form: any) => void;
@@ -17,7 +25,7 @@ type Props = {
 
 export default function ContractorForm({ form, setForm, isEditing = false }: Props) {
   const [postcodeError, setPostcodeError] = useState("");
-  const [lookupResults, setLookupResults] = useState([]);
+  const [lookupResults, setLookupResults] = useState<LookupResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -31,14 +39,14 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
         if (data.website) {
           console.log("Website found:", data.website);
-          setForm((prev) => ({
+          setForm((prev: any) => ({
             ...prev,
             website: data.website,
             address: data.address_line || prev.address,
             postcode: data.postcode || prev.postcode,
           }));
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn("Company enrich failed", err);
       }
     }, 500); // half-second debounce for typing
@@ -51,7 +59,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
     if (form.postcode && isValidPostcodeForLookup(form.postcode)) {
       const { region } = getLocationFromPostcode(form.postcode);
       if (region && region !== form.region) {
-        setForm((prev) => ({
+        setForm((prev: any) => ({
           ...prev,
           region,
         }));
@@ -59,12 +67,32 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
     }
   }, [form.postcode]);
 
-  function validatePostcode(postcode: string) {
-    if (!postcode) return setPostcodeError("");
-    setPostcodeError(UK_POSTCODE_REGEX.test(postcode) ? "" : "Invalid UK postcode format");
-  }
+  const handleSelect = (result: LookupResult) => {
+    setForm({
+      ...form,
+      name: result.name,
+      address: result.address_line || form.address,
+      postcode: result.postcode || form.postcode,
+      website: result.website || form.website,
+    });
+    setLookupResults([]);
+    setQuery("");
+  };
 
-  // Live search as user types
+  const validatePostcode = (postcode: string) => {
+    if (!postcode) {
+      setPostcodeError("");
+      return;
+    }
+
+    const cleanPostcode = postcode.replace(/\s+/g, " ").toUpperCase();
+    if (!UK_POSTCODE_REGEX.test(cleanPostcode)) {
+      setPostcodeError("Please enter a valid UK postcode");
+    } else {
+      setPostcodeError("");
+    }
+  };
+
   useEffect(() => {
     if (!query || query.length < 2) {
       setLookupResults([]);
@@ -77,42 +105,15 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         const res = await fetch(`/api/companyLookup?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         setLookupResults(data.results || []);
-      } catch (err) {
-        console.error("Lookup failed", err);
+      } catch (err: any) {
+        console.warn("Lookup failed", err);
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 400); // debounce
 
     return () => clearTimeout(delay);
   }, [query]);
-
-  const handleSelect = async (selected: any) => {
-    setForm((prev) => ({
-      ...prev,
-      name: selected.name,
-      postcode: selected.postcode || "",
-      address: selected.address_line || "",
-      region: selected.region || "",
-    }));
-    setLookupResults([]);
-
-    try {
-      const res = await fetch(`/api/companyEnrich?query=${encodeURIComponent(selected.name)}`);
-      const data = await res.json();
-
-      setForm((prev) => ({
-        ...prev,
-        website: data.website || prev.website,
-        address: data.address_line || prev.address,
-        postcode: data.postcode || prev.postcode,
-      }));
-    } catch (err) {
-      console.warn("Company enrich failed", err);
-    }
-  };
-
-
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -136,7 +137,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
             {lookupResults.length > 0 && (
               <ul className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-md w-full mt-1 max-h-60 overflow-y-auto">
-                {lookupResults.map((r: any) => (
+                {lookupResults.map((r) => (
                   <li
                     key={r.id}
                     className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
@@ -154,39 +155,21 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Address</label>
+          <label className="block text-sm font-medium text-gray-300">Postcode</label>
           <input
             type="text"
-            value={form.address || ""}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            value={form.postcode || ""}
+            onChange={(e) => {
+              const value = e.target.value.toUpperCase();
+              setForm({ ...form, postcode: value });
+              validatePostcode(value);
+            }}
+            className={`w-full rounded-md border px-2 py-1 text-white ${
+              postcodeError ? "border-red-500 bg-red-900/20" : "border-gray-600 bg-gray-800"
+            }`}
+            placeholder="SW1A 1AA"
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Postcode</label>
-            <input
-              type="text"
-              value={form.postcode || ""}
-              onChange={(e) => {
-                const cleanValue = e.target.value.toUpperCase().trim();
-                setForm({ ...form, postcode: cleanValue });
-                validatePostcode(cleanValue);
-              }}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-            />
-            {postcodeError && <p className="text-red-400 text-sm mt-1">{postcodeError}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Region</label>
-            <input
-              type="text"
-              value={form.region || ""}
-              onChange={(e) => setForm({ ...form, region: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-            />
-          </div>
+          {postcodeError && <p className="text-red-400 text-xs mt-1">{postcodeError}</p>}
         </div>
 
         <div>
@@ -273,64 +256,32 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
           />
         </div>
-
-        {isEditing && (form.created_at || form.updated_at) && (
-          <div className="text-xs text-white/60 space-y-1">
-            {form.created_at && <div>Created: {new Date(form.created_at).toLocaleDateString()}</div>}
-            {form.updated_at && <div>Updated: {new Date(form.updated_at).toLocaleDateString()}</div>}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
-/* ---------------------------------------------------- */
-/* CATEGORY SELECT (GLOBAL, NO COMPANY FILTER) */
-function ContractorCategorySelect({
-  form,
-  setForm,
-}: {
-  form: any;
-  setForm: (form: any) => void;
-}) {
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+// Contractor Category Select Component
+function ContractorCategorySelect({ form, setForm }: { form: any; setForm: (form: any) => void }) {
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    async function loadCategories() {
-      try {
-        const { data, error } = await supabase
-          .from("contractor_categories")
-          .select("id, name")
-          .order("name");
-
-        if (error) throw error;
-        setCategories(data || []);
-      } catch (err) {
-        console.warn("Failed to load categories:", err);
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCategories();
+    const fetchCategories = async () => {
+      const { data } = await supabase.from("contractor_categories").select("*").order("name");
+      setCategories(data || []);
+    };
+    fetchCategories();
   }, []);
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300">Category *</label>
-      <select
-        value={form.category_id || ""}
-        onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-        className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-      >
-        <option value="">Select category</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>{c.name}</option>
-        ))}
-      </select>
+      <Label htmlFor="category">Category</Label>
+      <Select
+        value={form.category || ""}
+        onValueChange={(value: string) => setForm({ ...form, category: value })}
+        options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
+        placeholder="Select category"
+      />
     </div>
   );
 }

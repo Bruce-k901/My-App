@@ -3,29 +3,22 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function WelcomeHeader() {
-  const [time, setTime] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("");
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [firstName, setFirstName] = useState("");
+  const { user, companyId } = useAuth();
 
-  // Remove: const supabase = createClientComponentClient();
+  const tick = () => setCurrentTime(new Date());
 
   useEffect(() => {
-    const tick = () => {
-      setTime(format(new Date(), "HH:mm:ss"));
-      setDate(format(new Date(), "EEEE, d MMMM yyyy"));
-    };
-    tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     async function fetchUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user) return;
       const { data: profile } = await supabase
         .from("profiles")
@@ -35,14 +28,14 @@ export default function WelcomeHeader() {
       if (profile?.full_name) setFirstName(profile.full_name.split(" ")[0]);
     }
     fetchUser();
-  }, []);
+  }, [user]);
 
   return (
     <div className="text-white">
       {/* Centered Clock */}
       <div className="w-full flex justify-center mb-2">
         <div className="font-mono text-2xl tracking-widest text-pink-400 text-center">
-          {time}
+          {format(currentTime, "HH:mm:ss")}
         </div>
       </div>
       {/* Welcome + Date below */}
@@ -51,7 +44,7 @@ export default function WelcomeHeader() {
           <h1 className="text-3xl font-semibold">
             Welcome{firstName ? `, ${firstName}` : ""}
           </h1>
-          <p className="text-white/60 text-sm md:text-base">{date}</p>
+          <p className="text-white/60 text-sm md:text-base">{format(currentTime, "EEEE, d MMMM yyyy")}</p>
         </div>
       </div>
     </div>

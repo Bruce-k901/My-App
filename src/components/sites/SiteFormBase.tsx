@@ -391,7 +391,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   };
 
   const handleGMChange = (gmId: string) => {
-    const selectedGM = gmList.find(gm => gm.id === gmId);
+    const selectedGM = gmList?.find(gm => gm.id === gmId);
     if (selectedGM) {
       setFormData(prev => ({
         ...prev,
@@ -416,7 +416,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       console.log("Save button clicked", formData.id, formData.gm_user_id);
       console.log("Saving GM", formData.id, formData.gm_user_id);
       
-      await updateGM(formData.id, formData.gm_user_id);
+      if (formData.gm_user_id && formData.id) {
+        await updateGM(formData.id, formData.gm_user_id);
+      }
 
       showToast("GM saved and synced", "success");
       setGmEditMode(false);
@@ -1011,7 +1013,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             <div className="flex gap-2 items-center mb-3">
               <DatePicker
                 selected={newClosure.start ? new Date(newClosure.start) : null}
-                onChange={(date) => setNewClosure(prev => ({
+                onChange={(date: Date | null) => setNewClosure(prev => ({
                   ...prev,
                   start: date?.toISOString().split("T")[0] || ""
                 }))}
@@ -1023,7 +1025,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
               <DatePicker
                 selected={newClosure.end ? new Date(newClosure.end) : null}
-                onChange={(date) => setNewClosure(prev => ({
+                onChange={(date: Date | null) => setNewClosure(prev => ({
                   ...prev,
                   end: date?.toISOString().split("T")[0] || ""
                 }))}

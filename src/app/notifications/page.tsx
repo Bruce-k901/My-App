@@ -84,7 +84,7 @@ function NotificationsInner() {
         .order("created_at", { ascending: false })
         .limit(limit);
       // For non-admin roles, prefer site-scoped view if available
-      if (siteId && role !== "admin") q = q.eq("site_id", siteId);
+      if (siteId && role !== "Admin") q = q.eq("site_id", siteId);
       const { data } = await q;
       if (!mounted) return;
       setItems((data || []) as Notification[]);

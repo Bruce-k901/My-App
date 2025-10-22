@@ -51,14 +51,14 @@ function SitesContent() {
       try {
         const { data } = await supabase.from("sites").select("*").eq("company_id", companyId);
         const loaded = data || [];
-        setSites(role === "admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
+        setSites(role === "Admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
       } catch {}
       try {
         const { data: profs } = await supabase
           .from("profiles")
           .select("id, email, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
           .eq("company_id", companyId);
-        setManagers((profs || []).filter((p: any) => p.role === "manager"));
+        setManagers((profs || []).filter((p: any) => p.app_role === "Manager"));
       } catch {}
       setFormOpen(!sites || sites.length === 0);
     })();
@@ -137,7 +137,7 @@ function SitesContent() {
       setPhone("");
       const { data: sitesRes } = await supabase.from("sites").select("*").eq("company_id", companyId);
       const loaded = sitesRes || [];
-      setSites(role === "admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
+      setSites(role === "Admin" ? loaded : siteId ? loaded.filter((s: any) => s.id === siteId) : loaded);
       await refresh();
       if (continueNext) router.push("/setup/team");
     } catch (err: any) {
@@ -154,7 +154,7 @@ function SitesContent() {
       <h2 className="text-xl font-semibold mb-2 text-center">Add your sites</h2>
       <p className="text-slate-300 mb-6 text-center">Each site can have its own checklists, team, and equipment.</p>
 
-      {role === "admin" && (
+      {role === "Admin" && (
         <div className="mb-4">
           <button className="btn-glass" onClick={() => setFormOpen((o) => !o)}>
             {formOpen ? "Hide Form" : "+ Add Site"}
@@ -162,7 +162,7 @@ function SitesContent() {
         </div>
       )}
 
-      {role === "admin" && formOpen && (
+      {role === "Admin" && formOpen && (
         <form onSubmit={(e) => submit(e)} className="space-y-3 rounded-lg border border-neutral-800 p-4 bg-[#0f1220]">
           <input className="input" placeholder="Site name" value={name} onChange={(e) => setName(e.target.value)} />
           <textarea className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
@@ -211,7 +211,7 @@ function SitesContent() {
                   <p className="text-xs text-slate-400">{s.address}</p>
                   <p className="text-xs text-slate-400">Status: {s.active === false ? "Inactive" : "Active"} • TZ: {s.timezone} • Open {s.open_time} → Close {s.close_time}</p>
                 </div>
-                {role === "admin" && (
+                {role === "Admin" && (
                   <div className="flex items-center gap-2">
                     <button className="btn-glass" onClick={() => {
                       setEditingId(s.id);
@@ -229,7 +229,7 @@ function SitesContent() {
                         await supabase.from("sites").delete().eq("id", s.id);
                         const { data: sitesRes } = await supabase.from("sites").select("*").eq("company_id", companyId);
                         const loaded = sitesRes || [];
-                        setSites(role === "admin" ? loaded : siteId ? loaded.filter((x: any) => x.id === siteId) : loaded);
+                        setSites(role === "Admin" ? loaded : siteId ? loaded.filter((x: any) => x.id === siteId) : loaded);
                       } catch {}
                     }}>Delete</button>
                   </div>

@@ -4,7 +4,7 @@ export interface ArchivedUser {
   auth_user_id: string | null;
   full_name: string | null;
   email: string | null;
-  role?: string | null;
+  app_role?: 'Admin' | 'Manager' | 'Staff' | 'Owner' | 'General Manager' | null;
   position_title: string | null;
   company_id: string | null;
   site_id: string | null;

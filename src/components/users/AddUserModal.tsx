@@ -123,7 +123,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         pin_code: form.pin_code,
         company_id: companyId,
         site_id: form.site_id ?? selectedSiteId ?? siteId ?? null,
-        role: normRole(form.app_role) || form.app_role,
+        app_role: normRole(form.app_role) || form.app_role,
         position_title: form.position_title,
         boh_foh: form.boh_foh,
       };

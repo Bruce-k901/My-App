@@ -62,7 +62,7 @@ export default function OrganizationSitesPage() {
           .from("profiles")
           .select("id, full_name, email, app_role, position_title, site_id, company_id")
           .eq("company_id", profile.company_id)
-          .or("position_title.ilike.%manager%,role.ilike.%manager%")
+          .or("position_title.ilike.%manager%,app_role.ilike.%manager%")
       ]);
 
       if (siteRes.error) throw siteRes.error;

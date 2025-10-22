@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 const countryList = [
   "United Kingdom",
@@ -48,6 +49,7 @@ type Company = {
 
 export default function BusinessDetailsTab() {
   const { company: contextCompany, setCompany, profile } = useAppContext();
+  const { user, companyId } = useAuth();
   const [form, setForm] = useState<Company>(contextCompany || {});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -62,8 +64,6 @@ export default function BusinessDetailsTab() {
         return;
       }
 
-      const { data: userRes } = await supabase.auth.getUser();
-      const user = userRes?.user || null;
       if (!user) {
         setLoading(false);
         return;

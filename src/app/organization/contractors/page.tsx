@@ -41,7 +41,11 @@ export default function ContractorsPage() {
   const [uploading, setUploading] = useState(false);
 
   const loadContractors = async () => {
-    if (!companyId) return;
+    console.log("🔍 DEBUG ContractorsPage - loadContractors called with companyId:", companyId);
+    if (!companyId) {
+      console.log("🔍 DEBUG ContractorsPage - no companyId, returning early");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -92,6 +96,7 @@ export default function ContractorsPage() {
   };
 
   useEffect(() => {
+    console.log("🔍 DEBUG ContractorsPage - useEffect triggered with companyId:", companyId);
     if (companyId) loadContractors();
   }, [companyId]);
 
@@ -181,7 +186,7 @@ export default function ContractorsPage() {
         newline: '\r\n'
       })
 
-      const blob = new Blob(['\uFEFF' + csvText], { type: 'text/csv;charset=utf-8;' })
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.style.display = 'none'

@@ -52,7 +52,7 @@ function IncidentsList() {
       if (!companyId) return;
       setLoading(true);
       let q = supabase.from("incidents").select("*").eq("company_id", companyId);
-      if (siteId && role !== "admin") q = q.eq("site_id", siteId);
+      if (siteId && role !== "Admin") q = q.eq("site_id", siteId);
       if (status && status !== "all") q = q.eq("status", status);
       if (severity && severity !== "all") q = q.eq("severity", severity);
       if (startDate) q = q.gte("created_at", `${startDate}T00:00:00Z`);

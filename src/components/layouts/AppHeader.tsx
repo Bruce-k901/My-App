@@ -67,7 +67,7 @@ function NotificationBell() {
         .eq("company_id", companyId)
         .eq("status", "active")
         .order("created_at", { ascending: false });
-      if (siteId && role !== "admin") base = base.eq("site_id", siteId);
+      if (siteId && role !== "Admin") base = base.eq("site_id", siteId);
       const [{ data: unseenRes }, { data: latestRes }] = await Promise.all([
         base.eq("seen", false).select("id"),
         base.limit(limit),

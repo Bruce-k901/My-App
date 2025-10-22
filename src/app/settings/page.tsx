@@ -125,7 +125,7 @@ function SettingsInner() {
       <p className="text-sm text-slate-400 mb-6">Control notifications and company branding.</p>
 
       {/* Branding (admins only) */}
-      {role === "admin" && (
+      {role === "Admin" && (
         <div className="space-y-4 mb-8 p-4 rounded border border-neutral-800 bg-[#0f1220]">
           <div className="flex items-center justify-between">
             <div>

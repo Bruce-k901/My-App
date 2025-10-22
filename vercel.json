@@ -1,0 +1,13 @@
+{
+  "builds": [],
+  "functions": {},
+  "routes": [
+    {
+      "src": "/(.*)",
+      "status": 503,
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    }
+  ]
+}

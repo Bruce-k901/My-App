@@ -1,9 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 
+interface SearchResult {
+  id: string;
+  name: string;
+  postcode?: string;
+  region?: string;
+}
+
 export default function CompanySearchBar() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -18,7 +25,7 @@ export default function CompanySearchBar() {
         const res = await fetch(`/api/companyLookup?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         setResults(data.results || []);
-      } catch (err) {
+      } catch (err: any) {
         console.warn("Lookup failed", err);
       } finally {
         setLoading(false);

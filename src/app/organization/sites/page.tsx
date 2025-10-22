@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SiteFormNew from "@/components/sites/SiteFormNew";
@@ -27,6 +29,10 @@ interface Site {
 }
 
 export default function OrganizationSitesPage() {
+  const { loading: authLoading } = useAuth();
+
+  if (authLoading) return null;
+
   const { profile, loading: ctxLoading } = useAppContext();
   const [sites, setSites] = useState<Site[]>([]);
   const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string | null}>>([]);

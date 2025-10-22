@@ -52,8 +52,10 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
   });
 
   const fetchAll = useCallback(async () => {
+      console.log("🔍 DEBUG AppContext - fetchAll called");
       try {
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        console.log("🔍 DEBUG AppContext - session check:", { sessionError, hasSession: !!sessionData?.session });
         
         // Handle session errors gracefully
         if (sessionError) {
@@ -70,6 +72,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
         const session = sessionData?.session;
         if (!session) {
           // Do not redirect here; server-side middleware gates protected routes.
+          console.log("🔍 DEBUG AppContext - no session, setting loading to false");
           setState((s) => ({ ...s, loading: false }));
           return;
         }

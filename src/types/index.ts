@@ -6,11 +6,11 @@ export interface Profile {
   id: string;
   full_name: string | null;
   email: string | null;
-  role?: UserRole | null;
-  app_role?: string | null;
+  app_role?: 'Admin' | 'Manager' | 'Staff' | 'Owner' | 'General Manager' | null;
   position_title: string | null;
   company_id: string | null;
   site_id: string | null;
+  home_site?: string | null;
   boh_foh: string | null;
   last_login: string | null;
   pin_code: string | null;

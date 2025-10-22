@@ -8,7 +8,7 @@ import { AuthLayout } from "@/components/layouts";
 import { Eye, EyeOff } from "lucide-react";
 import { Input, Button } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
-import { handlePostLogin } from "@/lib/auth";
+import { redirectToDashboard } from "@/lib/auth";
 
 async function preloadDashboardData() {
   const preloadQueries = [
@@ -53,13 +53,8 @@ export default function LoginPage() {
       // Trigger background preload for dashboard data
       await preloadDashboardData();
       
-      // Use the proper post-login flow to handle user setup and routing
-      const userId = data?.user?.id;
-      if (userId) {
-        await handlePostLogin(userId, router);
-      } else {
-        router.replace("/dashboard");
-      }
+      // Simply redirect to dashboard - let AuthContext handle session management
+      redirectToDashboard(router);
     } catch (_e) {
       setError("Network issue while logging in. Please retry.");
     } finally {
