@@ -9,11 +9,13 @@ import { supabase } from "@/lib/supabase";
 
 type Incident = {
   id: string;
-  site_name: string;
-  date: string;
   description: string;
-  follow_up: string;
+  resolution_notes?: string;
   status: string;
+  created_at: string;
+  sites?: {
+    name: string;
+  };
 };
 
 const tabs = [
@@ -36,15 +38,26 @@ export default function IncidentLog() {
     setError(null);
     try {
       let query = supabase
-        .from("incident_reports")
-        .select("id, site_name, date, description, follow_up, status")
+        .from("incidents")
+        .select(`
+          id,
+          description,
+          resolution_notes,
+          status,
+          created_at,
+          sites!inner(name)
+        `)
         .eq("type", activeTab)
-        .order("date", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(10);
       if (companyId) query = query.eq("company_id", companyId);
       const { data, error } = await query;
       if (error) throw error;
-      setIncidents((data || []) as Incident[]);
+      const formattedData = (data || []).map(item => ({
+        ...item,
+        sites: item.sites?.[0] || { name: 'Unknown Site' }
+      }));
+      setIncidents(formattedData as Incident[]);
     } catch (e: any) {
       setError(e?.message || "Failed to load incidents");
     } finally {
@@ -149,7 +162,7 @@ export default function IncidentLog() {
                 <th className="text-left py-2">Date</th>
                 <th className="text-left py-2">Site</th>
                 <th className="text-left py-2">Description</th>
-                <th className="text-left py-2">Follow Up</th>
+                <th className="text-left py-2">Resolution Notes</th>
                 <th className="text-left py-2">Status</th>
               </tr>
             </thead>
@@ -158,10 +171,10 @@ export default function IncidentLog() {
                 .filter((i) => (statusFilter === "all" ? true : i.status === statusFilter))
                 .map((i) => (
                 <tr key={i.id} className="border-b border-white/[0.05] hover:bg-white/[0.05]">
-                  <td className="py-2 text-white/80">{format(new Date(i.date), "d MMM yyyy")}</td>
-                  <td className="py-2 text-white/80">{i.site_name}</td>
+                  <td className="py-2 text-white/80">{format(new Date(i.created_at), "d MMM yyyy")}</td>
+                  <td className="py-2 text-white/80">{i.sites?.name || "—"}</td>
                   <td className="py-2 text-white/80">{i.description}</td>
-                  <td className="py-2 text-white/60">{i.follow_up || "—"}</td>
+                  <td className="py-2 text-white/60">{i.resolution_notes || "—"}</td>
                   <td className="py-2">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${

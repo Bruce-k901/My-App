@@ -132,6 +132,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               }}
               className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
               placeholder="Start typing company name..."
+              required
             />
             {loading && <div className="absolute right-3 top-8 text-xs text-gray-400">...</div>}
 
@@ -155,7 +156,31 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Postcode</label>
+          <label className="block text-sm font-medium text-gray-300">Contact Name *</label>
+          <input
+            type="text"
+            value={form.contact_name || ""}
+            onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            placeholder="Primary contact person"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Address *</label>
+          <textarea
+            rows={2}
+            value={form.address || ""}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            placeholder="Full business address"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Postcode *</label>
           <input
             type="text"
             value={form.postcode || ""}
@@ -168,6 +193,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               postcodeError ? "border-red-500 bg-red-900/20" : "border-gray-600 bg-gray-800"
             }`}
             placeholder="SW1A 1AA"
+            required
           />
           {postcodeError && <p className="text-red-400 text-xs mt-1">{postcodeError}</p>}
         </div>
@@ -217,12 +243,13 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Telephone</label>
+            <label className="block text-sm font-medium text-gray-300">Telephone *</label>
             <input
               type="text"
               value={form.phone || ""}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              required
             />
           </div>
           <div>
@@ -237,12 +264,13 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Email</label>
+          <label className="block text-sm font-medium text-gray-300">Email *</label>
           <input
             type="email"
             value={form.email || ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            required
           />
         </div>
 

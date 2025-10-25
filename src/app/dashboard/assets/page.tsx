@@ -9,41 +9,39 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SiteSelector from "@/components/ui/SiteSelector";
 import Link from "next/link";
-import { Plus, Upload, Download } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Plus, Upload, Download, Archive } from "lucide-react";
 
 type Asset = {
   id: string;
   company_id: string;
-  label: string;
-  model?: string;
-  serial_number?: string;
-  asset_type?: string;
-  code?: string;
-  date_of_purchase?: string;
-  warranty_length_years?: number;
-  next_service_due?: string;
-  add_to_ppm?: boolean;
-  ppm_services_per_year?: number;
-  warranty_callout_info?: string;
-  document_url?: string;
-  site_id?: string;
-  contractor_reactive_id?: string;
-  contractor_ppm_id?: string;
-  created_at?: string;
-  updated_at?: string;
-  site_name?: string | null; // Add site name to the type
+  name: string;
+  brand: string | null;
+  model: string | null;
+  serial_number: string | null;
+  category: string;
+  site_id: string | null;
+  site_name: string | null;
+  ppm_contractor_id: string | null;
+  ppm_contractor_name: string | null;
+  reactive_contractor_id: string | null;
+  reactive_contractor_name: string | null;
+  warranty_contractor_id: string | null;
+  warranty_contractor_name: string | null;
+  install_date: string | null;
+  warranty_end: string | null;
+  last_service_date: string | null;
+  next_service_date: string | null;
+  ppm_frequency_months: number | null;
+  ppm_status: string | null;
+  status: string;
+  archived: boolean;
+  notes: string | null;
 };
 
 export default function AssetsPage() {
-  const { profile, loading: ctxLoading } = useAppContext();
-  const { user, loading: authLoading } = useAuth();
-  
-  // Wait for auth to load before proceeding
-  if (authLoading) return null;
+  const { profile, loading: ctxLoading, session } = useAppContext();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [editing, setEditing] = useState<Asset | null>(null);
   const [query, setQuery] = useState("");
   const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,34 +49,73 @@ export default function AssetsPage() {
 
   const fetchAssets = async () => {
     console.log("Fetching assets...");
+    console.log("Session:", session);
+    console.log("Profile:", profile);
+    console.log("Company ID:", profile?.company_id);
     
-    let query = supabase
-      .from("assets_redundant")
-      .select(`
-        *,
-        sites_redundant!inner(name)
-      `)
-      .order("updated_at", { ascending: false });
-    
-    // Filter by site if selected
-    if (selectedSite) {
-      query = query.eq("site_id", selectedSite);
+    if (!session?.user?.id) {
+      throw new Error("No user ID available");
     }
     
-    const { data, error } = await query;
-    
-    console.log("Fetch result:", { data, error });
-    if (error) {
-      console.error("Error fetching assets:", error);
-      throw new Error("Failed to load assets");
+    if (!profile?.company_id) {
+      throw new Error("No company ID available");
     }
     
-    // Transform the data to include site_name
-    const assetsWithSiteNames = (data || []).map((asset: any) => ({
-      ...asset,
-      site_name: asset.sites?.name || null
-    }));
-    return assetsWithSiteNames as Asset[];
+    // Use direct query approach for better reliability
+    console.log("Fetching assets with direct query...");
+    const { data: assetsData, error: assetsError } = await supabase
+      .from('assets')
+      .select('*')
+      .eq('company_id', profile.company_id)
+      .eq('archived', false)
+      .order('name');
+      
+      console.log("Direct query result:", { data: assetsData, error: assetsError });
+      
+      if (assetsError) {
+        console.error("Error fetching assets:", assetsError);
+        console.error("Error details:", JSON.stringify(assetsError, null, 2));
+        throw new Error(`Failed to load assets: ${assetsError.message || 'Unknown error'}`);
+      }
+      
+      if (!assetsData || assetsData.length === 0) {
+        return [];
+      }
+      
+      // Get unique site IDs and contractor IDs
+      const siteIds = [...new Set(assetsData.map(asset => asset.site_id).filter(Boolean))];
+      const contractorIds = [...new Set([
+        ...assetsData.map(asset => asset.ppm_contractor_id).filter(Boolean),
+        ...assetsData.map(asset => asset.reactive_contractor_id).filter(Boolean),
+        ...assetsData.map(asset => asset.warranty_contractor_id).filter(Boolean)
+      ])];
+      
+      // Fetch sites and contractors in parallel
+      const [sitesResult, contractorsResult] = await Promise.all([
+        siteIds.length > 0 ? supabase.from('sites').select('id, name').in('id', siteIds) : { data: [] },
+        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] }
+      ]);
+      
+      // Create lookup maps
+      const sitesMap = new Map((sitesResult.data || []).map(site => [site.id, site.name]));
+      const contractorsMap = new Map((contractorsResult.data || []).map(contractor => [contractor.id, contractor.name]));
+      
+      // Transform the data to match the expected format
+      const transformedData = assetsData.map((asset: any) => ({
+        ...asset,
+        site_name: asset.site_id ? sitesMap.get(asset.site_id) || null : null,
+        ppm_contractor_name: asset.ppm_contractor_id ? contractorsMap.get(asset.ppm_contractor_id) || null : null,
+        reactive_contractor_name: asset.reactive_contractor_id ? contractorsMap.get(asset.reactive_contractor_id) || null : null,
+        warranty_contractor_name: asset.warranty_contractor_id ? contractorsMap.get(asset.warranty_contractor_id) || null : null,
+      }));
+      
+      // Filter by site if selected
+      let filteredData = transformedData;
+      if (selectedSite) {
+        filteredData = transformedData.filter((asset: any) => asset.site_id === selectedSite);
+      }
+      
+      return filteredData as Asset[];
   };
 
   const { data: assets = [], isLoading, isError, error } = useQuery({
@@ -87,15 +124,16 @@ export default function AssetsPage() {
     staleTime: 1000 * 60 * 5, // cache for 5 min
     enabled: !ctxLoading && !!profile?.company_id,
   });
+  
+  // Wait for auth to load before proceeding
+  if (ctxLoading) return null;
 
   const handleAdd = () => {
-    setEditing(null);
     setFormOpen(true);
   };
 
   const handleSaved = async () => {
     setFormOpen(false);
-    setEditing(null);
     // No need to manually refetch - React Query will handle this via cache invalidation
   };
 
@@ -107,19 +145,15 @@ export default function AssetsPage() {
     try {
       // Prepare CSV data with all asset fields
       const fields = [
-        "label",
+        "name",
         "model", 
         "serial_number",
-        "code",
-        "type",
-        "date_of_purchase",
-        "under_warranty",
-        "warranty_length_years",
-        "next_service_due",
-        "add_to_ppm",
-        "ppm_services_per_year",
-        "warranty_callout_info",
-        "document_url"
+        "category",
+        "install_date",
+        "warranty_end",
+        "next_service_date",
+        "status",
+        "notes"
       ];
 
       const csvContent = [
@@ -240,22 +274,20 @@ export default function AssetsPage() {
           company_id: profile.company_id,
           site_id: rowData.site_id ?? null,
           label: rowData.label ?? "",
+          name: rowData.name || rowData.label || "",
           model: rowData.model ?? "",
           serial_number: rowData.serial_number ?? "",
-          code: rowData.code && rowData.code.trim() !== "" ? rowData.code : generateAssetCode(i),
-          type: mapAssetType(rowData.type),
-          date_of_purchase: toISODate(rowData.date_of_purchase),
-          under_warranty: rowData.under_warranty === "true" || rowData.under_warranty === true,
-          warranty_length_years: Number(rowData.warranty_length_years) || 0,
-          next_service_due: toISODate(rowData.next_service_due),
-          add_to_ppm: rowData.add_to_ppm === "true" || rowData.add_to_ppm === true,
-          ppm_services_per_year: Number(rowData.ppm_services_per_year) || 0,
-          warranty_callout_info: rowData.warranty_callout_info ?? "",
-          document_url: rowData.document_url ?? "",
+          brand: rowData.brand ?? "",
+          category: mapAssetType(rowData.category || rowData.type),
+          install_date: toISODate(rowData.install_date || rowData.date_of_purchase),
+          warranty_end: toISODate(rowData.warranty_end),
+          next_service_date: toISODate(rowData.next_service_date || rowData.next_service_due),
+          status: rowData.status || "Active",
+          notes: rowData.notes ?? "",
         };
 
         // Insert the asset
-        const { error } = await supabase.from("assets_redundant").insert(assetData);
+        const { error } = await supabase.from("assets").insert(assetData);
         if (error) {
           console.error("Error inserting asset:", error.message, error.details, error.hint);
         }
@@ -287,20 +319,14 @@ export default function AssetsPage() {
   const q = (query || "").toLowerCase().trim();
   const filteredAssets = q
     ? assets.filter((a) =>
-        (a.label || "").toLowerCase().includes(q) || 
+        (a.name || "").toLowerCase().includes(q) || 
         (a.model || "").toLowerCase().includes(q) ||
-        (a.serial_number || "").toLowerCase().includes(q)
+        (a.serial_number || "").toLowerCase().includes(q) ||
+        (a.brand || "").toLowerCase().includes(q) ||
+        (a.category || "").toLowerCase().includes(q)
       )
     : assets;
 
-  const siteSelector = (
-    <SiteSelector
-      value={selectedSite}
-      onChange={setSelectedSite}
-      placeholder="All Sites"
-      className="w-[160px]"
-    />
-  );
 
   return (
     <div className="mt-8 space-y-6">
@@ -308,23 +334,22 @@ export default function AssetsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <h1 className="text-3xl font-bold text-white">Assets</h1>
-          <Link
-            href="/dashboard/archived-assets"
-            className="inline-flex items-center px-4 py-2 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] text-sm font-medium"
-          >
-            Archived Assets
-          </Link>
-          {/* Site Selector and Search Bar moved closer to Archived Assets button */}
-          {siteSelector}
+          {/* Site Selector and Search Bar next to Assets header */}
+          <SiteSelector
+            value={selectedSite}
+            onChange={setSelectedSite}
+            placeholder="All Sites"
+            className="h-11 min-w-[120px]"
+          />
           <input 
             value={query} 
             onChange={(e) => setQuery(e.target.value)} 
             placeholder="Search assets..." 
-            className="w-64 px-4 py-2 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40" 
+            className="h-11 w-64 px-4 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40" 
           />
         </div>
-        <div className="flex items-center space-x-3">
-          {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          {/* Action Buttons with unified height and 2mm spacing */}
           <button
             onClick={handleAdd}
             className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
@@ -332,6 +357,13 @@ export default function AssetsPage() {
           >
             <Plus className="h-5 w-5" />
           </button>
+          <Link
+            href="/dashboard/archived-assets"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-500/10 transition-all duration-150 ease-in-out hover:shadow-[0_0_8px_#ff9500]"
+            title="View archived assets"
+          >
+            <Archive className="h-5 w-5" />
+          </Link>
           <button
             onClick={handleDownload}
             className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
@@ -370,24 +402,41 @@ export default function AssetsPage() {
       ) : (
         <div className="space-y-4">
           {filteredAssets.map((asset) => (
-            <AssetCard key={asset.id} asset={asset} onArchive={async (assetId) => {
-              try {
-                await supabase.rpc("archive_asset", { asset_to_archive: assetId });
-                await queryClient.invalidateQueries({ queryKey: ["assets"] });
-                showToast({ 
-                  title: "Asset archived", 
-                  description: "Asset has been moved to archived assets", 
-                  type: "success" 
-                });
-              } catch (error) {
-                console.error("Error archiving asset:", error);
-                showToast({ 
-                  title: "Archive failed", 
-                  description: "Failed to archive asset", 
-                  type: "error" 
-                });
-              }
-            }} />
+            <AssetCard 
+              key={asset.id} 
+              asset={asset} 
+              onArchive={async (assetId) => {
+                try {
+                  console.log("Archiving asset:", assetId);
+                  // Use direct update instead of RPC function
+                  const { data, error } = await supabase
+                    .from('assets')
+                    .update({ 
+                      archived: true, 
+                      archived_at: new Date().toISOString() 
+                    })
+                    .eq('id', assetId)
+                    .select();
+                  
+                  console.log("Archive update result:", { data, error });
+                  if (error) throw error;
+                  
+                  await queryClient.invalidateQueries({ queryKey: ["assets"] });
+                  showToast({ 
+                    title: "Asset archived", 
+                    description: "Asset has been moved to archived assets", 
+                    type: "success" 
+                  });
+                } catch (error) {
+                  console.error("Error archiving asset:", error);
+                  showToast({ 
+                    title: "Archive failed", 
+                    description: "Failed to archive asset", 
+                    type: "error" 
+                  });
+                }
+              }} 
+            />
           ))}
         </div>
       )}

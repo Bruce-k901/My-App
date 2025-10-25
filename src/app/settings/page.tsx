@@ -36,7 +36,7 @@ function SettingsInner() {
     return {
       user_id: userId,
       company_id: companyId,
-      site_id: siteId,
+      site_id: siteId || null,
       receive_email_digests: true,
       include_incidents: true,
       include_tasks: true,

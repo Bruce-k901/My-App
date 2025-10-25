@@ -221,9 +221,9 @@ begin
       c.name as contractor_name,
       ucr.user_id as assigned_user_id
     from public.ppm_schedule ps
-    join public.assets_redundant a on ps.asset_id = a.id
-    join public.sites_redundant s on a.site_id = s.id
-    left join public.contractors_redundant c on ps.contractor_id = c.id
+    join public.assets a on ps.asset_id = a.id
+    join public.sites s on a.site_id = s.id
+    left join public.contractors c on ps.contractor_id = c.id
     left join public.user_company_roles ucr on ucr.company_id = a.company_id 
       and ucr.role in ('admin', 'owner', 'manager')
     where ps.status in ('scheduled', 'due_soon', 'overdue')

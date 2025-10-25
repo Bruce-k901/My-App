@@ -13,9 +13,7 @@ const nextConfig: NextConfig = {
   // when multiple lockfiles exist on the machine.
   outputFileTracingRoot: process.cwd(),
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // eslint configuration moved to eslint.config.mjs
   
   typescript: {
     ignoreBuildErrors: true,

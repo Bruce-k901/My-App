@@ -18,7 +18,7 @@ export const EQUIPMENT_HEADER_MAP: HeaderMap = {
     "service_interval",
   ],
   supplier: ["supplier", "vendor"],
-  warranty_expiry: ["warranty_expiry", "warranty", "warranty_expiration", "warranty_end"],
+  warranty_end: ["warranty_expiry", "warranty", "warranty_expiration", "warranty_end"],
   site_id: ["site_id", "site", "location_id"],
 };
 
@@ -145,10 +145,10 @@ export function validateEquipmentRows(rows: any[]): { valid: any[]; errors: Vali
     if (interval !== undefined && (!Number.isFinite(interval) || interval <= 0)) {
       errors.push({ line, field: "service_interval_days", message: `Invalid service interval days: ${r.service_interval_days}` });
     }
-    const expiry = (r.warranty_expiry || "").trim();
-    if (expiry && !isValidISODate(expiry)) errors.push({ line, field: "warranty_expiry", message: `Invalid warranty expiry date (YYYY-MM-DD): ${expiry}` });
+    const expiry = (r.warranty_end || "").trim();
+    if (expiry && !isValidISODate(expiry)) errors.push({ line, field: "warranty_end", message: `Invalid warranty end date (YYYY-MM-DD): ${expiry}` });
     const siteId = (r.site_id || "").trim();
-    valid.push({ ...r, name, service_interval_days: interval, warranty_expiry: expiry || null, site_id: siteId || null });
+    valid.push({ ...r, name, service_interval_days: interval, warranty_end: expiry || null, site_id: siteId || null });
   });
   return { valid, errors };
 }

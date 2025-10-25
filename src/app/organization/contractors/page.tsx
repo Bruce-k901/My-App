@@ -10,6 +10,7 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/ToastProvider";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import { ContextTest } from "@/components/ContextTest";
 
 type Contractor = {
   id: string;
@@ -281,6 +282,7 @@ export default function ContractorsPage() {
       onDownload={handleDownload}
       onUpload={handleUploadClick}
     >
+      <ContextTest />
       <input
         ref={fileInputRef}
         type="file"

@@ -1,17 +1,21 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppContext } from "@/context/AppContext";
 import DocumentsPoliciesSection from "@/components/organisation/DocumentsPoliciesSection";
-import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 
 export default function OrganizationDocumentsPage() {
-  const { loading: authLoading } = useAuth();
+  // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
+  
+  // 1. Context hooks
+  const { loading: authLoading } = useAppContext();
 
+  // 2. Early returns ONLY AFTER all hooks
   if (authLoading) return null;
 
   return (
-    <EntityPageLayout title="Documents/Policies" searchPlaceholder="Search">
+    <OrgContentWrapper title="Documents & Policies">
       <DocumentsPoliciesSection />
-    </EntityPageLayout>
+    </OrgContentWrapper>
   );
 }

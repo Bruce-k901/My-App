@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* react-datepicker styles */
-@import "react-datepicker/dist/react-datepicker.css";
+/* react-datepicker styles will be imported via component */
 
 /* ----------------------------- */
 /* Base theme and typography     */

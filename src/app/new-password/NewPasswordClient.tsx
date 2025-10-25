@@ -11,13 +11,29 @@ export default function NewPasswordClient() {
   useEffect(() => {
     let isMounted = true;
 
-    // If a session is already present, proceed directly.
-    supabase.auth.getSession().then(({ data }) => {
-      if (!isMounted) return;
-      if (data.session) {
-        router.replace("/reset-password");
+    const handleSessionRecovery = async () => {
+      try {
+        // Capture session from URL hash (critical for password reset magic links)
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session recovery failed:", error);
+          setMessage("Session recovery failed. Please try the reset link again.");
+          return;
+        }
+        
+        if (data.session) {
+          console.log("Recovered session:", data.session);
+          setMessage("Recovery link verified. Redirecting...");
+          router.replace("/reset-password");
+          return;
+        }
+      } catch (err) {
+        console.error("Session recovery error:", err);
       }
-    });
+    };
+
+    // Immediately try to recover session from URL
+    handleSessionRecovery();
 
     // Listen for the recovery event and then redirect.
     const { data: subscription } = supabase.auth.onAuthStateChange((event) => {

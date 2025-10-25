@@ -6,10 +6,10 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  -- Create a profile record for the new user
-  insert into public.profiles (id, email, full_name, app_role, position_title)
+  -- Create a profile record for the new user with proper auth_user_id linkage
+  insert into public.profiles (auth_user_id, email, full_name, app_role, position_title)
   values (
-    new.id,
+    new.id,  -- Link to auth.users.id via auth_user_id
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'first_name' || ' ' || new.raw_user_meta_data->>'last_name', 'User'),
     'admin',

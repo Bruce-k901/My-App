@@ -69,7 +69,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
     try {
       // Fetch sites
       const { data: sitesData } = await supabase
-        .from('sites_redundant')
+        .from('sites')
         .select('id, name')
         .order('name');
 
@@ -81,13 +81,12 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
       // Fetch assets
       const { data: assetsData } = await supabase
-        .from('assets_redundant')
+        .from('assets')
         .select(`
           id,
           name,
           category,
-          site_id,
-          sites_redundant!inner(name)
+          site:sites(id, name)
         `)
         .order('name');
 
@@ -98,8 +97,8 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
         id: asset.id,
         name: asset.name,
         category: asset.category,
-        site_id: asset.site_id,
-        site_name: (asset.sites_redundant as any)?.name || 'Unknown Site'
+        site_id: (asset.site as any)?.id || null,
+        site_name: (asset.site as any)?.name || 'Unknown Site'
       })) || [];
       
       setAssets(formattedAssets);

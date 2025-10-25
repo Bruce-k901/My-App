@@ -1,242 +1,200 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { useToast } from "@/components/ui/ToastProvider";
 import { calculateAssetAge, calculateNextServiceDate } from "@/lib/utils/dateUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import CardChevron from "@/components/ui/CardChevron";
+import EditableField from "@/components/ui/EditableField";
+import CalloutModal from "@/components/modals/CalloutModal";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface Asset {
   id: string;
   company_id: string;
-  label: string;
-  model?: string;
-  serial_number?: string;
-  asset_type?: string;
-  code?: string; // Changed from asset_code to code
-  date_of_purchase?: string;
-  warranty_length_years?: number;
-  next_service_due?: string;
-  add_to_ppm?: boolean;
-  ppm_services_per_year?: number;
-  warranty_callout_info?: string;
-  document_url?: string;
-  site_id?: string;
-  contractor_reactive_id?: string;
-  contractor_ppm_id?: string;
-  created_at?: string;
-  updated_at?: string;
+  name: string;
+  brand: string | null;
+  model: string | null;
+  serial_number: string | null;
+  category: string;
+  site_id: string | null;
+  site_name: string | null;
+  ppm_contractor_id: string | null;
+  ppm_contractor_name: string | null;
+  reactive_contractor_id: string | null;
+  reactive_contractor_name: string | null;
+  warranty_contractor_id: string | null;
+  warranty_contractor_name: string | null;
+  install_date: string | null;
+  warranty_end: string | null;
+  last_service_date: string | null;
+  next_service_date: string | null;
+  ppm_frequency_months: number | null;
+  ppm_status: string | null;
+  status: string;
+  archived: boolean;
+  archived_at: string | null;
+  notes: string | null;
+  document_url: string | null;
 }
 
 interface AssetCardProps {
-  asset: Asset & {
-    site_name?: string | null;
-  };
+  asset: Asset;
   onArchive?: (assetId: string) => void;
+  onEdit?: (asset: Asset) => void;
 }
 
-export default function AssetCard({ asset, onArchive }: AssetCardProps) {
+export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedAsset, setEditedAsset] = useState<Asset>(asset);
-  const [isSaving, setIsSaving] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [calloutModalOpen, setCalloutModalOpen] = useState(false);
+  const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const { companyId } = useAppContext();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
-  const [contractors, setContractors] = useState<{id: string; name: string; category_name: string}[]>([]);
 
-  // Load contractors when component mounts or when editing starts
-  useEffect(() => {
-    const loadContractors = async () => {
-      if (!companyId || !isEditing) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from("contractors")
-          .select("id, name, category_name")
-          .eq("company_id", companyId)
-          .in("category_name", [asset.asset_type])
-          .order("name");
-        
-        if (error) throw error;
-        
-        setContractors(data || []);
-      } catch (error) {
-        console.error("Failed to load contractors:", error);
-      }
-    };
-
-    loadContractors();
-  }, [companyId, isEditing, asset.asset_type]);
-
-  // Auto-fill PPM contractor when reactive contractor is selected
-  useEffect(() => {
-    if (!editedAsset.contractor_ppm_id && editedAsset.contractor_reactive_id) {
-      setEditedAsset(prev => ({
-        ...prev,
-        contractor_ppm_id: editedAsset.contractor_reactive_id
-      }));
-    }
-  }, [editedAsset.contractor_reactive_id]);
-
-  // Update editedAsset when asset prop changes (from React Query updates)
-  React.useEffect(() => {
-    setEditedAsset(asset);
-  }, [asset]);
-
-  // Auto-calculate warranty end date
-  const getWarrantyEndDate = (purchaseDate?: string, warrantyYears?: number) => {
-    if (!purchaseDate || !warrantyYears) return null;
-    const purchase = new Date(purchaseDate);
-    const warrantyEnd = new Date(purchase);
-    warrantyEnd.setFullYear(purchase.getFullYear() + warrantyYears);
-    return warrantyEnd;
-  };
-
-  // Check if under warranty
+  // Check if under warranty using warranty_end column
   const isUnderWarranty = () => {
-    const warrantyEnd = getWarrantyEndDate(editedAsset.date_of_purchase, editedAsset.warranty_length_years);
-    if (!warrantyEnd) return false;
-    return new Date() <= warrantyEnd;
+    if (!asset.warranty_end) return false;
+    return new Date() <= new Date(asset.warranty_end);
   };
 
-  const warrantyEndDate = getWarrantyEndDate(editedAsset.date_of_purchase, editedAsset.warranty_length_years);
   const underWarranty = isUnderWarranty();
 
-  const handleInputChange = (field: keyof Asset, value: any) => {
-    setEditedAsset(prev => ({ ...prev, [field]: value }));
+  const handleArchive = () => {
+    setArchiveConfirmOpen(true);
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setEditedAsset(asset);
-    setIsEditing(false);
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      console.log("Saving asset with data:", editedAsset);
-      
-      // Generate asset code if it doesn't exist
-      let assetCode = editedAsset.code;
-      if (!assetCode || assetCode.trim() === "") {
-        // Get the current count of assets for this company to generate the next code
-        const { count, error: countError } = await supabase
-          .from("assets_redundant")
-          .select("*", { count: "exact", head: true })
-          .eq("company_id", asset.company_id);
-        
-        if (countError) {
-          console.error("Error counting assets:", countError);
-        } else {
-          const nextNumber = (count || 0) + 1;
-          assetCode = `AST-${String(nextNumber).padStart(5, "0")}`;
-          console.log("Generated asset code:", assetCode);
-        }
-      }
-      
-      // Only update the editable fields
-      const updateData = {
-        label: editedAsset.label,
-        model: editedAsset.model,
-        serial_number: editedAsset.serial_number,
-        asset_type: editedAsset.asset_type,
-        code: assetCode, // Include the generated or existing asset code
-        date_of_purchase: editedAsset.date_of_purchase,
-        warranty_length_years: editedAsset.warranty_length_years,
-        warranty_callout_info: editedAsset.warranty_callout_info,
-        add_to_ppm: editedAsset.add_to_ppm,
-        ppm_services_per_year: editedAsset.ppm_services_per_year,
-      };
-
-      console.log("Update data being sent:", updateData);
-      console.log("Asset ID:", asset.id);
-
-      const { data, error } = await supabase
-        .from("assets_redundant")
-        .update(updateData)
-        .eq("id", asset.id)
-        .select();
-
-      console.log("Supabase response:", { data, error });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
-
-      showToast("Asset updated successfully", "success");
-      setIsEditing(false);
-      setIsExpanded(false); // Minimize the card after successful save
-      
-      // ✅ Auto-refresh data without manual onRefresh
-      await queryClient.invalidateQueries({ queryKey: ["assets"] });
-    } catch (error: any) {
-      console.error("Error updating asset:", error);
-      showToast(`Failed to update asset: ${error?.message || 'Unknown error'}`, "error");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleArchive = async () => {
+  const handleConfirmArchive = async () => {
     if (onArchive) {
-      onArchive(asset.id);
+      // Minimize the card first for visual feedback
+      setIsExpanded(false);
+      
+      // Add a small delay for the minimize animation
+      setTimeout(async () => {
+        await onArchive(asset.id);
+      }, 200);
     }
   };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    // Handle file upload logic here
-    // For now, just add to uploaded files list
-    const newFiles = Array.from(files).map(file => file.name);
-    setUploadedFiles(prev => [...prev, ...newFiles]);
-    showToast(`${newFiles.length} file(s) uploaded`, "success");
-  };
-
-  const removeFile = (fileName: string) => {
-    setUploadedFiles(prev => prev.filter(f => f !== fileName));
-  };
-
-
 
   // Calculate next service date
   const getNextServiceDate = () => {
-    const calculatedDate = calculateNextServiceDate(
-      asset.date_of_purchase,
-      asset.add_to_ppm,
-      asset.ppm_services_per_year
-    );
-    return calculatedDate;
+    if (asset.next_service_date) {
+      return new Date(asset.next_service_date);
+    }
+    return null;
+  };
+
+  // Site change handler with contractor auto-update
+  const handleSiteChange = async (newSiteId: string) => {
+    try {
+      // Update site_id
+      await supabase.from('assets').update({ site_id: newSiteId }).eq('id', asset.id);
+      
+      // Get site region for contractor auto-update
+      const { data: site } = await supabase
+        .from('sites')
+        .select('region')
+        .eq('id', newSiteId)
+        .single();
+      
+      if (site?.region) {
+        // Find contractors that match the asset category and site region
+        const { data: matched } = await supabase
+          .from('contractors')
+          .select('id, category')
+          .eq('region', site.region)
+          .eq('category', asset.category)
+          .eq('company_id', companyId)
+          .limit(1);
+        
+        if (matched && matched.length > 0) {
+          // Auto-update contractors
+          await supabase.from('assets').update({
+            ppm_contractor_id: matched[0].id,
+            reactive_contractor_id: matched[0].id,
+            warranty_contractor_id: matched[0].id
+          }).eq('id', asset.id);
+        }
+      }
+      
+      showToast({ title: 'Site updated successfully', type: 'success' });
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+    } catch (error: any) {
+      console.error('Site update failed:', error);
+      showToast({ 
+        title: 'Failed to update site', 
+        description: error.message || 'Could not update site', 
+        type: 'error' 
+      });
+    }
+  };
+
+  // Generic field update handler
+  const handleFieldUpdate = async (field: string, value: string) => {
+    try {
+      await supabase.from('assets').update({ [field]: value }).eq('id', asset.id);
+      showToast({ title: 'Field updated successfully', type: 'success' });
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+    } catch (error: any) {
+      console.error('Field update failed:', error);
+      showToast({ 
+        title: 'Failed to update field', 
+        description: error.message || 'Could not update field', 
+        type: 'error' 
+      });
+    }
+  };
+
+  // Fetch sites for site dropdown
+  const fetchSites = async () => {
+    const { data, error } = await supabase
+      .from('sites')
+      .select('id, name')
+      .eq('company_id', companyId)
+      .order('name');
+    
+    if (error) throw error;
+    return (data || []).map(site => ({ value: site.id, label: site.name }));
+  };
+
+  // Fetch contractors for contractor dropdowns
+  const fetchContractors = async () => {
+    const { data, error } = await supabase
+      .from('contractors')
+      .select('id, name')
+      .eq('company_id', companyId)
+      .order('name');
+    
+    if (error) throw error;
+    return (data || []).map(contractor => ({ value: contractor.id, label: contractor.name }));
   };
 
   return (
-    <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
+    <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
       {/* Compact View */}
       {!isExpanded && (
         <div className="space-y-2">
           {/* Header with asset info and buttons */}
-          <div className="flex items-center justify-between">
+          <div 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center justify-between p-3 cursor-pointer hover:bg-neutral-800/50 transition"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }
+            }}
+          >
             <div className="flex items-center justify-between flex-1 min-w-0 mr-4">
               <div className="flex items-center space-x-4">
                 <h3 className="text-lg font-semibold text-white truncate">
-                  {asset.label || "Unnamed Asset"}
+                  {asset.name || "Unnamed Asset"}
                 </h3>
-                {asset.code && (
-                  <span className="text-xs text-gray-500 bg-white/[0.05] px-2 py-1 rounded">
-                    {asset.code}
-                  </span>
-                )}
                 {asset.site_name && (
                   <span className="text-sm text-gray-400 truncate">
                     @ {asset.site_name}
@@ -252,7 +210,7 @@ export default function AssetCard({ asset, onArchive }: AssetCardProps) {
                   })()}
                 </span>
                 <span className="text-sm text-gray-400 truncate">
-                  Age: {calculateAssetAge(asset.date_of_purchase)}
+                  Age: {calculateAssetAge(asset.install_date)}
                 </span>
               </div>
             </div>
@@ -260,21 +218,15 @@ export default function AssetCard({ asset, onArchive }: AssetCardProps) {
             {/* Action buttons */}
             <div className="flex items-center space-x-2">
               <button
-                onClick={handleEdit}
-                className="p-1.5 text-gray-400 hover:text-white border border-magenta-500 rounded transition-colors"
-                title="Edit Asset"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCalloutModalOpen(true);
+                }}
+                className="p-1.5 text-magenta-400 hover:text-magenta-300 border border-magenta-500 rounded transition-colors hover:shadow-[0_0_8px_rgba(236,72,153,0.3)]"
+                title="Log a callout"
               >
-                <Edit2 size={16} />
+                <Wrench size={16} />
               </button>
-              {onArchive && (
-                <button
-                  onClick={handleArchive}
-                  className="p-1.5 text-gray-400 hover:text-white border border-magenta-500 rounded transition-colors"
-                  title="Archive Asset"
-                >
-                  <Archive size={16} />
-                </button>
-              )}
               <CardChevron 
                 isOpen={isExpanded} 
                 onToggle={() => setIsExpanded(!isExpanded)}
@@ -284,14 +236,28 @@ export default function AssetCard({ asset, onArchive }: AssetCardProps) {
         </div>
       )}
 
-      {/* Expanded View */}
+      {/* Expanded View - Full Data Display with Inline Editing */}
       {isExpanded && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 max-w-5xl mx-auto">
           {/* Header with minimize button */}
-          <div className="flex items-center justify-between pb-4">
-            <h2 className="text-lg font-semibold text-white">{asset.label || "Unnamed Asset"}</h2>
+          <div 
+            onClick={() => setIsExpanded(false)}
+            className="flex items-center justify-between pb-4 cursor-pointer hover:bg-neutral-800/30 transition rounded-lg p-2 -m-2"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsExpanded(false);
+              }
+            }}
+          >
+            <h2 className="text-lg font-semibold text-white">{asset.name || "Unnamed Asset"}</h2>
             <button
-              onClick={() => setIsExpanded(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(false);
+              }}
               className="p-1.5 text-gray-400 hover:text-white transition-colors"
               title="Minimize"
             >
@@ -300,312 +266,249 @@ export default function AssetCard({ asset, onArchive }: AssetCardProps) {
           </div>
           
           {/* Divider line */}
-          <div className="border-t border-white/[0.1]"></div>
+          <div className="border-t border-neutral-700 mb-6"></div>
           
-          {/* Unified 4-Column Grid for All Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Row 1: Identity Fields */}
+          {/* All Asset Fields with Inline Editing - 2 Column Grid */}
+          <div className="space-y-6">
+            {/* Section A: Assignment */}
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Label</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedAsset.label}
-                  onChange={(e) => handleInputChange("label", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+              <h3 className="text-base font-semibold tracking-wide text-magenta-400 border-t border-neutral-700 mt-4 pt-3 bg-gradient-to-r from-magenta-600/20 to-transparent px-2 py-1 rounded">
+                Assignment
+              </h3>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-magenta-500/40"></div>
+                <EditableField
+                  label="Site"
+                  value={asset.site_name}
+                  type="select"
+                  fetchOptions={fetchSites}
+                  onSave={handleSiteChange}
                 />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.label}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Model</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedAsset.model || ""}
-                  onChange={(e) => handleInputChange("model", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.model || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Serial Number</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedAsset.serial_number || ""}
-                  onChange={(e) => handleInputChange("serial_number", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.serial_number || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Asset Code</label>
-              {isEditing ? (
-                 <input
-                   type="text"
-                   value={editedAsset.code || ""}
-                   onChange={(e) => handleInputChange("code", e.target.value)}
-                   className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                   placeholder="Will be auto-generated if empty"
-                 />
-               ) : (
-                 <p className="text-white text-sm py-2">{asset.code || "—"}</p>
-               )}
-            </div>
-
-            {/* Row 2: Identity + Warranty Fields */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Type</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedAsset.asset_type || ""}
-                  onChange={(e) => handleInputChange("asset_type", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.asset_type || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Purchase Date</label>
-              {isEditing ? (
-                <input
-                  type="date"
-                  value={editedAsset.date_of_purchase || ""}
-                  onChange={(e) => handleInputChange("date_of_purchase", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.date_of_purchase ? new Date(asset.date_of_purchase).toLocaleDateString() : "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Warranty (Years)</label>
-              {isEditing ? (
-                <input
-                  type="number"
-                  value={editedAsset.warranty_length_years || ""}
-                  onChange={(e) => handleInputChange("warranty_length_years", parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.warranty_length_years || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Warranty End Date</label>
-              <p className="text-white text-sm py-2">{warrantyEndDate ? warrantyEndDate.toLocaleDateString() : "—"}</p>
-            </div>
-
-            {/* Row 3: Warranty + PPM Fields + Contractor Dropdowns */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Under Warranty</label>
-              <span className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium ${
-                underWarranty 
-                  ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-                  : "bg-red-500/20 text-red-400 border border-red-500/30"
-              }`}>
-                {underWarranty ? "Yes" : "No"}
-              </span>
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Warranty Contact / Callout Info</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedAsset.warranty_callout_info || ""}
-                  onChange={(e) => handleInputChange("warranty_callout_info", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                  placeholder="Contact details, phone numbers, or callout instructions"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.warranty_callout_info || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Next Service Date</label>
-              <p className="text-white text-sm py-2">{(() => {
-                const nextService = getNextServiceDate();
-                return nextService ? nextService.toLocaleDateString() : asset.add_to_ppm ? "Not scheduled" : "Not scheduled";
-              })()}</p>
-            </div>
-            {/* Reactive Contractor Dropdown */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Reactive Contractor</label>
-              {isEditing ? (
-                <select
-                  value={editedAsset.contractor_reactive_id || ""}
-                  onChange={(e) => handleInputChange("contractor_reactive_id", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                >
-                  <option value="">Select contractor...</option>
-                  {contractors.map(contractor => (
-                    <option key={contractor.id} value={contractor.id}>
-                      {contractor.name} ({contractor.category_name})
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                 <p className="text-white text-sm py-2">
-                   {(() => {
-                     const contractor = contractors.find(c => c.id === asset.contractor_reactive_id);
-                     return contractor ? `${contractor.name} (${contractor.category_name})` : "—";
-                   })()}
-                 </p>
-               )}
-            </div>
-
-            {/* Row 4: PPM Fields */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">PPM Enabled</label>
-              {isEditing ? (
-                <select
-                  value={editedAsset.add_to_ppm ? "true" : "false"}
-                  onChange={(e) => handleInputChange("add_to_ppm", e.target.value === "true")}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                >
-                  <option value="false">No</option>
-                  <option value="true">Yes</option>
-                </select>
-              ) : (
-                <p className="text-white text-sm py-2">{asset.add_to_ppm ? "Yes" : "No"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Services/Year</label>
-              {isEditing ? (
-                <input
-                  type="number"
-                  value={editedAsset.ppm_services_per_year || ""}
-                  onChange={(e) => handleInputChange("ppm_services_per_year", parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                />
-              ) : (
-                <p className="text-white text-sm py-2">{asset.ppm_services_per_year || "—"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Service Docs</label>
-              {isEditing ? (
-                <div className="flex items-center">
-                  <input
-                    type="file"
-                    multiple
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="file-upload"
-                  />
-                  <label 
-                    htmlFor="file-upload" 
-                    className="inline-flex items-center px-2 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded text-white text-xs hover:bg-white/[0.1] cursor-pointer transition-colors"
-                  >
-                    <Paperclip className="h-3 w-3 mr-1" />
-                    Attach
-                  </label>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Category</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.category}</span>
+                  </div>
                 </div>
-              ) : (
-                <p className="text-white text-sm py-2">{uploadedFiles.length > 0 ? `${uploadedFiles.length} file(s)` : "—"}</p>
-              )}
+              </div>
             </div>
-            {/* PPM Contractor Dropdown */}
+
+            {/* Section B: Identification */}
             <div>
-              <label className="block text-xs text-gray-400 mb-1">PPM Contractor</label>
-              {isEditing ? (
-                <select
-                  value={editedAsset.contractor_ppm_id || ""}
-                  onChange={(e) => handleInputChange("contractor_ppm_id", e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
-                >
-                  <option value="">Select contractor...</option>
-                  {contractors.map(contractor => (
-                    <option key={contractor.id} value={contractor.id}>
-                      {contractor.name} ({contractor.category_name})
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                 <p className="text-white text-sm py-2">
-                   {(() => {
-                     const contractor = contractors.find(c => c.id === asset.contractor_ppm_id);
-                     return contractor ? `${contractor.name} (${contractor.category_name})` : "—";
-                   })()}
-                 </p>
-               )}
+              <h3 className="text-base font-semibold tracking-wide text-magenta-400 border-t border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-magenta-500/10 to-transparent px-2 py-1 rounded">
+                Identification
+              </h3>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-magenta-500/40"></div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Asset Name</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.name}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Brand</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.brand || '—'}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Model</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.model || '—'}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Serial Number</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.serial_number || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section C: Important Dates */}
+            <div>
+              <h3 className="text-base font-semibold tracking-wide text-magenta-400 border-t border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-magenta-500/10 to-transparent px-2 py-1 rounded">
+                Important Dates
+              </h3>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-magenta-500/40"></div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Install Date</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">
+                      {asset.install_date ? new Date(asset.install_date).toLocaleDateString() : '—'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Warranty End</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">
+                      {asset.warranty_end ? new Date(asset.warranty_end).toLocaleDateString() : '—'}
+                    </span>
+                  </div>
+                </div>
+                <EditableField
+                  label="Next Service Date"
+                  value={asset.next_service_date}
+                  type="date"
+                  onSave={(value) => handleFieldUpdate('next_service_date', value)}
+                />
+                <EditableField
+                  label="PPM Frequency"
+                  value={asset.ppm_frequency_months ? `every ${asset.ppm_frequency_months} months` : '—'}
+                  type="text"
+                  onSave={(value) => {
+                    // Extract number from "every X months" format or just number
+                    const match = value.match(/every (\d+) months?/i);
+                    const months = match ? parseInt(match[1]) : parseInt(value);
+                    if (months && months >= 1) {
+                      handleFieldUpdate('ppm_frequency_months', months.toString());
+                    }
+                  }}
+                  placeholder="every 6 months"
+                />
+              </div>
+            </div>
+
+            {/* Section D: Contractor Assignments */}
+            <div>
+              <h3 className="text-base font-semibold tracking-wide text-magenta-400 border-t border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-magenta-500/10 to-transparent px-2 py-1 rounded">
+                Contractor Assignments
+              </h3>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-magenta-500/40"></div>
+                <EditableField
+                  label="PPM Contractor"
+                  value={asset.ppm_contractor_name}
+                  type="select"
+                  fetchOptions={fetchContractors}
+                  onSave={(value) => handleFieldUpdate('ppm_contractor_id', value)}
+                />
+                <EditableField
+                  label="Reactive Contractor"
+                  value={asset.reactive_contractor_name}
+                  type="select"
+                  fetchOptions={fetchContractors}
+                  onSave={(value) => handleFieldUpdate('reactive_contractor_id', value)}
+                />
+                <EditableField
+                  label="Warranty Contractor"
+                  value={asset.warranty_contractor_name}
+                  type="select"
+                  fetchOptions={fetchContractors}
+                  onSave={(value) => handleFieldUpdate('warranty_contractor_id', value)}
+                />
+                <div></div>
+              </div>
+            </div>
+
+            {/* Section E: Additional Information */}
+            <div>
+              <h3 className="text-base font-semibold tracking-wide text-magenta-400 border-t border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-magenta-500/10 to-transparent px-2 py-1 rounded">
+                Additional Information
+              </h3>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-magenta-500/40"></div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Status</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{asset.status}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Warranty Status</span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`
+                        ${asset.warranty_end && new Date(asset.warranty_end) >= new Date()
+                          ? 'text-green-400 animate-pulse font-medium'
+                          : 'text-red-400 animate-pulse font-medium'}
+                      `}
+                    >
+                      {asset.warranty_end && new Date(asset.warranty_end) >= new Date()
+                        ? 'In Warranty'
+                        : 'Out of Warranty'}
+                    </span>
+                  </div>
+                </div>
+                <EditableField
+                  label="Notes"
+                  value={asset.notes}
+                  type="textarea"
+                  onSave={(value) => handleFieldUpdate('notes', value)}
+                  placeholder="Enter any additional notes..."
+                />
+                <div className="flex justify-between items-center border-b border-neutral-800 pb-1">
+                  <span className="text-neutral-400">Document URL</span>
+                  <div className="flex items-center gap-2">
+                    {asset.document_url ? (
+                      <a 
+                        href={asset.document_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-magenta-400 hover:text-magenta-300 text-sm underline"
+                      >
+                        View Document
+                      </a>
+                    ) : (
+                      <span className="text-white font-medium">—</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* File Upload Display */}
-          {uploadedFiles.length > 0 && (
-            <div className="mt-3 space-y-1">
-              {uploadedFiles.map((fileName, index) => (
-                <div key={index} className="flex items-center justify-between bg-white/[0.05] rounded-lg px-3 py-2">
-                  <span className="text-sm text-white">{fileName}</span>
-                  {isEditing && (
-                    <button
-                      onClick={() => removeFile(fileName)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end pt-3 border-t border-white/[0.1]">
+          <div className="flex items-center justify-end pt-6 border-t border-neutral-700 mt-6">
             <div className="flex items-center space-x-2">
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] text-sm font-medium disabled:opacity-50"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    {isSaving ? "Saving..." : "Save"}
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-gray-500 text-gray-400 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(107,114,128,0.25)] text-sm font-medium"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={handleEdit}
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-blue-500 text-blue-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(37,99,235,0.25)] text-sm font-medium"
-                  >
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    Edit
-                  </button>
-                  {onArchive && (
-                    <button
-                      onClick={handleArchive}
-                      className="inline-flex items-center px-4 py-2 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] text-sm font-medium"
-                    >
-                      <Archive className="h-4 w-4 mr-2" />
-                      Archive
-                    </button>
-                  )}
-                </>
+              {onArchive && (
+                <button
+                  onClick={handleArchive}
+                  className="p-2 bg-transparent hover:bg-neutral-800/40 border-none 
+                             text-orange-400 hover:text-orange-300 
+                             hover:shadow-[0_0_6px_#ff9500] transition flex items-center"
+                  title="Archive Asset"
+                >
+                  <Trash2 size={18} />
+                </button>
               )}
             </div>
           </div>
+
+          {/* Archived Date Display */}
+          {asset.archived && asset.archived_at && (
+            <div className="mt-4 pt-4 border-t border-neutral-700">
+              <p className="text-xs text-neutral-400 text-center">
+                Archived on {new Date(asset.archived_at).toLocaleDateString()}
+              </p>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Callout Modal */}
+      <CalloutModal
+        open={calloutModalOpen}
+        onClose={() => setCalloutModalOpen(false)}
+        assetId={asset.id}
+        assetName={asset.name}
+      />
+
+      {/* Archive Confirmation Dialog */}
+      <ConfirmDialog
+        open={archiveConfirmOpen}
+        onClose={() => setArchiveConfirmOpen(false)}
+        onConfirm={handleConfirmArchive}
+        title="Move Asset to Archives"
+        description={`Are you sure you want to move "${asset.name}" to archives? This action can be undone later.`}
+        confirmText="Move to Archives"
+        cancelText="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 }

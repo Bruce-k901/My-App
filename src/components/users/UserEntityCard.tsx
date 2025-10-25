@@ -104,15 +104,15 @@ export default function UserEntityCard({
                 <Select
                   value={editForm.position_title}
                   options={[
-                    { label: "General Manager", value: "general_manager" },
-                    { label: "Assistant Manager", value: "assistant_manager" },
-                    { label: "Head Chef", value: "head_chef" },
-                    { label: "Sous Chef", value: "sous_chef" },
-                    { label: "Staff", value: "staff" },
-                    { label: "Owner", value: "owner" },
-                    { label: "Admin", value: "admin" },
-                    { label: "Head Office", value: "head_office" },
-                    { label: "Other", value: "other" }
+                    { label: "General Manager", value: "General Manager" },
+                    { label: "Assistant Manager", value: "Assistant Manager" },
+                    { label: "Head Chef", value: "Head Chef" },
+                    { label: "Sous Chef", value: "Sous Chef" },
+                    { label: "Staff", value: "Staff" },
+                    { label: "Owner", value: "Owner" },
+                    { label: "Admin", value: "Admin" },
+                    { label: "Head Office", value: "Head Office" },
+                    { label: "Other", value: "Other" }
                   ]}
                   onValueChange={(val: string) => onEditFormChange({ position_title: val })}
                 />

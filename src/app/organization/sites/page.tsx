@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SiteFormNew from "@/components/sites/SiteFormNew";
@@ -29,11 +28,12 @@ interface Site {
 }
 
 export default function OrganizationSitesPage() {
-  const { loading: authLoading } = useAuth();
-
-  if (authLoading) return null;
-
-  const { profile, loading: ctxLoading } = useAppContext();
+  // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
+  
+  // 1. Context hooks
+  const { loading: ctxLoading, profile } = useAppContext();
+  
+  // 2. State hooks
   const [sites, setSites] = useState<Site[]>([]);
   const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string | null}>>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,12 +44,16 @@ export default function OrganizationSitesPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // 3. Effect hooks - MUST BE CALLED EVERY RENDER
   useEffect(() => {
     (async () => {
       const { data: userRes } = await supabase.auth.getUser();
       setUserId(userRes?.user?.id || null);
     })();
   }, []);
+
+  // 4. Early returns ONLY AFTER all hooks
+  if (ctxLoading) return <div>Loading...</div>;
 
   const fetchSites = useCallback(async () => {
     if (!profile?.company_id) return;

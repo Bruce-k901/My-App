@@ -5,7 +5,6 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AppContextProvider } from "@/context/AppContext";
 import Footer from "@/components/layouts/Footer";
-import { AuthProvider } from "@/contexts/AuthContext";
 import RouteLogger from "@/components/RouteLogger";
 
 const manrope = Manrope({
@@ -35,12 +34,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <QueryProvider>
           <ToastProvider>
             <AppContextProvider>
-              {/* Auth provider wraps the actual app tree */}
-              <AuthProvider>
-                <RouteLogger />
-                {children}
-                <Footer />
-              </AuthProvider>
+              <RouteLogger />
+              {children}
+              <Footer />
             </AppContextProvider>
           </ToastProvider>
         </QueryProvider>

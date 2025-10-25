@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
 
 const countryList = [
   "United Kingdom",
@@ -48,8 +46,7 @@ type Company = {
 };
 
 export default function BusinessDetailsTab() {
-  const { company: contextCompany, setCompany, profile } = useAppContext();
-  const { user, companyId } = useAuth();
+  const { company: contextCompany, setCompany, profile, companyId } = useAppContext();
   const [form, setForm] = useState<Company>(contextCompany || {});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);

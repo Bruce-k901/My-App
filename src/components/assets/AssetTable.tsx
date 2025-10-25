@@ -11,20 +11,23 @@ export default function AssetTable() {
   useEffect(() => {
     const fetchAssets = async () => {
       const { data, error } = await supabase
-        .from('assets_redundant')
+        .from('assets')
         .select(`
           id,
-          label,
-          code,
+          name,
           model,
           serial_number,
-          date_of_purchase,
-          warranty_length_years,
-          under_warranty,
-          next_service_due,
-          add_to_ppm
+          brand,
+          category,
+          contractor:contractors(id, name, phone, email),
+          site:sites(id, name),
+          install_date,
+          next_service_date,
+          warranty_end,
+          status,
+          notes
         `)
-        .order('label', { ascending: true });
+        .order('name', { ascending: true });
 
       if (error) console.error(error);
       else setAssets(data || []);
@@ -35,20 +38,23 @@ export default function AssetTable() {
 
   const refreshAssets = async () => {
     const { data, error } = await supabase
-      .from('assets_redundant')
+      .from('assets')
       .select(`
         id,
-        label,
-        code,
+        name,
         model,
         serial_number,
-        date_of_purchase,
-        warranty_length_years,
-        under_warranty,
-        next_service_due,
-        add_to_ppm
+        brand,
+        category,
+        contractor:contractors(id, name, phone, email),
+        site:sites(id, name),
+        install_date,
+        next_service_date,
+        warranty_end,
+        status,
+        notes
       `)
-      .order('label', { ascending: true });
+      .order('name', { ascending: true });
     if (error) console.error(error);
     else setAssets(data || []);
   };
@@ -56,12 +62,12 @@ export default function AssetTable() {
   const saveLabel = async (id: string) => {
     const newLabel = editValue.trim();
     const { error } = await supabase
-      .from('assets_redundant')
-      .update({ label: newLabel || null })
+      .from('assets')
+      .update({ name: newLabel || null })
       .eq('id', id);
     if (error) {
-      console.error('Failed to update label', error);
-      alert(error.message || 'Could not update asset label');
+      console.error('Failed to update name', error);
+      alert(error.message || 'Could not update asset name');
       return;
     }
     setEditId(null);
@@ -76,10 +82,11 @@ export default function AssetTable() {
           <th className="py-2 text-left">Item</th>
           <th className="text-left">Model</th>
           <th className="text-left">Serial</th>
-          <th className="text-left">Purchase</th>
-          <th className="text-left">Warranty</th>
+          <th className="text-left">Brand</th>
+          <th className="text-left">Install Date</th>
+          <th className="text-left">Warranty End</th>
           <th className="text-left">Next Service</th>
-          <th className="text-left">PPM</th>
+          <th className="text-left">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -127,23 +134,24 @@ export default function AssetTable() {
                   className={a.label ? '' : 'text-neutral-500'}
                   title={a.label ? 'Double-click to edit label' : 'Double-click to set label'}
                 >
-                  {a.label || a.code || '(unnamed asset)'}
+                  {a.name || '(unnamed asset)'}
                 </span>
               )}
             </td>
             <td>{a.model}</td>
             <td>{a.serial_number}</td>
-            <td>{a.date_of_purchase}</td>
+            <td>{a.brand}</td>
+            <td>{a.install_date}</td>
             <td>
-              {a.under_warranty ? 'Under Warranty' : `${a.warranty_length_years} yr`}
+              {a.warranty_end ? new Date(a.warranty_end).toLocaleDateString() : '-'}
             </td>
-            <td>{a.next_service_due || '-'}</td>
-            <td>{a.add_to_ppm ? 'Yes' : 'No'}</td>
+            <td>{a.next_service_date ? new Date(a.next_service_date).toLocaleDateString() : '-'}</td>
+            <td>{a.status || 'Active'}</td>
           </tr>
         ))}
         {assets.length === 0 && (
           <tr>
-            <td colSpan={7} className="py-4 text-center text-neutral-500">
+            <td colSpan={8} className="py-4 text-center text-neutral-500">
               No assets yet.
             </td>
           </tr>

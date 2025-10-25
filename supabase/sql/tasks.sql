@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
   -- PPM Integration columns
   task_type text DEFAULT 'general' CHECK (task_type IN ('general', 'ppm', 'incident', 'maintenance')),
   linked_ppm_id uuid NULL REFERENCES public.ppm_schedule(id) ON DELETE SET NULL,
-  linked_asset_id uuid NULL REFERENCES public.assets_redundant(id) ON DELETE SET NULL,
+  linked_asset_id uuid NULL REFERENCES public.assets(id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );

@@ -30,9 +30,11 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
   const { companyId } = useAppContext();
   const [form, setForm] = useState({
     name: "",
+    contact_name: "",
     email: "",
     phone: "",
     ooh_phone: "",
+    address: "",
     category: "",
     service_description: "",
     postcode: "",
@@ -52,9 +54,11 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     if (isEdit) {
       setForm({
         name: contractor.name || "",
+        contact_name: contractor.contact_name || "",
         email: contractor.email || "",
         phone: contractor.phone || "",
         ooh_phone: contractor.ooh_phone || contractor.ooh || contractor.emergency_phone || "",
+        address: contractor.address || "",
         category: contractor.category || "",
         service_description: contractor.service_description || contractor.notes || "",
         postcode: contractor.postcode || "",
@@ -67,9 +71,11 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     } else if (prefill) {
       setForm({
         name: prefill.name || "",
+        contact_name: "",
         email: prefill.email || "",
         phone: prefill.phone || "",
         ooh_phone: prefill.ooh || "",
+        address: "",
         category: "",
         service_description: prefill.service_description || "",
         postcode: prefill.postcode || "",
@@ -82,9 +88,11 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     } else {
       setForm({
         name: "",
+        contact_name: "",
         email: "",
         phone: "",
         ooh_phone: "",
+        address: "",
         category: "",
         service_description: "",
         postcode: "",
@@ -105,6 +113,31 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
       return;
     }
 
+    if (!form.contact_name.trim()) {
+      showToast("Please enter a contact name");
+      return;
+    }
+
+    if (!form.address.trim()) {
+      showToast("Please enter an address");
+      return;
+    }
+
+    if (!form.phone.trim()) {
+      showToast("Please enter a phone number");
+      return;
+    }
+
+    if (!form.postcode.trim()) {
+      showToast("Please enter a postcode");
+      return;
+    }
+
+    if (!form.email.trim()) {
+      showToast("Please enter an email address");
+      return;
+    }
+
     if (!companyId) {
       showToast("Company context missing — please refresh or reselect company.");
       return;
@@ -116,10 +149,12 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
       const contractorData = {
         company_id: companyId,
         name: form.name.trim(),
-        email: form.email?.trim() || null,
-        phone: form.phone?.trim() || null,
+        contact_name: form.contact_name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
         ooh_phone: form.ooh_phone?.trim() || null,
-        postcode: form.postcode?.trim() || null,
+        address: form.address.trim(),
+        postcode: form.postcode.trim(),
         hourly_rate: form.hourly_rate !== null && form.hourly_rate !== "" ? Number(form.hourly_rate) : null,
         callout_fee: form.callout_fee !== null && form.callout_fee !== "" ? Number(form.callout_fee) : null,
         notes: form.service_description || null,

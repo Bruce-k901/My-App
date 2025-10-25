@@ -1,12 +1,16 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppContext } from "@/context/AppContext";
 import UsersTab from "@/components/organization/UsersTab";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 
 export default function OrganizationUsersPage() {
-  const { loading: authLoading } = useAuth();
+  // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
+  
+  // 1. Context hooks
+  const { loading: authLoading } = useAppContext();
 
+  // 2. Early returns ONLY AFTER all hooks
   if (authLoading) return null;
 
   return (

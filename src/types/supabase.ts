@@ -263,54 +263,48 @@ export type Database = {
           company_id: string | null
           contractor_id: string | null
           created_at: string | null
-          frequency_months: number | null
           id: string
           install_date: string | null
-          last_service_date: string | null
+          model: string | null
           name: string
-          next_service_date: string | null
+          next_service: string | null
           notes: string | null
-          ppm_status: string | null
-          purchase_date: string | null
           serial_number: string | null
           site_id: string | null
-          warranty_expiry: string | null
+          status: string | null
+          warranty_end: string | null
         }
         Insert: {
           category?: string | null
           company_id?: string | null
           contractor_id?: string | null
           created_at?: string | null
-          frequency_months?: number | null
           id?: string
           install_date?: string | null
-          last_service_date?: string | null
+          model?: string | null
           name: string
-          next_service_date?: string | null
+          next_service?: string | null
           notes?: string | null
-          ppm_status?: string | null
-          purchase_date?: string | null
           serial_number?: string | null
           site_id?: string | null
-          warranty_expiry?: string | null
+          status?: string | null
+          warranty_end?: string | null
         }
         Update: {
           category?: string | null
           company_id?: string | null
           contractor_id?: string | null
           created_at?: string | null
-          frequency_months?: number | null
           id?: string
           install_date?: string | null
-          last_service_date?: string | null
+          model?: string | null
           name?: string
-          next_service_date?: string | null
+          next_service?: string | null
           notes?: string | null
-          ppm_status?: string | null
-          purchase_date?: string | null
           serial_number?: string | null
           site_id?: string | null
-          warranty_expiry?: string | null
+          status?: string | null
+          warranty_end?: string | null
         }
         Relationships: [
           {
@@ -5067,7 +5061,7 @@ export type Database = {
           site_name: string | null
           site_postcode: string | null
           site_region: string | null
-          warranty_expiry: string | null
+          warranty_end: string | null
         }
         Relationships: []
       }

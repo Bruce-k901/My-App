@@ -10,20 +10,17 @@ import { Input, Button } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
 import { redirectToDashboard } from "@/lib/auth";
 
-async function preloadDashboardData() {
-  const preloadQueries = [
-    supabase.from("sites").select("*"),
-    supabase.from("assets").select("*"),
-    supabase.from("contractors").select("*"),
-    supabase.from("profiles").select("*")
-  ];
-
-  try {
-    const results = await Promise.all(preloadQueries);
+// Optimized preload - only essential data, non-blocking
+function preloadEssentialData() {
+  // Don't await - let this run in background
+  Promise.all([
+    supabase.from("sites").select("id, name, address").limit(10),
+    supabase.from("assets").select("id, name, site_id").limit(20)
+  ]).then(results => {
     sessionStorage.setItem("checkly-preload", JSON.stringify(results));
-  } catch (err) {
-    console.warn("Preload failed", err);
-  }
+  }).catch(err => {
+    console.warn("Background preload failed", err);
+  });
 }
 
 export default function LoginPage() {
@@ -40,24 +37,33 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    
     try {
+      console.log("🔐 Starting login process...");
+      
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
+      
       if (signInError) {
+        console.error("❌ Sign in error:", signInError);
         setError(signInError.message || "Login failed. Please check your credentials.");
+        setLoading(false);
         return;
       }
       
-      // Trigger background preload for dashboard data
-      await preloadDashboardData();
+      console.log("✅ Sign in successful, user:", data.user?.email);
       
-      // Simply redirect to dashboard - let AuthContext handle session management
-      redirectToDashboard(router);
-    } catch (_e) {
+      // Give the cookie a breath before redirect
+      await new Promise((r) => setTimeout(r, 300));
+      
+      // Use Next.js router for proper navigation
+      router.push("/dashboard");
+      
+    } catch (error) {
+      console.error("❌ Login error:", error);
       setError("Network issue while logging in. Please retry.");
-    } finally {
       setLoading(false);
     }
   };

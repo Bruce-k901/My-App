@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
 import UserEntityCard from "@/components/users/UserEntityCard";
@@ -27,7 +27,7 @@ interface Site {
 }
 
 export default function UsersTab() {
-  const { companyId, role } = useAuth();
+  const { companyId, role } = useAppContext();
   const { showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [sites, setSites] = useState<Site[]>([]);

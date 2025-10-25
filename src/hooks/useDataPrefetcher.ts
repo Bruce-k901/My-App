@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { fetchCompanyData, fetchSiteData } from '@/lib/supabaseHelpers';
 
 interface PrefetchOptions {
   priority?: 'high' | 'medium' | 'low';
@@ -27,6 +28,7 @@ export function useDataPrefetcher() {
 
   const prefetchData = useCallback(async (
     table: string,
+    companyId: string,
     select: string = '*',
     filters: Record<string, any> = {},
     options: PrefetchOptions = {}
@@ -48,9 +50,18 @@ export function useDataPrefetcher() {
 
     const fetchData = async () => {
       try {
-        let query = supabase.from(table).select(select);
+        // Use the new helper functions that automatically include company_id
+        let query;
         
-        // Apply filters
+        if (filters.site_id) {
+          // Site-scoped data
+          query = fetchSiteData(table, companyId, filters.site_id, select, filters);
+        } else {
+          // Company-scoped data
+          query = fetchCompanyData(table, companyId, select, filters);
+        }
+        
+        // Apply additional query modifiers
         Object.entries(filters).forEach(([key, value]) => {
           if (key === 'order') {
             const [column, ascending] = value.split(':');
@@ -60,7 +71,8 @@ export function useDataPrefetcher() {
           } else if (key === 'range') {
             const [from, to] = value;
             query = query.range(from, to);
-          } else {
+          } else if (key !== 'site_id' && key !== 'company_id') {
+            // Skip site_id and company_id as they're handled by the helper functions
             query = query.eq(key, value);
           }
         });
@@ -98,6 +110,7 @@ export function useDataPrefetcher() {
 
   const getCachedData = useCallback((
     table: string,
+    companyId: string,
     select: string = '*',
     filters: Record<string, any> = {}
   ) => {
@@ -111,9 +124,12 @@ export function useDataPrefetcher() {
     return null;
   }, [getCacheKey, isStale]);
 
-  const prefetchDashboardData = useCallback(async (companyId?: string, siteId?: string) => {
-    const baseFilters = companyId ? { company_id: companyId } : {};
-    const siteFilters = siteId ? { ...baseFilters, site_id: siteId } : baseFilters;
+  const prefetchDashboardData = useCallback(async (companyId: string, siteId?: string) => {
+    if (!companyId) {
+      throw new Error("Company ID is required for data prefetching");
+    }
+    
+    const siteFilters = siteId ? { site_id: siteId } : {};
 
     // Prefetch common dashboard data with staggered delays
     const prefetchTasks = [
@@ -123,7 +139,7 @@ export function useDataPrefetcher() {
       
       // Medium priority - slight delay
       { table: 'assets', filters: { ...siteFilters, limit: 20 }, delay: 100 },
-      { table: 'breakdowns', filters: { ...baseFilters, status: 'open', limit: 10 }, delay: 150 },
+      { table: 'tasks', filters: { ...baseFilters, task_type: 'maintenance', status: 'pending', limit: 10 }, delay: 150 },
       
       // Low priority - longer delay
       { table: 'ppm_schedules', filters: siteFilters, delay: 200 },
@@ -131,7 +147,7 @@ export function useDataPrefetcher() {
     ];
 
     prefetchTasks.forEach(({ table, filters, delay }) => {
-      prefetchData(table, '*', filters, { delay, priority: delay === 0 ? 'high' : 'medium' });
+      prefetchData(table, companyId, '*', filters, { delay, priority: delay === 0 ? 'high' : 'medium' });
     });
   }, [prefetchData]);
 

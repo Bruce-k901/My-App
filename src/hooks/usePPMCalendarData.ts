@@ -70,14 +70,14 @@ export function usePPMCalendarData(currentDate: Date) {
 
       // Optimized query: only fetch assets with PPM schedules in the date range
       const { data: assetsData, error } = await supabase
-        .from('assets_redundant')
+        .from('assets')
         .select(`
           id,
           name,
           category,
           status,
           site_id,
-          sites_redundant!inner(
+          sites!inner(
             id,
             name,
             company_id
@@ -97,7 +97,7 @@ export function usePPMCalendarData(currentDate: Date) {
             contractor_id
           )
         `)
-        .eq('sites_redundant.company_id', userRole.company_id)
+        .eq('sites.company_id', userRole.company_id)
         .gte('ppm_schedule.next_service_date', startDate)
         .lte('ppm_schedule.next_service_date', endDate)
         .order('ppm_schedule.next_service_date', { ascending: true })
@@ -153,7 +153,7 @@ export function usePPMCalendarData(currentDate: Date) {
   // Fetch data when current date changes
   useEffect(() => {
     fetchMonthData(currentDate)
-  }, [currentDate, fetchMonthData])
+  }, [currentDate])
 
   // Prefetch adjacent months for better UX
   useEffect(() => {
@@ -178,7 +178,7 @@ export function usePPMCalendarData(currentDate: Date) {
     if (currentMonthData.length >= 0) {
       prefetchAdjacentMonths()
     }
-  }, [currentDate, currentMonthData, monthlyData, fetchMonthData])
+  }, [currentDate, currentMonthData, monthlyData])
 
   // Clear old cached data (keep only last 6 months)
   useEffect(() => {

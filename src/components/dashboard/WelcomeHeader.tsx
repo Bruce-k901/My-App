@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppContext } from "@/context/AppContext";
 
 export default function WelcomeHeader() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [firstName, setFirstName] = useState("");
-  const { user, companyId } = useAuth();
+  const { session, companyId } = useAppContext();
 
   const tick = () => setCurrentTime(new Date());
 
@@ -18,17 +18,22 @@ export default function WelcomeHeader() {
   }, []);
 
   useEffect(() => {
-    async function fetchUser() {
-      if (!user) return;
+    const fetchUserName = async () => {
+      if (!session?.user?.id) return;
+      
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
-        .eq("id", user.id)
+        .select("full_name")
+        .eq("id", session.user.id)
         .single();
-      if (profile?.full_name) setFirstName(profile.full_name.split(" ")[0]);
-    }
-    fetchUser();
-  }, [user]);
+      
+      if (profile?.full_name) {
+        const name = profile.full_name.split(" ")[0];
+        setFirstName(name);
+      }
+    };
+    fetchUserName();
+  }, [session]);
 
   return (
     <div className="text-white">

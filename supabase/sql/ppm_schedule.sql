@@ -1,8 +1,8 @@
 -- Create ppm_schedule table for recurring and one-off maintenance records
 CREATE TABLE IF NOT EXISTS ppm_schedule (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    asset_id UUID NOT NULL REFERENCES assets_redundant(id) ON DELETE CASCADE,
-    contractor_id UUID REFERENCES contractors_redundant(id) ON DELETE SET NULL,
+    asset_id UUID NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+    contractor_id UUID REFERENCES contractors(id) ON DELETE SET NULL,
     last_service_date DATE,
     next_service_date DATE NOT NULL,
     frequency_months INTEGER NOT NULL DEFAULT 12,
@@ -52,8 +52,8 @@ ALTER TABLE ppm_schedule ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin and owner can manage all PPM schedules" ON ppm_schedule
     FOR ALL USING (
         EXISTS (
-            SELECT 1 FROM assets_redundant a
-            JOIN sites_redundant s ON a.site_id = s.id
+            SELECT 1 FROM assets a
+            JOIN sites s ON a.site_id = s.id
             JOIN user_roles ur ON ur.company_id = s.company_id
             WHERE a.id = ppm_schedule.asset_id
             AND ur.user_id = auth.uid()
@@ -65,8 +65,8 @@ CREATE POLICY "Admin and owner can manage all PPM schedules" ON ppm_schedule
 CREATE POLICY "Manager can view PPM schedules for their site" ON ppm_schedule
     FOR SELECT USING (
         EXISTS (
-            SELECT 1 FROM assets_redundant a
-            JOIN sites_redundant s ON a.site_id = s.id
+            SELECT 1 FROM assets a
+            JOIN sites s ON a.site_id = s.id
             JOIN user_roles ur ON ur.company_id = s.company_id
             WHERE a.id = ppm_schedule.asset_id
             AND ur.user_id = auth.uid()

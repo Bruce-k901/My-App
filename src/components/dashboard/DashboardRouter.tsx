@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
 import dynamic from "next/dynamic";
-import { getUserContext } from "@/lib/userContext";
+import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
 
 const StaffDashboard = dynamic(() => import("@/components/dashboard/StaffDashboard"), { ssr: false });
@@ -14,19 +14,29 @@ const AdminDashboard = dynamic(() => import("@/components/dashboard/AdminDashboa
 type Preload = Record<string, any>;
 
 async function preloadData(role: string, companyId: string, siteId?: string | null): Promise<Preload> {
+  if (!companyId) {
+    throw new Error("Company ID is required for data preloading");
+  }
+
   switch (role) {
     case "Staff": {
+      if (!siteId) {
+        throw new Error("Site ID is required for Staff role");
+      }
       const [{ data: tasks }, { data: incidents }, { data: temperature }] = await Promise.all([
-        supabase.from("tasks").select("*").eq("site_id", siteId ?? ""),
-        supabase.from("incidents").select("*").eq("site_id", siteId ?? ""),
-        supabase.from("temperature_logs").select("*").eq("site_id", siteId ?? ""),
+        supabase.from("tasks").select("*").eq("company_id", companyId).eq("site_id", siteId),
+        supabase.from("incidents").select("*").eq("company_id", companyId).eq("site_id", siteId),
+        supabase.from("temperature_logs").select("*").eq("company_id", companyId).eq("site_id", siteId),
       ]);
       return { tasks: tasks ?? [], incidents: incidents ?? [], temperature: temperature ?? [] };
     }
     case "Manager": {
+      if (!siteId) {
+        throw new Error("Site ID is required for Manager role");
+      }
       const [{ data: siteTasks }, { data: maintenance }] = await Promise.all([
-        supabase.from("tasks").select("*").eq("site_id", siteId ?? ""),
-        supabase.from("maintenance_logs").select("*").eq("site_id", siteId ?? ""),
+        supabase.from("tasks").select("*").eq("company_id", companyId).eq("site_id", siteId),
+        supabase.from("maintenance_logs").select("*").eq("company_id", companyId).eq("site_id", siteId),
       ]);
       return { siteTasks: siteTasks ?? [], maintenance: maintenance ?? [] };
     }
@@ -45,31 +55,35 @@ async function preloadData(role: string, companyId: string, siteId?: string | nu
 export default function DashboardRouter() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { loading, profile, company, site, role, session } = useAppContext();
   const [ready, setReady] = useState(false);
-  const [role, setRole] = useState<string>("Staff");
   const [preload, setPreload] = useState<Preload>({});
 
   useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const { profile, company, site } = await getUserContext();
-        // Setup pages have been retired - skip setup status checks
-        setRole(profile.app_role || "Staff");
-        const data = await preloadData(profile.app_role, company.id, site?.id ?? null);
-        if (!alive) return;
-        setPreload(data);
-        setReady(true);
-      } catch (e: any) {
-        const msg = e?.message || "Failed to load dashboard";
-        showToast(msg, "error");
+    console.log('🔍 DashboardRouter - loading:', loading, 'profile:', !!profile, 'company:', !!company, 'session:', session);
+    
+    // Hydration guard: treat undefined session as "still loading"
+    if (session === undefined) {
+      console.log('🔍 DashboardRouter - session still undefined, waiting for hydration');
+      return;
+    }
+    
+    if (!loading && (!profile || !company)) {
+      // Add a small delay to prevent race conditions during login
+      const timeoutId = setTimeout(() => {
+        console.log('🔍 DashboardRouter - still missing context after delay, redirecting');
+        showToast("Session expired. Please log in again.", "error");
         router.replace("/login");
-      }
-    })();
-    return () => { alive = false; };
-  }, [router, showToast]);
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
+    } else if (!loading && profile && company) {
+      preloadData(role || "Staff", company.id, site?.id ?? null).then(setPreload);
+      setReady(true);
+    }
+  }, [loading, profile, company, site, role, session, router, showToast]);
 
-  if (!ready) {
+  if (!ready || session === undefined) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
         <p className="text-slate-400">Loading dashboard…</p>
