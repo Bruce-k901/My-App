@@ -61,7 +61,7 @@ export default function TroubleshootReel({
       {/* Scrollable Container */}
       <div 
         ref={containerRef}
-        className="h-[200px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
+        className="h-[150px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
       >
         <div className="p-2 space-y-1">
           {items.map((item, index) => {

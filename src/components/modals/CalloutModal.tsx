@@ -591,7 +591,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-hide">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto scrollbar-hide">
         <DialogHeader>
           <div className="bg-neutral-800/30 rounded-lg p-4 backdrop-blur-sm">
             {/* First row: Asset Name left, Site Name right */}
@@ -722,24 +722,24 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               <div className="space-y-4">
                 <h4 className="text-sm font-medium text-white text-center">Troubleshooting Checklist</h4>
                 {loadingQuestions ? (
-                  <div className="h-[160px] flex items-center justify-center">
+                  <div className="h-[120px] flex items-center justify-center">
                     <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
-          </div>
+                  </div>
                 ) : troubleshootingQuestions.length > 0 ? (
                   <TroubleshootReel 
                     items={troubleshootingQuestions}
                     onComplete={() => setTroubleshootAck(true)}
                   />
                 ) : (
-                  <div className="h-[160px] flex items-center justify-center">
+                  <div className="h-[120px] flex items-center justify-center">
                     <div className="text-neutral-400 text-sm text-center">
                       No troubleshooting guide available for this equipment.
                       <br />
                       <span className="text-xs text-neutral-500 mt-2 block">
                         Category: {asset?.category || 'Unknown'} | Questions: {troubleshootingQuestions.length}
                       </span>
-          </div>
-            </div>
+                    </div>
+                  </div>
           )}
         </div>
         
@@ -789,8 +789,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
             onClick={onClose}
                   className="flex items-center gap-2 px-4 py-2 bg-neutral-800/50 border border-neutral-600 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors rounded-lg text-sm"
                   title="Close"
-                >
-                  Close
+          >
+            Close
                 </button>
               </div>
             </div>
@@ -904,7 +904,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                             >
                               <CheckCircle size={14} className="mr-1" />
                               Close Callout
-                            </Button>
+          </Button>
                           </div>
                         </div>
                       </div>
@@ -1001,12 +1001,6 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               )}
             </div>
           )}
-        </div>
-        
-        <div className="flex justify-end gap-2 pt-4 border-t border-neutral-700">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
         </div>
       </DialogContent>
 
