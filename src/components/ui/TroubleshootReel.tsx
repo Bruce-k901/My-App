@@ -52,9 +52,9 @@ export default function TroubleshootReel({
       {/* Column Headers */}
       <div className="flex items-center justify-between mb-2 px-2">
         <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
-        <div className="flex gap-8">
-          <div className="text-sm font-medium text-neutral-400 w-12 text-center">Yes</div>
-          <div className="text-sm font-medium text-neutral-400 w-12 text-center">No</div>
+        <div className="flex gap-8 w-20">
+          <div className="text-sm font-medium text-neutral-400 w-6 text-center">Yes</div>
+          <div className="text-sm font-medium text-neutral-400 w-6 text-center">No</div>
         </div>
       </div>
       
@@ -94,7 +94,7 @@ export default function TroubleshootReel({
                 </span>
                 
                 {/* Yes/No Tick Boxes */}
-                <div className="flex gap-8">
+                <div className="flex gap-8 w-20">
                   {/* Yes Button */}
                   <motion.button
                     onClick={() => handleAnswerSelect(index, 'yes')}
