@@ -520,16 +520,23 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
   // Fetch troubleshooting questions based on asset category
   const fetchTroubleshootingQuestions = async () => {
-    if (!asset?.category) return;
+    console.log('Fetching troubleshooting questions for category:', asset?.category);
+    if (!asset?.category) {
+      console.log('No asset category found');
+      return;
+    }
     
     setLoadingQuestions(true);
     try {
+      console.log('Querying troubleshooting_questions table...');
       const { data: questions, error } = await supabase
         .from('troubleshooting_questions')
         .select('question_text, order_index')
         .eq('category', asset.category)
         .eq('is_active', true)
         .order('order_index', { ascending: true });
+
+      console.log('Troubleshooting questions query result:', { questions, error });
 
       if (error) {
         console.error('Error fetching troubleshooting questions:', error);
@@ -538,8 +545,10 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
       }
 
       if (questions && questions.length > 0) {
+        console.log('Found troubleshooting questions:', questions);
         setTroubleshootingQuestions(questions.map(q => q.question_text));
       } else {
+        console.log('No troubleshooting questions found for category:', asset.category);
         setTroubleshootingQuestions([]);
       }
     } catch (error) {
@@ -725,6 +734,10 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                   <div className="h-[160px] flex items-center justify-center">
                     <div className="text-neutral-400 text-sm text-center">
                       No troubleshooting guide available for this equipment.
+                      <br />
+                      <span className="text-xs text-neutral-500 mt-2 block">
+                        Category: {asset?.category || 'Unknown'} | Questions: {troubleshootingQuestions.length}
+                      </span>
           </div>
             </div>
           )}
