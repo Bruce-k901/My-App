@@ -10,28 +10,33 @@ interface TroubleshootReelProps {
   onStepChange?: (stepIndex: number) => void;
 }
 
+interface QuestionAnswer {
+  questionIndex: number;
+  answer: 'yes' | 'no' | null;
+}
+
 export default function TroubleshootReel({ 
   items, 
   onComplete, 
   onStepChange 
 }: TroubleshootReelProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [isAnimating, setIsAnimating] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [answers, setAnswers] = useState<Map<number, 'yes' | 'no'>>(new Map());
 
-  // Check if all steps are completed
-  const allCompleted = completedSteps.size === items.length;
+  // Check if all steps are completed (all questions answered)
+  const allCompleted = answers.size === items.length;
 
-  // Handle step completion
-  const handleStepComplete = (stepIndex: number) => {
-    if (completedSteps.has(stepIndex)) return;
+  // Handle answer selection
+  const handleAnswerSelect = (questionIndex: number, answer: 'yes' | 'no') => {
+    setAnswers(prev => {
+      const newAnswers = new Map(prev);
+      newAnswers.set(questionIndex, answer);
+      return newAnswers;
+    });
     
-    setCompletedSteps(prev => new Set([...prev, stepIndex]));
-    
-    // Check if all steps are completed
-    const newCompletedSteps = new Set([...completedSteps, stepIndex]);
-    if (newCompletedSteps.size === items.length) {
+    // Check if all questions are answered
+    const newAnswers = new Map(answers);
+    newAnswers.set(questionIndex, answer);
+    if (newAnswers.size === items.length) {
       setTimeout(() => {
         onComplete();
       }, 500);
@@ -43,6 +48,15 @@ export default function TroubleshootReel({
 
   return (
     <div className="w-full">
+      {/* Column Headers */}
+      <div className="flex items-center justify-between mb-2 px-2">
+        <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
+        <div className="flex gap-8">
+          <div className="text-sm font-medium text-neutral-400 w-12 text-center">Yes</div>
+          <div className="text-sm font-medium text-neutral-400 w-12 text-center">No</div>
+        </div>
+      </div>
+      
       {/* Scrollable Container */}
       <div 
         ref={containerRef}
@@ -50,23 +64,21 @@ export default function TroubleshootReel({
       >
         <div className="p-2 space-y-1">
           {items.map((item, index) => {
-            const isCompleted = completedSteps.has(index);
-            const isActive = index === currentIndex;
+            const currentAnswer = answers.get(index);
+            const isAnswered = currentAnswer !== undefined;
             
             return (
               <motion.div
                 key={`${index}-${item}`}
                 className={`flex items-center justify-between p-2 rounded-md transition-all duration-300 ${
-                  isCompleted 
+                  isAnswered 
                     ? 'bg-green-500/10 border border-green-500/30' 
-                    : isActive
-                    ? 'bg-magenta-500/10 border border-magenta-500/30'
                     : 'bg-neutral-800/30 border border-neutral-700/50'
                 }`}
                 initial={false}
                 animate={{
-                  opacity: isActive ? 1 : 0.7,
-                  scale: isActive ? 1.02 : 1,
+                  opacity: isAnswered ? 1 : 0.7,
+                  scale: isAnswered ? 1.02 : 1,
                 }}
                 transition={{
                   type: "spring",
@@ -75,41 +87,75 @@ export default function TroubleshootReel({
                 }}
               >
                 <span className={`text-sm font-medium transition-colors flex-1 ${
-                  isCompleted ? 'text-green-400' : isActive ? 'text-white' : 'text-neutral-300'
+                  isAnswered ? 'text-green-400' : 'text-neutral-300'
                 }`}>
                   {item}
                 </span>
                 
-                <motion.button
-                  onClick={() => handleStepComplete(index)}
-                  disabled={isCompleted}
-                  className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
-                    isCompleted 
-                      ? 'bg-green-500 border-green-500' 
-                      : 'border-neutral-500 hover:border-green-400'
-                  }`}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div
-                    animate={isCompleted ? {
-                      scale: [1, 1.2, 1],
-                      opacity: [0, 1, 1]
-                    } : {
-                      opacity: 0
-                    }}
-                    transition={{ duration: 0.25 }}
-                    className="w-4 h-4"
+                {/* Yes/No Tick Boxes */}
+                <div className="flex gap-8">
+                  {/* Yes Button */}
+                  <motion.button
+                    onClick={() => handleAnswerSelect(index, 'yes')}
+                    className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
+                      currentAnswer === 'yes'
+                        ? 'bg-green-500 border-green-500' 
+                        : 'border-neutral-500 hover:border-green-400'
+                    }`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <Image
-                      src="/assets/tick_icon.png"
-                      alt="Check"
-                      width={16}
-                      height={16}
-                      className="w-full h-full"
-                    />
-                  </motion.div>
-                </motion.button>
+                    <motion.div
+                      animate={currentAnswer === 'yes' ? {
+                        scale: [1, 1.2, 1],
+                        opacity: [0, 1, 1]
+                      } : {
+                        opacity: 0
+                      }}
+                      transition={{ duration: 0.25 }}
+                      className="w-4 h-4"
+                    >
+                      <Image
+                        src="/assets/tick_icon.png"
+                        alt="Yes"
+                        width={16}
+                        height={16}
+                        className="w-full h-full"
+                      />
+                    </motion.div>
+                  </motion.button>
+                  
+                  {/* No Button */}
+                  <motion.button
+                    onClick={() => handleAnswerSelect(index, 'no')}
+                    className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
+                      currentAnswer === 'no'
+                        ? 'bg-red-500 border-red-500' 
+                        : 'border-neutral-500 hover:border-red-400'
+                    }`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <motion.div
+                      animate={currentAnswer === 'no' ? {
+                        scale: [1, 1.2, 1],
+                        opacity: [0, 1, 1]
+                      } : {
+                        opacity: 0
+                      }}
+                      transition={{ duration: 0.25 }}
+                      className="w-4 h-4"
+                    >
+                      <Image
+                        src="/assets/tick_icon.png"
+                        alt="No"
+                        width={16}
+                        height={16}
+                        className="w-full h-full"
+                      />
+                    </motion.div>
+                  </motion.button>
+                </div>
               </motion.div>
             );
           })}
@@ -149,8 +195,8 @@ export default function TroubleshootReel({
       {/* Caption */}
       <p className="text-xs text-neutral-400 text-center mt-2">
         {allCompleted 
-          ? "All troubleshooting steps completed!" 
-          : "Complete all steps to enable submission"
+          ? "All troubleshooting questions answered!" 
+          : "Answer all questions to enable submission"
         }
       </p>
     </div>
