@@ -21,6 +21,7 @@ export default function TroubleshootReel({
   onStepChange 
 }: TroubleshootReelProps) {
   const [answers, setAnswers] = useState<Map<number, 'yes' | 'no'>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Check if all steps are completed (all questions answered)
   const allCompleted = answers.size === items.length;
