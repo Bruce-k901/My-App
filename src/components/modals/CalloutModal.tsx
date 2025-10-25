@@ -236,7 +236,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
       return;
     }
 
-    if (!troubleshootingComplete) {
+    if (!troubleshootAck) {
       showToast({ title: 'Please confirm troubleshooting is complete', type: 'error' });
       return;
     }
@@ -266,7 +266,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
           p_fault_description: faultDescription || null,
           p_notes: notes || null,
           p_attachments: JSON.stringify(attachmentUrls),
-          p_troubleshooting_complete: troubleshootingComplete
+          p_troubleshooting_complete: troubleshootAck
         });
 
         if (error) throw error;
@@ -302,7 +302,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               fault_description: faultDescription || null,
               notes: notes || null,
               attachments: attachmentUrls,
-              troubleshooting_complete: troubleshootingComplete
+              troubleshooting_complete: troubleshootAck
             });
 
           if (error) {
@@ -749,7 +749,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                   </button>
                   <button
                     onClick={handleCreateCallout}
-                    disabled={loading || !troubleshootingComplete}
+                    disabled={loading || !troubleshootAck}
                     className="flex items-center gap-2 px-3 py-2 bg-magenta-500/20 border border-magenta-500/30 text-magenta-400 hover:bg-magenta-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
                     title="Send Call-Out"
                   >
