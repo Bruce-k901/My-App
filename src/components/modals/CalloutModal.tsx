@@ -724,7 +724,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 {loadingQuestions ? (
                   <div className="h-[120px] flex items-center justify-center">
                     <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
-                  </div>
+          </div>
                 ) : troubleshootingQuestions.length > 0 ? (
                   <TroubleshootReel 
                     items={troubleshootingQuestions}
@@ -738,8 +738,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                       <span className="text-xs text-neutral-500 mt-2 block">
                         Category: {asset?.category || 'Unknown'} | Questions: {troubleshootingQuestions.length}
                       </span>
-                    </div>
-                  </div>
+          </div>
+            </div>
           )}
         </div>
         
@@ -783,7 +783,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                   className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Send Call-Out"
                 >
-                  📨 Send
+                  ✈️ Send
                 </button>
                 <button
             onClick={onClose}
