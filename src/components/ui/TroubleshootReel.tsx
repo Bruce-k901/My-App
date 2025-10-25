@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
+import Image from 'next/image';
 
 interface TroubleshootReelProps {
   items: string[];
@@ -46,9 +46,9 @@ export default function TroubleshootReel({
       {/* Scrollable Container */}
       <div 
         ref={containerRef}
-        className="h-[200px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto"
+        className="h-[200px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
       >
-        <div className="p-4 space-y-3">
+        <div className="p-2 space-y-1">
           {items.map((item, index) => {
             const isCompleted = completedSteps.has(index);
             const isActive = index === currentIndex;
@@ -56,7 +56,7 @@ export default function TroubleshootReel({
             return (
               <motion.div
                 key={`${index}-${item}`}
-                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ${
+                className={`flex items-center justify-between p-2 rounded-md transition-all duration-300 ${
                   isCompleted 
                     ? 'bg-green-500/10 border border-green-500/30' 
                     : isActive
@@ -83,10 +83,10 @@ export default function TroubleshootReel({
                 <motion.button
                   onClick={() => handleStepComplete(index)}
                   disabled={isCompleted}
-                  className={`relative p-2 rounded-full transition-all duration-200 ${
+                  className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
                     isCompleted 
-                      ? 'text-green-400' 
-                      : 'text-neutral-500 hover:text-green-400'
+                      ? 'bg-green-500 border-green-500' 
+                      : 'border-neutral-500 hover:border-green-400'
                   }`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -94,21 +94,19 @@ export default function TroubleshootReel({
                   <motion.div
                     animate={isCompleted ? {
                       scale: [1, 1.2, 1],
-                      boxShadow: [
-                        '0 0 0px rgba(0,255,180,0)',
-                        '0 0 8px rgba(0,255,180,0.6)',
-                        '0 0 0px rgba(0,255,180,0)'
-                      ]
-                    } : {}}
+                      opacity: [0, 1, 1]
+                    } : {
+                      opacity: 0
+                    }}
                     transition={{ duration: 0.25 }}
+                    className="w-4 h-4"
                   >
-                    <Check 
-                      size={18} 
-                      className={`transition-all duration-200 ${
-                        isCompleted 
-                          ? 'text-green-400 fill-green-400' 
-                          : 'text-neutral-500'
-                      }`}
+                    <Image
+                      src="/assets/tick_icon.png"
+                      alt="Check"
+                      width={16}
+                      height={16}
+                      className="w-full h-full"
                     />
                   </motion.div>
                 </motion.button>
@@ -133,10 +131,14 @@ export default function TroubleshootReel({
                   opacity: [0, 1, 0]
                 }}
                 transition={{ duration: 0.4 }}
+                className="w-12 h-12"
               >
-                <Check 
-                  size={48} 
-                  className="text-green-400 fill-green-400"
+                <Image
+                  src="/assets/tick_icon.png"
+                  alt="Check"
+                  width={48}
+                  height={48}
+                  className="w-full h-full"
                 />
               </motion.div>
             </motion.div>
