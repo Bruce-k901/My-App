@@ -783,7 +783,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                   className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:cursor-not-allowed"
                   title="Send Call-Out"
                 >
-                  ✈️ Send
+                  <img src="/assets/send_icon.png" alt="Send" className="w-8 h-8 brightness-150" />
+                  Send
                 </button>
                 <button
             onClick={onClose}
