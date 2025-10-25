@@ -52,9 +52,6 @@ export default function OrganizationSitesPage() {
     })();
   }, []);
 
-  // 4. Early returns ONLY AFTER all hooks
-  if (ctxLoading) return <div>Loading...</div>;
-
   const fetchSites = useCallback(async () => {
     if (!profile?.company_id) return;
     setLoading(true);
@@ -137,6 +134,9 @@ export default function OrganizationSitesPage() {
       setError("No company context detected. Please sign in or complete setup.");
     }
   }, [ctxLoading, profile?.company_id]);
+
+  // Early returns ONLY AFTER all hooks
+  if (ctxLoading) return <div>Loading...</div>;
 
   const handleSaved = async () => {
     setFormOpen(false);
