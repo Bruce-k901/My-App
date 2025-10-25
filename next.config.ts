@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Explicitly disable Turbopack by giving an empty options object
-  turbopack: {},
-
   reactStrictMode: false, // Temporarily disabled for performance debugging
   // App Router is enabled by default in Next 15; no experimental flag needed
   // Ensure SSR build (not static export)
@@ -19,8 +16,20 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  webpack: (config) => {
-    return config; // forces classic Webpack behaviour
+  // Use webpack explicitly to avoid Turbopack conflicts
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Add bundle analyzer for production builds
+    if (!dev && !isServer) {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: 'bundle-analyzer-report.html',
+        })
+      );
+    }
+    return config;
   },
 };
 
