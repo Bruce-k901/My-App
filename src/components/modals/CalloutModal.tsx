@@ -581,7 +581,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-hide">
         <DialogHeader>
           <div className="bg-neutral-800/30 rounded-lg p-4 backdrop-blur-sm">
             {/* First row: Asset Name left, Site Name right */}
@@ -696,7 +696,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                     value={faultDescription}
                     onChange={(e) => setFaultDescription(e.target.value)}
                     placeholder="Describe the fault or issue..."
-                    className="w-full h-24 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
+                    className="w-full h-24 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
                     required
                   />
                 </div>
@@ -865,7 +865,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                             value={updateNotes}
                             onChange={(e) => setUpdateNotes(e.target.value)}
                             placeholder="Add update notes..."
-                            className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
+                            className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
                           />
                         </div>
                         <div className="flex gap-2">
@@ -892,7 +892,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                               value={repairSummary}
                               onChange={(e) => setRepairSummary(e.target.value)}
                               placeholder="Describe what was repaired..."
-                              className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
+                              className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
                             />
                           </div>
                           <div className="flex gap-2">
