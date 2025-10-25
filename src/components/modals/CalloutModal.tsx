@@ -752,34 +752,38 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 </div>
               </div>
 
-              {/* Contact buttons */}
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={() => {
-                    const contractorName = getContractorInfo();
-                    if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
-                      // TODO: Implement actual phone call
-                      console.log('Calling main contractor line');
-                    }
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                  title="Call Contractor"
-                >
-                  📞 Call Contractor
-                </button>
-                <button
-                  onClick={() => {
-                    const contractorName = getContractorInfo();
-                    if (confirm(`Call out-of-hours contact for ${contractorName || 'Contractor'}?`)) {
-                      // TODO: Implement actual phone call
-                      console.log('Calling OOH contact');
-                    }
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                  title="Call OOH Contact"
-                >
-                  🌙 Call OOH
-                </button>
+              {/* Contact button with dropdown */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      const contractorName = getContractorInfo();
+                      if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
+                        // TODO: Implement actual phone call
+                        console.log('Calling main contractor line');
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
+                    title="Call Contractor"
+                  >
+                    📞 Call Contractor
+                  </button>
+                  
+                  {/* Emergency call option */}
+                  <button
+                    onClick={() => {
+                      const contractorName = getContractorInfo();
+                      if (confirm(`Call emergency contact for ${contractorName || 'Contractor'}?`)) {
+                        // TODO: Implement actual phone call
+                        console.log('Calling emergency contact');
+                      }
+                    }}
+                    className="ml-2 flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors text-sm"
+                    title="Call Emergency Contact"
+                  >
+                    🚨 Emergency
+                  </button>
+                </div>
               </div>
 
               {/* CTA Bar - Sticky Footer */}
