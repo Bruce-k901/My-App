@@ -494,8 +494,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
       <CalloutModal
         open={calloutModalOpen}
         onClose={() => setCalloutModalOpen(false)}
-        assetId={asset.id}
-        assetName={asset.name}
+        asset={asset}
       />
 
       {/* Archive Confirmation Dialog */}
