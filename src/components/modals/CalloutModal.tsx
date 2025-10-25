@@ -9,6 +9,7 @@ import Select from '@/components/ui/Select';
 import { useToast } from '@/components/ui/ToastProvider';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import TroubleshootReel from '@/components/ui/TroubleshootReel';
 import { 
   Wrench, 
   AlertTriangle, 
@@ -78,15 +79,6 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const [priority, setPriority] = useState<'low' | 'medium' | 'urgent'>('medium');
   const [faultDescription, setFaultDescription] = useState('');
   const [notes, setNotes] = useState('');
-  const [troubleshootingComplete, setTroubleshootingComplete] = useState(false);
-  const [troubleshootingSteps, setTroubleshootingSteps] = useState({
-    powerConnected: false,
-    switchedOn: false,
-    settingsCorrect: false,
-    breakerOn: false,
-    connectionsSecure: false,
-    noObstructions: false
-  });
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
@@ -475,17 +467,6 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
     }
   };
 
-  const handleTroubleshootingStep = (step: keyof typeof troubleshootingSteps) => {
-    setTroubleshootingSteps(prev => ({
-      ...prev,
-      [step]: !prev[step]
-    }));
-    
-    // Check if all steps are complete
-    const updatedSteps = { ...troubleshootingSteps, [step]: !troubleshootingSteps[step] };
-    const allComplete = Object.values(updatedSteps).every(Boolean);
-    setTroubleshootingComplete(allComplete);
-  };
 
   const PrioritySlider = () => {
     const options = [
@@ -533,82 +514,14 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
     );
   };
 
-  const TroubleshootingSpinner = () => {
-    const steps = [
-      { key: 'powerConnected', label: 'Power Connected', icon: Power },
-      { key: 'switchedOn', label: 'Switched On', icon: Zap },
-      { key: 'settingsCorrect', label: 'Settings Correct', icon: Settings },
-      { key: 'breakerOn', label: 'Breaker On', icon: Power },
-      { key: 'connectionsSecure', label: 'Connections Secure', icon: Settings },
-      { key: 'noObstructions', label: 'No Obstructions', icon: Check }
-    ];
-
-    return (
-      <div className="flex flex-col items-center space-y-4">
-        <div className="relative w-48 h-48">
-          {/* Outer translucent ring */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-neutral-700/30 to-neutral-600/30 p-2">
-            <div className="w-full h-full rounded-full bg-neutral-800/60 backdrop-blur-sm"></div>
-          </div>
-          
-          {/* 6 Checkly tick segments on circumference */}
-          {steps.map((step, index) => {
-            const isComplete = troubleshootingSteps[step.key as keyof typeof troubleshootingSteps];
-            const angle = (index * 60) - 90; // 60 degrees apart, starting at top
-            const x = 50 + 40 * Math.cos((angle * Math.PI) / 180);
-            const y = 50 + 40 * Math.sin((angle * Math.PI) / 180);
-            
-            return (
-              <div
-                key={step.key}
-                className={`absolute w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-110 ${
-                  isComplete 
-                    ? 'bg-green-500/30 border-2 border-green-400 text-green-400 shadow-lg shadow-green-500/30' 
-                    : 'bg-neutral-700/40 border border-neutral-600 text-neutral-300 hover:bg-neutral-600/50 hover:border-neutral-500 hover:shadow-lg hover:shadow-magenta-500/20'
-                }`}
-                style={{
-                  left: `${x - 16}%`,
-                  top: `${y - 16}%`,
-                  transform: 'translate(-50%, -50%)'
-                }}
-                onClick={() => handleTroubleshootingStep(step.key as keyof typeof troubleshootingSteps)}
-              >
-                {isComplete ? (
-                  <Check size={16} className="text-green-400" />
-                ) : (
-                  <step.icon size={16} />
-                )}
-              </div>
-            );
-          })}
-          
-          {/* Center circle with large Checkly tick */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className={`w-24 h-24 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
-              troubleshootingComplete 
-                ? 'bg-green-500/20 border-green-400 shadow-lg shadow-green-500/30' 
-                : 'bg-neutral-800/50 border-neutral-600'
-            }`}>
-              <CheckCircle 
-                size={32} 
-                className={troubleshootingComplete ? 'text-green-400' : 'text-neutral-400'} 
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Caption */}
-        <div className="text-center">
-          <p className="text-sm text-neutral-400">
-            {troubleshootingComplete 
-              ? 'All troubleshooting steps completed ✓' 
-              : 'Complete all steps to enable submission'
-            }
-          </p>
-        </div>
-      </div>
-    );
-  };
+  const troubleshootingSteps = [
+    "Power Connected",
+    "Switched On", 
+    "Settings Correct",
+    "Breaker On",
+    "Connections Secure",
+    "No Obstructions"
+  ];
 
   const canCloseReopen = () => {
     return profile?.role === 'manager' || profile?.role === 'admin';
@@ -762,10 +675,13 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 <PrioritySlider />
               </div>
 
-              {/* Troubleshooting Spinner */}
+              {/* Troubleshooting Reel */}
               <div className="space-y-4">
                 <h4 className="text-sm font-medium text-white text-center">Troubleshooting Checklist</h4>
-                <TroubleshootingSpinner />
+                <TroubleshootReel 
+                  items={troubleshootingSteps}
+                  onComplete={() => setTroubleshootAck(true)}
+                />
               </div>
 
               {/* Photo upload */}
