@@ -758,30 +758,30 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                   <button
                     onClick={() => {
                       const contractorName = getContractorInfo();
-                      if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
-                        // TODO: Implement actual phone call
-                        console.log('Calling main contractor line');
+                      const choice = confirm(
+                        `Choose contact option:\n\n` +
+                        `Click OK for: 📞 Call Contractor (${contractorName || 'Contractor'})\n` +
+                        `Click Cancel for: 🚨 Emergency Contact`
+                      );
+                      
+                      if (choice) {
+                        // User clicked OK - Call Contractor
+                        if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
+                          // TODO: Implement actual phone call
+                          console.log('Calling main contractor line');
+                        }
+                      } else {
+                        // User clicked Cancel - Emergency Contact
+                        if (confirm(`Call emergency contact for ${contractorName || 'Contractor'}?`)) {
+                          // TODO: Implement actual phone call
+                          console.log('Calling emergency contact');
+                        }
                       }
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                    title="Call Contractor"
+                    title="Call Options"
                   >
-                    📞 Call Contractor
-                  </button>
-                  
-                  {/* Emergency call option */}
-                  <button
-                    onClick={() => {
-                      const contractorName = getContractorInfo();
-                      if (confirm(`Call emergency contact for ${contractorName || 'Contractor'}?`)) {
-                        // TODO: Implement actual phone call
-                        console.log('Calling emergency contact');
-                      }
-                    }}
-                    className="ml-2 flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors text-sm"
-                    title="Call Emergency Contact"
-                  >
-                    🚨 Emergency
+                    📞 Call Options
                   </button>
                 </div>
               </div>
