@@ -81,6 +81,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const [notes, setNotes] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [troubleshootAck, setTroubleshootAck] = useState(false);
   
   // Active callout update state
   const [updateNotes, setUpdateNotes] = useState('');
