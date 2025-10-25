@@ -113,12 +113,66 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const loadCallouts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.rpc('get_asset_callouts', {
-        p_asset_id: asset.id
-      });
+      
+      // Try RPC function first, fallback to direct query if not available
+      try {
+        const { data, error } = await supabase.rpc('get_asset_callouts', {
+          p_asset_id: asset.id
+        });
 
-      if (error) throw error;
-      setCallouts(data || []);
+        if (error) throw error;
+        setCallouts(data || []);
+      } catch (rpcError) {
+        console.log('RPC function not available, using direct query:', rpcError);
+        
+        // Fallback to direct query
+        const { data, error } = await supabase
+          .from('callouts')
+          .select(`
+            id,
+            callout_type,
+            priority,
+            status,
+            fault_description,
+            repair_summary,
+            notes,
+            attachments,
+            documents,
+            log_timeline,
+            troubleshooting_complete,
+            created_at,
+            closed_at,
+            reopened_at,
+            contractors(name),
+            profiles(name)
+          `)
+          .eq('asset_id', asset.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        // Transform data to match expected format
+        const transformedData = (data || []).map((callout: any) => ({
+          id: callout.id,
+          callout_type: callout.callout_type,
+          priority: callout.priority,
+          status: callout.status,
+          fault_description: callout.fault_description,
+          repair_summary: callout.repair_summary,
+          notes: callout.notes,
+          attachments: callout.attachments || [],
+          documents: callout.documents || [],
+          log_timeline: callout.log_timeline || {},
+          troubleshooting_complete: callout.troubleshooting_complete,
+          created_at: callout.created_at,
+          closed_at: callout.closed_at,
+          reopened_at: callout.reopened_at,
+          contractor_name: callout.contractors?.name || null,
+          created_by_name: callout.profiles?.name || null,
+        }));
+        
+        setCallouts(transformedData);
+      }
     } catch (error) {
       console.error('Error loading callouts:', error);
       showToast({ title: 'Failed to load callouts', type: 'error' });
@@ -149,17 +203,55 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
         console.log('Uploading attachments:', attachments);
       }
 
-      const { data, error } = await supabase.rpc('create_callout', {
-        p_asset_id: asset.id,
-        p_callout_type: calloutType,
-        p_priority: priority,
-        p_fault_description: faultDescription || null,
-        p_notes: notes || null,
-        p_attachments: JSON.stringify(attachmentUrls),
-        p_troubleshooting_complete: troubleshootingComplete
-      });
+      // Try RPC function first, fallback to direct insert if not available
+      try {
+        const { data, error } = await supabase.rpc('create_callout', {
+          p_asset_id: asset.id,
+          p_callout_type: calloutType,
+          p_priority: priority,
+          p_fault_description: faultDescription || null,
+          p_notes: notes || null,
+          p_attachments: JSON.stringify(attachmentUrls),
+          p_troubleshooting_complete: troubleshootingComplete
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      } catch (rpcError) {
+        console.log('RPC function not available, using direct insert:', rpcError);
+        
+        // Fallback to direct insert
+        const { data: assetData } = await supabase
+          .from('assets')
+          .select('company_id, site_id, ppm_contractor_id, reactive_contractor_id, warranty_contractor_id')
+          .eq('id', asset.id)
+          .single();
+
+        if (!assetData) {
+          throw new Error('Asset not found');
+        }
+
+        const contractorId = calloutType === 'ppm' ? assetData.ppm_contractor_id :
+                           calloutType === 'warranty' ? assetData.warranty_contractor_id :
+                           assetData.reactive_contractor_id;
+
+        const { error } = await supabase
+          .from('callouts')
+          .insert({
+            company_id: assetData.company_id,
+            asset_id: asset.id,
+            site_id: assetData.site_id,
+            contractor_id: contractorId,
+            created_by: profile?.id,
+            callout_type: calloutType,
+            priority: priority,
+            fault_description: faultDescription || null,
+            notes: notes || null,
+            attachments: attachmentUrls,
+            troubleshooting_complete: troubleshootingComplete
+          });
+
+        if (error) throw error;
+      }
 
       showToast({ 
         title: 'Callout created successfully', 
@@ -200,13 +292,31 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
         console.log('Uploading documents:', closeDocuments);
       }
 
-      const { error } = await supabase.rpc('close_callout', {
-        p_callout_id: calloutId,
-        p_repair_summary: repairSummary,
-        p_documents: JSON.stringify(documentUrls)
-      });
+      // Try RPC function first, fallback to direct update if not available
+      try {
+        const { error } = await supabase.rpc('close_callout', {
+          p_callout_id: calloutId,
+          p_repair_summary: repairSummary,
+          p_documents: JSON.stringify(documentUrls)
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      } catch (rpcError) {
+        console.log('RPC function not available, using direct update:', rpcError);
+        
+        // Fallback to direct update
+        const { error } = await supabase
+          .from('callouts')
+          .update({
+            status: 'closed',
+            repair_summary: repairSummary,
+            documents: documentUrls,
+            closed_at: new Date().toISOString()
+          })
+          .eq('id', calloutId);
+
+        if (error) throw error;
+      }
 
       showToast({ 
         title: 'Callout closed successfully', 
@@ -231,11 +341,28 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
     try {
       setLoading(true);
       
-      const { error } = await supabase.rpc('reopen_callout', {
-        p_callout_id: calloutId
-      });
+      // Try RPC function first, fallback to direct update if not available
+      try {
+        const { error } = await supabase.rpc('reopen_callout', {
+          p_callout_id: calloutId
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      } catch (rpcError) {
+        console.log('RPC function not available, using direct update:', rpcError);
+        
+        // Fallback to direct update
+        const { error } = await supabase
+          .from('callouts')
+          .update({
+            status: 'open',
+            reopened: true,
+            reopened_at: new Date().toISOString()
+          })
+          .eq('id', calloutId);
+
+        if (error) throw error;
+      }
 
       showToast({ 
         title: 'Callout reopened successfully', 
