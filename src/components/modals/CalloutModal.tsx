@@ -84,6 +84,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const [troubleshootAck, setTroubleshootAck] = useState(false);
   const [troubleshootingQuestions, setTroubleshootingQuestions] = useState<string[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [showCallOptions, setShowCallOptions] = useState(false);
   
   // Active callout update state
   const [updateNotes, setUpdateNotes] = useState('');
@@ -752,38 +753,15 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 </div>
               </div>
 
-              {/* Contact button with dropdown */}
+              {/* Contact button with custom modal */}
               <div className="flex justify-center">
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      const contractorName = getContractorInfo();
-                      const choice = confirm(
-                        `Choose contact option:\n\n` +
-                        `Click OK for: 📞 Call Contractor (${contractorName || 'Contractor'})\n` +
-                        `Click Cancel for: 🚨 Emergency Contact`
-                      );
-                      
-                      if (choice) {
-                        // User clicked OK - Call Contractor
-                        if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
-                          // TODO: Implement actual phone call
-                          console.log('Calling main contractor line');
-                        }
-                      } else {
-                        // User clicked Cancel - Emergency Contact
-                        if (confirm(`Call emergency contact for ${contractorName || 'Contractor'}?`)) {
-                          // TODO: Implement actual phone call
-                          console.log('Calling emergency contact');
-                        }
-                      }
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                    title="Call Options"
-                  >
-                    📞 Call Options
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowCallOptions(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
+                  title="Call Options"
+                >
+                  📞 Call Options
+                </button>
               </div>
 
               {/* CTA Bar - Sticky Footer */}
@@ -1079,6 +1057,68 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 className="px-4 py-2 bg-magenta-500 hover:bg-magenta-600 text-white rounded-lg disabled:opacity-50 transition-colors"
               >
                 {loading ? 'Sending...' : 'Confirm & Send'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Call Options Modal */}
+      {showCallOptions && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold text-white mb-2">Choose Contact Option</h3>
+              <p className="text-neutral-400 text-sm">Select how you'd like to contact the contractor</p>
+            </div>
+            
+            <div className="space-y-3">
+              {/* Call Contractor Option */}
+              <button
+                onClick={() => {
+                  const contractorName = getContractorInfo();
+                  if (confirm(`Call ${contractorName || 'Contractor'}?`)) {
+                    // TODO: Implement actual phone call
+                    console.log('Calling main contractor line');
+                  }
+                  setShowCallOptions(false);
+                }}
+                className="w-full flex items-center gap-3 p-4 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors"
+              >
+                <div className="text-2xl">📞</div>
+                <div className="text-left">
+                  <div className="font-medium">Call Contractor</div>
+                  <div className="text-sm text-neutral-400">{getContractorInfo() || 'Main contractor line'}</div>
+                </div>
+              </button>
+              
+              {/* Emergency Contact Option */}
+              <button
+                onClick={() => {
+                  const contractorName = getContractorInfo();
+                  if (confirm(`Call emergency contact for ${contractorName || 'Contractor'}?`)) {
+                    // TODO: Implement actual phone call
+                    console.log('Calling emergency contact');
+                  }
+                  setShowCallOptions(false);
+                }}
+                className="w-full flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                <div className="text-2xl">🚨</div>
+                <div className="text-left">
+                  <div className="font-medium">Emergency Contact</div>
+                  <div className="text-sm text-neutral-400">Out-of-hours emergency line</div>
+                </div>
+              </button>
+            </div>
+            
+            {/* Cancel Button */}
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => setShowCallOptions(false)}
+                className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+              >
+                Cancel
               </button>
             </div>
           </div>
