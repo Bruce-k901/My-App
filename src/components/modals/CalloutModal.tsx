@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
+import Select from '@/components/ui/Select';
 import { useToast } from '@/components/ui/ToastProvider';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -414,15 +414,16 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
               {/* Priority */}
               <div>
-                <label className="text-sm text-neutral-400 mb-2 block">Priority</label>
                 <Select
+                  label="Priority"
                   value={priority}
+                  options={[
+                    { label: 'Low', value: 'low' },
+                    { label: 'Medium', value: 'medium' },
+                    { label: 'Urgent', value: 'urgent' }
+                  ]}
                   onValueChange={(value: 'low' | 'medium' | 'urgent') => setPriority(value)}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="urgent">Urgent</option>
-                </Select>
+                />
               </div>
 
               {/* Troubleshooting checklist */}
