@@ -496,16 +496,20 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
     return (
       <div className="w-full max-w-md mx-auto">
-        <div className="bg-white/5 backdrop-blur rounded-md p-[2px] overflow-hidden h-[38px]">
+        <div className="flex rounded-md bg-white/5 backdrop-blur p-[2px] overflow-hidden h-[38px]">
           <div className="relative flex w-full">
-            {/* Sliding indicator */}
+            {/* Shared sliding indicator */}
             <motion.div
               layoutId="priority-indicator"
               className="absolute inset-y-0 bg-fuchsia-500/10 border border-fuchsia-400/40 rounded-md shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] shadow-black/20"
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              transition={{
+                type: "spring",
+                stiffness: 420,
+                damping: 34
+              }}
               style={{
                 width: `${100/3}%`,
-                left: `${(options.findIndex(opt => opt.value === priority) * 100/3)}%`
+                left: `${(priority === 'low' ? 0 : priority === 'medium' ? 1 : 2) * (100/3)}%`
               }}
             />
             
@@ -514,11 +518,13 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               <button
                 key={option.value}
                 onClick={() => setPriority(option.value as 'low' | 'medium' | 'urgent')}
-                className="flex-1 flex items-center justify-center text-base font-medium relative z-10"
+                className={`flex-1 flex items-center justify-center text-base font-medium transition-colors duration-200 ${
+                  priority === option.value
+                    ? 'text-fuchsia-200'
+                    : 'text-zinc-300 hover:text-white'
+                }`}
               >
-                <span className={priority === option.value ? 'text-fuchsia-200' : 'text-zinc-300 hover:text-white transition-colors'}>
-                  {option.label}
-                </span>
+                {option.label}
               </button>
             ))}
           </div>
