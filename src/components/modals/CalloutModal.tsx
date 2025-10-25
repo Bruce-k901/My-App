@@ -767,7 +767,9 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               </div>
 
               {/* Contact button with custom modal */}
-              <div className="flex justify-center">
+
+              {/* CTA Bar */}
+              <div className="flex justify-start items-center gap-3 mt-6">
                 <button
                   onClick={() => setShowCallOptions(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
@@ -775,27 +777,21 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 >
                   📞 Call Options
                 </button>
-              </div>
-
-              {/* CTA Bar - Sticky Footer */}
-              <div className="sticky bottom-0 bg-neutral-900/95 backdrop-blur-sm border-t border-neutral-700 -mx-6 px-6 py-4">
-                <div className="flex justify-end items-center gap-3">
-                  <button
-                    onClick={onClose}
-                    className="flex items-center gap-2 px-3 py-2 bg-neutral-800/50 border border-neutral-600 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors rounded-lg"
-                    title="Cancel"
-                  >
-                    ❌
-                  </button>
-                  <button
-                    onClick={handleCreateCallout}
-                    disabled={loading || !troubleshootAck}
-                    className="flex items-center gap-2 px-3 py-2 bg-magenta-500/20 border border-magenta-500/30 text-magenta-400 hover:bg-magenta-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
-                    title="Send Call-Out"
-                  >
-                    📨
-                  </button>
-                </div>
+                <button
+                  onClick={handleCreateCallout}
+                  disabled={loading || !troubleshootAck}
+                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Send Call-Out"
+                >
+                  📨 Send
+                </button>
+                <button
+            onClick={onClose}
+                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800/50 border border-neutral-600 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors rounded-lg text-sm"
+                  title="Close"
+                >
+                  Close
+                </button>
               </div>
             </div>
           )}
