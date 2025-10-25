@@ -82,6 +82,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [troubleshootAck, setTroubleshootAck] = useState(false);
+  const [troubleshootingQuestions, setTroubleshootingQuestions] = useState<string[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
   
   // Active callout update state
   const [updateNotes, setUpdateNotes] = useState('');
@@ -515,14 +517,44 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
     );
   };
 
-  const troubleshootingSteps = [
-    "Power Connected",
-    "Switched On", 
-    "Settings Correct",
-    "Breaker On",
-    "Connections Secure",
-    "No Obstructions"
-  ];
+  // Fetch troubleshooting questions based on asset category
+  const fetchTroubleshootingQuestions = async () => {
+    if (!asset?.category) return;
+    
+    setLoadingQuestions(true);
+    try {
+      const { data: questions, error } = await supabase
+        .from('troubleshooting_questions')
+        .select('question_text, order_index')
+        .eq('category', asset.category)
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching troubleshooting questions:', error);
+        setTroubleshootingQuestions([]);
+        return;
+      }
+
+      if (questions && questions.length > 0) {
+        setTroubleshootingQuestions(questions.map(q => q.question_text));
+      } else {
+        setTroubleshootingQuestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching troubleshooting questions:', error);
+      setTroubleshootingQuestions([]);
+    } finally {
+      setLoadingQuestions(false);
+    }
+  };
+
+  // Fetch troubleshooting questions when modal opens and asset is available
+  useEffect(() => {
+    if (open && asset?.category) {
+      fetchTroubleshootingQuestions();
+    }
+  }, [open, asset?.category]);
 
   const canCloseReopen = () => {
     return profile?.role === 'manager' || profile?.role === 'admin';
@@ -679,12 +711,24 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               {/* Troubleshooting Reel */}
               <div className="space-y-4">
                 <h4 className="text-sm font-medium text-white text-center">Troubleshooting Checklist</h4>
-                <TroubleshootReel 
-                  items={troubleshootingSteps}
-                  onComplete={() => setTroubleshootAck(true)}
-                />
-              </div>
-
+                {loadingQuestions ? (
+                  <div className="h-[160px] flex items-center justify-center">
+                    <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
+          </div>
+                ) : troubleshootingQuestions.length > 0 ? (
+                  <TroubleshootReel 
+                    items={troubleshootingQuestions}
+                    onComplete={() => setTroubleshootAck(true)}
+                  />
+                ) : (
+                  <div className="h-[160px] flex items-center justify-center">
+                    <div className="text-neutral-400 text-sm text-center">
+                      No troubleshooting guide available for this equipment.
+          </div>
+            </div>
+          )}
+        </div>
+        
               {/* Photo upload */}
               <div>
                 <label className="text-sm text-neutral-400 mb-2 block">Photos</label>
@@ -950,11 +994,11 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                         {callout.reopened_at && ` • Reopened: ${new Date(callout.reopened_at).toLocaleDateString()}`}
                       </div>
                       {canReopen(callout) && (
-                        <Button
+          <Button
                           onClick={() => handleReopenCallout(callout.id)}
                           disabled={loading}
                           size="sm"
-                          variant="outline"
+            variant="outline"
                           className="text-orange-400 border-orange-400 hover:bg-orange-400/10"
                         >
                           Reopen Callout
