@@ -1,0 +1,20 @@
+# Ignore development files
+.next/
+node_modules/
+*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore documentation files
+*.md
+docs/
+
+# Ignore SQL files
+*.sql
+
+# Ignore test files
+__tests__/
+*.test.*
+*.spec.*
