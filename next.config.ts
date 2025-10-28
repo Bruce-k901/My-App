@@ -16,11 +16,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Explicitly use webpack for builds to avoid Turbopack conflicts
+  // Explicitly disable Turbopack to use webpack
   experimental: {
-    turbo: {
-      // Empty turbopack config to disable it
-    },
+    turbo: false,
   },
 
   // Use webpack explicitly to avoid Turbopack conflicts
