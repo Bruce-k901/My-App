@@ -21,27 +21,36 @@ export default function EmergencyBreakdowns() {
 
   useEffect(() => {
     async function fetchBreakdowns() {
-      const { data, error } = await supabase
-        .from("tasks")
-        .select(`
-          id,
-          name,
-          notes,
-          status,
-          created_at,
-          sites!inner(name),
-          assets!inner(name)
-        `)
-        .eq("task_type", "maintenance")
-        .eq("status", "pending")
-        .order("created_at", { ascending: false });
-      if (!error && data) {
-        const formattedData = data.map(item => ({
+      try {
+        const { data, error } = await supabase
+          .from("assets")
+          .select(`
+            id,
+            name,
+            notes,
+            status,
+            created_at,
+            sites(name)
+          `)
+          .eq("status", "maintenance")
+          .eq("archived", false)
+          .order("created_at", { ascending: false });
+          
+        if (error) {
+          console.error("Error fetching breakdowns:", error);
+          setData([]);
+          return;
+        }
+        
+        const formattedData = (data || []).map(item => ({
           ...item,
-          sites: item.sites?.[0] || { name: 'Unknown Site' },
-          assets: item.assets?.[0] || { name: 'Unknown Asset' }
+          sites: item.sites || { name: 'Unknown Site' },
+          assets: { name: item.name || 'Unknown Asset' }
         }));
         setData(formattedData);
+      } catch (err) {
+        console.error("Failed to fetch breakdowns:", err);
+        setData([]);
       }
     }
     fetchBreakdowns();

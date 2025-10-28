@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 // import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
@@ -10,7 +10,6 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/ToastProvider";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
-import { ContextTest } from "@/components/ContextTest";
 
 type Contractor = {
   id: string;
@@ -41,12 +40,8 @@ export default function ContractorsPage() {
   const [query, setQuery] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const loadContractors = async () => {
-    console.log("🔍 DEBUG ContractorsPage - loadContractors called with companyId:", companyId);
-    if (!companyId) {
-      console.log("🔍 DEBUG ContractorsPage - no companyId, returning early");
-      return;
-    }
+  const loadContractors = useCallback(async () => {
+    if (!companyId) return;
     setLoading(true);
     setError(null);
     try {
@@ -94,12 +89,11 @@ export default function ContractorsPage() {
       setError(err.message);
       setLoading(false);
     }
-  };
+  }, [companyId]);
 
   useEffect(() => {
-    console.log("🔍 DEBUG ContractorsPage - useEffect triggered with companyId:", companyId);
     if (companyId) loadContractors();
-  }, [companyId]);
+  }, [companyId, loadContractors]);
 
   const handleSaved = async () => {
     setOpenAdd(false);
@@ -282,7 +276,6 @@ export default function ContractorsPage() {
       onDownload={handleDownload}
       onUpload={handleUploadClick}
     >
-      <ContextTest />
       <input
         ref={fileInputRef}
         type="file"

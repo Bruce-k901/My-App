@@ -19,7 +19,7 @@ export default function OrganizationPageLayout({
     <div className="pt-4 px-6 max-w-7xl mx-auto flex flex-col gap-6">
       {/* Page header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h2 className="text-2xl font-semibold text-white">{title}</h2>
+        <h1 className="text-2xl font-semibold mb-2">{title}</h1>
 
         {/* Actions like Add/Upload/Download */}
         <div className="flex flex-wrap gap-3">{actions}</div>

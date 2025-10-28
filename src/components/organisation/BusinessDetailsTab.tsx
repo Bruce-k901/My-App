@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
+import { supabase } from "@/lib/supabase";
 
 const countryList = [
   "United Kingdom",
@@ -46,7 +47,7 @@ type Company = {
 };
 
 export default function BusinessDetailsTab() {
-  const { company: contextCompany, setCompany, profile, companyId } = useAppContext();
+  const { company: contextCompany, setCompany, profile, companyId, userId } = useAppContext();
   const [form, setForm] = useState<Company>(contextCompany || {});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export default function BusinessDetailsTab() {
         return;
       }
 
-      if (!user) {
+      if (!userId) {
         setLoading(false);
         return;
       }
@@ -69,13 +70,13 @@ export default function BusinessDetailsTab() {
       const { data: profileRow } = await supabase
         .from("profiles")
         .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
-        .eq("id", user.id)
+        .eq("id", userId)
         .maybeSingle();
 
       const { data } = await supabase
         .from("companies")
         .select("*")
-        .or(`created_by.eq.${user.id},id.eq.${profileRow?.company_id || ""}`)
+        .or(`created_by.eq.${userId},id.eq.${profileRow?.company_id || ""}`)
         .limit(1);
 
       const row = Array.isArray(data) ? data?.[0] : (data as any);
@@ -92,7 +93,7 @@ export default function BusinessDetailsTab() {
           phone: "",
           website: "",
           country: "",
-          contact_email: user.email ?? "",
+          contact_email: profile?.email ?? "",
         });
       }
 

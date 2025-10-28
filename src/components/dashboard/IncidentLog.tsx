@@ -37,6 +37,12 @@ export default function IncidentLog() {
     setLoading(true);
     setError(null);
     try {
+      if (!companyId) {
+        setError("No company ID available");
+        setIncidents([]);
+        return;
+      }
+
       let query = supabase
         .from("incidents")
         .select(`
@@ -45,17 +51,17 @@ export default function IncidentLog() {
           resolution_notes,
           status,
           created_at,
-          sites!inner(name)
+          sites(name)
         `)
         .eq("type", activeTab)
         .order("created_at", { ascending: false })
         .limit(10);
-      if (companyId) query = query.eq("company_id", companyId);
+        
       const { data, error } = await query;
       if (error) throw error;
       const formattedData = (data || []).map(item => ({
         ...item,
-        sites: item.sites?.[0] || { name: 'Unknown Site' }
+        sites: item.sites || { name: 'Unknown Site' }
       }));
       setIncidents(formattedData as Incident[]);
     } catch (e: any) {

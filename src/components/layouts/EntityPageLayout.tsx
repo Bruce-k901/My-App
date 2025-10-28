@@ -41,7 +41,7 @@ export default function EntityPageLayout({
       <div className="flex items-center justify-between w-full mb-4">
         {/* Left side - Title and Search */}
         <div className="flex items-center gap-4">
-          {title && <h1 className="text-3xl font-semibold text-white flex-shrink-0">{title}</h1>}
+          {title && <h1 className="text-2xl font-semibold mb-2 flex-shrink-0">{title}</h1>}
           
           {/* Search area */}
           <div className="flex items-center gap-3">

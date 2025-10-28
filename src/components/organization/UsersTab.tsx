@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -37,7 +37,7 @@ export default function UsersTab() {
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
   const [editForms, setEditForms] = useState<Record<string, any>>({});
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     if (!companyId) return;
 
     try {
@@ -56,9 +56,9 @@ export default function UsersTab() {
         type: "error"
       });
     }
-  };
+  }, [companyId, showToast]);
 
-  const fetchSites = async () => {
+  const fetchSites = useCallback(async () => {
     if (!companyId) return;
 
     try {
@@ -77,7 +77,7 @@ export default function UsersTab() {
         type: "error"
       });
     }
-  };
+  }, [companyId, showToast]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,7 +87,7 @@ export default function UsersTab() {
     };
 
     loadData();
-  }, [companyId]);
+  }, [companyId, fetchUsers, fetchSites]);
 
   const handleUserUpdate = async (userId: string, updates: Partial<User>) => {
     try {
@@ -246,9 +246,9 @@ export default function UsersTab() {
                   }));
                 }}
                 roleOptions={[
-                  { label: "Admin", value: "admin" },
-                  { label: "Manager", value: "manager" },
-                  { label: "Staff", value: "staff" }
+                  { label: "Admin", value: "Admin" },
+                  { label: "Manager", value: "Manager" },
+                  { label: "Staff", value: "Staff" }
                 ]}
                 onRoleChange={(userId: string, role: string) => {
                   setEditForms(prev => ({

@@ -32,7 +32,7 @@ export default function PageLayout({
     <div className="w-full space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-3xl font-bold text-white tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-semibold mb-2">{title}</h1>
         <div className="flex flex-wrap gap-2">{buttons}</div>
       </div>
 

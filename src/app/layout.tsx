@@ -3,7 +3,9 @@ import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
-import { AppContextProvider } from "@/context/AppContext";
+import { AppProvider } from "@/context/AppContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";
 
@@ -31,15 +33,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={manrope.variable}>
       <body className="bg-neutral-950 text-white font-sans">
-        <QueryProvider>
-          <ToastProvider>
-            <AppContextProvider>
-              <RouteLogger />
-              {children}
-              <Footer />
-            </AppContextProvider>
-          </ToastProvider>
-        </QueryProvider>
+        <ErrorBoundary>
+          <ReactQueryProvider>
+            <QueryProvider>
+              <ToastProvider>
+                <AppProvider>
+                  <RouteLogger />
+                  {children}
+                  <Footer />
+                </AppProvider>
+              </ToastProvider>
+            </QueryProvider>
+          </ReactQueryProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

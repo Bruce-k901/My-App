@@ -1,3 +1,6 @@
-export default function Page() {
-  return <div className="p-8 text-white/80">Tasks coming soon</div>;
+import { redirect } from "next/navigation";
+
+export default function TasksPage() {
+  // Redirect to templates by default
+  redirect("/dashboard/tasks/templates");
 }

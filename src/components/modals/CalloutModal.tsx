@@ -85,6 +85,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   const [troubleshootingQuestions, setTroubleshootingQuestions] = useState<string[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [showCallOptions, setShowCallOptions] = useState(false);
+  const [showTroubleshootModal, setShowTroubleshootModal] = useState(false);
   
   // Active callout update state
   const [updateNotes, setUpdateNotes] = useState('');
@@ -691,7 +692,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               </button>
             ))}
           </div>
-        </div>
+          </div>
 
         {/* Tab Content */}
         <div className="py-6">
@@ -709,8 +710,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                     className="w-full h-24 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
                     required
                   />
-                </div>
-              )}
+            </div>
+          )}
 
               {/* Priority Slider */}
               <div className="space-y-3">
@@ -718,30 +719,19 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 <PrioritySlider />
               </div>
 
-              {/* Troubleshooting Reel */}
+              {/* Troubleshooting Button */}
               <div className="space-y-4">
                 <h4 className="text-sm font-medium text-white text-center">Troubleshooting Checklist</h4>
-                {loadingQuestions ? (
-                  <div className="h-[120px] flex items-center justify-center">
-                    <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
-          </div>
-                ) : troubleshootingQuestions.length > 0 ? (
-                  <TroubleshootReel 
-                    items={troubleshootingQuestions}
-                    onComplete={() => setTroubleshootAck(true)}
-                  />
-                ) : (
-                  <div className="h-[120px] flex items-center justify-center">
-                    <div className="text-neutral-400 text-sm text-center">
-                      No troubleshooting guide available for this equipment.
-                      <br />
-                      <span className="text-xs text-neutral-500 mt-2 block">
-                        Category: {asset?.category || 'Unknown'} | Questions: {troubleshootingQuestions.length}
-                      </span>
-          </div>
-            </div>
-          )}
-        </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowTroubleshootModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
+                    title="Open Troubleshooting Guide"
+                  >
+                    🔧 Troubleshoot
+                  </button>
+                </div>
+              </div>
         
               {/* Photo upload */}
               <div>
@@ -764,28 +754,30 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                     </Button>
                   </label>
                 </div>
-              </div>
-
+        </div>
+        
               {/* Contact button with custom modal */}
 
               {/* CTA Bar */}
-              <div className="flex justify-start items-center gap-3 mt-6">
-                <button
-                  onClick={() => setShowCallOptions(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                  title="Call Options"
-                >
-                  📞 Call Options
-                </button>
-                <button
-                  onClick={handleCreateCallout}
-                  disabled={loading || !troubleshootAck}
-                  className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:cursor-not-allowed"
-                  title="Send Call-Out"
-                >
-                  <img src="/assets/send_icon.png" alt="Send" className="w-8 h-8 brightness-150" />
-                  Send
-                </button>
+              <div className="flex justify-between items-center mt-6">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowCallOptions(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
+                    title="Call Options"
+                  >
+                    📞 Call Options
+                  </button>
+                  <button
+                    onClick={handleCreateCallout}
+                    disabled={loading || !troubleshootAck}
+                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:cursor-not-allowed"
+                    title="Send Call-Out"
+                  >
+                    <img src="/logo/send_icon.png" alt="Send" className="w-4 h-4 brightness-150" />
+                    Send
+                  </button>
+                </div>
                 <button
             onClick={onClose}
                   className="flex items-center gap-2 px-4 py-2 bg-neutral-800/50 border border-neutral-600 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors rounded-lg text-sm"
@@ -1125,6 +1117,47 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Troubleshoot Modal */}
+      {showTroubleshootModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Troubleshooting Guide</h3>
+              <button
+                onClick={() => setShowTroubleshootModal(false)}
+                className="text-neutral-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {loadingQuestions ? (
+              <div className="h-[200px] flex items-center justify-center">
+                <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
+              </div>
+            ) : troubleshootingQuestions.length > 0 ? (
+              <TroubleshootReel 
+                items={troubleshootingQuestions}
+                onComplete={() => {
+                  setTroubleshootAck(true);
+                  setShowTroubleshootModal(false);
+                }}
+              />
+            ) : (
+              <div className="h-[200px] flex items-center justify-center">
+                <div className="text-neutral-400 text-sm text-center">
+                  No troubleshooting guide available for this equipment.
+                  <br />
+                  <span className="text-xs text-neutral-500 mt-2 block">
+                    Category: {asset?.category || 'Unknown'}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -199,31 +199,29 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     }
   }, [initialData]);
 
-  // Phase 1: Minimal Proof-of-Life Query
+  // Set GM data from initialData when form initializes
   useEffect(() => {
-    const loadGMName = async () => {
-      console.log("🔍 Testing GM fetch for site:", initialData?.id);
-      const { data, error } = await supabase
-        .from("gm_index") // keep gm_index for now
-        .select("full_name")
-        .eq("home_site", initialData?.id)
-        .ilike("position_title", "%general%manager%")
-        .limit(1)
-        .single();
-
-      if (error) {
-        console.error("GM name fetch error:", error);
-      } else {
-        console.log("✅ GM name data:", data);
-        setFormData(prev => ({
-          ...prev,
-          gm_name: data?.full_name || "",
-        }));
-      }
-    };
-
-    if (initialData?.id) loadGMName();
-  }, [initialData?.id]);
+    if (initialData?.gm_profile) {
+      console.log("Setting GM data from initialData:", initialData.gm_profile);
+      setFormData(prev => ({
+        ...prev,
+        gm_user_id: initialData.gm_profile.id,
+        gm_name: initialData.gm_profile.full_name || "",
+        gm_email: initialData.gm_profile.email || "",
+        gm_phone: initialData.gm_profile.phone || ""
+      }));
+    } else if (initialData?.gm_user_id) {
+      // Fallback: if we have gm_user_id but no gm_profile, clear the GM fields
+      console.log("No gm_profile found, clearing GM fields");
+      setFormData(prev => ({
+        ...prev,
+        gm_user_id: "",
+        gm_name: "",
+        gm_email: "",
+        gm_phone: ""
+      }));
+    }
+  }, [initialData?.gm_profile, initialData?.gm_user_id]);
 
   // Data loading effect for edit mode
   useEffect(() => {
@@ -317,8 +315,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             console.log("initialData.gm_user_id:", initialData?.gm_user_id);
             console.log("gmList:", gmList);
             
-            // Load GM data after site data is set
-            await loadGMForSite(site.id);
+            // GM data is now handled by useEffect above
           }
         } catch (error) {
           console.error("Error loading site data:", error);
@@ -424,8 +421,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       setGmEditMode(false);
       onSaved?.();
     } catch (err) {
-      console.error(err);
-      showToast("Failed to save GM", "error");
+      console.error("Error updating GM:", err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+      showToast(`Failed to save GM: ${errorMessage}`, "error");
     } finally {
       setIsSaving(false);
     }

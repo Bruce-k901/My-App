@@ -24,6 +24,14 @@ function preloadEssentialData() {
 }
 
 export default function LoginPage() {
+  // 🔍 DEBUG: Check environment variables
+  console.log('🔍 ENV CHECK:', {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    keyType: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 15),
+    env: process.env.NODE_ENV
+  });
+  
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
@@ -71,7 +79,7 @@ export default function LoginPage() {
   return (
     <AuthLayout>
       <GlassCard>
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-white">
+        <h1 className="text-2xl font-semibold mb-2 text-center text-white">
           Log in to Checkly
         </h1>
 

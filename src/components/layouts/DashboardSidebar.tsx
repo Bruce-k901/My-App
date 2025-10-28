@@ -16,6 +16,8 @@ import {
   Globe,
   ShieldCheck,
   BadgeCheck,
+  Shield,
+  AlertTriangle,
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
@@ -24,9 +26,12 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
   { label: "Organization", href: "/dashboard/organization", icon: Building2 },
   { label: "Tasks", href: "/dashboard/tasks", icon: ClipboardList },
+  { label: "Checklists", href: "/dashboard/checklists", icon: ClipboardList },
   { label: "Assets", href: "/dashboard/assets", icon: Box },
   { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench },
   { label: "SOPs", href: "/dashboard/sops", icon: FileText },
+  { label: "Risk Assessments", href: "/dashboard/risk-assessments", icon: AlertTriangle },
+  { label: "COSHH Data", href: "/dashboard/coshh-data", icon: Shield },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: BadgeCheck },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },

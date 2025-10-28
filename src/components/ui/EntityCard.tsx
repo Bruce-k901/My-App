@@ -14,12 +14,9 @@ export default function EntityCard({
   return (
     <div 
       className="
-        group relative rounded-xl
-        bg-[#111827] text-white
-        border border-[#1F2937]
-        transition-colors transition-shadow duration-150
-        hover:border-[#EC4899]
-        hover:shadow-[0_0_0_1px_rgba(236,72,153,0.55),0_0_12px_rgba(236,72,153,0.35)]
+        bg-white/[0.05] border border-white/[0.1] rounded-xl p-3
+        transition-all duration-150 ease-in-out
+        hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]
       "
     >
       <div
@@ -34,7 +31,7 @@ export default function EntityCard({
         </div>
       </div>
 
-      {children && <div className="px-4 pb-3 border-t border-[#1F2937]">{children}</div>}
+      {children && <div className="px-4 pb-3 border-t border-white/[0.1]">{children}</div>}
     </div>
   );
 }

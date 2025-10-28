@@ -14,7 +14,7 @@ export default function OrganizationBusinessPage() {
   if (authLoading) return null;
 
   return (
-    <OrgContentWrapper title="Business Details">
+    <OrgContentWrapper title="">
       <BusinessDetailsTab />
     </OrgContentWrapper>
   );

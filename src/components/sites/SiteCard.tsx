@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, memo } from "react";
+import { useState, memo } from "react";
 import EntityCard from "@/components/ui/EntityCard";
 import CardHeader from "@/components/ui/CardHeader";
 import CardChevron from "@/components/ui/CardChevron";
 import { Pencil, Mail, Phone } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 
 type Site = Record<string, any>;
 
@@ -16,46 +15,11 @@ interface SiteCardProps {
 
 function SiteCard({ site, onEdit }: SiteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [gm, setGm] = useState<{
-    id: string;
-    full_name: string;
-    phone: string;
-    email: string;
-    home_site: string;
-  } | null>(null);
 
   const toggleCard = () => setIsOpen((prev) => !prev);
 
-  // Fetch GM data silently from gm_index
-  useEffect(() => {
-    const fetchGM = async () => {
-      if (!site?.id) return;
-
-      const { data, error } = await supabase
-        .from("gm_index")
-        .select("id, full_name, email, phone, home_site, position_title")
-        .eq("home_site", site.id)
-        .ilike("position_title", "%general%manager%"); // case-insensitive match for "General Manager"
-
-      if (error) {
-        console.error("GM fetch error:", error.message);
-      } else if (data && data.length > 0) {
-        const gm = data[0]; // take the first matching GM
-        console.log("GM found:", gm);
-        setGm({
-          id: gm.id,
-          full_name: gm.full_name,
-          email: gm.email ?? "",
-          phone: gm.phone ?? "",
-          home_site: gm.home_site
-        });
-      } else {
-        console.log(`No GM found for site: ${site.name}`);
-        setGm(null);
-      }
-    };
-    fetchGM();
-  }, [site?.id]);
+  // Use GM data from enriched site prop instead of fetching independently
+  const gm = site.gm_profile || null;
 
   // Create subtitle with address and contact details
   const createSubtitle = () => {

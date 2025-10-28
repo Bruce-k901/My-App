@@ -49,21 +49,21 @@ export default function TroubleshootReel({
 
   return (
     <div className="w-full">
-      {/* Column Headers */}
-      <div className="flex items-center justify-between mb-2 px-2">
-        <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
-        <div className="flex gap-8 w-20">
-          <div className="text-sm font-medium text-neutral-400 w-6 text-center">Yes</div>
-          <div className="text-sm font-medium text-neutral-400 w-6 text-center">No</div>
-        </div>
-      </div>
-      
-      {/* Scrollable Container */}
+      {/* Questions Container */}
       <div 
         ref={containerRef}
-        className="h-[150px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
+        className="h-[300px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
       >
-        <div className="p-2 space-y-1">
+        {/* Header inside scrollable container */}
+        <div className="flex items-center justify-between p-3 border-b border-neutral-700/50 sticky top-0 bg-neutral-800 z-10">
+          <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
+          <div className="flex gap-8 w-20 -ml-6">
+            <div className="text-sm font-medium text-neutral-400 w-6 text-center">Yes</div>
+            <div className="text-sm font-medium text-neutral-400 w-6 text-center">No</div>
+          </div>
+        </div>
+        
+        <div className="p-3 space-y-2">
           {items.map((item, index) => {
             const currentAnswer = answers.get(index);
             const isAnswered = currentAnswer !== undefined;
@@ -95,14 +95,14 @@ export default function TroubleshootReel({
                 
                 {/* Yes/No Tick Boxes */}
                 <div className="flex gap-8 w-20">
-                  {/* Yes Button */}
-                  <motion.button
-                    onClick={() => handleAnswerSelect(index, 'yes')}
-                    className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
-                      currentAnswer === 'yes'
-                        ? 'bg-green-500 border-green-500' 
-                        : 'border-neutral-500 hover:border-green-400'
-                    }`}
+                              {/* Yes Button */}
+                              <motion.button
+                                onClick={() => handleAnswerSelect(index, 'yes')}
+                                className={`relative w-8 h-8 rounded border-2 transition-all duration-200 flex items-center justify-center ${
+                                  currentAnswer === 'yes'
+                                    ? 'bg-green-500 border-green-500' 
+                                    : 'border-neutral-500 hover:border-green-400'
+                                }`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -114,7 +114,7 @@ export default function TroubleshootReel({
                         opacity: 0
                       }}
                       transition={{ duration: 0.25 }}
-                      className="w-4 h-4"
+                                  className="w-5 h-5"
                     >
                       <Image
                         src="/assets/tick_icon.png"
@@ -126,14 +126,14 @@ export default function TroubleshootReel({
                     </motion.div>
                   </motion.button>
                   
-                  {/* No Button */}
-                  <motion.button
-                    onClick={() => handleAnswerSelect(index, 'no')}
-                    className={`relative w-6 h-6 rounded border-2 transition-all duration-200 flex items-center justify-center ${
-                      currentAnswer === 'no'
-                        ? 'bg-red-500 border-red-500' 
-                        : 'border-neutral-500 hover:border-red-400'
-                    }`}
+                              {/* No Button */}
+                              <motion.button
+                                onClick={() => handleAnswerSelect(index, 'no')}
+                                className={`relative w-8 h-8 rounded border-2 transition-all duration-200 flex items-center justify-center ${
+                                  currentAnswer === 'no'
+                                    ? 'bg-red-500 border-red-500' 
+                                    : 'border-neutral-500 hover:border-red-400'
+                                }`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -145,7 +145,7 @@ export default function TroubleshootReel({
                         opacity: 0
                       }}
                       transition={{ duration: 0.25 }}
-                      className="w-4 h-4"
+                                  className="w-5 h-5"
                     >
                       <Image
                         src="/assets/tick_icon.png"

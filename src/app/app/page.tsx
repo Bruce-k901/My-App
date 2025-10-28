@@ -52,7 +52,7 @@ export default function AppHome() {
       <main className="flex-1">
         {/* Hero */}
         <section className="flex flex-col items-center justify-center text-center px-6 py-12">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-magenta-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(236,72,153,0.4)]">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(236,72,153,0.4)]">
             Welcome back{userEmail ? `, ${userEmail}` : ""}
           </h1>
           <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base mt-3">

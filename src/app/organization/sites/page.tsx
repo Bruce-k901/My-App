@@ -52,6 +52,37 @@ export default function OrganizationSitesPage() {
     })();
   }, []);
 
+  const fetchGMList = useCallback(async () => {
+    if (!profile?.company_id) return;
+
+    try {
+      // Fetch all GMs for the company from profiles table
+      const { data: gmsData, error: gmsError } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, phone_number")
+        .eq("company_id", profile.company_id)
+        .eq("app_role", "Manager")
+        .order("full_name");
+
+      if (gmsError) {
+        console.error("Error fetching GM list:", gmsError);
+        return;
+      }
+
+      // Transform the data to match expected format
+      const transformedGMs = (gmsData || []).map(gm => ({
+        id: gm.id,
+        full_name: gm.full_name,
+        email: gm.email,
+        phone: gm.phone_number
+      }));
+
+      setGmList(transformedGMs);
+    } catch (err: any) {
+      console.error("Error in fetchGMList:", err);
+    }
+  }, [profile?.company_id]);
+
   const fetchSites = useCallback(async () => {
     if (!profile?.company_id) return;
     setLoading(true);
@@ -104,15 +135,22 @@ export default function OrganizationSitesPage() {
           .in("id", gmIds);
 
         if (!gmsError && gmsData) {
+          console.log("GM data fetched from gm_index:", gmsData);
           gmMap = new Map(gmsData.map(g => [g.id, g]));
+        } else {
+          console.log("No GM data found or error:", gmsError);
         }
       }
 
       // Enrich sites with GM data
-      const enrichedSites = sitesData?.map(site => ({
-        ...site,
-        gm_profile: gmMap.get(site.gm_user_id) || null,
-      })) || [];
+      const enrichedSites = sitesData?.map(site => {
+        const gmProfile = gmMap.get(site.gm_user_id) || null;
+        console.log(`Site ${site.name} (${site.id}): gm_user_id=${site.gm_user_id}, gm_profile=`, gmProfile);
+        return {
+          ...site,
+          gm_profile: gmProfile,
+        };
+      }) || [];
 
       setSites(enrichedSites);
     } catch (err: any) {
@@ -124,9 +162,9 @@ export default function OrganizationSitesPage() {
   }, [profile?.company_id]);
 
   useEffect(() => {
-    if (!profile?.company_id) return;
     fetchSites();
-  }, [profile?.company_id, ctxLoading, fetchSites]);
+    fetchGMList();
+  }, [fetchSites, fetchGMList]);
 
   useEffect(() => {
     if (!ctxLoading && !profile?.company_id) {
@@ -136,12 +174,16 @@ export default function OrganizationSitesPage() {
   }, [ctxLoading, profile?.company_id]);
 
   // Early returns ONLY AFTER all hooks
-  if (ctxLoading) return <div>Loading...</div>;
+  if (ctxLoading) {
+    console.log('Context loading:', ctxLoading, 'Profile:', profile);
+    return <div className="text-slate-400">Loading context...</div>;
+  }
 
   const handleSaved = async () => {
     setFormOpen(false);
     setEditing(null);
     await fetchSites();
+    await fetchGMList();
   };
 
   // Filter sites based on search term
@@ -206,7 +248,7 @@ export default function OrganizationSitesPage() {
           onSaved={handleSaved}
           initial={editing || null}
           companyId={profile?.company_id || ""}
-
+          gmList={gmList}
         />
       )}
 
@@ -218,8 +260,10 @@ export default function OrganizationSitesPage() {
           onSaved={() => {
             setActiveSite(null);
             fetchSites();
+            fetchGMList();
           }}
           companyId={profile?.company_id || ""}
+          gmList={gmList}
         />
       )}
     </EntityPageLayout>

@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const newUserId = crypto.randomUUID();
     console.log("🟢 Generated local user ID:", newUserId);
 
-    const roleValue = String(app_role || "staff").toLowerCase();
+    const roleValue = String(app_role || "Staff");
 
     const { error: insertError } = await admin.from("profiles").insert({
       id: newUserId,

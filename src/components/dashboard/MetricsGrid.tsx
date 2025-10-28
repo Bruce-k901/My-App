@@ -4,7 +4,7 @@ export default function MetricsGrid() {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* A. Task Performance Summary */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">Task Performance Summary</h3>
         <div className="text-sm text-slate-300">Completed / Total</div>
         <div className="mt-2 h-3 w-full rounded-full bg-white/10 overflow-hidden">
@@ -20,7 +20,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* B. PPM Compliance */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">PPM Compliance</h3>
         <p className="text-sm text-slate-300">Next 30 days: due vs completed</p>
         <div className="mt-3 w-24 h-24 rounded-full bg-white/10 grid place-items-center">
@@ -30,7 +30,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* C. Training Coverage */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">Training Coverage</h3>
         <div className="grid grid-cols-2 gap-3 text-sm">
           {[
@@ -53,7 +53,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* D. Certificate Expiry */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">Certificate Expiry</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -79,7 +79,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* E. Site Comparison */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">Site Comparison</h3>
         <div className="space-y-2 text-sm">
           {[{ name: "Downtown", value: 72 }, { name: "Riverside", value: 85 }].map((s) => (
@@ -97,7 +97,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* F. SOP Review Status */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">SOP Review Status</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -117,7 +117,7 @@ export default function MetricsGrid() {
       </div>
 
       {/* G. Alerts Feed */}
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+      <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
         <h3 className="text-2xl font-semibold mb-3">Alerts Feed</h3>
         <p className="text-sm text-slate-400">No alerts to show right now.</p>
       </div>
