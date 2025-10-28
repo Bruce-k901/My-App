@@ -19,23 +19,28 @@ import {
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
+import { useRoutePreloader } from "@/hooks/useRoutePreloader";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-  { label: "Organization", href: "/dashboard/organization", icon: Building2 },
-  { label: "Tasks", href: "/dashboard/tasks", icon: ClipboardList },
+  // Link directly to organization root (avoids extra redirect hop)
+  { label: "Organization", href: "/organization", icon: Building2, activePaths: ["/dashboard/organization", "/organization/business"] },
+  // Use canonical routes for feature pages
+  { label: "Tasks", href: "/tasks", icon: ClipboardList, activePaths: ["/dashboard/tasks"] },
   { label: "Assets", href: "/dashboard/assets", icon: Box },
   { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench },
   { label: "SOPs", href: "/dashboard/sops", icon: FileText },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: BadgeCheck },
-  { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { label: "Reports", href: "/reports", icon: BarChart3, activePaths: ["/dashboard/reports"] },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
-  { label: "Support", href: "/dashboard/support", icon: Globe },
+  // Support/help lives under /dashboard/help
+  { label: "Support", href: "/dashboard/help", icon: Globe },
 ];
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const { role } = useAppContext();
+  const { preloadOnHover } = useRoutePreloader();
   const filtered = isRoleGuardEnabled()
     ? navItems.filter((item: any) => {
         if (item.roles && Array.isArray(item.roles)) {
@@ -46,20 +51,18 @@ export default function DashboardSidebar() {
     : navItems;
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col items-center py-6 gap-4 z-40">
+    <aside className="fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col items-center py-6 z-40">
       {/* Nav Icons */}
-      <nav className="flex flex-col gap-3 items-center">
-        {filtered.map(({ label, href, icon: Icon }) => {
-          const isDashboard = href === "/dashboard";
-          // For items under /dashboard/<segment>, also treat top-level /<segment> as active
-          const segment = href.startsWith("/dashboard/") ? href.slice("/dashboard".length) : href; // e.g. "/organization"
-          const isActive = isDashboard
-            ? pathname === "/dashboard"
-            : pathname.startsWith(href) || (!!segment && pathname.startsWith(segment));
+      <nav className="flex flex-col gap-3 items-center overflow-y-auto">
+        {filtered.map(({ label, href, icon: Icon, activePaths }) => {
+          const synonyms = Array.isArray(activePaths) ? activePaths : [];
+          const candidates = [href, ...synonyms];
+          const isActive = candidates.some((p) => pathname === p || pathname.startsWith(`${p}/`));
           return (
             <div key={href} className="relative group">
               <Link
                 href={href}
+                {...preloadOnHover(href)}
                 className={`flex items-center justify-center w-10 h-10 rounded-xl relative transition-all duration-200 
                   ${
                     isActive
