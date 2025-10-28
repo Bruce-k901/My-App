@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Explicitly use webpack for builds to avoid Turbopack conflicts
+  experimental: {
+    turbo: {
+      // Empty turbopack config to disable it
+    },
+  },
+
   // Use webpack explicitly to avoid Turbopack conflicts
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Add bundle analyzer for production builds
