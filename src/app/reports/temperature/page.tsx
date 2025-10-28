@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 
 type ComplianceRow = { site_id: string; site_name: string; ok: number; total: number; rate: number };
 
@@ -80,8 +80,8 @@ function TemperatureComplianceInner() {
 
 export default function TemperatureCompliancePage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <TemperatureComplianceInner />
-    </AppContextProvider>
+    </AppProvider>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 
 type Asset = { id: string; name: string; type?: string };
@@ -342,8 +342,8 @@ function TemperatureLogsInner() {
 
 export default function TemperatureLogsPage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <TemperatureLogsInner />
-    </AppContextProvider>
+    </AppProvider>
   );
 }

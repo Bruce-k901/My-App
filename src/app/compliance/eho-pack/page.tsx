@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 
 type Include = { tasks: boolean; temperature: boolean; maintenance: boolean; incidents: boolean };
@@ -259,8 +259,8 @@ function EHOPackInner() {
 
 export default function EHOPackPage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <EHOPackInner />
-    </AppContextProvider>
+    </AppProvider>
   );
 }

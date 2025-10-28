@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { useToast, ToastProvider } from "@/components/ui/ToastProvider";
 
@@ -164,10 +164,10 @@ function NotificationsInner() {
 
 export default function Page() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <ToastProvider>
         <NotificationsInner />
       </ToastProvider>
-    </AppContextProvider>
+    </AppProvider>
   );
 }

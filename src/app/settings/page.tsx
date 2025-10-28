@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/components/ui/ToastProvider';
-import { AppContextProvider } from '@/context/AppContext';
+import { AppProvider } from '@/context/AppContext';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
 
@@ -247,10 +247,10 @@ function SettingsInner() {
 
 export default function SettingsPage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <ToastProvider>
         <SettingsInner />
       </ToastProvider>
-    </AppContextProvider>
+    </AppProvider>
   );
 }

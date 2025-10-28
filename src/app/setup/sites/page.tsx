@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SetupLayout from "@/components/setup/SetupLayout";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -12,9 +12,9 @@ import { getTimezones } from "@/lib/timezones";
 
 export default function SitesSetupPage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <SitesContent />
-    </AppContextProvider>
+    </AppProvider>
   );
 }
 

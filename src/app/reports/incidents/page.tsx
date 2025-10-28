@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 
 type Incident = {
   id: string;
@@ -133,8 +133,8 @@ function Chart() {
 
 export default function Page() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <Chart />
-    </AppContextProvider>
+    </AppProvider>
   );
 }

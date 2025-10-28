@@ -17,9 +17,9 @@ const nextConfig: NextConfig = {
   },
 
   // Explicitly disable Turbopack to use webpack
-  experimental: {
-    turbo: false,
-  },
+  // experimental: {
+  //   turbo: false, // This key is invalid in Next.js 16
+  // },
 
   // Use webpack explicitly to avoid Turbopack conflicts
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {

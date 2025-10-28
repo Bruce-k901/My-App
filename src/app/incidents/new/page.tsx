@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useAppContext, AppContextProvider } from "@/context/AppContext";
+import { useAppContext, AppProvider } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 
 function NewIncidentForm() {
@@ -138,8 +138,8 @@ function NewIncidentForm() {
 
 export default function NewIncidentPage() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <NewIncidentForm />
-    </AppContextProvider>
+    </AppProvider>
   );
 }

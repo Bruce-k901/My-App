@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { AppContextProvider, useAppContext } from "@/context/AppContext";
+import { AppProvider, useAppContext } from "@/context/AppContext";
 import Link from "next/link";
 
 type Incident = {
@@ -216,8 +216,8 @@ function AsyncThumb({ path }: { path: string }) {
 
 export default function Page() {
   return (
-    <AppContextProvider>
+    <AppProvider>
       <IncidentsList />
-    </AppContextProvider>
+    </AppProvider>
   );
 }
