@@ -22,19 +22,19 @@ interface DraftTemplate {
 }
 
 export default function DraftTasksPage() {
-  const { profile, companyId } = useAppContext();
+  const { profile } = useAppContext();
   const [drafts, setDrafts] = useState<DraftTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (companyId) {
+    if (profile?.company_id) {
       loadDraftTemplates();
     }
-  }, [companyId]);
+  }, [profile?.company_id]);
 
   const loadDraftTemplates = async () => {
-    if (!companyId) return;
+    if (!profile?.company_id) return;
     
     setLoading(true);
     setError(null);
@@ -57,7 +57,7 @@ export default function DraftTasksPage() {
           asset_type,
           instructions
         `)
-        .eq("company_id", companyId)
+        .eq("company_id", profile.company_id)
         .eq("is_template_library", false) // Only show company-specific drafts, not library templates
         .order("updated_at", { ascending: false });
 
