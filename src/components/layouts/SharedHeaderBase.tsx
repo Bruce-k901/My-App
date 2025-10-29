@@ -23,8 +23,8 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
             <img
               src={logoSrc}
               alt={logoAlt ?? "Company logo"}
-              width={160}
-              height={40}
+              width={192}
+              height={48}
               className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
               loading="eager"
             />
@@ -32,8 +32,8 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
             <Image
               src={logo as any}
               alt={logoAlt ?? "Checkly logo"}
-              width={160}
-              height={40}
+              width={192}
+              height={48}
               priority
               className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
             />

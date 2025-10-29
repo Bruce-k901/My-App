@@ -15,8 +15,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Image
               src={logo}
               alt="Checkly logo"
-              width={390}
-              height={120}
+              width={468}
+              height={144}
               priority
               className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
             />

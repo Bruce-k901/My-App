@@ -55,7 +55,7 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
   return (
     <aside 
       className={`sticky top-0 h-screen flex flex-col border-r transition-all duration-300 ${
-        isMinimized ? 'w-12' : 'w-40'
+        isMinimized ? 'w-12' : 'w-24'
       }`}
       style={{
         backgroundColor: '#141419',

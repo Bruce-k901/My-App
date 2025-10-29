@@ -12,8 +12,8 @@ export default function AuthLogoHeader() {
           <Image
             src={logo as any}
             alt="Checkly logo"
-            width={240}
-            height={60}
+            width={288}
+            height={72}
             priority
             className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
           />

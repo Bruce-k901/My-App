@@ -28,7 +28,7 @@ export function HeaderLayout({
     if (pathname.includes('/organization/') || pathname === '/organization') return 'organization'
     if (pathname.includes('/sops')) return 'sops'
     if (pathname.includes('/tasks')) return 'tasks'
-    if (pathname.includes('/assets')) return 'assets'
+    if (pathname.includes('/assets') || pathname.includes('/ppm')) return 'assets'
     if (pathname.includes('/eho-report')) return 'eho-readiness'
     if (pathname.includes('/reports')) return 'reports'
     if (pathname.includes('/settings')) return 'settings'

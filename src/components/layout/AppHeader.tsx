@@ -26,7 +26,7 @@ export function AppHeader({
           <img
             src="/assets/logo.png"
             alt="Checkly"
-            className="h-8 w-auto"
+            className="h-11 w-auto"
           />
         </Link>
       </div>
