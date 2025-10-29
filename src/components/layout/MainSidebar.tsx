@@ -29,7 +29,7 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
   
   // Organization Section
-  { label: "Business Details", href: "/dashboard/organization/business", icon: Building2, section: "organization" },
+  { label: "Business Details", href: "/dashboard/organization/business-details", icon: Building2, section: "organization" },
   { label: "Sites", href: "/dashboard/organization/sites", icon: MapPin, section: "organization" },
   { label: "Users", href: "/dashboard/organization/users", icon: Users, section: "organization" },
   { label: "Contractors", href: "/dashboard/organization/contractors", icon: UserCog, section: "organization" },
