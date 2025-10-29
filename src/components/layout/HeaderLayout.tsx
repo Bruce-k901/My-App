@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { AppHeader } from './AppHeader'
 import { MainSidebar } from './MainSidebar'
 import { ContextualSidebar } from './ContextualSidebar'
@@ -20,11 +20,11 @@ export function HeaderLayout({
   const [contextSidebarMinimized, setContextSidebarMinimized] = useState(false)
   const [burgerOpen, setBurgerOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
 
   // Determine current page for contextual sidebar
   const getCurrentPage = () => {
-    // Check for organization sub-pages first (more specific)
+    // Check for specific routes first (most specific)
+    if (pathname === '/organization/contractors') return 'contractors'
     if (pathname.includes('/organization/') || pathname === '/organization') return 'organization'
     if (pathname.includes('/sops')) return 'sops'
     if (pathname.includes('/tasks')) return 'tasks'

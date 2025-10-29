@@ -16,8 +16,7 @@ import {
   Wrench,
   BarChart3,
   TrendingUp,
-  Settings,
-  HelpCircle
+  Settings
 } from 'lucide-react'
 
 interface ContextualSidebarProps {
@@ -52,7 +51,6 @@ const getContextualItems = (currentPage: string) => {
       ]
     case 'assets':
       return [
-        { id: 'contractors', label: 'Contractors', icon: Users, path: '/dashboard/organization/contractors' },
         { id: 'callouts', label: 'Callouts', icon: FileText, path: '/dashboard/organization' },
         { id: 'ppm-calendar', label: 'PPM Calendar', icon: Wrench, path: '/dashboard/ppm' }
       ]
@@ -157,7 +155,7 @@ export function ContextualSidebar({ isMinimized, onToggleMinimize, currentPage }
         })}
       </nav>
 
-      <style jsx>{`
+      <style>{`
         .hovering {
           background: #141419 !important;
           color: white !important;

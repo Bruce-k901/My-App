@@ -26,7 +26,8 @@ interface MainSidebarProps {
 const MAIN_NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, isDivider: false },
   { id: 'divider', label: '', path: '', icon: null, isDivider: true },
-  { id: 'organization', label: 'Organization', path: '/dashboard/organization', icon: Users, isDivider: false },
+  { id: 'organization', label: 'Organization', path: '/organization', icon: Users, isDivider: false },
+  { id: 'contractors', label: 'Contractors', path: '/organization/contractors', icon: Users, isDivider: false },
   { id: 'sops', label: 'SOPs', path: '/dashboard/sops', icon: FileText, isDivider: false },
   { id: 'tasks', label: 'Tasks', path: '/dashboard/tasks', icon: CheckSquare, isDivider: false },
   { id: 'assets', label: 'Assets', path: '/dashboard/assets', icon: Wrench, isDivider: false },
@@ -37,7 +38,6 @@ const MAIN_NAV_ITEMS = [
 ]
 
 export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: MainSidebarProps) {
-  const pathname = usePathname()
   const router = useRouter()
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
@@ -123,7 +123,7 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
         })}
       </nav>
 
-      <style jsx>{`
+      <style>{`
         .hovering {
           background: #1A1A20 !important;
           color: white !important;
