@@ -98,6 +98,8 @@ const directLinks: SidebarLink[] = [
 export default function NewMainSidebar() {
   const pathname = usePathname();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Create refs for each section button
   const orgRef = useRef<HTMLDivElement>(null);
@@ -114,6 +116,33 @@ export default function NewMainSidebar() {
     "Libraries": librariesRef,
     "Assets": assetsRef,
   };
+
+  // Handle hover with delay
+  const handleHover = (sectionLabel: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setIsHovering(true);
+    setHoveredSection(sectionLabel);
+  };
+
+  const handleLeave = () => {
+    setIsHovering(false);
+    hoverTimeoutRef.current = setTimeout(() => {
+      if (!isHovering) {
+        setHoveredSection(null);
+      }
+    }, 150); // 150ms delay
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -133,8 +162,8 @@ export default function NewMainSidebar() {
             key={section.label}
             section={section}
             isHovered={hoveredSection === section.label}
-            onHover={() => setHoveredSection(section.label)}
-            onLeave={() => setHoveredSection(null)}
+            onHover={() => handleHover(section.label)}
+            onLeave={handleLeave}
             pathname={pathname}
             buttonRef={buttonRefs[section.label]}
           />
@@ -158,8 +187,8 @@ export default function NewMainSidebar() {
           key={section.label}
           section={section}
           isVisible={hoveredSection === section.label}
-          onMouseEnter={() => setHoveredSection(section.label)}
-          onMouseLeave={() => setHoveredSection(null)}
+          onMouseEnter={() => handleHover(section.label)}
+          onMouseLeave={handleLeave}
           pathname={pathname}
           buttonRef={buttonRefs[section.label]}
         />
