@@ -94,26 +94,7 @@ export function TemperatureCheckTemplate() {
   };
 
   const handleSave = async () => {
-    // Save as draft - stays only in Templates page
-    setStatus("draft");
-    setIsExpanded(false);
-    
-    // Store template config
-    const config = {
-      equipment: equipmentRows.filter(row => row.assetId !== "").map(row => ({
-        assetId: row.assetId,
-        nickname: row.nickname
-      })),
-      day_parts: selectedDayParts,
-      times: times.slice(0, selectedDayParts.length)
-    };
-    
-    console.log("Saving draft template:", config);
-    alert("Template saved as draft in Templates page!");
-  };
-
-  const handleSaveAndDeploy = async () => {
-    // Save as draft in Templates AND deploy copy to My Tasks
+    // Save as draft - goes to Drafts page
     setStatus("draft");
     
     const validEquipment = equipmentRows.filter(row => row.assetId !== "");
@@ -129,7 +110,132 @@ export function TemperatureCheckTemplate() {
     }
 
     try {
-      // 1. Create a task template for this temperature check configuration
+      // Create a draft task template (not in library, goes to drafts)
+      const templateName = "SFBB Temperature Checks (Draft)";
+      const templateSlug = `sfbb-temperature-checks-draft-${Date.now()}`;
+      
+      const templateData = {
+        company_id: profile.company_id,
+        name: templateName,
+        slug: templateSlug,
+        description: "Daily temperature monitoring for refrigeration equipment - Draft",
+        category: "food_safety",
+        frequency: "daily",
+        time_of_day: "before_open",
+        dayparts: selectedDayParts,
+        assigned_to_role: "kitchen_manager",
+        repeatable_field_name: "fridge_name",
+        evidence_types: ["temperature", "photo", "pass_fail"],
+        compliance_standard: "Food Safety Act / HACCP",
+        audit_category: "food_safety",
+        is_critical: false,
+        is_template_library: false, // This makes it a draft
+        is_active: true,
+        instructions: `Temperature check for: ${validEquipment.map(eq => eq.nickname || 'Equipment').join(', ')}`
+      };
+
+      // Create the template
+      const { data: template, error: insertError } = await supabase
+        .from("task_templates")
+        .insert(templateData)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error creating draft template:", insertError);
+        alert("Error creating draft template");
+        return;
+      }
+
+      // Create fields for the template
+      const fields = [
+        {
+          task_template_id: template.id,
+          field_name: "fridge_name",
+          field_label: "Fridge Name",
+          field_type: "select",
+          is_required: true,
+          display_order: 1,
+          help_text: "Select the unit being checked",
+          options: validEquipment.map(eq => ({
+            value: eq.assetId,
+            label: eq.nickname || 'Equipment'
+          }))
+        },
+        {
+          task_template_id: template.id,
+          field_name: "temperature",
+          field_label: "Temperature (°C)",
+          field_type: "temperature",
+          is_required: true,
+          min_value: -20,
+          max_value: 10,
+          display_order: 2,
+          help_text: "Cold hold must be between 0-8°C"
+        },
+        {
+          task_template_id: template.id,
+          field_name: "status",
+          field_label: "Status",
+          field_type: "pass_fail",
+          is_required: true,
+          display_order: 3
+        },
+        {
+          task_template_id: template.id,
+          field_name: "initials",
+          field_label: "Initials",
+          field_type: "text",
+          is_required: true,
+          display_order: 4
+        },
+        {
+          task_template_id: template.id,
+          field_name: "photo",
+          field_label: "Photo Evidence",
+          field_type: "photo",
+          is_required: false,
+          display_order: 5
+        }
+      ];
+
+      const { error: fieldsError } = await supabase
+        .from("task_fields")
+        .insert(fields);
+
+      if (fieldsError) {
+        console.error("Error creating template fields:", fieldsError);
+        alert("Template created but fields failed to save");
+        return;
+      }
+
+      setIsExpanded(false);
+      alert("✅ Template saved as Draft! Check the Drafts page to see your template.");
+      
+    } catch (error) {
+      console.error("Draft save error:", error);
+      alert("Error saving draft template");
+    }
+  };
+
+  const handleSaveAndDeploy = async () => {
+    // Save as template AND deploy task instances to My Tasks
+    setStatus("draft");
+    
+    const validEquipment = equipmentRows.filter(row => row.assetId !== "");
+    
+    if (validEquipment.length === 0) {
+      alert("Please select at least one equipment item");
+      return;
+    }
+
+    if (!profile?.company_id) {
+      alert("No company found for user");
+      return;
+    }
+
+    try {
+      // 1. Create a task template (goes to Templates page)
       const templateName = "SFBB Temperature Checks";
       const templateSlug = `sfbb-temperature-checks-${Date.now()}`;
       
@@ -140,57 +246,139 @@ export function TemperatureCheckTemplate() {
         description: "Daily temperature monitoring for refrigeration equipment",
         category: "food_safety",
         frequency: "daily",
+        time_of_day: "before_open",
+        dayparts: selectedDayParts,
+        assigned_to_role: "kitchen_manager",
+        repeatable_field_name: "fridge_name",
+        evidence_types: ["temperature", "photo", "pass_fail"],
+        compliance_standard: "Food Safety Act / HACCP",
+        audit_category: "food_safety",
+        is_critical: false,
+        is_template_library: true, // This makes it available in Templates
         is_active: true,
-        is_template_library: true
+        instructions: `Temperature check for: ${validEquipment.map(eq => eq.nickname || 'Equipment').join(', ')}`
       };
 
-      // Check if template already exists with this name
-      const { data: existingTemplates, error: searchError } = await supabase
+      // Create the template
+      const { data: template, error: insertError } = await supabase
         .from("task_templates")
-        .select("id")
-        .eq("company_id", profile.company_id)
-        .eq("name", templateName);
+        .insert(templateData)
+        .select()
+        .single();
 
-      if (searchError) {
-        console.error("Error searching for template:", searchError);
+      if (insertError) {
+        console.error("Error creating template:", insertError);
+        alert("Error creating task template");
+        return;
       }
 
-      const existing = existingTemplates?.[0];
-      let template;
+      // 2. Create fields for the template
+      const fields = [
+        {
+          task_template_id: template.id,
+          field_name: "fridge_name",
+          field_label: "Fridge Name",
+          field_type: "select",
+          is_required: true,
+          display_order: 1,
+          help_text: "Select the unit being checked",
+          options: validEquipment.map(eq => ({
+            value: eq.assetId,
+            label: eq.nickname || 'Equipment'
+          }))
+        },
+        {
+          task_template_id: template.id,
+          field_name: "temperature",
+          field_label: "Temperature (°C)",
+          field_type: "temperature",
+          is_required: true,
+          min_value: -20,
+          max_value: 10,
+          display_order: 2,
+          help_text: "Cold hold must be between 0-8°C"
+        },
+        {
+          task_template_id: template.id,
+          field_name: "status",
+          field_label: "Status",
+          field_type: "pass_fail",
+          is_required: true,
+          display_order: 3
+        },
+        {
+          task_template_id: template.id,
+          field_name: "initials",
+          field_label: "Initials",
+          field_type: "text",
+          is_required: true,
+          display_order: 4
+        },
+        {
+          task_template_id: template.id,
+          field_name: "photo",
+          field_label: "Photo Evidence",
+          field_type: "photo",
+          is_required: false,
+          display_order: 5
+        }
+      ];
 
-      if (existing) {
-        // Update existing template
-        const { data, error: updateError } = await supabase
-          .from("task_templates")
-          .update(templateData)
-          .eq("id", existing.id)
-          .select()
-          .single();
+      const { error: fieldsError } = await supabase
+        .from("task_fields")
+        .insert(fields);
+
+      if (fieldsError) {
+        console.error("Error creating template fields:", fieldsError);
+        alert("Template created but fields failed to save");
+        return;
+      }
+
+      // 3. Create task instances for immediate deployment (goes to My Tasks)
+      const today = new Date();
+      const taskInstances = [];
+
+      // Create instances for each day part selected
+      for (let i = 0; i < selectedDayParts.length; i++) {
+        const dayPart = selectedDayParts[i];
+        const time = times[i] || "09:00";
         
-        if (updateError) {
-          console.error("Error updating template:", updateError);
-          alert("Error updating task template");
-          return;
-        }
-        template = data;
-      } else {
-        // Insert new template
-        const { data, error: insertError } = await supabase
-          .from("task_templates")
-          .insert(templateData)
-          .select()
-          .single();
+        // Create a task instance for today
+        const scheduledDate = today.toISOString().split('T')[0];
+        const [hours, minutes] = time.split(':');
+        const scheduledTime = `${hours}:${minutes}:00`;
+        
+        // Calculate due datetime (2 hours after scheduled time)
+        const dueDateTime = new Date(today);
+        dueDateTime.setHours(parseInt(hours) + 2, parseInt(minutes), 0, 0);
+        
+        taskInstances.push({
+          task_template_id: template.id,
+          company_id: profile.company_id,
+          scheduled_date: scheduledDate,
+          scheduled_time: scheduledTime,
+          due_datetime: dueDateTime.toISOString(),
+          assigned_to_user_id: profile.id, // Assign to current user
+          site_id: profile.site_id,
+          status: "pending",
+          custom_name: `Temperature Check - ${dayPart.charAt(0).toUpperCase() + dayPart.slice(1)}`,
+          custom_instructions: `Check temperatures for all refrigeration units during ${dayPart} service.`
+        });
+      }
 
-        if (insertError) {
-          console.error("Error creating template:", insertError);
-          alert("Error creating task template");
-          return;
-        }
-        template = data;
+      // Insert all task instances
+      const { error: instancesError } = await supabase
+        .from("task_instances")
+        .insert(taskInstances);
+
+      if (instancesError) {
+        console.error("Error creating task instances:", instancesError);
+        alert("Template created but task instances failed to deploy");
+        return;
       }
 
       setIsExpanded(false);
-      alert(`✅ Template saved as Draft in Templates page!\n\nNote: Full deployment to My Tasks requires database migrations to be applied.`);
+      alert(`✅ Template saved and deployed!\n\n📋 Template available in Templates page\n📝 ${taskInstances.length} task(s) created in My Tasks page`);
 
     } catch (error) {
       console.error("Deployment error:", error);
