@@ -30,29 +30,41 @@ const getContextualItems = (currentPage: string) => {
   switch (currentPage) {
     case 'organization':
       return [
-        { id: 'business-details', label: 'Business Details', icon: Building2, path: '/organization/business' },
-        { id: 'sites', label: 'Sites', icon: MapPin, path: '/organization/sites' },
-        { id: 'users', label: 'Users', icon: Users, path: '/organization/users' },
-        { id: 'policies', label: 'Policies', icon: FileText, path: '/organization/documents' }
+        { id: 'business-details', label: 'Business Details', icon: Building2, path: '/dashboard/organization/business-details' },
+        { id: 'sites', label: 'Sites', icon: MapPin, path: '/dashboard/organization/sites' },
+        { id: 'users', label: 'Users', icon: Users, path: '/dashboard/organization/users' },
+        { id: 'contractors', label: 'Contractors', icon: Users, path: '/dashboard/organization/contractors' },
+        { id: 'policies', label: 'Documents', icon: FileText, path: '/dashboard/organization/documents' }
       ]
     case 'sops':
       return [
         { id: 'my-sops', label: 'My SOPs', icon: Edit3, path: '/dashboard/sops/list' },
         { id: 'templates', label: 'SOP Templates', icon: Copy, path: '/dashboard/sops/templates' },
-        { id: 'risk-assessments', label: 'Risk Assessments', icon: FileText, path: '/dashboard/risk-assessments' },
+        { id: 'risk-assessments', label: 'Risk Assessments', icon: FileText, path: '/dashboard/sops/risk-assessments' },
         { id: 'ra-templates', label: 'RA Templates', icon: Copy, path: '/dashboard/risk-assessments' },
-        { id: 'coshh-data', label: 'COSHH Data', icon: Trash2, path: '/dashboard/coshh-data' }
+        { id: 'coshh-data', label: 'COSHH Data', icon: Trash2, path: '/dashboard/coshh-data' },
+        { id: 'libraries', label: 'SOP Libraries', icon: FileText, path: '/dashboard/sops/libraries' }
       ]
     case 'tasks':
       return [
-        { id: 'my-tasks', label: 'My Tasks', icon: CheckSquare, path: '/dashboard/tasks/my-tasks' },
-        { id: 'templates', label: 'Templates', icon: Copy, path: '/dashboard/tasks/templates' },
-        { id: 'compliance', label: 'Compliance Templates', icon: CheckSquare, path: '/dashboard/tasks/compliance' }
+        { id: 'my-tasks', label: 'My Tasks', icon: CheckSquare, path: '/dashboard/tasks' },
+        { id: 'scheduled', label: 'Scheduled Tasks', icon: CheckSquare, path: '/dashboard/tasks/scheduled' },
+        { id: 'completed', label: 'Completed Tasks', icon: CheckSquare, path: '/dashboard/tasks/completed' },
+        { id: 'templates', label: 'Task Templates', icon: Copy, path: '/dashboard/tasks/templates' },
+        { id: 'compliance', label: 'Compliance Templates', icon: CheckSquare, path: '/dashboard/compliance-templates' },
+        { id: 'settings', label: 'Task Settings', icon: Settings, path: '/dashboard/tasks/settings' }
       ]
     case 'assets':
       return [
-        { id: 'callouts', label: 'Callouts', icon: FileText, path: '/dashboard/organization' },
-        { id: 'ppm-calendar', label: 'PPM Calendar', icon: Wrench, path: '/dashboard/ppm' }
+        { id: 'assets', label: 'Assets', icon: FileText, path: '/dashboard/assets' },
+        { id: 'ppm-calendar', label: 'PPM Calendar', icon: Wrench, path: '/dashboard/ppm' },
+        { id: 'callouts', label: 'Callout Logs', icon: FileText, path: '/dashboard/organization' },
+        { id: 'archived', label: 'Archived Assets', icon: FileText, path: '/dashboard/archived-assets' }
+      ]
+    case 'checklists':
+      return [
+        { id: 'daily', label: 'Daily Checklists', icon: CheckSquare, path: '/dashboard/checklists' },
+        { id: 'templates', label: 'Checklist Templates', icon: Copy, path: '/dashboard/checklists/templates' }
       ]
     case 'eho-readiness':
       return [

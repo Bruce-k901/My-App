@@ -21,6 +21,13 @@ import {
   LayoutTemplate,
   Library,
   ShieldCheck,
+  Calendar,
+  CheckCircle,
+  AlertTriangle,
+  Copy,
+  Trash2,
+  Archive,
+  CheckSquare,
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
@@ -37,14 +44,31 @@ const navItems = [
   
   // Tasks Section
   { label: "My Tasks", href: "/dashboard/tasks", icon: ClipboardList, section: "tasks" },
-  { label: "Templates", href: "/dashboard/templates", icon: LayoutTemplate, section: "tasks" },
+  { label: "Scheduled Tasks", href: "/dashboard/tasks/scheduled", icon: Calendar, section: "tasks" },
+  { label: "Completed Tasks", href: "/dashboard/tasks/completed", icon: CheckCircle, section: "tasks" },
+  { label: "Task Templates", href: "/dashboard/tasks/templates", icon: LayoutTemplate, section: "tasks" },
   { label: "Compliance Templates", href: "/dashboard/compliance-templates", icon: ShieldCheck, section: "tasks" },
-  { label: "Library", href: "/dashboard/library", icon: Library, section: "tasks" },
+  { label: "Task Settings", href: "/dashboard/tasks/settings", icon: Settings, section: "tasks" },
+  
+  // SOPs Section
+  { label: "My SOPs", href: "/dashboard/sops/list", icon: FileText, section: "sops" },
+  { label: "SOP Templates", href: "/dashboard/sops/templates", icon: LayoutTemplate, section: "sops" },
+  { label: "Risk Assessments", href: "/dashboard/sops/risk-assessments", icon: AlertTriangle, section: "sops" },
+  { label: "RA Templates", href: "/dashboard/risk-assessments", icon: Copy, section: "sops" },
+  { label: "COSHH Data", href: "/dashboard/coshh-data", icon: Trash2, section: "sops" },
+  { label: "SOP Libraries", href: "/dashboard/sops/libraries", icon: Library, section: "sops" },
+  
+  // Assets Section
+  { label: "Assets", href: "/dashboard/assets", icon: Box, section: "assets" },
+  { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench, section: "assets" },
+  { label: "Callout Logs", href: "/dashboard/organization", icon: FileText, section: "assets" },
+  { label: "Archived Assets", href: "/dashboard/archived-assets", icon: Archive, section: "assets" },
+  
+  // Checklists Section
+  { label: "Daily Checklists", href: "/dashboard/checklists", icon: CheckSquare, section: "checklists" },
+  { label: "Checklist Templates", href: "/dashboard/checklists/templates", icon: LayoutTemplate, section: "checklists" },
   
   // Other Main Items
-  { label: "Assets", href: "/dashboard/assets", icon: Box },
-  { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench },
-  { label: "SOPs", href: "/dashboard/sops", icon: FileText },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: BadgeCheck },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },

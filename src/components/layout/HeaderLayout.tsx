@@ -26,9 +26,10 @@ export function HeaderLayout({
     // Check for specific routes first (most specific)
     if (pathname === '/organization/contractors') return 'contractors'
     if (pathname.includes('/organization/') || pathname === '/organization') return 'organization'
-    if (pathname.includes('/sops')) return 'sops'
+    if (pathname.includes('/sops') || pathname.includes('/risk-assessments') || pathname.includes('/coshh-data')) return 'sops'
     if (pathname.includes('/tasks') || pathname.includes('/templates') || pathname.includes('/compliance-templates') || pathname.includes('/library')) return 'tasks'
-    if (pathname.includes('/assets') || pathname.includes('/ppm')) return 'assets'
+    if (pathname.includes('/assets') || pathname.includes('/ppm') || pathname.includes('/archived-assets')) return 'assets'
+    if (pathname.includes('/checklists')) return 'checklists'
     if (pathname.includes('/eho-report')) return 'eho-readiness'
     if (pathname.includes('/reports')) return 'reports'
     if (pathname.includes('/settings')) return 'settings'
@@ -39,7 +40,7 @@ export function HeaderLayout({
 
   // Check if current page should show contextual sidebar
   const shouldShowContextSidebar = () => {
-    const pagesWithContext = ['organization', 'sops', 'tasks', 'assets', 'eho-readiness', 'reports', 'settings']
+    const pagesWithContext = ['organization', 'sops', 'tasks', 'assets', 'checklists', 'eho-readiness', 'reports', 'settings']
     return pagesWithContext.includes(currentPage)
   }
 
