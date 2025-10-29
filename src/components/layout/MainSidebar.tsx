@@ -117,37 +117,33 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-24 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col items-center py-6 gap-2 z-40 overflow-y-auto no-scrollbar">
-      {/* Nav Icons */}
-      <nav className="flex flex-col gap-1 items-center w-full">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col py-6 gap-2 z-40 overflow-y-auto no-scrollbar">
+      {/* Nav Items with Labels */}
+      <nav className="flex flex-col gap-1 px-4 w-full">
         {groupedItems.map((group, groupIdx) => (
           <div key={groupIdx} className="w-full">
             {/* Add subtle divider between sections */}
             {groupIdx > 0 && (
-              <div className="w-12 h-px bg-white/[0.05] mx-auto my-2" />
+              <div className="w-full h-px bg-white/[0.05] my-3" />
             )}
             
             {group.items.map(({ label, href, icon: Icon }) => {
               const active = isActive(href);
               return (
-                <div key={href} className="relative group px-2 py-1">
-                  <Link
-                    href={href}
-                    className={`flex items-center justify-center w-full h-12 rounded-xl relative transition-all duration-200 
-                      ${
-                        active
-                          ? "text-pink-400 bg-white/[0.12] shadow-[0_0_12px_rgba(236,72,153,0.35)]"
-                          : "text-white/70 hover:text-pink-400 hover:bg-white/[0.08] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
-                      }
-                    `}
-                  >
-                    <Icon className="w-6 h-6" />
-                  </Link>
-                  {/* Tooltip */}
-                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-sm rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(236,72,153,0.25)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-                    {label}
-                  </div>
-                </div>
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl relative transition-all duration-200 
+                    ${
+                      active
+                        ? "text-pink-400 bg-white/[0.12] shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                        : "text-white/70 hover:text-pink-400 hover:bg-white/[0.08] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+                    }
+                  `}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium truncate">{label}</span>
+                </Link>
               );
             })}
           </div>
