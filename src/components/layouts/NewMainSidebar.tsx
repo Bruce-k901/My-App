@@ -153,6 +153,16 @@ export default function NewMainSidebar() {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      
+      // Check if click is on a link inside popup - allow it to navigate
+      const clickedLink = target.closest('a');
+      const isInPopup = target.closest('[data-popup]');
+      
+      if (clickedLink && isInPopup) {
+        // Link clicked inside popup - allow navigation, popup will close via pathname change
+        return;
+      }
+      
       const isSidebar = target.closest('aside');
       const isPopup = target.closest('[data-popup]');
       
@@ -353,8 +363,12 @@ function SidebarPopup({
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={(e) => {
+                  // Ensure navigation happens and close popup
+                  e.stopPropagation();
+                }}
                 className={`
-                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150
+                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer
                   ${
                     isActive
                       ? "bg-pink-500/20 text-pink-300 font-medium"
