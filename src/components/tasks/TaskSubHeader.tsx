@@ -11,7 +11,7 @@ const tabs = [
   { label: "Settings", href: "/dashboard/tasks/settings" },
 ];
 
-export default function TaskSubHeader() {
+export function TaskSubHeader() {
   const pathname = usePathname();
   const normalize = (p?: string) => {
     if (!p) return "";
