@@ -85,7 +85,7 @@ const sections: SidebarSection[] = [
     items: [
       { label: "Assets", href: "/dashboard/assets" },
       { label: "Contractors", href: "/dashboard/assets/contractors" },
-      { label: "PPM Schedule", href: "/dashboard/assets/ppm" },
+      { label: "PPM Schedule", href: "/dashboard/ppm" },
       { label: "Callout Logs", href: "/dashboard/assets/callout-logs" },
     ],
   },
