@@ -73,6 +73,10 @@ const sections: SidebarSection[] = [
       { label: "All Libraries", href: "/dashboard/libraries" },
       { label: "Create Library", href: "/dashboard/libraries/create" },
       { label: "Library Templates", href: "/dashboard/libraries/templates" },
+      // FIX #3: Add placeholder libraries
+      { label: "Food Library", href: "/dashboard/libraries/food" },
+      { label: "Drinks Library", href: "/dashboard/libraries/drinks" },
+      { label: "Chemicals Library", href: "/dashboard/libraries/chemicals" },
     ],
   },
   {
@@ -134,6 +138,27 @@ export default function NewMainSidebar() {
       }
     }, 150); // 150ms delay
   };
+
+  // FIX #2: Close popup when route changes
+  useEffect(() => {
+    setHoveredSection(null);
+  }, [pathname]);
+
+  // FIX #2: Close popup on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isSidebar = target.closest('aside');
+      const isPopup = target.closest('[data-popup]');
+      
+      if (!isSidebar && !isPopup) {
+        setHoveredSection(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -295,6 +320,7 @@ function SidebarPopup({
 
   return (
     <div
+      data-popup="true"
       className="fixed left-20 pointer-events-none z-50"
       style={{ top: `${buttonTop}px` }}
       onMouseEnter={onMouseEnter}
@@ -309,7 +335,14 @@ function SidebarPopup({
         {/* Items */}
         <div className="space-y-1 px-2">
           {section.items.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            // FIX #1: More precise active state matching
+            const isExactMatch = pathname === item.href;
+            const isChildRoute = pathname.startsWith(item.href + "/") && 
+              !section.items.some(other => 
+                other.href !== item.href && pathname.startsWith(other.href)
+              );
+            
+            const isActive = isExactMatch || isChildRoute;
 
             return (
               <Link
