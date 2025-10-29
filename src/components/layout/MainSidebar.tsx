@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -78,6 +79,7 @@ const navItems = [
 export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: MainSidebarProps) {
   const pathname = usePathname();
   const { role } = useAppContext();
+  const [isHovered, setIsHovered] = useState(false);
   
   const filtered = isRoleGuardEnabled()
     ? navItems.filter((item: any) => {
@@ -116,34 +118,52 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
     groupedItems.push({ section: currentSection, items: currentGroup });
   }
 
+  const sidebarWidth = isHovered ? 'w-64' : 'w-16';
+
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col py-6 gap-2 z-40 overflow-y-auto no-scrollbar">
-      {/* Nav Items with Labels */}
-      <nav className="flex flex-col gap-1 px-4 w-full">
+    <aside 
+      className={`fixed left-0 top-0 h-screen ${sidebarWidth} bg-[#0B0D13] border-r border-white/[0.1] flex flex-col py-6 gap-2 z-40 overflow-y-auto no-scrollbar transition-all duration-300`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Nav Items */}
+      <nav className="flex flex-col gap-1 px-2 w-full">
         {groupedItems.map((group, groupIdx) => (
           <div key={groupIdx} className="w-full">
             {/* Add subtle divider between sections */}
             {groupIdx > 0 && (
-              <div className="w-full h-px bg-white/[0.05] my-3" />
+              <div className={`h-px bg-white/[0.05] my-3 ${isHovered ? 'w-full' : 'w-8 mx-auto'}`} />
             )}
             
             {group.items.map(({ label, href, icon: Icon }) => {
               const active = isActive(href);
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl relative transition-all duration-200 
-                    ${
-                      active
-                        ? "text-pink-400 bg-white/[0.12] shadow-[0_0_12px_rgba(236,72,153,0.35)]"
-                        : "text-white/70 hover:text-pink-400 hover:bg-white/[0.08] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
-                    }
-                  `}
-                >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
-                  <span className="text-sm font-medium truncate">{label}</span>
-                </Link>
+                <div key={href} className="relative group">
+                  <Link
+                    href={href}
+                    className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl relative transition-all duration-200 
+                      ${
+                        active
+                          ? "text-pink-400 bg-white/[0.12] shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                          : "text-white/70 hover:text-pink-400 hover:bg-white/[0.08] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+                      }
+                    `}
+                  >
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    {isHovered && (
+                      <span className="text-sm font-medium truncate opacity-100 transition-opacity duration-200">
+                        {label}
+                      </span>
+                    )}
+                  </Link>
+                  
+                  {/* Tooltip for collapsed state */}
+                  {!isHovered && (
+                    <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-sm rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(236,72,153,0.25)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                      {label}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
