@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   LayoutGrid,
   Building2,
@@ -98,6 +98,22 @@ const directLinks: SidebarLink[] = [
 export default function NewMainSidebar() {
   const pathname = usePathname();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  
+  // Create refs for each section button
+  const orgRef = useRef<HTMLDivElement>(null);
+  const tasksRef = useRef<HTMLDivElement>(null);
+  const sopsRef = useRef<HTMLDivElement>(null);
+  const librariesRef = useRef<HTMLDivElement>(null);
+  const assetsRef = useRef<HTMLDivElement>(null);
+  
+  // Map section labels to refs
+  const buttonRefs: { [key: string]: React.RefObject<HTMLDivElement> } = {
+    "Organization": orgRef,
+    "Tasks": tasksRef,
+    "SOPs": sopsRef,
+    "Libraries": librariesRef,
+    "Assets": assetsRef,
+  };
 
   return (
     <>
@@ -120,6 +136,7 @@ export default function NewMainSidebar() {
             onHover={() => setHoveredSection(section.label)}
             onLeave={() => setHoveredSection(null)}
             pathname={pathname}
+            buttonRef={buttonRefs[section.label]}
           />
         ))}
 
@@ -144,6 +161,7 @@ export default function NewMainSidebar() {
           onMouseEnter={() => setHoveredSection(section.label)}
           onMouseLeave={() => setHoveredSection(null)}
           pathname={pathname}
+          buttonRef={buttonRefs[section.label]}
         />
       ))}
     </>
@@ -190,12 +208,14 @@ function SidebarSectionItem({
   onHover,
   onLeave,
   pathname,
+  buttonRef,
 }: {
   section: SidebarSection;
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
   pathname: string;
+  buttonRef: React.RefObject<HTMLDivElement>;
 }) {
   const Icon = section.icon;
 
@@ -205,6 +225,7 @@ function SidebarSectionItem({
 
   return (
     <div
+      ref={buttonRef}
       className={`
         relative flex items-center justify-center w-14 h-14 rounded-xl
         transition-all duration-200 cursor-pointer
@@ -229,18 +250,24 @@ function SidebarPopup({
   onMouseEnter,
   onMouseLeave,
   pathname,
+  buttonRef,
 }: {
   section: SidebarSection;
   isVisible: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   pathname: string;
+  buttonRef: React.RefObject<HTMLDivElement>;
 }) {
   if (!isVisible) return null;
 
+  // Get button position
+  const buttonTop = buttonRef.current?.getBoundingClientRect().top ?? 0;
+
   return (
     <div
-      className="fixed left-20 top-0 h-screen flex items-center pointer-events-none z-50"
+      className="fixed left-20 pointer-events-none z-50"
+      style={{ top: `${buttonTop}px` }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
