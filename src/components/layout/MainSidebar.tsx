@@ -1,134 +1,140 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import { 
-  LayoutDashboard,
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutGrid,
+  Building2,
   Users,
-  FileText,
-  CheckSquare,
+  ClipboardList,
+  Box,
   Wrench,
+  FileText,
   BarChart3,
-  TrendingUp,
   Settings,
-  HelpCircle,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react'
+  Globe,
+  BadgeCheck,
+  MapPin,
+  UserCog,
+  FileCheck,
+  Briefcase,
+  LayoutTemplate,
+  Library,
+  ShieldCheck,
+} from "lucide-react";
+import { useAppContext } from "@/context/AppContext";
+import { isRoleGuardEnabled } from "@/lib/featureFlags";
+
+const navItems = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
+  
+  // Organization Section
+  { label: "Business Details", href: "/dashboard/organization/business", icon: Building2, section: "organization" },
+  { label: "Sites", href: "/dashboard/organization/sites", icon: MapPin, section: "organization" },
+  { label: "Users", href: "/dashboard/organization/users", icon: Users, section: "organization" },
+  { label: "Contractors", href: "/dashboard/organization/contractors", icon: UserCog, section: "organization" },
+  { label: "Documents", href: "/dashboard/organization/documents", icon: FileCheck, section: "organization" },
+  
+  // Tasks Section
+  { label: "My Tasks", href: "/dashboard/tasks", icon: ClipboardList, section: "tasks" },
+  { label: "Templates", href: "/dashboard/templates", icon: LayoutTemplate, section: "tasks" },
+  { label: "Compliance Templates", href: "/dashboard/compliance-templates", icon: ShieldCheck, section: "tasks" },
+  { label: "Library", href: "/dashboard/library", icon: Library, section: "tasks" },
+  
+  // Other Main Items
+  { label: "Assets", href: "/dashboard/assets", icon: Box },
+  { label: "PPM Schedule", href: "/dashboard/ppm", icon: Wrench },
+  { label: "SOPs", href: "/dashboard/sops", icon: FileText },
+  { label: "EHO Readiness", href: "/dashboard/eho-report", icon: BadgeCheck },
+  { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Support", href: "/dashboard/support", icon: Globe },
+];
+
+export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: MainSidebarProps) {
+  const pathname = usePathname();
+  const { role } = useAppContext();
+  
+  const filtered = isRoleGuardEnabled()
+    ? navItems.filter((item: any) => {
+        if (item.roles && Array.isArray(item.roles)) {
+          return item.roles.includes(role as any);
+        }
+        return true;
+      })
+    : navItems;
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(href);
+  };
+
+  // Group items by section for visual separation
+  const groupedItems: { section?: string; items: typeof navItems }[] = [];
+  let currentGroup: typeof navItems = [];
+  let currentSection: string | undefined = undefined;
+
+  filtered.forEach((item) => {
+    if (item.section !== currentSection) {
+      if (currentGroup.length > 0) {
+        groupedItems.push({ section: currentSection, items: currentGroup });
+      }
+      currentGroup = [item];
+      currentSection = item.section;
+    } else {
+      currentGroup.push(item);
+    }
+  });
+  
+  if (currentGroup.length > 0) {
+    groupedItems.push({ section: currentSection, items: currentGroup });
+  }
+
+  return (
+    <aside className="fixed left-0 top-0 h-screen w-24 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col items-center py-6 gap-2 z-40 overflow-y-auto no-scrollbar">
+      {/* Nav Icons */}
+      <nav className="flex flex-col gap-1 items-center w-full">
+        {groupedItems.map((group, groupIdx) => (
+          <div key={groupIdx} className="w-full">
+            {/* Add subtle divider between sections */}
+            {groupIdx > 0 && (
+              <div className="w-12 h-px bg-white/[0.05] mx-auto my-2" />
+            )}
+            
+            {group.items.map(({ label, href, icon: Icon }) => {
+              const active = isActive(href);
+              return (
+                <div key={href} className="relative group px-2 py-1">
+                  <Link
+                    href={href}
+                    className={`flex items-center justify-center w-full h-12 rounded-xl relative transition-all duration-200 
+                      ${
+                        active
+                          ? "text-pink-400 bg-white/[0.12] shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                          : "text-white/70 hover:text-pink-400 hover:bg-white/[0.08] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+                      }
+                    `}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </Link>
+                  {/* Tooltip */}
+                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-sm rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(236,72,153,0.25)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                    {label}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+    </aside>
+  );
+}
 
 interface MainSidebarProps {
   isMinimized: boolean
   onToggleMinimize: () => void
   currentPage: string
-}
-
-// Main navigation items - correct order per SIDEBAR_CORRECT_STRUCTURE.md
-const MAIN_NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, isDivider: false },
-  { id: 'divider', label: '', path: '', icon: null, isDivider: true },
-  { id: 'organization', label: 'Organization', path: '/organization', icon: Users, isDivider: false },
-  { id: 'contractors', label: 'Contractors', path: '/organization/contractors', icon: Users, isDivider: false },
-  { id: 'sops', label: 'SOPs', path: '/dashboard/sops', icon: FileText, isDivider: false },
-  { id: 'tasks', label: 'Tasks', path: '/dashboard/tasks', icon: CheckSquare, isDivider: false },
-  { id: 'assets', label: 'Assets', path: '/dashboard/assets', icon: Wrench, isDivider: false },
-  { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report', icon: BarChart3, isDivider: false },
-  { id: 'reports', label: 'Reports', path: '/dashboard/reports', icon: TrendingUp, isDivider: false },
-  { id: 'settings', label: 'Settings', path: '/dashboard/settings', icon: Settings, isDivider: false },
-  { id: 'help', label: 'Help & Support', path: '/dashboard/help', icon: HelpCircle, isDivider: false }
-]
-
-export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: MainSidebarProps) {
-  const router = useRouter()
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-
-  const handleItemClick = (path: string) => {
-    router.push(path)
-  }
-
-  const getActiveItem = () => {
-    // Use currentPage from HeaderLayout instead of pathname matching
-    return currentPage
-  }
-
-  const activeItem = getActiveItem()
-
-  return (
-    <aside 
-      className={`sticky top-0 h-screen flex flex-col border-r transition-all duration-300 ${
-        isMinimized ? 'w-12' : 'w-24'
-      }`}
-      style={{
-        backgroundColor: '#141419',
-        borderRightColor: '#2A2A2F'
-      }}
-    >
-      {/* Minimize Toggle */}
-      <div className="flex justify-end p-2 border-b" style={{ borderBottomColor: '#2A2A2F' }}>
-        <button
-          onClick={onToggleMinimize}
-          className="p-1 rounded-md hover:bg-neutral-800 transition-colors"
-          title={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
-        >
-          {isMinimized ? (
-            <ChevronRight className="w-3 h-3 text-neutral-400" />
-          ) : (
-            <ChevronLeft className="w-3 h-3 text-neutral-400" />
-          )}
-        </button>
-      </div>
-
-      {/* Navigation Items */}
-      <nav className="flex-1 py-2">
-        {MAIN_NAV_ITEMS.map((item) => {
-          // Handle divider
-          if (item.isDivider) {
-            return (
-              <div
-                key={item.id}
-                className="mx-3 my-2 border-t border-gray-600/30"
-                style={{ borderColor: '#2A2A2F' }}
-              />
-            )
-          }
-
-          const Icon = item.icon
-          const isActive = activeItem === item.id
-          const isHovering = hoveredItem === item.id
-          
-          return (
-            <button
-              key={item.id}
-              onMouseEnter={() => setHoveredItem(item.id)}
-              onMouseLeave={() => setHoveredItem(null)}
-              onClick={() => handleItemClick(item.path)}
-              className={`w-full flex items-center gap-1.5 px-3 py-2 text-xs font-medium cursor-pointer transition-all duration-200 border-l-2 ${
-                isActive
-                  ? 'text-white'
-                  : 'text-gray-400 hover:text-white'
-              } ${isHovering ? 'hovering' : ''}`}
-              style={{
-                backgroundColor: isActive ? '#1A1A20' : 'transparent',
-                borderLeftColor: isActive ? '#FF006E' : 'transparent',
-                boxShadow: isHovering ? 'inset 0 0 8px rgba(255, 0, 110, 0.1)' : 'none',
-                paddingLeft: isActive ? '10px' : '12px'
-              }}
-              title={isMinimized ? item.label : undefined}
-            >
-              <Icon className="w-4 h-4 flex-shrink-0" style={{ color: isActive ? '#FF006E' : '#FF006E' }} />
-              {!isMinimized && (
-                <span className="flex-1 text-left truncate">{item.label}</span>
-              )}
-            </button>
-          )
-        })}
-      </nav>
-
-      <style>{`
-        .hovering {
-          background: #1A1A20 !important;
-          color: white !important;
-        }
-      `}</style>
-    </aside>
-  )
 }
