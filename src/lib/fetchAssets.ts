@@ -41,7 +41,12 @@ export async function fetchAllAssets(companyId: string): Promise<AssetRecord[]> 
       next_service_date,
       warranty_end,
       status,
-      notes
+      notes,
+      ppm_frequency_months,
+      last_service_date,
+      ppm_status,
+      ppm_contractor_id,
+      ppm_contractor:ppm_contractor_id(id, name)
     `)
     .eq("company_id", companyId)
     .order("name");
@@ -70,12 +75,12 @@ export async function fetchAllAssets(companyId: string): Promise<AssetRecord[]> 
       warranty_end: item.warranty_end || null,
       status: item.status || null,
       notes: item.notes || null,
-      // PPM-related properties (set to null as they're not fetched in this function)
-      ppm_id: null,
-      frequency_months: null,
-      last_service_date: null,
-      ppm_status: null,
-      ppm_notes: null,
+      // PPM-related properties
+      ppm_id: item.ppm_contractor_id || null,
+      frequency_months: item.ppm_frequency_months || null,
+      last_service_date: item.last_service_date || null,
+      ppm_status: item.ppm_status || null,
+      ppm_notes: null, // This field doesn't exist in assets table yet
     };
   }) || [];
 

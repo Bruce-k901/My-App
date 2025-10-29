@@ -30,21 +30,21 @@ export default function PPMSchedulePage() {
   const [sites, setSites] = useState<string[]>([]);
   const [contractors, setContractors] = useState<string[]>([]);
   
-  const { company } = useAppContext();
+  const { profile } = useAppContext();
 
   const fetchPPMData = async () => {
     try {
       setLoading(true);
       
-      if (!company?.id) {
+      if (!profile?.company_id) {
         console.log("PPM Debug - No company ID available");
         return;
       }
 
-      console.log("PPM Debug - Company ID:", company.id);
+      console.log("PPM Debug - Company ID:", profile.company_id);
 
       // Fetch assets using the new fetchAllAssets function
-      const assetsData = await fetchAllAssets(company.id);
+      const assetsData = await fetchAllAssets(profile.company_id);
 
       console.log("PPM Debug - Assets query result:", assetsData);
 
@@ -103,14 +103,14 @@ export default function PPMSchedulePage() {
   usePPMRealtime({
     onPPMUpdate: fetchPPMData,
     onTaskUpdate: fetchPPMData,
-    companyId: company?.id || ''
+    companyId: profile?.company_id || ''
   });
 
   useEffect(() => {
-    if (company?.id) {
+    if (profile?.company_id) {
       fetchPPMData();
     }
-  }, [company?.id]);
+  }, [profile?.company_id]);
 
   useEffect(() => {
     filterAssets();
@@ -207,7 +207,7 @@ export default function PPMSchedulePage() {
     );
   }
 
-  if (!company?.id) {
+  if (!profile?.company_id) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
         <svg
