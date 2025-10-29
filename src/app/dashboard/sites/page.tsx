@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/ToastProvider";
-import SiteToolbar from "@/components/sites/SiteToolbar";
-import SiteAccordion from "@/components/sites/SiteAccordion";
 import SiteFormNew from "@/components/sites/SiteFormNew";
+import SiteToolbar from "@/components/sites/SiteToolbar";
+import SiteCard from "@/components/sites/SiteCard";
+import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
 interface Site {
   id: string;
@@ -17,213 +17,253 @@ interface Site {
   city?: string | null;
   postcode?: string | null;
   gm_user_id?: string | null;
+  gm_name?: string | null;
+  gm_phone?: string | null;
+  gm_email?: string | null;
   region?: string | null;
   status?: string | null;
   company_id?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
-  profiles?: {
-    id: string;
-    full_name: string | null;
-    phone_number: string | null;
-    email: string | null;
-  } | null;
 }
 
-export default function SitesPage() {
-  const { profile, loading: ctxLoading } = useAppContext();
-  const { showToast } = useToast();
-  const [sites, setSites] = useState<Site[]>([]);
-  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string, home_site?: string, company_id?: string}>>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  console.log("🔥 SITES PAGE - showAddModal state:", showAddModal);
-  console.log("🔍 DEBUG - profile:", profile);
-  console.log("🔍 DEBUG - profile.company_id:", profile?.company_id);
-  console.log("🔍 DEBUG - ctxLoading:", ctxLoading);
+export default function OrganizationSitesPage() {
+  // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
   
-  const fetchSites = useCallback(async () => {
-    console.log("🔍 DEBUG - fetchSites called with profile.company_id:", profile?.company_id);
-    if (!profile?.company_id) {
-      console.log("❌ DEBUG - No company_id found, returning early");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    
-    // Log the company_id values for comparison
-    const queryCompanyId = profile.company_id;
-    console.log('companyId in context:', profile?.company_id);
-    console.log('companyId used in query:', queryCompanyId);
-    
-    // Fetch sites and GM list in parallel
-    const [sitesResult, gmResult] = await Promise.all([
-      supabase
-        .from("sites")
-        .select("*")
-        .eq("company_id", queryCompanyId)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("gm_index")
-        .select("id, full_name, email, phone, home_site, company_id")
-        .eq("company_id", queryCompanyId)
-        .order("full_name", { ascending: true })
-    ]);
-    
-    // Add the exact logging requested
-    console.log('sites data:', sitesResult.data, 'error:', sitesResult.error);
-    
-    if (sitesResult.error) {
-      console.error("Error fetching sites:", sitesResult.error);
-      setError("Failed to load sites");
-      setSites([]);
-    } else {
-      setSites((sitesResult.data as Site[]) || []);
-    }
-    
-    if (gmResult.error) {
-      console.error("Error fetching GMs:", gmResult.error);
-      showToast("Failed to load General Managers", "error");
-      return;
-    } else {
-      // Map GM data from gm_index table
-      const gmList = (gmResult.data || []).map((gm) => ({
-        id: String(gm.id),
+  // 1. Context hooks
+  const { loading: ctxLoading, profile } = useAppContext();
+  
+  // 2. State hooks
+  const [sites, setSites] = useState<Site[]>([]);
+  const [gmList, setGmList] = useState<Array<{id: string, full_name: string, email: string, phone?: string | null}>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [editing, setEditing] = useState<Site | null>(null);
+  const [activeSite, setActiveSite] = useState<Site | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // 3. Effect hooks - MUST BE CALLED EVERY RENDER
+  useEffect(() => {
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      setUserId(userRes?.user?.id || null);
+    })();
+  }, []);
+
+  const fetchGMList = useCallback(async () => {
+    if (!profile?.company_id) return;
+
+    try {
+      // Fetch all GMs for the company from profiles table
+      const { data: gmsData, error: gmsError } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, phone_number")
+        .eq("company_id", profile.company_id)
+        .eq("app_role", "Manager")
+        .order("full_name");
+
+      if (gmsError) {
+        console.error("Error fetching GM list:", gmsError);
+        return;
+      }
+
+      // Transform the data to match expected format
+      const transformedGMs = (gmsData || []).map(gm => ({
+        id: gm.id,
         full_name: gm.full_name,
         email: gm.email,
-        phone: gm.phone,
-        home_site: gm.home_site,
-        company_id: gm.company_id,
+        phone: gm.phone_number
       }));
-      setGmList(gmList);
+
+      setGmList(transformedGMs);
+    } catch (err: any) {
+      console.error("Error in fetchGMList:", err);
     }
-    
-    setLoading(false);
+  }, [profile?.company_id]);
+
+  const fetchSites = useCallback(async () => {
+    if (!profile?.company_id) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      // First, fetch sites with planned closures (no GM profile join)
+      const { data: sitesData, error: sitesError } = await supabase
+        .from("sites")
+        .select(`
+          id,
+          name,
+          address_line1,
+          address_line2,
+          city,
+          postcode,
+          gm_user_id,
+          region,
+          status,
+          company_id,
+          created_at,
+          updated_at,
+          operating_schedule,
+          planned_closures:site_closures (
+            id,
+            is_active,
+            closure_start,
+            closure_end,
+            notes
+          )
+        `)
+        .eq("company_id", profile.company_id)
+        .order("created_at", { ascending: false });
+
+      if (sitesError) {
+        console.error("Error fetching sites:", sitesError);
+        setError("Failed to load sites");
+        setSites([]);
+        return;
+      }
+
+      // Then fetch GM data separately from gm_index
+      const gmIds = sitesData?.map(s => s.gm_user_id).filter(Boolean) || [];
+      let gmMap = new Map();
+
+      if (gmIds.length > 0) {
+        const { data: gmsData, error: gmsError } = await supabase
+          .from("gm_index")
+          .select("id, full_name, email, phone")
+          .in("id", gmIds);
+
+        if (!gmsError && gmsData) {
+          console.log("GM data fetched from gm_index:", gmsData);
+          gmMap = new Map(gmsData.map(g => [g.id, g]));
+        } else {
+          console.log("No GM data found or error:", gmsError);
+        }
+      }
+
+      // Enrich sites with GM data
+      const enrichedSites = sitesData?.map(site => {
+        const gmProfile = gmMap.get(site.gm_user_id) || null;
+        console.log(`Site ${site.name} (${site.id}): gm_user_id=${site.gm_user_id}, gm_profile=`, gmProfile);
+        return {
+          ...site,
+          gm_profile: gmProfile,
+        };
+      }) || [];
+
+      setSites(enrichedSites);
+    } catch (err: any) {
+      console.error("Error in fetchSites:", err);
+      setError("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
   }, [profile?.company_id]);
 
   useEffect(() => {
-    console.log("🔍 DEBUG - useEffect triggered with:", { ctxLoading, profile });
-    if (!ctxLoading && profile?.company_id) {
-      console.log("✅ DEBUG - Calling fetchSites with company_id:", profile.company_id);
-      fetchSites();
-    } else if (!ctxLoading && !profile?.company_id) {
-      console.log("❌ DEBUG - No company_id found. Profile:", profile);
+    fetchSites();
+    fetchGMList();
+  }, [fetchSites, fetchGMList]);
+
+  useEffect(() => {
+    if (!ctxLoading && !profile?.company_id) {
       setLoading(false);
       setError("No company context detected. Please sign in or complete setup.");
     }
-  }, [ctxLoading, profile?.company_id, fetchSites]);
+  }, [ctxLoading, profile?.company_id]);
 
-  const q = query.toLowerCase().trim();
-  const filteredSites = q
-    ? sites.filter((s) =>
-        (s.name || "").toLowerCase().includes(q) ||
-        (s.city || "").toLowerCase().includes(q)
-      )
-    : sites;
+  // Early returns ONLY AFTER all hooks
+  if (ctxLoading) {
+    console.log('Context loading:', ctxLoading, 'Profile:', profile);
+    return <div className="text-slate-400">Loading context...</div>;
+  }
 
-  // Create handlers for upload/download that use SiteToolbar logic
-  const handleDownload = () => {
-    try {
-      const fields = [
-        "name",
-        "address_line1",
-        "address_line2",
-        "city",
-        "postcode",
-        "gm_user_id",
-        "region","status","days_open","opening_time_from",
-        "opening_time_to","closing_time_from","closing_time_to"
-      ];
-
-      const rows = (filteredSites || []).map((site: any) => {
-        const row: Record<string, any> = {};
-        fields.forEach((field) => {
-          row[field] = site[field] || "";
-        });
-        return row;
-      });
-
-      const csv = [
-        fields.join(","),
-        ...rows.map((row) => fields.map((f) => `"${(row[f] || "").toString().replace(/"/g, '""')}"`).join(",")),
-      ].join("\n");
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", "sites.csv");
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
+  const handleSaved = async () => {
+    setFormOpen(false);
+    setEditing(null);
+    await fetchSites();
+    await fetchGMList();
   };
 
-  const handleUpload = () => {
-    // Create a file input element and trigger it
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".csv,text/csv";
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      // Handle CSV upload logic here - for now just log
-      console.log("Upload file:", file.name);
-    };
-    input.click();
-  };
+  // Filter sites based on search term
+  const filteredSites = sites.filter(site => {
+    if (!searchTerm) return true;
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      site.name?.toLowerCase().includes(searchLower) ||
+      site.address_line1?.toLowerCase().includes(searchLower) ||
+      site.city?.toLowerCase().includes(searchLower) ||
+      site.postcode?.toLowerCase().includes(searchLower) ||
+      site.gm_name?.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
     <EntityPageLayout
       title="Sites"
-      searchPlaceholder="Search"
-      onSearch={(v) => setQuery(v)}
-      onAdd={() => {
-        console.log("🔥 SITES PAGE - EntityPageLayout onAdd triggered");
-        setShowAddModal(true);
-      }}
-      onDownload={handleDownload}
-      onUpload={handleUpload}
+      onSearch={setSearchTerm}
+      searchPlaceholder="Search sites..."
+      customActions={
+        <SiteToolbar 
+          inline 
+          sites={sites} 
+          companyId={profile?.company_id || ""} 
+          onRefresh={fetchSites} 
+          showBack={false}
+          onAddSite={() => setFormOpen(true)}
+        />
+      }
     >
-
-      {/* Error state */}
       {error && (
-        <div className="mb-4 rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
+        <div className="rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 
-      {/* Main content */}
       {ctxLoading || loading ? (
         <div className="text-slate-400">Loading sites…</div>
       ) : filteredSites.length === 0 ? (
-        <p className="text-gray-400 p-6">No sites yet. Add one to get started.</p>
+        searchTerm ? (
+          <p className="text-gray-400">No sites found matching "{searchTerm}".</p>
+        ) : (
+          <p className="text-gray-400">No sites yet. Add one to get started.</p>
+        )
       ) : (
-        <SiteAccordion sites={filteredSites} gmList={gmList} onRefresh={fetchSites} />
+        <div className="space-y-4">
+          {filteredSites.map((site) => (
+            <SiteCard 
+              key={site.id} 
+              site={site} 
+              onEdit={(site) => setActiveSite(site as Site)}
+            />
+          ))}
+        </div>
       )}
 
-      {/* Add Site Modal - rendered at page level for proper centering */}
-      {showAddModal && (
+      {formOpen && (
         <SiteFormNew
-          open={showAddModal}
-          onClose={() => {
-            console.log("🔥 SITES PAGE - Modal onClose triggered");
-            setShowAddModal(false);
-          }}
-          onSaved={() => {
-            console.log("🔥 SITES PAGE - Modal onSaved triggered");
-            setShowAddModal(false);
-            fetchSites();
-          }}
-          initial={null}
+          open={formOpen}
+          onClose={() => setFormOpen(false)}
+          onSaved={handleSaved}
+          initial={editing || null}
           companyId={profile?.company_id || ""}
+          gmList={gmList}
+        />
+      )}
+
+      {activeSite && (
+        <SiteFormNew
+          open={true}
+          initial={activeSite}
+          onClose={() => setActiveSite(null)}
+          onSaved={() => {
+            setActiveSite(null);
+            fetchSites();
+            fetchGMList();
+          }}
+          companyId={profile?.company_id || ""}
+          gmList={gmList}
         />
       )}
     </EntityPageLayout>

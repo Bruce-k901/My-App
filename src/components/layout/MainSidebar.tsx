@@ -37,11 +37,11 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
   
   // Organization Section
-  { label: "Business Details", href: "/dashboard/organization/business-details", icon: Building2, section: "organization" },
-  { label: "Sites", href: "/dashboard/organization/sites", icon: MapPin, section: "organization" },
-  { label: "Users", href: "/dashboard/organization/users", icon: Users, section: "organization" },
-  { label: "Contractors", href: "/dashboard/organization/contractors", icon: UserCog, section: "organization" },
-  { label: "Documents", href: "/dashboard/organization/documents", icon: FileCheck, section: "organization" },
+  { label: "Business Details", href: "/dashboard/business", icon: Building2, section: "organization" },
+  { label: "Sites", href: "/dashboard/sites", icon: MapPin, section: "organization" },
+  { label: "Users", href: "/dashboard/users", icon: Users, section: "organization" },
+  { label: "Contractors", href: "/dashboard/assets/contractors", icon: UserCog, section: "organization" },
+  { label: "Documents", href: "/dashboard/documents", icon: FileCheck, section: "organization" },
   
   // Tasks Section
   { label: "My Tasks", href: "/dashboard/tasks", icon: ClipboardList, section: "tasks" },

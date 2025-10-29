@@ -14,7 +14,7 @@ import {
 
 export const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Organization", href: "/dashboard/organization", icon: Building2 },
+  { label: "Organization", href: "/dashboard/business", icon: Building2 },
   { label: "Users", href: "/dashboard/users", icon: Users2 },
   { label: "Tasks", href: "/dashboard/tasks", icon: ClipboardCheck },
   { label: "Assets", href: "/dashboard/assets", icon: Package },

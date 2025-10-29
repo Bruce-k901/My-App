@@ -30,11 +30,11 @@ const getContextualItems = (currentPage: string) => {
   switch (currentPage) {
     case 'organization':
       return [
-        { id: 'business-details', label: 'Business Details', icon: Building2, path: '/dashboard/organization/business-details' },
-        { id: 'sites', label: 'Sites', icon: MapPin, path: '/dashboard/organization/sites' },
-        { id: 'users', label: 'Users', icon: Users, path: '/dashboard/organization/users' },
-        { id: 'contractors', label: 'Contractors', icon: Users, path: '/dashboard/organization/contractors' },
-        { id: 'policies', label: 'Documents', icon: FileText, path: '/dashboard/organization/documents' }
+        { id: 'business-details', label: 'Business Details', icon: Building2, path: '/dashboard/business' },
+        { id: 'sites', label: 'Sites', icon: MapPin, path: '/dashboard/sites' },
+        { id: 'users', label: 'Users', icon: Users, path: '/dashboard/users' },
+        { id: 'contractors', label: 'Contractors', icon: Users, path: '/dashboard/assets/contractors' },
+        { id: 'policies', label: 'Documents', icon: FileText, path: '/dashboard/documents' }
       ]
     case 'sops':
       return [
