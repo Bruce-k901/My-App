@@ -70,13 +70,18 @@ const sections: SidebarSection[] = [
     label: "Libraries",
     icon: BookOpen,
     items: [
-      { label: "All Libraries", href: "/dashboard/libraries" },
+      { label: "All Libraries", href: "/dashboard/sops/libraries" },
       { label: "Create Library", href: "/dashboard/libraries/create" },
       { label: "Library Templates", href: "/dashboard/libraries/templates" },
-      // FIX #3: Add placeholder libraries
-      { label: "Food Library", href: "/dashboard/libraries/food" },
-      { label: "Drinks Library", href: "/dashboard/libraries/drinks" },
-      { label: "Chemicals Library", href: "/dashboard/libraries/chemicals" },
+      // All created libraries
+      { label: "Ingredients Library", href: "/dashboard/sops/libraries/ingredients" },
+      { label: "PPE Library", href: "/dashboard/sops/libraries/ppe" },
+      { label: "Chemicals Library", href: "/dashboard/sops/libraries/chemicals" },
+      { label: "Drinks Library", href: "/dashboard/sops/libraries/drinks" },
+      { label: "Disposables Library", href: "/dashboard/sops/libraries/disposables" },
+      { label: "Glassware Library", href: "/dashboard/sops/libraries/glassware" },
+      { label: "Packaging Library", href: "/dashboard/sops/libraries/packaging" },
+      { label: "Serving Equipment", href: "/dashboard/sops/libraries/serving-equipment" },
     ],
   },
   {
