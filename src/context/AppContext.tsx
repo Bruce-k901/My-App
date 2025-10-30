@@ -6,10 +6,14 @@ import { User, Session } from '@supabase/supabase-js';
 interface Profile {
   id: string;
   email: string;
-  company_id: string;
-  site_id: string;
+  company_id: string | null;
+  site_id: string | null;
   role: string;
-  // Add other profile fields as needed
+  // Optional enriched fields when available
+  full_name?: string | null;
+  avatar_url?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 interface AppContextType {
@@ -91,6 +95,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []); // Run only once!
 
+  // Temporary debug: observe session user and metadata
+  useEffect(() => {
+    const currentUser = session?.user as any;
+    if (currentUser) {
+      console.log('🔍 Current user:', currentUser);
+      console.log('🔍 User metadata:', currentUser?.user_metadata);
+      console.log('🔍 Company ID in metadata:', currentUser?.user_metadata?.company_id);
+    }
+  }, [session]);
+
   // Fetch profile - ONLY profile, nothing else
   const fetchProfile = async (userId: string) => {
     if (isFetching) {
@@ -109,11 +123,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (profileError) throw profileError;
 
-      setProfile(data);
+      if (data) {
+        console.log('Profile fetched from Supabase:', data);
+        setProfile(data);
+      }
       setError(null);
     } catch (err: any) {
-      console.error('Error fetching profile:', err);
-      setError(err.message);
+      const message = (err && (err.message || err.error_description))
+        || (typeof err === 'string' ? err : '')
+        || (() => { try { return JSON.stringify(err); } catch { return 'Unknown profile error'; } })();
+
+      // Fallback: if profiles RLS policy loops, synthesize a minimal profile from auth session
+      if (typeof message === 'string' && message.toLowerCase().includes('infinite recursion')) {
+        console.warn('Profiles RLS recursion detected, using session fallback profile');
+        const sUser = session?.user as any;
+        const email = sUser?.email || '';
+        const fallback: Profile = {
+          id: userId,
+          email,
+          full_name: sUser?.user_metadata?.full_name || email.split('@')[0] || null,
+          company_id: sUser?.user_metadata?.company_id ?? null,
+          site_id: sUser?.user_metadata?.site_id ?? null,
+          role: sUser?.user_metadata?.app_role || sUser?.user_metadata?.role || sUser?.app_metadata?.role || 'Staff',
+          avatar_url: sUser?.user_metadata?.avatar_url ?? null,
+          created_at: sUser?.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        console.log('Fallback profile created:', fallback);
+        setProfile(fallback);
+        setError(null);
+      } else {
+        console.error('Error fetching profile:', message);
+        setError(message);
+      }
     } finally {
       setIsFetching(false);
     }
@@ -155,12 +197,12 @@ export function useAppContext() {
     session: context.session,
     user: context.user,
     userId: context.user?.id || null,
-    email: context.profile?.email || null,
-    role: context.profile?.role || null,
-    companyId: context.profile?.company_id || null,
+    email: context.profile?.email || context.user?.email || null,
+    role: context.profile?.role || (context.session?.user as any)?.user_metadata?.role || (context.session?.user as any)?.app_metadata?.role || null,
+    companyId: context.profile?.company_id || (context.session?.user as any)?.user_metadata?.company_id || null,
     company: null, // Will be fetched separately if needed
     profile: context.profile,
-    siteId: context.profile?.site_id || null,
+    siteId: context.profile?.site_id || (context.session?.user as any)?.user_metadata?.site_id || null,
     site: null, // Will be fetched separately if needed
     sites: [],
     sitesCount: 0,
