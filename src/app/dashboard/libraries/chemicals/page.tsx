@@ -1,4 +1,5 @@
 "use client";
+export const revalidate = 0;
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle } from 'lucide-react';
