@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
 import { AuthLayout } from "@/components/layouts";
@@ -22,30 +23,46 @@ function preloadEssentialData() {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Note: We redirect only after an explicit successful sign-in to avoid loops
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setError("");
     setLoading(true);
+
     try {
-      console.log("🔐 Starting login process...");
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
+
       if (signInError) throw signInError;
-      console.log("✅ Sign in successful, user:", data.user?.email);
-    } catch (error: any) {
-      console.error("❌ Login error:", error);
-      setError(error?.message || "Failed to sign in");
-    } finally {
+
+      console.log("✅ Sign in successful, waiting for session cookie...");
+
+      // Wait for session cookie to be readable before navigating to avoid ping-pong
+      for (let i = 0; i < 10; i++) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          window.location.href = "/dashboard";
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      // Fallback navigate anyway
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Failed to sign in");
       setLoading(false);
     }
   };

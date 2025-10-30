@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 
@@ -43,6 +44,8 @@ const AppContext = createContext<AppContextType>({
 });
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isAuthPage = pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password';
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,6 +54,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Initialize auth - runs ONCE on mount
   useEffect(() => {
+    // Skip auth checks completely on public auth pages to avoid redirect loops
+    if (isAuthPage) {
+      setLoading(false);
+      return;
+    }
     let mounted = true;
 
     const initAuth = async () => {
@@ -105,7 +113,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Run only once!
+  }, [isAuthPage]); // Re-evaluate if route changes
 
   // Temporary debug: observe session user and metadata
   useEffect(() => {
