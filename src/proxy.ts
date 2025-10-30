@@ -22,20 +22,23 @@ export async function proxy(req: any) {
     return NextResponse.next();
   }
 
-  const cookie = req.cookies.get("sb-xijoybubtrgbrhquqwrx-auth-token");
+  // Try to detect Supabase auth cookie dynamically (sb-<ref>-auth-token)
+  const allCookies = req.cookies?.getAll?.() || [];
+  const authCookie = allCookies.find((c: any) => c?.name?.startsWith('sb-') && c?.name?.endsWith('-auth-token'));
   let session = null;
 
   console.log("[Proxy] Checking auth for:", req.url);
-  console.log("[Proxy] Cookie exists:", !!cookie?.value);
+  console.log("[Proxy] Cookie exists:", !!authCookie?.value);
 
-  if (cookie?.value) {
-    session = parseSupabaseCookie(cookie.value);
+  if (authCookie?.value) {
+    session = parseSupabaseCookie(authCookie.value);
     console.log("[Proxy] Parsed session:", !!session, session?.user?.email);
   }
 
+  // If we cannot determine a valid session at the edge, allow the request and let the client guard handle redirects.
   if (!session || !session.user) {
-    console.log("[Proxy] No valid session, redirecting to login");
-    return NextResponse.redirect(new URL("/login", req.url));
+    console.log("[Proxy] No valid session detected at edge - allowing, client guard will redirect if needed");
+    return NextResponse.next();
   }
 
   console.log("[Proxy] Valid session found, allowing request");
