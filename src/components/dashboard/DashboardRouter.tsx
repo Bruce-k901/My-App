@@ -68,17 +68,18 @@ export default function DashboardRouter() {
       return;
     }
     
-    if (!loading && (!profile || !company)) {
-      // Add a small delay to prevent race conditions during login
-      const timeoutId = setTimeout(() => {
-        console.log('🔍 DashboardRouter - still missing context after delay, redirecting');
-        showToast("Session expired. Please log in again.", "error");
-        router.replace("/login");
-      }, 1000);
-      
-      return () => clearTimeout(timeoutId);
-    } else if (!loading && profile && company) {
-      preloadData(role || "Staff", company.id, site?.id ?? null).then(setPreload);
+    // Definitive redirect only when we know session is null (logged out)
+    if (!loading && session === null) {
+      console.log('🔍 DashboardRouter - no session, redirecting to login');
+      router.replace("/login");
+      return;
+    }
+
+    // If we have a session, do not block on profile/company — allow dashboard to render
+    if (!loading && session) {
+      if (company?.id) {
+        preloadData(role || "Staff", company.id, site?.id ?? null).then(setPreload);
+      }
       setReady(true);
     }
   }, [loading, profile, company, site, role, session, router, showToast]);
