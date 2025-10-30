@@ -15,36 +15,41 @@ export default function DashboardHeader() {
 
   const handleLogout = async () => {
     if (isLoggingOut) return; // Prevent double clicks
-    
+
     setIsLoggingOut(true);
-    
+
     try {
       console.log("🔄 Logging out...");
-      
-      // Clear any cached data
-      if (typeof window !== 'undefined') {
-        localStorage.clear();
-        sessionStorage.clear();
-      }
-      
-      // Sign out from Supabase
+
+      // Sign out from Supabase first
       const { error } = await supabase.auth.signOut();
-      
       if (error) {
         console.error("❌ Logout error:", error);
       } else {
         console.log("✅ Logged out successfully");
       }
-      
-      // Small delay to ensure session is cleared
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Use Next.js router for navigation instead of window.location
-      router.push("/login");
+
+      // Clear any cached data after sign out
+      if (typeof window !== 'undefined') {
+        try { sessionStorage.clear(); } catch {}
+        try { localStorage.clear(); } catch {}
+      }
+
+      // Navigate to login
+      router.replace("/login");
+
+      // Hard fallback in case router is blocked
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }, 300);
     } catch (error) {
       console.error("❌ Logout failed:", error);
-      // Use router even if logout fails
-      router.push("/login");
+      router.replace("/login");
+    } finally {
+      // In case any UI remains, allow button again after a second
+      setTimeout(() => setIsLoggingOut(false), 1000);
     }
   };
 
