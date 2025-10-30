@@ -39,7 +39,7 @@ type Asset = {
 };
 
 export default function AssetsPage() {
-  const { profile, loading: ctxLoading, session } = useAppContext();
+  const { companyId, loading: authLoading, session } = useAppContext();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [query, setQuery] = useState("");
@@ -50,14 +50,13 @@ export default function AssetsPage() {
   const fetchAssets = async () => {
     console.log("Fetching assets...");
     console.log("Session:", session);
-    console.log("Profile:", profile);
-    console.log("Company ID:", profile?.company_id);
+    console.log("Company ID:", companyId);
     
     if (!session?.user?.id) {
       throw new Error("No user ID available");
     }
     
-    if (!profile?.company_id) {
+    if (!companyId) {
       throw new Error("No company ID available");
     }
     
@@ -66,7 +65,7 @@ export default function AssetsPage() {
     const { data: assetsData, error: assetsError } = await supabase
       .from('assets')
       .select('*')
-      .eq('company_id', profile.company_id)
+      .eq('company_id', companyId)
       .eq('archived', false)
       .order('name');
       
@@ -122,11 +121,32 @@ export default function AssetsPage() {
     queryKey: ["assets", selectedSite],
     queryFn: fetchAssets,
     staleTime: 1000 * 60 * 5, // cache for 5 min
-    enabled: !ctxLoading && !!profile?.company_id,
+    enabled: !authLoading && !!companyId,
   });
   
   // Wait for auth to load before proceeding
-  if (ctxLoading) return null;
+  if (authLoading) return <div className="p-8 text-white">Loading...</div>;
+
+  if (!companyId) {
+    return (
+      <div className="p-8">
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-yellow-400 mb-2">
+            Company Setup Required
+          </h2>
+          <p className="text-white/80 mb-4">
+            Please complete your company setup to access this page.
+          </p>
+          <a 
+            href="/dashboard/business" 
+            className="inline-block px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg"
+          >
+            Complete Setup
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const handleAdd = () => {
     setFormOpen(true);
@@ -197,7 +217,7 @@ export default function AssetsPage() {
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !profile?.company_id) return;
+    if (!file || !companyId) return;
 
     try {
       const text = await file.text();
@@ -271,7 +291,7 @@ export default function AssetsPage() {
         }
 
         const assetData = {
-          company_id: profile.company_id,
+          company_id: companyId,
           site_id: rowData.site_id ?? null,
           label: rowData.label ?? "",
           name: rowData.name || rowData.label || "",

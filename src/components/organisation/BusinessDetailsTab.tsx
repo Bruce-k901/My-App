@@ -180,13 +180,14 @@ export default function BusinessDetailsTab() {
         console.error("Failed to update user metadata:", e);
       }
 
-      // Also ensure profile table reflects the company
+      // Also ensure profile table reflects the company (match id OR auth_user_id)
       try {
-        if (userId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) {
           const { error: profileError } = await supabase
             .from("profiles")
             .update({ company_id: result.data.id, updated_at: new Date().toISOString() })
-            .eq("id", userId);
+            .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`);
           if (profileError) {
             console.error("Failed to update profile:", profileError);
           }
@@ -197,6 +198,10 @@ export default function BusinessDetailsTab() {
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      // Reload to ensure context picks up new metadata immediately
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
     }
     setSaving(false);
   };

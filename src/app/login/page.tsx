@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import GlassCard from "@/components/ui/GlassCard";
 import { AuthLayout } from "@/components/layouts";
 import { Eye, EyeOff } from "lucide-react";
 import { Input, Button } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
-import { redirectToDashboard } from "@/lib/auth";
 
 // Optimized preload - only essential data, non-blocking
 function preloadEssentialData() {
@@ -24,17 +22,7 @@ function preloadEssentialData() {
 }
 
 export default function LoginPage() {
-  // 🔍 DEBUG: Check environment variables
-  console.log('🔍 ENV CHECK:', {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    keyType: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 15),
-    env: process.env.NODE_ENV
-  });
-  
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [hasSession, setHasSession] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,42 +30,18 @@ export default function LoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // If already signed in, bounce to dashboard immediately and set hasSession
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!cancelled) {
-        const exists = !!data?.session;
-        setHasSession(exists);
-        if (exists) router.replace("/dashboard");
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      // Prevent double sign-in if a session already exists
-      const { data: existingSession } = await supabase.auth.getSession();
-      if (existingSession?.session) {
-        console.log("Already signed in, redirecting...");
-        router.replace("/dashboard");
-        return;
-      }
-
       console.log("🔐 Starting login process...");
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
       if (signInError) throw signInError;
-
       console.log("✅ Sign in successful, user:", data.user?.email);
-      router.replace("/dashboard");
     } catch (error: any) {
       console.error("❌ Login error:", error);
       setError(error?.message || "Failed to sign in");
@@ -129,8 +93,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading || hasSession}>
-            {hasSession ? "Redirecting..." : loading ? "Signing in..." : "Log in"}
+          <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading}>
+            {loading ? "Signing in..." : "Log in"}
           </Button>
           {error && (
             <p className="mt-3 text-sm text-red-400" role="alert">{error}</p>

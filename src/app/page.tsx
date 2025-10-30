@@ -1,47 +1,9 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 
 export default function HomePage() {
-  const router = useRouter();
-  const [checking, setChecking] = useState(true);
-  const [showMarketing, setShowMarketing] = useState(false);
-
-  useEffect(() => {
-    async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        console.log("Session exists, redirecting to dashboard");
-        router.replace("/dashboard");
-      } else {
-        setShowMarketing(true);
-      }
-      setChecking(false);
-    }
-    checkSession();
-  }, [router]);
-
-  if (checking) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white">Checking authentication...</div>
-      </div>
-    );
-  }
-
-  if (!showMarketing) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white">Redirecting...</div>
-      </div>
-    );
-  }
-
   return (
     <MarketingSubPageLayout>
       {/* HERO */}

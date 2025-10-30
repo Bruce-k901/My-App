@@ -20,7 +20,12 @@ interface AppContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  // Standardized fields required by app pages
+  companyId: string | null;
+  siteId: string | null;
+  role: string | null;
   loading: boolean;
+  // Legacy/additional fields
   authLoading?: boolean;
   error: string | null;
 }
@@ -29,6 +34,9 @@ const AppContext = createContext<AppContextType>({
   user: null,
   session: null,
   profile: null,
+  companyId: null,
+  siteId: null,
+  role: null,
   loading: true,
   authLoading: true,
   error: null,
@@ -59,7 +67,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         // Only fetch profile if we have a session
         if (currentSession?.user) {
-          await fetchProfile(currentSession.user.id);
+          const p = await fetchProfile(currentSession.user.id);
+          if (p) setProfile(p);
         }
       } catch (err: any) {
         console.error('Auth initialization error:', err);
@@ -84,7 +93,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSession(newSession);
 
         if (event === 'SIGNED_IN' && newSession?.user) {
-          await fetchProfile(newSession.user.id);
+          const p = await fetchProfile(newSession.user.id);
+          if (p) setProfile(p);
         } else if (event === 'SIGNED_OUT') {
           setProfile(null);
         }
@@ -107,66 +117,87 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [session]);
 
-  // Fetch profile - ONLY profile, nothing else
+  // Fetch profile by either id or auth_user_id, return the profile; caller sets state
   const fetchProfile = async (userId: string) => {
     if (isFetching) {
       console.log('Already fetching profile, skipping...');
-      return;
+      return null;
     }
 
     setIsFetching(true);
-    
     try {
-      const { data, error: profileError } = await supabase
+      console.log('[AppContext] Fetching profile for user:', userId);
+      const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
-        .single();
+        .or(`id.eq.${userId},auth_user_id.eq.${userId}`)
+        .limit(1);
 
-      if (profileError) throw profileError;
-
-      if (data) {
-        console.log('Profile fetched from Supabase:', data);
-        setProfile(data);
+      if (error) {
+        console.error('[AppContext] Profile fetch error:', error);
+        if (
+          typeof error.message === 'string' &&
+          (error.message.includes('infinite recursion') || error.message.includes('policy'))
+        ) {
+          console.warn('[AppContext] Using session fallback due to:', error.message);
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const fallback = {
+              id: user.id,
+              email: user.email || '',
+              full_name: (user as any)?.user_metadata?.full_name || user.email?.split('@')[0] || '',
+              company_id: (user as any)?.user_metadata?.company_id || null,
+              site_id: (user as any)?.user_metadata?.site_id || null,
+              role: (user as any)?.user_metadata?.app_role || (user as any)?.user_metadata?.role || 'Staff',
+              created_at: (user as any)?.created_at || new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              avatar_url: (user as any)?.user_metadata?.avatar_url ?? null,
+            } as Profile;
+            console.log('[AppContext] Using fallback profile:', fallback);
+            return fallback;
+          }
+        }
+        throw error;
       }
+
+      if (!profiles || profiles.length === 0) {
+        console.warn('[AppContext] No profile found for user:', userId);
+        throw new Error('No profile found');
+      }
+
+      const profile = profiles[0] as Profile;
+      console.log('[AppContext] Profile fetched successfully:', {
+        email: (profile as any).email,
+        company_id: profile.company_id,
+        app_role: (profile as any).app_role || profile.role,
+      });
       setError(null);
-    } catch (err: any) {
-      const message = (err && (err.message || err.error_description))
-        || (typeof err === 'string' ? err : '')
-        || (() => { try { return JSON.stringify(err); } catch { return 'Unknown profile error'; } })();
-
-      // Fallback: if profiles RLS policy loops, synthesize a minimal profile from auth session
-      if (typeof message === 'string' && message.toLowerCase().includes('infinite recursion')) {
-        console.warn('Profiles RLS recursion detected, using session fallback profile');
-        const sUser = session?.user as any;
-        const email = sUser?.email || '';
-        const fallback: Profile = {
-          id: userId,
-          email,
-          full_name: sUser?.user_metadata?.full_name || email.split('@')[0] || null,
-          company_id: sUser?.user_metadata?.company_id ?? null,
-          site_id: sUser?.user_metadata?.site_id ?? null,
-          role: sUser?.user_metadata?.app_role || sUser?.user_metadata?.role || sUser?.app_metadata?.role || 'Staff',
-          avatar_url: sUser?.user_metadata?.avatar_url ?? null,
-          created_at: sUser?.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        console.log('Fallback profile created:', fallback);
-        setProfile(fallback);
-        setError(null);
-      } else {
-        console.error('Error fetching profile:', message);
-        setError(message);
-      }
+      return profile;
+    } catch (err) {
+      console.error('[AppContext] Error in fetchProfile:', err);
+      setError((err as any)?.message || 'Profile fetch failed');
+      return null;
     } finally {
       setIsFetching(false);
     }
   };
 
-  const value = {
-    user: session?.user || null,
+  const currentUser = session?.user || null;
+  const derivedCompanyId = profile?.company_id ?? (currentUser as any)?.user_metadata?.company_id ?? null;
+  const derivedSiteId = profile?.site_id ?? (currentUser as any)?.user_metadata?.site_id ?? null;
+  const derivedRole = profile?.role
+    ?? (currentUser as any)?.user_metadata?.app_role
+    ?? (currentUser as any)?.user_metadata?.role
+    ?? (currentUser as any)?.app_metadata?.role
+    ?? null;
+
+  const value: AppContextType = {
+    user: currentUser,
     session,
     profile,
+    companyId: derivedCompanyId,
+    siteId: derivedSiteId,
+    role: derivedRole,
     loading,
     authLoading: loading,
     error,
