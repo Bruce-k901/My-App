@@ -231,11 +231,19 @@ export default function ChemicalsLibraryPage() {
             <thead className="bg-neutral-900">
               <tr>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Product Name</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Manufacturer</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Use Case</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Hazards</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">COSHH Sheet</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Contact Time</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Dilution</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Required PPE</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Supplier</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Unit Cost</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Pack Size</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Storage</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Linked Risks</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Notes</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Actions</th>
               </tr>
             </thead>
@@ -243,6 +251,7 @@ export default function ChemicalsLibraryPage() {
               {filteredItems.map((item) => (
                 <tr key={item.id} className="border-t border-neutral-700 hover:bg-neutral-800/50">
                   <td className="px-4 py-3 text-white">{item.product_name}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.manufacturer || '-'}</td>
                   <td className="px-4 py-3 text-neutral-400">{item.use_case}</td>
                   <td className="px-4 py-3">
                     {item.hazard_symbols && item.hazard_symbols.length > 0 ? (
@@ -268,7 +277,14 @@ export default function ChemicalsLibraryPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-neutral-400">{item.contact_time || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.dilution_ratio || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{(item.required_ppe || []).join(', ') || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.supplier || '-'}</td>
                   <td className="px-4 py-3 text-neutral-400">£{item.unit_cost || '0.00'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.pack_size || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.storage_requirements || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{(item.linked_risks || []).join(', ') || '-'}</td>
+                  <td className="px-4 py-3 text-neutral-400 max-w-[280px] truncate" title={item.notes || ''}>{item.notes || '-'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
@@ -324,6 +340,15 @@ export default function ChemicalsLibraryPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Manufacturer</label>
+                  <input
+                    value={formData.manufacturer}
+                    onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="e.g., Diversey"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm text-neutral-300 mb-1">Use Case</label>
                   <input
                     value={formData.use_case}
@@ -364,6 +389,79 @@ export default function ChemicalsLibraryPage() {
                     </label>
                   ))}
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Dilution Ratio</label>
+                  <input
+                    value={formData.dilution_ratio}
+                    onChange={(e) => setFormData({ ...formData, dilution_ratio: e.target.value })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="e.g., 1:10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Required PPE (comma separated)</label>
+                  <input
+                    value={(formData.required_ppe || []).join(', ')}
+                    onChange={(e) => setFormData({ ...formData, required_ppe: e.target.value.split(',').map(v => v.trim()).filter(Boolean) })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="e.g., Gloves, Goggles"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Supplier</label>
+                  <input
+                    value={formData.supplier}
+                    onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="Supplier name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Unit Cost (£)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.unit_cost}
+                    onChange={(e) => setFormData({ ...formData, unit_cost: e.target.value })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-300 mb-1">Pack Size</label>
+                  <input
+                    value={formData.pack_size}
+                    onChange={(e) => setFormData({ ...formData, pack_size: e.target.value })}
+                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="e.g., 5L"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-neutral-300 mb-1">Storage Requirements</label>
+                <input
+                  value={formData.storage_requirements}
+                  onChange={(e) => setFormData({ ...formData, storage_requirements: e.target.value })}
+                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                  placeholder="e.g., Store in a cool, dry place"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-neutral-300 mb-1">Linked Risks (comma separated)</label>
+                <input
+                  value={(formData.linked_risks || []).join(', ')}
+                  onChange={(e) => setFormData({ ...formData, linked_risks: e.target.value.split(',').map(v => v.trim()).filter(Boolean) })}
+                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+                  placeholder="e.g., COSHH-123, COSHH-456"
+                />
               </div>
 
               <div>
