@@ -34,6 +34,7 @@ export default function LoginPage() {
   
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +42,15 @@ export default function LoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // If already signed in, bounce to dashboard immediately
+  // If already signed in, bounce to dashboard immediately and set hasSession
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const { data } = await supabase.auth.getSession();
-      if (!cancelled && data?.session) {
-        router.replace("/dashboard");
+      if (!cancelled) {
+        const exists = !!data?.session;
+        setHasSession(exists);
+        if (exists) router.replace("/dashboard");
       }
     })();
     return () => { cancelled = true; };
@@ -57,33 +60,28 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    
     try {
+      // Prevent double sign-in if a session already exists
+      const { data: existingSession } = await supabase.auth.getSession();
+      if (existingSession?.session) {
+        console.log("Already signed in, redirecting...");
+        router.replace("/dashboard");
+        return;
+      }
+
       console.log("🔐 Starting login process...");
-      
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
-      
-      if (signInError) {
-        console.error("❌ Sign in error:", signInError);
-        setError(signInError.message || "Login failed. Please check your credentials.");
-        setLoading(false);
-        return;
-      }
-      
+      if (signInError) throw signInError;
+
       console.log("✅ Sign in successful, user:", data.user?.email);
-      
-      // Give the cookie a breath before redirect
-      await new Promise((r) => setTimeout(r, 300));
-      
-      // Use replace to avoid history back to /login
       router.replace("/dashboard");
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Login error:", error);
-      setError("Network issue while logging in. Please retry.");
+      setError(error?.message || "Failed to sign in");
+    } finally {
       setLoading(false);
     }
   };
@@ -131,8 +129,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <Button type="submit" variant="primary" fullWidth loading={loading}>
-            Log in
+          <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading || hasSession}>
+            {hasSession ? "Redirecting..." : loading ? "Signing in..." : "Log in"}
           </Button>
           {error && (
             <p className="mt-3 text-sm text-red-400" role="alert">{error}</p>

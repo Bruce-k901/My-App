@@ -7,8 +7,16 @@ import { useAppContext } from "@/context/AppContext";
 import type { AppRole } from "@/lib/accessControl";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { role: actualRole } = useAppContext();
+  const { role: actualRole, loading } = useAppContext();
   const isDevMode = false;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#0B0D13]">
+        <div className="text-white">Loading dashboard...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white">
