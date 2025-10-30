@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { isRestricted, type AppRole } from "@/lib/accessControl";
+import { isRoleGuardEnabled } from "@/lib/featureFlags";
+import { useAppContext } from "@/context/AppContext";
 import {
   LayoutGrid,
   Building2,
@@ -103,12 +106,16 @@ const directLinks: SidebarLink[] = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: HelpCircle },
 ];
-
 export default function NewMainSidebar() {
   const pathname = usePathname();
+  const { role: contextRole } = useAppContext();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const roleGuard = isRoleGuardEnabled();
+  const role = (
+    (contextRole as AppRole) || (roleGuard ? (null as any) : ("Admin" as AppRole))
+  ) as AppRole;
   
   // Create refs for each section button
   const orgRef = useRef<HTMLDivElement>(null);
@@ -192,48 +199,62 @@ export default function NewMainSidebar() {
         <SidebarDirectLink
           item={directLinks[0]}
           isActive={pathname === "/dashboard"}
+          isRestricted={false}
         />
 
         <div className="w-12 h-px bg-white/[0.1] my-2" />
 
         {/* Hover Sections */}
-        {sections.map((section) => (
-          <SidebarSectionItem
-            key={section.label}
-            section={section}
-            allSections={sections}
-            isHovered={hoveredSection === section.label}
-            onHover={() => handleHover(section.label)}
-            onLeave={handleLeave}
-            pathname={pathname}
-            buttonRef={buttonRefs[section.label]}
-          />
-        ))}
+        {sections.map((section) => {
+          const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+          return (
+            <SidebarSectionItem
+              key={section.label}
+              section={section}
+              allSections={sections}
+              isHovered={hoveredSection === section.label}
+              onHover={() => !sectionRestricted && handleHover(section.label)}
+              onLeave={handleLeave}
+              pathname={pathname}
+              buttonRef={buttonRefs[section.label]}
+              isRestricted={sectionRestricted}
+              role={role}
+            />
+          );
+        })}
 
         <div className="w-12 h-px bg-white/[0.1] my-2" />
 
         {/* Bottom Direct Links */}
-        {directLinks.slice(1).map((link) => (
-          <SidebarDirectLink
-            key={link.href}
-            item={link}
-            isActive={pathname.startsWith(link.href)}
-          />
-        ))}
+        {directLinks.slice(1).map((link) => {
+          const linkRestricted = roleGuard ? isRestricted(role, link.label) : false;
+          return (
+            <SidebarDirectLink
+              key={link.href}
+              item={link}
+              isActive={pathname.startsWith(link.href)}
+              isRestricted={linkRestricted}
+            />
+          );
+        })}
       </aside>
 
       {/* Hover Popups */}
-      {sections.map((section) => (
-        <SidebarPopup
-          key={section.label}
-          section={section}
-          isVisible={hoveredSection === section.label}
-          onMouseEnter={() => handleHover(section.label)}
-          onMouseLeave={handleLeave}
-          pathname={pathname}
-          buttonRef={buttonRefs[section.label]}
-        />
-      ))}
+      {sections.map((section) => {
+        const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+        return (
+          <SidebarPopup
+            key={section.label}
+            section={section}
+            isVisible={hoveredSection === section.label && !sectionRestricted}
+            onMouseEnter={() => !sectionRestricted && handleHover(section.label)}
+            onMouseLeave={handleLeave}
+            pathname={pathname}
+            buttonRef={buttonRefs[section.label]}
+            role={role}
+          />
+        );
+      })}
     </>
   );
 }
@@ -242,30 +263,46 @@ export default function NewMainSidebar() {
 function SidebarDirectLink({
   item,
   isActive,
+  isRestricted,
 }: {
   item: SidebarLink;
   isActive: boolean;
+  isRestricted: boolean;
 }) {
   const Icon = item.icon;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (isRestricted) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Link
-      href={item.href}
+      href={isRestricted ? "#" : item.href}
+      onClick={handleClick}
       className={`
         relative group flex items-center justify-center w-14 h-14 rounded-xl
         transition-all duration-200
+        ${isRestricted ? "opacity-40 cursor-not-allowed" : ""}
         ${
-          isActive
+          isActive && !isRestricted
             ? "bg-pink-500/20 text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
             : "text-white/60 hover:text-white hover:bg-white/[0.08]"
         }
       `}
     >
       <Icon size={22} />
-      
-      {/* Tooltip */}
+      {isRestricted && (
+        <div className="absolute top-1 right-1 text-white/40">
+          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 1a5 5 0 0 0-5 5v4H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v4H9V6a3 3 0 0 1 3-3z"/>
+          </svg>
+        </div>
+      )}
       <div className="absolute left-full ml-4 px-3 py-2 bg-[#1a1c24] border border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
         {item.label}
+        {isRestricted && <span className="block text-xs text-red-400 mt-1">🔒 Restricted</span>}
       </div>
     </Link>
   );
@@ -279,6 +316,8 @@ function SidebarSectionItem({
   onLeave,
   pathname,
   allSections,
+  isRestricted,
+  role,
   buttonRef,
 }: {
   section: SidebarSection;
@@ -287,6 +326,8 @@ function SidebarSectionItem({
   onLeave: () => void;
   pathname: string;
   allSections: SidebarSection[];
+  isRestricted: boolean;
+  role: AppRole;
   buttonRef: React.RefObject<HTMLDivElement>;
 }) {
   const Icon = section.icon;
@@ -296,6 +337,7 @@ function SidebarSectionItem({
   let bestMatchSection = "";
 
   allSections.forEach((sect) => {
+    if (isRestricted) return;
     sect.items.forEach((item) => {
       if (pathname === item.href || pathname.startsWith(item.href + "/")) {
         if (item.href.length > bestMatch.length) {
@@ -314,9 +356,9 @@ function SidebarSectionItem({
       ref={buttonRef}
       className={`
         relative flex items-center justify-center w-14 h-14 rounded-xl
-        transition-all duration-200 cursor-pointer
+        transition-all duration-200 ${isRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
         ${
-          isActive || isHovered
+          (isActive || isHovered) && !isRestricted
             ? "bg-pink-500/20 text-pink-400"
             : "text-white/60 hover:text-white hover:bg-white/[0.08]"
         }
@@ -325,6 +367,13 @@ function SidebarSectionItem({
       onMouseLeave={onLeave}
     >
       <Icon size={22} />
+      {isRestricted && (
+        <div className="absolute top-1 right-1 text-white/40">
+          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 1a5 5 0 0 0-5 5v4H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v4H9V6a3 3 0 0 1 3-3z"/>
+          </svg>
+        </div>
+      )}
     </div>
   );
 }
@@ -337,6 +386,7 @@ function SidebarPopup({
   onMouseLeave,
   pathname,
   buttonRef,
+  role,
 }: {
   section: SidebarSection;
   isVisible: boolean;
@@ -344,6 +394,7 @@ function SidebarPopup({
   onMouseLeave: () => void;
   pathname: string;
   buttonRef: React.RefObject<HTMLDivElement>;
+  role: AppRole;
 }) {
   if (!isVisible) return null;
 
@@ -367,28 +418,24 @@ function SidebarPopup({
         {/* Items */}
         <div className="space-y-1 px-2">
           {section.items.map((item) => {
-            // Only highlight if this is the LONGEST (most specific) matching route in this section
+            const itemRestricted = isRestricted(role, item.label);
             const isExactMatch = pathname === item.href;
             const isChildRoute = pathname.startsWith(item.href + "/");
-
             const longerMatchExists = section.items.some((other) =>
               other.href !== item.href &&
               other.href.length > item.href.length &&
               (pathname === other.href || pathname.startsWith(other.href + "/"))
             );
-
-            const isActive = (isExactMatch || isChildRoute) && !longerMatchExists;
+            const isActive = !itemRestricted && (isExactMatch || isChildRoute) && !longerMatchExists;
 
             return (
               <Link
                 key={item.href}
-                href={item.href}
-                onClick={(e) => {
-                  // Ensure navigation happens and close popup
-                  e.stopPropagation();
-                }}
+                href={itemRestricted ? "#" : item.href}
+                onClick={(e) => { if (itemRestricted) e.preventDefault(); e.stopPropagation(); }}
                 className={`
-                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer
+                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150
+                  ${itemRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                   ${
                     isActive
                       ? "bg-pink-500/20 text-pink-300 font-medium"
@@ -397,6 +444,9 @@ function SidebarPopup({
                 `}
               >
                 {item.label}
+                {itemRestricted && (
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 text-xs">🔒</span>
+                )}
               </Link>
             );
           })}

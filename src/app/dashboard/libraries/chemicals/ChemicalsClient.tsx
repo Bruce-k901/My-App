@@ -32,8 +32,10 @@ export default function ChemicalsClient() {
   });
 
   const loadChemicals = useCallback(async () => {
-    if (!companyId) return;
-    if (loading) return;
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);

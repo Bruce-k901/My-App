@@ -3,8 +3,13 @@
 import React from "react";
 import NewMainSidebar from "@/components/layouts/NewMainSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
+import { useAppContext } from "@/context/AppContext";
+import type { AppRole } from "@/lib/accessControl";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { role: actualRole } = useAppContext();
+  const isDevMode = false;
+
   return (
     <div className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white">
       <NewMainSidebar />
@@ -12,6 +17,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <DashboardHeader />
         {children}
       </main>
+
+      {/* Dev toggle disabled */}
     </div>
   );
 }

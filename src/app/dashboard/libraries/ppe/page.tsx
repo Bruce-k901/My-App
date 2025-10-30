@@ -6,42 +6,38 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 
-const DRINK_CATEGORIES = [
-  'Spirit',
-  'Liqueur',
-  'Mixer',
-  'Garnish',
-  'Bitters',
-  'Syrup',
-  'Fresh Produce'
+const PPE_CATEGORIES = [
+  'Hand Protection',
+  'Eye Protection',
+  'Respiratory',
+  'Body Protection',
+  'Foot Protection'
 ];
 
-export default function DrinksLibraryPage() {
+export default function PPELibraryPage() {
   const { companyId } = useAppContext();
   const { showToast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [drinks, setDrinks] = useState([]);
+  const [ppeItems, setPPEItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showModal, setShowModal] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [formData, setFormData] = useState({
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({
     item_name: '',
     category: '',
-    sub_category: '',
-    abv: '',
-    allergens: [],
-    unit: '',
-    unit_cost: '',
+    standard_compliance: '',
+    size_options: [],
     supplier: '',
-    pack_size: '',
-    storage_type: '',
-    shelf_life: '',
+    unit_cost: '',
+    reorder_level: '',
+    linked_risks: [],
+    cleaning_replacement_interval: '',
     notes: ''
   });
 
-  const loadDrinks = useCallback(async () => {
+  const loadPPEItems = useCallback(async () => {
     if (!companyId) {
       setLoading(false);
       return;
@@ -50,79 +46,77 @@ export default function DrinksLibraryPage() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('drinks_library')
+        .from('ppe_library')
         .select('*')
         .eq('company_id', companyId)
         .order('item_name');
       
       if (error) throw error;
-      setDrinks(data || []);
-    } catch (error) {
-      console.error('Error loading drinks:', error);
-      const errorMessage = (error as any)?.message || 'Unknown error occurred';
-      showToast({ title: 'Error loading drinks', description: errorMessage, type: 'error' });
+      setPPEItems(data || []);
+    } catch (error: any) {
+      console.error('Error loading PPE:', error);
+      showToast({ title: 'Error loading PPE', description: error.message, type: 'error' });
     } finally {
       setLoading(false);
     }
   }, [companyId, showToast]);
 
   useEffect(() => {
-    loadDrinks();
-  }, [loadDrinks]);
+    loadPPEItems();
+  }, [loadPPEItems]);
 
   const handleSave = async () => {
     try {
       const payload = {
         ...formData,
         company_id: companyId,
-        abv: formData.abv ? parseFloat(formData.abv) : null,
-        unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : null
+        unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : null,
+        reorder_level: formData.reorder_level ? parseInt(formData.reorder_level) : null,
+        size_options: formData.size_options || []
       };
 
       if (editingItem) {
         const { error } = await supabase
-          .from('drinks_library')
+          .from('ppe_library')
           .update(payload)
           .eq('id', editingItem.id);
         
         if (error) throw error;
-        showToast({ title: 'Drink updated', type: 'success' });
+        showToast({ title: 'PPE updated', type: 'success' });
       } else {
         const { error } = await supabase
-          .from('drinks_library')
+          .from('ppe_library')
           .insert(payload);
         
         if (error) throw error;
-        showToast({ title: 'Drink added', type: 'success' });
+        showToast({ title: 'PPE added', type: 'success' });
       }
 
       setShowModal(false);
       setEditingItem(null);
       resetForm();
-      loadDrinks();
-    } catch (error) {
-      console.error('Error saving drink:', error);
-      const errorMessage = (error as any)?.message || 'Unknown error occurred';
-      showToast({ title: 'Error saving drink', description: errorMessage, type: 'error' });
+      loadPPEItems();
+    } catch (error: any) {
+      console.error('Error saving PPE:', error);
+      showToast({ title: 'Error saving PPE', description: error.message, type: 'error' });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this drink item?')) return;
+    if (!confirm('Are you sure you want to delete this PPE item?')) return;
     
     try {
       const { error } = await supabase
-        .from('drinks_library')
+        .from('ppe_library')
         .delete()
         .eq('id', id);
       
       if (error) throw error;
-      showToast({ title: 'Drink deleted', type: 'success' });
-      loadDrinks();
-    } catch (error) {
-      console.error('Error deleting drink:', error);
-      const errorMessage = (error as any)?.message || 'Unknown error occurred';
-      showToast({ title: 'Error deleting drink', description: errorMessage, type: 'error' });
+      showToast({ title: 'PPE deleted', type: 'success' });
+      loadPPEItems();
+    } catch (error: any) {
+      console.error('Error deleting PPE:', error);
+      showToast({ title: 'Error deleting PPE', description: error.message, type: 'error' });
     }
   };
 
@@ -130,15 +124,13 @@ export default function DrinksLibraryPage() {
     setFormData({
       item_name: '',
       category: '',
-      sub_category: '',
-      abv: '',
-      allergens: [],
-      unit: '',
-      unit_cost: '',
+      standard_compliance: '',
+      size_options: [],
       supplier: '',
-      pack_size: '',
-      storage_type: '',
-      shelf_life: '',
+      unit_cost: '',
+      reorder_level: '',
+      linked_risks: [],
+      cleaning_replacement_interval: '',
       notes: ''
     });
   };
@@ -148,21 +140,19 @@ export default function DrinksLibraryPage() {
     setFormData({
       item_name: item.item_name || '',
       category: item.category || '',
-      sub_category: item.sub_category || '',
-      abv: item.abv || '',
-      allergens: item.allergens || [],
-      unit: item.unit || '',
-      unit_cost: item.unit_cost || '',
+      standard_compliance: item.standard_compliance || '',
+      size_options: item.size_options || [],
       supplier: item.supplier || '',
-      pack_size: item.pack_size || '',
-      storage_type: item.storage_type || '',
-      shelf_life: item.shelf_life || '',
+      unit_cost: item.unit_cost || '',
+      reorder_level: item.reorder_level || '',
+      linked_risks: item.linked_risks || [],
+      cleaning_replacement_interval: item.cleaning_replacement_interval || '',
       notes: item.notes || ''
     });
     setShowModal(true);
   };
 
-  const filteredItems = drinks.filter((item: any) => {
+  const filteredItems = ppeItems.filter((item: any) => {
     const matchesSearch = (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
     return matchesSearch && matchesCategory;
@@ -173,10 +163,10 @@ export default function DrinksLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-purple-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
             <div>
-              <h1 className="text-lg font-semibold text-white">Drinks Library</h1>
-              <p className="text-sm text-neutral-400">Manage spirits, mixers, and garnishes</p>
+              <h1 className="text-lg font-semibold text-white">PPE Library</h1>
+              <p className="text-sm text-neutral-400">Manage personal protective equipment</p>
             </div>
           </div>
         </div>
@@ -198,7 +188,7 @@ export default function DrinksLibraryPage() {
             className="px-4 py-2 bg-gradient-to-r from-magenta-600 to-blue-600 hover:from-magenta-500 hover:to-blue-500 transition-all rounded-lg text-white flex items-center gap-2"
           >
             <Plus size={16} />
-            Add Drink
+            Add PPE
           </button>
         </div>
       </div>
@@ -210,7 +200,7 @@ export default function DrinksLibraryPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search drinks..."
+            placeholder="Search PPE items..."
             className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
           />
         </div>
@@ -220,17 +210,17 @@ export default function DrinksLibraryPage() {
           className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
         >
           <option value="all">All Categories</option>
-          {DRINK_CATEGORIES.map(cat => (
+          {PPE_CATEGORIES.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
       </div>
 
       {loading ? (
-        <div className="text-neutral-400 text-center py-8">Loading drinks...</div>
+        <div className="text-neutral-400 text-center py-8">Loading PPE...</div>
       ) : filteredItems.length === 0 ? (
         <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-          <p className="text-neutral-400">No drinks found.</p>
+          <p className="text-neutral-400">No PPE items found.</p>
         </div>
       ) : (
         <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
@@ -239,8 +229,8 @@ export default function DrinksLibraryPage() {
               <tr>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Item Name</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Category</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">ABV</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Unit Cost</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Reorder Level</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Actions</th>
               </tr>
             </thead>
@@ -249,8 +239,8 @@ export default function DrinksLibraryPage() {
                 <tr key={item.id} className="border-t border-neutral-700 hover:bg-neutral-800/50">
                   <td className="px-4 py-3 text-white">{item.item_name}</td>
                   <td className="px-4 py-3 text-neutral-400">{item.category}</td>
-                  <td className="px-4 py-3 text-neutral-400">{item.abv ? `${item.abv}%` : '-'}</td>
                   <td className="px-4 py-3 text-neutral-400">£{item.unit_cost || '0.00'}</td>
+                  <td className="px-4 py-3 text-neutral-400">{item.reorder_level || '-'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button onClick={() => handleEdit(item)} className="p-1.5 text-magenta-400 hover:text-magenta-300">
@@ -273,7 +263,7 @@ export default function DrinksLibraryPage() {
           <div className="bg-neutral-900 rounded-xl border border-neutral-700 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-white">
-                {editingItem ? 'Edit Drink' : 'Add Drink'}
+                {editingItem ? 'Edit PPE' : 'Add PPE'}
               </h2>
               <button
                 onClick={() => {
@@ -306,20 +296,18 @@ export default function DrinksLibraryPage() {
                     className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
                   >
                     <option value="">Select category...</option>
-                    {DRINK_CATEGORIES.map(cat => (
+                    {PPE_CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">ABV (%)</label>
+                  <label className="block text-sm text-neutral-300 mb-1">Reorder Level</label>
                   <input
                     type="number"
-                    step="0.1"
-                    value={formData.abv}
-                    onChange={(e) => setFormData({ ...formData, abv: e.target.value })}
+                    value={formData.reorder_level}
+                    onChange={(e) => setFormData({ ...formData, reorder_level: e.target.value })}
                     className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                    placeholder="For alcoholic items"
                   />
                 </div>
               </div>
@@ -360,3 +348,5 @@ export default function DrinksLibraryPage() {
     </div>
   );
 }
+
+

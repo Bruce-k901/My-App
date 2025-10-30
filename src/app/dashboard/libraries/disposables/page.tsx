@@ -22,12 +22,12 @@ export default function DisposablesLibraryPage() {
   const { showToast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [disposables, setDisposables] = useState([]);
+  const [disposables, setDisposables] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showModal, setShowModal] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [formData, setFormData] = useState({
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({
     item_name: '',
     category: '',
     material: '',
@@ -45,8 +45,10 @@ export default function DisposablesLibraryPage() {
   });
 
   const loadDisposables = useCallback(async () => {
-    if (!companyId) return;
-    if (loading) return; // Guard against concurrent calls
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -58,13 +60,13 @@ export default function DisposablesLibraryPage() {
       
       if (error) throw error;
       setDisposables(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading disposables:', error);
       showToast({ title: 'Error loading disposables', description: error.message, type: 'error' });
     } finally {
       setLoading(false);
     }
-  }, [companyId, showToast, loading]);
+  }, [companyId, showToast]);
 
   useEffect(() => {
     loadDisposables();
@@ -101,13 +103,13 @@ export default function DisposablesLibraryPage() {
       setEditingItem(null);
       resetForm();
       loadDisposables();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving disposable:', error);
       showToast({ title: 'Error saving disposable', description: error.message, type: 'error' });
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this disposable item?')) return;
     
     try {
@@ -119,7 +121,7 @@ export default function DisposablesLibraryPage() {
       if (error) throw error;
       showToast({ title: 'Disposable deleted', type: 'success' });
       loadDisposables();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting disposable:', error);
       showToast({ title: 'Error deleting disposable', description: error.message, type: 'error' });
     }
@@ -144,7 +146,7 @@ export default function DisposablesLibraryPage() {
     });
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = (item: any) => {
     setEditingItem(item);
     setFormData({
       item_name: item.item_name || '',
@@ -165,15 +167,14 @@ export default function DisposablesLibraryPage() {
     setShowModal(true);
   };
 
-  const filteredItems = disposables.filter(item => {
-    const matchesSearch = item.item_name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredItems = disposables.filter((item: any) => {
+    const matchesSearch = (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
@@ -207,7 +208,6 @@ export default function DisposablesLibraryPage() {
         </div>
       </div>
 
-      {/* Search and Filter */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
@@ -231,7 +231,6 @@ export default function DisposablesLibraryPage() {
         </select>
       </div>
 
-      {/* Disposables Table */}
       {loading ? (
         <div className="text-neutral-400 text-center py-8">Loading disposables...</div>
       ) : filteredItems.length === 0 ? (
@@ -252,7 +251,7 @@ export default function DisposablesLibraryPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item) => (
+              {filteredItems.map((item: any) => (
                 <tr key={item.id} className="border-t border-neutral-700 hover:bg-neutral-800/50">
                   <td className="px-4 py-3 text-white">{item.item_name}</td>
                   <td className="px-4 py-3 text-neutral-400">{item.category}</td>
@@ -267,16 +266,10 @@ export default function DisposablesLibraryPage() {
                   <td className="px-4 py-3 text-neutral-400">£{item.unit_cost || '0.00'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="p-1.5 text-magenta-400 hover:text-magenta-300"
-                      >
+                      <button onClick={() => handleEdit(item)} className="p-1.5 text-magenta-400 hover:text-magenta-300">
                         <Edit size={16} />
                       </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 text-red-400 hover:text-red-300"
-                      >
+                      <button onClick={() => handleDelete(item.id)} className="p-1.5 text-red-400 hover:text-red-300">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -288,7 +281,6 @@ export default function DisposablesLibraryPage() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-neutral-900 rounded-xl border border-neutral-700 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -333,24 +325,15 @@ export default function DisposablesLibraryPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Material</label>
+                  <label className="block text-sm text-neutral-300 mb-1">Unit Cost (£)</label>
                   <input
-                    value={formData.material}
-                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    type="number"
+                    step="0.01"
+                    value={formData.unit_cost}
+                    onChange={(e) => setFormData({ ...formData, unit_cost: e.target.value })}
                     className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                    placeholder="e.g., Paper, Bamboo"
                   />
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.eco_friendly}
-                  onChange={(e) => setFormData({ ...formData, eco_friendly: e.target.checked })}
-                  className="rounded"
-                />
-                <label className="text-sm text-neutral-300">Eco-friendly / Compostable</label>
               </div>
 
               <div>
@@ -389,4 +372,5 @@ export default function DisposablesLibraryPage() {
     </div>
   );
 }
+
 

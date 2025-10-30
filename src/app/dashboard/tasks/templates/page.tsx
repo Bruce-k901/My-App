@@ -17,7 +17,7 @@ export default function TaskTemplatesPage() {
           </div>
           <h2 className="text-xl font-semibold text-white mb-2">Task Templates</h2>
           <p className="text-white/60 max-w-md mx-auto">
-            Build task templates that can be saved as drafts or deployed as active tasks. This is Phase 1a of the development pipeline.
+            This feature is under development and will be available soon.
           </p>
         </div>
       </div>

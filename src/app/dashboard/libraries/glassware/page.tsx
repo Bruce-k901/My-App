@@ -11,12 +11,12 @@ export default function GlasswareLibraryPage() {
   const { showToast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [glassware, setGlassware] = useState([]);
+  const [glassware, setGlassware] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     item_name: '',
     category: '',
     capacity: '',
@@ -27,7 +27,10 @@ export default function GlasswareLibraryPage() {
   });
 
   const loadGlassware = async () => {
-    if (!companyId) return;
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -39,7 +42,7 @@ export default function GlasswareLibraryPage() {
       
       if (error) throw error;
       setGlassware(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading glassware:', error);
       showToast({ title: 'Error loading glassware', description: error.message, type: 'error' });
     } finally {
@@ -51,7 +54,7 @@ export default function GlasswareLibraryPage() {
     loadGlassware();
   }, [companyId]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
@@ -90,13 +93,13 @@ export default function GlasswareLibraryPage() {
         notes: ''
       });
       loadGlassware();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving glassware:', error);
       showToast({ title: 'Error saving glassware', description: error.message, type: 'error' });
     }
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = (item: any) => {
     setEditingItem(item);
     setFormData({
       item_name: item.item_name || '',
@@ -110,7 +113,7 @@ export default function GlasswareLibraryPage() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
     
     try {
@@ -122,15 +125,15 @@ export default function GlasswareLibraryPage() {
       if (error) throw error;
       showToast({ title: 'Glassware deleted', description: 'Item deleted successfully', type: 'success' });
       loadGlassware();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting glassware:', error);
       showToast({ title: 'Error deleting glassware', description: error.message, type: 'error' });
     }
   };
 
-  const filteredGlassware = glassware.filter(item =>
-    item.item_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredGlassware = glassware.filter((item: any) =>
+    (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.category || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -170,9 +173,8 @@ export default function GlasswareLibraryPage() {
         </div>
       </div>
 
-      {/* Glassware Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredGlassware.map((item) => (
+        {filteredGlassware.map((item: any) => (
           <div key={item.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.06] transition-colors">
             <div className="flex items-start justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">{item.item_name}</h3>
@@ -228,7 +230,6 @@ export default function GlasswareLibraryPage() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#0f1119] border border-white/[0.1] rounded-xl p-6 w-full max-w-md">
@@ -377,3 +378,5 @@ export default function GlasswareLibraryPage() {
     </div>
   );
 }
+
+
