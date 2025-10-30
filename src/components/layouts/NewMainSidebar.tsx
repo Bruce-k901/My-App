@@ -201,6 +201,7 @@ export default function NewMainSidebar() {
           <SidebarSectionItem
             key={section.label}
             section={section}
+            allSections={sections}
             isHovered={hoveredSection === section.label}
             onHover={() => handleHover(section.label)}
             onLeave={handleLeave}
@@ -277,6 +278,7 @@ function SidebarSectionItem({
   onHover,
   onLeave,
   pathname,
+  allSections,
   buttonRef,
 }: {
   section: SidebarSection;
@@ -284,13 +286,28 @@ function SidebarSectionItem({
   onHover: () => void;
   onLeave: () => void;
   pathname: string;
+  allSections: SidebarSection[];
   buttonRef: React.RefObject<HTMLDivElement>;
 }) {
   const Icon = section.icon;
 
-  const isAnyChildActive = section.items.some((item) =>
-    pathname.startsWith(item.href)
-  );
+  // Find the section with the longest matching route (most specific match)
+  let bestMatch = "";
+  let bestMatchSection = "";
+
+  allSections.forEach((sect) => {
+    sect.items.forEach((item) => {
+      if (pathname === item.href || pathname.startsWith(item.href + "/")) {
+        if (item.href.length > bestMatch.length) {
+          bestMatch = item.href;
+          bestMatchSection = sect.label;
+        }
+      }
+    });
+  });
+
+  // Only highlight if this section owns the best match
+  const isActive = bestMatchSection === section.label;
 
   return (
     <div
@@ -299,7 +316,7 @@ function SidebarSectionItem({
         relative flex items-center justify-center w-14 h-14 rounded-xl
         transition-all duration-200 cursor-pointer
         ${
-          isAnyChildActive || isHovered
+          isActive || isHovered
             ? "bg-pink-500/20 text-pink-400"
             : "text-white/60 hover:text-white hover:bg-white/[0.08]"
         }
@@ -350,14 +367,17 @@ function SidebarPopup({
         {/* Items */}
         <div className="space-y-1 px-2">
           {section.items.map((item) => {
-            // FIX #1: More precise active state matching
+            // Only highlight if this is the LONGEST (most specific) matching route in this section
             const isExactMatch = pathname === item.href;
-            const isChildRoute = pathname.startsWith(item.href + "/") && 
-              !section.items.some(other => 
-                other.href !== item.href && pathname.startsWith(other.href)
-              );
-            
-            const isActive = isExactMatch || isChildRoute;
+            const isChildRoute = pathname.startsWith(item.href + "/");
+
+            const longerMatchExists = section.items.some((other) =>
+              other.href !== item.href &&
+              other.href.length > item.href.length &&
+              (pathname === other.href || pathname.startsWith(other.href + "/"))
+            );
+
+            const isActive = (isExactMatch || isChildRoute) && !longerMatchExists;
 
             return (
               <Link
