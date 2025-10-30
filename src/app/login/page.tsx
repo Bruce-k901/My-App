@@ -66,8 +66,8 @@ export default function LoginPage() {
       // Give the cookie a breath before redirect
       await new Promise((r) => setTimeout(r, 300));
       
-      // Use Next.js router for proper navigation
-      router.push("/dashboard");
+      // Use replace to avoid history back to /login
+      router.replace("/dashboard");
       
     } catch (error) {
       console.error("❌ Login error:", error);

@@ -19,18 +19,13 @@ export default function AppHome() {
     const check = async () => {
       const { data } = await supabase.auth.getSession();
       const session = data?.session;
-      if (!session) {
-        router.replace("/login");
-      } else if (mounted) {
-        setUserEmail(session.user.email ?? null);
-      }
+      if (mounted && session) setUserEmail(session.user.email ?? null);
       setChecking(false);
     };
     check();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) router.replace("/login");
-      else setUserEmail(session.user.email ?? null);
+      if (mounted) setUserEmail(session?.user?.email ?? null);
     });
     return () => {
       mounted = false;
