@@ -162,6 +162,39 @@ export default function BusinessDetailsTab() {
     if (result.data) {
       setCompany(result.data);
       setForm(result.data);
+
+      // Update user metadata with company context
+      try {
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: {
+            company_id: result.data.id,
+            company_name: result.data.name,
+          },
+        });
+        if (metadataError) {
+          console.error("Failed to update user metadata:", metadataError);
+        } else {
+          console.log("✅ User metadata updated with company_id:", result.data.id);
+        }
+      } catch (e) {
+        console.error("Failed to update user metadata:", e);
+      }
+
+      // Also ensure profile table reflects the company
+      try {
+        if (userId) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .update({ company_id: result.data.id, updated_at: new Date().toISOString() })
+            .eq("id", userId);
+          if (profileError) {
+            console.error("Failed to update profile:", profileError);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to update profile:", e);
+      }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     }
