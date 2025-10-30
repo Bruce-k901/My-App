@@ -21,6 +21,7 @@ interface AppContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  authLoading?: boolean;
   error: string | null;
 }
 
@@ -29,6 +30,7 @@ const AppContext = createContext<AppContextType>({
   session: null,
   profile: null,
   loading: true,
+  authLoading: true,
   error: null,
 });
 
@@ -166,6 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     session,
     profile,
     loading,
+    authLoading: loading,
     error,
   };
 
@@ -194,6 +197,7 @@ export function useAppContext() {
   // Map to legacy interface for compatibility
   return {
     loading: context.loading,
+    authLoading: context.loading,
     session: context.session,
     user: context.user,
     userId: context.user?.id || null,
