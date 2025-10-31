@@ -66,9 +66,10 @@ interface CalloutModalProps {
   open: boolean;
   onClose: () => void;
   asset: Asset;
+  requireTroubleshoot?: boolean; // Force troubleshooting before allowing callout
 }
 
-export default function CalloutModal({ open, onClose, asset }: CalloutModalProps) {
+export default function CalloutModal({ open, onClose, asset, requireTroubleshoot = false }: CalloutModalProps) {
   const [activeTab, setActiveTab] = useState<'new' | 'active' | 'history'>('new');
   const [loading, setLoading] = useState(false);
   const [callouts, setCallouts] = useState<Callout[]>([]);
@@ -139,8 +140,17 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
   useEffect(() => {
     if (open) {
       loadCallouts();
+      
+      // If troubleshooting is required, open troubleshoot modal immediately
+      if (requireTroubleshoot) {
+        setShowTroubleshootModal(true);
+        setActiveTab('new'); // Ensure we're on the new callout tab
+      }
+    } else {
+      // Reset troubleshoot ack when modal closes
+      setTroubleshootAck(false);
     }
-  }, [open, asset.id]);
+  }, [open, asset.id, requireTroubleshoot]);
 
   const loadCallouts = async () => {
     try {
@@ -152,8 +162,15 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
           p_asset_id: asset.id
         });
 
-        if (error) throw error;
-        setCallouts(data || []);
+        if (error) {
+          console.error('Error loading callouts from RPC:', error);
+          throw error;
+        }
+        const calloutsData = data || [];
+        console.log('✅ Loaded callouts from RPC:', calloutsData.length, 'Total callouts');
+        console.log('All callouts with statuses:', calloutsData.map((c: any) => ({ id: c.id, status: c.status })));
+        console.log('Active callouts (status=open):', calloutsData.filter((c: any) => c.status === 'open').length);
+        setCallouts(calloutsData);
       } catch (rpcError) {
         console.log('RPC function not available, using direct query:', rpcError);
         
@@ -194,7 +211,7 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
           
           // Transform data to match expected format
           const transformedData = (data || []).map((callout: any) => ({
-            id: callout.id,
+            id: callout.callout_id || callout.id, // Handle both RPC and direct query formats
             callout_type: callout.callout_type,
             priority: callout.priority,
             status: callout.status,
@@ -212,6 +229,8 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
             created_by_name: callout.profiles?.name || null,
           }));
           
+          console.log('✅ Loaded callouts from direct query:', transformedData.length, 'Total callouts');
+          console.log('Active callouts (status=open):', transformedData.filter((c: any) => c.status === 'open').length);
           setCallouts(transformedData);
         } catch (tableError) {
           // If table doesn't exist or other error, just show empty state
@@ -262,7 +281,30 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
         console.log('Uploading attachments:', attachments);
       }
 
+      // Ensure we have a user profile ID
+      let userId = profile?.id
+      if (!userId) {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          throw new Error('User not authenticated')
+        }
+        
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .single()
+        
+        if (!userProfile) {
+          throw new Error('User profile not found')
+        }
+        
+        userId = userProfile.id
+      }
+
       // Try RPC function first, fallback to direct insert if not available
+      let calloutCreated = false
+      let newCalloutId: string | null = null
       try {
         const { data, error } = await supabase.rpc('create_callout', {
           p_asset_id: asset.id,
@@ -270,21 +312,34 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
           p_priority: priority,
           p_fault_description: faultDescription || null,
           p_notes: notes || null,
-          p_attachments: JSON.stringify(attachmentUrls),
+          p_attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
           p_troubleshooting_complete: troubleshootAck
         });
 
-        if (error) throw error;
-      } catch (rpcError) {
-        console.log('RPC function not available, using direct insert:', rpcError);
+        if (error) throw error
+        if (data) newCalloutId = data
+        calloutCreated = true
+      } catch (rpcError: any) {
+        console.log('RPC function not available, using direct insert:', rpcError)
         
         // Fallback to direct insert
         try {
-          const { data: assetData } = await supabase
+          const { data: assetData, error: assetError } = await supabase
             .from('assets')
             .select('company_id, site_id, ppm_contractor_id, reactive_contractor_id, warranty_contractor_id')
             .eq('id', asset.id)
             .single();
+
+          if (assetError) {
+            const errorDetails = {
+              message: assetError.message || 'Unknown error',
+              code: assetError.code || 'UNKNOWN',
+              details: assetError.details || null,
+              hint: assetError.hint || null
+            }
+            console.error('❌ Error loading asset data:', JSON.stringify(errorDetails, null, 2))
+            throw new Error(`Failed to load asset: ${assetError.message}`)
+          }
 
           if (!assetData) {
             throw new Error('Asset not found');
@@ -294,25 +349,39 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                              calloutType === 'warranty' ? assetData.warranty_contractor_id :
                              assetData.reactive_contractor_id;
 
-          const { error } = await supabase
-            .from('callouts')
-            .insert({
-              company_id: assetData.company_id,
-              asset_id: asset.id,
-              site_id: assetData.site_id,
-              contractor_id: contractorId,
-              created_by: profile?.id,
-              callout_type: calloutType,
-              priority: priority,
-              fault_description: faultDescription || null,
-              notes: notes || null,
-              attachments: attachmentUrls,
-              troubleshooting_complete: troubleshootAck
-            });
+          const calloutData: any = {
+            company_id: assetData.company_id,
+            asset_id: asset.id,
+            site_id: assetData.site_id,
+            contractor_id: contractorId,
+            created_by: userId,
+            callout_type: calloutType,
+            priority: priority,
+            status: 'open', // Explicitly set status to 'open'
+            fault_description: faultDescription || null,
+            notes: notes || null,
+            attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
+            troubleshooting_complete: troubleshootAck
+          }
 
-          if (error) {
+          const { data: calloutResult, error: insertError } = await supabase
+            .from('callouts')
+            .insert(calloutData)
+            .select()
+            .single();
+
+          if (insertError) {
+            const errorDetails = {
+              message: insertError.message || 'Unknown error',
+              code: insertError.code || 'UNKNOWN',
+              details: insertError.details || null,
+              hint: insertError.hint || null,
+              attemptedData: calloutData
+            }
+            console.error('❌ Error creating callout:', JSON.stringify(errorDetails, null, 2))
+            
             // If table doesn't exist, show helpful message
-            if (error.code === 'PGRST116' || error.message?.includes('relation "callouts" does not exist')) {
+            if (insertError.code === 'PGRST116' || insertError.message?.includes('relation "callouts" does not exist')) {
               showToast({ 
                 title: 'Callout system not set up', 
                 description: 'Please run the database migration to enable callouts',
@@ -320,9 +389,32 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
               });
               return;
             }
-            throw error;
+            
+            // Check for constraint violations
+            if (insertError.code === '23514' || insertError.message?.includes('check constraint')) {
+              showToast({ 
+                title: 'Invalid callout data', 
+                description: insertError.message || 'Please check all required fields',
+                type: 'error' 
+              });
+              return;
+            }
+            
+            throw insertError
           }
-        } catch (tableError) {
+          
+          calloutCreated = true
+          newCalloutId = calloutResult?.id || null
+          console.log('✅ Callout created successfully:', calloutResult?.id)
+        } catch (tableError: any) {
+          const errorDetails = {
+            message: tableError.message || 'Unknown error',
+            code: tableError.code || 'UNKNOWN',
+            details: tableError.details || null,
+            hint: tableError.hint || null
+          }
+          console.error('❌ Error in callout creation fallback:', JSON.stringify(errorDetails, null, 2))
+          
           if (tableError.code === 'PGRST116' || tableError.message?.includes('relation "callouts" does not exist')) {
             showToast({ 
               title: 'Callout system not set up', 
@@ -331,7 +423,147 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
             });
             return;
           }
-          throw tableError;
+          throw tableError
+        }
+      }
+
+      if (!calloutCreated) {
+        throw new Error('Failed to create callout')
+      }
+
+      // Create follow-up task for tomorrow if callout was created
+      if (newCalloutId && asset) {
+        try {
+          // Get asset details for company_id and site_id
+          const { data: assetDetails, error: assetError } = await supabase
+            .from('assets')
+            .select('company_id, site_id')
+            .eq('id', asset.id)
+            .single()
+
+          if (assetError) {
+            console.error('Error fetching asset details for follow-up task:', {
+              message: assetError.message,
+              code: assetError.code,
+              details: assetError.details,
+              hint: assetError.hint
+            })
+            // Continue without creating follow-up task, but don't exit the function
+            // The callout was already created successfully
+          } else if (assetDetails) {
+            const tomorrow = new Date()
+            tomorrow.setDate(tomorrow.getDate() + 1)
+            const tomorrowDate = tomorrow.toISOString().split('T')[0]
+
+            // Create follow-up task (no template_id needed for callout follow-ups)
+            const taskData: any = {
+              company_id: assetDetails.company_id,
+              site_id: assetDetails.site_id,
+              due_date: tomorrowDate,
+              due_time: '09:00', // Default to 9 AM
+              daypart: 'during_service',
+              assigned_to_role: 'manager',
+              status: 'pending',
+              priority: priority === 'urgent' ? 'critical' : priority === 'medium' ? 'high' : 'high',
+              flagged: true,
+              flag_reason: 'callout_followup',
+              generated_at: new Date().toISOString(),
+            }
+
+            // Try to create follow-up task with callout_id first
+            // If migration hasn't been run, fall back to creating without it
+            const taskDataWithCallout: any = {
+              ...taskData,
+              template_id: null, // Nullable after migration
+              callout_id: newCalloutId
+            }
+
+            let taskError = null
+            let { error: initialError } = await supabase
+              .from('checklist_tasks')
+              .insert(taskDataWithCallout)
+
+            // If error is about missing callout_id column, try without it (migration not run)
+            if (initialError && (initialError.code === 'PGRST204' || initialError.message?.includes("callout_id"))) {
+              console.warn('callout_id column not found - migration may not be run. Attempting to create task without callout_id...')
+              
+              // Check if template_id can be null (migration might be partially run)
+              // Try with a dummy template_id first, then with null
+              const fallbackData: any = {
+                ...taskData,
+                template_id: taskData.template_id || '00000000-0000-0000-0000-000000000000' // Dummy UUID if null not allowed
+              }
+              
+              // Remove callout_id since column doesn't exist
+              delete fallbackData.callout_id
+              
+              const { error: fallbackError } = await supabase
+                .from('checklist_tasks')
+                .insert(fallbackData)
+              
+              if (fallbackError) {
+                taskError = fallbackError
+                console.error('Error creating follow-up task (fallback):', {
+                  message: fallbackError.message,
+                  code: fallbackError.code,
+                  details: fallbackError.details,
+                  hint: fallbackError.hint
+                })
+              } else {
+                console.warn('⚠️ Follow-up task created without callout_id. Please run migration: supabase/migrations/20250128000002_add_callout_followup_tasks.sql')
+              }
+            } else if (initialError) {
+              taskError = initialError
+              console.error('Error creating follow-up task:', {
+                message: initialError.message,
+                code: initialError.code,
+                details: initialError.details,
+                hint: initialError.hint,
+                attemptedData: taskDataWithCallout
+              })
+              
+              // If error is about missing column, the migration hasn't been run
+              if (initialError.code === '42703' || (initialError.message?.includes('column') && initialError.message?.includes('does not exist'))) {
+                console.warn('Callout follow-up task feature requires database migration. Please run: supabase/migrations/20250128000002_add_callout_followup_tasks.sql')
+              }
+            } else {
+              // Get the created task to verify
+              const { data: createdTask } = await supabase
+                .from('checklist_tasks')
+                .select('id, due_date, due_time, callout_id, flag_reason')
+                .eq('callout_id', newCalloutId)
+                .eq('due_date', tomorrowDate)
+                .single()
+              
+              if (createdTask) {
+                console.log('✅ Follow-up task created successfully:', {
+                  taskId: createdTask.id,
+                  dueDate: createdTask.due_date,
+                  dueTime: createdTask.due_time,
+                  calloutId: createdTask.callout_id,
+                  flagReason: createdTask.flag_reason
+                })
+                
+                // Show toast with task details
+                showToast({
+                  title: 'Follow-up task scheduled',
+                  description: `Task created for ${new Date(tomorrowDate).toLocaleDateString()} at ${createdTask.due_time || '09:00'}`,
+                  type: 'success'
+                })
+              } else {
+                console.log('✅ Follow-up task created successfully')
+              }
+            }
+            
+            // Don't fail callout creation if task creation fails
+          }
+        } catch (taskError: any) {
+          console.error('Exception creating follow-up task:', {
+            message: taskError?.message || 'Unknown error',
+            stack: taskError?.stack,
+            error: taskError
+          })
+          // Don't fail callout creation if task creation fails
         }
       }
 
@@ -344,15 +576,37 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
       // Reset form
       setFaultDescription('');
       setNotes('');
-      setTroubleshootingComplete(false);
+      setTroubleshootAck(false);
       setAttachments([]);
+      setShowTroubleshootModal(false);
       
-      // Reload callouts
+      // Reload callouts immediately, then again after a delay to ensure data is fresh
       await loadCallouts();
+      
+      // Switch to active tab
       setActiveTab('active');
-    } catch (error) {
-      console.error('Error creating callout:', error);
-      showToast({ title: 'Failed to create callout', type: 'error' });
+      
+      // Reload again after a short delay to ensure the newly created callout appears
+      setTimeout(async () => {
+        await loadCallouts();
+        console.log('Reloaded callouts, active count:', callouts.filter(c => c.status === 'open').length);
+      }, 800);
+    } catch (error: any) {
+      const errorDetails = {
+        message: error?.message || 'Unknown error',
+        code: error?.code || 'UNKNOWN',
+        details: error?.details || null,
+        hint: error?.hint || null,
+        error: error
+      }
+      console.error('❌ Error creating callout:', JSON.stringify(errorDetails, null, 2))
+      
+      const errorMessage = error?.message || 'Failed to create callout. Please check console for details.'
+      showToast({ 
+        title: 'Failed to create callout', 
+        description: errorMessage,
+        type: 'error' 
+      })
     } finally {
       setLoading(false);
     }
@@ -1123,13 +1377,47 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
 
       {/* Troubleshoot Modal */}
       {showTroubleshootModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide">
-            <div className="flex items-center justify-between mb-4">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            // Close modal when clicking outside (if not required or if completed)
+            if (e.target === e.currentTarget) {
+              if (requireTroubleshoot && !troubleshootAck) {
+                showToast({ 
+                  title: 'Troubleshooting Required', 
+                  description: 'Please complete the troubleshooting guide before proceeding',
+                  type: 'warning' 
+                });
+                return;
+              }
+              setShowTroubleshootModal(false);
+            }
+          }}
+        >
+          <div 
+            className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4 sticky top-0 bg-neutral-900 z-10 pb-2">
               <h3 className="text-lg font-semibold text-white">Troubleshooting Guide</h3>
               <button
-                onClick={() => setShowTroubleshootModal(false)}
-                className="text-neutral-400 hover:text-white transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // If troubleshooting is required, don't allow closing without completion
+                  if (requireTroubleshoot && !troubleshootAck) {
+                    showToast({ 
+                      title: 'Troubleshooting Required', 
+                      description: 'Please complete the troubleshooting guide before proceeding',
+                      type: 'warning' 
+                    });
+                    return;
+                  }
+                  // Close the modal
+                  setShowTroubleshootModal(false);
+                }}
+                className="text-neutral-400 hover:text-white transition-colors p-1 hover:bg-neutral-700/50 rounded flex items-center justify-center"
+                aria-label="Close troubleshooting guide"
+                type="button"
               >
                 <X size={20} />
               </button>
@@ -1140,22 +1428,43 @@ export default function CalloutModal({ open, onClose, asset }: CalloutModalProps
                 <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
               </div>
             ) : troubleshootingQuestions.length > 0 ? (
-              <TroubleshootReel 
-                items={troubleshootingQuestions}
-                onComplete={() => {
-                  setTroubleshootAck(true);
-                  setShowTroubleshootModal(false);
-                }}
-              />
+              <div>
+                <TroubleshootReel 
+                  items={troubleshootingQuestions}
+                  onComplete={() => {
+                    setTroubleshootAck(true);
+                    setShowTroubleshootModal(false);
+                  }}
+                />
+                
+                {/* Prevent closing troubleshoot modal when required */}
+                {requireTroubleshoot && !troubleshootAck && (
+                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-400 text-sm text-center">
+                    Please complete the troubleshooting guide before proceeding
+                  </div>
+                )}
+              </div>
             ) : (
-              <div className="h-[200px] flex items-center justify-center">
-                <div className="text-neutral-400 text-sm text-center">
+              <div className="h-[200px] flex flex-col items-center justify-center">
+                <div className="text-neutral-400 text-sm text-center mb-4">
                   No troubleshooting guide available for this equipment.
                   <br />
                   <span className="text-xs text-neutral-500 mt-2 block">
                     Category: {asset?.category || 'Unknown'}
                   </span>
                 </div>
+                {requireTroubleshoot && (
+                  <button
+                    onClick={() => {
+                      // If no troubleshooting guide, allow proceeding after acknowledgment
+                      setTroubleshootAck(true);
+                      setShowTroubleshootModal(false);
+                    }}
+                    className="px-4 py-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-colors text-sm"
+                  >
+                    Acknowledge - Continue to Callout
+                  </button>
+                )}
               </div>
             )}
           </div>
