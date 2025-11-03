@@ -4,7 +4,6 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button, Input } from "@/components/ui";
 import { useAppContext } from "@/context/AppContext";
-import { useToast } from "@/components/ui/ToastProvider";
 
 type Props = {
   onClose?: () => void;
@@ -14,7 +13,6 @@ type Props = {
 
 export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
   const { companyId } = useAppContext();
-  const { showToast } = useToast();
   const [form, setForm] = useState<{
     category: string;
     name: string;
@@ -59,12 +57,12 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
   const handleUpload = async () => {
     if (!form.file || !form.category || !form.name) {
       setError("Please fill all required fields.");
-      showToast("Please fill all required fields.", "error");
+      console.error("Please fill all required fields.");
       return;
     }
     if (!companyId) {
       setError("Missing company context. Please refresh and try again.");
-      showToast("Company context not loaded yet. Please refresh and try again.", "error");
+      console.error("Company context not loaded yet. Please refresh and try again.");
       return;
     }
     setLoading(true);
@@ -95,7 +93,7 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
 
     if (uploadError) {
       setError(uploadError.message);
-      showToast(`Upload failed: ${uploadError.message}`, "error");
+      console.error(`Upload failed: ${uploadError.message}`);
       setLoading(false);
       return;
     }
@@ -119,13 +117,13 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
 
     if (insertError) {
       setError(insertError.message);
-      showToast(`Metadata insert failed: ${insertError.message}`, "error");
+      console.error(`Metadata insert failed: ${insertError.message}`);
       setLoading(false);
       return;
     }
 
     setLoading(false);
-    showToast("Document uploaded successfully!", "success");
+    console.log("Document uploaded successfully!");
     onSuccess?.(inserted?.id);
     onClose?.();
   };

@@ -2,7 +2,6 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
-import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AppProvider } from "@/context/AppContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
@@ -36,13 +35,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ErrorBoundary>
           <ReactQueryProvider>
             <QueryProvider>
-              <ToastProvider>
-                <AppProvider>
-                  <RouteLogger />
-                  {children}
-                  <Footer />
-                </AppProvider>
-              </ToastProvider>
+              <AppProvider>
+                <RouteLogger />
+                {children}
+                <Footer />
+              </AppProvider>
             </QueryProvider>
           </ReactQueryProvider>
         </ErrorBoundary>

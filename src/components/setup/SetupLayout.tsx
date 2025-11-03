@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import SetupHeader from "./SetupHeader";
 import { useAppContext } from "@/context/AppContext";
-import { ToastProvider } from "@/components/ui/ToastProvider";
 import { useRouter } from "next/navigation";
 
 function ProgressBar({ status }: { status: string | null | undefined }) {
@@ -44,27 +43,25 @@ export default function SetupLayout({ children, stepLabel, activeStep }: { child
     }
   }, [company?.id, router]);
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-neutral-950 text-white">
-        <header className="px-6 py-3 bg-[#0f1220]">
-          <div className="max-w-5xl mx-auto">
-            <SetupHeader />
-          </div>
-        </header>
-        <main className="px-6 py-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-3 flex flex-col items-center text-center">
-              {company?.name && (
-                <h1 className="text-2xl font-semibold">{company.name}</h1>
-              )}
-              <div className="mt-3 w-full max-w-md">
-                <ProgressBar status={company?.setup_status} />
-              </div>
+    <div className="min-h-screen bg-neutral-950 text-white">
+      <header className="px-6 py-3 bg-[#0f1220]">
+        <div className="max-w-5xl mx-auto">
+          <SetupHeader />
+        </div>
+      </header>
+      <main className="px-6 py-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-3 flex flex-col items-center text-center">
+            {company?.name && (
+              <h1 className="text-2xl font-semibold">{company.name}</h1>
+            )}
+            <div className="mt-3 w-full max-w-md">
+              <ProgressBar status={company?.setup_status} />
             </div>
-            {children}
           </div>
-        </main>
-      </div>
-    </ToastProvider>
+          {children}
+        </div>
+      </main>
+    </div>
   );
 }

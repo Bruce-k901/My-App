@@ -5,7 +5,6 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/ToastProvider";
 import { Plus, Upload, Download } from "lucide-react";
 
 type Props = {
@@ -32,7 +31,6 @@ export default function SiteToolbar({
   onAddSite,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showToast } = useToast();
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
 
@@ -74,9 +72,9 @@ export default function SiteToolbar({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast({ title: "Sites exported", description: "Saved as .xlsx", type: "success" });
+      console.log("Sites exported successfully");
     } catch (e: any) {
-      showToast({ title: "Export failed", description: e?.message || "Unable to export", type: "error" });
+      console.error("Export failed:", e?.message || "Unable to export");
     }
   };
 
@@ -99,7 +97,7 @@ export default function SiteToolbar({
         }
       },
       error: (err) => {
-        showToast({ title: "Upload failed", description: err.message || "Parsing error", type: "error" });
+        console.error("Upload failed:", err.message || "Parsing error");
         setUploading(false);
       },
     });
@@ -108,7 +106,7 @@ export default function SiteToolbar({
   const handleImport = async (rows: any[]) => {
     try {
       if (!companyId) {
-        showToast({ title: "Upload failed", description: "Company not loaded yet.", type: "error" });
+        console.error("Upload failed: Company not loaded yet.");
         return;
       }
 
@@ -119,7 +117,7 @@ export default function SiteToolbar({
       const keyFor = (r: any) => (r.site_name && String(r.site_name).trim()) || (r.name && String(r.name).trim());
       const deduped = Array.from(new Map(valid.map(r => [keyFor(r), r])).values());
       if (deduped.length === 0) {
-        showToast({ title: "Upload failed", description: "No valid rows found", type: "error" });
+        console.error("Upload failed: No valid rows found");
         return;
       }
 
@@ -141,18 +139,18 @@ export default function SiteToolbar({
 
       const { error } = await supabase.from("sites").insert(payload);
       if (error) {
-        showToast({ title: "Upload failed", description: error.message || "Insert error", type: "error" });
+        console.error("Upload failed:", error.message || "Insert error");
       } else {
-        showToast({ title: "Success", description: `${deduped.length} sites added`, type: "success" });
+        console.log(`Success: ${deduped.length} sites added`);
         onRefresh?.();
       }
     } catch (e: any) {
-      showToast({ title: "Upload failed", description: e?.message || "Unexpected error", type: "error" });
+      console.error("Upload failed:", e?.message || "Unexpected error");
     }
   };
 
   const handleCreateSaved = () => {
-    showToast({ title: "Site added", type: "success" });
+    console.log("Site added successfully");
     onRefresh?.();
   };
 

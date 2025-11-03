@@ -42,6 +42,8 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
       reactive_contractor_id: '',
       warranty_contractor_id: '',
       document_url: '',
+      working_temp_min: '',
+      working_temp_max: '',
     }
   });
 
@@ -115,6 +117,8 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
         reactive_contractor_id: '',
         warranty_contractor_id: '',
         document_url: '',
+        working_temp_min: '',
+        working_temp_max: '',
       });
     }
   }, [isHydrated, open, siteId]);
@@ -123,9 +127,16 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
     const formData = form.getValues();
     
     try {
+      // Convert temperature values to numbers or null
+      const temperatureData = {
+        working_temp_min: formData.working_temp_min ? parseFloat(formData.working_temp_min) : null,
+        working_temp_max: formData.working_temp_max ? parseFloat(formData.working_temp_max) : null,
+      };
+      
       // Create new asset
       const { data, error } = await createAsset({
         ...formData,
+        ...temperatureData,
         company_id: companyId,
       });
       
@@ -359,11 +370,45 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
               </div>
             </div>
 
-            {/* Section E: Notes */}
+            {/* Section E: Temperature Ranges & Notes */}
             <div className="space-y-4 mt-6">
               <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
-                Additional Information
+                Temperature & Additional Information
               </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-neutral-400 mb-1 block">
+                    Working Temp Min (°C)
+                    <Tooltip content="Minimum acceptable operating temperature. Readings below this will trigger warnings.">
+                      <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
+                    </Tooltip>
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={form.watch('working_temp_min') || ''}
+                    onChange={(e) => form.setValue('working_temp_min', e.target.value)}
+                    placeholder="e.g. 0 for fridges, -20 for freezers"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-neutral-400 mb-1 block">
+                    Working Temp Max (°C)
+                    <Tooltip content="Maximum acceptable operating temperature. Readings above this will trigger warnings.">
+                      <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
+                    </Tooltip>
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={form.watch('working_temp_max') || ''}
+                    onChange={(e) => form.setValue('working_temp_max', e.target.value)}
+                    placeholder="e.g. 5 for fridges, -18 for freezers"
+                    className="w-full"
+                  />
+                </div>
+              </div>
               <div>
                 <label className="text-sm text-neutral-400 mb-1 block">Notes</label>
                 <textarea

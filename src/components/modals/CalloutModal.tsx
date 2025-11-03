@@ -33,15 +33,18 @@ import {
 } from 'lucide-react';
 
 interface Asset {
-  id: string;
+  id: string | null;
   name: string;
-  serial_number: string | null;
+  serial_number?: string | null;
   site_name: string | null;
-  warranty_end: string | null;
-  install_date: string | null;
-  ppm_contractor_name: string | null;
-  reactive_contractor_name: string | null;
-  warranty_contractor_name: string | null;
+  warranty_end?: string | null;
+  install_date?: string | null;
+  ppm_contractor_name?: string | null;
+  reactive_contractor_name?: string | null;
+  warranty_contractor_name?: string | null;
+  reactive_contractor_id?: string | null;
+  requiresManualContractor?: boolean;
+  contractorType?: 'fire_panel_company' | 'electrician';
 }
 
 interface Callout {
@@ -87,6 +90,9 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [showCallOptions, setShowCallOptions] = useState(false);
   const [showTroubleshootModal, setShowTroubleshootModal] = useState(false);
+  // Manual contractor entry (for cases where no contractor is linked)
+  const [manualContractorName, setManualContractorName] = useState('');
+  const [manualContractorEmail, setManualContractorEmail] = useState('');
   
   // Active callout update state
   const [updateNotes, setUpdateNotes] = useState('');
@@ -139,7 +145,13 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   // Load callouts when modal opens
   useEffect(() => {
     if (open) {
+      if (asset.id) {
       loadCallouts();
+      }
+      
+      // Reset manual contractor fields
+      setManualContractorName('');
+      setManualContractorEmail('');
       
       // If troubleshooting is required, open troubleshoot modal immediately
       if (requireTroubleshoot) {
@@ -260,6 +272,16 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       return;
     }
 
+    // Validate manual contractor entry if required
+    if (requiresManualContractorEntry() && !manualContractorName.trim()) {
+      showToast({ 
+        title: 'Contractor information required', 
+        description: 'Please provide contractor name and email', 
+        type: 'error' 
+      });
+      return;
+    }
+
     if (!troubleshootAck) {
       showToast({ title: 'Please confirm troubleshooting is complete', type: 'error' });
       return;
@@ -302,16 +324,28 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         userId = userProfile.id
       }
 
+      // Handle manual contractor entry - prepare notes
+      let calloutNotes = notes || null;
+      if (requiresManualContractorEntry() && manualContractorName) {
+        const manualContractorInfo = `Contractor: ${manualContractorName}${manualContractorEmail ? ` (${manualContractorEmail})` : ''}`;
+        calloutNotes = calloutNotes 
+          ? `${calloutNotes}\n\n${manualContractorInfo}`
+          : manualContractorInfo;
+      }
+
       // Try RPC function first, fallback to direct insert if not available
       let calloutCreated = false
       let newCalloutId: string | null = null
+      
+      // Skip RPC if no asset ID (placeholder asset)
+      if (asset.id) {
       try {
         const { data, error } = await supabase.rpc('create_callout', {
           p_asset_id: asset.id,
           p_callout_type: calloutType,
           p_priority: priority,
           p_fault_description: faultDescription || null,
-          p_notes: notes || null,
+            p_notes: calloutNotes,
           p_attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
           p_troubleshooting_complete: troubleshootAck
         });
@@ -321,10 +355,20 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         calloutCreated = true
       } catch (rpcError: any) {
         console.log('RPC function not available, using direct insert:', rpcError)
+          // Fall through to direct insert
+        }
+      }
         
-        // Fallback to direct insert
+      // Fallback to direct insert (or use if no asset ID)
+      if (!calloutCreated) {
         try {
-          const { data: assetData, error: assetError } = await supabase
+          let assetData: any = null;
+          let companyIdFromAsset: string | null = null;
+          let siteIdFromAsset: string | null = null;
+          
+          if (asset.id) {
+            // Load asset data if asset exists
+            const { data: loadedAssetData, error: assetError } = await supabase
             .from('assets')
             .select('company_id, site_id, ppm_contractor_id, reactive_contractor_id, warranty_contractor_id')
             .eq('id', asset.id)
@@ -340,28 +384,43 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             console.error('❌ Error loading asset data:', JSON.stringify(errorDetails, null, 2))
             throw new Error(`Failed to load asset: ${assetError.message}`)
           }
-
-          if (!assetData) {
-            throw new Error('Asset not found');
+            assetData = loadedAssetData;
+            companyIdFromAsset = assetData.company_id;
+            siteIdFromAsset = assetData.site_id;
+          } else {
+            // Placeholder asset - get company/site from context
+            companyIdFromAsset = ctxCompanyId;
+            siteIdFromAsset = ctxSiteId;
+          }
+          
+          if (!companyIdFromAsset || !siteIdFromAsset) {
+            throw new Error('Missing company or site information');
           }
 
-          const contractorId = calloutType === 'ppm' ? assetData.ppm_contractor_id :
+          // Handle manual contractor entry - store in notes if no contractor ID available
+          let contractorId = null;
+          if (assetData) {
+            contractorId = calloutType === 'ppm' ? assetData.ppm_contractor_id :
                              calloutType === 'warranty' ? assetData.warranty_contractor_id :
-                             assetData.reactive_contractor_id;
+                           assetData.reactive_contractor_id || asset.reactive_contractor_id;
+          } else {
+            // For placeholder assets, use contractor ID from asset if available
+            contractorId = asset.reactive_contractor_id;
+          }
 
           const calloutData: any = {
-            company_id: assetData.company_id,
-            asset_id: asset.id,
-            site_id: assetData.site_id,
-            contractor_id: contractorId,
+              company_id: companyIdFromAsset,
+              asset_id: asset.id || null, // Allow null if no asset (placeholder asset)
+              site_id: siteIdFromAsset,
+              contractor_id: contractorId, // May be null if manual entry
             created_by: userId,
-            callout_type: calloutType,
-            priority: priority,
+              callout_type: calloutType,
+              priority: priority,
             status: 'open', // Explicitly set status to 'open'
-            fault_description: faultDescription || null,
-            notes: notes || null,
+              fault_description: faultDescription || null,
+              notes: calloutNotes,
             attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
-            troubleshooting_complete: troubleshootAck
+              troubleshooting_complete: troubleshootAck
           }
 
           const { data: calloutResult, error: insertError } = await supabase
@@ -398,7 +457,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 type: 'error' 
               });
               return;
-            }
+          }
             
             throw insertError
           }
@@ -716,6 +775,16 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   };
 
   const getContractorInfo = () => {
+    // If manual contractor is provided, return it
+    if (manualContractorName) {
+      return manualContractorName;
+    }
+    
+    // Check if manual contractor is required
+    if (asset.requiresManualContractor) {
+      return null; // Will show manual entry fields
+    }
+    
     switch (calloutType) {
       case 'ppm':
         return asset.ppm_contractor_name;
@@ -724,6 +793,29 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       default:
         return asset.reactive_contractor_name;
     }
+  };
+  
+  const requiresManualContractorEntry = () => {
+    // Check if asset explicitly requires manual contractor
+    if (asset.requiresManualContractor) {
+      return true;
+    }
+    
+    // Check if no contractor is linked for the current callout type
+    let hasContractor = false;
+    switch (calloutType) {
+      case 'ppm':
+        hasContractor = !!asset.ppm_contractor_name;
+        break;
+      case 'warranty':
+        hasContractor = !!asset.warranty_contractor_name;
+        break;
+      default:
+        hasContractor = !!asset.reactive_contractor_name || !!asset.reactive_contractor_id;
+        break;
+    }
+    
+    return !hasContractor && !manualContractorName;
   };
 
 
@@ -849,13 +941,22 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto scrollbar-hide">
         <DialogHeader>
           <div className="bg-neutral-800/30 rounded-lg p-4 backdrop-blur-sm">
-            {/* First row: Asset Name left, Site Name right */}
+            {/* First row: Asset Name left, Site Name right with close button */}
             <div className="flex items-center justify-between mb-2">
               <DialogTitle className="text-xl font-semibold text-white">
                 {asset.name}
-          </DialogTitle>
-              <div className="text-sm text-neutral-400">
-                {asset.site_name || 'N/A'}
+              </DialogTitle>
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-neutral-400">
+                  {asset.site_name || 'N/A'}
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
             </div>
             
@@ -972,6 +1073,53 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 <label className="text-sm text-neutral-400 block text-center">Priority</label>
                 <PrioritySlider />
               </div>
+
+              {/* Manual Contractor Entry - Show when no contractor is linked */}
+              {requiresManualContractorEntry() && (
+                <div className="space-y-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <h4 className="text-sm font-semibold text-yellow-400">
+                      Contractor Information Required
+                    </h4>
+                  </div>
+                  <p className="text-xs text-yellow-300/80">
+                    {asset.contractorType === 'fire_panel_company' 
+                      ? 'No fire panel company linked to this site. Please provide contractor details.'
+                      : asset.contractorType === 'electrician'
+                      ? 'No electrician linked to this site. Please provide contractor details.'
+                      : 'No contractor linked. Please provide contractor details.'}
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm text-neutral-400 mb-2 block">
+                        Contractor Name <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={manualContractorName}
+                        onChange={(e) => setManualContractorName(e.target.value)}
+                        placeholder="Enter contractor name..."
+                        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm text-neutral-400 mb-2 block">
+                        Contractor Email <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={manualContractorEmail}
+                        onChange={(e) => setManualContractorEmail(e.target.value)}
+                        placeholder="Enter contractor email..."
+                        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Troubleshooting Button */}
               <div className="space-y-4">
@@ -1286,7 +1434,10 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-400">Contractor:</span>
-                <span className="text-white">{getContractorInfo() || 'N/A'}</span>
+                <span className="text-white">
+                  {manualContractorName || getContractorInfo() || 'N/A'}
+                  {manualContractorEmail && ` (${manualContractorEmail})`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-400">Attachments:</span>
@@ -1429,13 +1580,13 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               </div>
             ) : troubleshootingQuestions.length > 0 ? (
               <div>
-                <TroubleshootReel 
-                  items={troubleshootingQuestions}
-                  onComplete={() => {
-                    setTroubleshootAck(true);
-                    setShowTroubleshootModal(false);
-                  }}
-                />
+              <TroubleshootReel 
+                items={troubleshootingQuestions}
+                onComplete={() => {
+                  setTroubleshootAck(true);
+                  setShowTroubleshootModal(false);
+                }}
+              />
                 
                 {/* Prevent closing troubleshoot modal when required */}
                 {requireTroubleshoot && !troubleshootAck && (

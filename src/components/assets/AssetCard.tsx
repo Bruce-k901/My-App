@@ -39,6 +39,8 @@ interface Asset {
   archived_at: string | null;
   notes: string | null;
   document_url: string | null;
+  working_temp_min: number | null;
+  working_temp_max: number | null;
 }
 
 interface AssetCardProps {
@@ -434,6 +436,20 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                     </span>
                   </div>
                 </div>
+                <EditableField
+                  label="Working Temp Min (°C)"
+                  value={asset.working_temp_min?.toString() || ''}
+                  type="number"
+                  onSave={(value) => handleFieldUpdate('working_temp_min', value ? parseFloat(value).toString() : '')}
+                  placeholder="e.g. 0"
+                />
+                <EditableField
+                  label="Working Temp Max (°C)"
+                  value={asset.working_temp_max?.toString() || ''}
+                  type="number"
+                  onSave={(value) => handleFieldUpdate('working_temp_max', value ? parseFloat(value).toString() : '')}
+                  placeholder="e.g. 5"
+                />
                 <EditableField
                   label="Notes"
                   value={asset.notes}

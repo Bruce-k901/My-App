@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -22,83 +22,132 @@ export default function PPELibraryPage() {
   const [ppeItems, setPPEItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [showModal, setShowModal] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [formData, setFormData] = useState<any>({
-    item_name: '',
-    category: '',
-    standard_compliance: '',
-    size_options: [],
-    supplier: '',
-    unit_cost: '',
-    reorder_level: '',
-    linked_risks: [],
-    cleaning_replacement_interval: '',
-    notes: ''
-  });
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [rowDraft, setRowDraft] = useState<any | null>(null);
+  const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
+  const csvInputRef = useRef<HTMLInputElement | null>(null);
 
-  const loadPPEItems = useCallback(async () => {
-    if (!companyId) {
-      setLoading(false);
-      return;
-    }
-    
+  const isFetchingRef = useRef(false);
+  const loadPPEItems = async () => {
+    if (isFetchingRef.current) return;
+    if (!companyId) { setLoading(false); return; }
+    let isCancelled = false;
     try {
+      isFetchingRef.current = true;
       setLoading(true);
       const { data, error } = await supabase
         .from('ppe_library')
         .select('*')
         .eq('company_id', companyId)
         .order('item_name');
-      
       if (error) throw error;
-      setPPEItems(data || []);
+      if (!isCancelled) setPPEItems(data || []);
     } catch (error: any) {
       console.error('Error loading PPE:', error);
       showToast({ title: 'Error loading PPE', description: error.message, type: 'error' });
     } finally {
-      setLoading(false);
+      if (!isCancelled) setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [companyId, showToast]);
+    return () => { isCancelled = true; };
+  };
 
   useEffect(() => {
-    loadPPEItems();
-  }, [loadPPEItems]);
+    let cancelled = false;
+    (async () => { if (!cancelled) await loadPPEItems(); })();
+    return () => { cancelled = true; };
+  }, [companyId]);
 
-  const handleSave = async () => {
+  const toggleRow = (id: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const saveRow = async (id: string) => {
+    if (!rowDraft) return;
     try {
-      const payload = {
-        ...formData,
+      setLoading(true);
+      if (!companyId) { console.error('Error saving PPE: Missing company context'); return; }
+      const trimmedName = (rowDraft.item_name ?? '').toString().trim();
+      if (!trimmedName) { console.error('Validation error: Item name is required'); return; }
+
+      const unitCostRaw = rowDraft.unit_cost;
+      const unitCostVal = unitCostRaw === '' || unitCostRaw === null || unitCostRaw === undefined
+        ? null
+        : parseFloat(String(unitCostRaw));
+      if (unitCostVal !== null && Number.isNaN(unitCostVal)) { console.error('Validation error: Unit cost must be a number'); return; }
+
+      const reorderLevelRaw = rowDraft.reorder_level;
+      const reorderLevelVal = reorderLevelRaw === '' || reorderLevelRaw === null || reorderLevelRaw === undefined
+        ? null
+        : parseInt(String(reorderLevelRaw), 10);
+      if (reorderLevelVal !== null && Number.isNaN(reorderLevelVal)) { console.error('Validation error: Reorder level must be a number'); return; }
+
+      const sizeOptionsVal = Array.isArray(rowDraft.size_options)
+        ? rowDraft.size_options.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+      const linkedRisksVal = Array.isArray(rowDraft.linked_risks)
+        ? rowDraft.linked_risks.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+
+      const payload: any = {
+        item_name: trimmedName,
+        category: rowDraft.category ?? null,
+        standard_compliance: rowDraft.standard_compliance ?? null,
+        size_options: sizeOptionsVal,
+        supplier: rowDraft.supplier ?? null,
+        unit_cost: unitCostVal,
+        reorder_level: reorderLevelVal,
+        linked_risks: linkedRisksVal,
+        cleaning_replacement_interval: rowDraft.cleaning_replacement_interval ?? null,
+        notes: rowDraft.notes ?? null,
         company_id: companyId,
-        unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : null,
-        reorder_level: formData.reorder_level ? parseInt(formData.reorder_level) : null,
-        size_options: formData.size_options || []
       };
 
-      if (editingItem) {
-        const { error } = await supabase
+      if (newRowIds.has(id)) {
+        const { data, error, status, statusText } = await supabase
           .from('ppe_library')
-          .update(payload)
-          .eq('id', editingItem.id);
-        
-        if (error) throw error;
-        showToast({ title: 'PPE updated', type: 'success' });
+          .insert(payload)
+          .select('*')
+          .single();
+        if (error) {
+          console.error('Supabase insert error (ppe_library)', { error, status, statusText, payload });
+          throw error;
+        }
+        setPPEItems(prev => prev.map(p => p.id === id ? data : p));
+        setNewRowIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+        setExpandedRows(prev => { const n = new Set(prev); n.delete(id); return n; });
+        setEditingRowId(null);
+        setRowDraft(null);
       } else {
-        const { error } = await supabase
+        const { company_id: _omitCompanyId, ...updatePayload } = payload;
+        const { error, status, statusText } = await supabase
           .from('ppe_library')
-          .insert(payload);
-        
-        if (error) throw error;
-        showToast({ title: 'PPE added', type: 'success' });
+          .update(updatePayload)
+          .eq('id', id)
+          .eq('company_id', companyId);
+        if (error) {
+          console.error('Supabase update error (ppe_library)', { error, status, statusText, updatePayload, id });
+          throw error;
+        }
+        setPPEItems(prev => prev.map(p => p.id === id ? { ...p, ...updatePayload } : p));
+        setExpandedRows(prev => { const n = new Set(prev); n.delete(id); return n; });
+        setEditingRowId(null);
+        setRowDraft(null);
       }
-
-      setShowModal(false);
-      setEditingItem(null);
-      resetForm();
-      loadPPEItems();
+      showToast({ title: 'Saved', type: 'success' });
     } catch (error: any) {
+      const description = (error && (error.message || (error as any).error_description || (error as any).hint))
+        || (typeof error === 'string' ? error : '')
+        || (error ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : 'Unknown error');
       console.error('Error saving PPE:', error);
-      showToast({ title: 'Error saving PPE', description: error.message, type: 'error' });
+      showToast({ title: 'Error saving PPE', description, type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,7 +158,8 @@ export default function PPELibraryPage() {
       const { error } = await supabase
         .from('ppe_library')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('company_id', companyId);
       
       if (error) throw error;
       showToast({ title: 'PPE deleted', type: 'success' });
@@ -120,36 +170,147 @@ export default function PPELibraryPage() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      item_name: '',
-      category: '',
-      standard_compliance: '',
-      size_options: [],
-      supplier: '',
-      unit_cost: '',
-      reorder_level: '',
-      linked_risks: [],
-      cleaning_replacement_interval: '',
-      notes: ''
-    });
-  };
-
   const handleEdit = (item: any) => {
-    setEditingItem(item);
-    setFormData({
+    setEditingRowId(item.id);
+    setRowDraft({
       item_name: item.item_name || '',
       category: item.category || '',
       standard_compliance: item.standard_compliance || '',
       size_options: item.size_options || [],
       supplier: item.supplier || '',
-      unit_cost: item.unit_cost || '',
-      reorder_level: item.reorder_level || '',
+      unit_cost: item.unit_cost ?? '',
+      reorder_level: item.reorder_level ?? '',
       linked_risks: item.linked_risks || [],
       cleaning_replacement_interval: item.cleaning_replacement_interval || '',
       notes: item.notes || ''
     });
-    setShowModal(true);
+    setExpandedRows(prev => new Set(prev).add(item.id));
+  };
+
+  const cancelEdit = (id: string) => {
+    if (newRowIds.has(id)) {
+      setPPEItems(prev => prev.filter(p => p.id !== id));
+      setNewRowIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+      setExpandedRows(prev => { const n = new Set(prev); n.delete(id); return n; });
+    }
+    setEditingRowId(null);
+    setRowDraft(null);
+  };
+
+  // CSV
+  const CSV_HEADERS = [
+    'item_name',
+    'category',
+    'standard_compliance',
+    'size_options',
+    'supplier',
+    'unit_cost',
+    'reorder_level',
+    'linked_risks',
+    'cleaning_replacement_interval',
+    'notes'
+  ];
+
+  const escapeCSV = (value: any): string => {
+    if (value === null || value === undefined) return '';
+    const str = String(value);
+    if (/[",\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+    return str;
+  };
+  const toCSV = (rows: any[]): string => {
+    const header = CSV_HEADERS.join(',');
+    const body = rows.map(r => {
+      const obj: any = {
+        item_name: r.item_name ?? '',
+        category: r.category ?? '',
+        standard_compliance: r.standard_compliance ?? '',
+        size_options: (r.size_options || []).join('; '),
+        supplier: r.supplier ?? '',
+        unit_cost: r.unit_cost ?? '',
+        reorder_level: r.reorder_level ?? '',
+        linked_risks: (r.linked_risks || []).join('; '),
+        cleaning_replacement_interval: r.cleaning_replacement_interval ?? '',
+        notes: r.notes ?? ''
+      };
+      return CSV_HEADERS.map(h => escapeCSV(obj[h])).join(',');
+    }).join('\n');
+    return header + (body ? ('\n' + body) : '');
+  };
+  const handleDownloadCSV = () => {
+    const csv = toCSV(ppeItems.length ? ppeItems : []);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'ppe_library.csv'; a.click();
+    URL.revokeObjectURL(url);
+  };
+  const parseCSV = (text: string) => {
+    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const parseLine = (line: string): string[] => {
+      const res: string[] = []; let cur = ''; let inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQ) {
+          if (ch === '"') { if (line[i+1] === '"') { cur += '"'; i++; } else { inQ = false; } }
+          else { cur += ch; }
+        } else {
+          if (ch === ',') { res.push(cur); cur = ''; }
+          else if (ch === '"') { inQ = true; }
+          else { cur += ch; }
+        }
+      }
+      res.push(cur); return res;
+    };
+    const headers = parseLine(lines[0] || '').map(h => h.trim());
+    const rows = lines.slice(1).filter(l => l.trim().length > 0).map(parseLine);
+    return { headers, rows };
+  };
+  const normaliseArrayCell = (cell: string): string[] => {
+    if (!cell) return [];
+    return cell.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+  };
+  const handleUploadClick = () => csvInputRef.current?.click();
+  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    try {
+      setLoading(true);
+      const text = await file.text();
+      const { headers, rows } = parseCSV(text);
+      if (!headers.length) throw new Error('CSV has no headers');
+      const index: Record<string, number> = {}; headers.forEach((h, i) => index[h] = i);
+      const prepared: any[] = [];
+      for (const row of rows) {
+        const name = row[index['item_name']] ?? '';
+        if (!name.trim()) continue;
+        prepared.push({
+          company_id: companyId,
+          item_name: name.trim(),
+          category: row[index['category']] ?? null,
+          standard_compliance: row[index['standard_compliance']] ?? null,
+          size_options: normaliseArrayCell(row[index['size_options']]) || null,
+          supplier: row[index['supplier']] ?? null,
+          unit_cost: row[index['unit_cost']]?.trim() ? Number(row[index['unit_cost']]) : null,
+          reorder_level: row[index['reorder_level']]?.trim() ? Number(row[index['reorder_level']]) : null,
+          linked_risks: normaliseArrayCell(row[index['linked_risks']]) || null,
+          cleaning_replacement_interval: row[index['cleaning_replacement_interval']] ?? null,
+          notes: row[index['notes']] ?? null,
+        });
+      }
+      if (!prepared.length) { showToast({ title: 'No rows to import', type: 'warning' }); return; }
+      const chunkSize = 500;
+      for (let i = 0; i < prepared.length; i += chunkSize) {
+        const { data, error } = await supabase.from('ppe_library').insert(prepared.slice(i, i+chunkSize)).select('*');
+        if (error) throw error;
+        setPPEItems(prev => [ ...(data || []), ...prev ]);
+      }
+      showToast({ title: 'Import complete', description: `Imported ${prepared.length} row(s)`, type: 'success' });
+    } catch (err: any) {
+      console.error('CSV import error:', err);
+      showToast({ title: 'Import failed', description: err?.message || 'Unable to import CSV', type: 'error' });
+    } finally {
+      setLoading(false);
+      if (csvInputRef.current) csvInputRef.current.value = '';
+    }
   };
 
   const filteredItems = ppeItems.filter((item: any) => {
@@ -171,24 +332,42 @@ export default function PPELibraryPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleUploadClick} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
             <Upload size={16} />
             Upload CSV
           </button>
-          <button className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleDownloadCSV} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
             <Download size={16} />
             Download CSV
           </button>
+          <input ref={csvInputRef} type="file" accept=".csv,text/csv" onChange={handleUploadChange} className="hidden" />
           <button
             onClick={() => {
-              resetForm();
-              setEditingItem(null);
-              setShowModal(true);
+              const tempId = `temp-${Date.now()}`;
+              const empty = {
+                id: tempId,
+                item_name: '',
+                category: '',
+                standard_compliance: '',
+                size_options: [],
+                supplier: '',
+                unit_cost: null,
+                reorder_level: null,
+                linked_risks: [],
+                cleaning_replacement_interval: '',
+                notes: ''
+              };
+              setPPEItems(prev => [empty, ...prev]);
+              setExpandedRows(prev => new Set(prev).add(tempId));
+              setEditingRowId(tempId);
+              setRowDraft({ ...empty, unit_cost: '', reorder_level: '', id: undefined });
+              setNewRowIds(prev => new Set(prev).add(tempId));
             }}
-            className="px-4 py-2 bg-gradient-to-r from-magenta-600 to-blue-600 hover:from-magenta-500 hover:to-blue-500 transition-all rounded-lg text-white flex items-center gap-2"
+            aria-label="Add PPE"
+            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition"
           >
-            <Plus size={16} />
-            Add PPE
+            <Plus size={18} />
+            <span className="sr-only">Add PPE</span>
           </button>
         </div>
       </div>
@@ -227,124 +406,146 @@ export default function PPELibraryPage() {
           <table className="w-full">
             <thead className="bg-neutral-900">
               <tr>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Item Name</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Category</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Unit Cost</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Reorder Level</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-neutral-300">Actions</th>
+                <th className="w-10 px-2" aria-label="Expand" />
+                <th className="text-left px-4 py-3 font-semibold text-magenta-400 text-[0.95rem]">Item Name</th>
+                <th className="text-left px-2 py-3 font-semibold text-magenta-400 text-[0.95rem]">Category</th>
+                <th className="text-left px-2 py-3 font-semibold text-magenta-400 text-[0.95rem]">Reorder Level</th>
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item: any) => (
-                <tr key={item.id} className="border-t border-neutral-700 hover:bg-neutral-800/50">
-                  <td className="px-4 py-3 text-white">{item.item_name}</td>
-                  <td className="px-4 py-3 text-neutral-400">{item.category}</td>
-                  <td className="px-4 py-3 text-neutral-400">£{item.unit_cost || '0.00'}</td>
-                  <td className="px-4 py-3 text-neutral-400">{item.reorder_level || '-'}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleEdit(item)} className="p-1.5 text-magenta-400 hover:text-magenta-300">
-                        <Edit size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(item.id)} className="p-1.5 text-red-400 hover:text-red-300">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filteredItems.map((item: any) => {
+                const expanded = expandedRows.has(item.id);
+                return (
+                  <React.Fragment key={item.id}>
+                    <tr className="border-t border-neutral-700 hover:bg-neutral-800/50">
+                      <td className="px-2 py-3 align-top">
+                        <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-neutral-800 text-neutral-300">
+                          {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-white">
+                        {editingRowId === item.id ? (
+                          <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.item_name ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, item_name: e.target.value }))} />
+                        ) : (
+                          item.item_name
+                        )}
+                      </td>
+                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                        {editingRowId === item.id ? (
+                          <select className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.category ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, category: e.target.value }))}>
+                            <option value="">Select...</option>
+                            {PPE_CATEGORIES.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
+                          </select>
+                        ) : (
+                          item.category || '-'
+                        )}
+                      </td>
+                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                        {editingRowId === item.id ? (
+                          <input type="number" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_level: e.target.value }))} />
+                        ) : (
+                          item.reorder_level ?? '-'
+                        )}
+                      </td>
+                    </tr>
+                    {expanded && (
+                      <tr className="border-t border-neutral-800/60">
+                        <td colSpan={4} className="px-4 py-4 bg-neutral-900/40">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Standard/Compliance</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.standard_compliance ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, standard_compliance: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.standard_compliance || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Size Options</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" placeholder="Comma or semicolon separated" value={(rowDraft?.size_options || []).join(', ')} onChange={(e) => setRowDraft((d: any) => ({ ...d, size_options: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
+                              ) : (
+                                <div className="text-sm text-white">{(item.size_options || []).join(', ') || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Supplier</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.supplier ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.supplier || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Unit Cost</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.unit_cost ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Linked Risks</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" placeholder="Comma or semicolon separated" value={(rowDraft?.linked_risks || []).join(', ')} onChange={(e) => setRowDraft((d: any) => ({ ...d, linked_risks: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
+                              ) : (
+                                <div className="text-sm text-white">{(item.linked_risks || []).join(', ') || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-neutral-400">Cleaning/Replacement Interval</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.cleaning_replacement_interval ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, cleaning_replacement_interval: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.cleaning_replacement_interval || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-neutral-400">Notes</div>
+                              {editingRowId === item.id ? (
+                                <textarea className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white min-h-[80px]" value={rowDraft?.notes ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white whitespace-pre-wrap">{item.notes || '-'}</div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 mt-4">
+                            {editingRowId === item.id ? (
+                              <>
+                                <button onClick={() => saveRow(item.id)} className="px-3 py-2 rounded-lg border border-magenta-500/60 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition flex items-center gap-2">
+                                  <Save size={16} className="text-magenta-400" />
+                                  <span>Save</span>
+                                </button>
+                                <button onClick={() => cancelEdit(item.id)} className="px-3 py-2 rounded-lg border border-neutral-600 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 transition flex items-center gap-2">
+                                  <X size={16} className="text-neutral-300" />
+                                  <span>Cancel</span>
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button aria-label="Edit PPE" onClick={() => handleEdit(item)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition">
+                                  <Edit size={16} />
+                                  <span className="sr-only">Edit</span>
+                                </button>
+                                <button aria-label="Delete PPE" onClick={() => handleDelete(item.id)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-500/60 text-red-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-red-400 hover:shadow-[0_0_14px_rgba(239,68,68,0.55)] transition">
+                                  <Trash2 size={16} />
+                                  <span className="sr-only">Delete</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-neutral-900 rounded-xl border border-neutral-700 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">
-                {editingItem ? 'Edit PPE' : 'Add PPE'}
-              </h2>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingItem(null);
-                  resetForm();
-                }}
-                className="text-neutral-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-neutral-300 mb-1">Item Name *</label>
-                <input
-                  value={formData.item_name}
-                  onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Category</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                  >
-                    <option value="">Select category...</option>
-                    {PPE_CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Reorder Level</label>
-                  <input
-                    type="number"
-                    value={formData.reorder_level}
-                    onChange={(e) => setFormData({ ...formData, reorder_level: e.target.value })}
-                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-neutral-300 mb-1">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-white"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 mt-6">
-              <button
-                onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-magenta-600 to-blue-600 hover:from-magenta-500 hover:to-blue-500 transition-all rounded-lg text-white flex items-center justify-center gap-2"
-              >
-                <Save size={16} />
-                {editingItem ? 'Update' : 'Save'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingItem(null);
-                  resetForm();
-                }}
-                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* No modal — inline add/edit pattern applied */}
     </div>
   );
 }

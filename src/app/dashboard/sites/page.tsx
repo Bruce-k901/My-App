@@ -31,7 +31,7 @@ export default function OrganizationSitesPage() {
   // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
   
   // 1. Context hooks
-  const { loading: authLoading, companyId } = useAppContext();
+  const { loading: ctxLoading, profile } = useAppContext();
   
   // 2. State hooks
   const [sites, setSites] = useState<Site[]>([]);
@@ -53,14 +53,14 @@ export default function OrganizationSitesPage() {
   }, []);
 
   const fetchGMList = useCallback(async () => {
-    if (!companyId) return;
+    if (!profile?.company_id) return;
 
     try {
       // Fetch all GMs for the company from profiles table
       const { data: gmsData, error: gmsError } = await supabase
         .from("profiles")
         .select("id, full_name, email, phone_number")
-        .eq("company_id", companyId)
+        .eq("company_id", profile.company_id)
         .eq("app_role", "Manager")
         .order("full_name");
 
@@ -81,10 +81,10 @@ export default function OrganizationSitesPage() {
     } catch (err: any) {
       console.error("Error in fetchGMList:", err);
     }
-  }, [companyId]);
+  }, [profile?.company_id]);
 
   const fetchSites = useCallback(async () => {
-    if (!companyId) return;
+    if (!profile?.company_id) return;
     setLoading(true);
     setError(null);
 
@@ -114,7 +114,7 @@ export default function OrganizationSitesPage() {
             notes
           )
         `)
-        .eq("company_id", companyId)
+        .eq("company_id", profile.company_id)
         .order("created_at", { ascending: false });
 
       if (sitesError) {
@@ -159,48 +159,24 @@ export default function OrganizationSitesPage() {
     } finally {
       setLoading(false);
     }
-  }, [companyId]);
+  }, [profile?.company_id]);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!companyId) {
-      setLoading(false);
-      return;
-    }
     fetchSites();
     fetchGMList();
-  }, [authLoading, companyId, fetchSites, fetchGMList]);
+  }, [fetchSites, fetchGMList]);
 
   useEffect(() => {
-    if (!authLoading && !companyId) {
+    if (!ctxLoading && !profile?.company_id) {
       setLoading(false);
+      setError("No company context detected. Please sign in or complete setup.");
     }
-  }, [authLoading, companyId]);
+  }, [ctxLoading, profile?.company_id]);
 
   // Early returns ONLY AFTER all hooks
-  if (authLoading) {
-    return <div className="p-8 text-white">Loading...</div>;
-  }
-
-  if (!companyId) {
-    return (
-      <div className="p-8">
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-yellow-400 mb-2">
-            Company Setup Required
-          </h2>
-          <p className="text-white/80 mb-4">
-            Please complete your company setup to access this page.
-          </p>
-          <a 
-            href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg"
-          >
-            Complete Setup
-          </a>
-        </div>
-      </div>
-    );
+  if (ctxLoading) {
+    console.log('Context loading:', ctxLoading, 'Profile:', profile);
+    return <div className="text-slate-400">Loading context...</div>;
   }
 
   const handleSaved = async () => {
@@ -232,7 +208,7 @@ export default function OrganizationSitesPage() {
         <SiteToolbar 
           inline 
           sites={sites} 
-          companyId={companyId || ""} 
+          companyId={profile?.company_id || ""} 
           onRefresh={fetchSites} 
           showBack={false}
           onAddSite={() => setFormOpen(true)}
@@ -271,7 +247,7 @@ export default function OrganizationSitesPage() {
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
           initial={editing || null}
-          companyId={companyId || ""}
+          companyId={profile?.company_id || ""}
           gmList={gmList}
         />
       )}
@@ -286,7 +262,7 @@ export default function OrganizationSitesPage() {
             fetchSites();
             fetchGMList();
           }}
-          companyId={companyId || ""}
+          companyId={profile?.company_id || ""}
           gmList={gmList}
         />
       )}

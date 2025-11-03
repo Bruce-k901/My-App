@@ -1,9 +1,10 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 interface DialogProps {
   open: boolean;
+  onOpenChange?: (open: boolean) => void;
   children: ReactNode;
 }
 
@@ -19,13 +20,25 @@ interface DialogHeaderProps {
 
 interface DialogTitleProps {
   children: ReactNode;
+  className?: string;
 }
 
-export function Dialog({ open, children }: DialogProps) {
+export function Dialog({ open, onOpenChange, children }: DialogProps) {
+  const handleBackdropClick = useCallback(() => {
+    onOpenChange?.(false);
+  }, [onOpenChange]);
+
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
-      {children}
+    <div
+      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+      onMouseDown={handleBackdropClick}
+    >
+      {/* stopPropagation to prevent backdrop close when clicking inside content */}
+      <div onMouseDown={(e) => e.stopPropagation()}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -43,6 +56,6 @@ export function DialogHeader({ children }: DialogHeaderProps) {
   return <div className="mb-4">{children}</div>;
 }
 
-export function DialogTitle({ children }: DialogTitleProps) {
-  return <h2 className="text-lg font-semibold text-white">{children}</h2>;
+export function DialogTitle({ children, className = '' }: DialogTitleProps) {
+  return <h2 className={`text-lg font-semibold text-white ${className}`}>{children}</h2>;
 }

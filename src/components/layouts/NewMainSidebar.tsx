@@ -52,10 +52,10 @@ const sections: SidebarSection[] = [
     label: "Tasks",
     icon: CheckSquare,
     items: [
-      { label: "My Tasks", href: "/dashboard/tasks" },
-      { label: "Task Templates", href: "/dashboard/tasks/templates" },
-      { label: "Compliance Templates", href: "/dashboard/tasks/compliance-templates" },
-      { label: "Drafts", href: "/dashboard/tasks/drafts" },
+      { label: "Compliance", href: "/dashboard/tasks/compliance" },
+      { label: "Templates", href: "/dashboard/tasks/templates" },
+      { label: "Active", href: "/dashboard/tasks/active" },
+      { label: "Completed", href: "/dashboard/tasks/completed" },
     ],
   },
   {

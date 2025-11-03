@@ -4,7 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 
-type Asset = { id: string; name: string; type?: string };
+type Asset = { 
+  id: string; 
+  name: string; 
+  type?: string;
+  working_temp_min?: number | null;
+  working_temp_max?: number | null;
+};
 type TempLog = {
   id: string;
   asset_id: string;
@@ -88,7 +94,7 @@ function TemperatureLogsInner() {
       if (!siteId) return;
       const { data } = await supabase
         .from("assets")
-        .select("id,name,type")
+        .select("id,name,type,working_temp_min,working_temp_max")
         .eq("site_id", siteId)
         .order("name");
       setAssets(data || []);
@@ -132,7 +138,29 @@ function TemperatureLogsInner() {
     };
   }, [siteId]);
 
-  const computeStatus = (val: number): TempLog["status"] => {
+  const computeStatus = (val: number, asset: { working_temp_min: number | null, working_temp_max: number | null } | null): TempLog["status"] => {
+    // If asset has temperature ranges defined, use them
+    if (asset && (asset.working_temp_min !== null || asset.working_temp_max !== null)) {
+      const min = asset.working_temp_min ?? -Infinity;
+      const max = asset.working_temp_max ?? Infinity;
+      
+      // Define tolerance ranges (2°C outside range = failed, 1°C outside = warning)
+      const tolerance = 2;
+      const warningTolerance = 1;
+      
+      if (val > max + tolerance || val < min - tolerance) {
+        return "failed";
+      }
+      if (val > max + warningTolerance || val < min - warningTolerance) {
+        return "warning";
+      }
+      if (val > max || val < min) {
+        return "warning";
+      }
+      return "ok";
+    }
+    
+    // Fallback to hardcoded values for assets without ranges (backward compatibility)
     if (val > 8 || val < -2) return "failed";
     if (val > 5 || val < 0) return "warning";
     return "ok";
@@ -145,10 +173,10 @@ function TemperatureLogsInner() {
     if (isNaN(val) || !assetId) return;
     const { data: asset } = await supabase
       .from("assets")
-      .select("name,type")
+      .select("name,type,working_temp_min,working_temp_max")
       .eq("id", assetId)
       .single();
-    const status = computeStatus(val);
+    const status = computeStatus(val, asset);
     const { data: inserted, error } = await supabase.from("temperature_logs").insert({
       company_id: companyId,
       site_id: siteId,

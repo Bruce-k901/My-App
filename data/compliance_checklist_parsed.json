@@ -1,0 +1,267 @@
+[
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Management System",
+    "Task Name": "Maintain documented food safety management system (HACCP or equivalent)",
+    "Description / Notes": "System must be up to date and reflect actual operations",
+    "Frequency": "Annual",
+    "Linked Evidence": "HACCP Plan"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Management System",
+    "Task Name": "Review HACCP system for effectiveness",
+    "Description / Notes": "Annual review required or after process change",
+    "Frequency": "Annual",
+    "Linked Evidence": "Review Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Management System",
+    "Task Name": "Ensure staff trained in food hygiene and allergens",
+    "Description / Notes": "All food handlers trained to Level 2 or above",
+    "Frequency": "Annual",
+    "Linked Evidence": "Training Certificates"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Handling & Storage",
+    "Task Name": "Check fridge/freezer temperatures",
+    "Description / Notes": "Record all cold storage temperatures",
+    "Frequency": "Daily",
+    "Linked Evidence": "Temperature Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Handling & Storage",
+    "Task Name": "Verify hot holding above 63°C",
+    "Description / Notes": "Record during service to ensure compliance",
+    "Frequency": "Daily",
+    "Linked Evidence": "Temperature Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Handling & Storage",
+    "Task Name": "Label and date all stored foods",
+    "Description / Notes": "All opened or prepared foods labelled with use-by date",
+    "Frequency": "Daily",
+    "Linked Evidence": "Date Labels"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Handling & Storage",
+    "Task Name": "Separate raw and ready-to-eat foods",
+    "Description / Notes": "Store raw meats below ready-to-eat foods",
+    "Frequency": "Daily"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Handling & Storage",
+    "Task Name": "Calibrate temperature probes",
+    "Description / Notes": "Use boiling/ice water method to verify probe accuracy",
+    "Frequency": "Monthly",
+    "Linked Evidence": "Calibration Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Cleaning & Premises",
+    "Task Name": "Follow cleaning schedule for all areas",
+    "Description / Notes": "Ensure daily, weekly, deep cleaning per plan",
+    "Frequency": "Daily",
+    "Linked Evidence": "Cleaning Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Cleaning & Premises",
+    "Task Name": "Inspect pest control devices",
+    "Description / Notes": "Check traps and insectocutors, log findings",
+    "Frequency": "Weekly",
+    "Linked Evidence": "Pest Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Cleaning & Premises",
+    "Task Name": "Check refuse storage area cleanliness",
+    "Description / Notes": "Ensure bins closed, area clean, no infestation",
+    "Frequency": "Daily"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Cleaning & Premises",
+    "Task Name": "Verify handwashing facilities operational",
+    "Description / Notes": "Soap, paper towels, hot/cold water available",
+    "Frequency": "Daily"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Cleaning & Premises",
+    "Task Name": "Deep clean kitchen and equipment",
+    "Description / Notes": "Full strip-down and sanitation of equipment",
+    "Frequency": "Monthly",
+    "Linked Evidence": "Deep Clean Log"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Personal Hygiene",
+    "Task Name": "Ensure staff handwashing compliance",
+    "Description / Notes": "Supervise and record as per hygiene policy",
+    "Frequency": "Daily"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Personal Hygiene",
+    "Task Name": "Check protective clothing worn and clean",
+    "Description / Notes": "Aprons, hats, gloves where required",
+    "Frequency": "Daily"
+  },
+  {
+    "Category": "Food Safety",
+    "Sub-Category": "Personal Hygiene",
+    "Task Name": "Log staff sickness and exclusions",
+    "Description / Notes": "Staff unfit for work must be excluded per policy",
+    "Frequency": "As Occurs",
+    "Linked Evidence": "Sickness Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Policy & Organisation",
+    "Task Name": "Maintain Health & Safety Policy",
+    "Description / Notes": "Review annually and communicate updates",
+    "Frequency": "Annual",
+    "Linked Evidence": "H&S Policy"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Policy & Organisation",
+    "Task Name": "Appoint competent H&S person",
+    "Description / Notes": "Assign role in writing and maintain training",
+    "Frequency": "Annual",
+    "Linked Evidence": "Appointment Letter"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Risk Assessment",
+    "Task Name": "Conduct general risk assessment",
+    "Description / Notes": "Cover all site activities and update annually",
+    "Frequency": "Annual",
+    "Linked Evidence": "Risk Assessment"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Risk Assessment",
+    "Task Name": "Review COSHH assessments",
+    "Description / Notes": "Ensure chemical safety data sheets are current",
+    "Frequency": "Annual",
+    "Linked Evidence": "COSHH Register"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Risk Assessment",
+    "Task Name": "Assess manual handling tasks",
+    "Description / Notes": "Evaluate lifting tasks and provide training",
+    "Frequency": "Annual",
+    "Linked Evidence": "Manual Handling RA"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Fire Safety",
+    "Task Name": "Conduct fire risk assessment",
+    "Description / Notes": "Review annually or when layout changes",
+    "Frequency": "Annual",
+    "Linked Evidence": "Fire RA"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Fire Safety",
+    "Task Name": "Test fire alarms and emergency lighting",
+    "Description / Notes": "Weekly tests with log record",
+    "Frequency": "Weekly",
+    "Linked Evidence": "Fire Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Fire Safety",
+    "Task Name": "Inspect fire extinguishers",
+    "Description / Notes": "Visual check monthly; annual service by contractor",
+    "Frequency": "Monthly",
+    "Linked Evidence": "Fire Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Fire Safety",
+    "Task Name": "Conduct fire drill",
+    "Description / Notes": "Documented drill at least twice per year",
+    "Frequency": "Biannual",
+    "Linked Evidence": "Drill Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Equipment & Maintenance",
+    "Task Name": "PAT test electrical equipment",
+    "Description / Notes": "All portable items tested annually",
+    "Frequency": "Annual",
+    "Linked Evidence": "PAT Certificates"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Equipment & Maintenance",
+    "Task Name": "Service extraction and ventilation systems",
+    "Description / Notes": "Per manufacturer or biannually minimum",
+    "Frequency": "Biannual",
+    "Linked Evidence": "Service Certificates"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Equipment & Maintenance",
+    "Task Name": "Inspect flooring for slip hazards",
+    "Description / Notes": "Repair or report damage immediately",
+    "Frequency": "Weekly",
+    "Linked Evidence": "Inspection Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Equipment & Maintenance",
+    "Task Name": "Ensure lighting is operational",
+    "Description / Notes": "Replace faulty bulbs promptly",
+    "Frequency": "Weekly"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Welfare & First Aid",
+    "Task Name": "Check first aid box contents",
+    "Description / Notes": "Restock after use, ensure supplies in date",
+    "Frequency": "Weekly",
+    "Linked Evidence": "FA Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Welfare & First Aid",
+    "Task Name": "Display emergency contact list",
+    "Description / Notes": "Include first aiders and emergency numbers",
+    "Frequency": "Quarterly"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Training & Monitoring",
+    "Task Name": "Record all staff safety training",
+    "Description / Notes": "Keep evidence of attendance and competence",
+    "Frequency": "Ongoing",
+    "Linked Evidence": "Training Matrix"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Training & Monitoring",
+    "Task Name": "Conduct workplace inspection",
+    "Description / Notes": "Formal walkaround using checklist",
+    "Frequency": "Monthly",
+    "Linked Evidence": "Inspection Log"
+  },
+  {
+    "Category": "Health & Safety",
+    "Sub-Category": "Training & Monitoring",
+    "Task Name": "Report and record all incidents/near misses",
+    "Description / Notes": "Complete incident form, investigate cause",
+    "Frequency": "As Occurs",
+    "Linked Evidence": "Accident Book"
+  }
+]

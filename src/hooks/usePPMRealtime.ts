@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useToast } from '@/components/ui/ToastProvider'
 
 interface PPMRealtimeOptions {
   onPPMUpdate?: () => void
@@ -17,8 +16,6 @@ export function usePPMRealtime({
   companyId,
   siteId
 }: PPMRealtimeOptions = {}) {
-  const { showToast } = useToast()
-
   const handlePPMChange = useCallback((payload: any) => {
     console.log('PPM change detected:', payload)
     
@@ -47,51 +44,37 @@ export function usePPMRealtime({
           message = `PPM status updated for ${assetName}`
       }
       
-      showToast({
-        title: 'PPM Status Update',
-        description: message,
-        type
-      })
+      console.log('PPM Status Update:', message)
     }
     
     onPPMUpdate?.()
-  }, [onPPMUpdate, showToast])
+  }, [onPPMUpdate])
 
   const handleTaskChange = useCallback((payload: any) => {
     console.log('Task change detected:', payload)
     
-    // Show toast for PPM task completions
+    // Log for PPM task completions
     if (payload.eventType === 'UPDATE' && 
         payload.new?.task_type === 'ppm' && 
         payload.old?.status !== 'completed' && 
         payload.new?.status === 'completed') {
-      showToast({
-        title: 'PPM Task Completed',
-        description: `${payload.new?.name || 'PPM task'} has been completed`,
-        type: 'success'
-      })
+      console.log('PPM Task Completed:', `${payload.new?.name || 'PPM task'} has been completed`)
     }
     
     onTaskUpdate?.()
-  }, [onTaskUpdate, showToast])
+  }, [onTaskUpdate])
 
   const handleNotificationChange = useCallback((payload: any) => {
     console.log('Notification change detected:', payload)
     
-    // Show toast for new PPM notifications
+    // Log for new PPM notifications
     if (payload.eventType === 'INSERT' && 
         payload.new?.type?.startsWith('ppm_')) {
-      const severity = payload.new?.severity || 'info'
-      
-      showToast({
-        title: payload.new?.title || 'PPM Notification',
-        description: payload.new?.message,
-        type: severity === 'high' ? 'error' : 'info'
-      })
+      console.log('PPM Notification:', payload.new?.title || 'PPM Notification', payload.new?.message)
     }
     
     onNotificationUpdate?.()
-  }, [onNotificationUpdate, showToast])
+  }, [onNotificationUpdate])
 
   useEffect(() => {
     const channels: any[] = []

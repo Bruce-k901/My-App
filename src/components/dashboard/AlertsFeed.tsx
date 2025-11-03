@@ -25,7 +25,7 @@ export default function AlertsFeed() {
           .from("notifications")
           .select("id,title,message,severity,created_at,company_id")
           .gte("created_at", since)
-          .eq("severity", "critical")
+          .in("severity", ["critical", "warning"]) // Show both critical and warning alerts
           .order("created_at", { ascending: false })
           .limit(50);
         if (companyId) q = q.eq("company_id", companyId);

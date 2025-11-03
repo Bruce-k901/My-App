@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/ToastProvider";
 import { updateGM } from "@/lib/updateGM";
 import { ChevronUp } from "lucide-react";
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
@@ -63,7 +62,6 @@ const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList, onDelete }: SiteFormBaseProps) {
   console.log("� Rendered", "SiteFormBase");
   console.log("�🔥 Received gmList prop:", gmList);
-  const { showToast } = useToast();
   const [operatingScheduleOpen, setOperatingScheduleOpen] = useState(mode === "new");
   const [loading, setLoading] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
@@ -237,7 +235,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             .single();
 
           if (siteError) {
-            showToast(`Failed to load site data: ${siteError.message}`, "error");
+            console.error(`Failed to load site data: ${siteError.message}`);
             return;
           }
 
@@ -319,7 +317,6 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           }
         } catch (error) {
           console.error("Error loading site data:", error);
-          showToast("Failed to load site data", "error");
         } finally {
           setLoading(false);
         }
@@ -378,9 +375,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
       
-      // Show toast message for auto-fill only if times were copied
+      // Log message for auto-fill only if times were copied
       if (copiedCount > 0) {
-        showToast("Hours copied to all open days.", "success");
+        console.log("Hours copied to all open days.");
       }
     }
 
@@ -417,13 +414,13 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         await updateGM(formData.id, formData.gm_user_id);
       }
 
-      showToast("GM saved and synced", "success");
+      console.log("GM saved and synced");
       setGmEditMode(false);
       onSaved?.();
     } catch (err) {
       console.error("Error updating GM:", err);
       const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
-      showToast(`Failed to save GM: ${errorMessage}`, "error");
+      console.error(`Failed to save GM: ${errorMessage}`);
     } finally {
       setIsSaving(false);
     }
@@ -464,9 +461,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           }
         }
 
-        // Move toast outside of setState using setTimeout to avoid render-time state mutation
+        // Log message outside of setState using setTimeout to avoid render-time state mutation
         setTimeout(() => {
-          showToast("Copied hours to all active days", "success");
+          console.log("Copied hours to all active days");
         }, 0);
 
         return {
@@ -536,24 +533,24 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           city,
           region,
         }));
-        showToast("City and region auto-filled", "success");
+        console.log("City and region auto-filled");
       }
     }
-  }, [formData.postcode, showToast]);
+  }, [formData.postcode]);
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      showToast("Site name is required", "error");
+      console.error("Site name is required");
       return;
     }
 
     if (!formData.address_line1?.trim()) {
-      showToast("Address Line 1 is required", "error");
+      console.error("Address Line 1 is required");
       return;
     }
 
     if (!formData.postcode?.trim()) {
-      showToast("Postcode is required", "error");
+      console.error("Postcode is required");
       return;
     }
 
@@ -587,7 +584,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         .single();
 
       if (siteError) {
-        showToast(`Save failed: ${siteError.message}`, "error");
+        console.error(`Save failed: ${siteError.message}`);
         return;
       }
 
@@ -618,12 +615,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
 
-      showToast(`Site ${mode === "edit" ? "updated" : "created"} successfully`, "success");
+      console.log(`Site ${mode === "edit" ? "updated" : "created"} successfully`);
       onSaved?.();
       onClose();
     } catch (error) {
       console.error("Error saving site:", error);
-      showToast("Failed to save site", "error");
     } finally {
       setLoading(false);
     }

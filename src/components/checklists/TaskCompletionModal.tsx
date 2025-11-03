@@ -9,6 +9,10 @@ import MonitorDurationModal from './MonitorDurationModal'
 import { useToast } from '@/components/ui/ToastProvider'
 import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming'
 import CalloutModal from '@/components/modals/CalloutModal'
+import { handleWorkflow } from './workflows'
+import type { ComplianceTemplate } from '@/data/compliance-templates'
+import Image from 'next/image'
+import CheckboxCustom from '@/components/ui/CheckboxCustom'
 
 interface TaskCompletionModalProps {
   task: ChecklistTaskWithTemplate
@@ -30,16 +34,28 @@ export default function TaskCompletionModal({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [instructionsExpanded, setInstructionsExpanded] = useState(false)
-  const [showWarning, setShowWarning] = useState(false)
-  const [showActionOptions, setShowActionOptions] = useState(false)
   const [templateFields, setTemplateFields] = useState<any[]>([])
   const [assetsMap, setAssetsMap] = useState<Map<string, any>>(new Map())
   const [assetTempRanges, setAssetTempRanges] = useState<Map<string, { min: number | null, max: number | null }>>(new Map())
+  // Track out-of-range assets independently - use Set to store asset IDs that are out of range
+  const [outOfRangeAssets, setOutOfRangeAssets] = useState<Set<string>>(new Set())
+  // Track action options visibility per asset
+  const [showActionOptions, setShowActionOptions] = useState<Map<string, boolean>>(new Map())
+  // Track selected action per asset
+  const [selectedActions, setSelectedActions] = useState<Map<string, 'monitor' | 'callout'>>(new Map())
+  // Legacy single asset tracking (kept for backwards compatibility with single temp field)
   const [outOfRangeAssetId, setOutOfRangeAssetId] = useState<string | null>(null)
   const [selectedAction, setSelectedAction] = useState<'monitor' | 'callout' | null>(null)
+  const [showWarning, setShowWarning] = useState(false) // Legacy single field warning state
+  const [showActionOptionsSingle, setShowActionOptionsSingle] = useState(false) // Legacy single field action options
   const [showMonitorDurationModal, setShowMonitorDurationModal] = useState(false)
   const [showCalloutModal, setShowCalloutModal] = useState(false)
   const [calloutAsset, setCalloutAsset] = useState<any>(null)
+  const [calloutQueue, setCalloutQueue] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', asset: any}>>([])
+  const [pendingCallouts, setPendingCallouts] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', notes?: string}>>([])
+  // Fire alarm and emergency lighting checklist states
+  const [fireAlarmChecklist, setFireAlarmChecklist] = useState<boolean[]>([false, false, false, false, false, false])
+  const [emergencyLightingChecklist, setEmergencyLightingChecklist] = useState<boolean[]>([false, false, false, false, false, false])
   const { companyId, siteId } = useAppContext()
   const { showToast } = useToast()
 
@@ -48,6 +64,18 @@ export default function TaskCompletionModal({
       const initialize = async () => {
         await loadTemplateFields()
         await loadAssetTempRanges()
+        
+        // Debug: Log instructions to see what's being loaded
+        if (task.template?.instructions) {
+          console.log('📋 Template instructions loaded:', {
+            hasInstructions: !!task.template.instructions,
+            length: task.template.instructions.length,
+            preview: task.template.instructions.substring(0, 100),
+            startsWithHowTo: task.template.instructions.startsWith('How to successfully')
+          })
+        } else {
+          console.warn('⚠️ No instructions found in template:', task.template?.name)
+        }
       }
       initialize()
       
@@ -60,10 +88,18 @@ export default function TaskCompletionModal({
       setPhotos([])
       setError('')
       setInstructionsExpanded(false)
-      setShowWarning(false)
-      setShowActionOptions(false)
+      setOutOfRangeAssets(new Set())
+      setShowActionOptions(new Map())
+      setSelectedActions(new Map())
       setOutOfRangeAssetId(null)
       setSelectedAction(null)
+      setShowWarning(false)
+      setShowActionOptionsSingle(false)
+      setPendingCallouts([])
+      setCalloutAsset(null)
+      setCalloutQueue([])
+      setFireAlarmChecklist([false, false, false, false, false, false])
+      setEmergencyLightingChecklist([false, false, false, false, false, false])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, task])
@@ -81,10 +117,28 @@ export default function TaskCompletionModal({
       
       setTemplateFields(data || [])
       
-      // Load assets for equipment information
-      const equipmentField = data?.find((f: any) => f.field_type === 'select' && f.field_name === 'fridge_name')
+      // Initialize form data with default values for each field type
+      const initialFormData: Record<string, any> = { ...formData }
+      data?.forEach((field: any) => {
+        if (!(field.field_name in initialFormData)) {
+          if (field.field_type === 'checkbox') {
+            initialFormData[field.field_name] = false
+          } else if (field.field_type === 'select' || field.field_type === 'pass_fail') {
+            initialFormData[field.field_name] = ''
+          } else if (field.field_type === 'text') {
+            initialFormData[field.field_name] = ''
+          }
+        }
+      })
+      setFormData(initialFormData)
+      
+      // Load assets for equipment information (check both fridge_name and hot_holding_unit)
+      const equipmentField = data?.find((f: any) => 
+        f.field_type === 'select' && 
+        (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
+      )
       if (equipmentField?.options && Array.isArray(equipmentField.options)) {
-        const assetIds = equipmentField.options.map((opt: any) => opt.value)
+        const assetIds = equipmentField.options.map((opt: any) => opt.value).filter(Boolean)
         if (assetIds.length > 0) {
           const { data: assets, error: assetsError } = await supabase
             .from('assets')
@@ -132,7 +186,10 @@ export default function TaskCompletionModal({
         return data || []
       })()
       
-      const equipmentField = currentFields.find((f: any) => f.field_type === 'select' && f.field_name === 'fridge_name')
+      const equipmentField = currentFields.find((f: any) => 
+        f.field_type === 'select' && 
+        (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
+      )
       if (equipmentField?.options && Array.isArray(equipmentField.options)) {
         const assetIds = equipmentField.options.map((opt: any) => opt.value).filter(Boolean)
         if (assetIds.length > 0) {
@@ -157,13 +214,23 @@ export default function TaskCompletionModal({
     }
   }
 
-  const handleMonitorAction = () => {
+  const handleMonitorAction = (assetId?: string) => {
+    if (assetId) {
+      // Multi-asset mode
+      setSelectedActions(prev => new Map(prev).set(assetId, 'monitor'))
+      setOutOfRangeAssetId(assetId) // Set temporarily for createMonitoringTask
+      setShowMonitorDurationModal(true)
+    } else {
+      // Single asset mode (legacy)
     setSelectedAction('monitor')
     setShowMonitorDurationModal(true)
+    }
   }
 
   const createMonitoringTask = async (durationMinutes: number) => {
-    if (!task.template || !outOfRangeAssetId || !companyId || !siteId) {
+    // Use the asset ID that was set when handleMonitorAction was called
+    const targetAssetId = outOfRangeAssetId || (outOfRangeAssets.size > 0 ? Array.from(outOfRangeAssets)[0] : null)
+    if (!task.template || !targetAssetId || !companyId || !siteId) {
       showToast({ title: 'Error', description: 'Missing required information', type: 'error' })
       return
     }
@@ -201,8 +268,8 @@ export default function TaskCompletionModal({
       if (taskError) throw taskError
 
       // Create notification/alert
-      const assetName = assetsMap.get(outOfRangeAssetId)?.name || 'Equipment'
-      const tempValue = formData[`temp_${outOfRangeAssetId}`] || formData.temperature
+      const assetName = assetsMap.get(targetAssetId)?.name || 'Equipment'
+      const tempValue = formData[`temp_${targetAssetId}`] || formData.temperature
 
       await createAlert('monitor', assetName, tempValue, monitoringTask.id)
 
@@ -216,8 +283,10 @@ export default function TaskCompletionModal({
       setFormData(prev => ({
         ...prev,
         temp_action: 'monitor',
-        temp_action_asset_id: outOfRangeAssetId,
-        monitoring_task_id: monitoringTask.id
+        temp_action_asset_id: targetAssetId,
+        monitoring_task_id: monitoringTask.id,
+        [`temp_action_${targetAssetId}`]: 'monitor',
+        [`monitoring_task_id_${targetAssetId}`]: monitoringTask.id
       }))
 
       // Close duration modal and trigger parent refresh
@@ -319,16 +388,200 @@ export default function TaskCompletionModal({
     }
   }
 
-  const handleCalloutAction = async () => {
-    setSelectedAction('callout')
-    
-    if (!outOfRangeAssetId) {
+
+  const handleFireAlarmFailure = async () => {
+    // Try to find a fire alarm asset or create a placeholder asset for callout
+    try {
+      const { data: fireAlarmAssets } = await supabase
+        .from('assets')
+        .select('id, name, site_id, company_id, reactive_contractor_id')
+        .eq('category', 'fire_alarms')
+        .eq('company_id', companyId)
+        .eq('site_id', siteId)
+        .limit(1)
+        .maybeSingle()
+      
+      if (fireAlarmAssets) {
+        // Load site and contractor info
+        const { data: site } = await supabase
+          .from('sites')
+          .select('name')
+          .eq('id', siteId)
+          .single()
+        
+        let contractorName = null
+        let contractorId = null
+        if (fireAlarmAssets.reactive_contractor_id) {
+          const { data: contractor } = await supabase
+            .from('contractors')
+            .select('name')
+            .eq('id', fireAlarmAssets.reactive_contractor_id)
+            .single()
+          contractorName = contractor?.name || null
+          contractorId = fireAlarmAssets.reactive_contractor_id
+        }
+        
+        const assetForCallout = {
+          id: fireAlarmAssets.id,
+          name: fireAlarmAssets.name,
+          site_name: site?.name || null,
+          reactive_contractor_name: contractorName,
+          reactive_contractor_id: contractorId
+        }
+        
+        // Open callout modal immediately (don't queue)
+          setCalloutAsset(assetForCallout)
+          setShowCalloutModal(true)
+      } else {
+        // No fire alarm asset found - create placeholder asset for manual contractor entry
+        const { data: site } = await supabase
+          .from('sites')
+          .select('name')
+          .eq('id', siteId)
+          .single()
+        
+        const assetForCallout = {
+          id: null, // No asset ID - will use manual contractor entry
+          name: 'Fire Alarm System',
+          site_name: site?.name || null,
+          reactive_contractor_name: null,
+          reactive_contractor_id: null,
+          requiresManualContractor: true,
+          contractorType: 'fire_panel_company'
+        }
+        
+        setCalloutAsset(assetForCallout)
+        setShowCalloutModal(true)
+      }
+    } catch (error) {
+      console.error('Error loading fire alarm asset:', error)
+      // Create placeholder asset for manual contractor entry
+      const { data: site } = await supabase
+        .from('sites')
+        .select('name')
+        .eq('id', siteId)
+        .single()
+      
+      const assetForCallout = {
+        id: null,
+        name: 'Fire Alarm System',
+        site_name: site?.name || null,
+        reactive_contractor_name: null,
+        reactive_contractor_id: null,
+        requiresManualContractor: true,
+        contractorType: 'fire_panel_company'
+      }
+      
+      setCalloutAsset(assetForCallout)
+      setShowCalloutModal(true)
+    }
+  }
+
+  const handleEmergencyLightsFailure = async () => {
+    // Try to find an emergency lighting asset or create a placeholder
+    try {
+      const { data: emergencyLightAssets } = await supabase
+        .from('assets')
+        .select('id, name, site_id, company_id, reactive_contractor_id')
+        .eq('category', 'emergency_lighting')
+        .eq('company_id', companyId)
+        .eq('site_id', siteId)
+        .limit(1)
+        .maybeSingle()
+      
+      if (emergencyLightAssets) {
+        // Load site and contractor info
+        const { data: site } = await supabase
+          .from('sites')
+          .select('name')
+          .eq('id', siteId)
+          .single()
+        
+        let contractorName = null
+        let contractorId = null
+        if (emergencyLightAssets.reactive_contractor_id) {
+          const { data: contractor } = await supabase
+            .from('contractors')
+            .select('name')
+            .eq('id', emergencyLightAssets.reactive_contractor_id)
+            .single()
+          contractorName = contractor?.name || null
+          contractorId = emergencyLightAssets.reactive_contractor_id
+        }
+        
+        const assetForCallout = {
+          id: emergencyLightAssets.id,
+          name: emergencyLightAssets.name,
+          site_name: site?.name || null,
+          reactive_contractor_name: contractorName,
+          reactive_contractor_id: contractorId
+        }
+        
+        // Open callout modal immediately
+          setCalloutAsset(assetForCallout)
+          setShowCalloutModal(true)
+      } else {
+        // No emergency lighting asset found - create placeholder for manual contractor entry
+        const { data: site } = await supabase
+          .from('sites')
+          .select('name')
+          .eq('id', siteId)
+          .single()
+        
+        const assetForCallout = {
+          id: null, // No asset ID - will use manual contractor entry
+          name: 'Emergency Lighting System',
+          site_name: site?.name || null,
+          reactive_contractor_name: null,
+          reactive_contractor_id: null,
+          requiresManualContractor: true,
+          contractorType: 'electrician'
+        }
+        
+        setCalloutAsset(assetForCallout)
+        setShowCalloutModal(true)
+      }
+    } catch (error) {
+      console.error('Error loading emergency lighting asset:', error)
+      // Create placeholder asset for manual contractor entry
+      const { data: site } = await supabase
+        .from('sites')
+        .select('name')
+        .eq('id', siteId)
+        .single()
+      
+      const assetForCallout = {
+        id: null,
+        name: 'Emergency Lighting System',
+        site_name: site?.name || null,
+        reactive_contractor_name: null,
+        reactive_contractor_id: null,
+        requiresManualContractor: true,
+        contractorType: 'electrician'
+      }
+      
+      setCalloutAsset(assetForCallout)
+      setShowCalloutModal(true)
+    }
+  }
+
+  const handleCalloutAction = async (assetId?: string) => {
+    const targetAssetId = assetId || outOfRangeAssetId
+    if (!targetAssetId) {
       showToast({ 
         title: 'Error', 
         description: 'No asset selected for callout',
         type: 'error' 
       })
       return
+    }
+    
+    if (assetId) {
+      // Multi-asset mode
+      setSelectedActions(prev => new Map(prev).set(assetId, 'callout'))
+    } else {
+      // Single asset mode (legacy)
+      setSelectedAction('callout')
     }
 
     // Fetch asset details for callout modal with site and contractor relationships
@@ -338,7 +591,7 @@ export default function TaskCompletionModal({
       const { data: simpleAsset, error: simpleError } = await supabase
         .from('assets')
         .select('id, name, serial_number, warranty_end, install_date, category, site_id, ppm_contractor_id, reactive_contractor_id, warranty_contractor_id')
-        .eq('id', outOfRangeAssetId)
+        .eq('id', targetAssetId)
         .single()
 
       if (simpleError) {
@@ -429,12 +682,16 @@ export default function TaskCompletionModal({
       setFormData(prev => ({
         ...prev,
         temp_action: 'callout',
-        temp_action_asset_id: outOfRangeAssetId
+        temp_action_asset_id: targetAssetId,
+        [`temp_action_${targetAssetId}`]: 'callout'
       }))
 
       // Create alert for callout
       const assetName = assetForCallout.name || 'Equipment'
-      const tempValue = formData[`temp_${outOfRangeAssetId}`] || formData.temperature
+      const tempValue = formData[`temp_${targetAssetId}`] || formData.temperature
+      
+      // Update outOfRangeAssetId for backwards compatibility
+      setOutOfRangeAssetId(targetAssetId)
       await createAlert('callout', assetName, tempValue)
       
     } catch (error) {
@@ -476,10 +733,10 @@ export default function TaskCompletionModal({
       if (task.template?.asset_id) {
         const isOutOfRange = checkTemperatureRange(value, task.template.asset_id)
         if (isOutOfRange) {
-          setShowWarning(true)
+        setShowWarning(true)
           setOutOfRangeAssetId(task.template.asset_id)
-        } else {
-          setShowWarning(false)
+      } else {
+        setShowWarning(false)
           setOutOfRangeAssetId(null)
         }
       }
@@ -646,6 +903,155 @@ export default function TaskCompletionModal({
         }
       }
 
+      // Handle fire alarm and emergency lights failures - create callouts
+      const fireAlarmTestResult = formData.fire_alarm_test_result
+      const emergencyLightsTestResult = formData.emergency_lights_test_result
+      
+      if (fireAlarmTestResult === 'fail') {
+        // Create fire panel company callout
+        try {
+          const { data: fireAlarmAsset } = await supabase
+            .from('assets')
+            .select('id, name, site_id, company_id, reactive_contractor_id')
+            .eq('category', 'fire_alarms')
+            .eq('company_id', companyId)
+            .eq('site_id', siteId)
+            .limit(1)
+            .maybeSingle()
+          
+          if (fireAlarmAsset) {
+            const calloutData: any = {
+              company_id: companyId,
+              asset_id: fireAlarmAsset.id,
+              site_id: siteId,
+              contractor_id: fireAlarmAsset.reactive_contractor_id,
+              created_by: profile.id,
+              callout_type: 'reactive',
+              priority: 'urgent',
+              status: 'open',
+              fault_description: `Fire alarm test failed. Call point: ${formData.fire_alarm_call_point || 'Not specified'}. Requires fire panel company attention.`,
+              notes: formData.notes || `Fire alarm test failure recorded via task: ${task.template?.name || 'Unknown'}`,
+              attachments: photoUrls.length > 0 ? photoUrls : [],
+              troubleshooting_complete: false
+            }
+
+            const { error: calloutError } = await supabase
+              .from('callouts')
+              .insert(calloutData)
+
+            if (calloutError) {
+              console.error('Failed to create fire alarm callout:', calloutError)
+            } else {
+              console.log('✅ Fire alarm callout created')
+            }
+          }
+        } catch (error) {
+          console.error('Error creating fire alarm callout:', error)
+        }
+      }
+      
+      if (emergencyLightsTestResult === 'fail') {
+        // Create electrician callout
+        try {
+          const { data: emergencyLightAsset } = await supabase
+            .from('assets')
+            .select('id, name, site_id, company_id, reactive_contractor_id')
+            .eq('category', 'emergency_lighting')
+            .eq('company_id', companyId)
+            .eq('site_id', siteId)
+            .limit(1)
+            .maybeSingle()
+          
+          if (emergencyLightAsset) {
+            const calloutData: any = {
+              company_id: companyId,
+              asset_id: emergencyLightAsset.id,
+              site_id: siteId,
+              contractor_id: emergencyLightAsset.reactive_contractor_id,
+              created_by: profile.id,
+              callout_type: 'reactive',
+              priority: 'urgent',
+              status: 'open',
+              fault_description: `Emergency lights test failed. Requires electrician attention.`,
+              notes: formData.notes || `Emergency lights test failure recorded via task: ${task.template?.name || 'Unknown'}`,
+              attachments: photoUrls.length > 0 ? photoUrls : [],
+              troubleshooting_complete: false
+            }
+
+            const { error: calloutError } = await supabase
+              .from('callouts')
+              .insert(calloutData)
+
+            if (calloutError) {
+              console.error('Failed to create emergency lights callout:', calloutError)
+            } else {
+              console.log('✅ Emergency lights callout created')
+            }
+          }
+        } catch (error) {
+          console.error('Error creating emergency lights callout:', error)
+        }
+      }
+
+      // NEW: Handle workflow escalation using the workflow handler system
+      // This runs after temperature records are saved but before task completion
+      // Note: If user already selected monitor/callout action via UI (createMonitoringTask/handleCalloutAction),
+      // those actions are taken first. This workflow handler provides additional escalation logic
+      // and ensures consistent workflow processing across all compliance templates.
+      if (temperatureRecords.length > 0 && outOfRangeAssetId) {
+        const outOfRangeRecord = temperatureRecords.find(tr => tr.asset_id === outOfRangeAssetId)
+        if (outOfRangeRecord) {
+          try {
+            // Get template as ComplianceTemplate (with workflowType)
+            // For now, we'll treat it as a measurement workflow if it has temperature evidence
+            const template = task.template as unknown as ComplianceTemplate
+            const workflowType = (template as any).workflowType || 
+              (template.evidence_types?.includes('temperature') ? 'measurement' : 'simple_confirm')
+            
+            // Call workflow handler for measurement-based tasks
+            // This will handle escalation logic (monitor/callout) based on template configuration
+            // If user already selected an action via UI, this serves as validation/backup
+            if (workflowType === 'measurement') {
+              const assetRange = assetTempRanges.get(outOfRangeAssetId)
+              const workflowResult = await handleWorkflow({
+                template: {
+                  ...template,
+                  workflowType: 'measurement'
+                } as ComplianceTemplate,
+                formData,
+                photoUrls,
+                companyId: companyId!,
+                siteId: siteId!,
+                userId: profile.id,
+                taskId: task.id,
+                assetId: outOfRangeAssetId,
+                assetName: assetsMap.get(outOfRangeAssetId)?.name || 'Equipment',
+                measuredValue: outOfRangeRecord.reading,
+                assetMinTemp: assetRange?.min ?? null,
+                assetMaxTemp: assetRange?.max ?? null,
+                durationMinutes: selectedAction === 'monitor' ? 30 : undefined
+              })
+
+              if (workflowResult.success) {
+                console.log('✅ Workflow handled:', workflowResult.message)
+                
+                // Update formData with workflow action (if not already set)
+                if (workflowResult.action === 'monitor' && workflowResult.monitoringTaskId) {
+                  formData.temp_action = 'monitor'
+                  formData.monitoring_task_id = workflowResult.monitoringTaskId
+                } else if (workflowResult.action === 'callout' && workflowResult.calloutId) {
+                  formData.temp_action = 'callout'
+                  formData.callout_id = workflowResult.calloutId
+                }
+              }
+            }
+          } catch (workflowError) {
+            console.error('Workflow handling error (non-fatal):', workflowError)
+            // Don't fail the task completion if workflow handling fails
+          }
+        }
+      }
+
       // Create completion record with proper schema structure
       const completionRecord = {
         task_id: task.id,
@@ -729,6 +1135,198 @@ export default function TaskCompletionModal({
       }
 
       console.log('✅ Task completed successfully')
+
+      // Check if this is a monitoring task and temperature is still out of range
+      // If so, automatically trigger callout creation
+      const isMonitoringTask = task.flag_reason === 'monitoring'
+      
+      if (isMonitoringTask) {
+        // Check if temperature is still out of range
+        let shouldCreateCallout = false
+        let tempValue: number | null = null
+        let assetId: string | null = null
+        
+        // Get temperature value and asset ID from form data
+        if (task.template?.repeatable_field_name) {
+          // Check repeatable equipment temperature fields
+          const equipmentList = formData[task.template.repeatable_field_name] || []
+          for (const equipment of equipmentList) {
+            const tempField = `temp_${equipment.value || equipment}`
+            const temp = formData[tempField]
+            if (temp !== undefined && temp !== null && temp !== '') {
+              tempValue = parseFloat(temp)
+              assetId = equipment.value || equipment
+              if (checkTemperatureRange(tempValue, assetId)) {
+                shouldCreateCallout = true
+                break
+              }
+            }
+          }
+        } else if (task.template?.asset_id && formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '') {
+          // Check single temperature field
+          tempValue = parseFloat(formData.temperature)
+          assetId = task.template.asset_id
+          if (checkTemperatureRange(tempValue, assetId)) {
+            shouldCreateCallout = true
+          }
+        }
+        
+        // If still out of range, automatically create callout
+        if (shouldCreateCallout && assetId && tempValue !== null) {
+          console.log('🔄 Monitoring task completed but temperature still out of range - creating callout')
+          
+          try {
+            // Load asset details for callout
+            const { data: assetData, error: assetError } = await supabase
+              .from('assets')
+              .select(`
+                id,
+                name,
+                serial_number,
+                warranty_end,
+                install_date,
+                category,
+                site_id,
+                company_id,
+                ppm_contractor_id,
+                reactive_contractor_id,
+                warranty_contractor_id,
+                sites(name)
+              `)
+              .eq('id', assetId)
+              .single()
+
+            if (!assetError && assetData) {
+              const site = Array.isArray(assetData.sites) ? assetData.sites[0] : assetData.sites
+              const siteName = site?.name || null
+
+              // Load contractor names
+              let ppmContractorName = null
+              let reactiveContractorName = null
+              let warrantyContractorName = null
+
+              if (assetData.ppm_contractor_id) {
+                const { data: contractor } = await supabase
+                  .from('contractors')
+                  .select('name')
+                  .eq('id', assetData.ppm_contractor_id)
+                  .single()
+                ppmContractorName = contractor?.name || null
+              }
+
+              if (assetData.reactive_contractor_id) {
+                const { data: contractor } = await supabase
+                  .from('contractors')
+                  .select('name')
+                  .eq('id', assetData.reactive_contractor_id)
+                  .single()
+                reactiveContractorName = contractor?.name || null
+              }
+
+              if (assetData.warranty_contractor_id) {
+                const { data: contractor } = await supabase
+                  .from('contractors')
+                  .select('name')
+                  .eq('id', assetData.warranty_contractor_id)
+                  .single()
+                warrantyContractorName = contractor?.name || null
+              }
+
+              const assetForCallout = {
+                id: assetData.id,
+                name: assetData.name,
+                serial_number: assetData.serial_number || null,
+                warranty_end: assetData.warranty_end || null,
+                install_date: assetData.install_date || null,
+                category: assetData.category || null,
+                site_name: siteName,
+                ppm_contractor_name: ppmContractorName,
+                reactive_contractor_name: reactiveContractorName,
+                warranty_contractor_name: warrantyContractorName,
+              }
+
+              // Automatically create callout via RPC or direct insert
+              const { data: { user } } = await supabase.auth.getUser()
+              if (user) {
+                try {
+                  // Try RPC function first
+                  const { data: calloutId, error: rpcError } = await supabase.rpc('create_callout', {
+                    p_asset_id: assetId,
+                    p_callout_type: 'reactive', // Default to reactive for temperature issues
+                    p_priority: 'urgent', // Temperature issues are urgent
+                    p_fault_description: `Temperature monitoring task completed but reading still out of range (${tempValue}°C). Requires contractor attention.`,
+                    p_notes: `Automatically created after monitoring task completion. Original task: ${task.template?.name || 'Unknown'}`,
+                    p_attachments: photoUrls.length > 0 ? photoUrls : [],
+                    p_troubleshooting_complete: false
+                  })
+
+                  if (!rpcError && calloutId) {
+                    console.log('✅ Callout automatically created:', calloutId)
+                    showToast({
+                      title: 'Callout Created',
+                      description: `Temperature still out of range (${tempValue}°C). Callout automatically created for ${assetForCallout.name}.`,
+                      type: 'success'
+                    })
+                  } else {
+                    throw rpcError || new Error('RPC callout creation failed')
+                  }
+                } catch (rpcError: any) {
+                  // Fallback to direct insert
+                  console.log('RPC function not available, using direct insert:', rpcError)
+                  
+                  const contractorId = assetData.reactive_contractor_id
+
+                  const calloutData: any = {
+                    company_id: assetData.company_id,
+                    asset_id: assetId,
+                    site_id: assetData.site_id,
+                    contractor_id: contractorId,
+                    created_by: profile.id,
+                    callout_type: 'reactive',
+                    priority: 'urgent',
+                    status: 'open',
+                    fault_description: `Temperature monitoring task completed but reading still out of range (${tempValue}°C). Requires contractor attention.`,
+                    notes: `Automatically created after monitoring task completion. Original task: ${task.template?.name || 'Unknown'}`,
+                    attachments: photoUrls.length > 0 ? photoUrls : [],
+                    troubleshooting_complete: false
+                  }
+
+                  const { error: insertError } = await supabase
+                    .from('callouts')
+                    .insert(calloutData)
+                    .select()
+                    .single()
+
+                  if (insertError) {
+                    console.error('Failed to create callout:', insertError)
+                    showToast({
+                      title: 'Warning',
+                      description: 'Task completed but failed to auto-create callout. Please create manually.',
+                      type: 'warning'
+                    })
+                  } else {
+                    console.log('✅ Callout automatically created via direct insert')
+                    showToast({
+                      title: 'Callout Created',
+                      description: `Temperature still out of range (${tempValue}°C). Callout automatically created for ${assetForCallout.name}.`,
+                      type: 'success'
+                    })
+                  }
+                }
+              }
+            }
+          } catch (calloutError) {
+            console.error('Error creating automatic callout:', calloutError)
+            // Don't fail the task completion, just log and show warning
+            showToast({
+              title: 'Warning',
+              description: 'Task completed but failed to auto-create callout. Please create manually.',
+              type: 'warning'
+            })
+          }
+        }
+      }
+
       onComplete()
     } catch (error) {
       const errorInfo = {
@@ -797,9 +1395,35 @@ export default function TaskCompletionModal({
               </button>
               {instructionsExpanded && (
                 <div className="px-4 pb-4">
-                  <p className="text-white/80 text-sm">{task.template.instructions}</p>
+                  <div className="text-white/80 text-sm whitespace-pre-line">
+                    {task.template.instructions}
+                  </div>
                 </div>
               )}
+            </div>
+          )}
+          
+          {/* Show warning only if instructions are truly missing or very minimal (just equipment names) */}
+          {(() => {
+            const hasInstructions = task.template?.instructions && task.template.instructions.trim().length > 0;
+            // Check if instructions appear to be just equipment names (very short, no verbs/action words)
+            const isMinimalInstructions = hasInstructions && (
+              task.template.instructions.length < 50 || // Very short (likely just equipment names)
+              (!task.template.instructions.toLowerCase().includes('how') && 
+               !task.template.instructions.toLowerCase().includes('step') &&
+               !task.template.instructions.toLowerCase().includes('record') &&
+               !task.template.instructions.toLowerCase().includes('insert') &&
+               !task.template.instructions.toLowerCase().includes('take') &&
+               !task.template.instructions.toLowerCase().includes('check') &&
+               !task.template.instructions.toLowerCase().includes('locate'))
+            );
+            
+            return !hasInstructions || isMinimalInstructions;
+          })() && (
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+              <p className="text-yellow-200 text-sm">
+                ⚠️ Instructions are missing or need to be updated. Please edit the template in "My Tasks" to update the instructions with proper "How to" guidance.
+              </p>
             </div>
           )}
 
@@ -807,7 +1431,10 @@ export default function TaskCompletionModal({
           <div className="space-y-6">
             {/* Temperature Field with Equipment List */}
             {task.template?.evidence_types?.includes('temperature') && (() => {
-              const equipmentField = templateFields.find((f: any) => f.field_type === 'select' && f.field_name === 'fridge_name')
+              const equipmentField = templateFields.find((f: any) => 
+                f.field_type === 'select' && 
+                (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
+              )
               const temperatureField = templateFields.find((f: any) => f.field_type === 'number')
               const equipmentOptions = equipmentField?.options || []
               
@@ -820,18 +1447,26 @@ export default function TaskCompletionModal({
                     </label>
                     <div className="space-y-3">
                       {equipmentOptions.map((equipment: any, idx: number) => {
-                        const assetName = assetsMap.get(equipment.value)?.name || 'Equipment'
+                        // Extract asset name and nickname from equipment options
+                        // For hot holding: options have { value, label, assetName, nickname }
+                        // For temperature: options have { value, label } where label may contain nickname
+                        const assetName = equipment.assetName || assetsMap.get(equipment.value)?.name || 'Equipment'
+                        const nickname = equipment.nickname || (equipment.label?.includes('(') 
+                          ? equipment.label.match(/\(([^)]+)\)/)?.[1] 
+                          : '') || ''
+                        
+                        // Format: "Asset Name | Nickname | Input"
+                        const displayLabel = nickname 
+                          ? `${assetName} | ${nickname}`
+                          : assetName
+                        
                         return (
                           <div key={idx} className="flex items-center gap-3">
-                            {/* Equipment Name */}
+                            {/* Equipment Name | Nickname */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-magenta-400 font-medium truncate">{assetName}</p>
+                              <p className="text-magenta-400 font-medium">{displayLabel}</p>
                             </div>
-                            {/* Nickname */}
-                            <div className="flex-shrink-0">
-                              <p className="text-magenta-400 font-medium">{equipment.label}</p>
-                            </div>
-                            {/* Temperature Input - Small */}
+                            {/* Temperature Input */}
                             <div className="flex items-center gap-2 flex-shrink-0">
                               <input
                                 type="number"
@@ -844,123 +1479,201 @@ export default function TaskCompletionModal({
                                   
                                   // Check if temp is out of range using asset's working temperature ranges
                                   const assetId = equipment.value
-                                  const isOutOfRange = checkTemperatureRange(temp, assetId)
+                                  let isOutOfRange = checkTemperatureRange(temp, assetId)
                                   
+                                  // Fallback: If asset ranges aren't set, use template field validation
+                                  if (!isOutOfRange) {
+                                    const tempField = temperatureField || templateFields.find((f: any) => 
+                                      f.field_type === 'number' && f.field_name === 'temperature'
+                                    )
+                                    
+                                    if (tempField) {
+                                      // Check against template field min/max values
+                                      const minValue = tempField.min_value
+                                      const maxValue = tempField.max_value
+                                      
+                                      if (minValue !== null && temp < minValue) {
+                                        isOutOfRange = true
+                                      }
+                                      if (maxValue !== null && temp > maxValue) {
+                                        isOutOfRange = true
+                                      }
+                                      
+                                      // For hot holding specifically: check if below 63°C
+                                      if (equipmentField?.field_name === 'hot_holding_unit') {
+                                        if (temp < 63) {
+                                          isOutOfRange = true
+                                        }
+                                      }
+                                    }
+                                  }
+                                  
+                                  // Update out-of-range assets set independently
                                   if (isOutOfRange) {
-                                    setShowWarning(true)
-                                    setOutOfRangeAssetId(assetId)
-                                    setShowActionOptions(false) // Reset action selection
-                                    setSelectedAction(null)
+                                    setOutOfRangeAssets(prev => {
+                                      const newSet = new Set(prev)
+                                      newSet.add(assetId)
+                                      return newSet
+                                    })
+                                    // Reset action selection for this asset
+                                    setShowActionOptions(prev => {
+                                      const newMap = new Map(prev)
+                                      newMap.set(assetId, false)
+                                      return newMap
+                                    })
+                                    setSelectedActions(prev => {
+                                      const newMap = new Map(prev)
+                                      newMap.delete(assetId)
+                                      return newMap
+                                    })
                                   } else {
-                                    setShowWarning(false)
-                                    setOutOfRangeAssetId(null)
+                                    // Remove from out-of-range set if now in range
+                                    setOutOfRangeAssets(prev => {
+                                      const newSet = new Set(prev)
+                                      newSet.delete(assetId)
+                                      return newSet
+                                    })
                                   }
                                 }}
-                                className={`w-20 px-2 py-2 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors text-sm text-center ${
-                                  outOfRangeAssetId === equipment.value && showWarning
+                                className={`w-24 px-3 py-2 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors text-sm text-center ${
+                                  outOfRangeAssets.has(equipment.value)
                                     ? 'border-red-500 focus:border-red-500'
                                     : 'border-white/[0.06] focus:border-pink-500'
                                 }`}
-        />
-      </div>
-
-      {/* Monitor Duration Modal */}
-      <MonitorDurationModal
-        isOpen={showMonitorDurationModal}
-        onClose={() => setShowMonitorDurationModal(false)}
-        onConfirm={createMonitoringTask}
-        assetName={outOfRangeAssetId ? assetsMap.get(outOfRangeAssetId)?.name : undefined}
-      />
-    </div>
-  )
-})}
+                              />
+                              <span className="text-sm text-white/60">°C</span>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                     
-                    {/* Temperature Warning - Show for any out of range asset */}
-                    {showWarning && outOfRangeAssetId && (() => {
-                      const assetName = assetsMap.get(outOfRangeAssetId)?.name || 'Equipment'
-                      const range = assetTempRanges.get(outOfRangeAssetId)
-                      const tempValue = formData[`temp_${outOfRangeAssetId}`] || formData.temperature
-                      const isFailed = range && (
-                        (range.min !== null && tempValue < range.min - 2) ||
-                        (range.max !== null && tempValue > range.max + 2)
-                      )
+                    {/* Temperature Warnings - Show for each out of range asset independently */}
+                    {Array.from(outOfRangeAssets).map((assetId) => {
+                      // Find the equipment option to get nickname
+                      const equipmentOption = equipmentOptions.find((opt: any) => opt.value === assetId)
+                      const assetName = equipmentOption?.assetName || assetsMap.get(assetId)?.name || 'Equipment'
+                      const nickname = equipmentOption?.nickname || ''
+                      const displayName = nickname ? `${assetName} (${nickname})` : assetName
+                      const range = assetTempRanges.get(assetId)
+                      const tempValue = formData[`temp_${assetId}`] || formData.temperature
+                      const showActionOptionsForAsset = showActionOptions.get(assetId) || false
+                      const selectedActionForAsset = selectedActions.get(assetId)
+                      
+                      // Determine if it's a failure (critical) or warning
+                      let isFailed = false
+                      let minThreshold = null
+                      let maxThreshold = null
+                      
+                      if (range && (range.min !== null || range.max !== null)) {
+                        minThreshold = range.min
+                        maxThreshold = range.max
+                        isFailed = (
+                          (range.min !== null && tempValue < range.min - 2) ||
+                          (range.max !== null && tempValue > range.max + 2)
+                        )
+                      } else {
+                        // Fallback to template field validation or hot holding threshold
+                        if (equipmentField?.field_name === 'hot_holding_unit') {
+                          minThreshold = 63
+                          maxThreshold = null
+                          isFailed = tempValue < 60 // Critical below 60°C
+                        } else if (temperatureField) {
+                          minThreshold = temperatureField.min_value
+                          maxThreshold = temperatureField.max_value
+                          if (minThreshold !== null && tempValue < minThreshold - 2) {
+                            isFailed = true
+                          }
+                          if (maxThreshold !== null && tempValue > maxThreshold + 2) {
+                            isFailed = true
+                          }
+                        }
+                      }
                       
                       return (
-                        <div className={`mt-3 p-4 border rounded-lg ${
+                        <div key={assetId} className={`mt-3 p-4 border rounded-lg ${
                           isFailed 
                             ? 'bg-red-500/10 border-red-500/30' 
                             : 'bg-yellow-500/10 border-yellow-500/30'
                         }`}>
-                          <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3">
                             <AlertCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
                               isFailed ? 'text-red-400' : 'text-yellow-400'
                             }`} />
-                            <div className="flex-1">
+                          <div className="flex-1">
                               <h4 className={`text-sm font-semibold mb-1 ${
                                 isFailed ? 'text-red-400' : 'text-yellow-400'
                               }`}>
-                                Temperature Out of Range - {assetName}
-                              </h4>
+                                Temperature Out of Range - {displayName}
+                            </h4>
                               <p className={`text-sm mb-2 ${
                                 isFailed ? 'text-red-300/80' : 'text-yellow-300/80'
                               }`}>
                                 Reading: <strong>{tempValue}°C</strong> 
-                                {range && (
+                                {(minThreshold !== null || maxThreshold !== null) && (
                                   <span className="ml-2">
-                                    (Normal range: {range.min !== null ? range.min : 'N/A'}°C to {range.max !== null ? range.max : 'N/A'}°C)
+                                    {equipmentField?.field_name === 'hot_holding_unit' 
+                                      ? `(Minimum required: 63°C)`
+                                      : `(Normal range: ${minThreshold !== null ? minThreshold : 'N/A'}°C to ${maxThreshold !== null ? maxThreshold : 'N/A'}°C)`
+                                    }
                                   </span>
                                 )}
-                              </p>
-                              {!showActionOptions && (
-                                <button
-                                  onClick={() => setShowActionOptions(true)}
+                            </p>
+                              {!showActionOptionsForAsset && (
+                              <button
+                                  onClick={() => {
+                                    setShowActionOptions(prev => {
+                                      const newMap = new Map(prev)
+                                      newMap.set(assetId, true)
+                                      return newMap
+                                    })
+                                  }}
                                   className={`text-sm underline ${
                                     isFailed ? 'text-red-400 hover:text-red-300' : 'text-yellow-400 hover:text-yellow-300'
                                   }`}
-                                >
-                                  Choose action →
-                                </button>
-                              )}
-                            </div>
+                              >
+                                Choose action →
+                              </button>
+                            )}
                           </div>
-                          
-                          {/* Action Options */}
-                          {showActionOptions && (
-                            <div className="mt-4 space-y-3">
-                              <button
-                                onClick={handleMonitorAction}
+                        </div>
+                        
+                        {/* Action Options */}
+                          {showActionOptionsForAsset && (
+                          <div className="mt-4 space-y-3">
+                            <button
+                                onClick={() => handleMonitorAction(assetId)}
                                 className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
-                                  selectedAction === 'monitor'
+                                  selectedActionForAsset === 'monitor'
                                     ? 'bg-yellow-500/20 border-yellow-500/50'
                                     : 'bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20'
                                 }`}
-                              >
-                                <Monitor className="h-5 w-5 text-yellow-400" />
-                                <div>
-                                  <p className="text-sm font-medium text-white">Monitor</p>
-                                  <p className="text-xs text-white/60">Schedule a follow-up check</p>
-                                </div>
-                              </button>
-                              <button
-                                onClick={handleCalloutAction}
+                            >
+                              <Monitor className="h-5 w-5 text-yellow-400" />
+                              <div>
+                                <p className="text-sm font-medium text-white">Monitor</p>
+                                <p className="text-xs text-white/60">Schedule a follow-up check</p>
+                              </div>
+                            </button>
+                            <button
+                                onClick={() => handleCalloutAction(assetId)}
                                 className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
-                                  selectedAction === 'callout'
+                                  selectedActionForAsset === 'callout'
                                     ? 'bg-red-500/20 border-red-500/50'
                                     : 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
                                 }`}
-                              >
-                                <PhoneCall className="h-5 w-5 text-red-400" />
-                                <div>
-                                  <p className="text-sm font-medium text-white">Place Callout</p>
-                                  <p className="text-xs text-white/60">Contact contractor immediately</p>
-                                </div>
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                            >
+                              <PhoneCall className="h-5 w-5 text-red-400" />
+                              <div>
+                                <p className="text-sm font-medium text-white">Place Callout</p>
+                                <p className="text-xs text-white/60">Contact contractor immediately</p>
+                              </div>
+                            </button>
+                          </div>
+                        )}
+                      </div>
                       )
-                    })()}
+                    })}
                   </div>
                 )
               }
@@ -988,7 +1701,7 @@ export default function TaskCompletionModal({
                           if (isOutOfRange) {
                             setShowWarning(true)
                             setOutOfRangeAssetId(task.template.asset_id)
-                            setShowActionOptions(false)
+                            setShowActionOptionsSingle(false)
                             setSelectedAction(null)
                           } else {
                             setShowWarning(false)
@@ -1035,9 +1748,9 @@ export default function TaskCompletionModal({
                               </span>
                             )}
                           </p>
-                          {!showActionOptions && (
+                          {!showActionOptionsSingle && (
                             <button
-                              onClick={() => setShowActionOptions(true)}
+                              onClick={() => setShowActionOptionsSingle(true)}
                               className={`text-sm underline ${
                                 selectedAction === 'callout' ? 'text-red-400 hover:text-red-300' : 'text-yellow-400 hover:text-yellow-300'
                               }`}
@@ -1048,7 +1761,7 @@ export default function TaskCompletionModal({
                         </div>
                       </div>
                       
-                      {showActionOptions && (
+                      {showActionOptionsSingle && (
                         <div className="mt-4 space-y-3">
                           <button
                             onClick={handleMonitorAction}
@@ -1087,8 +1800,312 @@ export default function TaskCompletionModal({
             })()}
 
 
-            {/* Text Note Field */}
-            {task.template?.evidence_types?.includes('text_note') && (
+            {/* Dynamic Template Fields - Render all template fields that aren't temperature-related */}
+            {templateFields
+              .filter((field: any) => {
+                // Exclude temperature fields (handled above) and equipment select fields
+                // Also exclude old 'test_result' and 'emergency_lights_working' checkbox fields
+                // Exclude pass_fail fields (not required in task modals)
+                // Exclude initial/manager_initials fields (not required in task modals)
+                return field.field_type !== 'number' && 
+                       field.field_name !== 'fridge_name' && 
+                       field.field_name !== 'hot_holding_unit' &&
+                       field.field_name !== 'test_result' && // Exclude old generic test_result field
+                       field.field_name !== 'emergency_lights_working' && // Exclude old checkbox field
+                       field.field_type !== 'pass_fail' && // Exclude pass/fail fields
+                       !field.field_name?.toLowerCase().includes('initial') // Exclude initial/manager_initials fields
+              })
+              .map((field: any) => {
+                // Select field (e.g., call point selector)
+                if (field.field_type === 'select') {
+                  const isFireAlarmCallPoint = field.field_name === 'fire_alarm_call_point'
+                  
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <select
+                        value={formData[field.field_name] || ''}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        required={field.required}
+                        className="w-full px-4 py-3 bg-neutral-800 border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-pink-500 transition-colors"
+                        style={{ colorScheme: 'dark' }}
+                      >
+                        <option value="" className="bg-neutral-800 text-white">Select {field.label || field.field_name}...</option>
+                        {(field.options || []).map((option: any) => {
+                          const optionValue = typeof option === 'string' ? option : option.value
+                          const optionLabel = typeof option === 'string' ? option : (option.label || optionValue)
+                          return (
+                            <option key={optionValue} value={optionValue} className="bg-neutral-800 text-white">
+                              {optionLabel}
+                            </option>
+                          )
+                        })}
+                      </select>
+                      
+                      {/* Fire Alarm Checklist - Show below call point dropdown */}
+                      {isFireAlarmCallPoint && (
+                        <div className="mt-4 space-y-3">
+                          <h4 className="text-sm font-semibold text-white mb-3">Fire Alarm Test Steps</h4>
+                          {[
+                            'Warn everyone. Let staff know there\'ll be a test so no one panics or calls the fire brigade because you pressed a button.',
+                            'Pick a different call point each week. Don\'t always use the same one or you\'ll end up with one shiny working alarm and ten dead zones.',
+                            'Activate the call point. Use the test key or break-glass cover—short, sharp press to trigger the alarm.',
+                            'Confirm sounders work. Walk the site (or send someone you don\'t like) to check the alarm can be heard everywhere, including toilets and storerooms.',
+                            'Silence and reset. Use the fire panel to silence, then reset the system according to manufacturer instructions.',
+                            'Record the test. Note the date, time, call point number/location, and result in the fire logbook.'
+                          ].map((step, idx) => (
+                            <div key={idx} className="flex items-start gap-3">
+                              <CheckboxCustom
+                                checked={fireAlarmChecklist[idx]}
+                                onChange={(checked) => {
+                                  const newChecklist = [...fireAlarmChecklist]
+                                  newChecklist[idx] = checked
+                                  setFireAlarmChecklist(newChecklist)
+                                }}
+                                size={20}
+                              />
+                              <p className="text-sm text-white/80 flex-1 pt-0.5">
+                                <span className="font-medium text-white">Step {idx + 1}:</span> {step}
+                              </p>
+                            </div>
+                          ))}
+                          
+                          {/* Fire Alarm Pass/Fail Buttons */}
+                          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                            <label className="block text-sm font-semibold text-white mb-3">
+                              Test Result
+                              <span className="text-red-400 ml-1">*</span>
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                type="button"
+                                onClick={() => handleFieldChange('fire_alarm_test_result', 'pass')}
+                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                                  formData.fire_alarm_test_result === 'pass'
+                                    ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                                    : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                                }`}
+                              >
+                                <CheckCircle2 className="h-5 w-5" />
+                                <span className="font-medium">Pass</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleFieldChange('fire_alarm_test_result', 'fail')
+                                  handleFireAlarmFailure()
+                                }}
+                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                                  formData.fire_alarm_test_result === 'fail'
+                                    ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                                    : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                                }`}
+                              >
+                                <AlertCircle className="h-5 w-5" />
+                                <span className="font-medium">Fail</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                    </div>
+                  )
+                }
+
+                // Pass/Fail field - REMOVED per user request
+                // Pass/fail buttons are not required in task modals
+                if (field.field_type === 'pass_fail') {
+                  return null // Skip rendering pass/fail fields
+                }
+                
+                // Legacy pass/fail field handler (kept for reference but not rendered)
+                if (false && field.field_type === 'pass_fail') {
+                  const isFail = formData[field.field_name] === 'fail'
+                  const isFireAlarmField = field.field_name === 'fire_alarm_test_result'
+                  const isEmergencyLightsField = field.field_name === 'emergency_lights_test_result'
+                  
+                  return (
+                    <div key={field.id || field.field_name} className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-4">
+                      <label className="block text-sm font-semibold text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-3">{field.help_text}</p>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => handleFieldChange(field.field_name, 'pass')}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                            formData[field.field_name] === 'pass'
+                              ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <CheckCircle2 className="h-5 w-5" />
+                          <span className="font-medium">Pass</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleFieldChange(field.field_name, 'fail')
+                            // Trigger callout prompt when fail is selected
+                            if (isFireAlarmField) {
+                              handleFireAlarmFailure()
+                            } else if (isEmergencyLightsField) {
+                              handleEmergencyLightsFailure()
+                            }
+                          }}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                            formData[field.field_name] === 'fail'
+                              ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <AlertCircle className="h-5 w-5" />
+                          <span className="font-medium">Fail</span>
+                        </button>
+                      </div>
+                      {/* Failure Warning */}
+                      {isFail && (
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                          <p className="text-sm text-red-400 font-medium">
+                            ⚠️ Test failed. {isFireAlarmField ? 'Fire panel company' : isEmergencyLightsField ? 'Electrician' : 'Contractor'} callout will be created on task completion.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
+
+                // Checkbox field (e.g., emergency lights working)
+                if (field.field_type === 'checkbox') {
+                  return (
+                    <div key={field.id || field.field_name} className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id={field.field_name}
+                        checked={formData[field.field_name] === true || formData[field.field_name] === 'true'}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.checked)}
+                        className="mt-1 h-5 w-5 rounded border-white/[0.06] bg-white/[0.03] text-pink-500 focus:ring-pink-500 focus:ring-offset-0"
+                      />
+                      <div className="flex-1">
+                        <label htmlFor={field.field_name} className="block text-sm font-medium text-white cursor-pointer">
+                          {field.label || field.field_label || field.field_name}
+                          {field.required && <span className="text-red-400 ml-1">*</span>}
+                        </label>
+                        {field.help_text && (
+                          <p className="text-xs text-white/60 mt-1">{field.help_text}</p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                }
+
+                // Text field
+                if (field.field_type === 'text') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <textarea
+                        placeholder={field.help_text || `Enter ${field.label || field.field_name}...`}
+                        value={formData[field.field_name] || ''}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        required={field.required}
+                        rows={3}
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors resize-none"
+                      />
+                    </div>
+                  )
+                }
+
+                return null
+              })}
+
+            {/* Emergency Lighting Checklist - Show if this is a combined fire alarm + emergency lighting task */}
+            {task.template?.name?.toLowerCase().includes('fire alarm') && 
+             task.template?.name?.toLowerCase().includes('emergency light') && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-white mb-3">Emergency Lighting Test Steps</h4>
+                {[
+                  'Know what you\'re looking for. These are the little lights above exits or along escape routes that keep people from tripping over each other when the power goes out.',
+                  'Switch off normal lighting. Use the test key or control switch to simulate a mains power failure.',
+                  'Check all fittings. Ensure every emergency light comes on and is bright enough to actually see by.',
+                  'Note any failures. Dim, flickering, or dead units go straight to maintenance—don\'t wait for a real emergency to find out.',
+                  'Restore power. End the test and confirm the lights return to charge mode (the little green LEDs should glow again).',
+                  'Record it. Log date, duration, areas checked, and results in the emergency lighting logbook.'
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <CheckboxCustom
+                      checked={emergencyLightingChecklist[idx]}
+                      onChange={(checked) => {
+                        const newChecklist = [...emergencyLightingChecklist]
+                        newChecklist[idx] = checked
+                        setEmergencyLightingChecklist(newChecklist)
+                      }}
+                      size={20}
+                    />
+                    <p className="text-sm text-white/80 flex-1 pt-0.5">
+                      <span className="font-medium text-white">Step {idx + 1}:</span> {step}
+                    </p>
+                  </div>
+                ))}
+                
+                {/* Emergency Lighting Pass/Fail Buttons */}
+                <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                  <label className="block text-sm font-semibold text-white mb-3">
+                    Emergency Lighting Test Result
+                    <span className="text-red-400 ml-1">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleFieldChange('emergency_lights_test_result', 'pass')}
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                        formData.emergency_lights_test_result === 'pass'
+                          ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <CheckCircle2 className="h-5 w-5" />
+                      <span className="font-medium">Pass</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleFieldChange('emergency_lights_test_result', 'fail')
+                        handleEmergencyLightsFailure()
+                      }}
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                        formData.emergency_lights_test_result === 'fail'
+                          ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <AlertCircle className="h-5 w-5" />
+                      <span className="font-medium">Fail</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Text Note Field (fallback for evidence_types) */}
+            {task.template?.evidence_types?.includes('text_note') && !templateFields.find((f: any) => f.field_type === 'text' && f.field_name === 'notes') && (
               <div>
                 <label className="block text-sm font-medium text-white mb-2">
                   Notes
@@ -1193,6 +2210,15 @@ export default function TaskCompletionModal({
           onClose={() => {
             setShowCalloutModal(false)
             setCalloutAsset(null)
+            // Process next callout in queue after a short delay
+            setTimeout(() => {
+              if (calloutQueue.length > 0) {
+                const nextCallout = calloutQueue[0]
+                setCalloutAsset(nextCallout.asset)
+                setShowCalloutModal(true)
+                setCalloutQueue(prev => prev.slice(1))
+              }
+            }, 300) // Small delay for smooth transition
           }}
           asset={calloutAsset}
           requireTroubleshoot={true} // Always require troubleshooting when opened from task

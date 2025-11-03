@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react'
 import { Search, Plus, Settings, Info, ArrowRight, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { TaskTemplate, TaskCategory, LABELS } from '@/types/checklist-types'
-import TemplateDetailModal from '@/components/checklists/TemplateDetailModal'
-import CloneTemplateDialog from '@/components/checklists/CloneTemplateDialog'
 
 // Category color mapping for left borders
 const CATEGORY_COLORS = {
@@ -71,9 +69,33 @@ export default function TemplatesPage() {
 
   async function fetchTemplates() {
     try {
+      // Get current user's profile to get company_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('No user logged in');
+        setTemplates([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('company_id')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile?.company_id) {
+        console.error('Error fetching profile or no company_id:', profileError);
+        setTemplates([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch templates for this company only
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
+        .eq('company_id', profile.company_id)
         .eq('is_template_library', true)
         .eq('is_active', true)
         .order('category')
@@ -81,7 +103,6 @@ export default function TemplatesPage() {
 
       if (error) {
         console.error('Database error:', error)
-        // If table doesn't exist, use empty mock data - no hardcoded tasks
         setTemplates([])
         return
       }
@@ -221,33 +242,8 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      {/* Modals */}
-      {selectedTemplate && (
-        <>
-          {showDetail && (
-            <TemplateDetailModal
-              template={selectedTemplate}
-              isOpen={showDetail}
-              onClose={() => setShowDetail(false)}
-              onClone={() => {
-                setShowDetail(false)
-                setShowClone(true)
-              }}
-            />
-          )}
-          {showClone && (
-            <CloneTemplateDialog
-              template={selectedTemplate}
-              isOpen={showClone}
-              onClose={() => setShowClone(false)}
-              onSuccess={() => {
-                setShowClone(false)
-                // Refresh or navigate to edit page
-              }}
-            />
-          )}
-        </>
-      )}
+      {/* Modals - Removed: Components deleted as part of tasks restart */}
+      {/* Template Detail Modal and Clone Dialog functionality removed */}
     </div>
   )
 }

@@ -507,9 +507,9 @@ export default function CalloutLogsPage() {
           <div className="text-center text-white/60">Loading callouts...</div>
         </div>
       ) : callouts.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
               <Wrench className="w-8 h-8 text-pink-400" />
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">No Callouts Found</h2>
@@ -767,7 +767,7 @@ export default function CalloutLogsPage() {
               </div>
             </div>
           ))}
-        </div>
+      </div>
       )}
     </div>
   );

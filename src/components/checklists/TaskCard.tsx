@@ -1,30 +1,128 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskStatus } from '@/types/checklist-types'
+import { supabase } from '@/lib/supabase'
+import { calculateTaskTiming, TaskTimingStatus } from '@/utils/taskTiming'
 
 interface TaskCardProps {
   task: ChecklistTaskWithTemplate
   onClick: () => void
 }
 
+interface TempWarning {
+  status: 'warning' | 'failed'
+  reading: number
+  recorded_at: string
+  asset_name?: string
+}
+
 export default function TaskCard({ task, onClick }: TaskCardProps) {
-  const isOverdue = task.status === 'pending' && new Date(task.due_date) < new Date()
   const isCompleted = task.status === 'completed'
   const isCritical = task.template?.is_critical
+  const [tempWarning, setTempWarning] = useState<TempWarning | null>(null)
+  
+  // Calculate task timing status
+  const timing = !isCompleted 
+    ? calculateTaskTiming(task.due_date, task.due_time || null)
+    : null
+  const timingStatus: TaskTimingStatus | null = timing?.status || null
+
+  // Fetch recent temperature warnings for linked asset
+  useEffect(() => {
+    const fetchTempWarnings = async () => {
+      // Only fetch if task has a linked asset and isn't completed
+      if (!task.template?.asset_id || isCompleted) {
+        setTempWarning(null)
+        return
+      }
+
+      try {
+        // Get recent temperature logs (last 24 hours) for this asset with warnings/failures
+        const yesterday = new Date()
+        yesterday.setHours(yesterday.getHours() - 24)
+
+        const { data, error } = await supabase
+          .from('temperature_logs')
+          .select(`
+            status,
+            reading,
+            recorded_at,
+            assets(name)
+          `)
+          .eq('asset_id', task.template.asset_id)
+          .eq('site_id', task.site_id)
+          .in('status', ['warning', 'failed'])
+          .gte('recorded_at', yesterday.toISOString())
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (error) {
+          console.error('Error fetching temperature warnings:', error)
+          setTempWarning(null)
+          return
+        }
+
+        if (data) {
+          const asset = Array.isArray(data.assets) ? data.assets[0] : data.assets
+          setTempWarning({
+            status: data.status as 'warning' | 'failed',
+            reading: data.reading,
+            recorded_at: data.recorded_at,
+            asset_name: asset?.name
+          })
+        } else {
+          setTempWarning(null)
+        }
+      } catch (error) {
+        console.error('Error fetching temperature warnings:', error)
+      }
+    }
+
+    fetchTempWarnings()
+  }, [task.template?.asset_id, task.site_id, isCompleted])
+
+  const isMonitoringTask = task.flagged && task.flag_reason === 'monitoring'
+  const isLateCompleted = task.flagged && task.flag_reason === 'completed_late'
+  const isEarlyCompleted = task.flagged && task.flag_reason === 'completed_early'
 
   const getStatusColor = () => {
     if (isCompleted) return 'border-green-500/50 bg-green-500/10'
-    if (isOverdue) return 'border-red-500/50 bg-red-500/10'
+    if (isMonitoringTask) return 'border-orange-500/50 bg-orange-500/10' // Orange border for monitoring tasks
+    if (tempWarning?.status === 'failed') return 'border-red-500/50 bg-red-500/10'
+    if (tempWarning?.status === 'warning') return 'border-orange-500/50 bg-orange-500/10'
+    
+    // Task timing status (pending/due/late)
+    if (timingStatus === 'late') return 'border-red-500/50 bg-red-500/10'
+    if (timingStatus === 'due') return 'border-green-500/50 bg-green-500/10'
+    if (timingStatus === 'pending') return 'border-yellow-500/50 bg-yellow-500/10'
+    
     if (isCritical) return 'border-orange-500/50 bg-orange-500/10'
     return 'border-neutral-700 hover:border-pink-400/50'
   }
 
   const getStatusIcon = () => {
     if (isCompleted) return <CheckCircle2 className="h-5 w-5 text-green-400" />
-    if (isOverdue) return <AlertCircle className="h-5 w-5 text-red-400" />
+    if (tempWarning?.status === 'failed') return <AlertCircle className="h-5 w-5 text-red-400" />
+    if (tempWarning?.status === 'warning') return <AlertCircle className="h-5 w-5 text-orange-400" />
+    
+    // Task timing status
+    if (timingStatus === 'late') return <AlertCircle className="h-5 w-5 text-red-400" />
+    if (timingStatus === 'due') return <Clock className="h-5 w-5 text-green-400" />
+    if (timingStatus === 'pending') return <Clock className="h-5 w-5 text-yellow-400" />
+    
     if (isCritical) return <AlertCircle className="h-5 w-5 text-orange-400" />
     return <Clock className="h-5 w-5 text-neutral-400" />
+  }
+  
+  const getTimingStatusLabel = () => {
+    if (isCompleted) return null
+    if (timingStatus === 'late') return 'Late'
+    if (timingStatus === 'due') return 'Due'
+    if (timingStatus === 'pending') return 'Pending'
+    return null
   }
 
   const getEvidenceIcons = () => {
@@ -54,6 +152,9 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
           {getStatusIcon()}
           <span className="text-sm font-medium text-white">
             {task.template?.name || 'Unknown Task'}
+            {isMonitoringTask && (
+              <span className="ml-2 text-xs text-orange-400 font-normal">(Monitoring)</span>
+            )}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -71,9 +172,6 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
             <Calendar className="h-3 w-3" />
             <span>{task.due_time || 'Anytime'}</span>
           </div>
-          <span className="px-2 py-1 bg-neutral-700/50 rounded text-neutral-300">
-            {task.template?.category || 'Unknown'}
-          </span>
         </div>
 
         {task.template?.compliance_standard && (
@@ -83,14 +181,38 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         )}
 
         {isCompleted && task.completed_at && (
-          <div className="text-xs text-green-400">
+          <div className={`text-xs ${
+            isLateCompleted ? 'text-red-400' :
+            isEarlyCompleted ? 'text-yellow-400' :
+            'text-green-400'
+          }`}>
             Completed at {new Date(task.completed_at).toLocaleTimeString()}
+            {isLateCompleted && ' ⚠️ Late'}
+            {isEarlyCompleted && ' ⚠️ Early'}
           </div>
         )}
 
-        {isOverdue && (
-          <div className="text-xs text-red-400 font-medium">
-            Overdue
+        {!isCompleted && timingStatus && (
+          <div className={`text-xs font-medium ${
+            timingStatus === 'late' ? 'text-red-400' :
+            timingStatus === 'due' ? 'text-green-400' :
+            'text-yellow-400'
+          }`}>
+            {getTimingStatusLabel()}
+          </div>
+        )}
+
+        {tempWarning && !isCompleted && (
+          <div className={`text-xs font-medium flex items-center gap-2 ${
+            tempWarning.status === 'failed' 
+              ? 'text-red-400' 
+              : 'text-orange-400'
+          }`}>
+            <Thermometer className="h-3 w-3" />
+            <span>
+              {tempWarning.status === 'failed' ? '❌' : '⚠️'} Temp: {tempWarning.reading}°C 
+              {tempWarning.asset_name && ` (${tempWarning.asset_name})`}
+            </span>
           </div>
         )}
       </div>

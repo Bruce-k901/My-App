@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/ToastProvider";
 import UserEntityCard from "@/components/users/UserEntityCard";
 import LazyAddUserModal from "@/components/users/LazyAddUserModal";
 import { Plus, Search } from "lucide-react";
@@ -28,7 +27,6 @@ interface Site {
 
 export default function UsersTab() {
   const { companyId, role } = useAppContext();
-  const { showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,13 +48,9 @@ export default function UsersTab() {
       if (error) throw error;
       setUsers(data || []);
     } catch (error: any) {
-      showToast({
-        title: "Error",
-        description: error.message || "Failed to fetch users",
-        type: "error"
-      });
+      console.error("Failed to fetch users:", error);
     }
-  }, [companyId, showToast]);
+  }, [companyId]);
 
   const fetchSites = useCallback(async () => {
     if (!companyId) return;
@@ -71,13 +65,9 @@ export default function UsersTab() {
       if (error) throw error;
       setSites(data || []);
     } catch (error: any) {
-      showToast({
-        title: "Error",
-        description: error.message || "Failed to fetch sites",
-        type: "error"
-      });
+      console.error("Failed to fetch sites:", error);
     }
-  }, [companyId, showToast]);
+  }, [companyId]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,7 +77,7 @@ export default function UsersTab() {
     };
 
     loadData();
-  }, [companyId, fetchUsers, fetchSites]);
+  }, [fetchUsers, fetchSites]);
 
   const handleUserUpdate = async (userId: string, updates: Partial<User>) => {
     try {
@@ -102,16 +92,9 @@ export default function UsersTab() {
         user.id === userId ? { ...user, ...updates } : user
       ));
 
-      showToast({
-        title: "Success",
-        description: "User updated successfully"
-      });
+      console.log("User updated successfully");
     } catch (error: any) {
-      showToast({
-        title: "Error",
-        description: error.message || "Failed to update user",
-        type: "error"
-      });
+      console.error("Failed to update user:", error);
     }
   };
 
@@ -128,16 +111,9 @@ export default function UsersTab() {
         user.id === userId ? { ...user, archived: true } : user
       ));
 
-      showToast({
-        title: "Success",
-        description: "User archived successfully"
-      });
+      console.log("User archived successfully");
     } catch (error: any) {
-      showToast({
-        title: "Error",
-        description: error.message || "Failed to archive user",
-        type: "error"
-      });
+      console.error("Failed to archive user:", error);
     }
   };
 
@@ -154,16 +130,9 @@ export default function UsersTab() {
         user.id === userId ? { ...user, archived: false } : user
       ));
 
-      showToast({
-        title: "Success",
-        description: "User unarchived successfully"
-      });
+      console.log("User unarchived successfully");
     } catch (error: any) {
-      showToast({
-        title: "Error",
-        description: error.message || "Failed to unarchive user",
-        type: "error"
-      });
+      console.error("Failed to unarchive user:", error);
     }
   };
 
@@ -173,6 +142,7 @@ export default function UsersTab() {
     return (
       user.full_name?.toLowerCase().includes(query) ||
       user.email?.toLowerCase().includes(query) ||
+      user.app_role?.toLowerCase().includes(query) ||
       user.position_title?.toLowerCase().includes(query)
     );
   });

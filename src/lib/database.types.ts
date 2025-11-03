@@ -33,6 +33,8 @@ export interface Database {
           status: string
           archived: boolean
           archived_at: string | null
+          working_temp_min: number | null
+          working_temp_max: number | null
           created_at: string
           updated_at: string
         }
@@ -59,6 +61,8 @@ export interface Database {
           status?: string
           archived?: boolean
           archived_at?: string | null
+          working_temp_min?: number | null
+          working_temp_max?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -85,6 +89,8 @@ export interface Database {
           status?: string
           archived?: boolean
           archived_at?: string | null
+          working_temp_min?: number | null
+          working_temp_max?: number | null
           created_at?: string
           updated_at?: string
         }

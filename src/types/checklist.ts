@@ -49,7 +49,7 @@ export type TaskTemplateUpdate = Partial<TaskTemplateInsert>
 
 export type ChecklistTask = {
   id: string
-  template_id: string
+  template_id: string | null // Nullable for callout follow-up tasks
   company_id: string
   site_id: string
   due_date: string
@@ -70,6 +70,7 @@ export type ChecklistTask = {
   contractor_notify_on_fail: boolean
   contractor_type: string | null
   contractor_notified_at: string | null
+  callout_id: string | null // Reference to callout for follow-up tasks
   generated_at: string
   expires_at: string | null
   created_at: string

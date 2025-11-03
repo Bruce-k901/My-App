@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type CheckboxCustomProps = {
   checked?: boolean;
@@ -15,6 +15,11 @@ export default function CheckboxCustom({
 }: CheckboxCustomProps) {
   const [isChecked, setIsChecked] = useState(checked);
 
+  // Sync internal state when checked prop changes (controlled component)
+  useEffect(() => {
+    setIsChecked(checked);
+  }, [checked]);
+
   const toggle = () => {
     const newVal = !isChecked;
     setIsChecked(newVal);
@@ -24,6 +29,7 @@ export default function CheckboxCustom({
   return (
     <button
       onClick={toggle}
+      type="button"
       className={`flex items-center justify-center rounded-sm border-2 transition-all duration-200 
         ${isChecked ? "border-green-500 bg-green-900/10" : "border-neutral-400 hover:border-green-500"}`}
       style={{ width: size, height: size }}

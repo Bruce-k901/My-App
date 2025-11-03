@@ -66,10 +66,10 @@ CREATE TABLE IF NOT EXISTS public.task_templates (
   CONSTRAINT unique_slug_per_company UNIQUE(company_id, slug)
 );
 
-CREATE INDEX idx_task_templates_company_active ON public.task_templates(company_id) WHERE is_active = TRUE;
-CREATE INDEX idx_task_templates_library ON public.task_templates(is_template_library) WHERE is_active = TRUE;
-CREATE INDEX idx_task_templates_category ON public.task_templates(category, company_id) WHERE is_active = TRUE;
-CREATE INDEX idx_task_templates_site ON public.task_templates(site_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_task_templates_company_active ON public.task_templates(company_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_task_templates_library ON public.task_templates(is_template_library) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_task_templates_category ON public.task_templates(category, company_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_task_templates_site ON public.task_templates(site_id) WHERE is_active = TRUE;
 
 -- ============================================================================
 -- TABLE 2: template_fields - Define custom fields for each template
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS public.template_fields (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_template_fields_template_id ON public.template_fields(template_id);
-CREATE INDEX idx_template_fields_order ON public.template_fields(template_id, field_order);
+CREATE INDEX IF NOT EXISTS idx_template_fields_template_id ON public.template_fields(template_id);
+CREATE INDEX IF NOT EXISTS idx_template_fields_order ON public.template_fields(template_id, field_order);
 
 -- ============================================================================
 -- TABLE 3: template_repeatable_labels - Pre-defined options for repeatable fields
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS public.template_repeatable_labels (
   CONSTRAINT unique_label_per_template UNIQUE(template_id, label)
 );
 
-CREATE INDEX idx_repeatable_labels_template_id ON public.template_repeatable_labels(template_id);
+CREATE INDEX IF NOT EXISTS idx_repeatable_labels_template_id ON public.template_repeatable_labels(template_id);
 
 -- ============================================================================
 -- TABLE 4: checklist_tasks - Generated task instances
@@ -177,11 +177,11 @@ CREATE TABLE IF NOT EXISTS public.checklist_tasks (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_checklist_tasks_site_status ON public.checklist_tasks(site_id, status);
-CREATE INDEX idx_checklist_tasks_due_date ON public.checklist_tasks(due_date);
-CREATE INDEX idx_checklist_tasks_assigned_user ON public.checklist_tasks(assigned_to_user_id);
-CREATE INDEX idx_checklist_tasks_template_date ON public.checklist_tasks(template_id, due_date);
-CREATE INDEX idx_checklist_tasks_company_site_date ON public.checklist_tasks(company_id, site_id, due_date);
+CREATE INDEX IF NOT EXISTS idx_checklist_tasks_site_status ON public.checklist_tasks(site_id, status);
+CREATE INDEX IF NOT EXISTS idx_checklist_tasks_due_date ON public.checklist_tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_checklist_tasks_assigned_user ON public.checklist_tasks(assigned_to_user_id);
+CREATE INDEX IF NOT EXISTS idx_checklist_tasks_template_date ON public.checklist_tasks(template_id, due_date);
+CREATE INDEX IF NOT EXISTS idx_checklist_tasks_company_site_date ON public.checklist_tasks(company_id, site_id, due_date);
 
 -- ============================================================================
 -- TABLE 5: task_completion_records - Immutable audit trail
@@ -217,11 +217,11 @@ CREATE TABLE IF NOT EXISTS public.task_completion_records (
   CONSTRAINT check_evidence_not_empty CHECK (completion_data IS NOT NULL AND completion_data != '{}'::jsonb)
 );
 
-CREATE INDEX idx_task_completions_task_id ON public.task_completion_records(task_id);
-CREATE INDEX idx_task_completions_template_date ON public.task_completion_records(template_id, completed_at);
-CREATE INDEX idx_task_completions_site_date ON public.task_completion_records(site_id, completed_at);
-CREATE INDEX idx_task_completions_completed_by ON public.task_completion_records(completed_by);
-CREATE INDEX idx_task_completions_company_date ON public.task_completion_records(company_id, completed_at);
+CREATE INDEX IF NOT EXISTS idx_task_completions_task_id ON public.task_completion_records(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_completions_template_date ON public.task_completion_records(template_id, completed_at);
+CREATE INDEX IF NOT EXISTS idx_task_completions_site_date ON public.task_completion_records(site_id, completed_at);
+CREATE INDEX IF NOT EXISTS idx_task_completions_completed_by ON public.task_completion_records(completed_by);
+CREATE INDEX IF NOT EXISTS idx_task_completions_company_date ON public.task_completion_records(company_id, completed_at);
 
 -- ============================================================================
 -- TABLE 6: contractor_callouts - Triggered when tasks fail
@@ -260,10 +260,10 @@ CREATE TABLE IF NOT EXISTS public.contractor_callouts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_contractor_callouts_site ON public.contractor_callouts(site_id);
-CREATE INDEX idx_contractor_callouts_status ON public.contractor_callouts(status);
-CREATE INDEX idx_contractor_callouts_contractor ON public.contractor_callouts(contractor_id);
-CREATE INDEX idx_contractor_callouts_requested_date ON public.contractor_callouts(requested_date);
+CREATE INDEX IF NOT EXISTS idx_contractor_callouts_site ON public.contractor_callouts(site_id);
+CREATE INDEX IF NOT EXISTS idx_contractor_callouts_status ON public.contractor_callouts(status);
+CREATE INDEX IF NOT EXISTS idx_contractor_callouts_contractor ON public.contractor_callouts(contractor_id);
+CREATE INDEX IF NOT EXISTS idx_contractor_callouts_requested_date ON public.contractor_callouts(requested_date);
 
 -- ============================================================================
 -- TRIGGERS
@@ -317,6 +317,7 @@ ALTER TABLE public.task_completion_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contractor_callouts ENABLE ROW LEVEL SECURITY;
 
 -- task_templates policies
+DROP POLICY IF EXISTS "Users can view templates for their company" ON public.task_templates;
 CREATE POLICY "Users can view templates for their company"
   ON public.task_templates FOR SELECT
   USING (
@@ -324,28 +325,32 @@ CREATE POLICY "Users can view templates for their company"
     OR company_id IS NULL
   );
 
+DROP POLICY IF EXISTS "Admins can create templates" ON public.task_templates;
 CREATE POLICY "Admins can create templates"
   ON public.task_templates FOR INSERT
   WITH CHECK (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-    AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+    AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
   );
 
+DROP POLICY IF EXISTS "Admins can update templates" ON public.task_templates;
 CREATE POLICY "Admins can update templates"
   ON public.task_templates FOR UPDATE
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-    AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+    AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
   );
 
+DROP POLICY IF EXISTS "Admins can delete templates" ON public.task_templates;
 CREATE POLICY "Admins can delete templates"
   ON public.task_templates FOR DELETE
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-    AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+    AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
   );
 
 -- template_fields policies (inherit from task_templates)
+DROP POLICY IF EXISTS "Users can view fields for accessible templates" ON public.template_fields;
 CREATE POLICY "Users can view fields for accessible templates"
   ON public.template_fields FOR SELECT
   USING (
@@ -356,17 +361,19 @@ CREATE POLICY "Users can view fields for accessible templates"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can modify fields" ON public.template_fields;
 CREATE POLICY "Admins can modify fields"
   ON public.template_fields FOR ALL
   USING (
     template_id IN (
       SELECT id FROM public.task_templates
       WHERE company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-        AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+        AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
     )
   );
 
 -- template_repeatable_labels policies (inherit from task_templates)
+DROP POLICY IF EXISTS "Users can view repeatable labels for accessible templates" ON public.template_repeatable_labels;
 CREATE POLICY "Users can view repeatable labels for accessible templates"
   ON public.template_repeatable_labels FOR SELECT
   USING (
@@ -377,29 +384,33 @@ CREATE POLICY "Users can view repeatable labels for accessible templates"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can modify repeatable labels" ON public.template_repeatable_labels;
 CREATE POLICY "Admins can modify repeatable labels"
   ON public.template_repeatable_labels FOR ALL
   USING (
     template_id IN (
       SELECT id FROM public.task_templates
       WHERE company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-        AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+        AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
     )
   );
 
 -- checklist_tasks policies
+DROP POLICY IF EXISTS "Users can view tasks for their company" ON public.checklist_tasks;
 CREATE POLICY "Users can view tasks for their company"
   ON public.checklist_tasks FOR SELECT
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "Users can update their assigned tasks" ON public.checklist_tasks;
 CREATE POLICY "Users can update their assigned tasks"
   ON public.checklist_tasks FOR UPDATE
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "Users can insert tasks for their company" ON public.checklist_tasks;
 CREATE POLICY "Users can insert tasks for their company"
   ON public.checklist_tasks FOR INSERT
   WITH CHECK (
@@ -407,12 +418,14 @@ CREATE POLICY "Users can insert tasks for their company"
   );
 
 -- task_completion_records policies
+DROP POLICY IF EXISTS "Users can view completions for their company" ON public.task_completion_records;
 CREATE POLICY "Users can view completions for their company"
   ON public.task_completion_records FOR SELECT
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "Users can insert completions for their company" ON public.task_completion_records;
 CREATE POLICY "Users can insert completions for their company"
   ON public.task_completion_records FOR INSERT
   WITH CHECK (
@@ -420,19 +433,22 @@ CREATE POLICY "Users can insert completions for their company"
   );
 
 -- contractor_callouts policies
+DROP POLICY IF EXISTS "Users can view contractor calls for their company" ON public.contractor_callouts;
 CREATE POLICY "Users can view contractor calls for their company"
   ON public.contractor_callouts FOR SELECT
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "Admins can update contractor calls" ON public.contractor_callouts;
 CREATE POLICY "Admins can update contractor calls"
   ON public.contractor_callouts FOR UPDATE
   USING (
     company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-    AND (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('owner', 'admin')
+    AND (SELECT app_role FROM public.profiles WHERE id = auth.uid()) IN ('Owner', 'Admin')
   );
 
+DROP POLICY IF EXISTS "Users can insert contractor calls for their company" ON public.contractor_callouts;
 CREATE POLICY "Users can insert contractor calls for their company"
   ON public.contractor_callouts FOR INSERT
   WITH CHECK (

@@ -36,6 +36,8 @@ type Asset = {
   status: string;
   archived: boolean;
   notes: string | null;
+  working_temp_min: number | null;
+  working_temp_max: number | null;
 };
 
 export default function AssetsPage() {
@@ -409,13 +411,13 @@ export default function AssetsPage() {
         style={{ display: "none" }}
       />
 
-      {(isError || (!ctxLoading && !profile?.company_id)) && (
+      {isError && (
         <div className="mb-4 rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
-          <p className="text-sm text-red-400">{isError ? error?.message || "Failed to load assets" : "No company context detected. Please sign in or complete setup."}</p>
+          <p className="text-sm text-red-400">{error?.message || "Failed to load assets"}</p>
         </div>
       )}
 
-      {ctxLoading || isLoading ? (
+      {isLoading ? (
         <div className="text-slate-400">Loading assets…</div>
       ) : filteredAssets.length === 0 ? (
         <p className="text-gray-400 p-6">No assets yet. Add one to get started.</p>

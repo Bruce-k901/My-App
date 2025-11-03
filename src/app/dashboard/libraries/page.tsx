@@ -17,7 +17,7 @@ export default function LibrariesPage() {
         return;
       }
       setLoading(true);
-      const [ingredients, ppe, chemicals, drinks, disposables, glassware, packaging, equipment] = await Promise.all([
+      const [ingredients, ppe, chemicals, drinks, disposables, glassware, packaging, equipment, appliances] = await Promise.all([
         supabase.from('ingredients_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('ppe_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('chemicals_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
@@ -26,6 +26,7 @@ export default function LibrariesPage() {
         supabase.from('glassware_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('packaging_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('equipment_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
+        supabase.from('pat_appliances').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
       ]);
       setCounts({
         ingredients: ingredients.count || 0,
@@ -36,6 +37,7 @@ export default function LibrariesPage() {
         glassware: glassware.count || 0,
         packaging: packaging.count || 0,
         equipment: equipment.count || 0,
+        appliances: appliances.count || 0,
       });
       setLoading(false);
     };
@@ -51,6 +53,7 @@ export default function LibrariesPage() {
     { id: 'glassware', name: 'Glassware', href: '/dashboard/libraries/glassware' },
     { id: 'packaging', name: 'Packaging', href: '/dashboard/libraries/packaging' },
     { id: 'equipment', name: 'Serving Equipment', href: '/dashboard/libraries/serving-equipment' },
+    { id: 'appliances', name: 'Appliances', href: '/dashboard/libraries/appliances' },
   ];
 
   return (

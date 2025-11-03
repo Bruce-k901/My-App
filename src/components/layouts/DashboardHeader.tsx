@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Calendar, BarChart3, LogOut, Building2 } from "lucide-react";
+import { Calendar, BarChart3, LogOut, Building2, ClipboardCheck } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 
@@ -69,6 +69,15 @@ export default function DashboardHeader() {
 
       {/* Middle: Actions */}
       <div className="flex items-center gap-4">
+        {/* Today's Tasks - Main Priority */}
+        <Link
+          href="/dashboard/checklists"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]"
+        >
+          <ClipboardCheck className="w-5 h-5 text-pink-400" />
+          <span className="font-semibold">Today's Tasks</span>
+        </Link>
+
         {/* Site Switcher */}
         <button
           className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all"

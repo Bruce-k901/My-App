@@ -1,26 +1,44 @@
 "use client";
 
-export default function TaskTemplatesPage() {
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
+
+export default function TemplatesPage() {
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Task Templates</h1>
-        <p className="text-white/60">Create and manage reusable task templates</p>
+    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-8">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">My Task Templates</h1>
+          <p className="text-white/60">Custom task templates you've created</p>
+        </div>
+        <button
+          onClick={() => setIsBuilderOpen(true)}
+          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150"
+          aria-label="Add Template"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
       </div>
 
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
-            <svg className="w-8 h-8 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-white mb-2">Task Templates</h2>
-          <p className="text-white/60 max-w-md mx-auto">
-            This feature is under development and will be available soon.
-          </p>
-        </div>
+      {/* Empty State */}
+      <div className="mt-8">
+        <p className="text-white/60">Create your first template to get started</p>
       </div>
+
+      {/* Master Template Modal */}
+      <MasterTemplateModal 
+        isOpen={isBuilderOpen}
+        onClose={() => setIsBuilderOpen(false)}
+        onSave={(templateConfig) => {
+          console.log('Template created:', templateConfig);
+          setIsBuilderOpen(false);
+          // TODO: Add to templates list when we build that
+        }}
+      />
     </div>
   );
 }
