@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Plus, Settings, Info, ArrowRight, AlertCircle } from 'lucide-react'
+import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { TaskTemplate, TaskCategory, LABELS } from '@/types/checklist-types'
+import { toast } from 'sonner'
 
 // Category color mapping for left borders
 const CATEGORY_COLORS = {
@@ -34,15 +35,20 @@ const CATEGORY_LABELS = {
   compliance: 'Compliance & Audit'
 }
 
+type TemplateWithUsage = TaskTemplate & {
+  usage_count?: number
+}
+
 export default function TemplatesPage() {
-  const [templates, setTemplates] = useState<TaskTemplate[]>([])
-  const [filteredTemplates, setFilteredTemplates] = useState<TaskTemplate[]>([])
+  const [templates, setTemplates] = useState<TemplateWithUsage[]>([])
+  const [filteredTemplates, setFilteredTemplates] = useState<TemplateWithUsage[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedTemplate, setSelectedTemplate] = useState<TaskTemplate | null>(null)
   const [showDetail, setShowDetail] = useState(false)
   const [showClone, setShowClone] = useState(false)
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
 
   // Fetch templates on mount
   useEffect(() => {
@@ -91,26 +97,83 @@ export default function TemplatesPage() {
         return;
       }
 
-      // Fetch templates for this company only
-      const { data, error } = await supabase
+      // Fetch user-created templates (not library templates) for this company
+      const { data: templatesData, error: templatesError } = await supabase
         .from('task_templates')
         .select('*')
         .eq('company_id', profile.company_id)
-        .eq('is_template_library', true)
+        .eq('is_template_library', false) // User-created templates, not library templates
         .eq('is_active', true)
-        .order('category')
         .order('name')
-
-      if (error) {
-        console.error('Database error:', error)
+      
+      if (templatesError) {
+        console.error('Error fetching templates:', templatesError)
         setTemplates([])
         return
       }
-      setTemplates(data || [])
+      
+      // Fetch usage counts separately (count how many tasks were created from each template)
+      const templateIds = (templatesData || []).map(t => t.id)
+      const usageCounts = new Map<string, number>()
+      
+      if (templateIds.length > 0) {
+        const { data: usageData } = await supabase
+          .from('checklist_tasks')
+          .select('template_id')
+          .in('template_id', templateIds)
+        
+        if (usageData) {
+          usageData.forEach(task => {
+            if (task.template_id) {
+              usageCounts.set(task.template_id, (usageCounts.get(task.template_id) || 0) + 1)
+            }
+          })
+        }
+      }
+      
+      // Combine templates with their usage counts
+      const templatesWithUsage = (templatesData || []).map(t => ({
+        ...t,
+        usage_count: usageCounts.get(t.id) || 0
+      }))
+      
+      setTemplates(templatesWithUsage)
     } catch (error) {
       console.error('Failed to fetch templates:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleDeleteTemplate(templateId: string, e: React.MouseEvent) {
+    e.stopPropagation() // Prevent card click
+    
+    if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+      return
+    }
+
+    setDeletingTemplateId(templateId)
+    
+    try {
+      // Soft delete by setting is_active to false
+      const { error } = await supabase
+        .from('task_templates')
+        .update({ is_active: false })
+        .eq('id', templateId)
+
+      if (error) {
+        toast.error('Failed to delete template: ' + error.message)
+        return
+      }
+
+      toast.success('Template deleted successfully')
+      // Refresh templates list
+      fetchTemplates()
+    } catch (error) {
+      console.error('Error deleting template:', error)
+      toast.error('Failed to delete template')
+    } finally {
+      setDeletingTemplateId(null)
     }
   }
 
@@ -186,7 +249,7 @@ export default function TemplatesPage() {
                 setSelectedTemplate(template)
                 setShowDetail(true)
               }}
-              className={`group bg-neutral-800/50 backdrop-blur-sm border-l-2 ${CATEGORY_COLORS[template.category as keyof typeof CATEGORY_COLORS] || 'border-neutral-600'} border-r border-t border-b border-neutral-700 rounded-lg p-4 hover:border-neutral-600 transition-all cursor-pointer h-[90px] flex flex-col justify-between`}
+              className="group bg-neutral-800/50 backdrop-blur-sm border border-neutral-700 rounded-lg p-4 hover:border-neutral-600 transition-all cursor-pointer min-h-[90px] flex flex-col justify-between"
             >
               {/* Header */}
               <div className="flex items-start justify-between">
@@ -198,7 +261,7 @@ export default function TemplatesPage() {
                     {template.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1 ml-2">
+                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                   <span className="text-xs text-neutral-500 uppercase font-medium">
                     {FREQUENCY_LABELS[template.frequency as keyof typeof FREQUENCY_LABELS] || template.frequency}
                   </span>
@@ -210,6 +273,13 @@ export default function TemplatesPage() {
                 </div>
               </div>
 
+              {/* Usage Count Tag */}
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  Used {template.usage_count || 0} {template.usage_count === 1 ? 'time' : 'times'}
+                </span>
+              </div>
+
               {/* Footer - Actions */}
               <div className="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-2">
@@ -219,6 +289,7 @@ export default function TemplatesPage() {
                       // TODO: Open settings
                     }}
                     className="p-1 text-neutral-400 hover:text-white transition-colors"
+                    title="Settings"
                   >
                     <Settings className="h-3 w-3" />
                   </button>
@@ -228,8 +299,17 @@ export default function TemplatesPage() {
                       // TODO: Open info
                     }}
                     className="p-1 text-neutral-400 hover:text-white transition-colors"
+                    title="Info"
                   >
                     <Info className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteTemplate(template.id, e)}
+                    disabled={deletingTemplateId === template.id}
+                    className="p-1 text-neutral-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                    title="Delete template"
+                  >
+                    <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
                 <div className="flex items-center text-xs text-neutral-400 group-hover:text-pink-400 transition-colors">

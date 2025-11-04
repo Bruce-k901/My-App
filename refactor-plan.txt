@@ -1,0 +1,120 @@
+﻿=== DEPENDENCY MAP ===
+
+--- CalloutFollowUpTaskCard imports ---
+--- CloneTemplateDialog imports ---
+--- TemplateDetailModal imports ---
+--- ComplianceTemplateEditor imports ---
+--- Barrel file exports (index.ts) ---
+
+=== PHASE 2: UI CLEANUP ANALYSIS ===
+
+## 🔍 Files Requiring Cleanup
+
+### 1. src/app/dashboard/tasks/compliance-templates/page.tsx
+**Status:** ❌ BROKEN - Has dead code referencing deleted modals
+
+**Issues Found:**
+- Line 32: `const [showDetail, setShowDetail] = useState(false);` - State for deleted modal
+- Line 33: `const [showClone, setShowClone] = useState(false);` - State for deleted modal
+- Line 31: `const [selectedTemplate, setSelectedTemplate] = useState<TaskTemplate | null>(null);` - State for deleted modal
+- Line 309: `setShowDetail(true);` - Sets state that does nothing (modal deleted)
+- Lines 353-354: Comments acknowledge modals were deleted, but code still references them
+
+**What Needs to Be Fixed:**
+1. Remove `showDetail`, `showClone`, and `selectedTemplate` state variables
+2. Remove the "View Details" button click handler (or replace with new functionality)
+3. Remove all references to deleted modal components
+4. The "Edit" button (line 316-324) shows a placeholder message - needs proper implementation or removal
+
+**Current UI Behavior:**
+- "View Details" button exists but does nothing (no modal renders)
+- "Edit" button expands template card but shows "Template editing is not available" message
+- Search and filtering work correctly
+- Template listing works correctly
+- Status badges (In Use, Edited, Critical) work correctly
+
+---
+
+### 2. src/app/dashboard/tasks/page.tsx
+**Status:** ✅ WORKING - Uses TaskCompletionModal (which exists)
+
+**Notes:**
+- This page correctly imports and uses `TaskCompletionModal` from `@/components/checklists/TaskCompletionModal`
+- No dead code found
+- All functionality appears to be working
+- Displays user's assigned tasks with status filtering
+- Has task completion modal integration
+
+---
+
+### 3. src/app/dashboard/tasks/my-tasks/page.tsx
+**Status:** ⚠️ PARTIAL - Has placeholder editor
+
+**Notes:**
+- No imports of deleted components ✅
+- "Edit Template" button (line 251-260) expands card but shows placeholder message (line 276)
+- Similar pattern to compliance-templates page
+- Delete functionality works correctly
+- Template listing and filtering work correctly
+
+**What Needs to Be Fixed:**
+- Line 273-279: Expanded editor view shows "Template editing is not available" message
+- Consider removing edit button OR implementing new editor
+
+---
+
+### 4. src/app/dashboard/tasks/templates/page.tsx
+**Status:** ✅ CLEAN - Placeholder page only
+
+**Notes:**
+- Simple placeholder page
+- No functionality, no imports
+- Just says "under development"
+
+---
+
+### 5. src/app/dashboard/checklists/page.tsx
+**Status:** ✅ WORKING - Uses TaskCard and TaskCompletionModal (both exist)
+
+**Notes:**
+- Imports `TaskCard` from `@/components/checklists/TaskCard` ✅
+- Imports `TaskCompletionModal` from `@/components/checklists/TaskCompletionModal` ✅
+- No references to deleted components
+- This is the "Today's Tasks" page (daily checklist)
+
+---
+
+## 📋 Cleanup Checklist
+
+### Priority 1: Fix compliance-templates page ✅ COMPLETE
+- [x] Remove unused state: `showDetail`, `showClone`, `selectedTemplate`
+- [x] Removed "View Details" button (non-functional)
+- [x] Removed "Edit" button (only showed placeholder)
+- [x] Removed expanded editor view section
+- [x] Removed unused `Clock` import
+- [x] Page now works as read-only template browser
+
+### Priority 2: Verify all task pages
+- [x] Check `src/app/dashboard/tasks/page.tsx` - ✅ Clean
+- [x] Check `src/app/dashboard/tasks/templates/page.tsx` - ✅ Clean (placeholder page)
+- [x] Check `src/app/dashboard/tasks/my-tasks/page.tsx` - ⚠️ Has placeholder editor
+- [x] Check `src/app/dashboard/checklists/page.tsx` - ✅ Clean
+- [ ] Check other task sub-pages (completed, drafts, scheduled, settings, compliance, view/[taskId])
+
+---
+
+## 🎯 Recommended Actions
+
+### Option A: Minimal Cleanup (Remove Dead Code)
+1. Remove dead state variables
+2. Remove "View Details" button
+3. Remove "Edit" button (or keep with placeholder message)
+4. Keep template listing functional
+
+### Option B: Full Rebuild (New Implementation)
+1. Create new TemplateDetailModal component
+2. Create new template editing interface
+3. Implement "View Details" with new modal
+4. Implement "Edit" with new editor
+
+**Recommendation:** Start with Option A to get the page working, then implement Option B as Phase 3.

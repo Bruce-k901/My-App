@@ -6,23 +6,71 @@ import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import TaskCompletionModal from '@/components/checklists/TaskCompletionModal'
 import TaskCard from '@/components/checklists/TaskCard'
+import CompletedTaskCard from '@/components/checklists/CompletedTaskCard'
 import { useAppContext } from '@/context/AppContext'
 import { calculateTaskTiming } from '@/utils/taskTiming'
+import { DAYPARTS } from '@/types/constants'
+
+// Daypart chronological order (for sorting)
+const DAYPART_ORDER: Record<string, number> = {
+  'before_open': 1,
+  'during_service': 2,
+  'after_service': 3,
+  'anytime': 4
+}
+
+// Helper function to get daypart sort order
+function getDaypartSortOrder(daypart: string | null | undefined): number {
+  if (!daypart) return 999 // Put null/undefined at the end
+  return DAYPART_ORDER[daypart] || 999
+}
+
+// Helper function to parse daypart(s) - could be string, array, or comma-separated
+function parseDayparts(daypart: any): string[] {
+  if (!daypart) return []
+  
+  // If it's already an array
+  if (Array.isArray(daypart)) {
+    return daypart.filter(d => d && typeof d === 'string')
+  }
+  
+  // If it's a string, check if it's comma-separated
+  if (typeof daypart === 'string') {
+    if (daypart.includes(',')) {
+      return daypart.split(',').map(d => d.trim()).filter(d => d)
+    }
+    return [daypart]
+  }
+  
+  return []
+}
+
+type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
+  completion_record?: {
+    id: string
+    completion_data: Record<string, any>
+    evidence_attachments?: string[]
+    completed_at: string
+    completed_by: string
+    duration_seconds?: number | null
+  } | null
+}
 
 export default function DailyChecklistPage() {
   const [tasks, setTasks] = useState<ChecklistTaskWithTemplate[]>([])
-  const [completedTasks, setCompletedTasks] = useState<ChecklistTaskWithTemplate[]>([])
+  const [completedTasks, setCompletedTasks] = useState<CompletedTaskWithRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedTask, setSelectedTask] = useState<ChecklistTaskWithTemplate | null>(null)
   const [showCompletion, setShowCompletion] = useState(false)
   const [showCompleted, setShowCompleted] = useState(false)
   const [showUpcoming, setShowUpcoming] = useState(false)
   const [upcomingTasks, setUpcomingTasks] = useState<ChecklistTaskWithTemplate[]>([])
+  const { siteId } = useAppContext()
 
   useEffect(() => {
     fetchTodaysTasks()
     fetchUpcomingTasks()
-  }, [])
+  }, [siteId])
 
   async function fetchUpcomingTasks() {
     try {
@@ -55,28 +103,55 @@ export default function DailyChecklistPage() {
 
   async function fetchTodaysTasks() {
     try {
+      setLoading(true)
       const today = new Date().toISOString().split('T')[0]
       
-      // Select all columns - callout_id will be included if the migration has been run
-      // Exclude callout_followup tasks - they're shown separately in the upcoming section
-      const { data: allTasks, error } = await supabase
+      console.log('🔍 Fetching tasks for:', { today, siteId })
+      
+      // Today's Tasks are filtered from Active Tasks by:
+      // 1. due_date matches today
+      // 2. site_id matches (if set)
+      // 3. Exclude callout_followup tasks (shown separately)
+      // 4. Exclude completed tasks from the main list (they go to Completed section)
+      let query = supabase
         .from('checklist_tasks')
         .select('*')
         .eq('due_date', today)
+        // Don't filter by status here - we'll filter completed tasks in display
+      
+      // Filter by site_id if available
+      if (siteId) {
+        query = query.eq('site_id', siteId)
+      }
+      
+      const { data: allTasks, error } = await query
         .order('due_time', { ascending: true })
         .order('daypart', { ascending: true })
+      
+      console.log('📥 Raw tasks from database:', {
+        total: allTasks?.length || 0,
+        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
+      })
       
       // Filter out callout_followup tasks - they're shown in the upcoming section
       const data = allTasks?.filter(task => task.flag_reason !== 'callout_followup') || []
 
       if (error) {
-        console.error('Supabase query error:', {
+        console.error('❌ Supabase query error:', {
           message: error.message,
           code: error.code,
           details: error.details,
           hint: error.hint
         })
         throw error
+      }
+      
+      if (!data || data.length === 0) {
+        console.log('⚠️ No tasks found for today')
+        setTasks([])
+        setCompletedTasks([])
+        setLoading(false)
+        return
       }
       
       // Load templates manually (only for tasks that have template_id)
@@ -87,7 +162,7 @@ export default function DailyChecklistPage() {
         if (templateIds.length > 0) {
         const { data: templates } = await supabase
           .from('task_templates')
-          .select('id, name, description, category, frequency, compliance_standard, is_critical, evidence_types, repeatable_field_name, instructions')
+          .select('id, name, description, category, frequency, compliance_standard, is_critical, evidence_types, repeatable_field_name, instructions, dayparts')
           .in('id', templateIds)
         
         if (templates) {
@@ -97,40 +172,287 @@ export default function DailyChecklistPage() {
         
           const tasksWithTemplates = data.map(task => ({
             ...task,
-          template: task.template_id ? templatesMap.get(task.template_id) : null
+            template: task.template_id ? templatesMap.get(task.template_id) : null
           }))
+          
+          console.log('📦 Tasks with templates:', {
+            count: tasksWithTemplates.length,
+            tasks: tasksWithTemplates.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, template_id: t.template_id }))
+          })
+        
+        // CRITICAL: Handle tasks with multiple dayparts
+        // IMPORTANT: The cron job already creates separate task records for each daypart.
+        // So if a task has a daypart field set, it's already a single instance - don't expand it.
+        // Only expand if the task has NO daypart but has multiple dayparts in task_data or template.
+        let expandedTasks: ChecklistTaskWithTemplate[] = []
+        
+        // Helper function to normalize daypart names (handle legacy/invalid dayparts)
+        const normalizeDaypart = (daypart: string | null | undefined): string => {
+          if (!daypart || typeof daypart !== 'string') {
+            return 'anytime' // Default if null/undefined
+          }
+          const normalized = daypart.toLowerCase().trim()
+          // Map common variations to standard dayparts
+          const daypartMap: Record<string, string> = {
+            'afternoon': 'during_service',
+            'morning': 'before_open',
+            'evening': 'after_service',
+            'night': 'after_service',
+            'lunch': 'during_service',
+            'dinner': 'during_service'
+          }
+          return daypartMap[normalized] || normalized
+        }
+        
+        // Helper function to get default time for daypart
+        // IMPORTANT: Only override time if task doesn't have a specific time set
+        // If task has a due_time already, preserve it (user-specified times take precedence)
+        const getDaypartTime = (daypart: string, templateTime: string | null, existingTime: string | null): string => {
+          // If task already has a specific time, use it (don't override user-specified times)
+          if (existingTime && existingTime.trim() !== '') {
+            // Convert to HH:MM format if needed (remove seconds)
+            const timeStr = existingTime.includes(':') ? existingTime.split(':').slice(0, 2).join(':') : existingTime
+            return timeStr
+          }
+          
+          // Normalize daypart first
+          const normalizedDaypart = normalizeDaypart(daypart)
+          
+          // If template has a specific time, use it as base
+          // Otherwise, use default times per daypart
+          const defaultTimes: Record<string, string> = {
+            'before_open': '08:00',
+            'during_service': '12:00',
+            'after_service': '18:00',
+            'anytime': templateTime || '09:00'
+          }
+          
+          // If template has a time, try to adjust it based on daypart
+          if (templateTime) {
+            const [hours, minutes] = templateTime.split(':').map(Number)
+            
+            // Adjust based on daypart if needed
+            if (normalizedDaypart === 'before_open' && hours >= 9) {
+              return '08:00' // Earlier for before open
+            } else if (normalizedDaypart === 'during_service' && hours < 11) {
+              return '12:00' // Midday for during service
+            } else if (normalizedDaypart === 'after_service' && hours < 17) {
+              return '18:00' // Evening for after service
+            }
+            
+            // Use template time if it's already appropriate
+            return templateTime
+          }
+          
+          return defaultTimes[normalizedDaypart] || '09:00'
+        }
+        
+        tasksWithTemplates.forEach(task => {
+          // If task already has a daypart set, it's already a separate instance from cron generation
+          // Use it as-is, but ensure it has the correct time for its daypart
+          if (task.daypart && typeof task.daypart === 'string') {
+            const daypartStr = normalizeDaypart(task.daypart) // Normalize daypart
+            const templateTime = task.template?.time_of_day || null
+            // Preserve existing time if set, otherwise calculate based on daypart
+            const daypartTime = getDaypartTime(daypartStr, templateTime, task.due_time)
+            
+            console.log('🕐 Setting daypart time:', {
+              taskId: task.id,
+              originalDaypart: task.daypart,
+              normalizedDaypart: daypartStr,
+              originalTime: task.due_time,
+              templateTime: templateTime,
+              calculatedTime: daypartTime,
+              preservingTime: task.due_time ? 'yes' : 'no'
+            })
+            
+            // Preserve existing time if task has one, otherwise use daypart-based time
+            expandedTasks.push({
+              ...task,
+              daypart: daypartStr, // Store normalized daypart
+              due_time: daypartTime, // Use existing time if set, otherwise calculated
+              _expandedKey: `${task.id}_${daypartStr}`
+            })
+            return // Skip expansion for this task
+          }
+          
+          // Task doesn't have daypart set - check if it needs expansion
+          // This handles legacy tasks or manually created tasks without daypart
+          let dayparts: string[] = []
+          
+          // Priority 1: Check task_data for dayparts
+          if (task.task_data && typeof task.task_data === 'object') {
+            if (task.task_data.dayparts && Array.isArray(task.task_data.dayparts)) {
+              dayparts = task.task_data.dayparts
+            } else if (task.task_data.daypart) {
+              dayparts = parseDayparts(task.task_data.daypart)
+            }
+          }
+          
+          // Priority 2: Check template's dayparts array
+          if (dayparts.length === 0 && task.template?.dayparts) {
+            dayparts = parseDayparts(task.template.dayparts)
+          }
+          
+          // If still no dayparts, use 'anytime' as default
+          if (dayparts.length === 0) {
+            dayparts = ['anytime']
+          }
+          
+          // Create one task instance for each daypart (only for tasks without daypart set)
+          dayparts.forEach((daypart, daypartIndex) => {
+            // Ensure daypart is a string for the key
+            const daypartStr = typeof daypart === 'string' ? daypart : String(daypart)
+            const templateTime = task.template?.time_of_day || null
+            const daypartTime = getDaypartTime(daypartStr, templateTime)
+            
+            expandedTasks.push({
+              ...task,
+              daypart: daypartStr, // Set the specific daypart for this instance
+              due_time: daypartTime, // Set appropriate time for this daypart
+              // Create a unique key for React rendering
+              _expandedKey: `${task.id}_${daypartStr}_${daypartIndex}`
+            })
+          })
+        })
+        
+        console.log('🔄 Before deduplication:', {
+          count: expandedTasks.length,
+          tasks: expandedTasks.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, template_id: t.template_id }))
+        })
+        
+        // Deduplicate: Use task ID as the unique key (since each task should have a unique ID)
+        // Only filter out if we have the exact same task ID appearing multiple times
+        // This prevents true duplicates while preserving separate task instances
+        const seen = new Map<string, ChecklistTaskWithTemplate>()
+        const deduplicatedTasks = expandedTasks.filter(task => {
+          // Use task ID as the key - each task should have a unique ID
+          const key = task.id
+          if (seen.has(key)) {
+            // Already seen this exact task ID - skip it (true duplicate)
+            console.log('⚠️ Duplicate task ID filtered:', { key, taskId: task.id, status: task.status })
+            return false
+          }
+          seen.set(key, task)
+          return true
+        })
+        
+        console.log('🔄 After deduplication:', {
+          count: deduplicatedTasks.length,
+          tasks: deduplicatedTasks.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, template_id: t.template_id }))
+        })
+        
+        // Sort deduplicated tasks chronologically by daypart
+        deduplicatedTasks.sort((a, b) => {
+          const orderA = getDaypartSortOrder(a.daypart)
+          const orderB = getDaypartSortOrder(b.daypart)
+          
+          // If same daypart order, sort by due_time
+          if (orderA === orderB) {
+            const timeA = a.due_time || '23:59'
+            const timeB = b.due_time || '23:59'
+            return timeA.localeCompare(timeB)
+          }
+          
+          return orderA - orderB
+        })
+        
+        // Use deduplicated tasks for the rest of the logic
+        expandedTasks = deduplicatedTasks
         
         // Load profiles for completed tasks
-        const completedTaskIds = tasksWithTemplates
+        const completedByUserIds = expandedTasks
           .filter(t => t.status === 'completed' && t.completed_by)
           .map(t => t.completed_by)
           .filter((id): id is string => id !== null)
         
         let profilesMap = new Map()
-        if (completedTaskIds.length > 0) {
+        if (completedByUserIds.length > 0) {
           const { data: profiles } = await supabase
             .from('profiles')
             .select('id, full_name, email')
-            .in('id', [...new Set(completedTaskIds)])
+            .in('id', [...new Set(completedByUserIds)])
           
           if (profiles) {
             profilesMap = new Map(profiles.map(p => [p.id, p]))
           }
         }
         
-        const tasksWithProfiles = tasksWithTemplates.map(task => ({
+        const tasksWithProfiles = expandedTasks.map(task => ({
           ...task,
           completed_by_profile: task.completed_by ? profilesMap.get(task.completed_by) : null
         }))
         
-        setTasks(tasksWithProfiles.filter(t => t.status !== 'completed'))
-        setCompletedTasks(tasksWithProfiles.filter(t => t.status === 'completed'))
+        // Fetch completion records for completed tasks
+        const completedTasksList = tasksWithProfiles.filter(t => t.status === 'completed')
+        const completedTaskIds = completedTasksList.map(t => t.id)
+        
+        let completionRecordsMap = new Map()
+        if (completedTaskIds.length > 0) {
+          const { data: completionRecords } = await supabase
+            .from('task_completion_records')
+            .select('*')
+            .in('task_id', completedTaskIds)
+          
+          if (completionRecords) {
+            completionRecordsMap = new Map(completionRecords.map(r => [r.task_id, r]))
+          }
+        }
+        
+        // Attach completion records to completed tasks
+        // CRITICAL: Use completion_record.id as the unique identifier since one task can have multiple completion records
+        // (though typically one, but we need unique keys)
+        const completedTasksWithRecords = completedTasksList
+          .map(task => ({
+            ...task,
+            completion_record: completionRecordsMap.get(task.id) || null
+          }))
+          // Filter out tasks without completion records (shouldn't happen, but safety check)
+          .filter(task => task.completion_record !== null)
+          // Ensure uniqueness by using completion_record.id
+          .filter((task, index, self) => 
+            index === self.findIndex(t => 
+              t.completion_record?.id === task.completion_record?.id
+            )
+          )
+        
+        // Filter out completed tasks from the main list (they go to completed section)
+        // Only show pending, in_progress, overdue, or failed tasks in the main list
+        const activeTasks = tasksWithProfiles.filter(t => 
+          t.status !== 'completed' && t.status !== 'skipped'
+        )
+        
+        console.log('📋 Tasks Debug:', {
+          totalTasks: tasksWithProfiles.length,
+          activeTasks: activeTasks.length,
+          completedTasks: completedTasksWithRecords.length,
+          taskStatuses: tasksWithProfiles.map(t => ({ 
+            id: t.id, 
+            status: t.status, 
+            daypart: t.daypart, 
+            due_time: t.due_time,
+            templateId: t.template_id,
+            templateName: t.template?.name
+          }))
+        })
+        
+        console.log('✅ Setting tasks:', {
+          activeTasksCount: activeTasks.length,
+          completedTasksCount: completedTasksWithRecords.length,
+          activeTasks: activeTasks.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, due_time: t.due_time }))
+        })
+        
+        setTasks(activeTasks)
+        setCompletedTasks(completedTasksWithRecords)
       } else {
+        console.log('⚠️ No data after processing')
         setTasks([])
         setCompletedTasks([])
       }
     } catch (error) {
-      console.error('Failed to fetch today\'s tasks:', error)
+      console.error('❌ Failed to fetch today\'s tasks:', error)
+      setTasks([])
+      setCompletedTasks([])
     } finally {
       setLoading(false)
     }
@@ -258,7 +580,7 @@ export default function DailyChecklistPage() {
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">Loading tasks...</h3>
         </div>
-      ) : tasks.length === 0 ? (
+      ) : tasks.length === 0 && completedTasks.length > 0 ? (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 mb-6">
@@ -273,13 +595,34 @@ export default function DailyChecklistPage() {
             </p>
           </div>
         </div>
+      ) : tasks.length === 0 && completedTasks.length === 0 ? (
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/10 mb-6">
+              <Calendar className="w-10 h-10 text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-3">No tasks for today</h2>
+            <p className="text-white/60 text-lg mb-4">
+              There are no tasks scheduled for today.
+            </p>
+            <p className="text-white/40 text-sm">
+              Check back later or create a template to add tasks.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="space-y-3">
-          {tasks.map((task) => {
+          {tasks.map((task, index) => {
+            // Use expandedKey if available, otherwise use task.id + index for uniqueness
+            // Ensure key is always a string and unique
+            const expandedKey = (task as any)._expandedKey
+            const key = expandedKey 
+              ? String(expandedKey) 
+              : `${task.id}_${index}`
             // Render TaskCard for all tasks
             return (
               <TaskCard
-                key={task.id}
+                key={key}
                 task={task}
                 onClick={() => {
                   setSelectedTask(task)
@@ -296,16 +639,20 @@ export default function DailyChecklistPage() {
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-white mb-4">Upcoming Callout Follow-ups</h2>
           <div className="space-y-3">
-            {upcomingTasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onClick={() => {
-                  setSelectedTask(task)
-                  setShowCompletion(true)
-                }}
-              />
-            ))}
+            {upcomingTasks.map((task, index) => {
+              // Use task.id + index for unique keys (callout follow-up tasks)
+              const uniqueKey = `callout-followup-${task.id}-${index}`;
+              return (
+                <TaskCard
+                  key={uniqueKey}
+                  task={task}
+                  onClick={() => {
+                    setSelectedTask(task)
+                    setShowCompletion(true)
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -315,41 +662,20 @@ export default function DailyChecklistPage() {
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-white mb-4">Completed Tasks</h2>
           <div className="space-y-3">
-            {completedTasks.map((task) => (
-              <div 
-                key={task.id} 
-                className="bg-green-500/5 border border-green-500/20 rounded-xl p-6 hover:bg-green-500/10 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">
-                        {task.template?.name || 'Untitled Task'}
-                      </h3>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 bg-green-500/10 text-green-400 border-green-500/20">
-                        <CheckCircle2 className="w-4 h-4" />
-                        COMPLETED
-                      </span>
-                    </div>
-                    
-                    <div className="text-sm text-white/60 space-y-1">
-                      {task.completed_by_profile && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/40">Completed by:</span>
-                          <span>{task.completed_by_profile.full_name || task.completed_by_profile.email || 'Unknown'}</span>
-                        </div>
-                      )}
-                      {task.completed_at && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/40">Completed at:</span>
-                          <span>{new Date(task.completed_at).toLocaleString()}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {completedTasks.map((task) => {
+              // Use completion_record.id as key if available, otherwise use task.id + completion_record.id
+              // This ensures uniqueness even if the same task has multiple completion records
+              const uniqueKey = task.completion_record?.id 
+                ? `completed-${task.completion_record.id}` 
+                : `completed-${task.id}-${task.completed_at || Date.now()}`;
+              return (
+                <CompletedTaskCard
+                  key={uniqueKey}
+                  task={task}
+                  completionRecord={task.completion_record}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -363,10 +689,12 @@ export default function DailyChecklistPage() {
             setShowCompletion(false)
             setSelectedTask(null)
           }}
-          onComplete={() => {
+          onComplete={async () => {
             setShowCompletion(false)
             setSelectedTask(null)
-            fetchTodaysTasks() // Refresh tasks to show new monitoring task
+            // Small delay to ensure database updates have propagated
+            await new Promise(resolve => setTimeout(resolve, 500))
+            await fetchTodaysTasks() // Refresh tasks to show completed task
           }}
           onMonitoringTaskCreated={() => {
             // Refresh tasks list immediately when monitoring task is created

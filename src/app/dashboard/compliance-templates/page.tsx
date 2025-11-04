@@ -2,15 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { TemperatureCheckTemplate } from "@/components/compliance/TemperatureCheckTemplate";
-import { HotHoldingTemplate } from "@/components/compliance/HotHoldingTemplate";
-import { FireAlarmTestTemplate } from "@/components/compliance/FireAlarmTestTemplate";
-import { EmergencyLightingTemplate } from "@/components/compliance/EmergencyLightingTemplate";
-import { PATTestingTemplate } from "@/components/compliance/PATTestingTemplate";
-import { ProbeCalibrationTemplate } from "@/components/compliance/ProbeCalibrationTemplate";
-import { ExtractionServiceTemplate } from "@/components/compliance/ExtractionServiceTemplate";
+import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
 import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, Utensils, ShieldAlert, Flame, Sparkles, ClipboardCheck } from "lucide-react";
 import { TaskTemplate } from "@/types/checklist-types";
+import { useAppContext } from "@/context/AppContext";
 
 const FREQUENCY_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -29,36 +24,31 @@ interface TemplateStatus {
 }
 
 export default function ComplianceTemplatesPage() {
+  const { companyId } = useAppContext();
   const [templates, setTemplates] = useState<TaskTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<TaskTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [templateStatuses, setTemplateStatuses] = useState<Map<string, TemplateStatus>>(new Map());
   const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set());
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
 
-  // Special template components metadata for search
-  const specialTemplates = [
-    { name: 'SFBB Temperature Checks', description: 'Daily temperature monitoring for refrigerators, freezers, and hot holding units', component: TemperatureCheckTemplate },
-    { name: 'Verify hot holding above 63°C', description: 'Record during service to ensure compliance', component: HotHoldingTemplate },
-    { name: 'Test fire alarms and emergency lighting', description: 'Weekly testing of fire alarms and emergency lighting systems', component: FireAlarmTestTemplate },
-    { name: 'Test emergency lighting', description: 'Weekly testing of emergency lighting systems', component: EmergencyLightingTemplate },
-    { name: 'PAT test electrical equipment', description: 'Annual Portable Appliance Testing of electrical equipment', component: PATTestingTemplate },
-    { name: 'Calibrate temperature probes', description: 'Monthly calibration verification of temperature probes', component: ProbeCalibrationTemplate },
-    { name: 'Service extraction and ventilation systems', description: 'Biannual service and verification of extraction and ventilation systems', component: ExtractionServiceTemplate },
-  ];
+  const handleUseTemplate = (templateId: string, e?: React.MouseEvent) => {
+    // Prevent triggering when clicking Edit or Expand buttons
+    if (e && (e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    setSelectedTemplateId(templateId);
+  };
 
-  // Filter special templates based on search
-  const filteredSpecialTemplates = specialTemplates.filter(template =>
-    !searchTerm || 
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleTaskCreated = () => {
+    setSelectedTemplateId(null); // Close modal
+    // Optionally refresh templates to update "In Use" status
+    fetchTemplates();
+  };
 
   useEffect(() => {
-    fetchTemplates().then(() => {
-      // After fetching, ensure global templates exist
-      ensureGlobalTemplates();
-    });
+    fetchTemplates();
   }, []);
 
   useEffect(() => {
@@ -100,60 +90,38 @@ export default function ComplianceTemplatesPage() {
       }
 
       // Fetch templates - include both global (company_id IS NULL) and company-specific
+      // For compliance templates, we want global templates (company_id IS NULL) that are library templates
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
-        .or(`company_id.is.null,company_id.eq.${profile.company_id}`)
+        .is('company_id', null) // Only global templates for compliance page
         .eq('is_template_library', true)
         .eq('is_active', true)
         .order('audit_category')
         .order('name');
 
       if (error) {
-        console.error('Database error:', error);
+        console.error('Database error fetching compliance templates:', error);
         setTemplates([]);
         return;
       }
       
-      // Filter out draft templates and non-EHO templates
-      // Only show templates that are clearly EHO compliance templates
+      console.log('Fetched compliance templates:', data?.length || 0, 'templates');
+      if (data && data.length > 0) {
+        console.log('Template names:', data.map(t => t.name));
+      }
+      
+      // Filter out draft templates only
+      // All templates with is_template_library = true are compliance templates
       const filteredData = (data || []).filter(template => {
-        // Exclude drafts
+        // Exclude drafts only
         const isDraft = template.name.toLowerCase().includes('(draft)') || 
                        template.description?.toLowerCase().includes('draft');
         
-        // Must have audit_category for proper grouping
-        const hasCategory = template.audit_category && template.audit_category.trim() !== '';
-        
-        // Exclude operational/operational templates that aren't EHO compliance templates
-        // These typically have simple operational names without compliance codes/standards
-        const name = template.name.toLowerCase();
-        const description = (template.description || '').toLowerCase();
-        
-        // Operational templates that shouldn't be here:
-        const operationalKeywords = [
-          'calibrate temperature probes',
-          'check fridge/freezer temperatures',
-          'label and date all stored foods',
-          'daily temperature monitoring for refrigeration equipment - draft'
-        ];
-        
-        const seemsOperational = operationalKeywords.some(keyword => 
-          name.includes(keyword) || description.includes(keyword)
-        );
-        
-        // Also check if it's a real EHO template - should have compliance codes or specific patterns
-        // EHO templates usually have codes like "FS-001", "HS-001", or mention compliance standards
-        const hasComplianceCode = /^(fs|hs|fire|clean|comp)-\d+/i.test(template.name);
-        const hasComplianceStandard = template.compliance_standard && 
-                                      template.compliance_standard.length > 0;
-        
-        // Only include if it's not a draft, has category, not operational, AND looks like EHO template
-        return !isDraft && 
-               hasCategory && 
-               !seemsOperational && 
-               (hasComplianceCode || hasComplianceStandard);
+        return !isDraft;
       });
+      
+      console.log('Filtered compliance templates (after draft filter):', filteredData.length);
       
       // Deduplicate templates by name - keep the most recent one if duplicates exist
       const templatesMap = new Map<string, TaskTemplate>();
@@ -263,49 +231,6 @@ export default function ComplianceTemplatesPage() {
     }
   }
 
-  // Auto-import global templates if they don't exist (run once on page load)
-  async function ensureGlobalTemplates() {
-    try {
-      // Check if global templates already exist
-      const { data: existingTemplates } = await supabase
-        .from('task_templates')
-        .select('slug')
-        .is('company_id', null)
-        .eq('is_template_library', true)
-        .eq('is_active', true);
-
-      const existingSlugs = new Set(existingTemplates?.map(t => t.slug) || []);
-      
-      // Get all templates from TypeScript definitions
-      const { getAllTemplates } = await import('@/data/compliance-templates');
-      const allTemplates = getAllTemplates();
-      
-      // Check if we need to import any
-      const needsImport = allTemplates.some(t => !existingSlugs.has(t.slug));
-      
-      if (!needsImport) {
-        return; // All templates already exist
-      }
-
-      // Import missing templates as global (company_id = NULL)
-      const response = await fetch('/api/compliance/import-templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company_id: null }) // null = global templates
-      });
-
-      const result = await response.json();
-      
-      if (result.success && result.imported > 0) {
-        console.log(`Auto-imported ${result.imported} global templates`);
-        // Refresh templates silently
-        await fetchTemplates();
-      }
-    } catch (error) {
-      // Silent fail - templates might already exist or we'll retry next time
-      console.error('Error ensuring global templates:', error);
-    }
-  }
 
   // Helper function to get icon based on category/audit_category
   const getTemplateIcon = (template: TaskTemplate) => {
@@ -340,11 +265,11 @@ export default function ComplianceTemplatesPage() {
     });
   };
 
-  // Handle edit button click
-  const handleEditTemplate = (template: TaskTemplate) => {
-    // TODO: Navigate to edit page or open edit modal
-    console.log('Edit template:', template.id);
-    // Example: router.push(`/dashboard/tasks/compliance-templates/edit/${template.id}`);
+  // Handle edit button click - For compliance templates, editing opens the template in TaskFromTemplateModal
+  const handleEditTemplate = async (template: TaskTemplate, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    // For compliance templates, "edit" means create a task from it
+    setSelectedTemplateId(template.id);
   };
 
   // Group templates by audit_category
@@ -378,16 +303,6 @@ export default function ComplianceTemplatesPage() {
         </div>
       </div>
 
-      {/* Special Template Components */}
-      {filteredSpecialTemplates.length > 0 && (
-        <div className="space-y-8 mb-8">
-          {filteredSpecialTemplates.map((template) => {
-            const Component = template.component;
-            return <Component key={template.name} />;
-          })}
-        </div>
-      )}
-
       {/* Templates List */}
       {loading ? (
         <div className="text-white">Loading compliance templates...</div>
@@ -406,7 +321,8 @@ export default function ComplianceTemplatesPage() {
                   return (
                     <div
                       key={template.id}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-pink-500/30 transition-colors"
+                      onClick={(e) => handleUseTemplate(template.id, e)}
+                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-pink-500/30 transition-colors cursor-pointer"
                     >
                       {/* Collapsed Card View */}
                       <div className="p-4">
@@ -444,14 +360,17 @@ export default function ComplianceTemplatesPage() {
                               {/* Actions */}
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <button
-                                  onClick={() => handleEditTemplate(template)}
+                                  onClick={(e) => handleEditTemplate(template, e)}
                                   className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors"
-                                  title="Edit template"
+                                  title="Use template to create task"
                                 >
                                   <Edit2 className="w-4 h-4 text-white/60 hover:text-white" />
                                 </button>
                                 <button
-                                  onClick={() => toggleExpand(template.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleExpand(template.id);
+                                  }}
                                   className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors"
                                   title={isExpanded ? "Collapse" : "Expand"}
                                 >
@@ -541,7 +460,7 @@ export default function ComplianceTemplatesPage() {
       ) : null}
 
       {/* No templates found message - only show if searching and no results */}
-      {!loading && searchTerm && filteredSpecialTemplates.length === 0 && filteredTemplates.length === 0 && (
+      {!loading && searchTerm && filteredTemplates.length === 0 && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
           <p className="text-white/60">
             No templates found matching your search "{searchTerm}".
@@ -549,30 +468,24 @@ export default function ComplianceTemplatesPage() {
         </div>
       )}
 
-      {/* Template count - show total including special templates */}
-      {!loading && (
+      {/* Template count */}
+      {!loading && filteredTemplates.length > 0 && (
         <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
           <p className="text-sm text-blue-200">
-            <strong>Total Templates:</strong> {filteredSpecialTemplates.length + filteredTemplates.length} available
-            {filteredSpecialTemplates.length > 0 && filteredTemplates.length > 0 && (
-              <span className="text-blue-300/70">
-                {' '}({filteredSpecialTemplates.length} special templates above, {filteredTemplates.length} EHO compliance templates below)
-              </span>
-            )}
-            {filteredSpecialTemplates.length > 0 && filteredTemplates.length === 0 && (
-              <span className="text-blue-300/70">
-                {' '}({filteredSpecialTemplates.length} special templates)
-              </span>
-            )}
-            {filteredSpecialTemplates.length === 0 && filteredTemplates.length > 0 && (
-              <span className="text-blue-300/70">
-                {' '}({filteredTemplates.length} EHO compliance templates)
-              </span>
-            )}
+            <strong>Total Templates:</strong> {filteredTemplates.length} compliance templates available
           </p>
         </div>
       )}
 
+      {/* TaskFromTemplateModal - Opens when a template is clicked */}
+      {selectedTemplateId && (
+        <TaskFromTemplateModal
+          isOpen={!!selectedTemplateId}
+          onClose={() => setSelectedTemplateId(null)}
+          templateId={selectedTemplateId}
+          onSave={handleTaskCreated}
+        />
+      )}
     </div>
   );
 }

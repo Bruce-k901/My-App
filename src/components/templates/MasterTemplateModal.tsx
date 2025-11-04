@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { X, Info } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import { toast } from 'sonner';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (templateConfig: any) => void;
+  editingTemplate?: any; // Template to edit (null for new template)
+  mode?: 'template'; // 'template' saves as template (default)
 }
 
 const DAYPARTS = [
@@ -61,15 +63,13 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
   );
 };
 
-export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateModalProps) {
-  const router = useRouter();
+export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, mode = 'template' }: MasterTemplateModalProps) {
   const { companyId } = useAppContext();
   const [isSaving, setIsSaving] = useState(false);
   
   const [templateConfig, setTemplateConfig] = useState({
     templateName: '',
-    taskName: '',
-    taskDescription: '',
+    taskDescription: '', // Hidden in builder but still saved to template
     frequency: 'Daily',
     dayPart: 'Morning',
     purpose: '',
@@ -103,11 +103,128 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
     sopUpload: false,
   });
 
+  // Load template data when editing
+  useEffect(() => {
+    if (editingTemplate && isOpen) {
+      // Reverse map frequency from database to UI
+      const frequencyReverseMap: Record<string, string> = {
+        'daily': 'Daily',
+        'weekly': 'Weekly',
+        'monthly': 'Monthly',
+        'triggered': 'On Demand',
+        'once': 'Once'
+      };
+
+      // Parse instructions (purpose, importance, method, specialRequirements)
+      const instructions = editingTemplate.instructions || '';
+      const purposeMatch = instructions.match(/Purpose:\n([\s\S]*?)(?:\n\n|$)/);
+      const importanceMatch = instructions.match(/Importance:\n([\s\S]*?)(?:\n\n|$)/);
+      const methodMatch = instructions.match(/Method:\n([\s\S]*?)(?:\n\n|$)/);
+      const specialMatch = instructions.match(/Special Requirements:\n([\s\S]*?)(?:\n\n|$)/);
+
+      setTemplateConfig({
+        templateName: editingTemplate.name || '',
+        taskDescription: editingTemplate.description || '',
+        frequency: frequencyReverseMap[editingTemplate.frequency] || 'Daily',
+        dayPart: 'Morning',
+        purpose: purposeMatch ? purposeMatch[1].trim() : '',
+        importance: importanceMatch ? importanceMatch[1].trim() : '',
+        method: methodMatch ? methodMatch[1].trim() : '',
+        specialRequirements: specialMatch ? specialMatch[1].trim() : '',
+      });
+
+      // Set dayparts
+      if (editingTemplate.dayparts && Array.isArray(editingTemplate.dayparts)) {
+        setSelectedDayparts(editingTemplate.dayparts);
+      }
+
+      // Set daypart times from recurrence_pattern
+      if (editingTemplate.recurrence_pattern?.daypart_times) {
+        setDaypartTimes(editingTemplate.recurrence_pattern.daypart_times);
+      }
+
+      // Set frequency-specific data
+      if (editingTemplate.frequency === 'weekly' && editingTemplate.recurrence_pattern?.weeklyDays) {
+        setWeeklyDays(editingTemplate.recurrence_pattern.weeklyDays);
+      }
+      if (editingTemplate.frequency === 'monthly') {
+        if (editingTemplate.recurrence_pattern?.monthlyLastWeekday) {
+          setMonthlyLastWeekday(editingTemplate.recurrence_pattern.monthlyLastWeekday);
+        } else if (editingTemplate.recurrence_pattern?.monthlyDay !== undefined) {
+          setMonthlyDay(editingTemplate.recurrence_pattern.monthlyDay);
+        }
+      }
+      if (editingTemplate.recurrence_pattern?.annualDate) {
+        setAnnualDate(editingTemplate.recurrence_pattern.annualDate);
+      }
+
+      // Set features from evidence_types and other flags
+      const evidenceTypes = editingTemplate.evidence_types || [];
+      setFeatures({
+        monitorCallout: false, // Not stored directly
+        checklist: evidenceTypes.includes('text_note') && !evidenceTypes.includes('yes_no_checklist'),
+        yesNoChecklist: evidenceTypes.includes('yes_no_checklist'),
+        passFail: evidenceTypes.includes('pass_fail'),
+        libraryDropdown: false, // Not stored directly
+        raUpload: editingTemplate.requires_risk_assessment || false,
+        photoEvidence: evidenceTypes.includes('photo'),
+        documentUpload: false, // Not stored directly
+        tempLogs: evidenceTypes.includes('temperature'),
+        assetDropdown: false, // Not stored directly
+        sopUpload: editingTemplate.requires_sop || false,
+      });
+    } else if (!editingTemplate && isOpen) {
+      // Reset form for new template
+      setTemplateConfig({
+        templateName: '',
+        taskDescription: '',
+        frequency: 'Daily',
+        dayPart: 'Morning',
+        purpose: '',
+        importance: '',
+        method: '',
+        specialRequirements: '',
+      });
+      setSelectedDayparts(['before_open']);
+      setDaypartTimes({ before_open: '06:00' });
+      setWeeklyDays([]);
+      setMonthlyDay(null);
+      setMonthlyLastWeekday(null);
+      setAnnualDate('');
+      setFeatures({
+        monitorCallout: false,
+        checklist: false,
+        yesNoChecklist: false,
+        passFail: false,
+        libraryDropdown: false,
+        raUpload: false,
+        photoEvidence: false,
+        documentUpload: false,
+        tempLogs: false,
+        assetDropdown: false,
+        sopUpload: false,
+      });
+    }
+  }, [editingTemplate, isOpen]);
+
   const toggleFeature = (featureName: keyof typeof features) => {
-    setFeatures(prev => ({
-      ...prev,
-      [featureName]: !prev[featureName]
-    }));
+    setFeatures(prev => {
+      const newValue = !prev[featureName];
+      const updated = {
+        ...prev,
+        [featureName]: newValue
+      };
+      
+      // Auto-select monitor/callout when assetDropdown or passFail is selected
+      if (featureName === 'assetDropdown' && newValue) {
+        updated.monitorCallout = true;
+      }
+      if (featureName === 'passFail' && newValue) {
+        updated.monitorCallout = true;
+      }
+      
+      return updated;
+    });
   };
 
   const toggleDaypart = (daypart: string) => {
@@ -243,41 +360,42 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
 
   const handleSave = async () => {
     if (!companyId) {
-      alert('Company ID not found. Please refresh and try again.');
+      toast.error('Company ID not found. Please refresh and try again.');
       return;
     }
 
     // Validate scheduling based on frequency
     if (templateConfig.frequency === 'Daily' && selectedDayparts.length === 0) {
-      alert('Please select at least one daypart for Daily frequency.');
+      toast.error('Please select at least one daypart for Daily frequency.');
       return;
     }
     if (templateConfig.frequency === 'Weekly' && weeklyDays.length === 0) {
-      alert("Please select at least one day of the week for weekly tasks");
+      toast.error("Please select at least one day of the week for weekly tasks");
       return;
     }
     if (templateConfig.frequency === 'Monthly' && monthlyDay === null && monthlyLastWeekday === null) {
-      alert("Please select either a specific day or last weekday for monthly tasks");
+      toast.error("Please select either a specific day or last weekday for monthly tasks");
       return;
     }
     if ((templateConfig.frequency === 'Quarterly' || templateConfig.frequency === 'Bi-Annually' || templateConfig.frequency === 'Annually') && !annualDate) {
-      alert("Please select a date for quarterly/biannual/annual tasks");
+      toast.error("Please select a date for quarterly/biannual/annual tasks");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      // Map frequency to lowercase
+      // Map frequency to lowercase - must match database CHECK constraint
+      // Valid values: 'daily', 'weekly', 'monthly', 'triggered', 'once'
       const frequencyMap: Record<string, string> = {
         'Daily': 'daily',
         'Weekly': 'weekly',
         'Monthly': 'monthly',
-        'Quarterly': 'quarterly',
-        'Bi-Annually': 'biannual',
-        'Annually': 'annually',
+        'Quarterly': 'monthly', // Map to monthly since quarterly not in schema
+        'Bi-Annually': 'monthly', // Map to monthly since biannual not in schema
+        'Annually': 'monthly', // Map to monthly since annually not in schema
         'On Demand': 'triggered',
-        'Custom': 'custom',
+        'Custom': 'triggered', // Map to triggered for custom schedules
       };
 
       // Build instructions from purpose, importance, method, specialRequirements
@@ -288,10 +406,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
       if (features.tempLogs) evidenceTypes.push('temperature');
       if (features.photoEvidence) evidenceTypes.push('photo');
       if (features.passFail) evidenceTypes.push('pass_fail');
+      if (features.yesNoChecklist) evidenceTypes.push('yes_no_checklist');
       if (features.checklist) evidenceTypes.push('text_note');
 
-      // Prepare dayparts array - use selected dayparts
-      const dayparts = selectedDayparts.length > 0 ? selectedDayparts : [];
+      // Prepare dayparts array - use selected dayparts, ensure it's always an array
+      const dayparts = Array.isArray(selectedDayparts) && selectedDayparts.length > 0 
+        ? selectedDayparts 
+        : [];
 
       // Build recurrence_pattern based on frequency
       const recurrencePattern: any = {
@@ -318,11 +439,74 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
         ? daypartTimes[selectedDayparts[0]] || null
         : null;
 
-      // Create slug from template name
-      const slug = templateConfig.templateName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '');
+      // Handle slug - keep existing when editing, generate new when creating
+      let slug: string;
+      
+      if (editingTemplate) {
+        // Keep existing slug when editing
+        slug = editingTemplate.slug;
+      } else {
+        // Create base slug from template name
+        const baseSlug = templateConfig.templateName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '') || 'template'; // Fallback if name is empty
+
+        // Function to check if slug exists for this company
+        const checkSlugExists = async (slugToCheck: string): Promise<boolean> => {
+          if (!companyId) {
+            console.warn('No companyId available for slug check');
+            return false;
+          }
+
+          try {
+            const { data, error } = await supabase
+              .from('task_templates')
+              .select('id')
+              .eq('company_id', companyId)
+              .eq('slug', slugToCheck)
+              .maybeSingle();
+
+            if (error) {
+              console.warn('Error checking slug:', error);
+              // If we can't check, assume it exists to be safe
+              return true;
+            }
+
+            // maybeSingle returns null if no record found, or the record if found
+            return data !== null;
+          } catch (err) {
+            console.error('Exception checking slug:', err);
+            return true; // Be safe, assume exists
+          }
+        };
+
+        // Generate unique slug
+        slug = baseSlug || 'template';
+        let slugCounter = 1;
+        const maxSlugChecks = 100;
+
+        // Ensure slug is not empty
+        if (!slug || slug.trim().length === 0) {
+          slug = `template_${Date.now()}`;
+        } else {
+          // Check initial slug
+          let slugExists = await checkSlugExists(slug);
+
+          while (slugExists && slugCounter < maxSlugChecks) {
+            slug = `${baseSlug}_${slugCounter}`;
+            slugExists = await checkSlugExists(slug);
+            slugCounter++;
+          }
+
+          // If we hit the limit, append timestamp to ensure uniqueness
+          if (slugCounter >= maxSlugChecks) {
+            slug = `${baseSlug}_${Date.now()}`;
+          }
+        }
+
+        console.log('Generated unique slug:', slug, 'for company:', companyId);
+      }
 
       // Prepare template data
       const templateData: any = {
@@ -338,6 +522,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
         requires_sop: features.sopUpload,
         requires_risk_assessment: features.raUpload,
         is_active: true,
+        is_template_library: false, // User-created templates, not library templates
       };
 
       // Add optional fields
@@ -348,32 +533,64 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
         templateData.time_of_day = timeOfDay;
       }
 
-      // Save to database
-      const { data: savedTemplate, error } = await supabase
-        .from('task_templates')
-        .insert(templateData)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error saving template:', error);
-        alert(`Failed to save template: ${error.message}`);
+      // Validate required fields
+      if (!templateConfig.templateName || !templateConfig.templateName.trim()) {
+        toast.error('Template name is required');
         setIsSaving(false);
         return;
       }
+
+      // Save to database (create or update)
+      console.log('Saving template data:', templateData);
+      
+      let savedTemplate;
+      let error;
+
+      if (editingTemplate) {
+        // Update existing template
+        const { data, error: updateError } = await supabase
+          .from('task_templates')
+          .update(templateData)
+          .eq('id', editingTemplate.id)
+          .select()
+          .single();
+        
+        savedTemplate = data;
+        error = updateError;
+      } else {
+        // Create new template
+        const { data, error: insertError } = await supabase
+          .from('task_templates')
+          .insert(templateData)
+          .select()
+          .single();
+        
+        savedTemplate = data;
+        error = insertError;
+      }
+
+      if (error) {
+        console.error('Error saving template:', error);
+        const errorMessage = error.message || error.details || JSON.stringify(error);
+        toast.error(`Failed to save template: ${errorMessage}`);
+        setIsSaving(false);
+        return;
+      }
+
+      toast.success(editingTemplate ? 'Template updated successfully!' : 'Template created successfully!');
 
       // Call onSave callback if provided
       if (onSave) {
         onSave({ template: templateConfig, features, savedTemplate });
       }
 
-      // Close modal and navigate to templates page
+      // Reset state and close modal
+      setIsSaving(false);
       onClose();
-      router.push('/dashboard/tasks/templates');
       
     } catch (error) {
       console.error('Error in handleSave:', error);
-      alert(`Failed to save template: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Failed to save template: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setIsSaving(false);
     }
   };
@@ -401,8 +618,15 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-pink-500 mb-2">Template Builder</h1>
-              <p className="text-gray-400">Create comprehensive compliance task templates with all required elements</p>
+              <h1 className="text-2xl font-bold text-pink-500 mb-2">
+                {editingTemplate ? 'Edit Template Configuration' : 'Template Builder'}
+              </h1>
+              <p className="text-gray-400">
+                {editingTemplate 
+                  ? 'Modify template features and configuration. This will affect all future tasks created from this template.'
+                  : 'Create comprehensive compliance task templates with all required elements'
+                }
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -431,26 +655,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
               />
             </div>
 
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-300 mb-1">Task Name - Header</label>
-              <input
-                type="text"
-                value={templateConfig.taskName}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, taskName: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm"
-                placeholder="Name of the task"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-300 mb-1">Description / Notes - Header</label>
-              <textarea
-                value={templateConfig.taskDescription}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, taskDescription: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm min-h-[80px]"
-                placeholder="Detailed description of the task"
-              />
-            </div>
+            {/* Task Name and Description fields removed from builder - they will be shown in curated template view */}
           </div>
 
           {/* Frequency & Scheduling */}
@@ -743,15 +948,12 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
                       <label className="block text-xs text-slate-400 mb-1 capitalize">
                         {dayPart.replace('_', ' ')}
                       </label>
-                      <select
-                        value={daypartTimes[dayPart] || DAYPARTS.find(d => d.value === dayPart)?.times[0] || '09:00'}
+                      <input
+                        type="time"
+                        value={daypartTimes[dayPart] || ''}
                         onChange={(e) => setDaypartTime(dayPart, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
-                      >
-                        {DAYPARTS.find(d => d.value === dayPart)?.times.map((time) => (
-                          <option key={time} value={time}>{time}</option>
-                        ))}
-                      </select>
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent [color-scheme:dark]"
+                      />
                     </div>
                   ))}
                 </div>
@@ -782,47 +984,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
             </div>
           </div>
 
-          {/* Task Instructions */}
-          <div className="mb-6 pb-6 border-b border-white/10">
-            <h2 className="text-lg font-semibold text-white mb-4">Task Instructions</h2>
-            <p className="text-sm text-gray-400 mb-4">Define the purpose, importance, and method for this task</p>
-            
-            <div className="border border-white/10 p-4 mb-4">
-              <h4 className="text-pink-400 font-semibold mb-2">What (Purpose)</h4>
-              <textarea
-                value={templateConfig.purpose}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, purpose: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm min-h-[80px]"
-              />
-            </div>
-
-            <div className="border border-white/10 p-4 mb-4">
-              <h4 className="text-pink-400 font-semibold mb-2">Why (Importance)</h4>
-              <textarea
-                value={templateConfig.importance}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, importance: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm min-h-[80px]"
-              />
-            </div>
-
-            <div className="border border-white/10 p-4 mb-4">
-              <h4 className="text-pink-400 font-semibold mb-2">How (Method / Steps)</h4>
-              <textarea
-                value={templateConfig.method}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, method: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm min-h-[80px]"
-              />
-            </div>
-
-            <div className="border border-white/10 p-4">
-              <h4 className="text-orange-400 font-semibold mb-2">Special Requirements</h4>
-              <textarea
-                value={templateConfig.specialRequirements}
-                onChange={(e) => setTemplateConfig(prev => ({ ...prev, specialRequirements: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm min-h-[80px]"
-              />
-            </div>
-          </div>
+          {/* Task Instructions section hidden from builder - will be shown in curated template view */}
+          {/* Instructions are still saved to template, just not displayed in builder */}
         </div>
 
         {/* Footer */}
@@ -838,7 +1001,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave }: MasterTemplateM
             disabled={isSaving}
             className="px-5 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSaving ? 'Creating...' : 'Create Template'}
+            {isSaving 
+              ? (editingTemplate ? 'Updating...' : 'Creating...')
+              : (editingTemplate ? 'Update Template' : 'Create Template')
+            }
           </button>
         </div>
       </div>

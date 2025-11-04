@@ -563,13 +563,11 @@ export function getTemplateBySlug(slug: string): ComplianceTemplate | null {
  * so they should not be auto-imported into the database.
  */
 export function getAllTemplates(): ComplianceTemplate[] {
-  // Return empty array to prevent auto-importing duplicates
-  // The original templates are rendered as React components
-  return []
-  
-  // Uncomment below if you want to include other templates that don't have React components:
-  // return [
-  //   // Add other templates here that don't have React components
-  // ]
+  // Return all templates that should be imported into the database
+  // These templates will appear in the compliance templates page
+  return [
+    SFBB_TEMPERATURE_CHECKS_TEMPLATE,
+    // Add other templates here as needed
+  ]
 }
 

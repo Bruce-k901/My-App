@@ -151,7 +151,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         <div className="flex items-center gap-2">
           {getStatusIcon()}
           <span className="text-sm font-medium text-white">
-            {task.template?.name || 'Unknown Task'}
+            {task.custom_name || task.template?.name || 'Unknown Task'}
             {isMonitoringTask && (
               <span className="ml-2 text-xs text-orange-400 font-normal">(Monitoring)</span>
             )}
@@ -164,7 +164,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
 
       <div className="space-y-2">
         <p className="text-sm text-neutral-400 line-clamp-2">
-          {task.template?.description || 'No description available'}
+          {task.custom_instructions || task.template?.description || 'No description available'}
         </p>
 
         <div className="flex items-center justify-between text-xs text-neutral-500">

@@ -15,3 +15,6 @@ GRANT DELETE ON public.checklist_tasks TO authenticated;
 COMMENT ON POLICY "Users can delete tasks for their company" ON public.checklist_tasks IS 
 'Allows authenticated users to delete task instances (checklist_tasks) that belong to their company. This enables cleanup of duplicate or unwanted task instances.';
 
+
+
+

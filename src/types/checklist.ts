@@ -71,6 +71,9 @@ export type ChecklistTask = {
   contractor_type: string | null
   contractor_notified_at: string | null
   callout_id: string | null // Reference to callout for follow-up tasks
+  custom_name: string | null // Custom name if different from template
+  custom_instructions: string | null // Custom instructions if different from template
+  task_data: Record<string, any> | null // Instance-specific task data (checklist items, temperatures, etc.)
   generated_at: string
   expires_at: string | null
   created_at: string

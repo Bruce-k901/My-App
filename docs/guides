@@ -1,0 +1,428 @@
+# Codebase Management Guide
+
+**Project Status**: Large-scale Next.js application (~388 files, 458+ components)
+**Focus**: Efficient organization and management strategies
+
+---
+
+## 📊 Current Project Metrics
+
+- **Source Files**: 388 files in `src/`
+- **Components**: 458+ exported components/functions
+- **Cross-References**: 
+  - 79 files using `task_templates`
+  - 160 files importing `@/lib/supabase`
+  - 39 files using `evidence_types`
+- **Root Directory**: 100+ markdown/docs, SQL scripts, test files
+
+---
+
+## 🎯 Immediate Actions (Do First)
+
+### 1. Organize Root Directory
+
+**Problem**: Too many files in root causing clutter
+
+**Solution**: Create organized structure
+
+```
+my-app/
+├── docs/                    # All documentation
+│   ├── guides/              # Setup guides
+│   ├── architecture/        # Architecture docs
+│   ├── completion/          # *_COMPLETE.md files
+│   └── migration/           # Migration docs
+├── scripts/                 # Utility scripts
+│   ├── database/            # SQL scripts
+│   ├── auth/                # Auth scripts
+│   └── setup/               # Setup scripts
+├── sql/                     # Standalone SQL files
+│   ├── migrations/          # One-off migrations
+│   └── queries/             # Query scripts
+└── .cursor/                 # Cursor/MCP config (already done)
+```
+
+**Action Items**:
+- [ ] Create `docs/` folder structure
+- [ ] Move all `*_COMPLETE.md` files to `docs/completion/`
+- [ ] Move all `*_GUIDE.md` files to `docs/guides/`
+- [ ] Move SQL files to `sql/` or `supabase/migrations/`
+- [ ] Move test/debug scripts to `scripts/`
+
+### 2. Implement Feature-Based Organization
+
+**Current Structure** (mixed):
+```
+src/
+├── app/
+│   └── dashboard/
+│       ├── tasks/
+│       ├── checklists/
+│       ├── libraries/
+│       └── ...
+├── components/
+│   ├── templates/
+│   ├── checklists/
+│   ├── compliance/
+│   └── ...
+```
+
+**Recommended Structure** (domain-driven):
+```
+src/
+├── features/                # Feature modules
+│   ├── tasks/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   ├── utils/
+│   │   └── api/
+│   ├── compliance/
+│   │   ├── components/
+│   │   ├── templates/
+│   │   └── ...
+│   ├── libraries/
+│   └── dashboards/
+├── app/                     # Next.js App Router pages
+├── components/
+│   ├── ui/                  # Shared UI components (shadcn)
+│   └── layout/              # Layout components
+├── lib/                     # Shared utilities
+└── types/                   # Shared types
+```
+
+**Benefits**:
+- Easier to find related code
+- Clearer boundaries
+- Better for team collaboration
+- Easier to extract to microservices later
+
+---
+
+## 🛠️ Tools & Strategies for Large Codebases
+
+### 1. MCP Server Setup (Already Started ✅)
+
+**Current Setup**:
+- ✅ Filesystem MCP enabled
+
+**Recommended Additions**:
+
+#### A. PostgreSQL MCP (High Priority)
+**Why**: Direct database introspection without leaving Cursor
+**Use Cases**:
+- "Show me all tables related to tasks"
+- "What's the schema of task_templates?"
+- "Query the last 10 task completions"
+
+**Setup**: Add to `.cursor/mcp.json` (see `MCP_SERVER_SETUP.md`)
+
+#### B. GitHub MCP (Optional)
+**Why**: Better code navigation, PR reviews, issue tracking
+**Use Cases**:
+- "Show me recent PRs"
+- "What issues are open?"
+- "Find code in other branches"
+
+### 2. Code Navigation Tools
+
+#### A. VS Code / Cursor Extensions
+- **TypeScript Hero**: Organize imports
+- **Path Intellisense**: Better path autocomplete
+- **Import Cost**: See bundle impact
+- **Todo Tree**: Find TODO comments
+- **Code Metrics**: Complexity analysis
+
+#### B. Custom Scripts for Analysis
+
+Create `scripts/analyze-codebase.ts`:
+```typescript
+// Analyze component usage, find dead code, etc.
+```
+
+### 3. Documentation Strategy
+
+**Problem**: Too many `*_COMPLETE.md` files losing relevance
+
+**Solution**: Living Documentation
+
+```
+docs/
+├── README.md                    # Start here
+├── architecture/
+│   ├── task-system.md          # Task generation flow
+│   ├── database-schema.md      # Database overview
+│   └── component-architecture.md
+├── guides/
+│   ├── setup.md                # Initial setup
+│   ├── deployment.md           # Deployment guide
+│   └── contributing.md         # How to contribute
+└── changelog/
+    └── 2025-02.md              # Monthly changelog
+```
+
+**Action**: Archive completion docs, keep only active guides
+
+---
+
+## 📁 Recommended File Organization
+
+### Current Issues
+
+1. **Root Directory Clutter**: 100+ files
+2. **Component Scattering**: Related components in different folders
+3. **Type Definitions**: Mixed locations
+4. **Utils**: Spread across multiple locations
+
+### Proposed Structure
+
+```
+my-app/
+├── .cursor/
+│   └── mcp.json               # ✅ Already set up
+├── docs/                      # All documentation
+│   ├── architecture/
+│   ├── guides/
+│   └── changelog/
+├── scripts/                   # Utility scripts
+│   ├── database/
+│   ├── auth/
+│   └── setup/
+├── sql/                       # SQL files
+│   ├── migrations/            # One-off migrations
+│   └── queries/               # Query scripts
+├── src/
+│   ├── features/              # Feature modules (NEW)
+│   │   ├── tasks/
+│   │   ├── compliance/
+│   │   ├── libraries/
+│   │   └── dashboards/
+│   ├── app/                   # Next.js pages (keep as-is)
+│   ├── components/
+│   │   ├── ui/                # Shared UI (shadcn)
+│   │   └── layout/            # Layout components
+│   ├── lib/                   # Shared utilities
+│   └── types/                 # Shared types
+├── supabase/
+│   ├── migrations/            # Database migrations
+│   └── functions/             # Edge functions
+└── [config files]             # package.json, tsconfig, etc.
+```
+
+---
+
+## 🔍 Code Discovery & Navigation
+
+### Using MCP for Better Navigation
+
+**With Filesystem MCP** (already enabled):
+- "Show me all files in the tasks feature"
+- "Find all components using task_templates"
+- "List all API routes"
+
+**With PostgreSQL MCP** (recommended):
+- "Show me the task_templates schema"
+- "What are the relationships between tasks and templates?"
+- "Query recent task completions"
+
+### Code Search Strategies
+
+1. **Use Semantic Search**: Cursor's built-in search
+2. **Use Grep**: `grep -r "task_templates" src/`
+3. **Use TypeScript**: `tsc --noEmit` to find usage
+4. **Use MCP**: "Find all files importing TaskCard"
+
+---
+
+## 🧹 Maintenance Tasks
+
+### Monthly Cleanup Checklist
+
+- [ ] Review and archive old `*_COMPLETE.md` files
+- [ ] Remove unused components (dead code)
+- [ ] Update `CODEBASE_COMPLEXITY_ANALYSIS.md`
+- [ ] Review and consolidate duplicate utilities
+- [ ] Check for unused dependencies in `package.json`
+- [ ] Update architecture docs if structure changed
+
+### Quarterly Refactoring
+
+- [ ] Extract commonly used patterns into hooks
+- [ ] Consolidate similar components
+- [ ] Review and optimize database queries
+- [ ] Update TypeScript types for consistency
+- [ ] Review bundle size and optimize imports
+
+---
+
+## 📚 Best Practices for Large Codebases
+
+### 1. Component Organization
+
+**Do**:
+```typescript
+// features/tasks/components/TaskCard.tsx
+// Clear, feature-based location
+```
+
+**Don't**:
+```typescript
+// components/TaskCard.tsx
+// Generic, unclear context
+```
+
+### 2. Import Organization
+
+**Use Barrel Exports**:
+```typescript
+// features/tasks/index.ts
+export { TaskCard } from './components/TaskCard';
+export { useTaskData } from './hooks/useTaskData';
+export type { Task } from './types';
+```
+
+**Then Import**:
+```typescript
+import { TaskCard, useTaskData, Task } from '@/features/tasks';
+```
+
+### 3. Type Definitions
+
+**Feature Types**: Keep with feature
+```typescript
+// features/tasks/types.ts
+export interface Task { ... }
+```
+
+**Shared Types**: Keep in `src/types/`
+```typescript
+// src/types/supabase.ts
+export type Database = { ... }
+```
+
+### 4. Documentation
+
+**Living Docs**: Update as you code
+```typescript
+/**
+ * TaskCard Component
+ * 
+ * Displays a single task with status, timing, and action buttons.
+ * 
+ * @example
+ * <TaskCard task={task} onComplete={handleComplete} />
+ * 
+ * @see {@link TaskCompletionModal} for completion flow
+ */
+export function TaskCard({ task }: Props) { ... }
+```
+
+**Architecture Docs**: Update monthly
+- Document major changes
+- Update flow diagrams
+- Keep complexity analysis current
+
+---
+
+## 🚀 Quick Wins (Start Today)
+
+### 1. Create Documentation Structure (30 min)
+```bash
+mkdir -p docs/{architecture,guides,changelog}
+mkdir -p scripts/{database,auth,setup}
+mkdir -p sql/{migrations,queries}
+```
+
+### 2. Move Completion Docs (15 min)
+```bash
+# Move all *_COMPLETE.md files
+mv *_COMPLETE.md docs/completion/
+```
+
+### 3. Add PostgreSQL MCP (10 min)
+- Get Supabase connection string
+- Add to `.cursor/mcp.json`
+- Restart Cursor
+
+### 4. Create Feature Index Files (1 hour)
+- Create `src/features/tasks/index.ts`
+- Export all public APIs
+- Update imports
+
+### 5. Add Code Metrics Script (30 min)
+- Create `scripts/analyze-codebase.ts`
+- Track component counts, file sizes
+- Run weekly
+
+---
+
+## 📖 Recommended Reading
+
+### For Large Codebases
+- [Next.js App Router Best Practices](https://nextjs.org/docs/app/building-your-application/routing)
+- [Feature-Sliced Design](https://feature-sliced.design/)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+
+### Tools
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [MCP Documentation](https://modelcontextprotocol.io/)
+- [Cursor Docs](https://docs.cursor.com/)
+
+---
+
+## 🎯 Success Metrics
+
+Track these to measure improvement:
+
+1. **Findability**: Time to find a component (target: <2 min)
+2. **Documentation**: % of features with docs (target: >80%)
+3. **Code Duplication**: Lines of duplicate code (target: <5%)
+4. **Bundle Size**: Track bundle size growth
+5. **Build Time**: Monitor build performance
+
+---
+
+## 🔄 Next Steps
+
+1. **This Week**:
+   - [ ] Organize root directory
+   - [ ] Create docs structure
+   - [ ] Add PostgreSQL MCP
+
+2. **This Month**:
+   - [ ] Start feature-based organization
+   - [ ] Create barrel exports
+   - [ ] Update architecture docs
+
+3. **Ongoing**:
+   - [ ] Monthly cleanup
+   - [ ] Quarterly refactoring
+   - [ ] Track metrics
+
+---
+
+## 💡 Tips for Working Efficiently
+
+### Daily Workflow
+1. Use MCP filesystem to navigate quickly
+2. Use semantic search for code discovery
+3. Keep related files in feature folders
+4. Update docs as you code (not after)
+
+### Before Adding New Code
+1. Check if component/utility already exists
+2. Place in appropriate feature folder
+3. Export from feature's index file
+4. Update relevant docs
+
+### When Confused
+1. Check `CODEBASE_COMPLEXITY_ANALYSIS.md`
+2. Use MCP to explore related files
+3. Check architecture docs
+4. Ask AI assistant to trace dependencies
+
+---
+
+**Remember**: The goal isn't perfect organization immediately. It's incremental improvement that makes the codebase easier to work with over time.
+
+

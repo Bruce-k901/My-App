@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# MCP server credentials (never commit)
+.cursor/.env
+.cursor/mcp-*.json
+
 # vercel
 .vercel
 

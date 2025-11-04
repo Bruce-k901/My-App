@@ -1,0 +1,312 @@
+cat > /home/claude/CLAUDE.md << 'EOF'
+# Project Context & Guidelines for AI Assistants
+
+## Project Overview
+This is a Next.js 15 web application for managing health & safety, food safety, and operational compliance for hospitality venues. Built with TypeScript, Supabase, and modern React patterns.
+
+## Tech Stack
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Database**: Supabase (PostgreSQL)
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **State Management**: React hooks, Zustand
+- **Auth**: Supabase Auth
+
+## Project Structure
+```
+/app                    # Next.js App Router pages
+/components            # React components
+  /ui                 # shadcn/ui components
+  /dashboard          # Dashboard-specific components
+/lib                   # Utilities and helpers
+  /supabase          # Supabase client & utilities
+/public               # Static assets
+/types                # TypeScript type definitions
+```
+
+## Key Architecture Decisions
+
+### 1. Next.js App Router
+- Use Server Components by default
+- Mark components with `'use client'` only when needed (hooks, event handlers, browser APIs)
+- Leverage Server Actions for data mutations when appropriate
+
+### 2. Supabase Patterns
+- Use `createClient()` for client-side operations
+- Use `createServerClient()` for server-side operations
+- Always handle errors gracefully
+- Use TypeScript types generated from database schema
+
+### 3. Component Patterns
+- Prefer composition over prop drilling
+- Use shadcn/ui components as building blocks
+- Keep components focused and single-responsibility
+- Extract reusable logic into custom hooks
+
+### 4. Styling Conventions
+- Use Tailwind utility classes
+- Follow mobile-first responsive design
+- Maintain consistent spacing scale (4, 8, 16, 24, 32px)
+- Use design tokens from Tailwind config
+
+## Code Style Guidelines
+
+### TypeScript
+```typescript
+// ✅ Good: Explicit types for function parameters and returns
+export async function fetchTasks(userId: string): Promise<Task[]> {
+  // implementation
+}
+
+// ✅ Good: Interface for complex objects
+interface TaskFormData {
+  title: string;
+  description: string;
+  dueDate: Date;
+}
+
+// ❌ Avoid: Using 'any'
+const data: any = await fetchData(); // Don't do this
+```
+
+### React Components
+```typescript
+// ✅ Good: Named exports for components
+export function TaskCard({ task }: { task: Task }) {
+  return <div>{task.title}</div>;
+}
+
+// ✅ Good: Separate client/server concerns
+'use client';
+export function InteractiveButton() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+### Async Operations
+```typescript
+// ✅ Good: Proper error handling
+try {
+  const { data, error } = await supabase.from('tasks').select('*');
+  if (error) throw error;
+  return data;
+} catch (error) {
+  console.error('Failed to fetch tasks:', error);
+  return null;
+}
+
+// ❌ Avoid: Ignoring errors
+const { data } = await supabase.from('tasks').select('*'); // No error handling
+```
+
+## Common Patterns in This Project
+
+### 1. Fetching Data
+```typescript
+// Server Component (app/dashboard/page.tsx)
+export default async function DashboardPage() {
+  const supabase = createServerClient();
+  const { data: tasks } = await supabase.from('tasks').select('*');
+  
+  return <TaskList tasks={tasks} />;
+}
+```
+
+### 2. Form Handling
+```typescript
+// Client Component
+'use client';
+export function TaskForm() {
+  const [formData, setFormData] = useState<TaskFormData>(initialState);
+  
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const { error } = await supabase.from('tasks').insert(formData);
+    if (error) {
+      toast.error('Failed to create task');
+      return;
+    }
+    toast.success('Task created');
+  }
+  
+  return <form onSubmit={handleSubmit}>...</form>;
+}
+```
+
+### 3. Protected Routes
+```typescript
+// middleware.ts or layout.tsx
+export default async function ProtectedLayout({ children }) {
+  const supabase = createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    redirect('/login');
+  }
+  
+  return <>{children}</>;
+}
+```
+
+## Domain-Specific Context
+
+### Health & Safety Features
+- Task management with deadlines and priorities
+- Incident/accident reporting
+- Temperature monitoring (fridge temps)
+- Equipment maintenance tracking
+- Staff training records
+- Risk assessments
+
+### Food Safety Specific
+- HACCP compliance tracking
+- Temperature logs (cooking, storage, display)
+- Supplier verification
+- Allergen management
+- Cleaning schedules
+- Waste/wastage reporting
+
+### User Roles
+- **Admin**: Full access, can manage all venues
+- **Manager**: Venue-specific management
+- **Staff**: Basic task completion and reporting
+
+## When Providing Code Suggestions
+
+### Always Include:
+1. **Explanation**: Why you're suggesting this approach
+2. **Full Context**: Don't just show snippets, show where it fits
+3. **Error Handling**: Include try/catch and user feedback
+4. **TypeScript Types**: Provide proper type definitions
+5. **Comments**: Explain complex logic for novice developers
+
+### Example of Good Response:
+```typescript
+// Create a new form for reporting temperature readings
+// This goes in: components/dashboard/temperature-form.tsx
+
+'use client'; // Needed because we use useState and form events
+
+import { useState, FormEvent } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+
+interface TemperatureReading {
+  equipment_id: string;
+  temperature: number;
+  recorded_at: Date;
+}
+
+export function TemperatureForm() {
+  // State to track form inputs
+  const [reading, setReading] = useState<TemperatureReading>({
+    equipment_id: '',
+    temperature: 0,
+    recorded_at: new Date(),
+  });
+  
+  // State to show loading during submission
+  const [isLoading, setIsLoading] = useState(false);
+  
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault(); // Prevent page reload
+    setIsLoading(true);
+    
+    try {
+      const supabase = createClient();
+      
+      // Insert the reading into database
+      const { error } = await supabase
+        .from('temperature_readings')
+        .insert(reading);
+      
+      if (error) throw error;
+      
+      // Success! Show message and reset form
+      toast.success('Temperature recorded successfully');
+      setReading({ equipment_id: '', temperature: 0, recorded_at: new Date() });
+      
+    } catch (error) {
+      console.error('Error saving temperature:', error);
+      toast.error('Failed to save temperature reading');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Input
+        type="number"
+        placeholder="Temperature (°C)"
+        value={reading.temperature}
+        onChange={(e) => setReading({ ...reading, temperature: parseFloat(e.target.value) })}
+        required
+      />
+      
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? 'Saving...' : 'Record Temperature'}
+      </Button>
+    </form>
+  );
+}
+```
+
+## Testing & Debugging Tips
+
+### Common Issues & Solutions
+1. **Hydration Errors**: Ensure server/client HTML matches - don't use random IDs or timestamps in Server Components
+2. **Supabase Errors**: Always check `error` object and log it
+3. **TypeScript Errors**: Don't use `any` - define proper types
+4. **Build Errors**: Run `npm run build` locally before deploying
+
+### Debugging Checklist
+- [ ] Check browser console for errors
+- [ ] Verify Supabase connection in Network tab
+- [ ] Confirm environment variables are set
+- [ ] Check if you need 'use client' directive
+- [ ] Verify user authentication status
+
+## File Naming Conventions
+- Components: `kebab-case.tsx` (e.g., `task-card.tsx`)
+- Pages: `kebab-case` folders with `page.tsx`
+- Types: `PascalCase` for interfaces/types
+- Functions: `camelCase`
+- Constants: `UPPER_SNAKE_CASE`
+
+## Git Commit Message Format
+```
+<type>: <short description>
+
+<detailed description if needed>
+
+Types: feat, fix, docs, style, refactor, test, chore
+```
+
+## Additional Notes for AI Assistants
+
+When the developer asks for help:
+1. **Ask clarifying questions** if the request is ambiguous
+2. **Explain trade-offs** when multiple approaches exist
+3. **Reference existing code** in the project when possible
+4. **Provide runnable code** - complete, not just snippets
+5. **Include next steps** - what to do after implementing your suggestion
+
+Remember: This developer is a novice, so:
+- Avoid jargon without explanation
+- Show complete file paths
+- Explain WHY, not just WHAT
+- Provide context about where code should go
+- Suggest how to test the changes
+
+EOF
+```
+
+Now let me copy it to the outputs folder so you can download it:
+```
+bash_tool
+{"command": "cp /home/claude/CLAUDE.md /mnt/user-data/outputs/CLAUDE.md && echo 'File created successfully!'", "description": "Copy CLAUDE.md to outputs folder for user to download"}

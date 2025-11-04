@@ -7,6 +7,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";
+import { Toaster } from "sonner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <RouteLogger />
                 {children}
                 <Footer />
+                <Toaster position="top-right" richColors />
               </AppProvider>
             </QueryProvider>
           </ReactQueryProvider>

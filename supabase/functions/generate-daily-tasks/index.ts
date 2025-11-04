@@ -55,7 +55,7 @@ serve(async (req: Request) => {
         const { data: sites, error: sitesError } = await supabase
           .from("sites")
           .select("id, company_id")
-          .eq("is_active", true);
+          .or("status.is.null,status.neq.inactive");
 
         if (sitesError) {
           log.errors.push(`Failed to fetch sites: ${sitesError.message}`);
@@ -68,45 +68,124 @@ serve(async (req: Request) => {
           : sites;
 
         for (const site of targetSites || []) {
-          // Check if task already exists for today (prevent duplicates)
           const today = new Date().toISOString().split("T")[0];
 
-          const { data: existingTask } = await supabase
+          // CRITICAL: Handle multiple dayparts AND multiple times - create one task per combination
+          // Get dayparts from template (could be array or single value)
+          let dayparts: string[] = []
+          
+          if (template.dayparts && Array.isArray(template.dayparts) && template.dayparts.length > 0) {
+            dayparts = template.dayparts.filter(d => d && typeof d === 'string')
+          } else if (template.daypart && typeof template.daypart === 'string') {
+            // Handle single daypart or comma-separated
+            dayparts = template.daypart.includes(',') 
+              ? template.daypart.split(',').map(d => d.trim()).filter(d => d)
+              : [template.daypart]
+          }
+          
+          // Default to 'before_open' if no dayparts specified
+          if (dayparts.length === 0) {
+            dayparts = ['before_open']
+          }
+
+          // Get daypart-specific times from recurrence_pattern.daypart_times if available
+          // Format: { "before_open": "06:00", "during_service": "12:00,15:00", "after_service": "18:00" }
+          // OR: { "before_open": ["06:00"], "during_service": ["12:00", "15:00"] }
+          const pattern = template.recurrence_pattern as { daypart_times?: Record<string, string | string[]> } | null
+          const daypartTimes = pattern?.daypart_times || {}
+
+          // Create one task for each daypart with its specific times
+          const tasksToInsert: any[] = []
+          
+          dayparts.forEach((daypart) => {
+            // Get times for this specific daypart
+            let timesForDaypart: string[] = []
+            const daypartTimeValue = daypartTimes[daypart]
+            
+            if (daypartTimeValue) {
+              if (Array.isArray(daypartTimeValue)) {
+                // Array format: ["18:00", "19:00", "22:00"]
+                timesForDaypart = daypartTimeValue.filter(t => t && typeof t === 'string')
+              } else if (typeof daypartTimeValue === 'string') {
+                // String format: "18:00" or "18:00,19:00,22:00"
+                if (daypartTimeValue.includes(',')) {
+                  timesForDaypart = daypartTimeValue.split(',').map(t => t.trim()).filter(t => t)
+                } else {
+                  timesForDaypart = [daypartTimeValue.trim()]
+                }
+              }
+            }
+            
+            // If no daypart-specific times, fall back to time_of_day or default
+            if (timesForDaypart.length === 0) {
+              if (template.time_of_day) {
+                timesForDaypart = [template.time_of_day]
+              } else {
+                timesForDaypart = ['09:00'] // Default
+              }
+            }
+            
+            // Create one task for each time for this daypart
+            timesForDaypart.forEach((time) => {
+              tasksToInsert.push({
+                template_id: template.id,
+                company_id: site.company_id,
+                site_id: site.id,
+                due_date: today,
+                due_time: time, // Use the specific time for this daypart
+                daypart: daypart, // Set specific daypart for this instance
+                assigned_to_role: template.assigned_to_role,
+                assigned_to_user_id: template.assigned_to_user_id,
+                status: "pending",
+                priority: template.is_critical ? "critical" : "medium",
+                generated_at: new Date(),
+                expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires tomorrow
+                // Store metadata in task_data for consistency
+                task_data: {
+                  dayparts: dayparts, // Store all dayparts for reference
+                  daypart_times: daypartTimes, // Store daypart_times mapping for reference
+                  daypart: daypart, // Store which daypart this task is for
+                  time: time // Store which time this task is for
+                }
+              })
+            })
+          })
+
+          // Check for existing tasks to avoid duplicates
+          // Check by combination of daypart AND due_time
+          const existingTasks = await supabase
             .from("checklist_tasks")
-            .select("id")
+            .select("id, daypart, due_time")
             .eq("template_id", template.id)
             .eq("site_id", site.id)
             .eq("due_date", today)
-            .single();
 
-          if (existingTask) {
-            continue; // Task already exists
+          const existingCombinations = new Set(
+            (existingTasks.data || []).map(t => 
+              `${t.daypart || ''}|${t.due_time || ''}`
+            ).filter(Boolean)
+          )
+
+          // Filter out tasks that already exist for this daypart+time combination
+          const newTasksToInsert = tasksToInsert.filter(
+            task => !existingCombinations.has(`${task.daypart || ''}|${task.due_time || ''}`)
+          )
+
+          if (newTasksToInsert.length === 0) {
+            continue // All tasks already exist
           }
 
-          // Create task
+          // Insert all new tasks
           const { error: insertError } = await supabase
             .from("checklist_tasks")
-            .insert({
-              template_id: template.id,
-              company_id: site.company_id,
-              site_id: site.id,
-              due_date: today,
-              due_time: template.time_of_day,
-              daypart: template.dayparts?.[0] || "before_open",
-              assigned_to_role: template.assigned_to_role,
-              assigned_to_user_id: template.assigned_to_user_id,
-              status: "pending",
-              priority: template.is_critical ? "critical" : "medium",
-              generated_at: new Date(),
-              expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires tomorrow
-            });
+            .insert(newTasksToInsert)
 
           if (insertError) {
             log.errors.push(
               `Failed to create daily task for template ${template.id}: ${insertError.message}`
             );
           } else {
-            log.daily_tasks_created++;
+            log.daily_tasks_created += newTasksToInsert.length;
           }
         }
       } catch (e) {
@@ -145,7 +224,7 @@ serve(async (req: Request) => {
         const { data: sites } = await supabase
           .from("sites")
           .select("id, company_id")
-          .eq("is_active", true);
+          .or("status.is.null,status.neq.inactive");
 
         const targetSites = template.site_id
           ? sites?.filter((s) => s.id === template.site_id)
@@ -154,38 +233,73 @@ serve(async (req: Request) => {
         for (const site of targetSites || []) {
           const today = new Date().toISOString().split("T")[0];
 
-          const { data: existingTask } = await supabase
+          // CRITICAL: Handle multiple dayparts - create one task per daypart
+          // Get dayparts from template (could be array or single value)
+          let dayparts: string[] = []
+          
+          if (template.dayparts && Array.isArray(template.dayparts) && template.dayparts.length > 0) {
+            dayparts = template.dayparts.filter(d => d && typeof d === 'string')
+          } else if (template.daypart && typeof template.daypart === 'string') {
+            // Handle single daypart or comma-separated
+            dayparts = template.daypart.includes(',') 
+              ? template.daypart.split(',').map(d => d.trim()).filter(d => d)
+              : [template.daypart]
+          }
+          
+          // Default to 'anytime' if no dayparts specified
+          if (dayparts.length === 0) {
+            dayparts = ['anytime']
+          }
+
+          // Check for existing tasks to avoid duplicates
+          const existingTasks = await supabase
             .from("checklist_tasks")
-            .select("id")
+            .select("id, daypart")
             .eq("template_id", template.id)
             .eq("site_id", site.id)
             .eq("due_date", today)
-            .single();
 
-          if (existingTask) continue;
+          const existingDayparts = new Set(
+            (existingTasks.data || []).map(t => t.daypart).filter(Boolean)
+          )
 
-          const { error: insertError } = await supabase
-            .from("checklist_tasks")
-            .insert({
+          // Create one task for each daypart
+          const tasksToInsert = dayparts
+            .filter(daypart => !existingDayparts.has(daypart)) // Filter out existing
+            .map((daypart, index) => ({
               template_id: template.id,
               company_id: site.company_id,
               site_id: site.id,
               due_date: today,
               due_time: template.time_of_day,
-              daypart: template.dayparts?.[0] || "anytime",
+              daypart: daypart, // Set specific daypart for this instance
               assigned_to_role: template.assigned_to_role,
               status: "pending",
               priority: template.is_critical ? "critical" : "medium",
               generated_at: new Date(),
               expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 1 week
-            });
+              // Store all dayparts in task_data so they can be accessed later
+              task_data: {
+                dayparts: dayparts, // Store all dayparts for this task
+                original_daypart_index: index // Track which instance this is
+              }
+            }))
+
+          if (tasksToInsert.length === 0) {
+            continue // All tasks already exist
+          }
+
+          // Insert all new tasks
+          const { error: insertError } = await supabase
+            .from("checklist_tasks")
+            .insert(tasksToInsert)
 
           if (insertError) {
             log.errors.push(
               `Failed to create weekly task for template ${template.id}: ${insertError.message}`
             );
           } else {
-            log.weekly_tasks_created++;
+            log.weekly_tasks_created += tasksToInsert.length;
           }
         }
       } catch (e) {
@@ -226,7 +340,7 @@ serve(async (req: Request) => {
         const { data: sites } = await supabase
           .from("sites")
           .select("id, company_id")
-          .eq("is_active", true);
+          .or("status.is.null,status.neq.inactive");
 
         const targetSites = template.site_id
           ? sites?.filter((s) => s.id === template.site_id)
@@ -243,30 +357,73 @@ serve(async (req: Request) => {
             .eq("due_date", today)
             .single();
 
-          if (existingTask) continue;
+          // CRITICAL: Handle multiple dayparts - create one task per daypart
+          // Get dayparts from template (could be array or single value)
+          let dayparts: string[] = []
+          
+          if (template.dayparts && Array.isArray(template.dayparts) && template.dayparts.length > 0) {
+            dayparts = template.dayparts.filter(d => d && typeof d === 'string')
+          } else if (template.daypart && typeof template.daypart === 'string') {
+            // Handle single daypart or comma-separated
+            dayparts = template.daypart.includes(',') 
+              ? template.daypart.split(',').map(d => d.trim()).filter(d => d)
+              : [template.daypart]
+          }
+          
+          // Default to 'anytime' if no dayparts specified
+          if (dayparts.length === 0) {
+            dayparts = ['anytime']
+          }
 
-          const { error: insertError } = await supabase
+          // Check for existing tasks to avoid duplicates
+          const existingTasks = await supabase
             .from("checklist_tasks")
-            .insert({
+            .select("id, daypart")
+            .eq("template_id", template.id)
+            .eq("site_id", site.id)
+            .eq("due_date", today)
+
+          const existingDayparts = new Set(
+            (existingTasks.data || []).map(t => t.daypart).filter(Boolean)
+          )
+
+          // Create one task for each daypart
+          const tasksToInsert = dayparts
+            .filter(daypart => !existingDayparts.has(daypart)) // Filter out existing
+            .map((daypart, index) => ({
               template_id: template.id,
               company_id: site.company_id,
               site_id: site.id,
               due_date: today,
               due_time: template.time_of_day,
-              daypart: template.dayparts?.[0] || "anytime",
+              daypart: daypart, // Set specific daypart for this instance
               assigned_to_role: template.assigned_to_role,
               status: "pending",
               priority: template.is_critical ? "critical" : "medium",
               generated_at: new Date(),
               expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days
-            });
+              // Store all dayparts in task_data so they can be accessed later
+              task_data: {
+                dayparts: dayparts, // Store all dayparts for this task
+                original_daypart_index: index // Track which instance this is
+              }
+            }))
+
+          if (tasksToInsert.length === 0) {
+            continue // All tasks already exist
+          }
+
+          // Insert all new tasks
+          const { error: insertError } = await supabase
+            .from("checklist_tasks")
+            .insert(tasksToInsert)
 
           if (insertError) {
             log.errors.push(
               `Failed to create monthly task for template ${template.id}: ${insertError.message}`
             );
           } else {
-            log.monthly_tasks_created++;
+            log.monthly_tasks_created += tasksToInsert.length;
           }
         }
       } catch (e) {
@@ -298,7 +455,7 @@ serve(async (req: Request) => {
           .select("*")
           .eq("frequency", "triggered")
           .eq("asset_type", asset.type)
-          .eq("is_active", true)
+          .eq("is_active", true)  // This is for task_templates, which does have is_active
           .single();
 
         if (ppmTemplate) {
