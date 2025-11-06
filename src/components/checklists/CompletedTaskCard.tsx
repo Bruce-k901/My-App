@@ -230,15 +230,11 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   // Get equipment/assets from task template or task data
   const equipmentAssets = task.template?.asset_id ? [task.template.asset_id] : []
   
-  const photoPaths = completionRecord?.evidence_attachments || completionData.photos || []
-  const passFailResult = completionData.pass_fail_result || completionData.passFailStatus || allData.passFailStatus
-  const notes = completionData.notes || allData.notes || ''
-  
   // Extract follow-up actions - CRITICAL for compliance reporting
   const tempAction = completionData.temp_action || task.flag_reason
   const monitoringTaskId = completionData.monitoring_task_id
   const calloutId = completionData.callout_id
-  const flagReason = task.flag_reason || completionRecord?.completion_data?.flag_reason
+  const flagReason = task.flag_reason || completionRecord?.completion_data?.flag_reason || completionData.flag_reason
   const followUpDetails = completionData.follow_up_details || completionData.followUpDetails || {}
   
   // Get monitoring task details if available
@@ -250,6 +246,54 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   const monitoringAssetId = monitoringDetails.asset_id || completionData.monitoring_asset_id
   const monitoringAssetName = monitoringDetails.asset_name || completionData.monitoring_asset_name
   const contractorName = calloutDetails.contractor_name || completionData.contractor_name || calloutDetails.contractorName || completionData.contractorName
+  
+  // 🔒 LOCKED: Callout report detection and data extraction
+  // DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+  // Callout reports are identified by flag_reason === 'callout_report'
+  const isCalloutReport = flagReason === 'callout_report' || task.flag_reason === 'callout_report'
+  const calloutReportData = isCalloutReport ? completionData : null
+  const calloutFaultDescription = calloutReportData?.fault_description || calloutDetails.fault_description || completionData.fault_description
+  const calloutType = calloutReportData?.callout_type || calloutDetails.callout_type || completionData.callout_type
+  
+  // Get asset info from callout report
+  const calloutAssetId = calloutReportData?.asset_id || completionData.asset_id
+  const calloutAssetName = calloutReportData?.asset_name || completionData.asset_name || (calloutAssetId ? assetsMap.get(calloutAssetId)?.name : null)
+  
+  // Get contractor info from callout report
+  const calloutContractorId = calloutReportData?.contractor_id || completionData.contractor_id
+  const calloutContractorName = calloutReportData?.contractor_name || completionData.contractor_name || contractorName
+  const calloutContractorEmail = calloutReportData?.manual_contractor_email || completionData.manual_contractor_email || completionData.contractor_email
+  
+  // Get troubleshooting data - answers might be stored as array or object with question/answer pairs
+  const troubleshootingQuestions = calloutReportData?.troubleshooting_questions || completionData.troubleshooting_questions || []
+  const troubleshootingAnswers = calloutReportData?.troubleshooting_answers || completionData.troubleshooting_answers || []
+  // Troubleshooting might also be stored as an object with question-answer pairs
+  const troubleshootingData = calloutReportData?.troubleshooting || completionData.troubleshooting || {}
+  
+  const calloutNotes = calloutReportData?.notes || calloutDetails.notes || completionData.notes || ''
+  
+  // Get photos from multiple sources (evidence_attachments, photos, callout photos)
+  const photoPaths = completionRecord?.evidence_attachments || 
+    completionData.photos || 
+    completionData.callout_photos || 
+    (isCalloutReport ? (completionData.photos || []) : []) || 
+    []
+  const passFailResult = completionData.pass_fail_result || completionData.passFailStatus || allData.passFailStatus
+  const notes = completionData.notes || allData.notes || calloutNotes || ''
+  
+  // 🔒 LOCKED: Issue detection for color coding
+  // Tasks with issues are displayed with red borders, tasks without issues are green
+  // DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+  const hasIssue = !!(
+    flagReason || 
+    task.flagged || 
+    calloutId || 
+    monitoringTaskId || 
+    tempAction || 
+    passFailResult === 'fail' ||
+    (temperatures.length > 0 && temperatures.some((t: any) => t.status === 'failed' || t.status === 'warning')) ||
+    isCalloutReport
+  )
   
   // Convert photo paths to public URLs if needed
   const photoUrls = useMemo(() => {
@@ -274,21 +318,35 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     typeof item === 'object' ? item.completed : false
   ).length
 
+  // Color code based on whether there was an issue
+  const cardBorderColor = hasIssue 
+    ? 'border-red-500/30' 
+    : 'border-green-500/20'
+  const cardBgColor = hasIssue 
+    ? 'bg-red-500/5' 
+    : 'bg-green-500/5'
+  const headerHoverColor = hasIssue 
+    ? 'hover:bg-red-500/10' 
+    : 'hover:bg-green-500/10'
+  const statusBadgeColor = hasIssue
+    ? 'bg-red-500/10 text-red-400 border-red-500/20'
+    : 'bg-green-500/10 text-green-400 border-green-500/20'
+
   return (
-    <div className="bg-green-500/5 border border-green-500/20 rounded-xl overflow-hidden">
+    <div className={`${cardBgColor} border ${cardBorderColor} rounded-xl overflow-hidden`}>
       {/* Header - Always Visible */}
-      <button
+        <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-6 flex items-start justify-between hover:bg-green-500/10 transition-colors text-left"
+        className={`w-full p-6 flex items-start justify-between ${headerHoverColor} transition-colors text-left`}
       >
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold text-white">
               {task.custom_name || task.template?.name || 'Untitled Task'}
             </h3>
-            <span className="px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 bg-green-500/10 text-green-400 border-green-500/20">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${statusBadgeColor}`}>
               <CheckCircle2 className="w-4 h-4" />
-              COMPLETED
+              {hasIssue ? 'COMPLETED - ISSUE REPORTED' : 'COMPLETED'}
             </span>
             {task.template?.category && (
               <span className="px-2 py-1 rounded-full text-xs font-medium border border-white/20 bg-white/5 text-white/70">
@@ -377,10 +435,10 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
 
       {/* Expandable Content - Read-Only View */}
       {isExpanded && (
-        <div className="px-6 pb-6 border-t border-green-500/20 bg-green-500/5">
+        <div className={`px-6 pb-6 border-t ${hasIssue ? 'border-red-500/20 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
           <div className="pt-6 space-y-6">
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
-            {temperatures.length > 0 ? (
+            {temperatures.length > 0 && (
               <div>
                 <h4 className="text-lg font-bold text-white mb-4">Assets Checked</h4>
                 <div className="space-y-3">
@@ -433,16 +491,140 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
                   })}
                 </div>
               </div>
-            ) : (
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                <p className="text-yellow-400 text-sm font-medium">⚠️ No equipment/assets recorded for this task</p>
-              </div>
             )}
 
             {/* Completion Information - Who and When (removed duplication - already shown in header) */}
 
+            {/* Callout Report Data - Show all callout info if this is a callout report */}
+            {isCalloutReport && calloutReportData && (
+              <div className="bg-red-500/10 border-2 border-red-500/50 rounded-lg p-4 mb-6">
+                <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                  Callout Report Details
+                </h4>
+                <div className="space-y-4 text-sm">
+                  {/* Asset Information */}
+                  {(calloutAssetName || calloutAssetId) && (
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                      <p className="text-white/60 text-xs mb-2 font-medium">Asset Information</p>
+                      {calloutAssetName && (
+                        <p className="text-white/90 font-medium text-base mb-1">{calloutAssetName}</p>
+                      )}
+                      {calloutAssetId && (
+                        <p className="text-white/60 text-xs font-mono">ID: {calloutAssetId}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Contractor Information */}
+                  {(calloutContractorName || calloutContractorId || calloutContractorEmail) && (
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                      <p className="text-white/60 text-xs mb-2 font-medium">Contractor Information</p>
+                      {calloutContractorName && (
+                        <p className="text-white/90 font-medium text-base mb-1">{calloutContractorName}</p>
+                      )}
+                      {calloutContractorEmail && (
+                        <p className="text-white/70 text-xs mb-1">Email: {calloutContractorEmail}</p>
+                      )}
+                      {calloutContractorId && (
+                        <p className="text-white/60 text-xs font-mono">ID: {calloutContractorId}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {calloutType && (
+                    <div>
+                      <p className="text-white/60 text-xs mb-1">Callout Type</p>
+                      <p className="text-white/90 font-medium capitalize">{calloutType}</p>
+                    </div>
+                  )}
+                  
+                  {calloutFaultDescription && (
+                    <div>
+                      <p className="text-white/60 text-xs mb-1">Fault Description</p>
+                      <p className="text-white/90 font-medium whitespace-pre-line bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+                        {calloutFaultDescription}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Troubleshooting Questions with Answers */}
+                  {troubleshootingQuestions.length > 0 && (
+                    <div>
+                      <p className="text-white/60 text-xs mb-3 font-medium">Troubleshooting Questions & Answers</p>
+                      <div className="space-y-3">
+                        {troubleshootingQuestions.map((question: string, idx: number) => {
+                          // Try to get answer from multiple sources
+                          let answer = null
+                          
+                          // Check if troubleshootingData has this question as a key
+                          if (typeof troubleshootingData === 'object' && troubleshootingData[question]) {
+                            answer = troubleshootingData[question]
+                          }
+                          // Check if answers array has this index
+                          else if (Array.isArray(troubleshootingAnswers) && troubleshootingAnswers[idx]) {
+                            answer = troubleshootingAnswers[idx]
+                          }
+                          // Check if troubleshooting_answers is an object with question keys
+                          else if (typeof troubleshootingAnswers === 'object' && troubleshootingAnswers[question]) {
+                            answer = troubleshootingAnswers[question]
+                          }
+                          
+                          // Determine answer display
+                          const answerDisplay = answer === 'completed' || answer === 'yes' || answer === true 
+                            ? { text: 'Yes', color: 'text-green-400', bg: 'bg-green-500/20', border: 'border-green-500/30' }
+                            : answer === 'no' || answer === false
+                            ? { text: 'No', color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/30' }
+                            : answer
+                            ? { text: String(answer), color: 'text-yellow-400', bg: 'bg-yellow-500/20', border: 'border-yellow-500/30' }
+                            : { text: 'No answer recorded', color: 'text-white/40', bg: 'bg-white/5', border: 'border-white/10' }
+                          
+                          return (
+                            <div key={idx} className={`bg-white/5 border ${answerDisplay.border} rounded-lg p-3`}>
+                              <p className="text-white/90 text-sm font-medium mb-2">{question}</p>
+                              <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${answerDisplay.bg} ${answerDisplay.border} border`}>
+                                <span className={`text-xs font-semibold ${answerDisplay.color}`}>
+                                  {answerDisplay.text === 'No answer recorded' ? (
+                                    <span className="italic">{answerDisplay.text}</span>
+                                  ) : (
+                                    <>
+                                      {answerDisplay.text === 'Yes' && '✓ '}
+                                      {answerDisplay.text === 'No' && '✗ '}
+                                      {answerDisplay.text}
+                                    </>
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {calloutNotes && (
+                    <div>
+                      <p className="text-white/60 text-xs mb-1">Additional Notes</p>
+                      <p className="text-white/70 whitespace-pre-line bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+                        {calloutNotes}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {calloutId && (
+                    <div>
+                      <p className="text-white/60 text-xs mb-1">Callout ID</p>
+                      <p className="text-white/90 font-mono text-xs bg-white/5 border border-white/10 rounded-lg p-2 inline-block">
+                        {calloutId}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Follow-Up Actions - DETAILED for Compliance Reporting */}
-            {(tempAction || monitoringTaskId || calloutId || flagReason) && (
+            {(tempAction || monitoringTaskId || calloutId || flagReason) && !isCalloutReport && (
               <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-lg p-4">
                 <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />

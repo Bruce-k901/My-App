@@ -80,17 +80,19 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   
   // New callout form state
   const [calloutType, setCalloutType] = useState<'reactive' | 'warranty' | 'ppm'>('reactive');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'urgent'>('medium');
+  // Priority is always urgent for callouts
+  const priority = 'urgent';
   const [faultDescription, setFaultDescription] = useState('');
   const [notes, setNotes] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [troubleshootAck, setTroubleshootAck] = useState(false);
   const [troubleshootingQuestions, setTroubleshootingQuestions] = useState<string[]>([]);
+  const [troubleshootingAnswersMap, setTroubleshootingAnswersMap] = useState<Map<number, 'yes' | 'no'>>(new Map());
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [showCallOptions, setShowCallOptions] = useState(false);
   const [showTroubleshootModal, setShowTroubleshootModal] = useState(false);
-  // Manual contractor entry (for cases where no contractor is linked)
+  // Manual contractor entry (for cases where no contractor is linked or custom input)
   const [manualContractorName, setManualContractorName] = useState('');
   const [manualContractorEmail, setManualContractorEmail] = useState('');
   
@@ -103,7 +105,14 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   const [closeDocuments, setCloseDocuments] = useState<File[]>([]);
   
   const { showToast } = useToast();
-  const { profile } = useAppContext();
+  const { profile, companyId, siteId } = useAppContext();
+  
+  // Contractor dropdown state
+  const [contractors, setContractors] = useState<Array<{ id: string; name: string; email?: string; phone?: string }>>([]);
+  const [selectedContractorId, setSelectedContractorId] = useState<string | null>(null);
+  const [showCustomContractorInput, setShowCustomContractorInput] = useState(false);
+  const [loadingContractors, setLoadingContractors] = useState(false);
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
 
   // Calculate asset age
   const getAssetAge = () => {
@@ -142,27 +151,98 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
     return new Date() <= new Date(asset.warranty_end);
   };
 
+  // Load contractors for dropdown
+  const loadContractors = async () => {
+    if (!companyId) return;
+    setLoadingContractors(true);
+    try {
+      const { data, error } = await supabase
+        .from('contractors')
+        .select('id, name, email, phone')
+        .eq('company_id', companyId)
+        .eq('is_active', true)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setContractors(data || []);
+      
+      // Pre-select contractor based on callout type and asset
+      if (asset) {
+        let contractorId: string | null = null;
+        switch (calloutType) {
+          case 'ppm':
+            contractorId = asset.id ? (await getContractorIdFromAsset('ppm')) : null;
+            break;
+          case 'warranty':
+            contractorId = asset.id ? (await getContractorIdFromAsset('warranty')) : null;
+            break;
+          default:
+            contractorId = asset.reactive_contractor_id || (asset.id ? (await getContractorIdFromAsset('reactive')) : null);
+            break;
+        }
+        
+        if (contractorId && data?.find(c => c.id === contractorId)) {
+          setSelectedContractorId(contractorId);
+          setShowCustomContractorInput(false);
+        } else if (!contractorId) {
+          setShowCustomContractorInput(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading contractors:', error);
+    } finally {
+      setLoadingContractors(false);
+    }
+  };
+
+  const getContractorIdFromAsset = async (type: 'reactive' | 'warranty' | 'ppm'): Promise<string | null> => {
+    if (!asset.id) return null;
+    try {
+      const { data } = await supabase
+        .from('assets')
+        .select(`${type === 'ppm' ? 'ppm_contractor_id' : type === 'warranty' ? 'warranty_contractor_id' : 'reactive_contractor_id'}`)
+        .eq('id', asset.id)
+        .single();
+      return data?.[`${type}_contractor_id`] || null;
+    } catch {
+      return null;
+    }
+  };
+
   // Load callouts when modal opens
   useEffect(() => {
     if (open) {
       if (asset.id) {
-      loadCallouts();
+        loadCallouts();
       }
+      loadContractors();
       
-      // Reset manual contractor fields
+      // Reset form fields (but preserve troubleshootAck - troubleshooting is based on asset, not callout type)
       setManualContractorName('');
       setManualContractorEmail('');
+      setSelectedContractorId(null);
+      setShowCustomContractorInput(false);
+      setAttachments([]);
+      setPhotoPreviewUrls([]);
       
       // If troubleshooting is required, open troubleshoot modal immediately
-      if (requireTroubleshoot) {
+      if (requireTroubleshoot && !troubleshootAck) {
         setShowTroubleshootModal(true);
-        setActiveTab('new'); // Ensure we're on the new callout tab
+        setActiveTab('new');
       }
     } else {
-      // Reset troubleshoot ack when modal closes
+      // Reset troubleshoot ack and answers when modal closes
       setTroubleshootAck(false);
+      setTroubleshootingAnswersMap(new Map());
     }
-  }, [open, asset.id, requireTroubleshoot]);
+  }, [open, asset.id, requireTroubleshoot, companyId]);
+  
+  // Separate effect for callout type changes - only reload contractors, don't reset troubleshooting
+  useEffect(() => {
+    if (open) {
+      loadContractors();
+    }
+  }, [calloutType]);
 
   const loadCallouts = async () => {
     try {
@@ -265,42 +345,195 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
     }
   };
 
-  const handleCreateCallout = async () => {
-    // Validate required fields
-    if (calloutType !== 'ppm' && !faultDescription.trim()) {
-      showToast({ title: 'Fault description is required', type: 'error' });
-      return;
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  // 🔒 LOCKED: Callout form validation rules - DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+  const validateCalloutForm = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // Validate fault description (required for reactive and warranty, not PPM)
+    if (calloutType !== 'ppm') {
+      if (!faultDescription?.trim()) {
+        errors.push('Fault Description is required');
+      }
     }
 
-    // Validate manual contractor entry if required
-    if (requiresManualContractorEntry() && !manualContractorName.trim()) {
-      showToast({ 
-        title: 'Contractor information required', 
-        description: 'Please provide contractor name and email', 
-        type: 'error' 
-      });
-      return;
+    // Validate contractor selection
+    if (!selectedContractorId && !showCustomContractorInput) {
+      errors.push('Contractor selection is required');
     }
 
+    if (showCustomContractorInput && !manualContractorName?.trim()) {
+      errors.push('Custom contractor name is required');
+    }
+
+    // Validate troubleshooting
     if (!troubleshootAck) {
-      showToast({ title: 'Please confirm troubleshooting is complete', type: 'error' });
-      return;
+      errors.push('Troubleshooting guide must be completed');
     }
 
-    // Show confirmation popup
-    setShowConfirmation(true);
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
   };
 
+  // 🔒 LOCKED: Main callout creation handler - DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+  // This function handles validation and triggers the complete callout creation flow
+  const handleCreateCallout = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    console.log('📞 [CALLOUT] Send Callout button clicked');
+    
+    // Prevent double-click
+    if (loading) {
+      console.log('⚠️ [CALLOUT] Already processing, ignoring click');
+      return;
+    }
+    
+    // Validate form
+    const validation = validateCalloutForm();
+    
+    if (!validation.isValid) {
+      console.log('❌ [CALLOUT] Validation failed:', validation.errors);
+      setValidationErrors(validation.errors);
+      setShowValidationModal(true);
+      return;
+    }
+
+    try {
+      console.log('✅ [CALLOUT] All validations passed, creating callout and tasks');
+      // Create callout and tasks directly (skip confirmation)
+      await handleConfirmCreateCallout();
+    } catch (error: any) {
+      console.error('❌ [CALLOUT] Error in handleCreateCallout:', error);
+      showToast({
+        title: 'Error',
+        description: error?.message || 'Failed to process callout request',
+        type: 'error'
+      });
+    }
+  };
+  
+  // Handle photo capture from camera
+  const handleCameraCapture = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // Use rear camera on mobile
+    input.onchange = (e: any) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        handlePhotoAdd(file);
+      }
+    };
+    input.click();
+  };
+
+  // Handle photo upload
+  const handlePhotoUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = (e: any) => {
+      Array.from(e.target.files || []).forEach((file: File) => {
+        handlePhotoAdd(file);
+      });
+    };
+    input.click();
+  };
+
+  // Add photo to attachments and create preview
+  const handlePhotoAdd = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      showToast({ title: 'Invalid file type', description: 'Please select an image file', type: 'error' });
+      return;
+    }
+    
+    setAttachments(prev => [...prev, file]);
+    
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreviewUrls(prev => [...prev, reader.result as string]);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove photo
+  const handlePhotoRemove = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setPhotoPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // 🔒 LOCKED: Complete callout creation flow - DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+  // This function creates: 1) Callout record, 2) Completed task record, 3) Follow-up task
+  // See CALLOUT_SYSTEM_LOCKED.md for complete flow documentation
   const handleConfirmCreateCallout = async () => {
     try {
       setLoading(true);
-      setShowConfirmation(false);
+      
+      console.log('📞 [CALLOUT] Starting callout creation process...');
 
-      // Upload attachments if any
+      // Upload attachments/photos to Supabase storage
       let attachmentUrls: string[] = [];
-      if (attachments.length > 0) {
-        // TODO: Implement file upload to Supabase storage
-        console.log('Uploading attachments:', attachments);
+      if (attachments.length > 0 && companyId) {
+        console.log(`📸 [CALLOUT] Uploading ${attachments.length} photo(s)...`);
+        try {
+          const uploadPromises = attachments.map(async (file, index) => {
+            const fileExt = file.name.split('.').pop();
+            const timestamp = Date.now();
+            const fileName = `callout_${timestamp}_${index}.${fileExt}`;
+            const filePath = `${companyId}/callouts/${fileName}`;
+            
+            // Try callout_documents bucket first, fallback to sop-photos
+            let bucketName = 'callout_documents';
+            let { error } = await supabase.storage
+              .from(bucketName)
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type || 'image/jpeg'
+              });
+            
+            if (error && (error.message?.includes('Bucket not found') || error.message?.includes('does not exist'))) {
+              console.warn('callout_documents bucket not found, using sop-photos');
+              bucketName = 'sop-photos';
+              const fallbackResult = await supabase.storage
+                .from(bucketName)
+                .upload(filePath, file, {
+                  cacheControl: '3600',
+                  upsert: false,
+                  contentType: file.type || 'image/jpeg'
+                });
+              error = fallbackResult.error;
+            }
+            
+            if (error) throw error;
+            
+            const { data: urlData } = supabase.storage
+              .from(bucketName)
+              .getPublicUrl(filePath);
+            
+            return urlData.publicUrl;
+          });
+          
+          attachmentUrls = await Promise.all(uploadPromises);
+          console.log(`✅ [CALLOUT] Successfully uploaded ${attachmentUrls.length} photo(s)`);
+        } catch (uploadError: any) {
+          console.error('❌ [CALLOUT] Photo upload error:', uploadError);
+          showToast({
+            title: 'Photo upload failed',
+            description: uploadError.message || 'Some photos may not have been uploaded',
+            type: 'warning'
+          });
+          // Continue with callout creation even if photo upload fails
+        }
       }
 
       // Ensure we have a user profile ID
@@ -324,41 +557,80 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         userId = userProfile.id
       }
 
-      // Handle manual contractor entry - prepare notes
+      // Handle contractor selection - determine final contractor ID
+      let finalContractorId = selectedContractorId || null;
       let calloutNotes = notes || null;
-      if (requiresManualContractorEntry() && manualContractorName) {
+      
+      // If custom contractor is used, add to notes (no contractor ID)
+      if (showCustomContractorInput && manualContractorName) {
         const manualContractorInfo = `Contractor: ${manualContractorName}${manualContractorEmail ? ` (${manualContractorEmail})` : ''}`;
         calloutNotes = calloutNotes 
           ? `${calloutNotes}\n\n${manualContractorInfo}`
           : manualContractorInfo;
+        finalContractorId = null; // Custom contractor doesn't have an ID
+      } else if (!finalContractorId && asset.id) {
+        // Fallback to asset's contractor if available
+        const { data: assetContractorData } = await supabase
+          .from('assets')
+          .select('ppm_contractor_id, reactive_contractor_id, warranty_contractor_id')
+          .eq('id', asset.id)
+          .single();
+        if (assetContractorData) {
+          finalContractorId = calloutType === 'ppm' ? assetContractorData.ppm_contractor_id :
+                        calloutType === 'warranty' ? assetContractorData.warranty_contractor_id :
+                        assetContractorData.reactive_contractor_id;
+        }
+      } else if (!finalContractorId) {
+        // For placeholder assets, use contractor ID from asset prop if available
+        finalContractorId = asset.reactive_contractor_id || null;
       }
 
+      // Store asset details for task creation (needed later)
+      let assetDetailsForTasks: any = null;
+      
       // Try RPC function first, fallback to direct insert if not available
       let calloutCreated = false
       let newCalloutId: string | null = null
       
       // Skip RPC if no asset ID (placeholder asset)
       if (asset.id) {
-      try {
-        const { data, error } = await supabase.rpc('create_callout', {
-          p_asset_id: asset.id,
-          p_callout_type: calloutType,
-          p_priority: priority,
-          p_fault_description: faultDescription || null,
+        try {
+          // Load asset details first (needed for RPC and task creation)
+          const { data: assetDataForRPC, error: assetError } = await supabase
+            .from('assets')
+            .select('company_id, site_id')
+            .eq('id', asset.id)
+            .single();
+          
+          if (!assetError && assetDataForRPC) {
+            assetDetailsForTasks = { company_id: assetDataForRPC.company_id, site_id: assetDataForRPC.site_id };
+          }
+          
+          const { data, error } = await supabase.rpc('create_callout', {
+            p_asset_id: asset.id,
+            p_callout_type: calloutType,
+            p_priority: priority,
+            p_fault_description: faultDescription || null,
             p_notes: calloutNotes,
-          p_attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
-          p_troubleshooting_complete: troubleshootAck
-        });
+            p_attachments: attachmentUrls.length > 0 ? attachmentUrls : [],
+            p_troubleshooting_complete: troubleshootAck
+          });
 
-        if (error) throw error
-        if (data) newCalloutId = data
-        calloutCreated = true
-      } catch (rpcError: any) {
-        console.log('RPC function not available, using direct insert:', rpcError)
+          if (error) throw error
+          if (data) newCalloutId = data
+          calloutCreated = true
+          console.log('✅ [CALLOUT] Callout created via RPC:', newCalloutId);
+        } catch (rpcError: any) {
+          console.log('⚠️ [CALLOUT] RPC function not available, using direct insert:', rpcError)
           // Fall through to direct insert
         }
+      } else {
+        // Placeholder asset - set asset details from context
+        if (companyId && siteId) {
+          assetDetailsForTasks = { company_id: companyId, site_id: siteId };
+        }
       }
-        
+      
       // Fallback to direct insert (or use if no asset ID)
       if (!calloutCreated) {
         try {
@@ -387,35 +659,36 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             assetData = loadedAssetData;
             companyIdFromAsset = assetData.company_id;
             siteIdFromAsset = assetData.site_id;
+            // Store for task creation
+            assetDetailsForTasks = { company_id: companyIdFromAsset, site_id: siteIdFromAsset };
           } else {
             // Placeholder asset - get company/site from context
-            companyIdFromAsset = ctxCompanyId;
-            siteIdFromAsset = ctxSiteId;
+            companyIdFromAsset = companyId || null;
+            siteIdFromAsset = siteId || null;
+            assetDetailsForTasks = { company_id: companyIdFromAsset, site_id: siteIdFromAsset };
           }
           
           if (!companyIdFromAsset || !siteIdFromAsset) {
             throw new Error('Missing company or site information');
           }
 
-          // Handle manual contractor entry - store in notes if no contractor ID available
-          let contractorId = null;
-          if (assetData) {
-            contractorId = calloutType === 'ppm' ? assetData.ppm_contractor_id :
+          // Use finalContractorId from outer scope (set earlier)
+          // If not set yet, fallback to asset's contractor for this callout
+          let contractorIdForCallout = finalContractorId;
+          if (!contractorIdForCallout && assetData) {
+            contractorIdForCallout = calloutType === 'ppm' ? assetData.ppm_contractor_id :
                              calloutType === 'warranty' ? assetData.warranty_contractor_id :
-                           assetData.reactive_contractor_id || asset.reactive_contractor_id;
-          } else {
-            // For placeholder assets, use contractor ID from asset if available
-            contractorId = asset.reactive_contractor_id;
+                           assetData.reactive_contractor_id;
           }
 
           const calloutData: any = {
               company_id: companyIdFromAsset,
               asset_id: asset.id || null, // Allow null if no asset (placeholder asset)
               site_id: siteIdFromAsset,
-              contractor_id: contractorId, // May be null if manual entry
+              contractor_id: contractorIdForCallout, // May be null if manual entry
             created_by: userId,
               callout_type: calloutType,
-              priority: priority,
+              priority: 'urgent', // All callouts are urgent
             status: 'open', // Explicitly set status to 'open'
               fault_description: faultDescription || null,
               notes: calloutNotes,
@@ -465,6 +738,11 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
           calloutCreated = true
           newCalloutId = calloutResult?.id || null
           console.log('✅ Callout created successfully:', calloutResult?.id)
+          
+          // Store asset details for task creation (reuse from above)
+          if (!assetDetailsForTasks && assetData) {
+            assetDetailsForTasks = { company_id: assetData.company_id, site_id: assetData.site_id };
+          }
         } catch (tableError: any) {
           const errorDetails = {
             message: tableError.message || 'Unknown error',
@@ -486,170 +764,282 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         }
       }
 
-      if (!calloutCreated) {
+      if (!calloutCreated || !newCalloutId) {
         throw new Error('Failed to create callout')
       }
 
-      // Create follow-up task for tomorrow if callout was created
-      if (newCalloutId && asset) {
-        try {
-          // Get asset details for company_id and site_id
-          const { data: assetDetails, error: assetError } = await supabase
-            .from('assets')
-            .select('company_id, site_id')
-            .eq('id', asset.id)
-            .single()
-
-          if (assetError) {
-            console.error('Error fetching asset details for follow-up task:', {
-              message: assetError.message,
-              code: assetError.code,
-              details: assetError.details,
-              hint: assetError.hint
-            })
-            // Continue without creating follow-up task, but don't exit the function
-            // The callout was already created successfully
-          } else if (assetDetails) {
-            const tomorrow = new Date()
-            tomorrow.setDate(tomorrow.getDate() + 1)
-            const tomorrowDate = tomorrow.toISOString().split('T')[0]
-
-            // Create follow-up task (no template_id needed for callout follow-ups)
-            const taskData: any = {
-              company_id: assetDetails.company_id,
-              site_id: assetDetails.site_id,
-              due_date: tomorrowDate,
-              due_time: '09:00', // Default to 9 AM
-              daypart: 'during_service',
-              assigned_to_role: 'manager',
-              status: 'pending',
-              priority: priority === 'urgent' ? 'critical' : priority === 'medium' ? 'high' : 'high',
-              flagged: true,
-              flag_reason: 'callout_followup',
-              generated_at: new Date().toISOString(),
-            }
-
-            // Try to create follow-up task with callout_id first
-            // If migration hasn't been run, fall back to creating without it
-            const taskDataWithCallout: any = {
-              ...taskData,
-              template_id: null, // Nullable after migration
-              callout_id: newCalloutId
-            }
-
-            let taskError = null
-            let { error: initialError } = await supabase
-              .from('checklist_tasks')
-              .insert(taskDataWithCallout)
-
-            // If error is about missing callout_id column, try without it (migration not run)
-            if (initialError && (initialError.code === 'PGRST204' || initialError.message?.includes("callout_id"))) {
-              console.warn('callout_id column not found - migration may not be run. Attempting to create task without callout_id...')
-              
-              // Check if template_id can be null (migration might be partially run)
-              // Try with a dummy template_id first, then with null
-              const fallbackData: any = {
-                ...taskData,
-                template_id: taskData.template_id || '00000000-0000-0000-0000-000000000000' // Dummy UUID if null not allowed
-              }
-              
-              // Remove callout_id since column doesn't exist
-              delete fallbackData.callout_id
-              
-              const { error: fallbackError } = await supabase
-                .from('checklist_tasks')
-                .insert(fallbackData)
-              
-              if (fallbackError) {
-                taskError = fallbackError
-                console.error('Error creating follow-up task (fallback):', {
-                  message: fallbackError.message,
-                  code: fallbackError.code,
-                  details: fallbackError.details,
-                  hint: fallbackError.hint
-                })
-              } else {
-                console.warn('⚠️ Follow-up task created without callout_id. Please run migration: supabase/migrations/20250128000002_add_callout_followup_tasks.sql')
-              }
-            } else if (initialError) {
-              taskError = initialError
-              console.error('Error creating follow-up task:', {
-                message: initialError.message,
-                code: initialError.code,
-                details: initialError.details,
-                hint: initialError.hint,
-                attemptedData: taskDataWithCallout
-              })
-              
-              // If error is about missing column, the migration hasn't been run
-              if (initialError.code === '42703' || (initialError.message?.includes('column') && initialError.message?.includes('does not exist'))) {
-                console.warn('Callout follow-up task feature requires database migration. Please run: supabase/migrations/20250128000002_add_callout_followup_tasks.sql')
-              }
-            } else {
-              // Get the created task to verify
-              const { data: createdTask } = await supabase
-                .from('checklist_tasks')
-                .select('id, due_date, due_time, callout_id, flag_reason')
-                .eq('callout_id', newCalloutId)
-                .eq('due_date', tomorrowDate)
-                .single()
-              
-              if (createdTask) {
-                console.log('✅ Follow-up task created successfully:', {
-                  taskId: createdTask.id,
-                  dueDate: createdTask.due_date,
-                  dueTime: createdTask.due_time,
-                  calloutId: createdTask.callout_id,
-                  flagReason: createdTask.flag_reason
-                })
-                
-                // Show toast with task details
-                showToast({
-                  title: 'Follow-up task scheduled',
-                  description: `Task created for ${new Date(tomorrowDate).toLocaleDateString()} at ${createdTask.due_time || '09:00'}`,
-                  type: 'success'
-                })
-              } else {
-                console.log('✅ Follow-up task created successfully')
-              }
-            }
-            
-            // Don't fail callout creation if task creation fails
-          }
-        } catch (taskError: any) {
-          console.error('Exception creating follow-up task:', {
-            message: taskError?.message || 'Unknown error',
-            stack: taskError?.stack,
-            error: taskError
-          })
-          // Don't fail callout creation if task creation fails
+      // Get asset details for task creation
+      // Use assetDetailsForTasks if already loaded, otherwise fetch
+      let assetDetails = assetDetailsForTasks;
+      
+      if (!assetDetails && asset.id) {
+        // Fetch asset details if not already loaded
+        const { data, error } = await supabase
+          .from('assets')
+          .select('company_id, site_id')
+          .eq('id', asset.id)
+          .single();
+        
+        if (error) {
+          console.error('❌ [CALLOUT] Error fetching asset details for tasks:', error);
+          throw new Error(`Failed to load asset details: ${error.message}`);
         }
+        assetDetails = data;
+      } else if (!assetDetails && !asset.id) {
+        // Placeholder asset - use context
+        if (!companyId || !siteId) {
+          throw new Error('Missing company or site information for task creation');
+        }
+        assetDetails = { company_id: companyId, site_id: siteId };
+      }
+
+      if (!assetDetails || !assetDetails.company_id || !assetDetails.site_id) {
+        throw new Error('Missing asset details for task creation');
+      }
+
+      // Create tasks after callout is created
+      console.log('📋 [CALLOUT] Creating tasks...');
+      const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const expiresAt = tomorrow.toISOString(); // 24 hours from now
+
+      // 🔒 LOCKED: Step 1 - Create Callout Report Task (Completed Task Record)
+      // This creates an immutable audit trail with all troubleshooting data
+      // See CALLOUT_SYSTEM_LOCKED.md for details
+      const reportTaskData: any = {
+        company_id: assetDetails.company_id,
+        site_id: assetDetails.site_id,
+        due_date: today,
+        due_time: new Date().toTimeString().slice(0, 5),
+        daypart: 'during_service',
+        assigned_to_role: 'manager',
+        status: 'pending', // Will be marked completed after record creation
+        priority: 'high',
+        flagged: true,
+        flag_reason: 'callout_report',
+        generated_at: new Date().toISOString(),
+        custom_name: `Callout Report: ${asset.name} - ${calloutType}`,
+        custom_instructions: `Callout report created on ${new Date().toLocaleDateString()}`,
+        task_data: {
+          callout_id: newCalloutId,
+          callout_type: calloutType,
+          asset_id: asset.id,
+          asset_name: asset.name,
+          fault_description: faultDescription || null,
+          troubleshooting_completed: troubleshootAck,
+          troubleshooting_questions: troubleshootingQuestions,
+          troubleshooting_answers: troubleshootingQuestions.map((_, idx) => {
+            const answer = troubleshootingAnswersMap.get(idx);
+            return answer || 'completed';
+          }),
+          troubleshooting: Object.fromEntries(
+            troubleshootingQuestions.map((question, idx) => {
+              const answer = troubleshootingAnswersMap.get(idx);
+              return [question, answer || 'completed'];
+            })
+          ),
+          notes: notes || null,
+          photos: attachmentUrls,
+          contractor_id: finalContractorId,
+          contractor_name: showCustomContractorInput ? manualContractorName : (contractors.find(c => c.id === selectedContractorId)?.name || null),
+          manual_contractor_email: showCustomContractorInput ? manualContractorEmail : null
+        }
+      };
+
+      // Create the report task (try with null template_id first, fallback if needed)
+      const { data: reportTask, error: reportTaskError } = await supabase
+        .from('checklist_tasks')
+        .insert({ ...reportTaskData, template_id: null, callout_id: newCalloutId })
+        .select()
+        .single();
+
+      // Handle template_id null constraint (fallback to dummy UUID if needed)
+      let finalReportTask = reportTask;
+      if (reportTaskError && reportTaskError.message?.includes('template_id')) {
+        console.warn('⚠️ [CALLOUT] template_id cannot be null, using dummy UUID');
+        const { data: fallbackTask, error: fallbackError } = await supabase
+          .from('checklist_tasks')
+          .insert({ ...reportTaskData, template_id: '00000000-0000-0000-0000-000000000000' })
+          .select()
+          .single();
+        
+        if (fallbackError) {
+          console.error('❌ [CALLOUT] Error creating report task:', fallbackError);
+        } else {
+          finalReportTask = fallbackTask;
+        }
+      } else if (reportTaskError) {
+        console.error('❌ [CALLOUT] Error creating report task:', reportTaskError);
+      }
+
+      // Create completed task record if report task was created
+      if (finalReportTask) {
+        console.log('✅ [CALLOUT] Report task created:', finalReportTask.id);
+        
+        const completionRecord: any = {
+          task_id: finalReportTask.id,
+          template_id: finalReportTask.template_id || '00000000-0000-0000-0000-000000000000',
+          company_id: assetDetails.company_id,
+          site_id: assetDetails.site_id,
+          completed_by: userId,
+          completed_at: new Date().toISOString(),
+          duration_seconds: 0,
+          completion_data: {
+            callout_id: newCalloutId,
+            callout_type: calloutType,
+            asset_id: asset.id,
+            asset_name: asset.name,
+            fault_description: faultDescription || null,
+            troubleshooting_completed: troubleshootAck,
+            troubleshooting_questions: troubleshootingQuestions,
+            // 🔒 LOCKED: Troubleshooting answers must be stored in BOTH formats
+            // Format 1: Array for sequential access
+            troubleshooting_answers: troubleshootingQuestions.map((_, idx) => {
+              const answer = troubleshootingAnswersMap.get(idx);
+              return answer || 'completed'; // Use actual answer ('yes' or 'no') or 'completed' as fallback
+            }),
+            // Format 2: Object for question-based lookup (used by CompletedTaskCard)
+            troubleshooting: Object.fromEntries(
+              troubleshootingQuestions.map((question, idx) => {
+                const answer = troubleshootingAnswersMap.get(idx);
+                return [question, answer || 'completed'];
+              })
+            ),
+            notes: notes || null,
+            contractor_id: finalContractorId,
+            contractor_name: showCustomContractorInput ? manualContractorName : (contractors.find(c => c.id === selectedContractorId)?.name || null),
+            manual_contractor_email: showCustomContractorInput ? manualContractorEmail : null
+          },
+          evidence_attachments: attachmentUrls,
+          flagged: true,
+          flag_reason: 'callout_report',
+          sop_acknowledged: false,
+          risk_acknowledged: false
+        };
+
+        const { data: completionRecordData, error: completionError } = await supabase
+          .from('task_completion_records')
+          .insert(completionRecord)
+          .select()
+          .single();
+
+        if (completionError) {
+          console.error('❌ [CALLOUT] Error creating completion record:', completionError);
+        } else {
+          console.log('✅ [CALLOUT] Completion record created:', completionRecordData.id);
+
+          // Mark the report task as completed
+          await supabase
+            .from('checklist_tasks')
+            .update({
+              status: 'completed',
+              completed_at: new Date().toISOString(),
+              completed_by: userId
+            })
+            .eq('id', finalReportTask.id);
+        }
+      }
+
+      // 🔒 LOCKED: Step 2 - Create Follow-Up Task for TODAY (24-hour window)
+      // This allows user to update callout status and upload worksheet
+      // See CALLOUT_SYSTEM_LOCKED.md for details
+      const followupTaskData: any = {
+        company_id: assetDetails.company_id,
+        site_id: assetDetails.site_id,
+        due_date: today, // TODAY, not tomorrow
+        due_time: new Date().toTimeString().slice(0, 5),
+        daypart: 'during_service',
+        assigned_to_role: 'manager',
+        status: 'pending',
+        priority: 'high',
+        flagged: true,
+        flag_reason: 'callout_followup',
+        generated_at: new Date().toISOString(),
+        expires_at: expiresAt, // 24 hours from now
+        custom_name: `Callout Follow-up: ${asset.name}`,
+        custom_instructions: `Follow-up task for callout created on ${new Date().toLocaleDateString()}. Update callout status and upload worksheet when complete. This task expires in 24 hours.`,
+        task_data: {
+          callout_id: newCalloutId,
+          callout_status: 'not_yet_visited',
+          asset_id: asset.id,
+          asset_name: asset.name,
+          requires_worksheet_upload: true,
+          fault_description: faultDescription || null
+        }
+      };
+
+      // Create follow-up task (try with null template_id first, fallback if needed)
+      const { data: followupTask, error: followupTaskError } = await supabase
+        .from('checklist_tasks')
+        .insert({ ...followupTaskData, template_id: null, callout_id: newCalloutId })
+        .select()
+        .single();
+
+      // Handle template_id null constraint (fallback to dummy UUID if needed)
+      if (followupTaskError && followupTaskError.message?.includes('template_id')) {
+        console.warn('⚠️ [CALLOUT] template_id cannot be null for follow-up task, using dummy UUID');
+        const { data: fallbackFollowup, error: fallbackError } = await supabase
+          .from('checklist_tasks')
+          .insert({ ...followupTaskData, template_id: '00000000-0000-0000-0000-000000000000' })
+          .select()
+          .single();
+        
+        if (fallbackError) {
+          console.error('❌ [CALLOUT] Error creating follow-up task:', fallbackError);
+        } else {
+          console.log('✅ [CALLOUT] Follow-up task created:', fallbackFollowup?.id);
+        }
+      } else if (followupTaskError) {
+        // Handle missing callout_id column (migration not run)
+        if (followupTaskError.code === 'PGRST204' || followupTaskError.message?.includes('callout_id')) {
+          console.warn('⚠️ [CALLOUT] callout_id column not found, creating task without it');
+          const { data: fallbackFollowup, error: fallbackError } = await supabase
+            .from('checklist_tasks')
+            .insert({ ...followupTaskData, template_id: '00000000-0000-0000-0000-000000000000' })
+            .select()
+            .single();
+          
+          if (fallbackError) {
+            console.error('❌ [CALLOUT] Error creating follow-up task (fallback):', fallbackError);
+          } else {
+            console.log('✅ [CALLOUT] Follow-up task created (without callout_id):', fallbackFollowup?.id);
+          }
+        } else {
+          console.error('❌ [CALLOUT] Error creating follow-up task:', followupTaskError);
+        }
+      } else if (followupTask) {
+        console.log('✅ [CALLOUT] Follow-up task created successfully:', {
+          taskId: followupTask.id,
+          dueDate: followupTask.due_date,
+          expiresAt: expiresAt
+        });
       }
 
       showToast({ 
         title: 'Callout created successfully', 
-        description: 'The contractor has been notified',
+        description: 'Callout report and follow-up task have been created',
         type: 'success' 
       });
+
+      console.log('✅ [CALLOUT] Callout creation complete, closing modal...');
 
       // Reset form
       setFaultDescription('');
       setNotes('');
       setTroubleshootAck(false);
+      setTroubleshootingAnswersMap(new Map());
       setAttachments([]);
+      setPhotoPreviewUrls([]);
       setShowTroubleshootModal(false);
       
-      // Reload callouts immediately, then again after a delay to ensure data is fresh
-      await loadCallouts();
+      // Close modal
+      onClose();
       
-      // Switch to active tab
-      setActiveTab('active');
-      
-      // Reload again after a short delay to ensure the newly created callout appears
-      setTimeout(async () => {
-        await loadCallouts();
-        console.log('Reloaded callouts, active count:', callouts.filter(c => c.status === 'open').length);
-      }, 800);
+      // Reload callouts in background (in case modal is reopened)
+      setTimeout(() => {
+        loadCallouts();
+      }, 500);
     } catch (error: any) {
       const errorDetails = {
         message: error?.message || 'Unknown error',
@@ -819,51 +1209,6 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   };
 
 
-  const PrioritySlider = () => {
-    const options = [
-      { value: 'low', label: 'Low' },
-      { value: 'medium', label: 'Medium' },
-      { value: 'urgent', label: 'Urgent' }
-    ];
-
-    return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="flex rounded-md bg-white/5 backdrop-blur p-[2px] overflow-hidden h-[38px]">
-          <div className="relative flex w-full">
-            {/* Shared sliding indicator */}
-            <motion.div
-              layoutId="priority-indicator"
-              className="absolute inset-y-0 bg-fuchsia-500/10 border border-fuchsia-400/40 rounded-md shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] shadow-black/20"
-              transition={{
-                type: "spring",
-                stiffness: 420,
-                damping: 34
-              }}
-              style={{
-                width: `${100/3}%`,
-                left: `${(priority === 'low' ? 0 : priority === 'medium' ? 1 : 2) * (100/3)}%`
-              }}
-            />
-            
-            {/* Button labels */}
-            {options.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setPriority(option.value as 'low' | 'medium' | 'urgent')}
-                className={`flex-1 flex items-center justify-center text-base font-medium transition-colors duration-200 ${
-                  priority === option.value
-                    ? 'text-fuchsia-200'
-                    : 'text-zinc-300 hover:text-white'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   // Fetch troubleshooting questions based on asset category
   const fetchTroubleshootingQuestions = async () => {
@@ -907,6 +1252,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
   };
 
   // Fetch troubleshooting questions when modal opens and asset is available
+  // Note: Questions are based on asset category, NOT callout type, so they don't need to be refetched when callout type changes
   useEffect(() => {
     if (open && asset?.category) {
       fetchTroubleshootingQuestions();
@@ -1053,139 +1399,233 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         <div className="py-6">
           {activeTab === 'new' && (
             <div className="space-y-6">
+              {/* Priority Badge - All callouts are urgent */}
+              <div className="flex items-center justify-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500/40 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 text-red-400" />
+                  <span className="text-sm font-medium text-red-400">Urgent Priority</span>
+                </div>
+              </div>
 
               {/* Fault description */}
               {calloutType !== 'ppm' && (
                 <div>
-                  <label className="text-sm text-neutral-400 mb-2 block">Fault Description *</label>
+                  <label className="text-sm font-medium text-white mb-2 block">
+                    Fault Description <span className="text-red-400">*</span>
+                    {!faultDescription.trim() && (
+                      <span className="ml-2 text-xs text-yellow-400">(Required)</span>
+                    )}
+                  </label>
                   <textarea
                     value={faultDescription}
-                    onChange={(e) => setFaultDescription(e.target.value)}
+                    onChange={(e) => {
+                      console.log('📝 [CALLOUT] Fault description changed:', e.target.value);
+                      setFaultDescription(e.target.value);
+                    }}
                     placeholder="Describe the fault or issue..."
-                    className="w-full h-24 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
+                    className={`w-full h-24 px-4 py-3 bg-neutral-800/50 border rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
+                      !faultDescription.trim() 
+                        ? 'border-yellow-500/50 focus:ring-yellow-500/50 focus:border-yellow-500/50' 
+                        : 'border-neutral-700 focus:ring-magenta-500/50 focus:border-magenta-500/50'
+                    }`}
                     required
                   />
-            </div>
-          )}
-
-              {/* Priority Slider */}
-              <div className="space-y-3">
-                <label className="text-sm text-neutral-400 block text-center">Priority</label>
-                <PrioritySlider />
-              </div>
-
-              {/* Manual Contractor Entry - Show when no contractor is linked */}
-              {requiresManualContractorEntry() && (
-                <div className="space-y-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                    <h4 className="text-sm font-semibold text-yellow-400">
-                      Contractor Information Required
-                    </h4>
-                  </div>
-                  <p className="text-xs text-yellow-300/80">
-                    {asset.contractorType === 'fire_panel_company' 
-                      ? 'No fire panel company linked to this site. Please provide contractor details.'
-                      : asset.contractorType === 'electrician'
-                      ? 'No electrician linked to this site. Please provide contractor details.'
-                      : 'No contractor linked. Please provide contractor details.'}
-                  </p>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm text-neutral-400 mb-2 block">
-                        Contractor Name <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={manualContractorName}
-                        onChange={(e) => setManualContractorName(e.target.value)}
-                        placeholder="Enter contractor name..."
-                        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm text-neutral-400 mb-2 block">
-                        Contractor Email <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={manualContractorEmail}
-                        onChange={(e) => setManualContractorEmail(e.target.value)}
-                        placeholder="Enter contractor email..."
-                        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40"
-                        required
-                      />
-                    </div>
-                  </div>
+                  {!faultDescription.trim() && (
+                    <p className="mt-1 text-xs text-yellow-400">
+                      Please enter a fault description to continue
+                    </p>
+                  )}
                 </div>
               )}
 
+              {/* Contractor Selection */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-white block">
+                  Contractor <span className="text-red-400">*</span>
+                </label>
+                
+                {!showCustomContractorInput ? (
+                  <div className="space-y-3">
+                    <select
+                      value={selectedContractorId || ''}
+                      onChange={(e) => {
+                        if (e.target.value === 'custom') {
+                          setShowCustomContractorInput(true);
+                          setSelectedContractorId(null);
+                        } else {
+                          setSelectedContractorId(e.target.value);
+                        }
+                      }}
+                      className="w-full px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-magenta-500/50 focus:border-magenta-500/50 transition-all"
+                      disabled={loadingContractors}
+                    >
+                      <option value="">Select a contractor...</option>
+                      {contractors.map((contractor) => (
+                        <option key={contractor.id} value={contractor.id}>
+                          {contractor.name}{contractor.email ? ` (${contractor.email})` : ''}
+                        </option>
+                      ))}
+                      <option value="custom">+ Add Custom Contractor</option>
+                    </select>
+                    
+                    {selectedContractorId && (
+                      <div className="p-3 bg-neutral-800/30 border border-neutral-700 rounded-lg">
+                        <p className="text-sm text-white font-medium">
+                          {contractors.find(c => c.id === selectedContractorId)?.name}
+                        </p>
+                        {contractors.find(c => c.id === selectedContractorId)?.email && (
+                          <p className="text-xs text-neutral-400 mt-1">
+                            {contractors.find(c => c.id === selectedContractorId)?.email}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-yellow-400">Custom Contractor</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowCustomContractorInput(false);
+                          setManualContractorName('');
+                          setManualContractorEmail('');
+                        }}
+                        className="text-xs text-neutral-400 hover:text-white"
+                      >
+                        Use existing contractor
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={manualContractorName}
+                      onChange={(e) => setManualContractorName(e.target.value)}
+                      placeholder="Contractor name *"
+                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+                      required
+                    />
+                    <input
+                      type="email"
+                      value={manualContractorEmail}
+                      onChange={(e) => setManualContractorEmail(e.target.value)}
+                      placeholder="Contractor email (optional)"
+                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Troubleshooting Button */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-white text-center">Troubleshooting Checklist</h4>
-                <div className="flex justify-center">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-white">Troubleshooting</label>
+                  {!troubleshootAck && (
+                    <span className="text-xs text-yellow-400">Required</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTroubleshootModal(true)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
+                >
+                  <Wrench className="h-4 w-4" />
+                  <span>{troubleshootAck ? 'Troubleshooting Complete ✓' : 'Open Troubleshooting Guide'}</span>
+                </button>
+              </div>
+        
+              {/* Photo upload with camera capture */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-white block">Photos</label>
+                
+                {/* Photo previews */}
+                {photoPreviewUrls.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3">
+                    {photoPreviewUrls.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={url}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border border-neutral-700"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handlePhotoRemove(index)}
+                          className="absolute top-1 right-1 p-1 bg-red-500/80 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Photo capture buttons */}
+                <div className="flex gap-3">
                   <button
-                    onClick={() => setShowTroubleshootModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                    title="Open Troubleshooting Guide"
+                    type="button"
+                    onClick={handleCameraCapture}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
                   >
-                    🔧 Troubleshoot
+                    <Camera className="h-4 w-4" />
+                    <span className="text-sm">Take Photo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePhotoUpload}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span className="text-sm">Upload Photo</span>
                   </button>
                 </div>
               </div>
-        
-              {/* Photo upload */}
+              
+              {/* Additional Notes */}
               <div>
-                <label className="text-sm text-neutral-400 mb-2 block">Photos</label>
-                <div className="border-2 border-dashed border-neutral-600 rounded-lg p-4 text-center">
-                  <Camera className="mx-auto h-8 w-8 text-neutral-400 mb-2" />
-                  <p className="text-sm text-neutral-400">Click to upload photos</p>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) => setAttachments(Array.from(e.target.files || []))}
-                    className="hidden"
-                    id="photo-upload"
-                  />
-                  <label htmlFor="photo-upload" className="cursor-pointer">
-                    <Button variant="outline" size="sm" className="mt-2">
-                      <Upload size={14} className="mr-1" />
-                      Upload Photos
-                    </Button>
-                  </label>
-                </div>
-        </div>
+                <label className="text-sm font-medium text-white mb-2 block">Additional Notes (Optional)</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any additional notes..."
+                  className="w-full h-20 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-magenta-500/50 focus:border-magenta-500/50 transition-all"
+                />
+              </div>
         
-              {/* Contact button with custom modal */}
-
               {/* CTA Bar */}
-              <div className="flex justify-between items-center mt-6">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setShowCallOptions(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm"
-                    title="Call Options"
-                  >
-                    📞 Call Options
-                  </button>
-                  <button
-                    onClick={handleCreateCallout}
-                    disabled={loading || !troubleshootAck}
-                    className="flex items-center gap-2 px-4 py-2 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors text-sm disabled:cursor-not-allowed"
-                    title="Send Call-Out"
-                  >
-                    <img src="/logo/send_icon.png" alt="Send" className="w-4 h-4 brightness-150" />
-                    Send
-                  </button>
-                </div>
+              <div className="flex gap-3 pt-4 border-t border-neutral-700">
                 <button
-            onClick={onClose}
-                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800/50 border border-neutral-600 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-colors rounded-lg text-sm"
-                  title="Close"
-          >
-            Close
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCallOptions(true)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                >
+                  <Phone className="h-4 w-4" />
+                  Call Options
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    console.log('🔴 [BUTTON CLICK] Send Callout button clicked directly');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCreateCallout(e);
+                  }}
+                  disabled={loading || !troubleshootAck}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:text-neutral-500 transition-all text-sm font-medium"
+                >
+                  {loading ? 'Sending...' : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Send Callout
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -1430,13 +1870,16 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               )}
               <div className="flex justify-between">
                 <span className="text-neutral-400">Priority:</span>
-                <span className="text-white capitalize">{priority}</span>
+                <span className="text-white font-medium text-red-400">Urgent</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-400">Contractor:</span>
                 <span className="text-white">
-                  {manualContractorName || getContractorInfo() || 'N/A'}
-                  {manualContractorEmail && ` (${manualContractorEmail})`}
+                  {showCustomContractorInput 
+                    ? `${manualContractorName}${manualContractorEmail ? ` (${manualContractorEmail})` : ''}`
+                    : selectedContractorId 
+                      ? contractors.find(c => c.id === selectedContractorId)?.name || 'N/A'
+                      : 'Not selected'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -1455,9 +1898,9 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               <button
                 onClick={handleConfirmCreateCallout}
                 disabled={loading}
-                className="px-4 py-2 bg-magenta-500 hover:bg-magenta-600 text-white rounded-lg disabled:opacity-50 transition-colors"
+                className="px-4 py-2 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                {loading ? 'Sending...' : 'Confirm & Send'}
+                {loading ? 'Sending...' : 'Send Callout'}
               </button>
             </div>
           </div>
@@ -1582,7 +2025,16 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               <div>
               <TroubleshootReel 
                 items={troubleshootingQuestions}
-                onComplete={() => {
+                onComplete={(answers) => {
+                  if (answers) {
+                    setTroubleshootingAnswersMap(answers);
+                    // Convert answers map to array format for storage
+                    const answersArray = troubleshootingQuestions.map((_, idx) => {
+                      const answer = answers.get(idx);
+                      return answer || null;
+                    });
+                    console.log('✅ Troubleshooting answers captured:', answersArray);
+                  }
                   setTroubleshootAck(true);
                   setShowTroubleshootModal(false);
                 }}
@@ -1618,6 +2070,53 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 )}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Validation Modal */}
+      {showValidationModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-neutral-900 border-2 border-yellow-500/50 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="p-3 bg-yellow-500/20 rounded-lg">
+                <AlertTriangle className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-white mb-2">Complete All Required Fields</h3>
+                <p className="text-neutral-400 text-sm">
+                  Please complete the following required fields before submitting the callout:
+                </p>
+              </div>
+              <button
+                onClick={() => setShowValidationModal(false)}
+                className="text-neutral-400 hover:text-white transition-colors p-1"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {validationErrors.map((error, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg"
+                >
+                  <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-white text-sm">{error}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowValidationModal(false)}
+                className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+              >
+                I'll Complete These Fields
+              </button>
+            </div>
           </div>
         </div>
       )}

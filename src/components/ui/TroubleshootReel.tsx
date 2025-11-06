@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
+// 🔒 LOCKED: TroubleshootReel interface - DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
+// The onComplete callback MUST receive the answers Map to capture actual Yes/No responses
 interface TroubleshootReelProps {
   items: string[];
-  onComplete: () => void;
+  onComplete: (answers?: Map<number, 'yes' | 'no'>) => void; // 🔒 CRITICAL: Must pass answers back
   onStepChange?: (stepIndex: number) => void;
 }
 
@@ -34,12 +36,14 @@ export default function TroubleshootReel({
       return newAnswers;
     });
     
-    // Check if all questions are answered
+    // 🔒 LOCKED: Pass answers back via onComplete callback
+    // This is critical for callout system to capture actual Yes/No responses
+    // DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
     const newAnswers = new Map(answers);
     newAnswers.set(questionIndex, answer);
     if (newAnswers.size === items.length) {
       setTimeout(() => {
-        onComplete();
+        onComplete(newAnswers); // 🔒 CRITICAL: Must pass answers map, not just completion status
       }, 500);
     }
   };
