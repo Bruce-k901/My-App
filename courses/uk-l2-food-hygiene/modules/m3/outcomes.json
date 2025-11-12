@@ -1,0 +1,33 @@
+{
+  "outcomes": [
+    {
+      "id": "L2-3.1",
+      "statement": "Understand the importance of thorough cleaning and disinfection."
+    },
+    { "id": "L2-3.2", "statement": "Know the correct cleaning cycle and contact times." },
+    { "id": "L2-3.3", "statement": "Identify sources and routes of cross-contamination." },
+    {
+      "id": "L2-3.4",
+      "statement": "Recognise how to prevent cross-contamination through proper practice."
+    },
+    { "id": "L2-3.5", "statement": "Apply cleaning and disinfection principles in everyday work." }
+  ],
+  "mapping": [
+    { "page_id": "m3_p1", "outcome_id": "L2-3.1" },
+    { "page_id": "m3_p2", "outcome_id": "L2-3.1" },
+    { "page_id": "m3_p2", "outcome_id": "L2-3.2" },
+    { "page_id": "m3_p3", "outcome_id": "L2-3.2" },
+    { "page_id": "m3_p4", "outcome_id": "L2-3.3" },
+    { "page_id": "m3_p5", "outcome_id": "L2-3.3" },
+    { "page_id": "m3_p5", "outcome_id": "L2-3.4" },
+    { "page_id": "m3_p6", "outcome_id": "L2-3.4" },
+    { "page_id": "m3_p7", "outcome_id": "L2-3.5" },
+    { "quiz_id": "m3_q1", "outcome_id": "L2-3.1" },
+    { "quiz_id": "m3_q2", "outcome_id": "L2-3.2" },
+    { "quiz_id": "m3_q3", "outcome_id": "L2-3.2" },
+    { "quiz_id": "m3_q4", "outcome_id": "L2-3.3" },
+    { "quiz_id": "m3_q4", "outcome_id": "L2-3.4" },
+    { "quiz_id": "m3_q5", "outcome_id": "L2-3.3" },
+    { "quiz_id": "m3_q6", "outcome_id": "L2-3.5" }
+  ]
+}

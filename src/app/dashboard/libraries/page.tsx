@@ -17,7 +17,7 @@ export default function LibrariesPage() {
         return;
       }
       setLoading(true);
-      const [ingredients, ppe, chemicals, drinks, disposables, glassware, packaging, equipment, appliances] = await Promise.all([
+      const [ingredients, ppe, chemicals, drinks, disposables, glassware, packaging, equipment, appliances, firstAid] = await Promise.all([
         supabase.from('ingredients_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('ppe_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('chemicals_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
@@ -27,6 +27,7 @@ export default function LibrariesPage() {
         supabase.from('packaging_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('equipment_library').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
         supabase.from('pat_appliances').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
+        supabase.from('first_aid_supplies_library').select('id', { count: 'exact', head: true }).or(`company_id.eq.${companyId},company_id.is.null`),
       ]);
       setCounts({
         ingredients: ingredients.count || 0,
@@ -38,6 +39,7 @@ export default function LibrariesPage() {
         packaging: packaging.count || 0,
         equipment: equipment.count || 0,
         appliances: appliances.count || 0,
+        firstAid: firstAid.count || 0,
       });
       setLoading(false);
     };
@@ -54,6 +56,7 @@ export default function LibrariesPage() {
     { id: 'packaging', name: 'Packaging', href: '/dashboard/libraries/packaging' },
     { id: 'equipment', name: 'Serving Equipment', href: '/dashboard/libraries/serving-equipment' },
     { id: 'appliances', name: 'Appliances', href: '/dashboard/libraries/appliances' },
+    { id: 'firstAid', name: 'First Aid Supplies', href: '/dashboard/libraries/first-aid' },
   ];
 
   return (

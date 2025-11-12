@@ -70,9 +70,12 @@ BEGIN
         END IF;
         
         -- Get all active sites
+        -- Filter by company_id if template is company-specific (not global)
         FOR v_site IN 
-          SELECT id, company_id FROM sites WHERE (status IS NULL OR status != 'inactive')
-          AND (v_template.site_id IS NULL OR id = v_template.site_id)
+          SELECT id, company_id FROM sites 
+          WHERE (status IS NULL OR status != 'inactive')
+            AND (v_template.site_id IS NULL OR id = v_template.site_id)
+            AND (v_template.company_id IS NULL OR company_id = v_template.company_id)
         LOOP
           -- Check existing tasks for this template/site/date
           -- Check by both daypart AND due_time to avoid duplicates for multiple times
@@ -156,7 +159,7 @@ BEGIN
                         v_site.company_id,
                         v_site.id,
                         v_today,
-                        v_time_str, -- Use the specific time for this daypart
+                        v_time_str::TIME, -- Use the specific time for this daypart, cast to TIME
                         v_daypart,
                         v_template.assigned_to_role,
                         v_template.assigned_to_user_id,
@@ -168,7 +171,8 @@ BEGIN
                           'dayparts', v_dayparts,
                           'daypart_times', v_daypart_times, -- Store daypart_times mapping for reference
                           'daypart', v_daypart, -- Store which daypart this task is for
-                          'time', v_time_str -- Store which time this task is for
+                          'time', v_time_str, -- Store which time this task is for
+                          'checklistItems', COALESCE((v_template.recurrence_pattern->'default_checklist_items')::jsonb, '[]'::jsonb) -- Auto-populate checklist items from template
                         )
                       );
                       v_daily_count := v_daily_count + 1;
@@ -197,8 +201,9 @@ BEGIN
         v_pattern jsonb := v_template.recurrence_pattern;
         v_target_days int[];
       BEGIN
-        IF v_pattern ? 'weeks' THEN
-          v_target_days := ARRAY(SELECT jsonb_array_elements_text(v_pattern->'weeks')::int);
+        -- Use 'days' field (not 'weeks') - array of day numbers (0=Sunday, 1=Monday, etc.)
+        IF v_pattern ? 'days' THEN
+          v_target_days := ARRAY(SELECT jsonb_array_elements_text(v_pattern->'days')::int);
         ELSE
           v_target_days := ARRAY[1]; -- Default to Monday
         END IF;
@@ -214,52 +219,113 @@ BEGIN
         END IF;
         
         -- Get all active sites
+        -- Filter by company_id if template is company-specific (not global)
         FOR v_site IN 
-          SELECT id, company_id FROM sites WHERE (status IS NULL OR status != 'inactive')
-          AND (v_template.site_id IS NULL OR id = v_template.site_id)
+          SELECT id, company_id FROM sites 
+          WHERE (status IS NULL OR status != 'inactive')
+            AND (v_template.site_id IS NULL OR id = v_template.site_id)
+            AND (v_template.company_id IS NULL OR company_id = v_template.company_id)
         LOOP
-          -- Check existing tasks
-          SELECT array_agg(DISTINCT daypart) INTO v_existing_dayparts
-          FROM checklist_tasks
-          WHERE template_id = v_template.id
-            AND site_id = v_site.id
-            AND due_date = v_today
-            AND daypart IS NOT NULL;
-          
-          -- Create tasks for each daypart
-          FOREACH v_daypart IN ARRAY v_dayparts
-          LOOP
-            IF v_existing_dayparts IS NULL OR NOT (v_daypart = ANY(v_existing_dayparts)) THEN
-              INSERT INTO checklist_tasks (
-                template_id,
-                company_id,
-                site_id,
-                due_date,
-                due_time,
-                daypart,
-                assigned_to_role,
-                status,
-                priority,
-                generated_at,
-                expires_at,
-                task_data
-              ) VALUES (
-                v_template.id,
-                v_site.company_id,
-                v_site.id,
-                v_today,
-                v_template.time_of_day,
-                v_daypart,
-                v_template.assigned_to_role,
-                'pending',
-                CASE WHEN v_template.is_critical THEN 'critical' ELSE 'medium' END,
-                NOW(),
-                v_today + INTERVAL '7 days',
-                jsonb_build_object('dayparts', v_dayparts)
-              );
-              v_weekly_count := v_weekly_count + 1;
+          -- Check existing tasks by daypart+time combination (like daily tasks)
+          DECLARE
+            v_existing_combinations TEXT[];
+            v_daypart_times JSONB;
+            v_times_for_daypart TEXT[];
+            v_daypart_time_value JSONB;
+            v_time_str TEXT;
+          BEGIN
+            -- Get daypart_times from recurrence_pattern
+            IF v_pattern ? 'daypart_times' THEN
+              v_daypart_times := v_pattern->'daypart_times';
             END IF;
-          END LOOP;
+            
+            SELECT array_agg(DISTINCT COALESCE(daypart, '') || '|' || COALESCE(due_time::text, '')) 
+            INTO v_existing_combinations
+            FROM checklist_tasks
+            WHERE template_id = v_template.id
+              AND site_id = v_site.id
+              AND due_date = v_today;
+            
+            -- Create tasks for each daypart with its specific times
+            FOREACH v_daypart IN ARRAY v_dayparts
+            LOOP
+              -- Get times for this specific daypart
+              v_times_for_daypart := NULL;
+              IF v_daypart_times IS NOT NULL AND v_daypart_times ? v_daypart THEN
+                v_daypart_time_value := v_daypart_times->v_daypart;
+                
+                IF jsonb_typeof(v_daypart_time_value) = 'array' THEN
+                  SELECT array_agg(value::text) INTO v_times_for_daypart
+                  FROM jsonb_array_elements_text(v_daypart_time_value);
+                ELSIF jsonb_typeof(v_daypart_time_value) = 'string' THEN
+                  v_time_str := trim(both '"' from v_daypart_time_value::text);
+                  IF v_time_str LIKE '%,%' THEN
+                    v_times_for_daypart := string_to_array(v_time_str, ',');
+                    SELECT array_agg(trim(both ' ' from unnest)) INTO v_times_for_daypart
+                    FROM unnest(v_times_for_daypart);
+                  ELSE
+                    v_times_for_daypart := ARRAY[v_time_str];
+                  END IF;
+                END IF;
+              END IF;
+              
+              -- If no daypart-specific times, fall back to time_of_day or default
+              IF v_times_for_daypart IS NULL OR array_length(v_times_for_daypart, 1) IS NULL THEN
+                IF v_template.time_of_day IS NOT NULL THEN
+                  v_times_for_daypart := ARRAY[v_template.time_of_day];
+                ELSE
+                  v_times_for_daypart := ARRAY['09:00']; -- Default
+                END IF;
+              END IF;
+              
+              -- Create one task for each time for this daypart
+              FOREACH v_time_str IN ARRAY v_times_for_daypart
+              LOOP
+                DECLARE
+                  v_combination TEXT := COALESCE(v_daypart, '') || '|' || COALESCE(v_time_str, '');
+                BEGIN
+                  IF v_existing_combinations IS NULL OR NOT (v_combination = ANY(v_existing_combinations)) THEN
+                    INSERT INTO checklist_tasks (
+                      template_id,
+                      company_id,
+                      site_id,
+                      due_date,
+                      due_time,
+                      daypart,
+                      assigned_to_role,
+                      assigned_to_user_id,
+                      status,
+                      priority,
+                      generated_at,
+                      expires_at,
+                      task_data
+                    ) VALUES (
+                      v_template.id,
+                      v_site.company_id,
+                      v_site.id,
+                      v_today,
+                      v_time_str::TIME,
+                      v_daypart,
+                      v_template.assigned_to_role,
+                      v_template.assigned_to_user_id,
+                      'pending',
+                      CASE WHEN v_template.is_critical THEN 'critical' ELSE 'medium' END,
+                      NOW(),
+                      v_today + INTERVAL '7 days',
+                      jsonb_build_object(
+                        'dayparts', v_dayparts,
+                        'daypart_times', v_daypart_times,
+                        'daypart', v_daypart,
+                        'time', v_time_str,
+                        'checklistItems', COALESCE((v_template.recurrence_pattern->'default_checklist_items')::jsonb, '[]'::jsonb)
+                      )
+                    );
+                    v_weekly_count := v_weekly_count + 1;
+                  END IF;
+                END;
+              END LOOP;
+            END LOOP;
+          END;
         END LOOP;
       END;
     EXCEPTION WHEN OTHERS THEN
@@ -296,52 +362,113 @@ BEGIN
         END IF;
         
         -- Get all active sites
+        -- Filter by company_id if template is company-specific (not global)
         FOR v_site IN 
-          SELECT id, company_id FROM sites WHERE (status IS NULL OR status != 'inactive')
-          AND (v_template.site_id IS NULL OR id = v_template.site_id)
+          SELECT id, company_id FROM sites 
+          WHERE (status IS NULL OR status != 'inactive')
+            AND (v_template.site_id IS NULL OR id = v_template.site_id)
+            AND (v_template.company_id IS NULL OR company_id = v_template.company_id)
         LOOP
-          -- Check existing tasks
-          SELECT array_agg(DISTINCT daypart) INTO v_existing_dayparts
-          FROM checklist_tasks
-          WHERE template_id = v_template.id
-            AND site_id = v_site.id
-            AND due_date = v_today
-            AND daypart IS NOT NULL;
-          
-          -- Create tasks for each daypart
-          FOREACH v_daypart IN ARRAY v_dayparts
-          LOOP
-            IF v_existing_dayparts IS NULL OR NOT (v_daypart = ANY(v_existing_dayparts)) THEN
-              INSERT INTO checklist_tasks (
-                template_id,
-                company_id,
-                site_id,
-                due_date,
-                due_time,
-                daypart,
-                assigned_to_role,
-                status,
-                priority,
-                generated_at,
-                expires_at,
-                task_data
-              ) VALUES (
-                v_template.id,
-                v_site.company_id,
-                v_site.id,
-                v_today,
-                v_template.time_of_day,
-                v_daypart,
-                v_template.assigned_to_role,
-                'pending',
-                CASE WHEN v_template.is_critical THEN 'critical' ELSE 'medium' END,
-                NOW(),
-                v_today + INTERVAL '30 days',
-                jsonb_build_object('dayparts', v_dayparts)
-              );
-              v_monthly_count := v_monthly_count + 1;
+          -- Check existing tasks by daypart+time combination (like daily/weekly tasks)
+          DECLARE
+            v_existing_combinations TEXT[];
+            v_daypart_times JSONB;
+            v_times_for_daypart TEXT[];
+            v_daypart_time_value JSONB;
+            v_time_str TEXT;
+          BEGIN
+            -- Get daypart_times from recurrence_pattern
+            IF v_pattern ? 'daypart_times' THEN
+              v_daypart_times := v_pattern->'daypart_times';
             END IF;
-          END LOOP;
+            
+            SELECT array_agg(DISTINCT COALESCE(daypart, '') || '|' || COALESCE(due_time::text, '')) 
+            INTO v_existing_combinations
+            FROM checklist_tasks
+            WHERE template_id = v_template.id
+              AND site_id = v_site.id
+              AND due_date = v_today;
+            
+            -- Create tasks for each daypart with its specific times
+            FOREACH v_daypart IN ARRAY v_dayparts
+            LOOP
+              -- Get times for this specific daypart
+              v_times_for_daypart := NULL;
+              IF v_daypart_times IS NOT NULL AND v_daypart_times ? v_daypart THEN
+                v_daypart_time_value := v_daypart_times->v_daypart;
+                
+                IF jsonb_typeof(v_daypart_time_value) = 'array' THEN
+                  SELECT array_agg(value::text) INTO v_times_for_daypart
+                  FROM jsonb_array_elements_text(v_daypart_time_value);
+                ELSIF jsonb_typeof(v_daypart_time_value) = 'string' THEN
+                  v_time_str := trim(both '"' from v_daypart_time_value::text);
+                  IF v_time_str LIKE '%,%' THEN
+                    v_times_for_daypart := string_to_array(v_time_str, ',');
+                    SELECT array_agg(trim(both ' ' from unnest)) INTO v_times_for_daypart
+                    FROM unnest(v_times_for_daypart);
+                  ELSE
+                    v_times_for_daypart := ARRAY[v_time_str];
+                  END IF;
+                END IF;
+              END IF;
+              
+              -- If no daypart-specific times, fall back to time_of_day or default
+              IF v_times_for_daypart IS NULL OR array_length(v_times_for_daypart, 1) IS NULL THEN
+                IF v_template.time_of_day IS NOT NULL THEN
+                  v_times_for_daypart := ARRAY[v_template.time_of_day];
+                ELSE
+                  v_times_for_daypart := ARRAY['09:00']; -- Default
+                END IF;
+              END IF;
+              
+              -- Create one task for each time for this daypart
+              FOREACH v_time_str IN ARRAY v_times_for_daypart
+              LOOP
+                DECLARE
+                  v_combination TEXT := COALESCE(v_daypart, '') || '|' || COALESCE(v_time_str, '');
+                BEGIN
+                  IF v_existing_combinations IS NULL OR NOT (v_combination = ANY(v_existing_combinations)) THEN
+                    INSERT INTO checklist_tasks (
+                      template_id,
+                      company_id,
+                      site_id,
+                      due_date,
+                      due_time,
+                      daypart,
+                      assigned_to_role,
+                      assigned_to_user_id,
+                      status,
+                      priority,
+                      generated_at,
+                      expires_at,
+                      task_data
+                    ) VALUES (
+                      v_template.id,
+                      v_site.company_id,
+                      v_site.id,
+                      v_today,
+                      v_time_str::TIME,
+                      v_daypart,
+                      v_template.assigned_to_role,
+                      v_template.assigned_to_user_id,
+                      'pending',
+                      CASE WHEN v_template.is_critical THEN 'critical' ELSE 'medium' END,
+                      NOW(),
+                      v_today + INTERVAL '30 days',
+                      jsonb_build_object(
+                        'dayparts', v_dayparts,
+                        'daypart_times', v_daypart_times,
+                        'daypart', v_daypart,
+                        'time', v_time_str,
+                        'checklistItems', COALESCE((v_template.recurrence_pattern->'default_checklist_items')::jsonb, '[]'::jsonb)
+                      )
+                    );
+                    v_monthly_count := v_monthly_count + 1;
+                  END IF;
+                END;
+              END LOOP;
+            END LOOP;
+          END;
         END LOOP;
       END;
     EXCEPTION WHEN OTHERS THEN

@@ -1,0 +1,14 @@
+{
+  "id": "m6",
+  "title": "Cleaning, Disinfection and Waste Management",
+  "description": "2-stage cleaning, COSHH basics, and waste handling controls.",
+  "duration_min": 15,
+  "pages": ["m6_p1", "m6_p2", "m6_p3", "m6_p4", "m6_p5", "m6_p6", "m6_p7", "m6_p8", "m6_p9"],
+  "quiz": {
+    "pool": "m6",
+    "count": 5,
+    "pass_mark_percent": 80
+  },
+  "media_path": "media/",
+  "order": 6
+}

@@ -1,11 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Edit2, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { getTemplateFeatures } from '@/lib/template-features';
+import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template';
+import {
+  TemperatureLoggingFeature,
+  PassFailFeature,
+  ChecklistFeature,
+  YesNoChecklistFeature,
+  PhotoEvidenceFeature,
+  AssetSelectionFeature,
+  DocumentUploadFeature
+} from './features';
 
 interface TaskFromTemplateModalProps {
   isOpen: boolean;
@@ -29,6 +40,7 @@ export function TaskFromTemplateModal({
   const [template, setTemplate] = useState<any>(providedTemplate || null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [templateFields, setTemplateFields] = useState<any[]>([]);
 
   // Task form data - only fields for enabled features
   const [formData, setFormData] = useState({
@@ -91,6 +103,13 @@ export function TaskFromTemplateModal({
   
   // Asset selection state
   const [tempAssetSelection, setTempAssetSelection] = useState<string[]>([]); // Temporary asset selection before saving
+  const [isAssetSelectionExpanded, setIsAssetSelectionExpanded] = useState<boolean>(true); // Collapsible state
+  
+  // Call point management state
+  const [callPoints, setCallPoints] = useState<Array<{ id: string; label: string; location?: string }>>([]);
+  const [isCallPointManagementExpanded, setIsCallPointManagementExpanded] = useState<boolean>(false);
+  const [newCallPoint, setNewCallPoint] = useState({ name: '', location: '' });
+  const [hasCallPointField, setHasCallPointField] = useState<boolean>(false);
   
   // Instructions expandable state
   const [instructionsExpanded, setInstructionsExpanded] = useState(false);
@@ -177,7 +196,7 @@ export function TaskFromTemplateModal({
         loadLibrary('chemicals_library', 'id, product_name, manufacturer', 'product_name'),
         loadLibrary('equipment_library', 'id, equipment_name, category', 'equipment_name'),
         loadLibrary('ingredients_library', 'id, ingredient_name, category', 'ingredient_name'),
-        loadLibrary('drinks_library', 'id, drink_name, category', 'drink_name'),
+        loadLibrary('drinks_library', 'id, item_name, category', 'item_name'),
         loadLibrary('disposables_library', 'id, item_name, category', 'item_name'),
       ]);
       
@@ -332,30 +351,123 @@ export function TaskFromTemplateModal({
     }
   }
 
+  async function loadTemplateFields(templateId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('template_fields')
+        .select('*')
+        .eq('template_id', templateId)
+        .order('field_order');
+
+      if (error) throw error;
+      setTemplateFields(data || []);
+    } catch (error) {
+      console.error('Error loading template fields:', error);
+      setTemplateFields([]);
+    }
+  }
+
+  // Load call points from template_repeatable_labels
+  async function loadCallPoints(templateId: string) {
+    try {
+      // Check if template has fire_alarm_call_point field
+      const { data: fields } = await supabase
+        .from('template_fields')
+        .select('field_name')
+        .eq('template_id', templateId)
+        .eq('field_name', 'fire_alarm_call_point');
+      
+      if (!fields || fields.length === 0) {
+        // No fire_alarm_call_point field, don't load call points
+        return;
+      }
+      
+      // Load call points from template_repeatable_labels
+      const { data: labels, error } = await supabase
+        .from('template_repeatable_labels')
+        .select('id, label, label_value')
+        .eq('template_id', templateId)
+        .order('display_order');
+      
+      if (error) {
+        console.error('Error loading call points:', error);
+        return;
+      }
+      
+      if (labels && labels.length > 0) {
+        setCallPoints(labels.map(label => ({
+          id: label.id,
+          label: label.label,
+          location: label.label_value || ''
+        })));
+      }
+    } catch (error) {
+      console.error('Error loading call points:', error);
+    }
+  }
+
   async function fetchTemplate() {
+    console.log('🚀 fetchTemplate called', { hasProvidedTemplate: !!providedTemplate, templateId });
+    
     if (providedTemplate) {
-      setTemplate(providedTemplate);
+      // CRITICAL: Ensure recurrence_pattern is a proper object
+      let templateData = { ...providedTemplate };
+      if (templateData.recurrence_pattern && typeof templateData.recurrence_pattern === 'string') {
+        try {
+          templateData.recurrence_pattern = JSON.parse(templateData.recurrence_pattern);
+        } catch (e) {
+          console.error('Failed to parse providedTemplate recurrence_pattern:', e);
+        }
+      }
+      
+      console.log('🎯 Using providedTemplate:', {
+        id: templateData.id,
+        name: templateData.name,
+        has_recurrence_pattern: !!templateData.recurrence_pattern,
+        recurrence_pattern: templateData.recurrence_pattern,
+        default_checklist_items: templateData.recurrence_pattern?.default_checklist_items,
+        repeatable_field_name: templateData.repeatable_field_name
+      });
+      
+      const enrichedTemplate = enrichTemplateWithDefinition(templateData);
+      await loadTemplateFields(enrichedTemplate.id as string);
+      setTemplate(enrichedTemplate as any);
       setLoading(false);
-      initializeFormData(providedTemplate);
+      initializeFormData(enrichedTemplate as any);
       return;
     }
 
     setLoading(true);
     try {
+      // Use maybeSingle() to gracefully handle missing templates (returns null instead of error)
       const { data, error } = await supabase
         .from('task_templates')
-        .select('*')
+        .select('*, recurrence_pattern') // Explicitly include recurrence_pattern
         .eq('id', templateId)
-        .single();
-
+        .maybeSingle(); // Returns null if no rows, doesn't throw error
+      
+      // Handle any errors (including PGRST116 - template not found)
       if (error) {
         console.error('Error fetching template:', error);
         console.error('Template ID:', templateId);
-        console.error('Error details:', JSON.stringify(error, null, 2));
+        console.error('Error code:', error.code);
         
-        // If editing and template not found, show error but don't close
+        // Handle 406/PGRST116 errors (template not found)
+        if (error.code === 'PGRST116' || error.message?.includes('0 rows') || error.message?.includes('Cannot coerce')) {
+          console.warn('Template not found (likely deleted):', templateId);
+          if (existingTask) {
+            toast.error(`Template not found. Task may reference a deleted template.`);
+            setLoading(false);
+            return;
+          }
+          toast.error('Template not found');
+          onClose();
+          return;
+        }
+        
+        // Other errors
         if (existingTask) {
-          toast.error(`Template not found. Task may have been created from a deleted template.`);
+          toast.error(`Failed to load template: ${error.message || 'Unknown error'}`);
           setLoading(false);
           return;
         }
@@ -365,8 +477,49 @@ export function TaskFromTemplateModal({
         return;
       }
 
-      setTemplate(data);
-      initializeFormData(data);
+      // Handle case where template doesn't exist (maybeSingle returns null for 0 rows)
+      if (!data) {
+        console.warn('Template not found (maybeSingle returned null):', templateId);
+        
+        if (existingTask) {
+          toast.error(`Template not found. Task may reference a deleted template.`);
+          setLoading(false);
+          return;
+        }
+        
+        toast.error('Template not found');
+        onClose();
+        return;
+      }
+
+      // CRITICAL: Ensure recurrence_pattern is a proper object, not a string
+      let templateData = { ...data };
+      if (templateData.recurrence_pattern && typeof templateData.recurrence_pattern === 'string') {
+        try {
+          templateData.recurrence_pattern = JSON.parse(templateData.recurrence_pattern);
+        } catch (e) {
+          console.error('Failed to parse recurrence_pattern:', e);
+        }
+      }
+      
+      const enrichedTemplate = enrichTemplateWithDefinition(templateData);
+      await loadTemplateFields(enrichedTemplate.id as string);
+      setTemplate(enrichedTemplate as any);
+      
+      // Debug: Check if recurrence_pattern is loaded
+      console.log('📦 Template loaded:', {
+        id: templateData.id,
+        name: templateData.name,
+        has_recurrence_pattern: !!templateData.recurrence_pattern,
+        recurrence_pattern: templateData.recurrence_pattern,
+        repeatable_field_name: templateData.repeatable_field_name,
+        default_checklist_items: templateData.recurrence_pattern?.default_checklist_items
+      });
+      
+      // Load call points if template has fire_alarm_call_point field
+      await loadCallPoints(templateData.id);
+      
+      initializeFormData(enrichedTemplate as any);
     } catch (error: any) {
       console.error('Exception fetching template:', error);
       console.error('Error message:', error?.message);
@@ -411,6 +564,13 @@ export function TaskFromTemplateModal({
   }, [template, existingTask, isOpen, loading]);
 
   function initializeFormData(templateData: any) {
+    console.log('🔄 initializeFormData called:', {
+      hasExistingTask: !!existingTask,
+      templateId: templateData?.id,
+      templateName: templateData?.name,
+      hasRecurrencePattern: !!templateData?.recurrence_pattern
+    });
+    
     // Initialize form with existing task data if editing, otherwise use template defaults
     if (existingTask) {
       const dayparts = templateData.dayparts || [];
@@ -492,11 +652,50 @@ export function TaskFromTemplateModal({
         ? [] // Start with empty array - user can add items
         : [];
       
+      // Load default checklist items from template's recurrence_pattern if available
+      // CRITICAL: Handle both object and string formats
+      let recurrencePattern = templateData.recurrence_pattern;
+      if (typeof recurrencePattern === 'string') {
+        try {
+          recurrencePattern = JSON.parse(recurrencePattern);
+        } catch (e) {
+          console.error('Failed to parse recurrence_pattern string:', e);
+          recurrencePattern = null;
+        }
+      }
+      
+      const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
+      const checklistItems = Array.isArray(defaultChecklistItems) 
+        ? defaultChecklistItems.map((item: any) => 
+            typeof item === 'string' ? item : (item.text || item.label || '')
+          ).filter((item: string) => item && item.trim().length > 0)
+        : [];
+      
+      // Debug logging for checklist items
+      console.log('📋 Loading checklist items from template:', {
+        templateId: templateData.id,
+        templateName: templateData.name,
+        recurrence_pattern_type: typeof templateData.recurrence_pattern,
+        recurrence_pattern: recurrencePattern,
+        default_checklist_items: defaultChecklistItems,
+        default_checklist_items_type: Array.isArray(defaultChecklistItems),
+        parsed_checklist_items: checklistItems,
+        parsed_count: checklistItems.length,
+        evidence_types: templateData.evidence_types
+      });
+      
       // For compliance templates, auto-populate task name from template name (remove "template" word)
       const templateName = templateData.name || '';
       const autoTaskName = templateData.is_template_library 
         ? templateName.replace(/\s*template\s*/gi, '').trim()
         : '';
+      
+      console.log('✅ Setting formData with checklist items:', {
+        checklistItems: checklistItems,
+        checklistItemsCount: checklistItems.length,
+        dayparts: daypartsArray,
+        autoTaskName: autoTaskName
+      });
       
       setFormData(prev => ({
         ...prev,
@@ -505,31 +704,154 @@ export function TaskFromTemplateModal({
         daypart: dayparts[0] || '', // Keep for backward compatibility
         dayparts: daypartsArray.length > 0 ? daypartsArray : [], // Ensure always an array
         due_time: daypartTimes[dayparts[0]] || '',
+        checklistItems: checklistItems, // Auto-populate from template
         yesNoChecklistItems: yesNoChecklistItems || [], // Ensure always an array
       }));
+      
+      // Verify formData was set correctly
+      setTimeout(() => {
+        console.log('🔍 FormData after setting (checking state):', {
+          checklistItemsCount: checklistItems.length,
+          note: 'FormData state may not be immediately available in console'
+        });
+      }, 100);
     }
   }
 
-  // Determine which features are enabled
-  const evidenceTypes = template?.evidence_types || [];
-  const enabledFeatures = {
-    checklist: evidenceTypes.includes('text_note') && !evidenceTypes.includes('yes_no_checklist'),
-    yesNoChecklist: evidenceTypes.includes('yes_no_checklist'),
-    passFail: evidenceTypes.includes('pass_fail'),
-    tempLogs: evidenceTypes.includes('temperature'),
-    photoEvidence: evidenceTypes.includes('photo'),
-    requiresSOP: template?.requires_sop || false,
-    requiresRiskAssessment: template?.requires_risk_assessment || false,
-  };
+  // Determine which features are enabled - use shared utility for consistency
+  const enabledFeatures = getTemplateFeatures(template);
+  
+  const matrixField = useMemo(() => {
+    if (!templateFields || templateFields.length === 0) return undefined;
+    return templateFields.find((field) => field.field_name === 'matrix_link');
+  }, [templateFields]);
 
-  // Debug logging (can be removed later)
+  const matrixUrl = useMemo(() => {
+    if (matrixField?.placeholder && typeof matrixField.placeholder === 'string' && matrixField.placeholder.trim().length > 0) {
+      return matrixField.placeholder.trim();
+    }
+    return '/dashboard/training';
+  }, [matrixField]);
+
+  const matrixHref = useMemo(() => {
+    if (!matrixUrl) return undefined;
+    const hasSiteParam = /[?&]site=/.test(matrixUrl);
+    if (!siteId || hasSiteParam) {
+      return matrixUrl;
+    }
+    const separator = matrixUrl.includes('?') ? '&' : '?';
+    return `${matrixUrl}${separator}site=home`;
+  }, [matrixUrl, siteId]);
+
+  const matrixDisplayUrl = matrixHref || matrixUrl;
+
+  const handleOpenMatrix = useCallback(() => {
+    const target = matrixHref || matrixUrl;
+    if (!target) return;
+    if (typeof window === 'undefined') return;
+
+    const url = target.startsWith('http')
+      ? target
+      : `${window.location.origin}${target.startsWith('/') ? target : `/${target}`}`;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, [matrixHref, matrixUrl]);
+
+  // Debug logging for feature detection
+  if (template) {
+    console.log('🔍 Template feature detection:', {
+      templateName: template.name,
+      templateSlug: template.slug,
+      repeatable_field_name: template.repeatable_field_name,
+      evidence_types: template.evidence_types,
+      triggers_contractor_on_failure: template.triggers_contractor_on_failure,
+      contractor_type: template.contractor_type,
+      enabledFeatures: enabledFeatures,
+      willShowAssetUI: allAssets.length > 0 && enabledFeatures.assetSelection,
+      willShowLibrary: enabledFeatures.libraryDropdown,
+      willShowDocument: enabledFeatures.documentUpload,
+      // Debug: Log template configuration
+      templateRepeatableField: template?.repeatable_field_name,
+      templateRequiresSOP: template?.requires_sop,
+      templateRequiresRA: template?.requires_risk_assessment,
+      willShowChecklist: enabledFeatures.checklist,
+      hasDefaultChecklistItems: !!template.recurrence_pattern?.default_checklist_items
+    });
+  }
+
+  // Debug logging and ensure formData is initialized when template loads
+  // IMPORTANT: Only update checklist items, NOT times or dates - user may have already changed those
   useEffect(() => {
-    if (template && isOpen) {
+    if (template && isOpen && !existingTask) {
+      console.log('🔍 Template useEffect triggered:', {
+        templateId: template.id,
+        templateName: template.name,
+        hasRecurrencePattern: !!template.recurrence_pattern,
+        recurrencePatternType: typeof template.recurrence_pattern,
+        recurrencePattern: template.recurrence_pattern,
+        currentChecklistItemsCount: formData.checklistItems?.length || 0
+      });
+      
       console.log('Template evidence_types:', template.evidence_types);
       console.log('Enabled features:', enabledFeatures);
       console.log('Yes/No Checklist enabled?', enabledFeatures.yesNoChecklist);
+      
+      // CRITICAL FIX: If formData.checklistItems is empty but template has checklist items, initialize them
+      // NOTE: Do NOT reset times, dates, or dayparts - user may have already changed those
+      const recurrencePattern = template.recurrence_pattern;
+      if (recurrencePattern) {
+        // Handle both object and string formats
+        let parsedPattern = recurrencePattern;
+        if (typeof recurrencePattern === 'string') {
+          try {
+            parsedPattern = JSON.parse(recurrencePattern);
+          } catch (e) {
+            console.error('Failed to parse recurrence_pattern:', e);
+            parsedPattern = null;
+          }
+        }
+        
+        if (parsedPattern && typeof parsedPattern === 'object') {
+          const defaultChecklistItems = parsedPattern.default_checklist_items || [];
+          console.log('📋 Found default_checklist_items:', {
+            isArray: Array.isArray(defaultChecklistItems),
+            count: defaultChecklistItems.length,
+            items: defaultChecklistItems
+          });
+          
+          if (Array.isArray(defaultChecklistItems) && defaultChecklistItems.length > 0) {
+            const currentChecklistItems = formData.checklistItems || [];
+            console.log('📊 Current formData.checklistItems:', {
+              count: currentChecklistItems.length,
+              items: currentChecklistItems
+            });
+            
+            if (currentChecklistItems.length === 0) {
+              console.log('🔧 FIXING: Loading checklist items from template (formData was empty)', {
+                defaultChecklistItems,
+                count: defaultChecklistItems.length
+              });
+              
+              const checklistItems = defaultChecklistItems.map((item: any) => 
+                typeof item === 'string' ? item : (item.text || item.label || '')
+              ).filter((item: string) => item && item.trim().length > 0);
+              
+              console.log('✅ Setting checklistItems:', checklistItems);
+              
+              setFormData(prev => ({
+                ...prev,
+                checklistItems: checklistItems
+              }));
+            } else {
+              console.log('ℹ️ Checklist items already exist, not overwriting');
+            }
+          }
+        }
+      } else {
+        console.log('⚠️ No recurrence_pattern found in template');
+      }
     }
-  }, [template, isOpen]);
+  }, [template, isOpen, existingTask]);
 
   // Upload handlers
   async function handleFileUpload(
@@ -643,10 +965,7 @@ export function TaskFromTemplateModal({
     e.target.value = '';
   }
 
-  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  async function handlePhotoUpload(file: File) {
     // Validate image type
     if (!file.type.startsWith('image/')) {
       toast.error('Please select an image file');
@@ -660,9 +979,47 @@ export function TaskFromTemplateModal({
         photos: [...prev.photos, { url: uploadData.url, fileName: uploadData.fileName }],
       }));
     }
-    // Reset input
-    e.target.value = '';
   }
+
+  // Monitor/Callout handler - triggered by Pass/Fail, Temperature, Yes/No features
+  const handleMonitorCallout = async (
+    monitor: boolean,
+    callout: boolean,
+    notes?: string,
+    assetId?: string,
+    temp?: number
+  ) => {
+    // Store monitor/callout data - this will be saved in task_data when task is created/updated
+    console.log('Monitor/Callout triggered:', { monitor, callout, notes, assetId, temp });
+    
+    // You can extend this to:
+    // - Create contractor callout records
+    // - Store monitoring flags
+    // - Send notifications
+    // For now, this data can be stored in task_data.monitorCallout array
+    
+    if (callout && template?.contractor_type) {
+      toast.success(`Contractor callout requested: ${template.contractor_type.replace('_', ' ')}`);
+    }
+    
+    if (monitor) {
+      toast.info('Issue flagged for monitoring');
+    }
+  };
+
+  // Get temperature thresholds from template fields if available
+  const getTemperatureThresholds = () => {
+    if (!template?.template_fields) return { warnThreshold: undefined, failThreshold: undefined };
+    
+    const tempField = template.template_fields.find((f: any) => 
+      f.field_type === 'temperature' || f.field_name?.toLowerCase().includes('temp')
+    );
+    
+    return {
+      warnThreshold: tempField?.warn_threshold,
+      failThreshold: tempField?.fail_threshold
+    };
+  };
 
   function removeUpload(type: 'sop' | 'ra' | 'photo' | 'document', index: number) {
     if (type === 'sop') {
@@ -963,10 +1320,19 @@ export function TaskFromTemplateModal({
 
   // Get dayparts - use template dayparts if available, otherwise use existing task daypart if editing
   // Also include any dayparts from formData that aren't in template dayparts (user-added)
-  const templateDayparts = template?.dayparts || (existingTask?.daypart ? [existingTask.daypart] : []);
+  const templateDaypartsRaw = Array.isArray(template?.dayparts)
+    ? template.dayparts
+    : (existingTask?.daypart ? [existingTask.daypart] : []);
+
+  const templateDayparts = templateDaypartsRaw.filter(
+    (dp): dp is string => typeof dp === 'string' && dp.trim().length > 0
+  );
+
   const userAddedDayparts = formData.dayparts
-    .map(dp => dp.daypart)
-    .filter(dp => !templateDayparts.includes(dp));
+    .map((dp) => dp.daypart)
+    .filter((dp): dp is string => typeof dp === 'string' && dp.trim().length > 0)
+    .filter((dp) => !templateDayparts.includes(dp));
+
   const dayparts = [...new Set([...templateDayparts, ...userAddedDayparts])]; // Combine and deduplicate
 
   return (
@@ -1054,6 +1420,32 @@ export function TaskFromTemplateModal({
                 )}
               </div>
 
+              {template?.slug === 'training_compliance_management' && (
+                <div className="border border-pink-500/30 bg-pink-500/5 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(236,72,153,0.15)]">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-sm text-pink-50/90">
+                      <p className="font-semibold text-white">Training Matrix Shortcut</p>
+                      <p className="text-xs text-pink-100/80 mt-1">
+                        {matrixField?.help_text || 'Open the live Training Matrix in a new tab, review compliance status, then return to complete this task.'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleOpenMatrix}
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-pink-500 text-pink-300 font-medium rounded-lg transition-all duration-150 hover:bg-pink-500/15 hover:text-white shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                    >
+                      <span>Open Matrix</span>
+                      <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {matrixDisplayUrl && (
+                    <p className="text-[10px] text-pink-100/60 break-all">
+                      {matrixDisplayUrl}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Scheduling Section */}
               <div className="space-y-4">
                 <div>
@@ -1106,7 +1498,6 @@ export function TaskFromTemplateModal({
                         dayparts.map((daypart) => {
                           const daypartEntry = formData.dayparts.find((dp) => dp.daypart === daypart);
                           const isSelected = !!daypartEntry;
-                          const daypartIndex = formData.dayparts.findIndex((dp) => dp.daypart === daypart);
                           const daypartLabel = daypart.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
                           
                           return (
@@ -1157,12 +1548,14 @@ export function TaskFromTemplateModal({
                                     <label className="text-xs text-white/60">Time:</label>
                                     <input
                                       type="time"
-                                      value={daypartEntry.due_time || ''}
+                                      value={daypartEntry?.due_time || ''}
                                       onChange={(e) => {
-                                        const newDayparts = [...formData.dayparts];
-                                        if (daypartIndex !== -1) {
-                                          newDayparts[daypartIndex] = { ...newDayparts[daypartIndex], due_time: e.target.value };
-                                        }
+                                        // Find and update the correct daypart entry
+                                        const newDayparts = formData.dayparts.map((dp) => 
+                                          dp.daypart === daypart 
+                                            ? { ...dp, due_time: e.target.value }
+                                            : dp
+                                        );
                                         setFormData({ ...formData, dayparts: newDayparts });
                                       }}
                                       className="px-3 py-1.5 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark] text-sm"
@@ -1215,148 +1608,168 @@ export function TaskFromTemplateModal({
               </div>
             </div>
 
-            {/* Asset Selection - Moved below timings for better UX */}
-            {allAssets.length > 0 && (
+            {/* Asset Selection - Only show if template has repeatable_field_name (asset/equipment fields) */}
+            {allAssets.length > 0 && enabledFeatures.assetSelection && (
+              <AssetSelectionFeature
+                selectedAssets={formData.selectedAssets}
+                assets={assets}
+                sites={sites}
+                onChange={(selected) => {
+                  setFormData({ ...formData, selectedAssets: selected });
+                  // Also update tempAssetSelection to match
+                  setTempAssetSelection(selected);
+                }}
+                isExpanded={isAssetSelectionExpanded}
+                onExpandedChange={setIsAssetSelectionExpanded}
+              />
+            )}
+
+            {/* Call Point Management - Only show if template has fire_alarm_call_point field */}
+            {hasCallPointField && (
               <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Asset Selection</h2>
-                
-                {/* Site Filter */}
-                {sites.length > 0 && (
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-white mb-2">Filter by Site</label>
-                    <select
-                      value={selectedSiteFilter}
-                      onChange={(e) => {
-                        setSelectedSiteFilter(e.target.value);
-                        // Clear temp selection when changing filter
-                        setTempAssetSelection([]);
-                      }}
-                      className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    >
-                      <option value="">All Sites ({allAssets.length} assets)</option>
-                      {sites.map((site) => {
-                        const siteAssetCount = allAssets.filter((a) => a.site_id === site.id).length;
-                        return (
-                          <option key={site.id} value={site.id}>
-                            {site.name} ({siteAssetCount} assets)
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                )}
-                
-                {/* Step 1: Select assets with checkboxes */}
-                <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 mb-4">
-                  <h3 className="text-md font-semibold text-white mb-3">
-                    Select Assets {selectedSiteFilter && `(${assets.length} available)`}
-                  </h3>
-                  {assets.length > 0 ? (
-                    <div className="max-h-[300px] overflow-y-auto border border-neutral-800 rounded-lg bg-[#0f1220] p-3">
-                      <div className="space-y-2">
-                        {assets.map((asset) => {
-                        const isSelected = tempAssetSelection.includes(asset.id);
-                        return (
-                          <label
-                            key={asset.id}
-                            className="flex items-center gap-3 p-2 rounded hover:bg-white/5 cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setTempAssetSelection([...tempAssetSelection, asset.id]);
-                                } else {
-                                  setTempAssetSelection(tempAssetSelection.filter(id => id !== asset.id));
-                                }
-                              }}
-                              className="w-4 h-4 accent-pink-500 cursor-pointer"
-                            />
-                            <div className="flex-1">
-                              <span className="text-white text-sm">{asset.name}</span>
-                              {asset.category && (
-                                <span className="text-gray-400 text-xs ml-2">({asset.category})</span>
-                              )}
-                              {asset.site_name && (
-                                <span className="text-pink-400 text-xs ml-2">• {asset.site_name}</span>
-                              )}
-                            </div>
-                          </label>
-                        );
-                      })}
-                      </div>
-                    </div>
+                {/* Collapsible Header */}
+                <button
+                  type="button"
+                  onClick={() => setIsCallPointManagementExpanded(!isCallPointManagementExpanded)}
+                  className="w-full flex items-center justify-between mb-4 text-left hover:opacity-80 transition-opacity"
+                >
+                  <h2 className="text-lg font-semibold text-white">
+                    Fire Alarm Call Points
+                    {callPoints.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-pink-400">
+                        ({callPoints.length} configured)
+                      </span>
+                    )}
+                  </h2>
+                  {isCallPointManagementExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-white/60" />
                   ) : (
-                    <div className="p-4 text-center text-white/60 text-sm">
-                      No assets found for the selected site filter.
-                    </div>
+                    <ChevronDown className="w-5 h-5 text-white/60" />
                   )}
-                  <p className="text-xs text-gray-400 mt-2 mb-3">
-                    {tempAssetSelection.length} asset(s) selected
-                  </p>
-                  
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // Add selected assets to formData
-                        setFormData(prev => ({
-                          ...prev,
-                          selectedAssets: [...prev.selectedAssets, ...tempAssetSelection.filter(id => !prev.selectedAssets.includes(id))]
-                        }));
-                        // Reset temp selection
-                        setTempAssetSelection([]);
-                        toast.success(`Added ${tempAssetSelection.length} asset(s) to task`);
-                      }}
-                      disabled={tempAssetSelection.length === 0}
-                      className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Add to Task
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTempAssetSelection([]);
-                      }}
-                      className="px-4 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors"
-                    >
-                      Clear Selection
-                    </button>
-                  </div>
-                </div>
+                </button>
                 
-                {/* Step 2: Show selected assets summary */}
-                {formData.selectedAssets.length > 0 && (
-                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                    <h3 className="text-md font-semibold text-white mb-3">Selected Assets ({formData.selectedAssets.length})</h3>
-                    <div className="space-y-1">
-                      {formData.selectedAssets.map((assetId) => {
-                        const asset = assets.find(a => a.id === assetId);
-                        if (!asset) return null;
-                        return (
-                          <div key={assetId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                            <span className="text-white text-sm">
-                              {asset.name}
-                              {asset.category && <span className="text-gray-400 text-xs ml-2">({asset.category})</span>}
-                              {asset.site_name && <span className="text-pink-400 text-xs ml-2">• {asset.site_name}</span>}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFormData(prev => ({
-                                  ...prev,
-                                  selectedAssets: prev.selectedAssets.filter(id => id !== assetId)
-                                }));
-                              }}
-                              className="text-red-400 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-colors"
-                              title="Remove asset"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        );
-                      })}
+                {/* Collapsible Content */}
+                {isCallPointManagementExpanded && (
+                  <div className="space-y-4">
+                    {/* Existing Call Points */}
+                    {callPoints.length > 0 && (
+                      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+                        <h3 className="text-md font-semibold text-white mb-3">Existing Call Points</h3>
+                        <div className="space-y-2">
+                          {callPoints.map((cp) => (
+                            <div key={cp.id} className="flex items-center justify-between bg-[#0f1220] border border-neutral-800 rounded-lg p-3">
+                              <div>
+                                <span className="text-white text-sm font-medium">{cp.label}</span>
+                                {cp.location && cp.location !== cp.label && (
+                                  <span className="text-gray-400 text-xs ml-2">({cp.location})</span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    const { error } = await supabase
+                                      .from('template_repeatable_labels')
+                                      .delete()
+                                      .eq('id', cp.id);
+                                    
+                                    if (error) throw error;
+                                    
+                                    setCallPoints(callPoints.filter(c => c.id !== cp.id));
+                                    toast.success('Call point removed');
+                                  } catch (error: any) {
+                                    console.error('Error removing call point:', error);
+                                    toast.error('Failed to remove call point');
+                                  }
+                                }}
+                                className="text-red-400 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-colors"
+                                title="Remove call point"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Add New Call Point */}
+                    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+                      <h3 className="text-md font-semibold text-white mb-3">Add New Call Point</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-white mb-2">
+                            Call Point Name <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={newCallPoint.name}
+                            onChange={(e) => setNewCallPoint({ ...newCallPoint, name: e.target.value })}
+                            placeholder="e.g., Call Point 1 - Front Entrance"
+                            className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-white mb-2">
+                            Location (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={newCallPoint.location}
+                            onChange={(e) => setNewCallPoint({ ...newCallPoint, location: e.target.value })}
+                            placeholder="e.g., Front Entrance, Kitchen, Bar Area"
+                            className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!newCallPoint.name.trim()) {
+                              toast.error('Please enter a call point name');
+                              return;
+                            }
+                            
+                            try {
+                              const label = newCallPoint.location 
+                                ? `${newCallPoint.name} - ${newCallPoint.location}`
+                                : newCallPoint.name;
+                              
+                              const { data, error } = await supabase
+                                .from('template_repeatable_labels')
+                                .insert({
+                                  template_id: template.id,
+                                  label: label,
+                                  label_value: newCallPoint.location || label,
+                                  is_default: false,
+                                  display_order: callPoints.length + 1
+                                })
+                                .select()
+                                .single();
+                              
+                              if (error) throw error;
+                              
+                              setCallPoints([...callPoints, {
+                                id: data.id,
+                                label: data.label,
+                                location: data.label_value || ''
+                              }]);
+                              
+                              setNewCallPoint({ name: '', location: '' });
+                              toast.success('Call point added successfully');
+                            } catch (error: any) {
+                              console.error('Error adding call point:', error);
+                              toast.error(error.message || 'Failed to add call point');
+                            }
+                          }}
+                          disabled={!newCallPoint.name.trim()}
+                          className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Add Call Point
+                        </button>
+                        <p className="text-xs text-gray-400">
+                          Add all fire alarm call points for this venue. These will appear in the dropdown when creating tasks from this template.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1365,306 +1778,56 @@ export function TaskFromTemplateModal({
 
             {/* Feature-specific input fields - ONLY show if feature is enabled */}
             {enabledFeatures.checklist && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Checklist Items</h2>
-                <div className="space-y-2">
-                  {formData.checklistItems.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        className="accent-pink-500"
-                      />
-                      <input
-                        type="text"
-                        value={item}
-                        onChange={(e) => {
-                          const newItems = [...formData.checklistItems];
-                          newItems[index] = e.target.value;
-                          setFormData({ ...formData, checklistItems: newItems });
-                        }}
-                        placeholder={`Checklist item ${index + 1}`}
-                        className="flex-1 px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newItems = formData.checklistItems.filter((_, i) => i !== index);
-                          setFormData({ ...formData, checklistItems: newItems });
-                        }}
-                        className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, checklistItems: [...formData.checklistItems, ''] })}
-                    className="text-sm text-pink-400 hover:text-pink-300"
-                  >
-                    + Add Checklist Item
-                  </button>
-                </div>
-              </div>
+              <ChecklistFeature
+                items={formData.checklistItems}
+                defaultItems={template?.recurrence_pattern?.default_checklist_items || []}
+                onChange={(items) => setFormData({ ...formData, checklistItems: items })}
+              />
             )}
 
             {enabledFeatures.yesNoChecklist && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Yes/No Checklist Items</h2>
-                <p className="text-sm text-white/60 mb-4">Answer Yes or No for each item. Selecting "No" will trigger monitor/callout options.</p>
-                <div className="space-y-3">
-                  {formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0 ? (
-                    formData.yesNoChecklistItems.map((item, index) => (
-                    <div key={index} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                      <div className="flex items-start gap-3 mb-3">
-                        <input
-                          type="text"
-                          value={item.text}
-                          onChange={(e) => {
-                            const newItems = [...formData.yesNoChecklistItems];
-                            newItems[index] = { ...newItems[index], text: e.target.value };
-                            setFormData({ ...formData, yesNoChecklistItems: newItems });
-                          }}
-                          placeholder={`Yes/No question ${index + 1}`}
-                          className="flex-1 px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newItems = formData.yesNoChecklistItems.filter((_, i) => i !== index);
-                            setFormData({ ...formData, yesNoChecklistItems: newItems });
-                          }}
-                          className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newItems = [...formData.yesNoChecklistItems];
-                            newItems[index] = { ...newItems[index], answer: 'yes' };
-                            setFormData({ ...formData, yesNoChecklistItems: newItems });
-                          }}
-                          className={`px-4 py-2 rounded-lg border transition-colors ${
-                            item.answer === 'yes'
-                              ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
-                          }`}
-                        >
-                          Yes
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newItems = [...formData.yesNoChecklistItems];
-                            newItems[index] = { ...newItems[index], answer: 'no' };
-                            setFormData({ ...formData, yesNoChecklistItems: newItems });
-                          }}
-                          className={`px-4 py-2 rounded-lg border transition-colors ${
-                            item.answer === 'no'
-                              ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
-                          }`}
-                        >
-                          No
-                        </button>
-                        {item.answer === 'no' && (
-                          <span className="text-xs text-orange-400 ml-2">
-                            ⚠️ Monitor/Callout will be triggered
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-white/60">
-                      <p className="text-sm mb-2">No Yes/No questions added yet.</p>
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ 
-                      ...formData, 
-                      yesNoChecklistItems: [...(formData.yesNoChecklistItems || []), { text: '', answer: null }] 
-                    })}
-                    className="text-sm text-pink-400 hover:text-pink-300"
-                  >
-                    + Add Yes/No Question
-                  </button>
-                </div>
-              </div>
+              <YesNoChecklistFeature
+                items={formData.yesNoChecklistItems}
+                onChange={(items) => setFormData({ ...formData, yesNoChecklistItems: items })}
+                onMonitorCallout={handleMonitorCallout}
+                contractorType={template?.contractor_type}
+              />
             )}
 
-            {enabledFeatures.tempLogs && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Temperature Logs</h2>
-                <p className="text-sm text-white/60 mb-4">
-                  Temperature logs are automatically populated from selected assets. You can add a nickname for each asset.
-                </p>
-                <div className="space-y-3">
-                  {formData.temperatures.map((temp, index) => {
-                    const asset = assets.find(a => a.id === temp.assetId);
-                    return (
-                      <div key={index} className="grid grid-cols-4 gap-2">
-                        <input
-                          type="text"
-                          value={temp.equipment || asset?.name || ''}
-                          onChange={(e) => {
-                            const newTemps = [...formData.temperatures];
-                            newTemps[index] = { ...temp, equipment: e.target.value };
-                            setFormData({ ...formData, temperatures: newTemps });
-                          }}
-                          placeholder="Equipment name"
-                          className="px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
-                          readOnly={!!asset} // Read-only if auto-populated from asset
-                        />
-                        <input
-                          type="text"
-                          value={temp.nickname || ''}
-                          onChange={(e) => {
-                            const newTemps = [...formData.temperatures];
-                            newTemps[index] = { ...temp, nickname: e.target.value };
-                            setFormData({ ...formData, temperatures: newTemps });
-                          }}
-                          placeholder="Nickname (e.g., 1, 2, 3 or A, B, C)"
-                          className="px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
-                        />
-                        <input
-                          type="number"
-                          value={temp.temp || ''}
-                          onChange={(e) => {
-                            const newTemps = [...formData.temperatures];
-                            newTemps[index] = { ...temp, temp: parseFloat(e.target.value) };
-                            setFormData({ ...formData, temperatures: newTemps });
-                          }}
-                          placeholder="Temperature (°C)"
-                          className="px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newTemps = formData.temperatures.filter((_, i) => i !== index);
-                            setFormData({ ...formData, temperatures: newTemps });
-                          }}
-                          className="px-3 text-red-400 hover:bg-red-500/10 rounded"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    );
-                  })}
-                  {formData.temperatures.length === 0 && formData.selectedAssets.length > 0 && (
-                    <p className="text-sm text-white/60">
-                      Click "Auto-populate from Assets" to create temperature logs for selected assets.
-                    </p>
-                  )}
-                  {formData.selectedAssets.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // Auto-populate temperature logs from selected assets
-                        const newTemps = formData.selectedAssets
-                          .filter(assetId => !formData.temperatures.some(t => t.assetId === assetId))
-                          .map(assetId => {
-                            const asset = assets.find(a => a.id === assetId);
-                            return {
-                              assetId: assetId,
-                              equipment: asset?.name || '',
-                              nickname: '',
-                              temp: undefined as number | undefined
-                            };
-                          });
-                        setFormData({ 
-                          ...formData, 
-                          temperatures: [...formData.temperatures, ...newTemps]
-                        });
-                        toast.success(`Added ${newTemps.length} temperature log(s) from selected assets`);
-                      }}
-                      className="text-sm text-pink-400 hover:text-pink-300"
-                    >
-                      + Auto-populate from Assets
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, temperatures: [...formData.temperatures, { equipment: '', nickname: '', temp: undefined }] })}
-                    className="text-sm text-pink-400 hover:text-pink-300 ml-4"
-                  >
-                    + Add Manual Temperature Reading
-                  </button>
-                </div>
-              </div>
-            )}
+            {enabledFeatures.tempLogs && (() => {
+              const thresholds = getTemperatureThresholds();
+              return (
+                <TemperatureLoggingFeature
+                  temperatures={formData.temperatures}
+                  selectedAssets={formData.selectedAssets}
+                  assets={assets}
+                  onChange={(temps) => setFormData({ ...formData, temperatures: temps })}
+                  onMonitorCallout={handleMonitorCallout}
+                  contractorType={template?.contractor_type}
+                  warnThreshold={thresholds.warnThreshold}
+                  failThreshold={thresholds.failThreshold}
+                />
+              );
+            })()}
 
             {enabledFeatures.passFail && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Pass/Fail Assessment</h2>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, passFailStatus: 'pass' })}
-                    className={`flex-1 px-4 py-3 rounded-lg border-2 transition-colors ${
-                      formData.passFailStatus === 'pass'
-                        ? 'bg-green-500/20 border-green-500 text-green-400'
-                        : 'bg-[#0f1220] border-neutral-800 text-white hover:border-green-500/50'
-                    }`}
-                  >
-                    Pass
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, passFailStatus: 'fail' })}
-                    className={`flex-1 px-4 py-3 rounded-lg border-2 transition-colors ${
-                      formData.passFailStatus === 'fail'
-                        ? 'bg-red-500/20 border-red-500 text-red-400'
-                        : 'bg-[#0f1220] border-neutral-800 text-white hover:border-red-500/50'
-                    }`}
-                  >
-                    Fail
-                  </button>
-                </div>
-              </div>
+              <PassFailFeature
+                status={formData.passFailStatus}
+                onChange={(status) => setFormData({ ...formData, passFailStatus: status })}
+                onMonitorCallout={handleMonitorCallout}
+                contractorType={template?.contractor_type}
+              />
             )}
 
             {enabledFeatures.photoEvidence && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Photo Evidence</h2>
-                <div className="space-y-3">
-                  <label className="block">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      id="photo-upload"
-                    />
-                    <span className="inline-block px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 cursor-pointer">
-                      Upload Photo
-                    </span>
-                  </label>
-                  {formData.photos.length > 0 && (
-                    <div className="space-y-2">
-                      {formData.photos.map((photo, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
-                          <div className="flex items-center gap-3">
-                            <img src={photo.url} alt={photo.fileName} className="w-16 h-16 object-cover rounded" />
-                            <span className="text-white text-sm">{photo.fileName}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeUpload('photo', index)}
-                            className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <PhotoEvidenceFeature
+                photos={formData.photos}
+                onUpload={handlePhotoUpload}
+                onRemove={(index) => {
+                  const newPhotos = formData.photos.filter((_, i) => i !== index);
+                  setFormData({ ...formData, photos: newPhotos });
+                }}
+              />
             )}
 
             {enabledFeatures.requiresSOP && (
@@ -1755,54 +1918,29 @@ export function TaskFromTemplateModal({
               </div>
             )}
 
-            {/* General Document Upload - Hide for fridge-freezer template */}
-            {template?.slug !== 'fridge-freezer-temperature-check' && (
-            <div className="border-t border-white/10 pt-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Document Uploads</h2>
-              <div className="space-y-3">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                    onChange={handleDocumentUpload}
-                    className="hidden"
-                    id="document-upload"
-                  />
-                  <span className="inline-block px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 cursor-pointer">
-                    Upload Document
-                  </span>
-                </label>
-                {formData.documentUploads.length > 0 && (
-                  <div className="space-y-2">
-                    {formData.documentUploads.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-white text-sm">{doc.fileName}</span>
-                          <span className="text-gray-400 text-xs">({formatFileSize(doc.fileSize)})</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 text-sm">
-                            View
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => removeUpload('document', index)}
-                            className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs text-gray-400">Upload any supporting documents for this task (PDF, DOC, XLS, etc.)</p>
+            {/* Document Upload Feature - Only show if enabled in template features */}
+            {enabledFeatures.documentUpload && (
+              <div className="border-t border-white/10 pt-6">
+                <DocumentUploadFeature
+                  uploads={formData.documentUploads}
+                  onUpload={(uploads) => setFormData({ ...formData, documentUploads: uploads })}
+                  onRemove={(index) => {
+                    const newUploads = formData.documentUploads.filter((_, i) => i !== index);
+                    setFormData({ ...formData, documentUploads: newUploads });
+                  }}
+                  label="Supporting Documents"
+                  helpText={template?.requires_risk_assessment 
+                    ? "Upload service certificates, contractor qualifications, or compliance documents"
+                    : "Upload any supporting documents for this task (PDF, DOC, XLS, etc.)"}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
+                  maxFiles={10}
+                  maxFileSize={10 * 1024 * 1024}
+                />
               </div>
-            </div>
             )}
 
-            {/* Library Selections - Step by step selection - Hide for fridge-freezer template */}
-            {template?.slug !== 'fridge-freezer-temperature-check' && (
+            {/* Library Selections - Only show if enabled in template features */}
+            {enabledFeatures.libraryDropdown && (
             <div className="border-t border-white/10 pt-6">
               <h2 className="text-lg font-semibold text-white mb-4">Library Selections</h2>
               
@@ -1872,7 +2010,7 @@ export function TaskFromTemplateModal({
                       if (selectedLibraryType === 'chemicals') return item.product_name;
                       if (selectedLibraryType === 'equipment') return item.equipment_name;
                       if (selectedLibraryType === 'ingredients') return item.ingredient_name;
-                      if (selectedLibraryType === 'drinks') return item.drink_name;
+                      if (selectedLibraryType === 'drinks') return item.item_name;
                       if (selectedLibraryType === 'disposables') return item.item_name;
                       return '';
                     };
@@ -2169,7 +2307,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.drink_name}</span>
+                                <span className="text-white text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {

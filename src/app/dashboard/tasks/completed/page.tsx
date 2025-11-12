@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import CompletedTaskCard from '@/components/checklists/CompletedTaskCard';
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types';
+import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template';
 
 type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
   completion_record?: {
@@ -122,7 +123,12 @@ export default function CompletedTasksPage() {
           .in('id', templateIds);
 
         if (templates) {
-          templatesMap = new Map(templates.map(t => [t.id, t]));
+          templatesMap = new Map(
+            templates.map((template: any) => {
+              const enriched = enrichTemplateWithDefinition(template);
+              return [enriched.id, enriched];
+            }),
+          );
         }
       }
 

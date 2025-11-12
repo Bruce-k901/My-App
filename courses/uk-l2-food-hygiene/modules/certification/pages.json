@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cert_p1",
+    "type": "completion",
+    "title": "Course completion",
+    "body": [
+      "This screen unlocks when Modules 1 to 7 and the Final Assessment are complete.",
+      "Your overall score is calculated from module quizzes and the final exam.",
+      "Select Generate Certificate to create a personalised PDF."
+    ],
+    "media": "/courses/uk-l2-food-hygiene/certification/hero_cert.png",
+    "requires": {
+      "modules": ["m1", "m2", "m3", "m4", "m5", "m6", "m7", "final"],
+      "minOverallPercent": 80
+    },
+    "actions": {
+      "ctaLabel": "Generate certificate"
+    }
+  },
+  {
+    "id": "cert_p2",
+    "type": "content",
+    "title": "What happens next",
+    "body": "Your certificate is saved to your profile and can be downloaded at any time. Admins can verify certificates using the certificate ID."
+  }
+]

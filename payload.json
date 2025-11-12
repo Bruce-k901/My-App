@@ -1,0 +1,10 @@
+﻿{
+  "tenant_id": "f99510bc-b290-47c6-8f12-282bea67bd91",
+  "site_id": "TEST-SITE-001",
+  "asset_id": null,
+  "reading": 3.7,
+  "unit": "celsius",
+  "meta": {
+    "sensor": "lab-probe-1"
+  }
+}

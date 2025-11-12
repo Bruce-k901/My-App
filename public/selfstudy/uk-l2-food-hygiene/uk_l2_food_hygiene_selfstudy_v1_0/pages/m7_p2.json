@@ -1,0 +1,20 @@
+{
+  "id": "m7_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Cracked chopping board", "Not safe"],
+      ["Intact food-grade container", "Safe"],
+      ["Fridge with broken door seal", "Not safe"]
+    ]
+  },
+  "title": "Safe or not",
+  "text": "Is each item safe for use",
+  "media": "media/equipment.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}

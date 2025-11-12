@@ -22,7 +22,8 @@ export default function EmergencyBreakdowns() {
   useEffect(() => {
     async function fetchBreakdowns() {
       try {
-        const { data, error } = await supabase
+        // Fetch assets without relationship query (fetch sites separately)
+        const { data: assetsData, error } = await supabase
           .from("assets")
           .select(`
             id,
@@ -30,7 +31,7 @@ export default function EmergencyBreakdowns() {
             notes,
             status,
             created_at,
-            sites(name)
+            site_id
           `)
           .eq("status", "maintenance")
           .eq("archived", false)
@@ -42,9 +43,25 @@ export default function EmergencyBreakdowns() {
           return;
         }
         
-        const formattedData = (data || []).map(item => ({
+        // Fetch sites separately to avoid relationship issues
+        const siteIds = [...new Set((assetsData || []).map((item: any) => item.site_id).filter(Boolean))];
+        let sitesMap = new Map<string, { name: string }>();
+        
+        if (siteIds.length > 0) {
+          const { data: sitesData, error: sitesError } = await supabase
+            .from("sites")
+            .select("id, name")
+            .in("id", siteIds);
+          
+          if (!sitesError && sitesData) {
+            sitesMap = new Map(sitesData.map((s: any) => [s.id, { name: s.name }]));
+          }
+        }
+        
+        // Transform data to include site name
+        const formattedData = (assetsData || []).map((item: any) => ({
           ...item,
-          sites: item.sites || { name: 'Unknown Site' },
+          sites: item.site_id ? (sitesMap.get(item.site_id) || { name: 'Unknown Site' }) : { name: 'Unknown Site' },
           assets: { name: item.name || 'Unknown Asset' }
         }));
         setData(formattedData);

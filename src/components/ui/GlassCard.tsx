@@ -9,9 +9,9 @@ interface GlassCardProps {
 export default function GlassCard({ children, className = "" }: GlassCardProps) {
   const base = cn(
     "w-full max-w-md py-8 px-6",
-    "rounded-2xl backdrop-blur-lg",
-    // Cards & Containers tokens per docs/UI-Style-Guide.md
-    "bg-white/[0.05] border border-white/[0.1]",
+    "rounded-2xl backdrop-blur-md",
+    // Cards & Containers tokens per docs/UI-Style-Guide.md - More transparent
+    "bg-white/[0.03] border border-white/[0.2]",
     // Unified glow behaviour
     "shadow-[0_0_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_25px_rgba(236,72,153,0.25)]",
     "transition-all duration-200 ease-in-out",

@@ -1,0 +1,18 @@
+{
+  "course_id": "uk-l2-food-hygiene",
+  "title": "Level 2 Food Hygiene and Safety",
+  "version": "2.1.0",
+  "modules": [
+    { "id": "m1", "title": "Introduction and Legal Duties" },
+    { "id": "m2", "title": "Food Hazards & Contamination" },
+    { "id": "m3", "title": "Cleaning, Disinfection & Cross-Contamination" },
+    { "id": "m4", "title": "Personal Hygiene & PPE" },
+    { "id": "m5", "title": "Allergens & Allergen Management" },
+    { "id": "m6", "title": "Cleaning, Disinfection and Waste Management" },
+    { "id": "m7", "title": "Food Safety Management and Legal Responsibilities" },
+    { "id": "final", "title": "Final Assessment" },
+    { "id": "certification", "title": "Course Completion & Certificate" }
+  ],
+  "certificate_module": "certification",
+  "pass_mark_percent": 80
+}

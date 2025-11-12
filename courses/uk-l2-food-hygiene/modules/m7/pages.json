@@ -1,0 +1,64 @@
+[
+  {
+    "id": "m7_p1",
+    "type": "content",
+    "title": "The law behind food safety",
+    "body": "The Food Safety Act 1990 and Regulation (EC) 852/2004 require all food businesses to produce food that is safe to eat. These laws apply to anyone handling, preparing, or selling food. Local authorities enforce them through Environmental Health Officers (EHOs).",
+    "media": "/courses/uk-l2-food-hygiene/m7/hero_m7_food_law.png",
+    "outcomes": ["L2-7.1"]
+  },
+  {
+    "id": "m7_p2",
+    "type": "content",
+    "title": "Your legal duties",
+    "body": "Prevent food from being unsafe or harmful to health. Ensure traceability of food: know where it came from and where it goes. Maintain training and supervision suitable to your role. Report hazards, damage, or contamination immediately.",
+    "outcomes": ["L2-7.1", "L2-7.3", "L2-7.4"]
+  },
+  {
+    "id": "m7_p3",
+    "type": "lottie",
+    "title": "HACCP overview",
+    "caption": "HACCP is a system that identifies critical control points in food processes to prevent hazards.",
+    "src": "/courses/uk-l2-food-hygiene/m7/m7_haccp_flow.json",
+    "loop": false,
+    "outcomes": ["L2-7.2"]
+  },
+  {
+    "id": "m7_p4",
+    "type": "content",
+    "title": "The 7 principles of HACCP",
+    "body": "1. Identify hazards. 2. Identify critical control points (CCPs). 3. Set critical limits for each CCP. 4. Monitor each CCP. 5. Take corrective action if limits are not met. 6. Verify the system works effectively. 7. Keep records of all procedures and checks.",
+    "outcomes": ["L2-7.2"]
+  },
+  {
+    "id": "m7_p5",
+    "type": "content",
+    "title": "Traceability and record keeping",
+    "body": "Every ingredient should be traceable one step forward and one step back. Accurate records support product recalls, demonstrate due diligence, and keep accreditation bodies satisfied.",
+    "media": "/courses/uk-l2-food-hygiene/m7/traceability_chain.png",
+    "outcomes": ["L2-7.3", "L2-7.4"]
+  },
+  {
+    "id": "m7_p6",
+    "type": "content",
+    "title": "Enforcement and penalties",
+    "body": "EHOs can inspect without notice, take samples, and issue improvement or closure notices. Failure to comply can lead to fines, closure, or prosecution. Demonstrating due diligence with records and training can be a legal defence.",
+    "outcomes": ["L2-7.1", "L2-7.3"]
+  },
+  {
+    "id": "m7_p7",
+    "type": "recap",
+    "bullets": [
+      "Food law requires everyone to handle food safely and keep accurate records.",
+      "HACCP protects customers by controlling hazards at critical points.",
+      "Traceability and due diligence records are your legal safety net."
+    ],
+    "outcomes": ["L2-7.1", "L2-7.2", "L2-7.3", "L2-7.4"]
+  },
+  {
+    "id": "m7_p8",
+    "type": "quiz_ref",
+    "pool": "m7",
+    "count": 5
+  }
+]

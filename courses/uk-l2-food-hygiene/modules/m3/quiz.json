@@ -1,0 +1,78 @@
+{
+  "pool_id": "m3",
+  "items": [
+    {
+      "id": "m3_q1",
+      "type": "single_choice",
+      "stem": "What is the difference between cleaning and disinfection?",
+      "options": [
+        "Cleaning removes dirt; disinfection kills microorganisms.",
+        "They are the same process.",
+        "Disinfection removes visible dirt.",
+        "Cleaning uses heat, disinfection does not."
+      ],
+      "answer": 0,
+      "rationale": "Cleaning removes debris; disinfection kills remaining bacteria."
+    },
+    {
+      "id": "m3_q2",
+      "type": "single_choice",
+      "stem": "Which order correctly describes the cleaning cycle?",
+      "options": [
+        "Rinse, Disinfect, Clean, Air dry",
+        "Clean, Rinse, Disinfect, Air dry",
+        "Disinfect, Rinse, Dry, Clean",
+        "Clean, Air dry, Disinfect, Rinse"
+      ],
+      "answer": 1,
+      "rationale": "The proper sequence ensures dirt removal before disinfection."
+    },
+    {
+      "id": "m3_q3",
+      "type": "single_choice",
+      "stem": "If a disinfectant requires 30 seconds contact time, what should you do?",
+      "options": [
+        "Spray and wipe immediately.",
+        "Wait 30 seconds before wiping.",
+        "Leave for 5 minutes.",
+        "Rinse straight away."
+      ],
+      "answer": 1,
+      "rationale": "Allow the disinfectant to stay wet for its required time to kill bacteria."
+    },
+    {
+      "id": "m3_q4",
+      "type": "multi_choice",
+      "stem": "Which of the following prevent cross-contamination?",
+      "options": [
+        "Separate boards for raw and ready foods",
+        "Washing hands after handling raw meat",
+        "Storing raw meat above cooked food",
+        "Using the same cloth for all areas"
+      ],
+      "answers": [0, 1],
+      "rationale": "Keep raw and ready areas separate and wash hands to prevent spread."
+    },
+    {
+      "id": "m3_q5",
+      "type": "single_choice",
+      "stem": "Where should raw meat be stored in a fridge?",
+      "options": ["Top shelf", "Middle shelf", "Bottom shelf", "Anywhere — it doesn’t matter"],
+      "answer": 2,
+      "rationale": "Raw meat goes at the bottom to prevent drips contaminating ready-to-eat food."
+    },
+    {
+      "id": "m3_q6",
+      "type": "single_choice",
+      "stem": "Why is air drying important after disinfection?",
+      "options": [
+        "It saves paper towels.",
+        "It allows disinfectant to continue working and avoids re-contamination.",
+        "It prevents corrosion of metal surfaces.",
+        "It makes the surface shiny."
+      ],
+      "answer": 1,
+      "rationale": "Air drying prevents touching or wiping germs back onto a clean surface."
+    }
+  ]
+}

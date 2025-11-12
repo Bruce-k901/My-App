@@ -29,6 +29,7 @@ import {
   Trash2,
   Archive,
   CheckSquare,
+  GraduationCap,
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
@@ -40,6 +41,7 @@ const navItems = [
   { label: "Business Details", href: "/dashboard/business", icon: Building2, section: "organization" },
   { label: "Sites", href: "/dashboard/sites", icon: MapPin, section: "organization" },
   { label: "Users", href: "/dashboard/users", icon: Users, section: "organization" },
+  { label: "Training Matrix", href: "/dashboard/training", icon: GraduationCap, section: "organization" },
   { label: "Contractors", href: "/dashboard/assets/contractors", icon: UserCog, section: "organization" },
   { label: "Documents", href: "/dashboard/documents", icon: FileCheck, section: "organization" },
   

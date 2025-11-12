@@ -1,0 +1,67 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  vitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run test:run -- --reporter=verbose --coverage
+      - run: |
+          cat coverage/coverage-summary.json | node -e "
+            const input = require('fs').readFileSync(0, 'utf8');
+            const data = JSON.parse(input);
+            const pct = data.total.statements.pct;
+            if (pct < 70) {
+              console.error('Coverage too low:', pct);
+              process.exit(1);
+            }
+          "
+  supabase-rls-tests:
+    runs-on: ubuntu-latest
+    needs: vitest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            pg_isready -h 127.0.0.1 -p 5432 -U postgres && break
+            sleep 1
+          done
+      - name: Bootstrap schema for RLS tests
+        run: |
+          psql postgresql://postgres:postgres@127.0.0.1:5432/postgres -v ON_ERROR_STOP=1 -f supabase/tests/rls/bootstrap.sql
+      - name: Apply Supabase migrations
+        run: |
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort | while IFS= read -r file; do
+            echo "Applying ${file}"
+            psql postgresql://postgres:postgres@127.0.0.1:5432/postgres -v ON_ERROR_STOP=1 -f "${file}"
+          done
+      - name: Run tenant isolation tests
+        run: |
+          psql postgresql://postgres:postgres@127.0.0.1:5432/postgres -v ON_ERROR_STOP=1 -f supabase/tests/rls/tenant_isolation.sql

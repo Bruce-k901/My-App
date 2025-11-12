@@ -1,0 +1,14 @@
+{
+  "id": "m3",
+  "title": "Cleaning, Disinfection & Cross-Contamination",
+  "description": "Learn how to clean, disinfect and prevent cross-contamination in food handling areas.",
+  "duration_min": 15,
+  "pages": ["m3_p1", "m3_p2", "m3_p3", "m3_p4", "m3_p5", "m3_p6", "m3_p7", "m3_p8"],
+  "quiz": {
+    "pool": "m3",
+    "count": 6,
+    "pass_mark_percent": 70
+  },
+  "media_path": "media/",
+  "order": 3
+}

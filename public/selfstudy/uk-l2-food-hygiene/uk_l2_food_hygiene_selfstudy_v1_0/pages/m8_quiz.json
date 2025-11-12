@@ -1,0 +1,8 @@
+{
+  "id": "m8_quiz",
+  "type": "quiz",
+  "module_id": "m8",
+  "random_items": 5,
+  "feedback_mode": "immediate",
+  "duration_sec": 300
+}

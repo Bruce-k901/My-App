@@ -1,0 +1,33 @@
+{
+  "course_id": "uk-l2-food-hygiene",
+  "module_id": "m2",
+  "pool": "m2",
+  "target_count": 6,
+  "coverage": [
+    {
+      "topic": "Hazard types",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "topic": "Cross-contamination",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "topic": "Allergens",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "topic": "Controls/barriers",
+      "min": 1,
+      "max": 2
+    }
+  ],
+  "difficulty_split": {
+    "easy": 0.4,
+    "medium": 0.5,
+    "hard": 0.1
+  }
+}

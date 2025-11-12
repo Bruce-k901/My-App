@@ -1,0 +1,73 @@
+{
+  "pool_id": "m2",
+  "items": [
+    {
+      "id": "m2_q1",
+      "type": "single_choice",
+      "stem": "Which is a physical hazard?",
+      "options": ["Glass shard", "Salmonella", "Bleach residue", "Gluten"],
+      "answer": 0,
+      "rationale": "Physical hazards are objects like glass or metal."
+    },
+    {
+      "id": "m2_q2",
+      "type": "single_choice",
+      "stem": "Cross-contact refers to:",
+      "options": [
+        "Allergens transferring to safe food",
+        "Microbes moving from raw to ready foods",
+        "Overcooking reduces allergens",
+        "A cleaning method"
+      ],
+      "answer": 0,
+      "rationale": "Allergen proteins transfer; cooking doesn\u2019t remove them."
+    },
+    {
+      "id": "m2_q3",
+      "type": "multi_choice",
+      "stem": "Select all high-risk ready-to-eat foods:",
+      "options": ["Cooked sliced ham", "Unwashed potatoes", "Cooked rice", "Dry pasta"],
+      "answers": [0, 2],
+      "rationale": "Ham and cooked rice support bacterial growth; dry pasta does not."
+    },
+    {
+      "id": "m2_q4",
+      "type": "single_choice",
+      "stem": "Best action after using a board for raw chicken:",
+      "options": [
+        "Wash, rinse, disinfect, and air-dry",
+        "Wipe with a cloth",
+        "Rinse under cold water",
+        "Flip it over"
+      ],
+      "answer": 0,
+      "rationale": "Use the full clean-disinfect cycle to remove microbes."
+    },
+    {
+      "id": "m2_q5",
+      "type": "single_choice",
+      "stem": "Which prevents cross-contamination most effectively?",
+      "options": [
+        "Separate raw/ready equipment",
+        "Using the same knife quickly",
+        "Stacking raw above ready in fridge",
+        "Air drying hands only"
+      ],
+      "answer": 0,
+      "rationale": "Dedicated separation is a primary barrier."
+    },
+    {
+      "id": "m2_q6",
+      "type": "single_choice",
+      "stem": "Customer asks about celery in soup. You should:",
+      "options": [
+        "Check allergen matrix/label",
+        "Assume it\u2019s not included",
+        "Say you will find out tomorrow",
+        "Guess based on taste"
+      ],
+      "answer": 0,
+      "rationale": "Always verify against current documented allergen info."
+    }
+  ]
+}

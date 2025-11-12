@@ -1,0 +1,25 @@
+{
+  "id": "m4",
+  "title": "Personal Hygiene & PPE",
+  "description": "How to keep hands, clothing and PPE clean so food stays safe.",
+  "duration_min": 15,
+  "pages": [
+    "m4_p1",
+    "m4_p2",
+    "m4_p3",
+    "m4_p4",
+    "m4_p5",
+    "m4_p6",
+    "m4_p7",
+    "m4_p8",
+    "m4_p9",
+    "m4_p10"
+  ],
+  "quiz": {
+    "pool": "m4",
+    "count": 6,
+    "pass_mark_percent": 70
+  },
+  "media_path": "media/",
+  "order": 4
+}

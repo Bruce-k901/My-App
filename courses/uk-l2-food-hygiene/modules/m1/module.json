@@ -1,0 +1,16 @@
+{
+  "id": "m1",
+  "title": "Introduction and Legal Duties",
+  "duration_min": 20,
+  "pages": [
+    "m1_p1",
+    "m1_p2",
+    "m1_p3",
+    "m1_interact_1",
+    "m1_multi_1",
+    "m1_recap",
+    "m1_quiz_ref",
+    "m1_complete"
+  ],
+  "quiz": { "pool": "m1", "count": 6, "pass_mark_percent": 70 }
+}

@@ -1,0 +1,27 @@
+{
+  "outcomes": [
+    { "id": "L2-6.1", "statement": "Explain the difference between cleaning and disinfection." },
+    { "id": "L2-6.2", "statement": "Apply two-stage cleaning with the correct contact time." },
+    { "id": "L2-6.3", "statement": "Handle and store cleaning chemicals safely." },
+    { "id": "L2-6.4", "statement": "Manage waste to prevent contamination and pests." }
+  ],
+  "mapping": [
+    { "page_id": "m6_p1", "outcome_id": "L2-6.1" },
+    { "page_id": "m6_p2", "outcome_id": "L2-6.1" },
+    { "page_id": "m6_p3", "outcome_id": "L2-6.2" },
+    { "page_id": "m6_p4", "outcome_id": "L2-6.2" },
+    { "page_id": "m6_p5", "outcome_id": "L2-6.2" },
+    { "page_id": "m6_p5", "outcome_id": "L2-6.4" },
+    { "page_id": "m6_p6", "outcome_id": "L2-6.3" },
+    { "page_id": "m6_p7", "outcome_id": "L2-6.4" },
+    { "page_id": "m6_p8", "outcome_id": "L2-6.1" },
+    { "page_id": "m6_p8", "outcome_id": "L2-6.2" },
+    { "page_id": "m6_p8", "outcome_id": "L2-6.3" },
+    { "page_id": "m6_p8", "outcome_id": "L2-6.4" },
+    { "quiz_id": "m6_q1", "outcome_id": "L2-6.1" },
+    { "quiz_id": "m6_q2", "outcome_id": "L2-6.2" },
+    { "quiz_id": "m6_q3", "outcome_id": "L2-6.2" },
+    { "quiz_id": "m6_q4", "outcome_id": "L2-6.3" },
+    { "quiz_id": "m6_q5", "outcome_id": "L2-6.4" }
+  ]
+}

@@ -16,6 +16,7 @@ export type TaskTemplate = {
   name: string
   slug: string
   description: string | null
+  notes: string | null
   category: TaskCategory
   audit_category: string | null
   frequency: TaskFrequency
@@ -73,6 +74,7 @@ export type ChecklistTask = {
   callout_id: string | null // Reference to callout for follow-up tasks
   custom_name: string | null // Custom name if different from template
   custom_instructions: string | null // Custom instructions if different from template
+  template_notes: string | null
   task_data: Record<string, any> | null // Instance-specific task data (checklist items, temperatures, etc.)
   generated_at: string
   expires_at: string | null

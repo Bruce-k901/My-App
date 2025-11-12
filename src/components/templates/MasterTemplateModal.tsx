@@ -5,6 +5,7 @@ import { X, Info } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -158,20 +159,21 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         setAnnualDate(editingTemplate.recurrence_pattern.annualDate);
       }
 
-      // Set features from evidence_types and other flags
-      const evidenceTypes = editingTemplate.evidence_types || [];
+      // Use shared utility to determine features from template config
+      const templateFeatures = getTemplateFeatures(editingTemplate);
+      
       setFeatures({
-        monitorCallout: false, // Not stored directly
-        checklist: evidenceTypes.includes('text_note') && !evidenceTypes.includes('yes_no_checklist'),
-        yesNoChecklist: evidenceTypes.includes('yes_no_checklist'),
-        passFail: evidenceTypes.includes('pass_fail'),
-        libraryDropdown: false, // Not stored directly
-        raUpload: editingTemplate.requires_risk_assessment || false,
-        photoEvidence: evidenceTypes.includes('photo'),
-        documentUpload: false, // Not stored directly
-        tempLogs: evidenceTypes.includes('temperature'),
-        assetDropdown: false, // Not stored directly
-        sopUpload: editingTemplate.requires_sop || false,
+        monitorCallout: templateFeatures.monitorCallout,
+        checklist: templateFeatures.checklist,
+        yesNoChecklist: templateFeatures.yesNoChecklist,
+        passFail: templateFeatures.passFail,
+        libraryDropdown: templateFeatures.libraryDropdown,
+        raUpload: templateFeatures.raUpload,
+        photoEvidence: templateFeatures.photoEvidence,
+        documentUpload: templateFeatures.documentUpload,
+        tempLogs: templateFeatures.tempLogs,
+        assetDropdown: templateFeatures.assetSelection, // Map assetSelection to assetDropdown
+        sopUpload: templateFeatures.requiresSOP,
       });
     } else if (!editingTemplate && isOpen) {
       // Reset form for new template
@@ -215,11 +217,14 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         [featureName]: newValue
       };
       
-      // Auto-select monitor/callout when assetDropdown or passFail is selected
+      // Auto-select monitor/callout when assetDropdown, passFail, or tempLogs is selected
       if (featureName === 'assetDropdown' && newValue) {
         updated.monitorCallout = true;
       }
       if (featureName === 'passFail' && newValue) {
+        updated.monitorCallout = true;
+      }
+      if (featureName === 'tempLogs' && newValue) {
         updated.monitorCallout = true;
       }
       
@@ -402,12 +407,14 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       const instructions = `Purpose:\n${templateConfig.purpose}\n\nImportance:\n${templateConfig.importance}\n\nMethod:\n${templateConfig.method}\n\nSpecial Requirements:\n${templateConfig.specialRequirements}`;
 
       // Build evidence types from features
-      const evidenceTypes: string[] = [];
-      if (features.tempLogs) evidenceTypes.push('temperature');
-      if (features.photoEvidence) evidenceTypes.push('photo');
-      if (features.passFail) evidenceTypes.push('pass_fail');
-      if (features.yesNoChecklist) evidenceTypes.push('yes_no_checklist');
-      if (features.checklist) evidenceTypes.push('text_note');
+      // Use shared utility to map features to evidence_types
+      const evidenceTypes = featuresToEvidenceTypes({
+        tempLogs: features.tempLogs,
+        photoEvidence: features.photoEvidence,
+        passFail: features.passFail,
+        yesNoChecklist: features.yesNoChecklist,
+        checklist: features.checklist,
+      });
 
       // Prepare dayparts array - use selected dayparts, ensure it's always an array
       const dayparts = Array.isArray(selectedDayparts) && selectedDayparts.length > 0 

@@ -1,0 +1,14 @@
+{
+  "id": "m5",
+  "title": "Allergens & Allergen Management",
+  "description": "Know the 14 allergens, how to handle requests, and how to prevent allergen cross-contact.",
+  "duration_min": 15,
+  "pages": ["m5_p1", "m5_p2", "m5_p3", "m5_p4", "m5_p5", "m5_p6", "m5_p7", "m5_p8", "m5_p9"],
+  "quiz": {
+    "pool": "m5",
+    "count": 6,
+    "pass_mark_percent": 70
+  },
+  "media_path": "media/",
+  "order": 5
+}

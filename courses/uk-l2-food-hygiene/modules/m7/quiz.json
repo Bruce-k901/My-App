@@ -1,0 +1,70 @@
+{
+  "pool_id": "m7",
+  "items": [
+    {
+      "id": "m7_q1",
+      "type": "single_choice",
+      "stem": "Which law forms the foundation of UK food safety?",
+      "options": [
+        "Health and Safety at Work Act 1974",
+        "Food Safety Act 1990",
+        "Environmental Protection Act 1995",
+        "Consumer Rights Act 2015"
+      ],
+      "answer": 1,
+      "rationale": "The Food Safety Act 1990 is the key UK food safety law."
+    },
+    {
+      "id": "m7_q2",
+      "type": "single_choice",
+      "stem": "What does HACCP stand for?",
+      "options": [
+        "Hazard Analysis and Critical Control Points",
+        "Health and Clean Cooking Procedures",
+        "Hazard Awareness and Cleaning Control Plan",
+        "Handling and Cooking Control Practices"
+      ],
+      "answer": 0,
+      "rationale": "HACCP means Hazard Analysis and Critical Control Points."
+    },
+    {
+      "id": "m7_q3",
+      "type": "single_choice",
+      "stem": "Which of the following is NOT one of the seven HACCP principles?",
+      "options": [
+        "Identify hazards",
+        "Monitor CCPs",
+        "Take corrective action",
+        "Increase sales and marketing"
+      ],
+      "answer": 3,
+      "rationale": "Marketing is not part of HACCP; the other options are principles."
+    },
+    {
+      "id": "m7_q4",
+      "type": "single_choice",
+      "stem": "What does due diligence mean?",
+      "options": [
+        "Taking reasonable steps to avoid offences",
+        "Delegating tasks to others",
+        "Relying on the EHO to spot issues",
+        "Avoiding record keeping"
+      ],
+      "answer": 0,
+      "rationale": "Due diligence means taking all reasonable precautions and keeping evidence."
+    },
+    {
+      "id": "m7_q5",
+      "type": "single_choice",
+      "stem": "What is traceability in food safety?",
+      "options": [
+        "Tracking the temperature of fridges",
+        "Tracking where food came from and where it goes",
+        "Checking expiry dates only",
+        "Recording staff attendance"
+      ],
+      "answer": 1,
+      "rationale": "Traceability tracks food one step forward and one step back."
+    }
+  ]
+}

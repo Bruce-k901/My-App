@@ -1,0 +1,110 @@
+[
+  {
+    "id": "m2_p1",
+    "type": "content",
+    "title": "What is contamination",
+    "body": "Contamination is anything in food that should not be there. It can be biological (bacteria, viruses), chemical (cleaner residues, allergens), or physical (glass, metal, stones).",
+    "media": "/courses/uk-l2-food-hygiene/m2/hazard_types.png",
+    "outcomes": ["L2-2.1"]
+  },
+  {
+    "id": "m2_p2",
+    "type": "content",
+    "title": "Biological hazards",
+    "body": "Bacteria, viruses and moulds are biological hazards. They multiply quickly in warm, moist foods and can make guests seriously ill. Keep raw and ready-to-eat food apart, cook to safe core temperatures, chill high-risk food within 90 minutes and monitor dates closely.",
+    "media": "/courses/uk-l2-food-hygiene/m2/biological_hazards.png",
+    "outcomes": ["L2-2.1", "L2-2.2"]
+  },
+  {
+    "id": "m2_p3",
+    "type": "content",
+    "title": "Physical hazards",
+    "body": "Physical hazards are objects that can injure or choke guests: broken glass, packaging, stones, jewellery or pest droppings. Keep kit in good repair, cover food in storage, check deliveries, and use colour-coded cloths to avoid fragments entering food.",
+    "media": "/courses/uk-l2-food-hygiene/m2/physical_hazards.png",
+    "outcomes": ["L2-2.1"]
+  },
+  {
+    "id": "m2_p4",
+    "type": "content",
+    "title": "Allergen hazards & cross-contact",
+    "body": "Allergen proteins are hazardous even in tiny amounts. Cross-contact happens when tools, cloths or hands move allergen traces onto food that should be safe. Use separate utensils, clean and disinfect between tasks, and check the allergen matrix before answering guest questions.",
+    "media": "/courses/uk-l2-food-hygiene/m2/svg_cross_transfer.svg",
+    "outcomes": ["L2-3.1", "L2-3.2"]
+  },
+  {
+    "id": "m2_p5",
+    "type": "content",
+    "title": "High-risk foods and why they matter",
+    "body": "Ready-to-eat foods that support bacterial growth (cooked meats, dairy, cooked rice) are high risk. Keep them cold (5 C or below), minimise handling, and protect from raw foods.",
+    "voiceover": "voiceover optional",
+    "media": "/courses/uk-l2-food-hygiene/m2/chemical_hazards.png",
+    "outcomes": ["L2-2.3"]
+  },
+  {
+    "id": "m2_p6",
+    "type": "content",
+    "title": "Barriers that prevent contamination",
+    "body": "Separate equipment for raw and ready foods, correct storage order, clean-as-you-go, and effective hand hygiene create multiple barriers. If one fails, another catches it.",
+    "media": "/courses/uk-l2-food-hygiene/m2/svg_barriers.svg",
+    "outcomes": ["L2-2.4"]
+  },
+  {
+    "id": "m2_interact_dragbins",
+    "type": "drag_drop",
+    "prompt": "Sort each item into the correct hazard bin.",
+    "pairs": [
+      ["Listeria", "Biological"],
+      ["Sanitiser residue", "Chemical"],
+      ["Glass shard", "Physical"],
+      ["Peanut trace on knife", "Allergen"]
+    ],
+    "outcomes": ["L2-2.1", "L2-3.1"]
+  },
+  {
+    "id": "m2_interact_hotspot",
+    "type": "hotspot",
+    "prompt": "Find three cross-contamination risks in this prep scene.",
+    "image": "/courses/uk-l2-food-hygiene/m2/svg_prep_scene.svg",
+    "spots": [
+      { "x": 0.22, "y": 0.62, "label": "Raw chicken touching salad" },
+      { "x": 0.58, "y": 0.35, "label": "Knife used on raw then ready" },
+      { "x": 0.78, "y": 0.7, "label": "Cloth used for both raw and ready areas" }
+    ],
+    "outcomes": ["L2-2.2"]
+  },
+  {
+    "id": "m2_scenario_branch",
+    "type": "branch",
+    "title": "Allergen disclosure on the till",
+    "stem": "A customer asks if the soup contains celery. The recipe sometimes changes.",
+    "options": [
+      {
+        "label": "Say it's fine; you made it yesterday",
+        "result": "Incorrect. Never guess allergen content. You must check an up-to-date allergen matrix or label."
+      },
+      {
+        "label": "Check the allergen matrix/label and confirm based on today's batch",
+        "result": "Correct. Always verify against the current recipe or product label."
+      }
+    ],
+    "correctIndex": 1,
+    "outcomes": ["L2-3.2"]
+  },
+  {
+    "id": "m2_recap",
+    "type": "recap",
+    "bullets": [
+      "Know the four hazard types",
+      "Keep raw and ready completely separate",
+      "Allergen cross-contact is not fixed by cooking",
+      "Storage order and clean kit prevent transfer"
+    ],
+    "outcomes": ["L2-2.1", "L2-2.2", "L2-3.1"]
+  },
+  {
+    "id": "m2_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m2",
+    "count": 6
+  }
+]

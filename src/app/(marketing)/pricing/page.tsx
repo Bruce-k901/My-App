@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import DarkVeil from "@/components/ui/DarkVeil";
 import GlassCard from "@/components/ui/GlassCard";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui";
@@ -8,30 +9,39 @@ import { Button } from "@/components/ui";
 export default function PricingPage() {
   return (
     <>
-      {/* HERO */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold leading-[1.35] pb-2 mb-12 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
-            Less paperwork. More progress.
-          </h1>
-          <p className="text-gray-300 text-lg mt-4 mb-8">
-            Keep your sites compliant, your teams organised, and your fridges under control. Try
-            Checkly free for 14 days — no credit card needed.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/signup">
-              <Button variant="primary">Start Free Trial</Button>
-            </Link>
-            <Link href="/contact">
-              <Button variant="primary">Book a Demo</Button>
-            </Link>
+      {/* Single DarkVeil Background Container */}
+      <div className="relative overflow-hidden">
+        {/* Single DarkVeil Background - covers entire page */}
+        <div className="absolute inset-0 w-full h-full -z-0">
+          <div className="w-full h-full min-h-screen">
+            <DarkVeil />
           </div>
         </div>
-      </section>
 
-      {/* PRICING GRID */}
-      <section className="px-6 py-12 bg-[#0e1016] text-gray-200">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* HERO */}
+        <section className="relative text-center pt-6 pb-10 md:pt-8 md:pb-12 min-h-[400px] flex flex-col justify-start">
+          <div className="relative z-10 max-w-7xl mx-auto px-10 pt-8">
+            <h1 className="hero-title text-4xl md:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-6">
+              Less paperwork. More progress.
+            </h1>
+            <p className="text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-8">
+              Keep your sites compliant, your teams organised, and your fridges under control. Try
+              Checkly free for 14 days — no credit card needed.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/signup">
+                <Button variant="primary">Start Free Trial</Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="primary">Book a Demo</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* PRICING GRID */}
+        <section className="relative px-6 -mt-20 md:-mt-24 pb-14 text-gray-200">
+          <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* STARTER */}
           <GlassCard className="max-w-none flex flex-col min-h-[480px] hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]">
             <h3 className="text-2xl font-semibold text-white mb-2">Starter</h3>
@@ -113,12 +123,12 @@ export default function PricingPage() {
               <Button variant="primary" fullWidth>Contact Sales</Button>
             </Link>
           </GlassCard>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* ADD-ONS */}
-      <section className="px-6 py-12 bg-[#0b0d13] text-gray-200">
-        <div className="max-w-4xl mx-auto text-center">
+        {/* ADD-ONS */}
+        <section className="relative px-6 py-12 text-gray-200">
+          <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-8 text-white">Optional Add-ons</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             <div className="rounded-2xl bg-white/5 backdrop-blur-md p-6 border border-white/10">
@@ -140,27 +150,30 @@ export default function PricingPage() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* CTA */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0e1016]">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-          Ready to take your operation digital?
-        </h2>
-        <p className="text-gray-400 mb-8 max-w-xl">
-          Start with a free 14-day trial or speak to our team about rolling Checkly out across your
-          group.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/signup">
-            <Button variant="primary">Start Free Trial</Button>
-          </Link>
-          <Link href="/contact">
-            <Button variant="primary">Contact Sales</Button>
-          </Link>
-        </div>
-      </section>
+        {/* CTA */}
+        <section className="relative flex flex-col items-center justify-center text-center px-6 py-10 pb-14">
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              Ready to take your operation digital?
+            </h2>
+            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+              Start with a free 14-day trial or speak to our team about rolling Checkly out across your
+              group.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/signup">
+                <Button variant="primary">Start Free Trial</Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="primary">Contact Sales</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
     </>
   );
 }

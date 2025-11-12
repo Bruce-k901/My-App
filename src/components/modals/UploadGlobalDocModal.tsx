@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button, Input } from "@/components/ui";
+import Select from "@/components/ui/Select";
 import { useAppContext } from "@/context/AppContext";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
   const { companyId } = useAppContext();
   const [form, setForm] = useState<{
+    documentType: string;
     category: string;
     name: string;
     version: string;
@@ -21,6 +23,7 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     notes: string;
     file: File | null;
   }>({
+    documentType: "",
     category: "",
     name: "",
     version: "v1",
@@ -31,12 +34,53 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
+  // EHO Document Types - These map directly to readiness requirements
+  const documentTypes = [
+    // Food Safety
+    { value: "Food Safety Policy", category: "Food Safety & Hygiene", required: true },
+    { value: "HACCP Plan", category: "Food Safety & Hygiene", required: true },
+    { value: "Allergen Management Policy", category: "Food Safety & Hygiene", required: true },
+    
+    // Health & Safety
+    { value: "Health & Safety Policy", category: "Health & Safety", required: true },
+    { value: "Competent Person Appointment Letter", category: "Health & Safety", required: true },
+    { value: "COSHH Register", category: "Health & Safety", required: true },
+    
+    // Fire Safety
+    { value: "Fire Safety Policy", category: "Fire & Premises", required: true },
+    
+    // Training
+    { value: "Training Matrix", category: "Training & Competency", required: true },
+    
+    // Cleaning
+    { value: "Cleaning Schedule", category: "Cleaning & Hygiene", required: true },
+    
+    // Legal & Insurance
+    { value: "Public Liability Insurance", category: "Legal & Certificates", required: true },
+    { value: "Employers Liability Insurance", category: "Legal & Certificates", required: true },
+    { value: "Premises Licence", category: "Legal & Certificates", required: false },
+    { value: "Food Business Registration", category: "Legal & Certificates", required: true },
+    { value: "Gas Safety Certificate", category: "Legal & Certificates", required: false },
+    { value: "Electrical Installation Certificate", category: "Legal & Certificates", required: false },
+    
+    // Compliance
+    { value: "Waste Management Policy", category: "Environmental & Waste", required: true },
+    { value: "Staff Handbook", category: "Compliance", required: true },
+    
+    // Other
+    { value: "Other", category: "Other", required: false },
+  ];
+
   const categories = [
     "Food Safety & Hygiene",
     "Health & Safety",
     "Fire & Premises",
-    "Environmental & Waste",
+    "Training & Competency",
+    "Cleaning & Hygiene",
     "Legal & Certificates",
+    "Environmental & Waste",
+    "Compliance",
+    "Other",
   ];
 
   const handleChange = (key: keyof typeof form, value: any) =>
@@ -54,12 +98,46 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
       .toLowerCase(); // keep file names consistent
   }
 
+  const handleDocumentTypeChange = (docType: string) => {
+    const docTypeObj = documentTypes.find(dt => dt.value === docType)
+    if (docTypeObj) {
+      setForm(prev => ({
+        ...prev,
+        documentType: docType,
+        category: docTypeObj.category,
+        name: docType === "Other" ? "" : docType // Auto-fill name if not "Other"
+      }))
+    }
+  }
+
   const handleUpload = async () => {
-    if (!form.file || !form.category || !form.name) {
-      setError("Please fill all required fields.");
-      console.error("Please fill all required fields.");
+    // Validation: file and name are always required
+    // Category is required if documentType is "Other", otherwise it's auto-filled
+    if (!form.file || !form.name) {
+      setError("Please fill all required fields (file and document name).");
       return;
     }
+    
+    // If "Other" is selected, category must be provided
+    if (form.documentType === "Other" && !form.category) {
+      setError("Please select a category for 'Other' document type.");
+      return;
+    }
+    
+    // Ensure category is set (should be auto-filled from document type)
+    let finalCategory = form.category
+    if (!finalCategory && form.documentType && form.documentType !== "Other") {
+      const docTypeObj = documentTypes.find(dt => dt.value === form.documentType)
+      if (docTypeObj) {
+        finalCategory = docTypeObj.category
+      }
+    }
+    
+    if (!finalCategory) {
+      setError("Category is required. Please select a document type or category.");
+      return;
+    }
+    
     if (!companyId) {
       setError("Missing company context. Please refresh and try again.");
       console.error("Company context not loaded yet. Please refresh and try again.");
@@ -68,8 +146,8 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     setLoading(true);
     setError("");
 
-    // build folder path
-    const folder = form.category
+    // build folder path - use final category
+    const folder = finalCategory
       .toLowerCase()
       .replace(/ & /g, "_")
       .replace(/\s+/g, "_");
@@ -99,15 +177,19 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     }
 
     // 2. insert metadata and return the inserted id for highlight
+    // Store document type in name field (standardized) and also in notes for reference
+    const documentName = form.documentType && form.documentType !== "Other" 
+      ? form.documentType 
+      : form.name
+    
     const { data: inserted, error: insertError } = await supabase
       .from("global_documents")
       .insert({
-        category: form.category,
-        // Use the file name to match schema expectations
-        name: form.file?.name || form.name,
+        category: finalCategory,
+        name: documentName, // Use standardized document type name
         version: form.version,
         expiry_date: form.expiry_date || null,
-        notes: form.notes,
+        notes: form.documentType ? `${form.documentType}${form.notes ? ` - ${form.notes}` : ''}` : form.notes,
         file_path: filePath,
         company_id: companyId,
         uploaded_by: authData?.user?.id || null,
@@ -134,28 +216,56 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
 
       <div className="space-y-3">
         <div>
-          <label className="block text-sm text-white/80 mb-1">Category</label>
-          <select
-            value={form.category}
-            onChange={(e) => handleChange("category", e.target.value)}
-            className="w-full h-11 rounded-md px-4 text-white bg-white/[0.03] border border-white/[0.15] focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none"
-          >
-            <option value="">Select category…</option>
-            {categories.map((c) => (
-              <option key={c} value={c} className="text-black">
-                {c}
-              </option>
-            ))}
-          </select>
+          <Select
+            label={
+              <span className="text-sm text-white/80">
+                Document Type <span className="text-pink-400">*</span>
+                <span className="text-xs text-white/60 ml-2">(Select from EHO requirements)</span>
+              </span>
+            }
+            value={form.documentType}
+            onValueChange={handleDocumentTypeChange}
+            placeholder="Select document type…"
+            options={documentTypes.map((dt) => ({
+              label: `${dt.value}${dt.required ? ' *' : ''}`,
+              value: dt.value
+            }))}
+            className="text-white"
+          />
+          {form.documentType && form.documentType !== "Other" && (
+            <p className="text-xs text-green-400 mt-1">
+              ✓ This will be recognized by the EHO Readiness Pack
+            </p>
+          )}
         </div>
 
+        {form.documentType === "Other" && (
+          <div>
+            <Select
+              label="Category"
+              value={form.category}
+              onValueChange={(val) => handleChange("category", val)}
+              placeholder="Select category…"
+              options={categories.map((c) => ({ label: c, value: c }))}
+            />
+          </div>
+        )}
+
         <div>
-          <label className="block text-sm text-white/80 mb-1">Document Name</label>
+          <label className="block text-sm text-white/80 mb-1">
+            Document Name <span className="text-pink-400">*</span>
+          </label>
           <Input
-            placeholder="Fire Safety Policy"
+            placeholder={form.documentType && form.documentType !== "Other" ? form.documentType : "Enter document name"}
             value={form.name}
             onChange={(e) => handleChange("name", e.target.value)}
+            disabled={form.documentType && form.documentType !== "Other"}
           />
+          {form.documentType && form.documentType !== "Other" && (
+            <p className="text-xs text-white/60 mt-1">
+              Name auto-filled from document type. You can edit if needed.
+            </p>
+          )}
         </div>
 
         <div>

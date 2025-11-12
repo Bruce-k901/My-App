@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download } from 'lucide-react'
+import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskCompletionPayload } from '@/types/checklist-types'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -65,6 +65,7 @@ export default function TaskCompletionModal({
   const [sopUploads, setSopUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [raUploads, setRaUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [documentUploads, setDocumentUploads] = useState<Array<{ url: string; fileName: string }>>([])
+  const templateNote = task.template_notes || task.template?.notes || null
 
   useEffect(() => {
     if (isOpen) {
@@ -87,17 +88,28 @@ export default function TaskCompletionModal({
       // Initialize form data with task data FIRST (before loading template fields)
       const initialData: Record<string, any> = {}
       
+      // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
+      // Monitoring tasks should only show the asset that was out of range
+      const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
       // CRITICAL: Load repeatable field data (selected assets) from task_data
       // This is essential for equipment_list to be built correctly
+      // For monitoring tasks, only load the monitored asset (should already be filtered in task_data)
       if (task.template?.repeatable_field_name) {
         const repeatableFieldName = task.template.repeatable_field_name
         if (taskData[repeatableFieldName] && Array.isArray(taskData[repeatableFieldName])) {
-          // Load assets from task_data (assets chosen when task was created)
-          initialData[repeatableFieldName] = taskData[repeatableFieldName]
+          // For monitoring tasks, ensure only the monitored asset is loaded
+          // task_data should already be filtered, but double-check
+          const assetsToLoad = isMonitoringTask 
+            ? taskData[repeatableFieldName].slice(0, 1) // Only first asset for monitoring tasks
+            : taskData[repeatableFieldName] // All assets for regular tasks
+          
+          initialData[repeatableFieldName] = assetsToLoad
           console.log('📦 Loaded repeatable field data from task_data:', {
             fieldName: repeatableFieldName,
-            assetCount: taskData[repeatableFieldName].length,
-            assets: taskData[repeatableFieldName]
+            assetCount: assetsToLoad.length,
+            assets: assetsToLoad,
+            isMonitoringTask
           })
         } else {
           // Initialize empty array if no data
@@ -115,9 +127,12 @@ export default function TaskCompletionModal({
         initialData.yes_no_checklist_items = taskData.yesNoChecklistItems;
       }
       
-      // Load temperature logs from task data
-      // Initialize temperature values for each asset from saved temperatures
-      if (taskData.temperatures && Array.isArray(taskData.temperatures)) {
+      // CRITICAL: For monitoring tasks, DO NOT pre-populate temperatures
+      // Monitoring tasks should start with empty temperature fields so user can record new reading
+      
+      // Load temperature logs from task data (only for non-monitoring tasks)
+      // For monitoring tasks, leave temperatures empty so user can enter new reading
+      if (!isMonitoringTask && taskData.temperatures && Array.isArray(taskData.temperatures)) {
         initialData.temperatures = taskData.temperatures;
         // Map temperatures to formData by assetId for quick access
         taskData.temperatures.forEach((temp: any) => {
@@ -125,6 +140,11 @@ export default function TaskCompletionModal({
             initialData[`temp_${temp.assetId}`] = temp.temp;
           }
         });
+      } else if (isMonitoringTask) {
+        // For monitoring tasks, initialize empty temperatures array
+        // User needs to record a fresh temperature reading
+        initialData.temperatures = [];
+        console.log('🔧 Monitoring task detected - temperature fields will be empty for fresh reading')
       }
       
       // Load pass/fail status from task data
@@ -144,15 +164,47 @@ export default function TaskCompletionModal({
       setFormData(initialData)
       
       // Load task resources (assets, libraries, SOPs, RAs) - await to ensure assets are loaded before temp ranges
+      // CRITICAL: Temperature warning system depends on selectedAssets being loaded first
+      // Note: loadTaskResources now calls loadAssetTempRanges internally with asset IDs
+      // This ensures ranges load immediately when assets are available, avoiding state timing issues
       loadTaskResources(taskData).then(() => {
-        // Load asset temp ranges after assets are loaded
-        loadAssetTempRanges();
+        // Additional safeguard: Load ranges again after a short delay to catch any edge cases
+        // This is a fallback in case the internal call didn't work
+        setTimeout(() => {
+          console.log('🌡️ [TEMPERATURE SYSTEM] Final check: Loading temperature ranges...')
+          loadAssetTempRanges();
+        }, 500)
+      }).catch((error) => {
+        console.error('❌ [TEMPERATURE SYSTEM] Error loading task resources:', error)
+        // Still try to load temp ranges even if task resources fail
+        // Try to get asset IDs from task_data directly
+        const assetIdsFromTaskData = taskData.selectedAssets || []
+        if (assetIdsFromTaskData.length > 0) {
+          loadAssetTempRanges(assetIdsFromTaskData)
+        } else {
+          loadAssetTempRanges();
+        }
       })
+      
+      // SAFEGUARD: Also load temp ranges after a short delay to catch any missed assets
+      // This ensures ranges are loaded even if loadTaskResources doesn't complete properly
+      const tempRangeTimeout = setTimeout(() => {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Safety timeout: Re-checking temperature ranges...')
+        loadAssetTempRanges();
+      }, 1500)
+      
+      // Cleanup timeout on unmount
+      return () => {
+        clearTimeout(tempRangeTimeout)
+      }
       
       // Then load template fields (which will preserve existing formData)
       const initialize = async () => {
         await loadTemplateFields()
-        // Asset temp ranges will be loaded after assets are loaded in loadTaskResources
+        // SAFEGUARD: Reload temp ranges after template fields load (in case equipment field has assets)
+        // This ensures we catch all assets, even if they're in template fields
+        console.log('🌡️ [TEMPERATURE SYSTEM] Template fields loaded, re-checking temperature ranges...')
+        loadAssetTempRanges()
       }
       initialize()
       setPhotos([])
@@ -183,23 +235,56 @@ export default function TaskCompletionModal({
   // Load task resources (assets, libraries, SOPs, RAs) from task_data
   async function loadTaskResources(taskData: Record<string, any>) {
     try {
+      // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
+      // Monitoring tasks should only show the asset that was out of range
+      const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
       // Load selected assets
       if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets) && taskData.selectedAssets.length > 0) {
-        const { data: assetsData, error: assetsError } = await supabase
-          .from('assets')
-          .select('id, name, category, site_id, sites(id, name)')
-          .in('id', taskData.selectedAssets);
+        // For monitoring tasks, task_data.selectedAssets should already be filtered to only the monitored asset
+        // But double-check to ensure only one asset is loaded
+        const assetIdsToLoad = isMonitoringTask 
+          ? taskData.selectedAssets.slice(0, 1) // Only load first asset for monitoring tasks
+          : taskData.selectedAssets // Load all assets for regular tasks
         
-        if (!assetsError && assetsData) {
-          const assetsWithSite = assetsData.map((asset: any) => {
-            const site = Array.isArray(asset.sites) ? asset.sites[0] : asset.sites;
-            return {
-              ...asset,
-              site_name: site?.name || 'No site assigned'
-            };
-          });
-          setSelectedAssets(assetsWithSite);
+        if (assetIdsToLoad.length > 0) {
+          const { data: assetsData, error: assetsError } = await supabase
+            .from('assets')
+            .select('id, name, category, site_id, sites(id, name)')
+            .in('id', assetIdsToLoad);
+          
+          if (!assetsError && assetsData) {
+            const assetsWithSite = assetsData.map((asset: any) => {
+              const site = Array.isArray(asset.sites) ? asset.sites[0] : asset.sites;
+              return {
+                ...asset,
+                site_name: site?.name || 'No site assigned'
+              };
+            });
+            setSelectedAssets(assetsWithSite);
+            
+            if (isMonitoringTask) {
+              console.log('🔧 Monitoring task: Only loading monitored asset:', {
+                assetCount: assetsWithSite.length,
+                assets: assetsWithSite.map(a => ({ id: a.id, name: a.name }))
+              })
+            }
+            
+            // CRITICAL: Load temperature ranges immediately after assets are loaded
+            // Pass asset IDs directly to avoid state timing issues
+            const assetIds = assetsWithSite.map(a => a.id).filter(Boolean)
+            if (assetIds.length > 0) {
+              console.log('🌡️ [TEMPERATURE SYSTEM] Loading ranges immediately after assets loaded:', assetIds)
+              loadAssetTempRanges(assetIds)
+            }
+          }
         }
+      }
+      
+      // Also load ranges for template-linked asset if it exists
+      if (task.template?.asset_id) {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Loading range for template-linked asset:', task.template.asset_id)
+        loadAssetTempRanges([task.template.asset_id])
       }
       
       // Load selected libraries
@@ -248,7 +333,7 @@ export default function TaskCompletionModal({
         if (taskData.selectedLibraries.drinks && Array.isArray(taskData.selectedLibraries.drinks) && taskData.selectedLibraries.drinks.length > 0) {
           const { data: drinksData } = await supabase
             .from('drinks_library')
-            .select('id, drink_name, category')
+            .select('id, item_name, category')
             .in('id', taskData.selectedLibraries.drinks)
             .catch(() => ({ data: [] }));
           if (drinksData) librariesMap.drinks = drinksData;
@@ -298,22 +383,35 @@ export default function TaskCompletionModal({
   const loadTemplateFields = async () => {
     if (!task.template_id) return
     try {
-      const { data, error } = await supabase
-        .from('template_fields')
-        .select('*')
-        .eq('template_id', task.template_id)
-        .order('field_order')
+      // CRITICAL: Use template_fields from task.template if already loaded (from Today's Tasks page)
+      // This avoids unnecessary database queries and ensures fields are available immediately
+      let fields = task.template?.template_fields || []
       
-      if (error) throw error
+      // If template_fields weren't included in the template, fetch them separately
+      if (!fields || fields.length === 0) {
+        console.log('📋 Template fields not pre-loaded, fetching from database...')
+        const { data, error } = await supabase
+          .from('template_fields')
+          .select('*')
+          .eq('template_id', task.template_id)
+          .order('field_order')
+        
+        if (error) throw error
+        fields = data || []
+      } else {
+        console.log('✅ Using pre-loaded template fields:', fields.length)
+        // Ensure fields are sorted by field_order
+        fields = [...fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+      }
       
-      setTemplateFields(data || [])
+      setTemplateFields(fields)
       
       // Initialize form data with default values for each field type
       // IMPORTANT: Preserve existing formData (like checklist_items from task_data)
       // Use functional update to ensure we're working with the latest formData
       setFormData(prevFormData => {
         const initialFormData: Record<string, any> = { ...prevFormData }
-        data?.forEach((field: any) => {
+        fields?.forEach((field: any) => {
           // For select fields, ensure value is always scalar (string), not array/object
           if (field.field_type === 'select' || field.field_type === 'pass_fail') {
             const currentValue = initialFormData[field.field_name];
@@ -336,10 +434,12 @@ export default function TaskCompletionModal({
         return initialFormData
       })
       
-      // Load assets for equipment information (check both fridge_name and hot_holding_unit)
-      const equipmentField = data?.find((f: any) => 
+      // Load assets for equipment information (check fridge_name, hot_holding_unit, and equipment_name)
+      const equipmentField = fields?.find((f: any) => 
         f.field_type === 'select' && 
-        (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
+        (f.field_name === 'fridge_name' || 
+         f.field_name === 'hot_holding_unit' || 
+         f.field_name === 'equipment_name')
       )
       if (equipmentField?.options && Array.isArray(equipmentField.options)) {
         const assetIds = equipmentField.options.map((opt: any) => opt.value).filter(Boolean)
@@ -360,45 +460,86 @@ export default function TaskCompletionModal({
     }
   }
 
-  const loadAssetTempRanges = async () => {
+  /**
+   * ============================================================================
+   * TEMPERATURE WARNING SYSTEM - CRITICAL FUNCTIONALITY
+   * ============================================================================
+   * 
+   * ⚠️ DO NOT MODIFY THIS FUNCTION WITHOUT TESTING TEMPERATURE WARNINGS ⚠️
+   * 
+   * This function loads asset temperature ranges from the database and is
+   * essential for the temperature warning system. If this breaks, warnings
+   * won't appear when temperatures are out of range.
+   * 
+   * SAFEGUARDS:
+   * - Always loads ranges for template-linked assets
+   * - Always loads ranges for selected assets from task_data
+   * - Always loads ranges for assets in repeatable fields (legacy support)
+   * - Logs all loaded ranges for debugging
+   * - Never throws errors (catches and logs instead)
+   * 
+   * DEPENDENCIES:
+   * - selectedAssets state must be populated before calling
+   * - templateFields state should be populated (but will fetch if not)
+   * - task.template.asset_id may be set for template-linked assets
+   * 
+   * TESTING CHECKLIST:
+   * [ ] Temperature warnings appear when temp is below min
+   * [ ] Temperature warnings appear when temp is above max
+   * [ ] Warnings disappear when temp is corrected to in-range
+   * [ ] Monitor/Callout buttons appear in warning box
+   * [ ] Multiple assets can have warnings simultaneously
+   * [ ] Console shows "🌡️ Loaded asset temperature ranges" on modal open
+   * ============================================================================
+   */
+  /**
+   * Load asset temperature ranges
+   * @param assetIds - Optional array of asset IDs to load ranges for. If not provided, uses selectedAssets state and task_data
+   */
+  const loadAssetTempRanges = async (assetIds?: string[]) => {
     try {
+      console.log('🌡️ [TEMPERATURE SYSTEM] Starting to load asset temperature ranges...')
       const ranges = new Map<string, { min: number | null, max: number | null }>()
       const assets = new Map<string, { name: string }>()
+      const allAssetIds = new Set<string>()
       
-      // Load asset temperature ranges for template's linked asset
+      // SAFEGUARD 1: Load asset temperature ranges for template's linked asset
       if (task.template?.asset_id) {
-        const { data: asset, error } = await supabase
-          .from('assets')
-          .select('id, name, working_temp_min, working_temp_max')
-          .eq('id', task.template.asset_id)
-          .single()
-        
-        if (!error && asset) {
-          ranges.set(asset.id, { min: asset.working_temp_min, max: asset.working_temp_max })
-          assets.set(asset.id, { name: asset.name })
-        }
+        allAssetIds.add(task.template.asset_id)
+        console.log('🌡️ [TEMPERATURE SYSTEM] Template has linked asset:', task.template.asset_id)
       }
 
-      // Load ranges for selected assets from task_data
-      if (selectedAssets.length > 0) {
-        const assetIds = selectedAssets.map(a => a.id).filter(Boolean)
-        if (assetIds.length > 0) {
-          const { data: assetsData, error: assetsError } = await supabase
-            .from('assets')
-            .select('id, name, working_temp_min, working_temp_max')
-            .in('id', assetIds)
-          
-          if (!assetsError && assetsData) {
-            assetsData.forEach(a => {
-              ranges.set(a.id, { min: a.working_temp_min, max: a.working_temp_max })
-              assets.set(a.id, { name: a.name })
-            })
+      // SAFEGUARD 2: Load ranges for selected assets
+      // Priority: Use provided assetIds parameter, then selectedAssets state, then task_data
+      if (assetIds && assetIds.length > 0) {
+        // Use provided asset IDs (most reliable - passed directly)
+        assetIds.forEach(id => {
+          if (id) allAssetIds.add(id)
+        })
+        console.log('🌡️ [TEMPERATURE SYSTEM] Using provided asset IDs:', assetIds.length)
+      } else if (selectedAssets && selectedAssets.length > 0) {
+        // Fallback to selectedAssets state
+        selectedAssets.forEach(asset => {
+          if (asset?.id) {
+            allAssetIds.add(asset.id)
           }
+        })
+        console.log('🌡️ [TEMPERATURE SYSTEM] Found selected assets from state:', selectedAssets.length)
+      } else {
+        // Fallback: Try to get asset IDs from task_data directly
+        // This ensures ranges load even if selectedAssets state hasn't updated yet
+        const taskData = task.task_data || {}
+        if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets) && taskData.selectedAssets.length > 0) {
+          taskData.selectedAssets.forEach((id: string) => {
+            if (id) allAssetIds.add(id)
+          })
+          console.log('🌡️ [TEMPERATURE SYSTEM] Found asset IDs from task_data:', taskData.selectedAssets.length)
         }
       }
 
-      // Also load ranges for assets referenced in repeatable fields (equipment lists) - legacy support
+      // SAFEGUARD 3: Also load ranges for assets referenced in repeatable fields (equipment lists) - legacy support
       const currentFields = templateFields.length > 0 ? templateFields : await (async () => {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Fetching template fields for asset lookup...')
         const { data } = await supabase
           .from('template_fields')
           .select('*')
@@ -412,26 +553,78 @@ export default function TaskCompletionModal({
         (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
       )
       if (equipmentField?.options && Array.isArray(equipmentField.options)) {
-        const assetIds = equipmentField.options.map((opt: any) => opt.value).filter(Boolean)
-        if (assetIds.length > 0) {
-          const { data: assetsData, error: assetsError } = await supabase
-            .from('assets')
-            .select('id, name, working_temp_min, working_temp_max')
-            .in('id', assetIds)
-          
-          if (!assetsError && assetsData) {
-            assetsData.forEach(a => {
-              ranges.set(a.id, { min: a.working_temp_min, max: a.working_temp_max })
-              assets.set(a.id, { name: a.name })
-            })
+        equipmentField.options.forEach((opt: any) => {
+          if (opt?.value) {
+            allAssetIds.add(opt.value)
           }
-        }
+        })
+        console.log('🌡️ [TEMPERATURE SYSTEM] Found assets in equipment field:', equipmentField.options.length)
       }
       
+      // Fetch all assets with temperature ranges in one query
+      if (allAssetIds.size > 0) {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Fetching temperature ranges for', allAssetIds.size, 'assets')
+        const { data: assetsData, error: assetsError } = await supabase
+          .from('assets')
+          .select('id, name, working_temp_min, working_temp_max')
+          .in('id', Array.from(allAssetIds))
+        
+        if (assetsError) {
+          console.error('❌ [TEMPERATURE SYSTEM] Error fetching assets:', assetsError)
+          throw assetsError
+        }
+        
+        if (assetsData && assetsData.length > 0) {
+          assetsData.forEach(asset => {
+            ranges.set(asset.id, { 
+              min: asset.working_temp_min, 
+              max: asset.working_temp_max 
+            })
+            assets.set(asset.id, { name: asset.name })
+            console.log(`🌡️ [TEMPERATURE SYSTEM] Loaded range for ${asset.name}:`, {
+              id: asset.id,
+              min: asset.working_temp_min,
+              max: asset.working_temp_max
+            })
+          })
+        } else {
+          console.warn('⚠️ [TEMPERATURE SYSTEM] No assets found with IDs:', Array.from(allAssetIds))
+        }
+      } else {
+        console.warn('⚠️ [TEMPERATURE SYSTEM] No asset IDs to load ranges for')
+      }
+      
+      // CRITICAL: Always set the ranges, even if empty (prevents stale data)
       setAssetTempRanges(ranges)
-      setAssetsMap(prev => new Map([...prev, ...assets]))
+      setAssetsMap(prev => {
+        const newMap = new Map(prev)
+        assets.forEach((value, key) => {
+          newMap.set(key, value)
+        })
+        return newMap
+      })
+      
+      // Debug: Log loaded ranges
+      console.log('✅ [TEMPERATURE SYSTEM] Successfully loaded asset temperature ranges:', {
+        count: ranges.size,
+        ranges: Array.from(ranges.entries()).map(([id, range]) => ({
+          assetId: id,
+          assetName: assets.get(id)?.name || 'Unknown',
+          min: range.min,
+          max: range.max
+        }))
+      })
+      
+      // SAFEGUARD: Verify ranges were loaded
+      if (ranges.size === 0 && allAssetIds.size > 0) {
+        console.error('❌ [TEMPERATURE SYSTEM] WARNING: No temperature ranges loaded despite having asset IDs!')
+        console.error('   Asset IDs requested:', Array.from(allAssetIds))
+        console.error('   This will cause temperature warnings to NOT appear!')
+      }
     } catch (error) {
-      console.error('Error loading asset temperature ranges:', error)
+      console.error('❌ [TEMPERATURE SYSTEM] CRITICAL ERROR loading asset temperature ranges:', error)
+      // Don't throw - allow modal to continue, but log the error
+      // This ensures the modal still works even if temp ranges fail to load
     }
   }
 
@@ -472,58 +665,114 @@ export default function TaskCompletionModal({
       const now = new Date()
       const dueDate = new Date(now.getTime() + durationMinutes * 60 * 1000)
 
-      // Copy original task's task_data to preserve all assets, temperatures, and features
-      // This ensures the monitoring task has the same look and feel as the original
+      // CRITICAL: Monitoring tasks should:
+      // 1. ONLY include the asset that was out of range (not all assets)
+      // 2. PRESERVE all other features from original task (SOPs, RAs, libraries, checklists, etc.)
+      // 3. Show temperature warnings if temp is still out of range
+      // 4. Allow user to monitor again or escalate to callout
       let monitoringTaskData: Record<string, any> = {}
+      
+      // Find the specific asset that triggered monitoring
+      const outOfRangeAsset = selectedAssets.find(a => a.id === targetAssetId)
+      const savedTemp = task.task_data?.temperatures?.find((t: any) => t.assetId === targetAssetId)
+      const assetNickname = savedTemp?.nickname || ''
+      
       if (task.task_data && typeof task.task_data === 'object') {
-        // Deep copy the original task_data
+        // Deep copy the original task_data to preserve ALL features
         monitoringTaskData = JSON.parse(JSON.stringify(task.task_data))
         
-        // Update the temperature that triggered this monitoring task
-        if (monitoringTaskData.temperatures && Array.isArray(monitoringTaskData.temperatures)) {
-          const tempIndex = monitoringTaskData.temperatures.findIndex((t: any) => t.assetId === targetAssetId)
-          if (tempIndex !== -1) {
-            // Update existing temperature entry
-            monitoringTaskData.temperatures[tempIndex] = {
-              ...monitoringTaskData.temperatures[tempIndex],
-              temp: tempValue,
-              recorded_at: now.toISOString()
-            }
-          } else {
-            // Add new temperature entry if not found
-            monitoringTaskData.temperatures.push({
-              assetId: targetAssetId,
-              temp: tempValue,
-              nickname: '',
-              recorded_at: now.toISOString()
+        // CRITICAL: Filter ONLY asset-related data to the out-of-range asset
+        // 1. Filter selectedAssets to only include the out-of-range asset
+        if (monitoringTaskData.selectedAssets && Array.isArray(monitoringTaskData.selectedAssets)) {
+          monitoringTaskData.selectedAssets = monitoringTaskData.selectedAssets.filter((assetId: string) => assetId === targetAssetId)
+        } else if (task.task_data?.selectedAssets && Array.isArray(task.task_data.selectedAssets)) {
+          monitoringTaskData.selectedAssets = task.task_data.selectedAssets.filter((assetId: string) => assetId === targetAssetId)
+        } else {
+          // Fallback: use the asset ID directly
+          monitoringTaskData.selectedAssets = [targetAssetId]
+        }
+        
+        // 2. Filter temperatures to only include the out-of-range asset
+        monitoringTaskData.temperatures = [{
+          assetId: targetAssetId,
+          temp: tempValue,
+          nickname: assetNickname,
+          recorded_at: now.toISOString()
+        }]
+        
+        // 3. If there's a repeatable field (equipment list), filter it to only the out-of-range asset
+        const repeatableFieldName = task.template?.repeatable_field_name
+        if (repeatableFieldName && monitoringTaskData[repeatableFieldName]) {
+          if (Array.isArray(monitoringTaskData[repeatableFieldName])) {
+            monitoringTaskData[repeatableFieldName] = monitoringTaskData[repeatableFieldName].filter((item: any) => {
+              // Filter by assetId if it's an object, or by value if it's a string/ID
+              if (typeof item === 'object' && item !== null) {
+                return item.assetId === targetAssetId || item.id === targetAssetId || item.value === targetAssetId
+              }
+              return item === targetAssetId
             })
           }
-        } else {
-          // Initialize temperatures array if it doesn't exist
-          monitoringTaskData.temperatures = [{
+        }
+        
+        // CRITICAL: Remove dayparts array from monitoring task - monitoring tasks should be single instances
+        // If we keep dayparts, the monitoring task will be expanded into multiple instances in Today's Tasks
+        if (monitoringTaskData.dayparts) {
+          console.log('🔧 Removing dayparts from monitoring task to prevent expansion into multiple instances')
+          delete monitoringTaskData.dayparts
+        }
+        
+        // PRESERVE all other features (these are NOT filtered):
+        // - checklist_items (preserved)
+        // - yes_no_checklist_items (preserved)
+        // - sop_uploads (preserved)
+        // - ra_uploads (preserved)
+        // - document_uploads (preserved)
+        // - selectedLibraries (preserved - all library types)
+        // - All other task_data fields (preserved)
+        
+        console.log('🔧 Created monitoring task data:', {
+          assetId: targetAssetId,
+          assetName: outOfRangeAsset?.name || 'Unknown',
+          nickname: assetNickname,
+          temp: tempValue,
+          selectedAssets: monitoringTaskData.selectedAssets,
+          temperaturesCount: monitoringTaskData.temperatures?.length || 0,
+          preservedFeatures: {
+            checklistItems: monitoringTaskData.checklist_items?.length || 0,
+            yesNoItems: monitoringTaskData.yes_no_checklist_items?.length || 0,
+            sopUploads: monitoringTaskData.sop_uploads?.length || 0,
+            raUploads: monitoringTaskData.ra_uploads?.length || 0,
+            documentUploads: monitoringTaskData.document_uploads?.length || 0,
+            libraries: Object.keys(monitoringTaskData.selectedLibraries || {}).length
+          }
+        })
+      } else {
+        // If no task_data, create basic structure with ONLY the asset that triggered monitoring
+        // But still preserve any features that might exist
+        monitoringTaskData = {
+          selectedAssets: [targetAssetId], // Only the out-of-range asset
+          temperatures: [{
             assetId: targetAssetId,
             temp: tempValue,
-            nickname: '',
+            nickname: assetNickname,
             recorded_at: now.toISOString()
           }]
         }
         
-        // Preserve selectedAssets, libraries, SOPs, RAs, etc. - all from original task
-        // This ensures monitoring task shows the same assets with temperature fields, warnings, etc.
-      } else {
-        // If no task_data, create basic structure with the asset that triggered monitoring
-        monitoringTaskData = {
-          selectedAssets: task.task_data?.selectedAssets || selectedAssets.map(a => a.id),
-          temperatures: [{
+        // If there's a repeatable field, include it with only the out-of-range asset
+        const repeatableFieldName = task.template?.repeatable_field_name
+        if (repeatableFieldName && outOfRangeAsset) {
+          monitoringTaskData[repeatableFieldName] = [{
             assetId: targetAssetId,
-            temp: tempValue,
-            nickname: '',
-            recorded_at: now.toISOString()
+            nickname: assetNickname,
+            equipment: outOfRangeAsset.name
           }]
         }
       }
 
       // Create monitoring task based on original template
+      // CRITICAL: Monitoring tasks are SINGLE INSTANCE tasks - they should NOT have dayparts in task_data
+      // This prevents them from being expanded into multiple instances in Today's Tasks
       const { data: monitoringTask, error: taskError } = await supabase
         .from('checklist_tasks')
         .insert({
@@ -531,8 +780,8 @@ export default function TaskCompletionModal({
           company_id: companyId,
           site_id: siteId,
           due_date: now.toISOString().split('T')[0], // Today's date
-          due_time: dueDate.toTimeString().slice(0, 5), // HH:MM format
-          daypart: task.daypart || 'during_service',
+          due_time: dueDate.toTimeString().slice(0, 5), // HH:MM format (calculated from duration)
+          daypart: 'during_service', // Monitoring tasks are always single instance - use a default daypart
           assigned_to_role: task.template.assigned_to_role || null,
           assigned_to_user_id: task.assigned_to_user_id || null,
           status: 'pending',
@@ -541,7 +790,7 @@ export default function TaskCompletionModal({
           flag_reason: 'monitoring', // Mark as monitoring task
           generated_at: new Date().toISOString(),
           expires_at: dueDate.toISOString(),
-          task_data: monitoringTaskData, // Include all assets, temperatures, and features from original task
+          task_data: monitoringTaskData, // Include all assets, temperatures, and features from original task (but NO dayparts)
           custom_name: task.custom_name || task.template?.name, // Preserve task name
           custom_instructions: task.custom_instructions || task.template?.instructions, // Preserve instructions
         })
@@ -1097,19 +1346,75 @@ export default function TaskCompletionModal({
     }
   }
 
+  /**
+   * ============================================================================
+   * TEMPERATURE RANGE CHECK - CRITICAL FUNCTIONALITY
+   * ============================================================================
+   * 
+   * ⚠️ DO NOT MODIFY WITHOUT TESTING NEGATIVE TEMPERATURES ⚠️
+   * 
+   * This function checks if a temperature is outside the asset's working range.
+   * CRITICAL: Must handle negative temperatures correctly (e.g., freezers at -18°C)
+   * 
+   * Examples:
+   * - Freezer range: min=-20, max=-18
+   *   - -22°C is OUT (below min: -22 < -20) ✓
+   *   - -19°C is OUT (above max: -19 > -18) ✓
+   *   - -19.5°C is IN (between -20 and -18) ✓
+   * 
+   * SAFEGUARDS:
+   * - Handles negative numbers correctly
+   * - Handles null min/max values
+   * - Returns false if range not loaded (prevents false positives)
+   * 
+   * TESTING CHECKLIST:
+   * [ ] Freezer: -22°C with range -20 to -18 → OUT (below min)
+   * [ ] Freezer: -19°C with range -20 to -18 → OUT (above max)
+   * [ ] Freezer: -19.5°C with range -20 to -18 → IN
+   * [ ] Fridge: 10°C with range 0 to 5 → OUT (above max)
+   * [ ] Fridge: 3°C with range 0 to 5 → IN
+   * ============================================================================
+   */
   const checkTemperatureRange = (temp: number, assetId: string | null): boolean => {
-    if (!assetId || isNaN(temp)) return false
+    if (!assetId || isNaN(temp)) {
+      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] Invalid input: assetId=${assetId}, temp=${temp}`)
+      return false
+    }
     
     const range = assetTempRanges.get(assetId)
-    if (!range) return false
+    if (!range) {
+      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] No range loaded for asset ${assetId}`)
+      return false
+    }
     
     const { min, max } = range
-    if (min === null && max === null) return false
+    if (min === null && max === null) {
+      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] Range has no min or max for asset ${assetId}`)
+      return false
+    }
     
-    // Check if temperature is outside the working range
-    const isOutOfRange = 
-      (min !== null && temp < min) || 
-      (max !== null && temp > max)
+    // CRITICAL: Check if temperature is outside the working range
+    // For negative temps: -22 < -20 (below min) OR -19 > -18 (above max)
+    // For positive temps: 10 > 5 (above max) OR -1 < 0 (below min)
+    let isOutOfRange = false
+    
+    if (min !== null && temp < min) {
+      // Temperature is below minimum (works for both positive and negative)
+      // Example: -22 < -20 (freezer too cold) OR -1 < 0 (fridge too cold)
+      isOutOfRange = true
+      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${min}°C (out of range)`)
+    }
+    
+    if (max !== null && temp > max) {
+      // Temperature is above maximum (works for both positive and negative)
+      // Example: -19 > -18 (freezer too warm) OR 10 > 5 (fridge too warm)
+      isOutOfRange = true
+      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${max}°C (out of range)`)
+    }
+    
+    if (!isOutOfRange) {
+      console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${min ?? 'no min'}, ${max ?? 'no max'}]`)
+    }
     
     return isOutOfRange
   }
@@ -1653,7 +1958,12 @@ export default function TaskCompletionModal({
         
         // Temperature action (monitor/callout/pass)
         temp_action: formData.temp_action || null,
-        temp_action_asset_id: formData.temp_action_asset_id || null
+        temp_action_asset_id: formData.temp_action_asset_id || null,
+        
+        // CRITICAL: Store which daypart instance was completed
+        // This allows us to track completion per instance for tasks with multiple dayparts
+        completed_daypart: task.daypart || null,
+        completed_due_time: task.due_time || null
       }
 
       // Create completion record with proper schema structure
@@ -1687,29 +1997,36 @@ export default function TaskCompletionModal({
         completion_data_keys: Object.keys(completionData)
       })
 
-      const { data: insertedRecord, error: completionError } = await supabase
-        .from('task_completion_records')
-        .insert(completionRecord)
-        .select()
-        .single()
+      // Use server-side API route to bypass RLS (uses service role key)
+      const response = await fetch('/api/tasks/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(completionRecord),
+      })
 
-      if (completionError) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
         const errorDetails = {
-          message: completionError.message || 'Unknown error',
-          code: completionError.code || 'UNKNOWN',
-          details: completionError.details || null,
-          hint: completionError.hint || null,
+          message: errorData.error || 'Unknown error',
+          code: response.status.toString(),
+          details: null,
+          hint: null,
           attemptedData: completionRecord
         }
         console.error('❌ Task completion record error:', JSON.stringify(errorDetails, null, 2))
-        throw new Error(`Failed to create completion record: ${completionError.message}`)
+        throw new Error(`Failed to create completion record: ${errorData.error || 'Unknown error'}`)
       }
+
+      const { data: insertedRecord, taskUpdated } = await response.json()
 
       // Verify the record was saved correctly
       if (insertedRecord) {
         console.log('✅ COMPLETION RECORD SAVED SUCCESSFULLY:', {
           record_id: insertedRecord.id,
           task_id: insertedRecord.task_id,
+          taskUpdated,
           equipment_list_in_db: insertedRecord.completion_data?.equipment_list?.length || 0,
           completion_data_keys: Object.keys(insertedRecord.completion_data || {})
         })
@@ -1717,20 +2034,14 @@ export default function TaskCompletionModal({
         console.warn('⚠️ Completion record inserted but no data returned')
       }
 
-      // Update task status to completed
-      const { error: updateError } = await supabase
-        .from('checklist_tasks')
-        .update({
-          status: 'completed',
-          completed_at: completedAt,
-          completed_by: profile.id
-        })
-        .eq('id', task.id)
-
-      if (updateError) {
-        console.error('Task update error:', updateError)
-        throw new Error(`Failed to update task status: ${updateError.message}`)
+      // Task status update is now handled by the API route
+      if (taskUpdated) {
+        console.log('✅ Task status updated to completed by API route')
+      } else {
+        console.log('ℹ️ Task has multiple dayparts - not marking as completed yet (waiting for all instances)')
       }
+
+      // Task status update is handled by the API route - no need to update here
 
       // Create alert if task was completed late (after window end)
       if (completedLate) {
@@ -1761,9 +2072,10 @@ export default function TaskCompletionModal({
 
       // Check if this is a monitoring task and temperature is still out of range
       // If so, automatically trigger callout creation
-      const isMonitoringTask = task.flag_reason === 'monitoring'
+      // Note: isMonitoringTask is already defined above in the completion logic
+      const isMonitoringTaskCheck = task.flag_reason === 'monitoring' || task.flagged === true
       
-      if (isMonitoringTask) {
+      if (isMonitoringTaskCheck) {
         // Check if temperature is still out of range
         let shouldCreateCallout = false
         let tempValue: number | null = null
@@ -2000,6 +2312,16 @@ export default function TaskCompletionModal({
 
         {/* Content */}
         <div className="p-6 space-y-6">
+          {templateNote && (
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-100/90 p-4 flex gap-3">
+              <Lightbulb className="w-5 h-5 shrink-0 text-amber-300" />
+              <div>
+                <p className="text-sm font-semibold text-amber-200 uppercase tracking-wide">Template note</p>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed text-amber-100/90">{templateNote}</p>
+              </div>
+            </div>
+          )}
+          
           {/* Instructions - Expandable */}
           {(task.custom_instructions || task.template?.instructions) && (
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg">
@@ -2329,7 +2651,12 @@ export default function TaskCompletionModal({
                       : asset.name
                     const assetId = asset.id
                     const range = assetTempRanges.get(assetId)
-                    const tempValue = formData[`temp_${assetId}`] || savedTemp?.temp || ''
+                    // CRITICAL: For monitoring tasks, don't use savedTemp - field should be empty
+                    // For regular tasks, use formData first, then savedTemp as fallback
+                    const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+                    const tempValue = isMonitoringTask 
+                      ? (formData[`temp_${assetId}`] || '') // Only use formData, ignore savedTemp
+                      : (formData[`temp_${assetId}`] || savedTemp?.temp || '') // Regular task: formData or savedTemp
                     
                     // Find yes/no questions related to this asset (if any)
                     const yesNoItems = formData.yes_no_checklist_items || [];
@@ -2356,12 +2683,21 @@ export default function TaskCompletionModal({
                               type="number"
                               step="0.1"
                               placeholder="°C"
+                              min="-50"
+                              max="100"
                               value={tempValue}
                               onChange={(e) => {
                                 const inputValue = e.target.value
-                                // Handle empty string or parse the number (supports negative numbers)
-                                const temp = inputValue === '' ? NaN : parseFloat(inputValue)
-                                const isValidTemp = !isNaN(temp) && inputValue !== ''
+                                // CRITICAL: Handle negative temperatures correctly
+                                // parseFloat handles negative numbers: parseFloat('-18') = -18
+                                // Also handle cases like '-18.5', '-18.0', etc.
+                                let temp = NaN
+                                if (inputValue !== '' && inputValue !== '-') {
+                                  // Allow '-' to be typed (user might be typing negative number)
+                                  // Only parse if we have more than just '-'
+                                  temp = parseFloat(inputValue)
+                                }
+                                const isValidTemp = !isNaN(temp) && inputValue !== '' && inputValue !== '-'
                                 
                                 // Only update form data if we have a valid number
                                 if (isValidTemp) {
@@ -2372,36 +2708,48 @@ export default function TaskCompletionModal({
                                 }
                                 
                                 // Check if temp is out of range using asset's working temperature ranges from assets table
+                                // CRITICAL: Use the centralized checkTemperatureRange function for consistency
+                                // This ensures negative temperatures are handled correctly (e.g., freezers at -18°C)
                                 let isOutOfRange = false
                                 
                                 // Only check range if we have a valid temperature and a range to check against
                                 if (isValidTemp && range && (range.min !== null || range.max !== null)) {
-                                  // Check if temperature is below minimum (works for negative numbers like -20 < -18)
-                                  if (range.min !== null && temp < range.min) {
-                                    isOutOfRange = true
-                                  }
-                                  // Check if temperature is above maximum
-                                  if (range.max !== null && temp > range.max) {
-                                    isOutOfRange = true
-                                  }
+                                  // Use the centralized function to check range (handles negative temps correctly)
+                                  // This function properly handles:
+                                  // - Freezer: -22°C with range -20 to -18 → OUT (below min: -22 < -20)
+                                  // - Freezer: -19°C with range -20 to -18 → OUT (above max: -19 > -18)
+                                  // - Freezer: -19.5°C with range -20 to -18 → IN (between -20 and -18)
+                                  isOutOfRange = checkTemperatureRange(temp, assetId)
                                 } else if (isValidTemp && !range) {
-                                  // Debug: Log if range is missing for this asset
-                                  console.warn(`No temperature range loaded for asset ${assetId}`)
+                                  // SAFEGUARD: Log if range is missing - this indicates a problem
+                                  console.warn(`⚠️ [TEMPERATURE WARNING] No temperature range loaded for asset ${assetId} - cannot check if out of range`)
+                                  console.warn(`   This means warnings will NOT appear for this asset!`)
+                                  console.warn(`   Check: Is loadAssetTempRanges() being called? Are asset IDs correct?`)
+                                  // Try to reload ranges as a fallback
+                                  setTimeout(() => {
+                                    console.log(`🔄 [TEMPERATURE WARNING] Attempting to reload ranges for asset ${assetId}...`)
+                                    loadAssetTempRanges()
+                                  }, 500)
+                                } else if (isValidTemp) {
+                                  console.log(`ℹ️ [TEMPERATURE WARNING] Temperature ${temp}°C entered but no range defined (min: ${range?.min ?? 'null'}, max: ${range?.max ?? 'null'})`)
                                 }
                                 
                                 // Update out-of-range assets set independently
                                 // Support both positive and negative temperatures (e.g., freezers at -18°C)
                                 if (isOutOfRange && isValidTemp) {
+                                  console.log(`🚨 [TEMPERATURE WARNING] Adding asset ${assetId} to out-of-range set - warning should appear`)
                                   // Add to out-of-range set - this triggers the warning display
                                   setOutOfRangeAssets(prev => {
                                     const newSet = new Set(prev)
                                     newSet.add(assetId)
+                                    console.log(`📋 [TEMPERATURE WARNING] Out-of-range assets set updated:`, Array.from(newSet))
                                     return newSet
                                   })
                                   // Don't auto-show action options - let user choose when they're ready
                                   // User will see the warning and can click the buttons to choose Monitor or Callout
                                 } else if (isValidTemp) {
                                   // Temperature is valid and in range - remove from out-of-range set
+                                  console.log(`✅ [TEMPERATURE WARNING] Temperature ${temp}°C is in range - removing from out-of-range set`)
                                   setOutOfRangeAssets(prev => {
                                     const newSet = new Set(prev)
                                     newSet.delete(assetId)
@@ -2434,6 +2782,13 @@ export default function TaskCompletionModal({
                         )}
                         
                         {/* Temperature Warning - Show for out of range asset */}
+                        {(() => {
+                          // Debug: Log when warning should show
+                          if (outOfRangeAssets.has(assetId)) {
+                            console.log(`🚨 Rendering warning for asset ${assetId} - temp: ${tempValue}°C, range:`, range)
+                          }
+                          return null
+                        })()}
                         {outOfRangeAssets.has(assetId) && (
                           <div className="ml-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                             <div className="flex items-start gap-2">
@@ -2449,67 +2804,32 @@ export default function TaskCompletionModal({
                                   )}
                                 </p>
                                 
-                                {/* Action Options */}
-                                {!showActionOptions.get(assetId) ? (
-                                  <div className="flex gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setShowActionOptions(prev => new Map(prev).set(assetId, true))
-                                      }}
-                                      className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition-colors text-xs"
-                                    >
-                                      <Monitor className="w-3 h-3" />
-                                      Schedule Monitor
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleCalloutAction(assetId)}
-                                      className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors text-xs"
-                                    >
-                                      <PhoneCall className="w-3 h-3" />
-                                      Place Callout
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-2">
-                                    <p className="text-xs text-white/60 mb-2">Choose an action:</p>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setSelectedActions(prev => new Map(prev).set(assetId, 'monitor'))
-                                        setOutOfRangeAssetId(assetId)
-                                        handleMonitorAction(assetId)
-                                      }}
-                                      className={`w-full flex items-center gap-2 p-2 border rounded-lg transition-colors text-left text-sm ${
-                                        selectedActions.get(assetId) === 'monitor'
-                                          ? 'bg-yellow-500/20 border-yellow-500/50'
-                                          : 'bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20'
-                                      }`}
-                                    >
-                                      <Monitor className="h-4 w-4 text-yellow-400" />
-                                      <div>
-                                        <p className="text-xs font-medium text-white">Monitor</p>
-                                        <p className="text-xs text-white/60">Schedule a follow-up check</p>
-                                      </div>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleCalloutAction(assetId)}
-                                      className={`w-full flex items-center gap-2 p-2 border rounded-lg transition-colors text-left text-sm ${
-                                        selectedActions.get(assetId) === 'callout'
-                                          ? 'bg-red-500/20 border-red-500/50'
-                                          : 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
-                                      }`}
-                                    >
-                                      <PhoneCall className="h-4 w-4 text-red-400" />
-                                      <div>
-                                        <p className="text-xs font-medium text-white">Place Callout</p>
-                                        <p className="text-xs text-white/60">Contact contractor immediately</p>
-                                      </div>
-                                    </button>
-                                  </div>
-                                )}
+                                {/* Action Options - Direct action buttons (no intermediate step) */}
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedActions(prev => new Map(prev).set(assetId, 'monitor'))
+                                      setOutOfRangeAssetId(assetId)
+                                      handleMonitorAction(assetId)
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition-colors text-xs"
+                                  >
+                                    <Monitor className="w-3 h-3" />
+                                    Schedule Monitor
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedActions(prev => new Map(prev).set(assetId, 'callout'))
+                                      handleCalloutAction(assetId)
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors text-xs"
+                                  >
+                                    <PhoneCall className="w-3 h-3" />
+                                    Place Callout
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -2640,17 +2960,59 @@ export default function TaskCompletionModal({
               </div>
             )}
             
-            {/* Legacy Temperature Field - Only show if no selected assets but template has temperature evidence */}
-            {task.template?.evidence_types?.includes('temperature') && selectedAssets.length === 0 && (() => {
+            {/* Temperature Field - Show when template has temperature evidence */}
+            {task.template?.evidence_types?.includes('temperature') && (() => {
+              // Check for equipment select fields (legacy and new field names)
+              // Note: asset_name can be both a select field AND a repeatable field name
+              // We need to check if it's used as a select dropdown (has options) vs asset selection
               const equipmentField = templateFields.find((f: any) => 
                 f.field_type === 'select' && 
-                (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit')
+                (f.field_name === 'fridge_name' || 
+                 f.field_name === 'hot_holding_unit' || 
+                 f.field_name === 'equipment_name' ||
+                 f.field_name === 'asset_name')
               )
-              const temperatureField = templateFields.find((f: any) => f.field_type === 'number')
+              const temperatureField = templateFields.find((f: any) => 
+                f.field_type === 'number' && 
+                (f.field_name === 'temperature' || f.field_name?.toLowerCase().includes('temp'))
+              )
               const equipmentOptions = equipmentField?.options || []
               
-              // Render equipment list with temperature inputs (legacy support)
-              if (equipmentOptions.length > 0) {
+              // Debug logging
+              console.log('🌡️ Temperature field check:', {
+                templateSlug: task.template?.slug,
+                hasTemperatureEvidence: task.template?.evidence_types?.includes('temperature'),
+                templateFieldsCount: templateFields.length,
+                temperatureFieldFound: !!temperatureField,
+                temperatureFieldName: temperatureField?.field_name,
+                equipmentFieldFound: !!equipmentField,
+                equipmentFieldName: equipmentField?.field_name,
+                equipmentOptionsCount: equipmentOptions.length,
+                selectedAssetsCount: selectedAssets.length,
+                repeatableFieldName: task.template?.repeatable_field_name
+              })
+              
+              // CRITICAL: Only hide temperature section if:
+              // 1. There are selectedAssets (from asset picker) 
+              // 2. AND template uses repeatable_field_name for asset selection (not equipment select dropdown)
+              // 3. AND the equipment field doesn't have options (meaning it's used for asset selection, not dropdown)
+              // Equipment select fields with options should always show temperature inputs
+              // ALWAYS show temperature field if it exists, even if using asset selection
+              const repeatableFieldName = task.template?.repeatable_field_name
+              const usesAssetSelection = repeatableFieldName && selectedAssets.length > 0
+              const equipmentFieldHasOptions = equipmentField && equipmentOptions && equipmentOptions.length > 0
+              const isRepeatableAssetSelection = repeatableFieldName && 
+                                                 equipmentField?.field_name === repeatableFieldName && 
+                                                 !equipmentFieldHasOptions
+              
+              // Only hide if using asset selection AND no temperature field exists
+              // If temperature field exists, always show it (even if using asset selection)
+              if (usesAssetSelection && isRepeatableAssetSelection && !equipmentFieldHasOptions && !temperatureField) {
+                return null
+              }
+              
+              // Render equipment list with temperature inputs (for equipment select fields with options)
+              if (equipmentOptions && equipmentOptions.length > 0) {
                 return (
                   <div>
                     <label className="block text-sm font-medium text-white mb-3">
@@ -2658,13 +3020,16 @@ export default function TaskCompletionModal({
                     </label>
                     <div className="space-y-3">
                       {equipmentOptions.map((equipment: any, idx: number) => {
-                        const assetName = equipment.assetName || assetsMap.get(equipment.value)?.name || 'Equipment'
-                        const nickname = equipment.nickname || (equipment.label?.includes('(') 
-                          ? equipment.label.match(/\(([^)]+)\)/)?.[1] 
+                        // Handle both legacy format (with assetName) and new format (with label/value)
+                        const equipmentValue = equipment.value || equipment
+                        const equipmentLabel = equipment.label || equipment.assetName || equipment
+                        const assetName = equipment.assetName || assetsMap.get(equipmentValue)?.name || equipmentLabel || 'Equipment'
+                        const nickname = equipment.nickname || (typeof equipmentLabel === 'string' && equipmentLabel.includes('(') 
+                          ? equipmentLabel.match(/\(([^)]+)\)/)?.[1] 
                           : '') || ''
                         const displayLabel = nickname 
                           ? `${assetName} | ${nickname}`
-                          : assetName
+                          : (typeof equipmentLabel === 'string' ? equipmentLabel : assetName)
                         
                         return (
                           <div key={idx} className="flex items-center gap-3">
@@ -2676,12 +3041,12 @@ export default function TaskCompletionModal({
                                 type="number"
                                 step="0.1"
                                 placeholder="°C"
-                                value={formData[`temp_${equipment.value}`] || ''}
+                                value={formData[`temp_${equipmentValue}`] || ''}
                                 onChange={(e) => {
                                   const temp = parseFloat(e.target.value)
-                                  handleFieldChange(`temp_${equipment.value}`, temp)
+                                  handleFieldChange(`temp_${equipmentValue}`, temp)
                                   
-                                  const assetId = equipment.value
+                                  const assetId = equipmentValue
                                   let isOutOfRange = checkTemperatureRange(temp, assetId)
                                   
                                   if (!isOutOfRange) {
@@ -2700,7 +3065,10 @@ export default function TaskCompletionModal({
                                         isOutOfRange = true
                                       }
                                       
-                                      if (equipmentField?.field_name === 'hot_holding_unit') {
+                                      // Check hot holding threshold (63°C minimum)
+                                      if (equipmentField?.field_name === 'hot_holding_unit' || 
+                                          equipmentField?.field_name === 'equipment_name' ||
+                                          task.template?.slug === 'hot_holding_temperature_verification') {
                                         if (temp < 63) {
                                           isOutOfRange = true
                                         }
@@ -2733,7 +3101,7 @@ export default function TaskCompletionModal({
                                   }
                                 }}
                                 className={`w-24 px-3 py-2 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors text-sm text-center ${
-                                  outOfRangeAssets.has(equipment.value)
+                                  outOfRangeAssets.has(equipmentValue)
                                     ? 'border-red-500 focus:border-red-500'
                                     : 'border-white/[0.06] focus:border-pink-500'
                                 }`}
@@ -2747,10 +3115,15 @@ export default function TaskCompletionModal({
                     
                     {/* Temperature Warnings - Show for each out of range asset independently */}
                     {Array.from(outOfRangeAssets).map((assetId) => {
-                      const equipmentOption = equipmentOptions.find((opt: any) => opt.value === assetId)
-                      const assetName = equipmentOption?.assetName || assetsMap.get(assetId)?.name || 'Equipment'
+                      const equipmentOption = equipmentOptions.find((opt: any) => {
+                        const optValue = opt.value || opt
+                        return optValue === assetId || optValue?.toString() === assetId?.toString()
+                      })
+                      const optValue = equipmentOption?.value || equipmentOption
+                      const optLabel = equipmentOption?.label || equipmentOption?.assetName || equipmentOption
+                      const assetName = equipmentOption?.assetName || assetsMap.get(assetId)?.name || (typeof optLabel === 'string' ? optLabel : 'Equipment')
                       const nickname = equipmentOption?.nickname || ''
-                      const displayName = nickname ? `${assetName} (${nickname})` : assetName
+                      const displayName = nickname ? `${assetName} (${nickname})` : (typeof optLabel === 'string' ? optLabel : assetName)
                       const range = assetTempRanges.get(assetId)
                       const tempValue = formData[`temp_${assetId}`] || formData.temperature
                       const showActionOptionsForAsset = showActionOptions.get(assetId) || false
@@ -2768,7 +3141,10 @@ export default function TaskCompletionModal({
                           (range.max !== null && tempValue > range.max + 2)
                         )
                       } else {
-                        if (equipmentField?.field_name === 'hot_holding_unit') {
+                        // Check hot holding threshold
+                        if (equipmentField?.field_name === 'hot_holding_unit' || 
+                            equipmentField?.field_name === 'equipment_name' ||
+                            task.template?.slug === 'hot_holding_temperature_verification') {
                           minThreshold = 63
                           maxThreshold = null
                           isFailed = tempValue < 60 // Critical below 60°C
@@ -2806,7 +3182,9 @@ export default function TaskCompletionModal({
                                 Reading: <strong>{tempValue}°C</strong> 
                                 {(minThreshold !== null || maxThreshold !== null) && (
                                   <span className="ml-2">
-                                    {equipmentField?.field_name === 'hot_holding_unit' 
+                                    {(equipmentField?.field_name === 'hot_holding_unit' || 
+                                      equipmentField?.field_name === 'equipment_name' ||
+                                      task.template?.slug === 'hot_holding_temperature_verification')
                                       ? `(Minimum required: 63°C)`
                                       : `(Normal range: ${minThreshold !== null ? minThreshold : 'N/A'}°C to ${maxThreshold !== null ? maxThreshold : 'N/A'}°C)`
                                     }
@@ -2872,22 +3250,40 @@ export default function TaskCompletionModal({
                 )
               }
               
-              // Fallback to single temperature field if no equipment
+              // Fallback to single temperature field if no equipment options OR if temperature field exists
+              // Always show temperature field if template has temperature evidence and a temperature field exists
+              if (!temperatureField) {
+                return null // No temperature field found, don't render anything
+              }
+              
+              // Use template field label and help text if available
+              const tempFieldLabel = temperatureField.label || temperatureField.field_label || 'Temperature Reading'
+              const tempFieldHelp = temperatureField.help_text
+              const tempFieldName = temperatureField.field_name || 'temperature'
+              
               return (
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">
-                    Temperature Reading
+                    {tempFieldLabel}
+                    {temperatureField?.required && <span className="text-red-400 ml-1">*</span>}
                   </label>
+                  {tempFieldHelp && (
+                    <p className="text-xs text-white/60 mb-2">{tempFieldHelp}</p>
+                  )}
                   <div className="flex items-center gap-2">
                     <Thermometer className="h-5 w-5 text-neutral-400" />
                     <input
                       type="number"
                       step="0.1"
                       placeholder="Enter temperature"
-                      value={formData.temperature || ''}
+                      value={formData[tempFieldName] || formData.temperature || ''}
                       onChange={(e) => {
                         const temp = parseFloat(e.target.value)
-                        handleFieldChange('temperature', temp)
+                        handleFieldChange(tempFieldName, temp)
+                        // Also update 'temperature' for backward compatibility
+                        if (tempFieldName !== 'temperature') {
+                          handleFieldChange('temperature', temp)
+                        }
                         
                         // Check against template's linked asset if available
                         if (task.template?.asset_id) {
@@ -2902,45 +3298,67 @@ export default function TaskCompletionModal({
                             setOutOfRangeAssetId(null)
                           }
                         }
+                        
+                        // Check hot holding threshold
+                        if (task.template?.slug === 'hot_holding_temperature_verification' && temp < 63) {
+                          setShowWarning(true)
+                          setOutOfRangeAssetId(null) // No specific asset for hot holding
+                          setShowActionOptionsSingle(false)
+                          setSelectedAction(null)
+                        }
                       }}
                       className={`flex-1 px-4 py-3 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors ${
-                        showWarning && outOfRangeAssetId === task.template?.asset_id
+                        showWarning
                           ? 'border-red-500 focus:border-red-500'
                           : 'border-white/[0.06] focus:border-pink-500'
                       }`}
+                      required={temperatureField?.required}
                     />
                     <span className="text-sm text-white/60">°C</span>
                   </div>
                   
                   {/* Temperature Warning for single field */}
-                  {showWarning && outOfRangeAssetId === task.template?.asset_id && (
+                  {showWarning && (
                     <div className={`mt-3 p-4 border rounded-lg ${
-                      selectedAction === 'callout' || (assetTempRanges.get(outOfRangeAssetId) && (
-                        (assetTempRanges.get(outOfRangeAssetId)!.min !== null && formData.temperature < assetTempRanges.get(outOfRangeAssetId)!.min! - 2) ||
-                        (assetTempRanges.get(outOfRangeAssetId)!.max !== null && formData.temperature > assetTempRanges.get(outOfRangeAssetId)!.max! + 2)
+                      selectedAction === 'callout' || 
+                      (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60) ||
+                      (outOfRangeAssetId && assetTempRanges.get(outOfRangeAssetId) && (
+                        (assetTempRanges.get(outOfRangeAssetId)!.min !== null && (formData[tempFieldName] || formData.temperature) < assetTempRanges.get(outOfRangeAssetId)!.min! - 2) ||
+                        (assetTempRanges.get(outOfRangeAssetId)!.max !== null && (formData[tempFieldName] || formData.temperature) > assetTempRanges.get(outOfRangeAssetId)!.max! + 2)
                       ))
                         ? 'bg-red-500/10 border-red-500/30' 
                         : 'bg-yellow-500/10 border-yellow-500/30'
                     }`}>
                       <div className="flex items-start gap-3">
                         <AlertCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
-                          selectedAction === 'callout' ? 'text-red-400' : 'text-yellow-400'
+                          selectedAction === 'callout' || 
+                          (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
+                            ? 'text-red-400' 
+                            : 'text-yellow-400'
                         }`} />
                         <div className="flex-1">
                           <h4 className={`text-sm font-semibold mb-1 ${
-                            selectedAction === 'callout' ? 'text-red-400' : 'text-yellow-400'
+                            selectedAction === 'callout' || 
+                            (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
+                              ? 'text-red-400' 
+                              : 'text-yellow-400'
                           }`}>
                             Temperature Out of Range
                           </h4>
                           <p className={`text-sm mb-2 ${
-                            selectedAction === 'callout' ? 'text-red-300/80' : 'text-yellow-300/80'
+                            selectedAction === 'callout' || 
+                            (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
+                              ? 'text-red-300/80' 
+                              : 'text-yellow-300/80'
                           }`}>
-                            Reading: <strong>{formData.temperature}°C</strong>
-                            {assetTempRanges.get(outOfRangeAssetId) && (
+                            Reading: <strong>{(formData[tempFieldName] || formData.temperature)}°C</strong>
+                            {task.template?.slug === 'hot_holding_temperature_verification' ? (
+                              <span className="ml-2">(Minimum required: 63°C)</span>
+                            ) : assetTempRanges.get(outOfRangeAssetId) ? (
                               <span className="ml-2">
                                 (Normal range: {assetTempRanges.get(outOfRangeAssetId)!.min !== null ? assetTempRanges.get(outOfRangeAssetId)!.min : 'N/A'}°C to {assetTempRanges.get(outOfRangeAssetId)!.max !== null ? assetTempRanges.get(outOfRangeAssetId)!.max : 'N/A'}°C)
                               </span>
-                            )}
+                            ) : null}
                           </p>
                           {!showActionOptionsSingle && (
                             <button
@@ -2993,6 +3411,275 @@ export default function TaskCompletionModal({
               )
             })()}
 
+            {/* General Template Fields - Render all fields that aren't handled by specific evidence types */}
+            {templateFields
+              .filter((field: any) => {
+                // Exclude fields already handled by specific sections
+                const excludedFieldNames = [
+                  'fire_alarm_call_point', // Handled by fire alarm section
+                  'fire_alarm_test_result', // Handled by fire alarm section
+                  'emergency_lights_test_result', // Handled by emergency lighting section
+                  'notes', // Handled by notes section below
+                  'temperature', // Handled by temperature sections
+                  'pass_fail_result', // Handled by pass_fail section if no template field
+                  'initials', // Removed - user login is used instead (task is timestamped and completed_by is set)
+                  'checked_by_initials', // Removed - user login is used instead
+                  'checked_by', // Removed - user login is used instead
+                ]
+                
+                // Exclude equipment select fields (fridge_name, hot_holding_unit, equipment_name, asset_name) - handled by temperature sections
+                // BUT: Only exclude asset_name if it has options (dropdown), not if it's used for repeatable asset selection
+                const isEquipmentField = field.field_type === 'select' && 
+                  (field.field_name === 'fridge_name' || 
+                   field.field_name === 'hot_holding_unit' || 
+                   field.field_name === 'equipment_name' ||
+                   (field.field_name === 'asset_name' && field.options && Array.isArray(field.options) && field.options.length > 0))
+                
+                // Exclude repeatable field if it's being used for equipment list
+                const isRepeatableField = task.template?.repeatable_field_name === field.field_name
+                
+                // Exclude if it's a pass_fail field that's already handled by evidence type section
+                const isPassFailField = field.field_type === 'pass_fail' && 
+                  task.template?.evidence_types?.includes('pass_fail')
+                
+                return !excludedFieldNames.includes(field.field_name) && 
+                       !isEquipmentField && 
+                       !isRepeatableField &&
+                       !isPassFailField
+              })
+              .map((field: any) => {
+                // Render based on field type
+                if (field.field_type === 'text') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <input
+                        type="text"
+                        value={formData[field.field_name] || ''}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        placeholder={field.placeholder || `Enter ${field.label || field.field_name}`}
+                        required={field.required}
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors"
+                      />
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'textarea') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <textarea
+                        value={formData[field.field_name] || ''}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        placeholder={field.placeholder || `Enter ${field.label || field.field_name}`}
+                        required={field.required}
+                        rows={field.rows || 4}
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors resize-none"
+                      />
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'number') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <input
+                        type="number"
+                        step={field.step || 'any'}
+                        min={field.min_value !== null ? field.min_value : undefined}
+                        max={field.max_value !== null ? field.max_value : undefined}
+                        value={formData[field.field_name] || ''}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? '' : parseFloat(e.target.value)
+                          handleFieldChange(field.field_name, value)
+                        }}
+                        placeholder={field.placeholder || `Enter ${field.label || field.field_name}`}
+                        required={field.required}
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors"
+                      />
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'select') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <select
+                        value={(() => {
+                          const fieldValue = formData[field.field_name];
+                          if (Array.isArray(fieldValue) || (typeof fieldValue === 'object' && fieldValue !== null)) {
+                            return '';
+                          }
+                          return fieldValue || '';
+                        })()}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        required={field.required}
+                        className="w-full px-4 py-3 bg-neutral-800 border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-pink-500 transition-colors"
+                        style={{ colorScheme: 'dark' }}
+                      >
+                        <option value="" className="bg-neutral-800 text-white">Select {field.label || field.field_name}...</option>
+                        {(field.options || []).map((option: any) => {
+                          const optionValue = typeof option === 'string' ? option : option.value
+                          const optionLabel = typeof option === 'string' ? option : (option.label || optionValue)
+                          return (
+                            <option key={optionValue} value={optionValue} className="bg-neutral-800 text-white">
+                              {optionLabel}
+                            </option>
+                          )
+                        })}
+                      </select>
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'checkbox') {
+                  return (
+                    <div key={field.id || field.field_name} className="flex items-start gap-3">
+                      <CheckboxCustom
+                        checked={formData[field.field_name] || false}
+                        onChange={(checked) => handleFieldChange(field.field_name, checked)}
+                        size={20}
+                      />
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-white mb-1">
+                          {field.label || field.field_label || field.field_name}
+                          {field.required && <span className="text-red-400 ml-1">*</span>}
+                        </label>
+                        {field.help_text && (
+                          <p className="text-xs text-white/60">{field.help_text}</p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'pass_fail') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-3">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-3">{field.help_text}</p>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => handleFieldChange(field.field_name, 'pass')}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                            formData[field.field_name] === 'pass'
+                              ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <CheckCircle2 className="h-5 w-5" />
+                          <span className="font-medium">Pass</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleFieldChange(field.field_name, 'fail')}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                            formData[field.field_name] === 'fail'
+                              ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                              : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <AlertCircle className="h-5 w-5" />
+                          <span className="font-medium">Fail</span>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                }
+                
+                if (field.field_type === 'date') {
+                  return (
+                    <div key={field.id || field.field_name}>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {field.label || field.field_label || field.field_name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {field.help_text && (
+                        <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                      )}
+                      <input
+                        type="date"
+                        value={(() => {
+                          const value = formData[field.field_name];
+                          if (!value) return '';
+                          // If it's already a date string in YYYY-MM-DD format, return it
+                          if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                            return value;
+                          }
+                          // If it's a Date object or ISO string, convert to YYYY-MM-DD
+                          try {
+                            const date = new Date(value);
+                            if (!isNaN(date.getTime())) {
+                              return date.toISOString().split('T')[0];
+                            }
+                          } catch (e) {
+                            // Invalid date, return empty
+                          }
+                          return '';
+                        })()}
+                        onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                        required={field.required}
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors"
+                        style={{ colorScheme: 'dark' }}
+                      />
+                    </div>
+                  )
+                }
+                
+                // Default: render as text input for unknown field types
+                return (
+                  <div key={field.id || field.field_name}>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      {field.label || field.field_label || field.field_name}
+                      {field.required && <span className="text-red-400 ml-1">*</span>}
+                    </label>
+                    {field.help_text && (
+                      <p className="text-xs text-white/60 mb-2">{field.help_text}</p>
+                    )}
+                    <input
+                      type="text"
+                      value={formData[field.field_name] || ''}
+                      onChange={(e) => handleFieldChange(field.field_name, e.target.value)}
+                      placeholder={field.placeholder || `Enter ${field.label || field.field_name}`}
+                      required={field.required}
+                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors"
+                    />
+                  </div>
+                )
+              })}
 
             {/* Notes Section - Replaces dropdown fields */}
             <div>

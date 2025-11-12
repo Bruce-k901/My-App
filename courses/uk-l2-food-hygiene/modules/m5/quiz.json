@@ -1,0 +1,68 @@
+{
+  "pool_id": "m5",
+  "items": [
+    {
+      "id": "m5_q1",
+      "type": "single_choice",
+      "stem": "How many regulated allergens must be declared in the UK?",
+      "options": ["8", "12", "14", "16"],
+      "answer": 2,
+      "rationale": "UK law recognises 14 allergens for mandatory declaration."
+    },
+    {
+      "id": "m5_q2",
+      "type": "multi_choice",
+      "stem": "Select all that are tree nuts:",
+      "options": ["Almond", "Sesame", "Pine nut", "Walnut"],
+      "answers": [0, 3],
+      "rationale": "Almond and walnut are tree nuts. Sesame is a seed; pine nut is often treated as a seed in grouping."
+    },
+    {
+      "id": "m5_q3",
+      "type": "single_choice",
+      "stem": "A customer asks if a dish is nut-free and you are unsure. What should you do?",
+      "options": [
+        "Say yes if the recipe looks nut-free",
+        "Check the allergen matrix/spec and confirm or escalate",
+        "Ask a colleague for their opinion",
+        "Tell them it's probably fine"
+      ],
+      "answer": 1,
+      "rationale": "Use verified information only; escalate if not sure."
+    },
+    {
+      "id": "m5_q4",
+      "type": "single_choice",
+      "stem": "What is allergen cross-contact?",
+      "options": [
+        "Allergens multiplying on food",
+        "A safe food picking up traces of an allergen",
+        "A cleaning chemical contacting food",
+        "A food becoming unsafe for everyone"
+      ],
+      "answer": 1,
+      "rationale": "Cross-contact is trace transfer, dangerous for those allergic."
+    },
+    {
+      "id": "m5_q5",
+      "type": "multi_choice",
+      "stem": "Which controls reduce allergen cross-contact?",
+      "options": [
+        "Dedicated equipment for allergen-free prep",
+        "Cleaning between tasks",
+        "Guessing when busy",
+        "Clear labelling and storage"
+      ],
+      "answers": [0, 1, 3],
+      "rationale": "Separation, cleaning and clear labelling are core controls."
+    },
+    {
+      "id": "m5_q6",
+      "type": "single_choice",
+      "stem": "Which is a regulated allergen group?",
+      "options": ["Seeds (all)", "Soya", "Caffeine", "Beef"],
+      "answer": 1,
+      "rationale": "Soya is one of the 14 regulated allergens."
+    }
+  ]
+}

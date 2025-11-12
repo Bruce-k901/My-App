@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" role="img" aria-labelledby="title">
+  <title>Module complete placeholder</title>
+  <rect width="400" height="200" rx="24" fill="#08111d" />
+  <path d="M130 120l34 34 106-106" fill="none" stroke="#22c55e" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="200" y="60" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="28" fill="#ec4899" font-weight="600">
+    Nice work!
+  </text>
+  <text x="200" y="90" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" fill="#e5e7eb">
+    Update with final illustration
+  </text>
+</svg>

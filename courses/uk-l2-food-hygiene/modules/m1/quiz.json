@@ -1,0 +1,66 @@
+{
+  "pool_id": "m1",
+  "items": [
+    {
+      "id": "m1_q1",
+      "type": "single_choice",
+      "stem": "Which authority leads food safety enforcement in the UK?",
+      "options": ["Fire Service", "Environmental Health", "Trading Standards"],
+      "answer": 1,
+      "rationale": "Environmental Health Officers inspect and enforce food safety law."
+    },
+    {
+      "id": "m1_q2",
+      "type": "single_choice",
+      "stem": "What document demonstrates your HACCP system is in control?",
+      "options": ["Daily records", "Social media posts", "Supplier invoices"],
+      "answer": 0,
+      "rationale": "Signed daily records prove critical limits were monitored."
+    },
+    {
+      "id": "m1_q3",
+      "type": "single_choice",
+      "stem": "If you spot unsafe food, what should you do first?",
+      "options": ["Serve it quickly", "Isolate and report it", "Hide it"],
+      "answer": 1,
+      "rationale": "Isolate and report so contaminated food cannot be served."
+    },
+    {
+      "id": "m1_q4",
+      "type": "single_choice",
+      "stem": "Food handlers must understand their legal duties because…",
+      "options": [
+        "Only managers can be penalised",
+        "They can be personally liable",
+        "It helps marketing"
+      ],
+      "answer": 1,
+      "rationale": "Individuals can face enforcement action if they neglect safe practice."
+    },
+    {
+      "id": "m1_q5",
+      "type": "multi_choice",
+      "stem": "Select the due diligence records inspectors expect to see.",
+      "options": [
+        "Completed cleaning schedule",
+        "Unsigned notice board",
+        "Supplier approval documents",
+        "Casual verbal reminders"
+      ],
+      "answers": [0, 2],
+      "rationale": "Only documented, signed records and supplier assurances are accepted evidence."
+    },
+    {
+      "id": "m1_q6",
+      "type": "single_choice",
+      "stem": "Who decides how frequently your business is inspected?",
+      "options": [
+        "The Environmental Health Officer using risk scoring",
+        "The head chef",
+        "Customer complaints"
+      ],
+      "answer": 0,
+      "rationale": "EHOs assign a risk score based on compliance and history to set visit frequency."
+    }
+  ]
+}

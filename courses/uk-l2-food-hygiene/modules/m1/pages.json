@@ -1,0 +1,69 @@
+[
+  {
+    "id": "m1_p1",
+    "type": "content",
+    "title": "Why food safety law matters",
+    "body": "UK food law is built around the Food Safety Act 1990 and the Food Hygiene Regulations 2006. They exist to protect guests from illness and to keep businesses trading.\n\nRegulators expect everyone on shift to understand the basics: keep food safe, record what you do, and raise issues quickly. That duty applies whether you prep, cook, serve, or supervise.",
+    "media": "/courses/uk-l2-food-hygiene/m1/intro_page.png"
+  },
+  {
+    "id": "m1_p2",
+    "type": "content",
+    "title": "Legal duties for every role",
+    "body": "Food handlers must: \n- Follow documented safe methods every time.\n- Stay away from food prep if ill and report symptoms.\n- Keep equipment, surfaces, and storage clean and organised.\n\nManagers must make sure safe methods exist, people are trained, and monitoring proves controls work. When inspectors visit they look at behaviour and records to judge compliance.",
+    "media": "/courses/uk-l2-food-hygiene/m1/legal_duties.png"
+  },
+  {
+    "id": "m1_p3",
+    "type": "content",
+    "title": "Due diligence in practice",
+    "body": "Due diligence means being able to prove you took all reasonable precautions. In day-to-day operations that looks like: \n- Completing temperature and cleaning checks accurately.\n- Signing off corrective actions when something drifts out of spec.\n- Filing supplier and traceability paperwork so it can be produced quickly.\n\nIf something goes wrong, solid records show the business acted responsibly.",
+    "media": "/courses/uk-l2-food-hygiene/m1/due_dilligence.png"
+  },
+  {
+    "id": "m1_interact_1",
+    "type": "drag_drop",
+    "prompt": "Match each duty to the person responsible.",
+    "pairs": [
+      ["Record fridge temperatures", "Food handler"],
+      ["Lead HACCP review", "Manager"],
+      ["Issue enforcement notices", "Environmental Health Officer"]
+    ]
+  },
+  {
+    "id": "m1_multi_1",
+    "type": "multi_choice",
+    "stem": "Which of these count as due diligence evidence? Select all that apply.",
+    "options": [
+      "Daily temperature log signed and dated",
+      "Messaging app reminder that someone should clean",
+      "Completed cleaning schedule with initials",
+      "Photos saved on a personal phone"
+    ],
+    "answers": [0, 2],
+    "rationale": "Inspectors trust written records that are controlled by the business. Informal messages or personal photos are not reliable evidence."
+  },
+  {
+    "id": "m1_recap",
+    "type": "recap",
+    "bullets": [
+      "Food safety law applies to everyone handling food, not just managers.",
+      "Environmental Health Officers inspect behaviour, records, and premises.",
+      "Due diligence records prove your controls worked and were checked.",
+      "Report issues quickly—doing nothing creates legal risk."
+    ]
+  },
+  {
+    "id": "m1_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m1",
+    "count": 6
+  },
+  {
+    "id": "m1_complete",
+    "type": "content",
+    "title": "Module complete",
+    "body": "Great job. You now understand the legal framework, who does what, and how records keep the business safe. Continue to the next module or return to the dashboard to sync your progress.",
+    "media": "/courses/uk-l2-food-hygiene/m1/completion.svg"
+  }
+]

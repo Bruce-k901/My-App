@@ -1,0 +1,7 @@
+{
+  "id": "certification",
+  "title": "Course Completion & Certificate",
+  "description": "Generate and store the learner's certificate after passing the final assessment.",
+  "pages": ["cert_p1", "cert_p2"],
+  "order": 9
+}

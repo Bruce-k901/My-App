@@ -1,0 +1,74 @@
+[
+  {
+    "id": "m1",
+    "title": "Introduction and Legal Duties",
+    "objectives": [
+      "Explain the legal responsibilities of food handlers and supervisors",
+      "Describe how enforcement officers inspect and rate food businesses",
+      "Identify the core pillars of a compliant food safety management system"
+    ]
+  },
+  {
+    "id": "m2",
+    "title": "Food Hazards",
+    "objectives": [
+      "Differentiate between biological, chemical and physical hazards",
+      "Recognise common sources of contamination in hospitality venues",
+      "Prioritise hazards based on likelihood and severity"
+    ]
+  },
+  {
+    "id": "m3",
+    "title": "Contamination and Allergens",
+    "objectives": [
+      "Outline how cross-contamination happens in kitchens",
+      "List the 14 regulated allergens and typical menu risks",
+      "Plan controls to keep allergen information accurate"
+    ]
+  },
+  {
+    "id": "m4",
+    "title": "Personal Hygiene",
+    "objectives": [
+      "Reinforce best practice for hand washing and protective clothing",
+      "State when staff must report illness or stay away from food prep",
+      "Maintain personal presentation standards that reassure auditors"
+    ]
+  },
+  {
+    "id": "m5",
+    "title": "Temperature Control and Storage",
+    "objectives": [
+      "Recall safe cooking, hot holding and cooling temperatures",
+      "Explain how the danger zone accelerates bacterial growth",
+      "Organise chilled storage to protect high-risk foods"
+    ]
+  },
+  {
+    "id": "m6",
+    "title": "Cleaning, Waste, Pests",
+    "objectives": [
+      "Structure two-stage cleaning and disinfection routines",
+      "Dispose of waste safely to deter pests",
+      "Spot early signs of pest activity and escalate quickly"
+    ]
+  },
+  {
+    "id": "m7",
+    "title": "Premises and Equipment",
+    "objectives": [
+      "Assess how layout and maintenance affect food safety",
+      "Protect equipment from damage and contamination",
+      "Document daily and periodic site checks"
+    ]
+  },
+  {
+    "id": "m8",
+    "title": "FSMS, Records, Inspections",
+    "objectives": [
+      "Summarise how HACCP keeps processes safe",
+      "Keep training and monitoring records audit-ready",
+      "Prepare for routine inspections with confidence"
+    ]
+  }
+]

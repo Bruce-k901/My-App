@@ -1,0 +1,20 @@
+{
+  "id": "m8_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Temperature log", "Safe storage or cooking"],
+      ["Cleaning checklist", "Hygiene maintenance"],
+      ["Delivery check", "Safe sourcing and receipt"]
+    ]
+  },
+  "title": "Match record to purpose",
+  "text": "Drag each record to what it proves.",
+  "media": "media/records.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}

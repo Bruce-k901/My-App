@@ -30,7 +30,11 @@ describe("Module m1 content", () => {
     const parsed = safeParseOrThrow(pagesSchema, pages, "module m1 pages");
     const quizIndex = parsed.findIndex((page) => page.id === "m1_quiz_ref");
     const completionIndex = parsed.findIndex((page) => page.id === "m1_complete");
+    const dragDrop = parsed.find((page) => page.id === "m1_interact_1");
+    const multi = parsed.find((page) => page.id === "m1_multi_1");
     expect(quizIndex).toBeGreaterThan(-1);
     expect(completionIndex).toBeGreaterThan(quizIndex);
+    expect(dragDrop?.type).toBe("drag_drop");
+    expect(multi?.type).toBe("multi_choice");
   });
 });

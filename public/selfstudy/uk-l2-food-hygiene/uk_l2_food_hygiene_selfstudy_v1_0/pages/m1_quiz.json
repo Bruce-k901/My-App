@@ -1,0 +1,8 @@
+{
+  "id": "m1_quiz",
+  "type": "quiz",
+  "module_id": "m1",
+  "random_items": 5,
+  "feedback_mode": "immediate",
+  "duration_sec": 300
+}

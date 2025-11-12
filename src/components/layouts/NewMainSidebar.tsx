@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Settings,
   HelpCircle,
+  GraduationCap,
 } from "lucide-react";
 
 // Section with hover popup
@@ -45,6 +46,7 @@ const sections: SidebarSection[] = [
       { label: "Business Details", href: "/dashboard/business" },
       { label: "Sites", href: "/dashboard/sites" },
       { label: "Users", href: "/dashboard/users" },
+      { label: "Training Matrix", href: "/dashboard/training" },
       { label: "Documents", href: "/dashboard/documents" },
     ],
   },
@@ -81,6 +83,7 @@ const sections: SidebarSection[] = [
       { label: "PPE Library", href: "/dashboard/libraries/ppe" },
       { label: "Chemicals Library", href: "/dashboard/libraries/chemicals" },
       { label: "Drinks Library", href: "/dashboard/libraries/drinks" },
+      { label: "First Aid Supplies", href: "/dashboard/libraries/first-aid" },
       { label: "Disposables Library", href: "/dashboard/libraries/disposables" },
       { label: "Glassware Library", href: "/dashboard/libraries/glassware" },
       { label: "Packaging Library", href: "/dashboard/libraries/packaging" },
@@ -95,6 +98,14 @@ const sections: SidebarSection[] = [
       { label: "Contractors", href: "/dashboard/assets/contractors" },
       { label: "PPM Schedule", href: "/dashboard/ppm" },
       { label: "Callout Logs", href: "/dashboard/assets/callout-logs" },
+    ],
+  },
+  {
+    label: "Courses",
+    icon: GraduationCap,
+    items: [
+      { label: "All Courses", href: "/dashboard/courses" },
+      { label: "Food Safety", href: "/dashboard/courses/food-safety" },
     ],
   },
 ];
@@ -112,6 +123,8 @@ export default function NewMainSidebar() {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Use ref to track actual hovering state for timeout closures
+  const isHoveringRef = useRef(false);
   const roleGuard = isRoleGuardEnabled();
   const role = (
     (contextRole as AppRole) || (roleGuard ? (null as any) : ("Admin" as AppRole))
@@ -123,6 +136,7 @@ export default function NewMainSidebar() {
   const sopsRef = useRef<HTMLDivElement>(null);
   const librariesRef = useRef<HTMLDivElement>(null);
   const assetsRef = useRef<HTMLDivElement>(null);
+  const coursesRef = useRef<HTMLDivElement>(null);
   
   // Map section labels to refs
   const buttonRefs: { [key: string]: React.RefObject<HTMLDivElement> } = {
@@ -131,21 +145,32 @@ export default function NewMainSidebar() {
     "SOPs": sopsRef,
     "Libraries": librariesRef,
     "Assets": assetsRef,
+    "Courses": coursesRef,
   };
 
   // Handle hover with delay
   const handleHover = (sectionLabel: string) => {
+    // Clear any existing timeout (including scroll timeout)
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
+    isHoveringRef.current = true;
     setIsHovering(true);
     setHoveredSection(sectionLabel);
   };
 
   const handleLeave = () => {
+    isHoveringRef.current = false;
     setIsHovering(false);
+    // Clear any existing timeout
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    // Close after delay if still not hovering
     hoverTimeoutRef.current = setTimeout(() => {
-      if (!isHovering) {
+      // Check ref (not state) to get current value
+      if (!isHoveringRef.current) {
         setHoveredSection(null);
       }
     }, 150); // 150ms delay
@@ -154,6 +179,13 @@ export default function NewMainSidebar() {
   // FIX #2: Close popup when route changes
   useEffect(() => {
     setHoveredSection(null);
+    isHoveringRef.current = false;
+    setIsHovering(false);
+    // Clear any pending timeouts
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
   }, [pathname]);
 
   // FIX #2: Close popup on click outside
@@ -175,6 +207,13 @@ export default function NewMainSidebar() {
       
       if (!isSidebar && !isPopup) {
         setHoveredSection(null);
+        isHoveringRef.current = false;
+        setIsHovering(false);
+        // Clear any pending timeouts
+        if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+          hoverTimeoutRef.current = null;
+        }
       }
     };
 
@@ -182,12 +221,43 @@ export default function NewMainSidebar() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // Close popup on scroll (after 2 seconds) - but not if user is hovering
+  useEffect(() => {
+    const handleScroll = () => {
+      if (hoveredSection && !isHoveringRef.current) {
+        // Clear any existing scroll timeout
+        if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+        }
+        // Close after 2 seconds if user has scrolled and is not hovering
+        hoverTimeoutRef.current = setTimeout(() => {
+          // Double-check user is still not hovering before closing (use ref)
+          if (!isHoveringRef.current) {
+            setHoveredSection(null);
+            setIsHovering(false);
+            isHoveringRef.current = false;
+          }
+        }, 2000);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, [hoveredSection]);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
+        hoverTimeoutRef.current = null;
       }
+      isHoveringRef.current = false;
     };
   }, []);
 
@@ -402,13 +472,16 @@ function SidebarPopup({
   const buttonTop = buttonRef.current?.getBoundingClientRect().top ?? 0;
 
   return (
-    <div
-      data-popup="true"
-      className="fixed left-20 pointer-events-none z-50"
-      style={{ top: `${buttonTop}px` }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+      <div
+        data-popup="true"
+        className="fixed left-20 pointer-events-none z-50"
+        style={{ top: `${buttonTop}px` }}
+        onMouseEnter={() => {
+          // Cancel any scroll timeout when user hovers over popup
+          onMouseEnter();
+        }}
+        onMouseLeave={onMouseLeave}
+      >
       <div className="pointer-events-auto bg-[#0f1119]/98 border border-pink-500/20 border-l-2 border-l-pink-500 rounded-r-xl backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[240px] py-3 animate-slideIn">
         {/* Section Title */}
         <div className="px-4 py-2 text-sm font-semibold text-pink-400 border-b border-white/[0.1] mb-2">

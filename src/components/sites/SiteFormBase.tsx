@@ -326,7 +326,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     };
 
     loadData();
-  }, [mode, initialData?.id, showToast, companyId]);
+  }, [mode, initialData?.id, companyId]);
 
   // Helper functions for operating schedule
   const isEmpty = (dayObj: FormData["operating_schedule"][string]) => {
@@ -591,10 +591,23 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       // 1️⃣ After site upsert succeeds and returns the site ID
       const siteId = siteResult.id;
 
-      // 2️⃣ Filter only active closures
+      // 2️⃣ When editing, delete existing closures first to avoid duplicates
+      if (mode === "edit" && siteId) {
+        const { error: deleteError } = await supabase
+          .from("site_closures")
+          .delete()
+          .eq("site_id", siteId);
+
+        if (deleteError) {
+          console.error("Error deleting existing closures:", deleteError);
+          // Continue anyway - might be a new site or no existing closures
+        }
+      }
+
+      // 3️⃣ Filter only active closures
       const activeClosures = (formData.planned_closures || []).filter(c => c.start && c.end);
 
-      // 3️⃣ If any closures exist, insert them
+      // 4️⃣ If any closures exist, insert them
       if (activeClosures.length > 0) {
         const closuresToInsert = activeClosures.map(c => ({
           site_id: siteId,
@@ -610,9 +623,14 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
         if (closureError) {
           console.error("Error inserting planned closures:", closureError);
+          console.error("Error details:", JSON.stringify(closureError, null, 2));
+          console.error("Closures to insert:", closuresToInsert);
         } else {
           console.log(`Inserted ${closuresToInsert.length} closures for site ${siteId}`);
         }
+      } else if (mode === "edit" && siteId) {
+        // If no closures in form, ensure all are deleted (already done above)
+        console.log(`No closures to insert for site ${siteId}`);
       }
 
       console.log(`Site ${mode === "edit" ? "updated" : "created"} successfully`);

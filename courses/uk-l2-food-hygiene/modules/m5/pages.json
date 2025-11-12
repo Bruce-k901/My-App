@@ -1,0 +1,90 @@
+[
+  {
+    "id": "m5_p1",
+    "type": "content",
+    "title": "Why allergens matter",
+    "body": "Allergic reactions can be severe or fatal. Every team member must know the 14 regulated allergens and how to communicate clearly with customers.",
+    "outcomes": ["L2-5.1"]
+  },
+  {
+    "id": "m5_p2",
+    "type": "content",
+    "title": "The 14 allergens (UK)",
+    "body": "Celery; Cereals containing gluten (wheat, rye, barley, oats, spelt, kamut); Crustaceans; Eggs; Fish; Lupin; Milk; Molluscs; Mustard; Peanuts; Sesame; Soya; Sulphur dioxide/sulphites; Tree nuts (almond, hazelnut, walnut, cashew, pecan, Brazil, pistachio, macadamia).",
+    "outcomes": ["L2-5.1"]
+  },
+  {
+    "id": "m5_p3",
+    "type": "hotspot",
+    "prompt": "Find the allergens listed on this label.",
+    "image": "/courses/uk-l2-food-hygiene/m5/label_allergen.png",
+    "spots": [
+      { "x": 0.39, "y": 0.26, "label": "WHEAT (gluten)" },
+      { "x": 0.2, "y": 0.4, "label": "PINE NUTS (tree nuts)" },
+      { "x": 0.19, "y": 0.46, "label": "VEGAN HARD CHEESE (check for milk analogue & nuts)" }
+    ],
+    "outcomes": ["L2-5.2"]
+  },
+  {
+    "id": "m5_p4",
+    "type": "drag_drop",
+    "prompt": "Match the allergen to an example ingredient.",
+    "pairs": [
+      ["Sesame", "Tahini"],
+      ["Soya", "Tofu"],
+      ["Milk", "Yoghurt"],
+      ["Mustard", "Wholegrain mustard"],
+      ["Peanuts", "Peanut butter"]
+    ],
+    "outcomes": ["L2-5.1"]
+  },
+  {
+    "id": "m5_p5",
+    "type": "content",
+    "title": "Cross-contact vs cross-contamination",
+    "body": "Allergen cross-contact is when a safe food picks up traces of an allergen. It does not make food unsafe for everyone, but it can be dangerous for those allergic. Use clean equipment, separate storage, and label everything clearly.",
+    "outcomes": ["L2-5.2", "L2-5.3"]
+  },
+  {
+    "id": "m5_p6",
+    "type": "branch",
+    "title": "Customer request",
+    "stem": "A customer asks: \"Is the soup nut-free?\" You are not 100 percent sure.",
+    "options": [
+      {
+        "label": "Give your best guess to keep the queue moving.",
+        "result": "Incorrect. Never guess. You must check the verified information."
+      },
+      {
+        "label": "Check the allergen matrix or recipe spec and confirm precisely.",
+        "result": "Correct. Use verified sources and communicate clearly."
+      }
+    ],
+    "correctIndex": 1,
+    "outcomes": ["L2-5.4"]
+  },
+  {
+    "id": "m5_p7",
+    "type": "content",
+    "title": "Communicating safely",
+    "body": "Repeat the customer's question. Check the allergen matrix or spec. If in doubt, say you do not know and ask a manager. Never say \"nut-free\" unless confirmed. Avoid cross-contact during prep by using clean tools and spaces.",
+    "outcomes": ["L2-5.4", "L2-5.5"]
+  },
+  {
+    "id": "m5_p8",
+    "type": "recap",
+    "bullets": [
+      "Know the 14 allergens and examples.",
+      "Use verified information — never guess.",
+      "Prevent cross-contact with clean tools and separation.",
+      "Label, store and serve with care."
+    ],
+    "outcomes": ["L2-5.1", "L2-5.2", "L2-5.3", "L2-5.4", "L2-5.5"]
+  },
+  {
+    "id": "m5_p9",
+    "type": "quiz_ref",
+    "pool": "m5",
+    "count": 6
+  }
+]

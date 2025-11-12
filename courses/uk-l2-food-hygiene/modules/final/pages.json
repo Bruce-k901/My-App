@@ -1,0 +1,20 @@
+[
+  {
+    "id": "final_intro",
+    "type": "content",
+    "title": "Final assessment",
+    "body": "You have 15 questions drawn from every module. The pass mark is 80 percent and your best score will be recorded."
+  },
+  {
+    "id": "final_quiz",
+    "type": "quiz_ref",
+    "pool": "final",
+    "count": 15
+  },
+  {
+    "id": "final_outro",
+    "type": "content",
+    "title": "Results",
+    "body": "Your result is saved to your profile. You must pass this assessment to unlock the certificate module."
+  }
+]

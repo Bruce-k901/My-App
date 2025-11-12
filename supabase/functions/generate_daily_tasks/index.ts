@@ -8,6 +8,7 @@ type SiteChecklist = {
   name: string;
   day_part: string | null;
   frequency: string | null;
+  notes: string | null;
   sites: { company_id: string };
 };
 
@@ -24,7 +25,9 @@ Deno.serve(async () => {
 
   const { data: checklists, error: clErr } = await supabase
     .from("site_checklists")
-    .select("id, site_id, checklist_template_id, name, day_part, frequency, sites(company_id)")
+    .select(
+      "id, site_id, checklist_template_id, name, day_part, frequency, notes, sites(company_id)"
+    )
     .eq("active", true);
 
   if (clErr) return new Response(`Error: ${clErr.message}`, { status: 500 });
@@ -52,6 +55,7 @@ Deno.serve(async () => {
       frequency: c.frequency ?? "daily",
       due_date: today,
       status: "pending",
+      template_notes: c.notes ?? null,
     }));
 
   if (newTasks.length) {
@@ -62,7 +66,7 @@ Deno.serve(async () => {
   // Automated alert: missed tasks from yesterday
   const { data: missed, error: missErr } = await supabase
     .from("tasks")
-    .select("company_id, site_id, name")
+    .select("company_id, site_id, name, template_notes")
     .eq("due_date", yesterday)
     .neq("status", "completed");
 
@@ -71,7 +75,7 @@ Deno.serve(async () => {
       company_id: m.company_id,
       site_id: m.site_id,
       type: "Missed Task",
-      description: `Task "${m.name}" was not completed.`,
+      description: `Task "${m.name}" was not completed.${m.template_notes ? ` Guidance: ${m.template_notes}` : ""}`,
       severity: "low",
       status: "open",
     }));

@@ -1,0 +1,13 @@
+{
+  "id": "final",
+  "title": "Final Assessment",
+  "description": "15-question exam covering all Level 2 Food Hygiene modules.",
+  "duration_min": 20,
+  "pages": ["final_intro", "final_quiz", "final_outro"],
+  "quiz": {
+    "pool": "final",
+    "count": 15,
+    "pass_mark_percent": 80
+  },
+  "order": 8
+}

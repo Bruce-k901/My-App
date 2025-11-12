@@ -1,0 +1,31 @@
+{
+  "learner_profile": {
+    "full_name": "string",
+    "position": "string",
+    "home_site": "string"
+  },
+  "result_payload": {
+    "course_id": "string",
+    "learner": {
+      "full_name": "string",
+      "position": "string",
+      "home_site": "string"
+    },
+    "attempt": {
+      "started_at": "ISO8601",
+      "completed_at": "ISO8601",
+      "duration_sec": "number"
+    },
+    "scores": {
+      "module_quizzes": "object",
+      "final": {
+        "score_percent": "number",
+        "passed": "boolean"
+      }
+    },
+    "audit": {
+      "user_agent": "string",
+      "ip_hash": "string"
+    }
+  }
+}

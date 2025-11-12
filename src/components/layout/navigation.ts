@@ -51,7 +51,7 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
       { id: 'sops', label: 'SOPs', path: '/dashboard/sops' },
       { id: 'tasks', label: 'Tasks', path: '/dashboard/tasks' },
       { id: 'assets', label: 'Assets', path: '/dashboard/assets' },
-      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report' },
+      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/compliance/eho' },
       { id: 'reports', label: 'Reports', path: '/dashboard/reports' },
       { id: 'settings', label: 'Settings', path: '/dashboard/settings' }
     ]
@@ -66,6 +66,7 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
               { id: 'todays-checks', label: "Today's Checks", path: '/dashboard/tasks/scheduled' },
               { id: 'compliance-reports', label: 'Compliance Reports', path: '/dashboard/reports' },
               { id: 'incidents', label: 'Incidents & Accidents', path: '/dashboard/incidents' },
+              { id: 'food-poisoning', label: 'Food Poisoning', path: '/dashboard/incidents/food-poisoning' },
               { id: 'contractor', label: 'Contractor Callouts', path: '/dashboard/organization' }
             ]
   },
@@ -103,7 +104,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
         return {
           ...section,
           items: section.items.filter(item => 
-            ['edit-tasks', 'todays-checks', 'compliance-reports', 'incidents'].includes(item.id)
+            ['edit-tasks', 'todays-checks', 'compliance-reports', 'incidents', 'food-poisoning'].includes(item.id)
           )
         }
       }
@@ -133,7 +134,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
       return {
         ...section,
         items: section.items.filter(item => 
-          ['todays-checks', 'incidents'].includes(item.id)
+          ['todays-checks', 'incidents', 'food-poisoning'].includes(item.id)
         )
       }
     }

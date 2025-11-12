@@ -1,0 +1,7 @@
+{
+  "id": "final_assessment",
+  "type": "final_quiz",
+  "random_items": 30,
+  "feedback_mode": "deferred",
+  "duration_sec": 1800
+}

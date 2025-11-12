@@ -1,0 +1,84 @@
+[
+  {
+    "id": "m6_p1",
+    "type": "content",
+    "title": "Why cleaning matters",
+    "body": "Cleaning removes dirt and food debris. Disinfection reduces harmful microbes to a safe level. You must keep food areas clean to prevent contamination and pest activity. Use products as directed by the label and your COSHH assessment.",
+    "outcomes": ["L2-6.1"]
+  },
+  {
+    "id": "m6_p2",
+    "type": "content",
+    "title": "Key terms",
+    "body": "Detergent removes grease and dirt. Disinfectant reduces microbes to a safe level. Sanitisers combine detergent and disinfectant (often still a 2-stage process). Contact time is how long disinfectant must stay wet to work.",
+    "outcomes": ["L2-6.1"]
+  },
+  {
+    "id": "m6_p3",
+    "type": "lottie",
+    "title": "2-stage clean in action",
+    "caption": "Stage 1: clean with detergent, rinse. Stage 2: apply disinfectant, leave for full contact time, then final rinse if the label requires it.",
+    "src": "/courses/uk-l2-food-hygiene/m6/m6_cleaning_cycle.json",
+    "loop": false,
+    "outcomes": ["L2-6.2"]
+  },
+  {
+    "id": "m6_p4",
+    "type": "content",
+    "title": "When to clean and disinfect",
+    "body": "Before starting work and after you finish. Between handling raw and ready-to-eat foods. After spills or visible dirt. On a planned schedule for high-touch points and equipment.",
+    "outcomes": ["L2-6.2"]
+  },
+  {
+    "id": "m6_p5",
+    "type": "hotspot",
+    "prompt": "Tap each area to see the cleaning focus on this prep bench.",
+    "image": "/courses/uk-l2-food-hygiene/m6/hotspot_prep_area.png",
+    "spots": [
+      {
+        "x": 0.31,
+        "y": 0.68,
+        "label": "Chopping board — 2-stage clean between raw and ready tasks."
+      },
+      {
+        "x": 0.84,
+        "y": 0.43,
+        "label": "Fridge handle — high-touch point, disinfect for full contact time."
+      },
+      { "x": 0.16, "y": 0.59, "label": "Sink area — clean traps, disinfect taps after raw prep." },
+      { "x": 0.66, "y": 0.81, "label": "Waste bin — keep lined, closed, and disinfect daily." }
+    ],
+    "outcomes": ["L2-6.2", "L2-6.4"]
+  },
+  {
+    "id": "m6_p6",
+    "type": "content",
+    "title": "Chemicals and safety (COSHH)",
+    "body": "Store chemicals away from food in a locked or supervised area. Keep Safety Data Sheets and follow PPE guidance. Never mix chemicals. Label spray bottles and record opening dates. Measure dilutions with the correct tool and complete training.",
+    "outcomes": ["L2-6.3"]
+  },
+  {
+    "id": "m6_p7",
+    "type": "content",
+    "title": "Waste management",
+    "body": "Segregate food, recycling, oil, glass, and general waste. Use tight lids and keep areas clean to deter pests. Stock rotation and correct chilling reduce food waste. Keep removal logs and contractor records.",
+    "outcomes": ["L2-6.4"]
+  },
+  {
+    "id": "m6_p8",
+    "type": "recap",
+    "bullets": [
+      "Use the right product for the job and respect contact times.",
+      "Switch from raw to ready-to-eat with a two-stage clean.",
+      "Handle chemicals safely under COSHH guidance.",
+      "Control and document waste to deter pests."
+    ],
+    "outcomes": ["L2-6.1", "L2-6.2", "L2-6.3", "L2-6.4"]
+  },
+  {
+    "id": "m6_p9",
+    "type": "quiz_ref",
+    "pool": "m6",
+    "count": 5
+  }
+]

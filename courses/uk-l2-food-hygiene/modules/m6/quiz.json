@@ -1,0 +1,70 @@
+{
+  "pool_id": "m6",
+  "items": [
+    {
+      "id": "m6_q1",
+      "type": "single_choice",
+      "stem": "What is the purpose of a disinfectant?",
+      "options": [
+        "To remove visible dirt and grease only",
+        "To reduce harmful microbes to a safe level",
+        "To make surfaces smell fresh",
+        "To rinse off detergent"
+      ],
+      "answer": 1,
+      "rationale": "Disinfectants reduce microbes to a safe level after cleaning."
+    },
+    {
+      "id": "m6_q2",
+      "type": "single_choice",
+      "stem": "Which sequence describes a two-stage clean?",
+      "options": [
+        "Apply disinfectant then dry with cloth",
+        "Rinse with water then disinfectant then dry",
+        "Detergent clean and rinse, then disinfect and leave for full contact time",
+        "Spray air freshener then wipe"
+      ],
+      "answer": 2,
+      "rationale": "Stage one is clean and rinse; stage two is disinfect for the full contact time."
+    },
+    {
+      "id": "m6_q3",
+      "type": "single_choice",
+      "stem": "What does contact time mean?",
+      "options": [
+        "How long staff spend cleaning per day",
+        "How long the surface stays wet with disinfectant",
+        "The time before food can touch the surface again",
+        "The age of the chemical since opening"
+      ],
+      "answer": 1,
+      "rationale": "Contact time is how long the disinfectant must remain wet to work."
+    },
+    {
+      "id": "m6_q4",
+      "type": "single_choice",
+      "stem": "Where should chemicals be stored?",
+      "options": [
+        "On the top shelf above food prep",
+        "In any cupboard if bottles are closed",
+        "In a designated area away from food with controls in place",
+        "Next to ingredients for speed"
+      ],
+      "answer": 2,
+      "rationale": "Chemicals are kept away from food in a controlled, labelled area."
+    },
+    {
+      "id": "m6_q5",
+      "type": "single_choice",
+      "stem": "Which is good waste practice?",
+      "options": [
+        "Leave lids open to reduce smells",
+        "Empty only when overflowing",
+        "Use liners and close lids, clean and disinfect bins daily",
+        "Store waste next to ready-to-eat food"
+      ],
+      "answer": 2,
+      "rationale": "Keep bins lined, closed, and cleaned to control pests."
+    }
+  ]
+}

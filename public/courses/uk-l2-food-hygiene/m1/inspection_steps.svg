@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" role="img" aria-labelledby="title">
+  <title>Inspection steps placeholder</title>
+  <rect width="400" height="200" rx="24" fill="#111827" />
+  <g stroke="#38bdf8" stroke-width="6" stroke-linecap="round" fill="none">
+    <path d="M60 60h280" />
+    <path d="M60 100h220" />
+    <path d="M60 140h260" />
+  </g>
+  <circle cx="60" cy="60" r="10" fill="#ec4899" />
+  <circle cx="60" cy="100" r="10" fill="#ec4899" />
+  <circle cx="60" cy="140" r="10" fill="#ec4899" />
+  <text x="200" y="180" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" fill="#e5e7eb">
+    Replace with illustrated asset
+  </text>
+</svg>

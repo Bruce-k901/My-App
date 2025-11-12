@@ -1,14 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskStatus } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import { calculateTaskTiming, TaskTimingStatus } from '@/utils/taskTiming'
+import Link from 'next/link'
 
 interface TaskCardProps {
   task: ChecklistTaskWithTemplate
   onClick: () => void
+  showDetailLink?: boolean
 }
 
 interface TempWarning {
@@ -18,10 +20,11 @@ interface TempWarning {
   asset_name?: string
 }
 
-export default function TaskCard({ task, onClick }: TaskCardProps) {
+export default function TaskCard({ task, onClick, showDetailLink = true }: TaskCardProps) {
   const isCompleted = task.status === 'completed'
   const isCritical = task.template?.is_critical
   const [tempWarning, setTempWarning] = useState<TempWarning | null>(null)
+  const templateNote = task.template_notes || task.template?.notes || null
   
   // Calculate task timing status
   const timing = !isCompleted 
@@ -142,12 +145,30 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
     })
   }
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // If clicking the detail link, don't trigger onClick
+    if ((e.target as HTMLElement).closest('a')) {
+      return;
+    }
+    onClick();
+  };
+
   return (
     <div
-      onClick={onClick}
-      className={`bg-neutral-800/50 backdrop-blur-sm border rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg ${getStatusColor()}`}
+      onClick={handleCardClick}
+      className={`bg-neutral-800/50 backdrop-blur-sm border rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative ${getStatusColor()}`}
     >
-      <div className="flex items-start justify-between mb-3">
+      {showDetailLink && (
+        <Link
+          href={`/dashboard/tasks/view/${task.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-3 right-3 p-1.5 hover:bg-white/10 rounded-lg transition-colors z-10"
+          title="View task details"
+        >
+          <ExternalLink className="w-4 h-4 text-white/60 hover:text-white" />
+        </Link>
+      )}
+      <div className="flex items-start justify-between mb-3 pr-8">
         <div className="flex items-center gap-2">
           {getStatusIcon()}
           <span className="text-sm font-medium text-white">
@@ -166,6 +187,16 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         <p className="text-sm text-neutral-400 line-clamp-2">
           {task.custom_instructions || task.template?.description || 'No description available'}
         </p>
+
+        {templateNote && (
+          <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-100/90 text-xs p-3 flex gap-2">
+            <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-amber-300" />
+            <div>
+              <p className="font-medium text-amber-200 mb-1">Template note</p>
+              <p className="whitespace-pre-wrap leading-relaxed">{templateNote}</p>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-between text-xs text-neutral-500">
           <div className="flex items-center gap-1">

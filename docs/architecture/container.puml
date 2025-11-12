@@ -1,0 +1,27 @@
+@startuml Container
+
+!include <C4/C4_Container>
+
+Boundary(app, "Compliance OS") {
+  Container(Web, "Next.js 15", "SSR/ISR + server actions")
+  Container(Job, "Vercel Cron", "Scheduled tasks")
+  Container(Edge, "Supabase Edge Functions", "Node/TS")
+  ContainerDb(DB, "Supabase Postgres", "Row Level Security")
+  Container(Storage, "Supabase Storage", "Evidence, docs")
+}
+
+Container_Ext(Email, "Resend", "Email")
+Container_Ext(SMS, "Twilio", "SMS")
+Container_Ext(IdP, "Azure AD/Okta", "OIDC/SAML")
+Container_Ext(Probes, "IoT Probes", "Webhook/BLE bridge")
+
+Web -> DB: SQL (RLS enforced)
+Web -> Storage: upload via signed URLs
+Web -> Edge: async tasks, exports
+Job -> Edge: nightly jobs
+Edge -> Email: send
+Edge -> SMS: send
+Probes -> Edge: ingest (tenant-scoped credentials)
+
+@enduml
+

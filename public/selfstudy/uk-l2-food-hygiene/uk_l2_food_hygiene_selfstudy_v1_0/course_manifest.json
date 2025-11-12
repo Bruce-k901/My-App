@@ -1,0 +1,75 @@
+{
+  "course_id": "uk-l2-food-hygiene",
+  "title": "Level 2 Food Hygiene and Safety",
+  "jurisdiction": "United Kingdom",
+  "version": "selfstudy-1.0",
+  "version_date": "2025-11-07",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction and Legal Duties"
+    },
+    {
+      "id": "m2",
+      "title": "Food Hazards"
+    },
+    {
+      "id": "m3",
+      "title": "Contamination and Allergens"
+    },
+    {
+      "id": "m4",
+      "title": "Personal Hygiene"
+    },
+    {
+      "id": "m5",
+      "title": "Temperature Control and Storage"
+    },
+    {
+      "id": "m6",
+      "title": "Cleaning, Waste, Pests"
+    },
+    {
+      "id": "m7",
+      "title": "Premises and Equipment"
+    },
+    {
+      "id": "m8",
+      "title": "FSMS, Records, Inspections"
+    }
+  ],
+  "flow": [
+    "onboarding",
+    "m1_p1",
+    "m1_p2",
+    "m1_quiz",
+    "m2_p1",
+    "m2_p2",
+    "m2_quiz",
+    "m3_p1",
+    "m3_p2",
+    "m3_quiz",
+    "m4_p1",
+    "m4_p2",
+    "m4_quiz",
+    "m5_p1",
+    "m5_p2",
+    "m5_quiz",
+    "m6_p1",
+    "m6_p2",
+    "m6_quiz",
+    "m7_p1",
+    "m7_p2",
+    "m7_quiz",
+    "m8_p1",
+    "m8_p2",
+    "m8_quiz",
+    "final_assessment",
+    "completion"
+  ],
+  "assessment": {
+    "module_quiz_items": 5,
+    "final_items": 30,
+    "pass_mark_percent": 75
+  }
+}

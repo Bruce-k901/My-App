@@ -1,0 +1,20 @@
+{
+  "id": "m3_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Use dedicated nut-free utensils", "Safe"],
+      ["Plate nut-free dish next to pecan dessert", "Unsafe"],
+      ["Clean and sanitise before allergen-free prep", "Safe"]
+    ]
+  },
+  "title": "Allergen cross-contact",
+  "text": "Match each action to safe or unsafe for allergens.",
+  "media": "media/allergen_icons.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}

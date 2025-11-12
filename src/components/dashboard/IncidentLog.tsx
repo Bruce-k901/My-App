@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 type Incident = {
   id: string;
   description: string;
-  resolution_notes?: string;
+  investigation_notes?: string;
   status: string;
   created_at: string;
   sites?: {
@@ -43,25 +43,45 @@ export default function IncidentLog() {
         return;
       }
 
+      // Fetch incidents without relationship query (fetch sites separately)
       let query = supabase
         .from("incidents")
         .select(`
           id,
           description,
-          resolution_notes,
+          investigation_notes,
           status,
           created_at,
-          sites(name)
+          site_id,
+          company_id
         `)
-        .eq("type", activeTab)
+        .eq("incident_type", activeTab)
+        .eq("company_id", companyId)
         .order("created_at", { ascending: false })
         .limit(10);
         
       const { data, error } = await query;
       if (error) throw error;
-      const formattedData = (data || []).map(item => ({
+      
+      // Fetch sites separately to avoid relationship issues
+      const siteIds = [...new Set((data || []).map((item: any) => item.site_id).filter(Boolean))];
+      let sitesMap = new Map<string, { name: string }>();
+      
+      if (siteIds.length > 0) {
+        const { data: sitesData, error: sitesError } = await supabase
+          .from("sites")
+          .select("id, name")
+          .in("id", siteIds);
+        
+        if (!sitesError && sitesData) {
+          sitesMap = new Map(sitesData.map((s: any) => [s.id, { name: s.name }]));
+        }
+      }
+      
+      // Transform data to include site name
+      const formattedData = (data || []).map((item: any) => ({
         ...item,
-        sites: item.sites || { name: 'Unknown Site' }
+        sites: item.site_id ? (sitesMap.get(item.site_id) || { name: 'Unknown Site' }) : { name: 'Unknown Site' }
       }));
       setIncidents(formattedData as Incident[]);
     } catch (e: any) {
@@ -72,25 +92,26 @@ export default function IncidentLog() {
   }
 
   useEffect(() => {
+    if (!companyId) return;
     loadIncidents();
-    // Realtime subscription: reload when incident_reports change
+    // Realtime subscription: reload when incidents change
     const channel = supabase
-      .channel("dashboard-incident-reports")
+      .channel("dashboard-incidents")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "incident_reports" },
+        { event: "INSERT", schema: "public", table: "incidents" },
         () => loadIncidents()
       )
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "incident_reports" },
+        { event: "UPDATE", schema: "public", table: "incidents" },
         () => loadIncidents()
       )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeTab, companyId, supabase]);
+  }, [activeTab, companyId]);
 
   return (
     <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white fade-in-soft">
@@ -168,7 +189,7 @@ export default function IncidentLog() {
                 <th className="text-left py-2">Date</th>
                 <th className="text-left py-2">Site</th>
                 <th className="text-left py-2">Description</th>
-                <th className="text-left py-2">Resolution Notes</th>
+                <th className="text-left py-2">Investigation Notes</th>
                 <th className="text-left py-2">Status</th>
               </tr>
             </thead>
@@ -180,7 +201,7 @@ export default function IncidentLog() {
                   <td className="py-2 text-white/80">{format(new Date(i.created_at), "d MMM yyyy")}</td>
                   <td className="py-2 text-white/80">{i.sites?.name || "—"}</td>
                   <td className="py-2 text-white/80">{i.description}</td>
-                  <td className="py-2 text-white/60">{i.resolution_notes || "—"}</td>
+                  <td className="py-2 text-white/60">{i.investigation_notes || "—"}</td>
                   <td className="py-2">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${

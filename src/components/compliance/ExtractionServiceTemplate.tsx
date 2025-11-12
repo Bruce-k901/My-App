@@ -480,41 +480,17 @@ ${validEquipment.map(eq => {
 
       if (fieldsError) throw fieldsError;
 
-      const today = new Date();
-      const taskInstances = [];
-      for (let i = 0; i < selectedDayParts.length; i++) {
-        const dayPart = selectedDayParts[i];
-        const time = times[i] || "09:00";
-        const scheduledDate = today.toISOString().split('T')[0];
-        const [hours, minutes] = time.split(':');
-        const scheduledTime = `${hours}:${minutes}:00`;
-        taskInstances.push({
-          template_id: template.id,
-          company_id: profile.company_id,
-          site_id: profile.site_id,
-          due_date: scheduledDate,
-          due_time: scheduledTime,
-          daypart: dayPart,
-          assigned_to_role: "manager",
-          assigned_to_user_id: profile.id,
-          status: "pending",
-          priority: "critical"
-        });
-      }
-
-      if (!editingTemplateId && taskInstances.length > 0) {
-        const { error: instancesError } = await supabase
-          .from("checklist_tasks")
-          .insert(taskInstances);
-        if (instancesError) throw instancesError;
-      }
+      // NOTE: Tasks should ONLY be created from templates via TaskFromTemplateModal
+      // in the compliance or templates pages. This component only saves templates.
+      // Tasks will be created automatically by the task generation system or manually
+      // by users via the TaskFromTemplateModal.
 
       setIsExpanded(false);
       if (editingTemplateId) {
         if (onSave) onSave();
-        else alert(`✅ Template updated successfully!`);
+        else alert(`✅ Template updated successfully!\n\n📋 Template configuration has been updated.\n\nTo create tasks from this template, use the Templates or Compliance pages.`);
       } else {
-        alert(`✅ Template saved and deployed!\n\n📋 Template available in Templates page\n📝 ${taskInstances.length} task(s) created in My Tasks page`);
+        alert(`✅ Template saved successfully!\n\n📋 Template is now available in the Templates and Compliance pages.\n\nTo create tasks from this template, go to the Templates or Compliance pages and click on the template.`);
       }
 
     } catch (error: any) {

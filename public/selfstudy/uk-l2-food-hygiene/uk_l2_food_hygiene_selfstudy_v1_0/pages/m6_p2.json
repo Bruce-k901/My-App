@@ -1,0 +1,20 @@
+{
+  "id": "m6_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Remove visible grease", "Clean"],
+      ["Apply sanitiser and observe contact time", "Disinfect"],
+      ["Rinse if required by label", "Disinfect"]
+    ]
+  },
+  "title": "Clean or disinfect",
+  "text": "Place each task under Clean or Disinfect.",
+  "media": "media/cleaning_order.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}

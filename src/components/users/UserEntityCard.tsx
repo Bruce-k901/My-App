@@ -61,8 +61,8 @@ export default function UserEntityCard({
       />
 
       {isExpanded && editForm && (
-        <div className="px-4 pb-3 separator-line">
-          <div className="p-4 space-y-4">
+        <div className="px-4 pb-3 border-t border-white/[0.1]">
+          <div className="p-4 space-y-4 overflow-visible">
             <div className="grid grid-cols-2 gap-3 overflow-visible relative z-auto">
               {/* Full Name */}
               <div>
@@ -177,6 +177,149 @@ export default function UserEntityCard({
               </div>
             </div>
 
+            {/* Training Certificates Section */}
+            <div className="mt-6 pt-6 border-t border-white/[0.1]">
+              <h3 className="text-base font-semibold text-white mb-4">Training Certificates</h3>
+              
+              <div className="space-y-4">
+                {/* Food Safety */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400">Food Safety Level</label>
+                    <Select
+                      value={editForm.food_safety_level ? editForm.food_safety_level.toString() : undefined}
+                      placeholder="Select Level"
+                      options={[
+                        { label: "Level 2", value: "2" },
+                        { label: "Level 3", value: "3" },
+                        { label: "Level 4", value: "4" },
+                        { label: "Level 5", value: "5" }
+                      ]}
+                      onValueChange={(val: string) => onEditFormChange({ 
+                        food_safety_level: val ? parseInt(val) : null
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-neutral-400">Food Safety Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={editForm.food_safety_expiry_date ? editForm.food_safety_expiry_date.split('T')[0] : ""}
+                      onChange={(e) => onEditFormChange({ food_safety_expiry_date: e.target.value || null })}
+                    />
+                  </div>
+                </div>
+
+                {/* H&S */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400">H&S Level</label>
+                    <Select
+                      value={editForm.h_and_s_level ? editForm.h_and_s_level.toString() : undefined}
+                      placeholder="Select Level"
+                      options={[
+                        { label: "Level 2", value: "2" },
+                        { label: "Level 3", value: "3" },
+                        { label: "Level 4", value: "4" }
+                      ]}
+                      onValueChange={(val: string) => onEditFormChange({ 
+                        h_and_s_level: val ? parseInt(val) : null
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-neutral-400">H&S Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={editForm.h_and_s_expiry_date ? editForm.h_and_s_expiry_date.split('T')[0] : ""}
+                      onChange={(e) => onEditFormChange({ h_and_s_expiry_date: e.target.value || null })}
+                    />
+                  </div>
+                </div>
+
+                {/* Fire Marshal */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400 mb-2 block">Fire Marshal Trained</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editForm.fire_marshal_trained || false}
+                        onChange={(e) => onEditFormChange({ fire_marshal_trained: e.target.checked })}
+                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="text-xs text-neutral-400">
+                        {editForm.fire_marshal_trained ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-neutral-400">Fire Marshal Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={editForm.fire_marshal_expiry_date ? editForm.fire_marshal_expiry_date.split('T')[0] : ""}
+                      onChange={(e) => onEditFormChange({ fire_marshal_expiry_date: e.target.value || null })}
+                      disabled={!editForm.fire_marshal_trained}
+                    />
+                  </div>
+                </div>
+
+                {/* First Aid */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400 mb-2 block">First Aid Trained</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editForm.first_aid_trained || false}
+                        onChange={(e) => onEditFormChange({ first_aid_trained: e.target.checked })}
+                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="text-xs text-neutral-400">
+                        {editForm.first_aid_trained ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-neutral-400">First Aid Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={editForm.first_aid_expiry_date ? editForm.first_aid_expiry_date.split('T')[0] : ""}
+                      onChange={(e) => onEditFormChange({ first_aid_expiry_date: e.target.value || null })}
+                      disabled={!editForm.first_aid_trained}
+                    />
+                  </div>
+                </div>
+
+                {/* COSSH */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400 mb-2 block">COSSH Trained</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editForm.cossh_trained || false}
+                        onChange={(e) => onEditFormChange({ cossh_trained: e.target.checked })}
+                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="text-xs text-neutral-400">
+                        {editForm.cossh_trained ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-neutral-400">COSSH Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={editForm.cossh_expiry_date ? editForm.cossh_expiry_date.split('T')[0] : ""}
+                      onChange={(e) => onEditFormChange({ cossh_expiry_date: e.target.value || null })}
+                      disabled={!editForm.cossh_trained}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className={layout.buttonGroup}>
               <button
@@ -193,22 +336,23 @@ export default function UserEntityCard({
                 <X size={18} />
               </button>
 
-              {/* Archive button positioned absolutely */}
-              {user.archived ? (
+              {/* Archive/Restore button */}
+              {onUnarchive ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className={components.archiveButton}
+                  className="px-3 py-2 border border-pink-500 text-pink-400 rounded-md hover:bg-pink-500 hover:text-white transition"
+                  title="Restore User"
                 >
-                  <Archive size={18} />
+                  Restore
                 </button>
-              ) : (
+              ) : onArchive ? (
                 <button
                   onClick={() => onArchive(user.id)}
                   className={components.archiveButton}
                 >
                   <Archive size={18} />
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { Plus, Trash2, Save, Download, Upload, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import BackButton from '@/components/ui/BackButton';
 
 export default function HotBeveragesSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -101,6 +102,8 @@ export default function HotBeveragesSOPTemplatePage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+      <BackButton href="/dashboard/sops" label="Back to SOPs" />
+
       <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-2xl p-6 border border-orange-500/30">
         <h1 className="text-3xl font-bold text-white mb-2">Hot Beverages SOP Template</h1>
         <p className="text-neutral-300 text-sm">Manage hot beverage preparation procedures</p>
@@ -179,7 +182,7 @@ export default function HotBeveragesSOPTemplatePage() {
         <button
           onClick={() => showToast({ title: 'Coming soon', description: 'Save functionality will be implemented soon', type: 'info' })}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-lg text-white font-medium transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save SOP'}

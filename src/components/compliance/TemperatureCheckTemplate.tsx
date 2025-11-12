@@ -745,47 +745,10 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
         return;
       }
 
-      // 3. Create checklist tasks for immediate deployment (goes to My Tasks)
-      const today = new Date();
-      const taskInstances = [];
-
-      // Create tasks for each day part selected
-      for (let i = 0; i < selectedDayParts.length; i++) {
-        const dayPart = selectedDayParts[i];
-        const time = times[i] || "09:00";
-        
-        // Create a task for today
-        const scheduledDate = today.toISOString().split('T')[0];
-        const [hours, minutes] = time.split(':');
-        const scheduledTime = `${hours}:${minutes}:00`;
-        
-        taskInstances.push({
-          template_id: template.id,
-          company_id: profile.company_id,
-          site_id: profile.site_id,
-          due_date: scheduledDate,
-          due_time: scheduledTime,
-          daypart: dayPart,
-          assigned_to_role: "kitchen_manager",
-          assigned_to_user_id: profile.id,
-          status: "pending",
-          priority: "medium"
-        });
-      }
-
-      // Only create new task instances if this is a new template
-      // When updating, don't create new tasks (user just wants to update configuration)
-      if (!editingTemplateId && taskInstances.length > 0) {
-        const { error: instancesError } = await supabase
-          .from("checklist_tasks")
-          .insert(taskInstances);
-
-        if (instancesError) {
-          console.error("Error creating task instances:", instancesError);
-          alert(`Template ${editingTemplateId ? 'updated' : 'created'} but tasks failed: ${instancesError.message}`);
-          return;
-        }
-      }
+      // NOTE: Tasks should ONLY be created from templates via TaskFromTemplateModal
+      // in the compliance or templates pages. This component only saves templates.
+      // Tasks will be created automatically by the task generation system or manually
+      // by users via the TaskFromTemplateModal.
 
       setIsExpanded(false);
       if (editingTemplateId) {
@@ -793,11 +756,11 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
         if (onSave) {
           onSave();
         } else {
-          alert(`✅ Template updated successfully!\n\n📋 Template configuration has been updated.`);
+          alert(`✅ Template updated successfully!\n\n📋 Template configuration has been updated.\n\nTo create tasks from this template, use the Templates or Compliance pages.`);
         }
       } else {
-        // Template was created and deployed
-        alert(`✅ Template saved and deployed!\n\n📋 Template available in Templates page\n📝 ${taskInstances.length} task(s) created in My Tasks page`);
+        // Template was created
+        alert(`✅ Template saved successfully!\n\n📋 Template is now available in the Templates and Compliance pages.\n\nTo create tasks from this template, go to the Templates or Compliance pages and click on the template.`);
       }
 
     } catch (error) {

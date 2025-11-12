@@ -1,0 +1,203 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Self-study Course Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Arial; margin: 0; }
+    header, footer { padding: 12px 16px; background: #111; color: #fff; }
+    main { padding: 16px; max-width: 900px; margin: auto; }
+    .card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+    .nav { margin-top: 16px; display: flex; gap: 8px; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; background: #f6f7fb; cursor: pointer; }
+    .field { margin-bottom: 12px; }
+    label { display:block; font-weight:600; margin-bottom:4px; }
+    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .options { margin-top: 12px; }
+    .pill { display:inline-block; padding: 6px 10px; border-radius: 999px; border:1px solid #ccc; margin: 4px 6px 0 0; cursor:pointer; }
+    .pill.selected { background:#dfffe0; border-color:#8f8; }
+    .msg { padding:8px 10px; border-radius:8px; margin-top:10px; }
+    .msg.ok { background:#e6ffed; border:1px solid #b6f2bf; }
+    .msg.err { background:#ffe9e9; border:1px solid #ffc0c0; }
+    .progress { height: 8px; background: #eee; border-radius: 999px; overflow: hidden; margin: 12px 0; }
+    .bar { height: 8px; background: #2563EB; width: 0%; }
+  </style>
+</head>
+<body>
+  <header><strong>Level 2 Food Hygiene</strong> — Self-study demo</header>
+  <main>
+    <div class="card">
+      <div id="content"></div>
+      <div class="nav">
+        <button id="prevBtn">Back</button>
+        <button id="nextBtn">Next</button>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+    </div>
+  </main>
+  <footer>Demo only. Use JSON in your app for full UX and tracking.</footer>
+
+<script>
+const manifestPath = "../course_manifest.json";
+const pagesDir = "../pages/";
+let manifest, flow, idx = 0;
+let learner = {};
+let scores = {module_quizzes:{}, final:null};
+let attempt = {started_at: new Date().toISOString()};
+
+async function loadJSON(p){ const r = await fetch(p); return await r.json(); }
+function $(id){ return document.getElementById(id); }
+
+function renderOnboarding(p){
+  const c = $("content");
+  c.innerHTML = `
+    <h2>${p.title}</h2>
+    <p>${p.text}</p>
+    <div class="field"><label>${p.fields[0].label}</label><input id="full_name"/></div>
+    <div class="field"><label>${p.fields[1].label}</label><input id="position"/></div>
+    <div class="field"><label>${p.fields[2].label}</label><input id="home_site"/></div>
+    <div class="msg" id="msg"></div>
+  `;
+  $("nextBtn").onclick = ()=>{
+    const fn = $("full_name").value.trim();
+    const pos = $("position").value.trim();
+    const site = $("home_site").value.trim();
+    if(!fn || !pos || !site){
+      const m = $("msg"); m.className = "msg err"; m.textContent = "Please complete all fields."; return;
+    }
+    learner = {full_name: fn, position: pos, home_site: site};
+    idx = flow.indexOf(p.cta.next);
+    render();
+  };
+  $("prevBtn").onclick = ()=>{};
+}
+function renderContent(p){
+  $("content").innerHTML = `<h2>${p.title}</h2><p>${p.text}</p>`;
+}
+function renderInteraction(p){
+  const c = $("content");
+  if(p.interaction.type === "reorder"){
+    c.innerHTML = `<h2>${p.title}</h2><p>${p.text}</p><div id="steps"></div><div class="msg" id="msg"></div>`;
+    const steps = [...p.interaction.steps];
+    const container = $("steps");
+    steps.forEach((s)=>{
+      const pill = document.createElement("span"); pill.className="pill"; pill.textContent=s;
+      pill.onclick = ()=>{ pill.classList.toggle("selected"); };
+      container.appendChild(pill);
+    });
+    $("nextBtn").onclick = ()=>{
+      const selected = Array.from(document.querySelectorAll(".pill.selected")).map(el=>el.textContent);
+      const ok = JSON.stringify(selected) === JSON.stringify(p.interaction.steps);
+      const m = $("msg");
+      if(ok){ m.className="msg ok"; m.textContent=p.feedback.correct; idx++; render(); } else { m.className="msg err"; m.textContent=p.feedback.incorrect; }
+    };
+    $("prevBtn").onclick = ()=>{ idx--; render(); };
+    return;
+  }
+  if(p.interaction.type === "drag_drop"){
+    c.innerHTML = `<h2>${p.title}</h2><p>${p.text}</p><div id="pairs"></div><div class="msg" id="msg"></div>`;
+    const pairs = p.interaction.pairs;
+    const state = pairs.map(x=>({left:x[0], right:null, correct:x[1]}));
+    const rightOptions = [...new Set(pairs.map(x=>x[1]))];
+    const container = $("pairs");
+    state.forEach((row)=>{
+      const wrap = document.createElement("div");
+      const left = document.createElement("span"); left.className="pill"; left.textContent=row.left;
+      const opts = document.createElement("span");
+      rightOptions.forEach(opt=>{
+        const o = document.createElement("span"); o.className="pill"; o.textContent=opt;
+        o.onclick = ()=>{ row.right = opt; Array.from(opts.children).forEach(ch=>ch.classList.remove("selected")); o.classList.add("selected"); };
+        opts.appendChild(o);
+      });
+      wrap.appendChild(left); wrap.appendChild(opts); container.appendChild(wrap);
+    });
+    $("nextBtn").onclick = ()=>{
+      const allChosen = state.every(r=>r.right);
+      const m = $("msg");
+      if(!allChosen){ m.className="msg err"; m.textContent="Choose an answer for each item."; return; }
+      const ok = state.every(r=>r.right === r.correct);
+      if(ok){ m.className="msg ok"; m.textContent=p.feedback.correct; idx++; render(); } else { m.className="msg err"; m.textContent=p.feedback.incorrect; }
+    };
+    $("prevBtn").onclick = ()=>{ idx--; render(); };
+    return;
+  }
+}
+function renderQuiz(p){
+  const c = $("content");
+  const pool = {
+    "m1":[["Who inspects locally","Environmental health","Police","DVLA","HMRC"],["Your duty is to","Follow procedures and report","Ignore issues","Write new laws","Rate businesses"]],
+    "m2":[["Which is biological","Listeria","Glass","Allergen residue","Detergent"]],
+    "m3":[["Allergen cross-contact means","Allergen transfers to safe food","Cleaning checklist","Cooking method","Delivery note"]],
+    "m4":[["Cover a cut with","Blue waterproof plaster","Nothing","Clear tape","Paper tissue"]],
+    "m5":[["Hot holding minimum","63 C","55 C","60 C","50 C"]],
+    "m6":[["Correct order","Clean then disinfect","Disinfect then clean","Either","Skip cleaning"]],
+    "m7":[["Cracked board","Remove from use","Keep using","Flip and ignore","Paint over"]],
+    "m8":[["CCP fail means","Take corrective action and record","Ignore","Delete record","Wait days"]]
+  };
+  const mid = p.module_id;
+  const qs = (pool[mid]||[]).slice(0,5);
+  let score = 0, i = 0;
+  function showQ(){
+    if(i>=qs.length){
+      scores.module_quizzes[mid] = Math.round((score/qs.length)*100);
+      idx++; render(); return;
+    }
+    const [stem, correct, ...opts] = qs[i];
+    const shuffled = [correct, ...opts].sort(()=>Math.random()-0.5);
+    c.innerHTML = `<h2>Quiz</h2><p>${stem}</p><div id="opts" class="options"></div><div id="fb" class="msg"></div>`;
+    const o = $("opts");
+    shuffled.forEach(choice=>{
+      const pill = document.createElement("span"); pill.className="pill"; pill.textContent=choice;
+      pill.onclick = ()=>{
+        if(choice===correct){ score++; $("fb").className="msg ok"; $("fb").textContent="Correct."; }
+        else { $("fb").className="msg err"; $("fb").textContent="Incorrect."; }
+        setTimeout(()=>{ i++; showQ(); }, 600);
+      };
+      o.appendChild(pill);
+    });
+  }
+  $("prevBtn").onclick = ()=>{ idx--; render(); };
+  $("nextBtn").onclick = ()=>{};
+  showQ();
+}
+function renderFinal(p){
+  const c = $("content");
+  c.innerHTML = `<h2>Final assessment</h2><p>30 questions. This demo simulates an 85 percent score.</p>`;
+  scores.final = {score_percent:85, passed:true};
+  $("nextBtn").onclick = ()=>{ idx++; render(); };
+  $("prevBtn").onclick = ()=>{ idx--; render(); };
+}
+function renderCompletion(p){
+  const c = $("content");
+  const payload = {
+    course_id: "uk-l2-food-hygiene",
+    learner,
+    attempt: {started_at: attempt.started_at, completed_at: new Date().toISOString(), duration_sec: 0},
+    scores
+  };
+  c.innerHTML = `<h2>${p.title}</h2><p>${p.text}</p><pre>${JSON.stringify(payload, null, 2)}</pre>`;
+  $("nextBtn").onclick = ()=>{};
+  $("prevBtn").onclick = ()=>{ idx--; render(); };
+}
+async function render(){
+  const id = manifest.flow[idx];
+  const pct = Math.round(((idx+1)/manifest.flow.length)*100);
+  $("bar").style.width = pct+"%";
+  const page = await loadJSON(pagesDir + id + ".json");
+  if(page.type==="onboarding") return renderOnboarding(page);
+  if(page.type==="content"){ renderContent(page); }
+  if(page.type==="interaction"){ renderInteraction(page); }
+  if(page.type==="quiz"){ renderQuiz(page); }
+  if(page.type==="final_quiz"){ renderFinal(page); }
+  if(page.type==="completion"){ renderCompletion(page); }
+  $("prevBtn").onclick = ()=>{ if(idx>0){ idx--; render(); } };
+  $("nextBtn").onclick = ()=>{ if(idx<manifest.flow.length-1){ idx++; render(); } };
+}
+(async ()=>{
+  manifest = await loadJSON("../course_manifest.json");
+  render();
+})();</script>
+</body>
+</html>

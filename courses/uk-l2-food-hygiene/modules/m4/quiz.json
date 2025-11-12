@@ -1,0 +1,83 @@
+{
+  "pool_id": "m4",
+  "items": [
+    {
+      "id": "m4_q1",
+      "type": "single_choice",
+      "stem": "What is the main purpose of personal hygiene in food handling?",
+      "options": [
+        "To keep staff comfortable",
+        "To prevent microorganisms and contaminants reaching food",
+        "To meet dress code rules",
+        "To reduce laundry costs"
+      ],
+      "answer": 1,
+      "rationale": "Hygiene controls the transfer of microbes from people to food."
+    },
+    {
+      "id": "m4_q2",
+      "type": "single_choice",
+      "stem": "Choose the correct handwashing order.",
+      "options": [
+        "Soap, rinse, dry, rub palms",
+        "Wet, soap, rub, backs, between fingers, rinse and dry",
+        "Wet, rub, dry, soap",
+        "Soap, dry, rinse"
+      ],
+      "answer": 1,
+      "rationale": "That is the six-step sequence shown in the training."
+    },
+    {
+      "id": "m4_q3",
+      "type": "multi_choice",
+      "stem": "When must hands be washed? Select all that apply.",
+      "options": [
+        "After handling raw meat",
+        "Before handling ready-to-eat food",
+        "After using a phone",
+        "Only at the start of the shift"
+      ],
+      "answers": [0, 1, 2],
+      "rationale": "Wash before RTE, after raw, and after any contamination risk like phones."
+    },
+    {
+      "id": "m4_q4",
+      "type": "single_choice",
+      "stem": "Which statement about gloves is correct?",
+      "options": [
+        "Gloves replace handwashing",
+        "Gloves must be changed between tasks and hands washed",
+        "Gloves can be worn all day",
+        "Gloves make food safe even if dirty"
+      ],
+      "answer": 1,
+      "rationale": "Gloves are single-task and do not replace handwashing."
+    },
+    {
+      "id": "m4_q5",
+      "type": "single_choice",
+      "stem": "What should you do if you have diarrhoea or vomiting?",
+      "options": [
+        "Work but avoid the kitchen",
+        "Wear two pairs of gloves",
+        "Report it and stay off for 48 hours after last symptom",
+        "Drink coffee and carry on"
+      ],
+      "answer": 2,
+      "rationale": "Exclusion for 48 hours is standard to prevent spread."
+    },
+    {
+      "id": "m4_q6",
+      "type": "single_choice",
+      "stem": "Which PPE practice is correct?",
+      "options": [
+        "Wear outdoor coats in prep if clean",
+        "Reuse single-use gloves after washing them",
+        "Remove aprons for bins and toilet, then replace",
+        "Leave cuts uncovered if small"
+      ],
+      "answer": 2,
+      "rationale": "Aprons off for dirty tasks. Cuts must be covered with blue plasters."
+    }
+  ]
+}

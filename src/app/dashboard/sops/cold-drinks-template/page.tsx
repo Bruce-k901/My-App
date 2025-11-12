@@ -5,6 +5,7 @@ import { Plus, Trash2, Save, Download, Upload, X, Loader2, Droplet } from 'lucid
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import BackButton from '@/components/ui/BackButton';
 
 export default function ColdDrinksSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -213,6 +214,8 @@ export default function ColdDrinksSOPTemplatePage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+      <BackButton href="/dashboard/sops" label="Back to SOPs" />
+
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-6 border border-blue-500/30">
         <div className="flex items-center gap-3 mb-2">
@@ -630,7 +633,7 @@ export default function ColdDrinksSOPTemplatePage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save SOP'}

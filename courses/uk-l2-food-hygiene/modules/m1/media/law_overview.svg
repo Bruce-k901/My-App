@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" role="img" aria-labelledby="title">
+  <title>Legal duties overview placeholder</title>
+  <rect width="400" height="200" rx="24" fill="#111827" />
+  <g fill="#ec4899">
+    <rect x="40" y="40" width="80" height="120" rx="12" opacity="0.6" />
+    <rect x="160" y="60" width="80" height="100" rx="12" opacity="0.8" />
+    <rect x="280" y="30" width="80" height="130" rx="12" opacity="0.4" />
+  </g>
+  <text x="200" y="175" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" fill="#e5e7eb">
+    Update with branded artwork
+  </text>
+</svg>

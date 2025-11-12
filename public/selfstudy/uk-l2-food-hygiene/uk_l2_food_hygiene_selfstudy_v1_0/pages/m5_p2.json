@@ -1,0 +1,20 @@
+{
+  "id": "m5_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Hot holding", "63 C or above"],
+      ["Fridge operation", "5 C or below"],
+      ["Typical poultry core", "75 C"]
+    ]
+  },
+  "title": "Temperature rules",
+  "text": "Match process to temperature.",
+  "media": "media/thermometer.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}

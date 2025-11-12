@@ -1,0 +1,33 @@
+{
+  "outcomes": [
+    { "id": "L2-4.1", "statement": "Understand the role of personal hygiene in food safety." },
+    { "id": "L2-4.2", "statement": "Demonstrate effective handwashing steps and timing." },
+    { "id": "L2-4.3", "statement": "Know when to wash hands and control common touchpoints." },
+    { "id": "L2-4.4", "statement": "Use clothing and PPE correctly for different tasks." },
+    { "id": "L2-4.5", "statement": "Follow illness reporting and exclusion requirements." }
+  ],
+  "mapping": [
+    { "page_id": "m4_p1", "outcome_id": "L2-4.1" },
+    { "page_id": "m4_p2", "outcome_id": "L2-4.2" },
+    { "page_id": "m4_p3", "outcome_id": "L2-4.2" },
+    { "page_id": "m4_p4", "outcome_id": "L2-4.2" },
+    { "page_id": "m4_p4", "outcome_id": "L2-4.3" },
+    { "page_id": "m4_p5", "outcome_id": "L2-4.1" },
+    { "page_id": "m4_p5", "outcome_id": "L2-4.3" },
+    { "page_id": "m4_p6", "outcome_id": "L2-4.3" },
+    { "page_id": "m4_p6", "outcome_id": "L2-4.4" },
+    { "page_id": "m4_p7", "outcome_id": "L2-4.5" },
+    { "page_id": "m4_p8", "outcome_id": "L2-4.4" },
+    { "page_id": "m4_p9", "outcome_id": "L2-4.1" },
+    { "page_id": "m4_p9", "outcome_id": "L2-4.2" },
+    { "page_id": "m4_p9", "outcome_id": "L2-4.3" },
+    { "page_id": "m4_p9", "outcome_id": "L2-4.4" },
+    { "page_id": "m4_p9", "outcome_id": "L2-4.5" },
+    { "quiz_id": "m4_q1", "outcome_id": "L2-4.1" },
+    { "quiz_id": "m4_q2", "outcome_id": "L2-4.2" },
+    { "quiz_id": "m4_q3", "outcome_id": "L2-4.3" },
+    { "quiz_id": "m4_q4", "outcome_id": "L2-4.4" },
+    { "quiz_id": "m4_q5", "outcome_id": "L2-4.5" },
+    { "quiz_id": "m4_q6", "outcome_id": "L2-4.4" }
+  ]
+}

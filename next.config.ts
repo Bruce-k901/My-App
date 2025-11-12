@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Optimize CSS loading to reduce preload warnings
+  experimental: {
+    optimizeCss: true,
+  },
+
   // Explicitly disable Turbopack to use webpack
   // experimental: {
   //   turbo: false, // This key is invalid in Next.js 16

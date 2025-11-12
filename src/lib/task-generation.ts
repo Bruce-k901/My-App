@@ -1,13 +1,18 @@
-import { supabase } from './supabase'
+import { supabase } from '@/lib/supabase'
 
 export interface GenerationLog {
-  run_date: string
-  daily_tasks: number
-  weekly_tasks: number
-  monthly_tasks: number
-  triggered_tasks: number
-  errors: string[]
-  status: 'success' | 'partial' | 'failed'
+  run_date?: Date | string
+  daily_tasks_created?: number
+  weekly_tasks_created?: number
+  monthly_tasks_created?: number
+  triggered_tasks_created?: number
+  errors?: string[]
+  // Legacy fields for backward compatibility
+  daily_tasks?: number
+  weekly_tasks?: number
+  monthly_tasks?: number
+  triggered_tasks?: number
+  status?: 'success' | 'partial' | 'failed'
 }
 
 /**

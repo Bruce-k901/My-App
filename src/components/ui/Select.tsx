@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 type Option = string | { label: string; value: string };
 type SelectProps = {
   label?: string;
-  value: string;
+  value?: string;
   options: Option[];
   onValueChange: (val: string) => void;
   placeholder?: string;
@@ -32,7 +32,7 @@ export default function Select({
     <div className={cn("relative", className)}>
       {label && <label className="block text-xs text-slate-400 mb-1">{label}</label>}
       
-      <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+      <SelectPrimitive.Root value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency

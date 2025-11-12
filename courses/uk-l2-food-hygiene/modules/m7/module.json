@@ -1,0 +1,14 @@
+{
+  "id": "m7",
+  "title": "Food Safety Management and Legal Responsibilities",
+  "description": "Understand UK legal duties, HACCP principles, and due diligence records.",
+  "duration_min": 15,
+  "pages": ["m7_p1", "m7_p2", "m7_p3", "m7_p4", "m7_p5", "m7_p6", "m7_p7", "m7_p8"],
+  "quiz": {
+    "pool": "m7",
+    "count": 5,
+    "pass_mark_percent": 80
+  },
+  "media_path": "media/",
+  "order": 7
+}

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
 import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, Utensils, ShieldAlert, Flame, Sparkles, ClipboardCheck } from "lucide-react";
 import { TaskTemplate } from "@/types/checklist-types";
 import { useAppContext } from "@/context/AppContext";
+import { COMPLIANCE_MODULE_SLUGS } from "@/data/compliance-templates";
+import { enrichTemplateWithDefinition } from "@/lib/templates/enrich-template";
 
 const FREQUENCY_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -32,6 +34,42 @@ export default function ComplianceTemplatesPage() {
   const [templateStatuses, setTemplateStatuses] = useState<Map<string, TemplateStatus>>(new Map());
   const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set());
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const hasAttemptedSeed = useRef(false);
+  const shouldAutoSeed = process.env.NEXT_PUBLIC_ENABLE_COMPLIANCE_TEMPLATE_AUTOFILL === "true";
+
+  async function seedGlobalTemplates() {
+    if (!shouldAutoSeed) {
+      return false;
+    }
+    if (hasAttemptedSeed.current) {
+      return false;
+    }
+
+    hasAttemptedSeed.current = true;
+
+    try {
+      const response = await fetch("/api/compliance/import-templates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ company_id: null }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        console.error("Failed to seed compliance templates:", errorBody);
+        return false;
+      }
+
+      const result = await response.json().catch(() => ({}));
+      console.log("Compliance templates seeded:", result);
+      return true;
+    } catch (error) {
+      console.error("Error seeding compliance templates:", error);
+      return false;
+    }
+  }
 
   const handleUseTemplate = (templateId: string, e?: React.MouseEvent) => {
     // Prevent triggering when clicking Edit or Expand buttons
@@ -110,15 +148,26 @@ export default function ComplianceTemplatesPage() {
       if (data && data.length > 0) {
         console.log('Template names:', data.map(t => t.name));
       }
-      
-      // Filter out draft templates only
-      // All templates with is_template_library = true are compliance templates
+
+      const requiredSlugs = new Set(COMPLIANCE_MODULE_SLUGS);
+      const presentSlugs = new Set((data || []).map(template => template.slug));
+      const missingSlugs = COMPLIANCE_MODULE_SLUGS.filter(slug => !presentSlugs.has(slug));
+
+      if (shouldAutoSeed && missingSlugs.length > 0) {
+        console.log('Missing compliance templates detected:', missingSlugs);
+        const seeded = await seedGlobalTemplates();
+        if (seeded) {
+          await fetchTemplates();
+          return;
+        }
+      }
+
+      // Filter out draft templates and exclude legacy uploads
       const filteredData = (data || []).filter(template => {
-        // Exclude drafts only
-        const isDraft = template.name.toLowerCase().includes('(draft)') || 
-                       template.description?.toLowerCase().includes('draft');
-        
-        return !isDraft;
+        const isDraft = template.name.toLowerCase().includes('(draft)') ||
+          template.description?.toLowerCase().includes('draft');
+        const isModuleTemplate = template.slug ? requiredSlugs.has(template.slug) : false;
+        return !isDraft && isModuleTemplate;
       });
       
       console.log('Filtered compliance templates (after draft filter):', filteredData.length);
@@ -131,14 +180,18 @@ export default function ComplianceTemplatesPage() {
           templatesMap.set(template.name, template);
         }
       });
-      
-      setTemplates(Array.from(templatesMap.values()));
+
+      const deduplicatedTemplates = Array.from(templatesMap.values()).map((template) =>
+        enrichTemplateWithDefinition(template),
+      ) as TaskTemplate[];
+
+      setTemplates(deduplicatedTemplates);
       
       // Fetch status information for templates (in use, edited)
-      // Use deduplicated templates for status check
-      const deduplicatedTemplates = Array.from(templatesMap.values());
       if (deduplicatedTemplates.length > 0) {
-        await fetchTemplateStatuses(deduplicatedTemplates.map(t => t.id), profile.company_id);
+        await fetchTemplateStatuses(deduplicatedTemplates, profile.company_id);
+      } else {
+        setTemplateStatuses(new Map());
       }
     } catch (error) {
       console.error('Failed to fetch compliance templates:', error);
@@ -148,8 +201,14 @@ export default function ComplianceTemplatesPage() {
   }
 
   // Fetch template statuses (in use, edited)
-  async function fetchTemplateStatuses(templateIds: string[], companyId: string) {
+  async function fetchTemplateStatuses(templateList: TaskTemplate[], companyId: string) {
     try {
+      if (templateList.length === 0) {
+        setTemplateStatuses(new Map());
+        return;
+      }
+
+      const templateIds = templateList.map(t => t.id);
       const statusMap = new Map<string, TemplateStatus>();
       
       // Check which templates are "in use" (have any task instances, not just active ones)
@@ -182,7 +241,7 @@ export default function ComplianceTemplatesPage() {
       });
       
       // For each template, determine status
-      templates.forEach(template => {
+      templateList.forEach(template => {
         const inUse = inUseTemplateIds.has(template.id);
         
         // Check if edited: 

@@ -1,0 +1,31 @@
+@startuml Context
+
+!include <C4/C4_Context>
+
+Person(user, "Venue Staff", "Record checks, temperatures, incidents")
+Person(manager, "Site/Area Manager", "Reviews, actions, audits")
+Person(compliance, "Compliance Manager", "Policies, oversight")
+
+System_Boundary(app, "Hospitality Compliance OS") {
+  System(web, "Web App (Next.js)", "UI + server actions")
+  SystemDb(db, "Supabase Postgres", "Tenant data, RLS")
+  System(api, "Edge Functions", "Webhooks, exports, score calc")
+}
+
+System_Ext(vercel, "Vercel", "Hosting + Cron")
+System_Ext(resend, "Resend", "Email")
+System_Ext(twilio, "Twilio", "SMS (planned)")
+System_Ext(idp, "Azure AD/Okta", "SSO (planned)")
+System_Ext(iot, "IoT Probes", "Bluetooth/Checkit (planned)")
+
+user -> web: Use PWA
+manager -> web: Reviews, approves
+compliance -> web: Configure policies/audits
+web -> db: SQL over PostgREST/pg via Supabase client
+web -> api: server actions call Edge Functions
+api -> resend: notifications
+api -> twilio: reminders (planned)
+iot -> api: readings webhook (planned)
+
+@enduml
+

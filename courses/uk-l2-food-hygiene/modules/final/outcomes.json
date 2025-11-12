@@ -1,0 +1,37 @@
+{
+  "outcomes": [
+    {
+      "id": "FINAL-1",
+      "statement": "Demonstrate applied understanding of contamination controls."
+    },
+    { "id": "FINAL-2", "statement": "Apply safe temperature control and separation of foods." },
+    { "id": "FINAL-3", "statement": "Show correct personal hygiene and PPE use." },
+    {
+      "id": "FINAL-4",
+      "statement": "Identify allergens accurately and communicate with customers."
+    },
+    { "id": "FINAL-5", "statement": "Apply two-stage cleaning and safe waste management." },
+    {
+      "id": "FINAL-6",
+      "statement": "Understand legal duties, HACCP, due diligence, and traceability."
+    }
+  ],
+  "mapping": [
+    { "page_id": "final_intro", "outcome_id": "FINAL-1" },
+    { "quiz_id": "final_q1", "outcome_id": "FINAL-1" },
+    { "quiz_id": "final_q2", "outcome_id": "FINAL-1" },
+    { "quiz_id": "final_q3", "outcome_id": "FINAL-2" },
+    { "quiz_id": "final_q4", "outcome_id": "FINAL-2" },
+    { "quiz_id": "final_q5", "outcome_id": "FINAL-2" },
+    { "quiz_id": "final_q6", "outcome_id": "FINAL-2" },
+    { "quiz_id": "final_q7", "outcome_id": "FINAL-3" },
+    { "quiz_id": "final_q8", "outcome_id": "FINAL-3" },
+    { "quiz_id": "final_q9", "outcome_id": "FINAL-4" },
+    { "quiz_id": "final_q10", "outcome_id": "FINAL-4" },
+    { "quiz_id": "final_q11", "outcome_id": "FINAL-5" },
+    { "quiz_id": "final_q12", "outcome_id": "FINAL-5" },
+    { "quiz_id": "final_q13", "outcome_id": "FINAL-6" },
+    { "quiz_id": "final_q14", "outcome_id": "FINAL-6" },
+    { "quiz_id": "final_q15", "outcome_id": "FINAL-6" }
+  ]
+}

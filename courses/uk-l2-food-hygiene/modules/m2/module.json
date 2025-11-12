@@ -1,0 +1,24 @@
+{
+  "id": "m2",
+  "title": "Food Hazards & Contamination",
+  "icon": "hazard-triangle",
+  "duration_min": 12,
+  "pages": [
+    "m2_p1",
+    "m2_p2",
+    "m2_p3",
+    "m2_p4",
+    "m2_p5",
+    "m2_p6",
+    "m2_interact_dragbins",
+    "m2_interact_hotspot",
+    "m2_scenario_branch",
+    "m2_recap",
+    "m2_quiz_ref"
+  ],
+  "quiz": {
+    "pool": "m2",
+    "count": 6,
+    "pass_mark_percent": 70
+  }
+}

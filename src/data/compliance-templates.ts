@@ -28,7 +28,7 @@
  * - Compliance standards
  */
 
-import { TaskTemplate } from '@/types/checklist'
+import { TaskTemplate, TaskCategory } from '@/types/checklist'
 
 export type WorkflowType = 
   | 'measurement'
@@ -87,6 +87,7 @@ export const SFBB_TEMPERATURE_CHECKS_TEMPLATE: ComplianceTemplate = {
   name: 'SFBB Temperature Checks',
   slug: 'sfbb-temperature-checks',
   description: 'Daily temperature monitoring for refrigerators, freezers, and hot holding units to ensure food safety compliance',
+  notes: null,
   category: 'food_safety',
   audit_category: 'food_safety',
   frequency: 'daily',
@@ -209,6 +210,7 @@ export const HOT_HOLDING_TEMPS_TEMPLATE: ComplianceTemplate = {
   name: 'Verify hot holding above 63°C',
   slug: 'hot-holding-temps',
   description: 'Record during service to ensure compliance',
+  notes: null,
   category: 'food_safety',
   audit_category: 'food_safety',
   frequency: 'daily',
@@ -267,6 +269,7 @@ export const FIRE_ALARM_TEST_TEMPLATE: ComplianceTemplate = {
   name: 'Test fire alarms and emergency lighting',
   slug: 'fire-alarm-test',
   description: 'Weekly testing of fire alarms and emergency lighting systems',
+  notes: null,
   category: 'h_and_s',
   audit_category: 'fire_safety',
   frequency: 'weekly',
@@ -324,6 +327,7 @@ export const EMERGENCY_LIGHTING_TEST_TEMPLATE: ComplianceTemplate = {
   name: 'Test emergency lighting',
   slug: 'emergency-lighting-test',
   description: 'Weekly testing of emergency lighting systems',
+  notes: null,
   category: 'h_and_s',
   audit_category: 'fire_safety',
   frequency: 'weekly',
@@ -377,6 +381,7 @@ export const PAT_TESTING_TEMPLATE: ComplianceTemplate = {
   name: 'PAT test electrical equipment',
   slug: 'pat-testing',
   description: 'Annual Portable Appliance Testing of electrical equipment',
+  notes: null,
   category: 'h_and_s',
   audit_category: 'health_and_safety',
   frequency: 'annually', // 'annual' maps to 'annually' in database
@@ -430,6 +435,7 @@ export const PROBE_CALIBRATION_TEMPLATE: ComplianceTemplate = {
   name: 'Calibrate temperature probes',
   slug: 'probe-calibration',
   description: 'Monthly calibration verification of temperature probes using boiling and ice water method',
+  notes: null,
   category: 'food_safety',
   audit_category: 'food_safety',
   frequency: 'monthly',
@@ -488,6 +494,7 @@ export const EXTRACTION_SERVICE_TEMPLATE: ComplianceTemplate = {
   name: 'Service extraction and ventilation systems',
   slug: 'extraction-service',
   description: 'Biannual service and verification of extraction and ventilation systems',
+  notes: null,
   category: 'h_and_s',
   audit_category: 'health_and_safety',
   frequency: 'quarterly', // 'biannual' (twice per year) maps to 'quarterly' in database
@@ -535,39 +542,278 @@ export const EXTRACTION_SERVICE_TEMPLATE: ComplianceTemplate = {
  * Get template by slug
  */
 export function getTemplateBySlug(slug: string): ComplianceTemplate | null {
-  const templates: ComplianceTemplate[] = [
-    SFBB_TEMPERATURE_CHECKS_TEMPLATE,
-    HOT_HOLDING_TEMPS_TEMPLATE,
-    FIRE_ALARM_TEST_TEMPLATE,
-    EMERGENCY_LIGHTING_TEST_TEMPLATE,
-    PAT_TESTING_TEMPLATE,
-    PROBE_CALIBRATION_TEMPLATE,
-    EXTRACTION_SERVICE_TEMPLATE
-  ]
-  
-  return templates.find(t => t.slug === slug) || null
+  return (
+    COMPLIANCE_MODULE_TEMPLATES.find((template) => template.slug === slug) || null
+  )
 }
 
-/**
- * Get all available templates
- * NOTE: The following templates are excluded because they have dedicated React components:
- * - SFBB_TEMPERATURE_CHECKS_TEMPLATE (TemperatureCheckTemplate component)
- * - HOT_HOLDING_TEMPS_TEMPLATE (HotHoldingTemplate component)
- * - FIRE_ALARM_TEST_TEMPLATE (FireAlarmTestTemplate component)
- * - EMERGENCY_LIGHTING_TEST_TEMPLATE (EmergencyLightingTemplate component)
- * - PAT_TESTING_TEMPLATE (PATTestingTemplate component)
- * - PROBE_CALIBRATION_TEMPLATE (ProbeCalibrationTemplate component)
- * - EXTRACTION_SERVICE_TEMPLATE (ExtractionServiceTemplate component)
- * 
- * These are rendered as React components at the top of the compliance templates page,
- * so they should not be auto-imported into the database.
- */
+const TEMPLATE_TIMESTAMP = new Date().toISOString()
+
+export function buildComplianceTemplate({
+  slug,
+  name,
+  description,
+  category,
+  auditCategory,
+  frequency,
+  dayparts,
+  assignedRole,
+  evidenceTypes,
+  complianceStandard,
+  isCritical,
+  workflowType = "checklist_verify",
+  workflowConfig = {} as ComplianceTemplate["workflowConfig"],
+  instructions,
+  triggersContractorOnFailure = false,
+  contractorType = null as string | null,
+}: {
+  slug: string
+  name: string
+  description: string
+  category: TaskCategory | string
+  auditCategory: string
+  frequency: string
+  dayparts: string[]
+  assignedRole: string
+  evidenceTypes: string[]
+  complianceStandard: string
+  isCritical: boolean
+  workflowType?: WorkflowType
+  workflowConfig?: ComplianceTemplate["workflowConfig"]
+  instructions?: string
+  triggersContractorOnFailure?: boolean
+  contractorType?: string | null
+}): ComplianceTemplate {
+  return {
+    id: slug,
+    company_id: null,
+    name,
+    slug,
+    description,
+    category: category as TaskCategory,
+    audit_category: auditCategory,
+    frequency,
+    recurrence_pattern: null,
+    time_of_day: dayparts[0] ?? "anytime",
+    dayparts,
+    assigned_to_role: assignedRole,
+    assigned_to_user_id: null,
+    site_id: null,
+    asset_id: null,
+    asset_type: null,
+    instructions: instructions ?? description,
+    repeatable_field_name: null,
+    evidence_types: evidenceTypes,
+    requires_sop: false,
+    requires_risk_assessment: false,
+    linked_sop_id: null,
+    linked_risk_id: null,
+    compliance_standard: complianceStandard,
+    is_critical: isCritical,
+    triggers_contractor_on_failure: triggersContractorOnFailure,
+    contractor_type: contractorType,
+    is_active: true,
+    is_template_library: true,
+    created_at: TEMPLATE_TIMESTAMP,
+    updated_at: TEMPLATE_TIMESTAMP,
+    workflowType,
+    workflowConfig,
+  }
+}
+
+const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
+  buildComplianceTemplate({
+    slug: "fridge-freezer-temperature-check",
+    name: "Fridge/Freezer Temperature Check",
+    description:
+      "Daily temperature monitoring for all chilled and frozen storage units with escalation for out-of-range readings.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "daily",
+    dayparts: ["before_open", "during_service", "after_service"],
+    assignedRole: "kitchen_manager",
+    evidenceTypes: ["temperature", "checklist"],
+    complianceStandard: "Food Safety Act / HACCP",
+    isCritical: true,
+    workflowType: "measurement",
+    triggersContractorOnFailure: true,
+    contractorType: "equipment_repair",
+  }),
+  buildComplianceTemplate({
+    slug: "hot_holding_temperature_verification",
+    name: "Hot Holding Temperature Verification",
+    description:
+      "During-service verification that all hot holding equipment maintains safe temperatures above 63°C.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "daily",
+    dayparts: ["during_service"],
+    assignedRole: "BOH",
+    evidenceTypes: ["temperature", "text_note"],
+    complianceStandard: "Food Safety Act 1990",
+    isCritical: true,
+    workflowType: "measurement",
+  }),
+  buildComplianceTemplate({
+    slug: "weekly_pest_control_inspection",
+    name: "Weekly Pest Control Device Inspection",
+    description: "Inspect all pest control devices, record findings, and trigger contractor callouts for any activity.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "weekly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["pass_fail", "photo", "text_note"],
+    complianceStandard: "Food Safety Act 1990",
+    isCritical: true,
+    triggersContractorOnFailure: true,
+    contractorType: "pest_control",
+  }),
+  buildComplianceTemplate({
+    slug: "fire_alarm_test_weekly",
+    name: "Weekly Fire Alarm Test",
+    description:
+      "Weekly testing of fire alarms and emergency lighting with documentation and contractor escalation for faults.",
+    category: TaskCategory.HEALTH_AND_SAFETY,
+    auditCategory: "fire_safety",
+    frequency: "weekly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["pass_fail", "photo", "text_note"],
+    complianceStandard: "Fire Safety Order 2005",
+    isCritical: true,
+    triggersContractorOnFailure: true,
+    contractorType: "fire_engineer",
+  }),
+  buildComplianceTemplate({
+    slug: "first_aid_kit_inspection",
+    name: "Weekly First Aid Kit Inspection",
+    description:
+      "Comprehensive check of first aid kits to ensure supplies are in date, restocked, and accident book is available.",
+    category: TaskCategory.HEALTH_AND_SAFETY,
+    auditCategory: "health_safety",
+    frequency: "weekly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["pass_fail", "photo", "text_note"],
+    complianceStandard: "Health and Safety (First-Aid) Regulations 1981",
+    isCritical: true,
+  }),
+  buildComplianceTemplate({
+    slug: "fire_extinguisher_inspection",
+    name: "Monthly Fire Extinguisher Inspection",
+    description:
+      "Visual inspection of fire extinguishers for accessibility, condition, pressure, and documentation compliance.",
+    category: TaskCategory.FIRE,
+    auditCategory: "fire_safety",
+    frequency: "monthly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["pass_fail", "text_note"],
+    complianceStandard: "Regulatory Reform (Fire Safety) Order 2005",
+    isCritical: true,
+    triggersContractorOnFailure: true,
+    contractorType: "fire_safety",
+  }),
+  buildComplianceTemplate({
+    slug: "extraction_system_contractor_verification",
+    name: "Extraction System Contractor Verification",
+    description:
+      "Verify professional extraction cleaning service, upload certificates, and track next due dates.",
+    category: TaskCategory.HEALTH_AND_SAFETY,
+    auditCategory: "health_safety",
+    frequency: "monthly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail"],
+    complianceStandard: "Health and Safety at Work Act 1974",
+    isCritical: true,
+    triggersContractorOnFailure: true,
+    contractorType: "duct_cleaning",
+  }),
+  buildComplianceTemplate({
+    slug: "lighting_inspection",
+    name: "Weekly Lighting Inspection",
+    description:
+      "Check all lighting across the venue is operational and raise electrical callouts for unresolved faults.",
+    category: TaskCategory.HEALTH_AND_SAFETY,
+    auditCategory: "health_safety",
+    frequency: "weekly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail"],
+    complianceStandard: "Workplace (Health, Safety and Welfare) Regulations 1992",
+    isCritical: false,
+    triggersContractorOnFailure: true,
+    contractorType: "electrical",
+  }),
+  buildComplianceTemplate({
+    slug: "workplace_inspection",
+    name: "Monthly Health & Safety Workplace Inspection",
+    description:
+      "Comprehensive safety walkthrough covering kitchen, FOH, staff welfare, and fire safety requirements.",
+    category: TaskCategory.HEALTH_AND_SAFETY,
+    auditCategory: "health_safety",
+    frequency: "monthly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail", "photo"],
+    complianceStandard: "Health and Safety at Work Act 1974",
+    isCritical: true,
+    triggersContractorOnFailure: true,
+    contractorType: "safety_consultant",
+  }),
+  buildComplianceTemplate({
+    slug: "training_records_review",
+    name: "Monthly Training Compliance Review",
+    description:
+      "Review staff training records, update certificate expiries, and plan refresher training for gaps.",
+    category: TaskCategory.COMPLIANCE,
+    auditCategory: "health_safety",
+    frequency: "monthly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail"],
+    complianceStandard: "Health and Safety at Work Act 1974",
+    isCritical: true,
+  }),
+  buildComplianceTemplate({
+    slug: "training_compliance_management",
+    name: "Training Compliance Management",
+    description:
+      "Manage live training matrix data, summarise expiring certificates, and log follow-up actions.",
+    category: TaskCategory.COMPLIANCE,
+    auditCategory: "health_safety",
+    frequency: "monthly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail", "repeatable_record"],
+    complianceStandard: "Health and Safety at Work Act 1974",
+    isCritical: true,
+  }),
+  buildComplianceTemplate({
+    slug: "food_labelling_audit",
+    name: "Food Labelling & Dating Compliance Audit",
+    description:
+      "Comprehensive audit of food labelling, shelf-life controls, and FIFO adherence across the venue.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "weekly",
+    dayparts: ["before_open"],
+    assignedRole: "manager",
+    evidenceTypes: ["text_note", "pass_fail"],
+    complianceStandard: "Food Safety Act 1990, Food Hygiene Regulations",
+    isCritical: true,
+  }),
+]
+
+export const COMPLIANCE_MODULE_TEMPLATES = COMPLIANCE_MODULE_TEMPLATES_V2
+
+export const COMPLIANCE_MODULE_SLUGS = COMPLIANCE_MODULE_TEMPLATES.map(
+  (template) => template.slug
+)
+
 export function getAllTemplates(): ComplianceTemplate[] {
-  // Return all templates that should be imported into the database
-  // These templates will appear in the compliance templates page
-  return [
-    SFBB_TEMPERATURE_CHECKS_TEMPLATE,
-    // Add other templates here as needed
-  ]
+  return COMPLIANCE_MODULE_TEMPLATES
 }
 

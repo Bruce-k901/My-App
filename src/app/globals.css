@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Animated CHECKLY Tiles - Magnetic snap effect */
+@keyframes magnet-slide-left {
+  from {
+    transform: translateX(-200px) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes magnet-slide-right {
+  from {
+    transform: translateX(200px) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+.tile-animate-left {
+  animation: magnet-slide-left 0.7s cubic-bezier(0.25, 0.46, 0.45, 1.3) forwards;
+  transform: translateX(-200px);
+  opacity: 1;
+}
+
+.tile-animate-right {
+  animation: magnet-slide-right 0.7s cubic-bezier(0.25, 0.46, 0.45, 1.3) forwards;
+  transform: translateX(200px);
+  opacity: 1;
+}
+
 /* Custom magenta glow utility */
 .hover\:shadow-magenta-glow:hover {
   box-shadow: 0 0 10px 2px rgba(255, 0, 150, 0.5);
@@ -299,8 +334,9 @@ p {
 /* Fix for gradient header clipping on all hero sections */
 .hero-title {
   padding-top: 0.25rem; /* adds small breathing room */
-  padding-bottom: 0.25rem; /* prevents bottom clipping */
-  line-height: 1.1; /* keeps headings compact but safe */
+  padding-bottom: 0.5rem; /* prevents bottom clipping for descenders (g, p, q, y) */
+  line-height: 1.3; /* allows space for descenders */
+  overflow: visible; /* ensures descenders aren't clipped */
 }
 
 /* ----------------------------- */
@@ -508,4 +544,19 @@ input[type="number"] {
 
 .animate-slideIn {
   animation: slideIn 150ms ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
 }

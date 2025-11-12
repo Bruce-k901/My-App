@@ -7,6 +7,7 @@
 
 // Export all types and interfaces
 export * from './checklist'
+export * from './temperature'
 
 // Export guards
 export * from './guards'

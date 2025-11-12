@@ -3,25 +3,31 @@
  * Calculates task status based on due_time and 1-hour window
  */
 
-export type TaskTimingStatus = 'pending' | 'due' | 'late'
+export type TaskTimingStatus = 'pending' | 'due' | 'late' | 'overdue' | 'grace_period'
 
 export interface TaskTimingInfo {
   status: TaskTimingStatus
   isWithinWindow: boolean
   isLate: boolean
+  isOverdue: boolean
+  isInGracePeriod: boolean
   windowStart: Date
   windowEnd: Date
   dueTime: Date | null
+  daysPastDue?: number
+  gracePeriodDays?: number
 }
 
 /**
- * Calculate task timing status based on due_time
+ * Calculate task timing status based on due_time and grace period
  * Window: 1 hour before due_time to 1 hour after due_time
+ * Grace period: Optional grace period after window end before task becomes "overdue"
  */
 export function calculateTaskTiming(
   dueDate: string,
   dueTime: string | null,
-  currentTime: Date = new Date()
+  currentTime: Date = new Date(),
+  gracePeriodDays: number = 0
 ): TaskTimingInfo {
   const today = new Date(dueDate)
   
@@ -67,23 +73,42 @@ export function calculateTaskTiming(
   const windowEnd = new Date(dueDateTime)
   windowEnd.setHours(windowEnd.getHours() + 1)
   
-  // Determine status
+  // Calculate days past due
+  const daysPastDue = Math.floor((currentTime.getTime() - windowEnd.getTime()) / (1000 * 60 * 60 * 24))
+  
+  // Determine status with grace period
   let status: TaskTimingStatus
+  let isInGracePeriod = false
+  let isOverdue = false
+  
   if (currentTime < windowStart) {
     status = 'pending'
   } else if (currentTime <= windowEnd) {
     status = 'due'
   } else {
-    status = 'late'
+    // Past the window - check grace period
+    if (gracePeriodDays > 0 && daysPastDue <= gracePeriodDays) {
+      status = 'grace_period'
+      isInGracePeriod = true
+    } else if (daysPastDue > gracePeriodDays) {
+      status = 'overdue'
+      isOverdue = true
+    } else {
+      status = 'late' // Legacy: late but not yet overdue
+    }
   }
   
   return {
     status,
     isWithinWindow: currentTime >= windowStart && currentTime <= windowEnd,
     isLate: currentTime > windowEnd,
+    isOverdue,
+    isInGracePeriod,
     windowStart,
     windowEnd,
-    dueTime: dueDateTime
+    dueTime: dueDateTime,
+    daysPastDue: daysPastDue > 0 ? daysPastDue : undefined,
+    gracePeriodDays: gracePeriodDays > 0 ? gracePeriodDays : undefined
   }
 }
 

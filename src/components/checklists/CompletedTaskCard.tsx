@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { CheckCircle2, ChevronDown, ChevronUp, Clock, Calendar, Thermometer, Camera, FileText, CheckCircle, X, AlertTriangle, ExternalLink } from 'lucide-react'
+import { CheckCircle2, ChevronDown, ChevronUp, Clock, Calendar, Thermometer, Camera, FileText, CheckCircle, X, AlertTriangle, ExternalLink, Lightbulb } from 'lucide-react'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
+import Link from 'next/link'
 
 interface CompletedTaskCardProps {
   task: ChecklistTaskWithTemplate & {
@@ -332,6 +333,8 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     ? 'bg-red-500/10 text-red-400 border-red-500/20'
     : 'bg-green-500/10 text-green-400 border-green-500/20'
 
+  const templateNote = task.template_notes || task.template?.notes || null
+
   return (
     <div className={`${cardBgColor} border ${cardBorderColor} rounded-xl overflow-hidden`}>
       {/* Header - Always Visible */}
@@ -369,6 +372,16 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
               </div>
             )}
           </div>
+
+          {templateNote && (
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-100/90 text-sm p-4 flex gap-3 mb-4">
+              <Lightbulb className="w-5 h-5 shrink-0 text-amber-300" />
+              <div>
+                <p className="font-semibold text-amber-200">Template note</p>
+                <p className="whitespace-pre-wrap leading-relaxed text-amber-100/90">{templateNote}</p>
+              </div>
+            </div>
+          )}
 
           {/* Preview of recorded data - always visible */}
           {!isExpanded && hasRecordedData && (

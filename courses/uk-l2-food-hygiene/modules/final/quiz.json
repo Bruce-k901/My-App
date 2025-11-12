@@ -1,0 +1,170 @@
+{
+  "pool_id": "final",
+  "items": [
+    {
+      "id": "final_q1",
+      "type": "single_choice",
+      "stem": "What is a common route for contamination in a kitchen?",
+      "options": [
+        "Sunlight exposure",
+        "Unwashed hands",
+        "High shelf storage",
+        "Blue chopping boards"
+      ],
+      "answer": 1,
+      "rationale": "Poor hand hygiene spreads germs quickly between surfaces and food."
+    },
+    {
+      "id": "final_q2",
+      "type": "single_choice",
+      "stem": "Which is a physical contaminant?",
+      "options": ["Salmonella", "Bleach", "Hair", "Allergen proteins"],
+      "answer": 2,
+      "rationale": "Hair is a physical contaminant; microbes and chemicals are other hazard types."
+    },
+    {
+      "id": "final_q3",
+      "type": "single_choice",
+      "stem": "The UK temperature danger zone is typically between:",
+      "options": ["0 °C and 5 °C", "5 °C and 63 °C", "63 °C and 100 °C", "−18 °C and 0 °C"],
+      "answer": 1,
+      "rationale": "Food kept between 5 °C and 63 °C allows harmful bacteria to multiply rapidly."
+    },
+    {
+      "id": "final_q4",
+      "type": "single_choice",
+      "stem": "Hot holding should be at or above:",
+      "options": ["55 °C", "60 °C", "63 °C", "70 °C"],
+      "answer": 2,
+      "rationale": "63 °C or hotter keeps food out of the danger zone during service."
+    },
+    {
+      "id": "final_q5",
+      "type": "single_choice",
+      "stem": "Which practice best prevents cross-contamination?",
+      "options": [
+        "Use one cloth for all tasks",
+        "Store raw meat below ready-to-eat food",
+        "Dry wipe boards only",
+        "Keep chemical sprays near food"
+      ],
+      "answer": 1,
+      "rationale": "Storing raw foods below ready-to-eat foods prevents drips contaminating safe food."
+    },
+    {
+      "id": "final_q6",
+      "type": "single_choice",
+      "stem": "Which board is commonly used for raw meat in UK colour coding?",
+      "options": ["Green", "Blue", "Red", "Yellow"],
+      "answer": 2,
+      "rationale": "Red chopping boards are typically reserved for raw meat in UK kitchens."
+    },
+    {
+      "id": "final_q7",
+      "type": "single_choice",
+      "stem": "When must food handlers wash hands?",
+      "options": [
+        "Every hour only",
+        "After using the toilet and after handling raw food",
+        "Only at the start of shift",
+        "After serving coffee"
+      ],
+      "answer": 1,
+      "rationale": "Key moments include after the toilet and after handling raw food to remove microbes."
+    },
+    {
+      "id": "final_q8",
+      "type": "single_choice",
+      "stem": "Which item is suitable PPE in a kitchen?",
+      "options": ["Loose bracelets", "Open-toe sandals", "Hair net or hat", "Long scarves"],
+      "answer": 2,
+      "rationale": "Hair restraints prevent shedding into food; jewellery and loose items are hazards."
+    },
+    {
+      "id": "final_q9",
+      "type": "single_choice",
+      "stem": "How many major allergens must be declared in the UK?",
+      "options": ["8", "12", "14", "16"],
+      "answer": 2,
+      "rationale": "UK law requires declaration of 14 specified allergens."
+    },
+    {
+      "id": "final_q10",
+      "type": "single_choice",
+      "stem": "A customer asks about allergens. What should you do?",
+      "options": [
+        "Guess based on memory",
+        "Check the up-to-date allergen matrix and labels",
+        "Say all dishes may contain all allergens",
+        "Refuse service"
+      ],
+      "answer": 1,
+      "rationale": "Always verify allergen information using the latest matrix or recipe specification."
+    },
+    {
+      "id": "final_q11",
+      "type": "single_choice",
+      "stem": "What is the second stage in a two-stage clean?",
+      "options": [
+        "Detergent clean and rinse",
+        "Apply disinfectant and leave for contact time",
+        "Dry with reusable cloth",
+        "Air dry only"
+      ],
+      "answer": 1,
+      "rationale": "Stage two is to disinfect the surface and allow the chemical to stay wet for the full contact time."
+    },
+    {
+      "id": "final_q12",
+      "type": "single_choice",
+      "stem": "Which is good bin practice?",
+      "options": [
+        "Leave lids open to vent",
+        "Use liners and close lids",
+        "Store bins next to ready-to-eat food",
+        "Empty only at end of day"
+      ],
+      "answer": 1,
+      "rationale": "Keeping bins lined and closed controls odours and pests."
+    },
+    {
+      "id": "final_q13",
+      "type": "single_choice",
+      "stem": "HACCP stands for:",
+      "options": [
+        "Hazard Analysis and Critical Control Points",
+        "Health and Catering Cleaning Protocol",
+        "Hazard Awareness and Cooking Plan",
+        "Handling and Cooking Control Points"
+      ],
+      "answer": 0,
+      "rationale": "HACCP is the internationally recognised Hazard Analysis and Critical Control Points system."
+    },
+    {
+      "id": "final_q14",
+      "type": "single_choice",
+      "stem": "Due diligence means:",
+      "options": [
+        "Waiting for EHO advice",
+        "Taking reasonable precautions and keeping records",
+        "Only training managers",
+        "Keeping receipts only"
+      ],
+      "answer": 1,
+      "rationale": "Due diligence means taking all reasonable precautions and recording evidence."
+    },
+    {
+      "id": "final_q15",
+      "type": "single_choice",
+      "stem": "Traceability requires you to know:",
+      "options": [
+        "Only supplier phone numbers",
+        "Where food came from and where it goes",
+        "Only the freezer temperature",
+        "Only the delivery driver name"
+      ],
+      "answer": 1,
+      "rationale": "Traceability tracks food one step back to suppliers and one step forward to customers."
+    }
+  ]
+}

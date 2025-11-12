@@ -1,0 +1,23 @@
+{
+  "id": "m4_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "reorder",
+    "steps": [
+      "Wet hands",
+      "Apply soap",
+      "Rub palms and backs",
+      "Clean thumbs and fingertips",
+      "Rinse",
+      "Dry with paper towels"
+    ]
+  },
+  "title": "Reorder the handwash steps",
+  "text": "Drag to set the correct sequence.",
+  "media": "media/handwashing_steps.svg",
+  "feedback": {
+    "correct": "Correct sequence.",
+    "incorrect": "Try again."
+  },
+  "duration_sec": 120
+}

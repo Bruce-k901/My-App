@@ -1,0 +1,30 @@
+{
+  "id": "onboarding",
+  "type": "onboarding",
+  "title": "Welcome to Level 2 Food Hygiene",
+  "text": "Confirm your details to begin. Your name will appear on your certificate.",
+  "fields": [
+    {
+      "key": "full_name",
+      "label": "Full name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "position",
+      "label": "Position",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "home_site",
+      "label": "Home site",
+      "type": "text",
+      "required": true
+    }
+  ],
+  "cta": {
+    "label": "Start course",
+    "next": "m1_p1"
+  }
+}

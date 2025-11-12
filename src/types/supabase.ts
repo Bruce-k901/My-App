@@ -613,6 +613,7 @@ export type Database = {
           id: string
           library_id: string | null
           name: string
+          notes: string | null
         }
         Insert: {
           category: Database["public"]["Enums"]["template_category"]
@@ -623,6 +624,7 @@ export type Database = {
           id?: string
           library_id?: string | null
           name: string
+          notes?: string | null
         }
         Update: {
           category?: Database["public"]["Enums"]["template_category"]
@@ -633,6 +635,7 @@ export type Database = {
           id?: string
           library_id?: string | null
           name?: string
+          notes?: string | null
         }
         Relationships: [
           {
@@ -1701,45 +1704,170 @@ export type Database = {
       }
       incidents: {
         Row: {
-          action_taken: string | null
-          description: string
+          company_id: string
+          site_id: string | null
           id: string
+          title: string
+          description: string
+          incident_type: string
+          severity: string
+          location: string | null
           incident_date: string
-          report_url: string | null
-          site_id: string
-          user_id: string | null
+          reported_date: string
+          reported_by: string | null
+          casualties: Json | null
+          witnesses: Json | null
+          emergency_services_called: boolean | null
+          emergency_services_type: string | null
+          first_aid_provided: boolean | null
+          scene_preserved: boolean | null
+          riddor_reportable: boolean | null
+          riddor_reported: boolean | null
+          riddor_reported_date: string | null
+          riddor_reference: string | null
+          riddor_category: string | null
+          riddor_reason: string | null
+          riddor_due_date: string | null
+          riddor_notes: string | null
+          riddor_notified_at: string | null
+          lost_time_days: number | null
+          hospitalisation: boolean | null
+          public_involved: boolean | null
+          reportable_disease: boolean | null
+          environmental_release: boolean | null
+          photos: string[] | null
+          documents: string[] | null
+          immediate_actions_taken: string | null
+          follow_up_tasks: Json | null
+          status: string
+          investigation_notes: string | null
+          root_cause: string | null
+          corrective_actions: string | null
+          created_at: string
+          updated_at: string
+          source_task_id: string | null
+          source_template_id: string | null
+          export_url: string | null
         }
         Insert: {
-          action_taken?: string | null
-          description: string
+          company_id: string
+          site_id?: string | null
           id?: string
+          title: string
+          description: string
+          incident_type: string
+          severity: string
+          location?: string | null
           incident_date?: string
-          report_url?: string | null
-          site_id: string
-          user_id?: string | null
+          reported_date?: string
+          reported_by?: string | null
+          casualties?: Json | null
+          witnesses?: Json | null
+          emergency_services_called?: boolean | null
+          emergency_services_type?: string | null
+          first_aid_provided?: boolean | null
+          scene_preserved?: boolean | null
+          riddor_reportable?: boolean | null
+          riddor_reported?: boolean | null
+          riddor_reported_date?: string | null
+          riddor_reference?: string | null
+          riddor_category?: string | null
+          riddor_reason?: string | null
+          riddor_due_date?: string | null
+          riddor_notes?: string | null
+          riddor_notified_at?: string | null
+          lost_time_days?: number | null
+          hospitalisation?: boolean | null
+          public_involved?: boolean | null
+          reportable_disease?: boolean | null
+          environmental_release?: boolean | null
+          photos?: string[] | null
+          documents?: string[] | null
+          immediate_actions_taken?: string | null
+          follow_up_tasks?: Json | null
+          status?: string
+          investigation_notes?: string | null
+          root_cause?: string | null
+          corrective_actions?: string | null
+          created_at?: string
+          updated_at?: string
+          source_task_id?: string | null
+          source_template_id?: string | null
+          export_url?: string | null
         }
         Update: {
-          action_taken?: string | null
-          description?: string
+          company_id?: string
+          site_id?: string | null
           id?: string
+          title?: string
+          description?: string
+          incident_type?: string
+          severity?: string
+          location?: string | null
           incident_date?: string
-          report_url?: string | null
-          site_id?: string
-          user_id?: string | null
+          reported_date?: string
+          reported_by?: string | null
+          casualties?: Json | null
+          witnesses?: Json | null
+          emergency_services_called?: boolean | null
+          emergency_services_type?: string | null
+          first_aid_provided?: boolean | null
+          scene_preserved?: boolean | null
+          riddor_reportable?: boolean | null
+          riddor_reported?: boolean | null
+          riddor_reported_date?: string | null
+          riddor_reference?: string | null
+          riddor_category?: string | null
+          riddor_reason?: string | null
+          riddor_due_date?: string | null
+          riddor_notes?: string | null
+          riddor_notified_at?: string | null
+          lost_time_days?: number | null
+          hospitalisation?: boolean | null
+          public_involved?: boolean | null
+          reportable_disease?: boolean | null
+          environmental_release?: boolean | null
+          photos?: string[] | null
+          documents?: string[] | null
+          immediate_actions_taken?: string | null
+          follow_up_tasks?: Json | null
+          status?: string
+          investigation_notes?: string | null
+          root_cause?: string | null
+          corrective_actions?: string | null
+          created_at?: string
+          updated_at?: string
+          source_task_id?: string | null
+          source_template_id?: string | null
+          export_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "incidents_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "incidents_site_id_fkey"
+            columns: ["site_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "sites"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "incidents_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "incidents_company_id_fkey"
+            columns: ["company_id"]
             isOneToOne: false
-            referencedRelation: "v_user_scope"
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_source_task_id_fkey"
+            columns: ["source_task_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_source_template_id_fkey"
+            columns: ["source_template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -3122,6 +3250,7 @@ export type Database = {
           id: string
           name: string | null
           site_id: string | null
+          notes: string | null
         }
         Insert: {
           active?: boolean | null
@@ -3131,6 +3260,7 @@ export type Database = {
           id?: string
           name?: string | null
           site_id?: string | null
+          notes?: string | null
         }
         Update: {
           active?: boolean | null
@@ -3140,6 +3270,7 @@ export type Database = {
           id?: string
           name?: string | null
           site_id?: string | null
+          notes?: string | null
         }
         Relationships: [
           {
@@ -4368,6 +4499,7 @@ export type Database = {
           title: string
           updated_at: string | null
           weight: number | null
+          notes: string | null
         }
         Insert: {
           active?: boolean
@@ -4386,6 +4518,7 @@ export type Database = {
           title: string
           updated_at?: string | null
           weight?: number | null
+          notes?: string | null
         }
         Update: {
           active?: boolean
@@ -4404,6 +4537,7 @@ export type Database = {
           title?: string
           updated_at?: string | null
           weight?: number | null
+          notes?: string | null
         }
         Relationships: []
       }
@@ -4427,6 +4561,7 @@ export type Database = {
           title: string
           updated_at: string
           weight: number | null
+          template_notes: string | null
         }
         Insert: {
           actor_staff_id?: string | null
@@ -4447,6 +4582,7 @@ export type Database = {
           title: string
           updated_at?: string
           weight?: number | null
+          template_notes?: string | null
         }
         Update: {
           actor_staff_id?: string | null
@@ -4467,6 +4603,7 @@ export type Database = {
           title?: string
           updated_at?: string
           weight?: number | null
+          template_notes?: string | null
         }
         Relationships: [
           {
@@ -4567,52 +4704,48 @@ export type Database = {
       }
       temperature_logs: {
         Row: {
-          asset_id: string | null
-          company_id: string | null
-          day_part: string | null
           id: string
-          notes: string | null
-          reading: number
-          recorded_at: string | null
-          recorded_by: string | null
+          company_id: string
           site_id: string | null
-          status: string | null
+          asset_id: string | null
+          reading: number
           unit: string | null
+          recorded_at: string
+          recorded_by: string | null
+          status: string | null
+          source: string | null
+          meta: Json | null
+          created_at: string
         }
         Insert: {
-          asset_id?: string | null
-          company_id?: string | null
-          day_part?: string | null
           id?: string
-          notes?: string | null
-          reading: number
-          recorded_at?: string | null
-          recorded_by?: string | null
+          company_id: string
           site_id?: string | null
-          status?: string | null
+          asset_id?: string | null
+          reading: number
           unit?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          status?: string | null
+          source?: string | null
+          meta?: Json | null
+          created_at?: string
         }
         Update: {
-          asset_id?: string | null
-          company_id?: string | null
-          day_part?: string | null
           id?: string
-          notes?: string | null
-          reading?: number
-          recorded_at?: string | null
-          recorded_by?: string | null
+          company_id?: string
           site_id?: string | null
-          status?: string | null
+          asset_id?: string | null
+          reading?: number
           unit?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          status?: string | null
+          source?: string | null
+          meta?: Json | null
+          created_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "temperature_logs_asset_id_fkey"
-            columns: ["asset_id"]
-            isOneToOne: false
-            referencedRelation: "assets_redundant"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "temperature_logs_company_id_fkey"
             columns: ["company_id"]
@@ -4621,46 +4754,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "temperature_logs_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temperature_logs_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "temperature_logs_recorded_by_fkey"
             columns: ["recorded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "temperature_logs_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_scope"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "temperature_logs_site_id_fkey"
-            columns: ["site_id"]
-            isOneToOne: false
-            referencedRelation: "ho_site_compliance"
-            referencedColumns: ["site_id"]
-          },
-          {
-            foreignKeyName: "temperature_logs_site_id_fkey"
-            columns: ["site_id"]
-            isOneToOne: false
-            referencedRelation: "site_compliance"
-            referencedColumns: ["site_id"]
-          },
-          {
-            foreignKeyName: "temperature_logs_site_id_fkey"
-            columns: ["site_id"]
-            isOneToOne: false
-            referencedRelation: "sites_redundant"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "temperature_logs_site_id_fkey"
-            columns: ["site_id"]
-            isOneToOne: false
-            referencedRelation: "v_temp_compliance"
-            referencedColumns: ["site_id"]
           },
         ]
       }
@@ -4681,6 +4793,83 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      training_bookings: {
+        Row: {
+          company_id: string
+          course: string
+          created_at: string
+          created_by: string | null
+          id: string
+          level: string | null
+          notes: string | null
+          provider: string | null
+          scheduled_date: string | null
+          site_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          course: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: string | null
+          notes?: string | null
+          provider?: string | null
+          scheduled_date?: string | null
+          site_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          course?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: string | null
+          notes?: string | null
+          provider?: string | null
+          scheduled_date?: string | null
+          site_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_bookings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_bookings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_bookings_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       training_records: {
         Row: {
@@ -4871,6 +5060,290 @@ export type Database = {
           site_id?: string
         }
         Relationships: []
+      }
+      temperature_breach_actions: {
+        Row: {
+          id: string
+          company_id: string
+          site_id: string
+          temperature_log_id: string
+          action_type: string
+          status: string
+          due_at: string | null
+          completed_at: string | null
+          assigned_to: string | null
+          notes: string | null
+          metadata: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          site_id: string
+          temperature_log_id: string
+          action_type: string
+          status?: string
+          due_at?: string | null
+          completed_at?: string | null
+          assigned_to?: string | null
+          notes?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          site_id?: string
+          temperature_log_id?: string
+          action_type?: string
+          status?: string
+          due_at?: string | null
+          completed_at?: string | null
+          assigned_to?: string | null
+          notes?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "temperature_breach_actions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temperature_breach_actions_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temperature_breach_actions_temperature_log_id_fkey"
+            columns: ["temperature_log_id"]
+            isOneToOne: false
+            referencedRelation: "temperature_logs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temperature_breach_actions_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_tasks: {
+        Row: {
+          assigned_to_role: string | null
+          assigned_to_user_id: string | null
+          company_id: string
+          completed_at: string | null
+          completed_by: string | null
+          completion_notes: string | null
+          custom_instructions: string | null
+          custom_name: string | null
+          daypart: string | null
+          due_date: string
+          due_time: string | null
+          escalated: boolean | null
+          escalated_to: string | null
+          escalation_reason: string | null
+          expires_at: string | null
+          flag_reason: string | null
+          flagged: boolean | null
+          generated_at: string | null
+          id: string
+          priority: string | null
+          site_id: string | null
+          status: string | null
+          task_data: Json | null
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to_role?: string | null
+          assigned_to_user_id?: string | null
+          company_id: string
+          completed_at?: string | null
+          completed_by?: string | null
+          completion_notes?: string | null
+          custom_instructions?: string | null
+          custom_name?: string | null
+          daypart?: string | null
+          due_date: string
+          due_time?: string | null
+          escalated?: boolean | null
+          escalated_to?: string | null
+          escalation_reason?: string | null
+          expires_at?: string | null
+          flag_reason?: string | null
+          flagged?: boolean | null
+          generated_at?: string | null
+          id?: string
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          task_data?: Json | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to_role?: string | null
+          assigned_to_user_id?: string | null
+          company_id?: string
+          completed_at?: string | null
+          completed_by?: string | null
+          completion_notes?: string | null
+          custom_instructions?: string | null
+          custom_name?: string | null
+          daypart?: string | null
+          due_date?: string
+          due_time?: string | null
+          escalated?: boolean | null
+          escalated_to?: string | null
+          escalation_reason?: string | null
+          expires_at?: string | null
+          flag_reason?: string | null
+          flagged?: boolean | null
+          generated_at?: string | null
+          id?: string
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          task_data?: Json | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_tasks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tasks_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tasks_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tasks_assigned_to_user_id_fkey"
+            columns: ["assigned_to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_completion_records: {
+        Row: {
+          id: string
+          task_id: string
+          template_id: string | null
+          company_id: string
+          site_id: string | null
+          completed_by: string | null
+          completed_at: string
+          duration_seconds: number | null
+          completion_data: Json | null
+          evidence_attachments: Json | null
+          flagged: boolean | null
+          flag_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          template_id?: string | null
+          company_id: string
+          site_id?: string | null
+          completed_by?: string | null
+          completed_at?: string
+          duration_seconds?: number | null
+          completion_data?: Json | null
+          evidence_attachments?: Json | null
+          flagged?: boolean | null
+          flag_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          template_id?: string | null
+          company_id?: string
+          site_id?: string | null
+          completed_by?: string | null
+          completed_at?: string
+          duration_seconds?: number | null
+          completion_data?: Json | null
+          evidence_attachments?: Json | null
+          flagged?: boolean | null
+          flag_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_completion_records_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completion_records_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completion_records_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completion_records_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completion_records_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -5135,6 +5608,93 @@ export type Database = {
           site_id: string | null
           site_name: string | null
           upcoming_tasks: number | null
+        }
+        Relationships: []
+      }
+      site_compliance_score: {
+        Row: {
+          breakdown: Json
+          created_at: string
+          id: string
+          missed_daily_checklists: number
+          open_critical_incidents: number
+          overdue_corrective_actions: number
+          score: number
+          score_date: string
+          site_id: string
+          temperature_breaches_last_7d: number
+          tenant_id: string
+        }
+        Insert: {
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          missed_daily_checklists?: number
+          open_critical_incidents?: number
+          overdue_corrective_actions?: number
+          score: number
+          score_date: string
+          site_id: string
+          temperature_breaches_last_7d?: number
+          tenant_id: string
+        }
+        Update: {
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          missed_daily_checklists?: number
+          open_critical_incidents?: number
+          overdue_corrective_actions?: number
+          score?: number
+          score_date?: string
+          site_id?: string
+          temperature_breaches_last_7d?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_compliance_score_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_compliance_score_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_compliance_score_latest: {
+        Row: {
+          breakdown: Json | null
+          created_at: string | null
+          id: string | null
+          missed_daily_checklists: number | null
+          open_critical_incidents: number | null
+          overdue_corrective_actions: number | null
+          score: number | null
+          score_date: string | null
+          site_id: string | null
+          temperature_breaches_last_7d: number | null
+          tenant_id: string | null
+        }
+        Relationships: []
+      }
+      tenant_compliance_overview: {
+        Row: {
+          average_score: number | null
+          first_score_date: string | null
+          highest_score: number | null
+          latest_score_date: string | null
+          lowest_score: number | null
+          open_critical_incidents_today: number | null
+          overdue_corrective_actions_today: number | null
+          site_count: number | null
+          tenant_id: string | null
         }
         Relationships: []
       }

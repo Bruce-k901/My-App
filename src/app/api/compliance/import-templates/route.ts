@@ -4,11 +4,31 @@ import { getAllTemplates, SFBB_TEMPERATURE_FIELDS } from '@/data/compliance-temp
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.warn(
+        "[import-templates] Skipping import because Supabase environment variables are missing"
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          imported: 0,
+          skipped: 0,
+          details: {
+            imported: [],
+            skipped: [],
+          },
+          message: "Supabase credentials are not configured.",
+        },
+        { status: 200 }
+      );
+    }
+
     // Use service role key for admin operations
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
     
     // Get company_id from request body (null = global templates)
     const { company_id } = await request.json();
@@ -52,12 +72,36 @@ export async function POST(request: NextRequest) {
         ...templateData
       } = template;
 
+      const workflowEnvelope =
+        workflowType || workflowConfig
+          ? {
+              type: workflowType ?? null,
+              config: workflowConfig ?? null,
+            }
+          : null;
+
+      const normalizedRecurrence =
+        templateData.recurrence_pattern && typeof templateData.recurrence_pattern === 'object'
+          ? { ...templateData.recurrence_pattern }
+          : templateData.recurrence_pattern
+          ? templateData.recurrence_pattern
+          : {};
+
+      const recurrenceWithWorkflow =
+        workflowEnvelope && typeof normalizedRecurrence === 'object'
+          ? { ...normalizedRecurrence, __workflow: workflowEnvelope }
+          : normalizedRecurrence;
+
       // Insert template with company_id
       const { data: inserted, error: insertError } = await supabase
         .from('task_templates')
         .insert({
           ...templateData,
-          company_id: company_id,
+          company_id,
+          tags: Array.from(
+            new Set([...(Array.isArray(templateData.tags) ? templateData.tags : []), 'compliance_module'])
+          ),
+          recurrence_pattern: recurrenceWithWorkflow,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -80,10 +124,6 @@ export async function POST(request: NextRequest) {
             field_type: field.field_type,
             label: field.label,
             required: field.required,
-            min_value: field.min_value,
-            max_value: field.max_value,
-            warn_threshold: field.warn_threshold,
-            fail_threshold: field.fail_threshold,
             field_order: field.field_order,
             help_text: field.help_text,
             options: field.options || null,

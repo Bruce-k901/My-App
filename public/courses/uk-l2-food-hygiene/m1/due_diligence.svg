@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" role="img" aria-labelledby="title">
+  <title>Due diligence records placeholder</title>
+  <rect width="400" height="200" rx="24" fill="#0f172a" />
+  <rect x="60" y="50" width="90" height="100" rx="12" fill="#38bdf8" opacity="0.35" />
+  <rect x="160" y="40" width="110" height="120" rx="16" fill="#ec4899" opacity="0.3" />
+  <rect x="290" y="60" width="60" height="90" rx="10" fill="#22c55e" opacity="0.4" />
+  <text x="200" y="170" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" fill="#e2e8f0">
+    Replace with branded illustration
+  </text>
+</svg>

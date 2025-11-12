@@ -1,0 +1,82 @@
+[
+  {
+    "id": "m3_p1",
+    "type": "content",
+    "title": "Why cleaning matters",
+    "body": "Cleaning removes visible dirt, grease and food residues. Disinfection kills bacteria and viruses that survive cleaning. Skipping either step lets harmful microorganisms spread to food, equipment or hands.",
+    "media": "/lottie/cleaning_cycle.json",
+    "outcomes": ["L2-3.1"]
+  },
+  {
+    "id": "m3_p2",
+    "type": "content",
+    "title": "The cleaning cycle",
+    "body": "A correct clean follows four steps: Clean, Rinse, Disinfect, Air Dry. Never skip rinsing — disinfectant won’t work on dirty surfaces, and wiping dry can re-contaminate them.",
+    "media": "/lottie/cleaning_cycle.json",
+    "outcomes": ["L2-3.1", "L2-3.2"]
+  },
+  {
+    "id": "m3_p3",
+    "type": "content",
+    "title": "Contact times",
+    "body": "Every disinfectant has a required contact time — often 30 seconds. Spraying and wiping straight away means bacteria survive. Read the product label and let it sit for the full contact time.",
+    "outcomes": ["L2-3.2"]
+  },
+  {
+    "id": "m3_p4",
+    "type": "lottie",
+    "title": "Cross-contamination in action",
+    "caption": "Particles moving from raw to ready foods. Always separate tools, boards and storage areas.",
+    "src": "/lottie/cross_contact.json",
+    "loop": false,
+    "outcomes": ["L2-3.3"]
+  },
+  {
+    "id": "m3_p5",
+    "type": "hotspot",
+    "prompt": "Click the areas where bacteria might hide.",
+    "image": "/courses/uk-l2-food-hygiene/m3/hotspot_kitchen.png",
+    "spots": [
+      { "x": 0.22, "y": 0.55, "label": "Cloth left on surface" },
+      { "x": 0.42, "y": 0.75, "label": "Chopping board grooves" },
+      { "x": 0.68, "y": 0.35, "label": "Fridge handle" },
+      { "x": 0.58, "y": 0.52, "label": "Sink tap" }
+    ],
+    "outcomes": ["L2-3.3", "L2-3.4"]
+  },
+  {
+    "id": "m3_p6",
+    "type": "branch",
+    "title": "Shortcut cleaning",
+    "stem": "After a busy lunch service you see a colleague spray and immediately wipe a food counter. What should you do?",
+    "options": [
+      {
+        "label": "Say nothing — it looks clean.",
+        "result": "Wrong. Bacteria remain because the disinfectant had no time to work."
+      },
+      {
+        "label": "Remind them to wait the full contact time.",
+        "result": "Correct. You’ve prevented a cross-contamination risk."
+      }
+    ],
+    "correctIndex": 1,
+    "outcomes": ["L2-3.4"]
+  },
+  {
+    "id": "m3_p7",
+    "type": "recap",
+    "bullets": [
+      "Clean → Rinse → Disinfect → Air dry.",
+      "Follow contact times on cleaning products.",
+      "Use colour-coded tools to separate raw and ready areas.",
+      "Let surfaces dry completely before food prep."
+    ],
+    "outcomes": ["L2-3.5"]
+  },
+  {
+    "id": "m3_p8",
+    "type": "quiz_ref",
+    "pool": "m3",
+    "count": 6
+  }
+]

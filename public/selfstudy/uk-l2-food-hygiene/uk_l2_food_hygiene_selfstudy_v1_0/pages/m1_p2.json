@@ -1,0 +1,20 @@
+{
+  "id": "m1_p2",
+  "type": "interaction",
+  "interaction": {
+    "type": "drag_drop",
+    "pairs": [
+      ["Food handler", "Follow procedures and report issues"],
+      ["Food business operator", "Provide procedures, training, supervision"],
+      ["Environmental health", "Inspect and enforce"]
+    ]
+  },
+  "title": "Who does what",
+  "text": "Match each role to the responsibility.",
+  "media": "media/roles.svg",
+  "feedback": {
+    "correct": "Correct.",
+    "incorrect": "Check again."
+  },
+  "duration_sec": 120
+}
