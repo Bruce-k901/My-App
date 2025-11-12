@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
-import { EmergencyIncidentModal } from '@/components/incidents/EmergencyIncidentModal';
+import { CustomerComplaintModal } from '@/components/incidents/CustomerComplaintModal';
 import Select from '@/components/ui/Select';
 
 interface CustomerComplaint {
@@ -367,8 +367,8 @@ export default function CustomerComplaintsPage() {
         )}
       </div>
 
-      {/* Emergency Incident Modal */}
-      <EmergencyIncidentModal
+      {/* Customer Complaint Modal */}
+      <CustomerComplaintModal
         isOpen={isIncidentModalOpen}
         onClose={() => {
           setIsIncidentModalOpen(false);

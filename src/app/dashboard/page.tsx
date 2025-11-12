@@ -1,7 +1,6 @@
 "use client";
 
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
-import QuickActions from "@/components/dashboard/QuickActions";
 import ShiftHandoverNotes from "@/components/dashboard/ShiftHandoverNotes";
 import AlertsFeed from "@/components/dashboard/AlertsFeed";
 import EmergencyBreakdowns from "@/components/dashboard/EmergencyBreakdowns";
@@ -19,7 +18,6 @@ export default function DashboardHomePage() {
     <div className="flex flex-col w-full items-center">
       <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white">
         <WelcomeHeader />
-        <QuickActions />
         {/* Compliance Metrics Widget - Prominent placement */}
         <ComplianceMetricsWidget />
         

@@ -37,13 +37,7 @@ export default function WelcomeHeader() {
 
   return (
     <div className="text-white">
-      {/* Centered Clock */}
-      <div className="w-full flex justify-center mb-2">
-        <div className="font-mono text-2xl tracking-widest text-pink-400 text-center">
-          {format(currentTime, "HH:mm:ss")}
-        </div>
-      </div>
-      {/* Welcome + Date below */}
+      {/* Welcome + Date */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-semibold">
