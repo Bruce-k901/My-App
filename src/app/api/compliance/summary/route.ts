@@ -14,7 +14,50 @@ function getSupabaseAdmin() {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = getSupabaseAdmin();
+    let supabase;
+    try {
+      supabase = getSupabaseAdmin();
+    } catch (initError: any) {
+      console.error("Failed to initialize Supabase admin client:", initError);
+      return NextResponse.json(
+        { 
+          error: "Database configuration error",
+          details: initError?.message || "Failed to initialize database connection",
+          tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
+          range: {
+            from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            to: new Date().toISOString().split("T")[0],
+            days: 30,
+          },
+          tenant: {
+            overview: null,
+            sites: [],
+          },
+          site: null,
+        },
+        { status: 500 },
+      );
+    }
+
+    if (!supabase) {
+      return NextResponse.json(
+        { 
+          error: "Database client not initialized",
+          tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
+          range: {
+            from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            to: new Date().toISOString().split("T")[0],
+            days: 30,
+          },
+          tenant: {
+            overview: null,
+            sites: [],
+          },
+          site: null,
+        },
+        { status: 500 },
+      );
+    }
 
     const tenantId = request.nextUrl.searchParams.get("tenant_id");
     if (!tenantId) {
@@ -60,13 +103,37 @@ export async function GET(request: NextRequest) {
         : await historyQuery;
       
       if (historyError) {
-        console.warn("Error fetching compliance history:", historyError);
+        console.error("Error fetching compliance history:", {
+          error: historyError,
+          message: historyError.message,
+          details: historyError.details,
+          hint: historyError.hint,
+          code: historyError.code,
+          tenantId,
+          siteId,
+          fromDateIso,
+          toDateIso
+        });
+        
+        // Check if it's a "relation does not exist" error (table/view missing)
+        if (historyError.code === '42P01' || historyError.message?.includes('does not exist')) {
+          console.warn("Compliance score table may not exist - returning empty history");
+          history = [];
+        }
         // Continue with empty history instead of failing
       } else {
         history = historyData ?? [];
       }
-    } catch (err) {
-      console.warn("Exception fetching compliance history:", err);
+    } catch (err: any) {
+      console.error("Exception fetching compliance history:", {
+        error: err,
+        message: err?.message,
+        stack: err?.stack,
+        tenantId,
+        siteId
+      });
+      // Ensure we have an empty array on exception
+      history = [];
     }
 
     try {
@@ -81,31 +148,49 @@ export async function GET(request: NextRequest) {
         .order("score", { ascending: true });
       
       if (latestSitesError) {
-        console.warn("Error fetching latest compliance scores:", latestSitesError);
-        // Fallback: try without join
-        const { data: fallbackData } = await supabase
-          .from("site_compliance_score_latest")
-          .select("*")
-          .eq("tenant_id", tenantId)
-          .order("score", { ascending: true });
+        console.error("Error fetching latest compliance scores:", {
+          error: latestSitesError,
+          message: latestSitesError.message,
+          details: latestSitesError.details,
+          hint: latestSitesError.hint,
+          code: latestSitesError.code,
+        });
         
-        latestSites = fallbackData ?? [];
-        
-        // Fetch site names separately
-        if (latestSites.length > 0) {
-          const siteIds = latestSites.map((s: any) => s.site_id).filter(Boolean);
-          if (siteIds.length > 0) {
-            const { data: sitesData } = await supabase
-              .from("sites")
-              .select("id, name")
-              .in("id", siteIds);
+        // Check if it's a "relation does not exist" error (view/table missing)
+        if (latestSitesError.code === '42P01' || latestSitesError.message?.includes('does not exist')) {
+          console.warn("Compliance views may not exist - returning empty data");
+          latestSites = [];
+        } else {
+          // Fallback: try without join
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from("site_compliance_score_latest")
+            .select("*")
+            .eq("tenant_id", tenantId)
+            .order("score", { ascending: true });
+          
+          if (fallbackError) {
+            console.error("Fallback query also failed:", fallbackError);
+            latestSites = [];
+          } else {
+            latestSites = fallbackData ?? [];
             
-            if (sitesData) {
-              const sitesMap = new Map(sitesData.map((s: any) => [s.id, s.name]));
-              latestSites = latestSites.map((score: any) => ({
-                ...score,
-                site_name: sitesMap.get(score.site_id) || null
-              }));
+            // Fetch site names separately
+            if (latestSites.length > 0) {
+              const siteIds = latestSites.map((s: any) => s.site_id).filter(Boolean);
+              if (siteIds.length > 0) {
+                const { data: sitesData } = await supabase
+                  .from("sites")
+                  .select("id, name")
+                  .in("id", siteIds);
+                
+                if (sitesData) {
+                  const sitesMap = new Map(sitesData.map((s: any) => [s.id, s.name]));
+                  latestSites = latestSites.map((score: any) => ({
+                    ...score,
+                    site_name: sitesMap.get(score.site_id) || null
+                  }));
+                }
+              }
             }
           }
         }
@@ -116,8 +201,14 @@ export async function GET(request: NextRequest) {
           site_name: item.site?.name || null
         }));
       }
-    } catch (err) {
-      console.warn("Exception fetching latest compliance scores:", err);
+    } catch (err: any) {
+      console.error("Exception fetching latest compliance scores:", {
+        error: err,
+        message: err?.message,
+        stack: err?.stack,
+      });
+      // Ensure we have an empty array on exception
+      latestSites = [];
     }
 
     if (siteId && latestSites.length > 0) {
@@ -147,13 +238,31 @@ export async function GET(request: NextRequest) {
         .maybeSingle();
 
       if (tenantOverviewError) {
-        console.warn("Error fetching tenant overview:", tenantOverviewError);
+        console.error("Error fetching tenant overview:", {
+          error: tenantOverviewError,
+          message: tenantOverviewError.message,
+          details: tenantOverviewError.details,
+          hint: tenantOverviewError.hint,
+          code: tenantOverviewError.code,
+        });
+        
+        // Check if it's a "relation does not exist" error (view missing)
+        if (tenantOverviewError.code === '42P01' || tenantOverviewError.message?.includes('does not exist')) {
+          console.warn("Tenant compliance overview view may not exist - returning null");
+          tenantOverview = null;
+        }
         // Continue with null overview instead of failing
       } else {
         tenantOverview = tenantOverviewData ?? null;
       }
-    } catch (err) {
-      console.warn("Exception fetching tenant overview:", err);
+    } catch (err: any) {
+      console.error("Exception fetching tenant overview:", {
+        error: err,
+        message: err?.message,
+        stack: err?.stack,
+      });
+      // Ensure we have null on exception
+      tenantOverview = null;
     }
 
     return NextResponse.json({
@@ -175,11 +284,25 @@ export async function GET(request: NextRequest) {
         }
         : null,
     });
-  } catch (error) {
-    console.error("Compliance summary error", error);
+  } catch (error: any) {
+    console.error("Compliance summary error", {
+      error,
+      message: error?.message,
+      stack: error?.stack,
+      details: error?.details,
+      hint: error?.hint,
+      code: error?.code,
+      tenant_id: request.nextUrl.searchParams.get("tenant_id"),
+      site_id: request.nextUrl.searchParams.get("site_id"),
+    });
+    // Return a more graceful error response
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorDetails = error?.details || error?.hint || error?.code || null;
+    
     return NextResponse.json(
       { 
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
+        details: errorDetails,
         tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
         range: {
           from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
