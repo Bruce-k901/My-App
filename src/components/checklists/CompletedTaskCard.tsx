@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { CheckCircle2, ChevronDown, ChevronUp, Clock, Calendar, Thermometer, Camera, FileText, CheckCircle, X, AlertTriangle, ExternalLink, Lightbulb } from 'lucide-react'
+import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -272,29 +273,84 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   const troubleshootingData = calloutReportData?.troubleshooting || completionData.troubleshooting || {}
   
   const calloutNotes = calloutReportData?.notes || calloutDetails.notes || completionData.notes || ''
-  
-  // Get photos from multiple sources (evidence_attachments, photos, callout photos)
-  const photoPaths = completionRecord?.evidence_attachments || 
-    completionData.photos || 
-    completionData.callout_photos || 
-    (isCalloutReport ? (completionData.photos || []) : []) || 
-    []
-  const passFailResult = completionData.pass_fail_result || completionData.passFailStatus || allData.passFailStatus
-  const notes = completionData.notes || allData.notes || calloutNotes || ''
-  
+const passFailResult = completionData.pass_fail_result || completionData.passFailStatus || allData.passFailStatus || null
+const notes = completionData.notes ?? allData.notes ?? calloutNotes ?? ''
+
+// 🔒 LOCKED: Evidence extraction (photos, attachments)
+const photoPaths = completionRecord?.evidence_attachments || 
+  completionData.photos ||
+  completionData.callout_photos ||
+  (isCalloutReport ? (completionData.photos || []) : []) ||
+  []
+
   // 🔒 LOCKED: Issue detection for color coding
-  // Tasks with issues are displayed with red borders, tasks without issues are green
-  // DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
-  const hasIssue = !!(
-    flagReason || 
-    task.flagged || 
-    calloutId || 
-    monitoringTaskId || 
-    tempAction || 
-    passFailResult === 'fail' ||
-    (temperatures.length > 0 && temperatures.some((t: any) => t.status === 'failed' || t.status === 'warning')) ||
-    isCalloutReport
+  const completedAtIso = completionRecord?.completed_at || task.completed_at || null
+  const dueDate = task.due_date
+  const dueTime = task.due_time || null
+  const computedOutsideWindow = completedAtIso && dueDate
+    ? isCompletedOutsideWindow(dueDate, dueTime, completedAtIso)
+    : false
+  const computedLate = completedAtIso && dueDate
+    ? isCompletedLate(dueDate, dueTime, completedAtIso)
+    : false
+  const normalizedFlagReason = (flagReason || '').toLowerCase()
+  const isLateCompletion = normalizedFlagReason === 'completed_late' || (!normalizedFlagReason && computedLate)
+  const isEarlyCompletion = normalizedFlagReason === 'completed_early' || (!normalizedFlagReason && computedOutsideWindow && !computedLate)
+  const hasTemperatureAlerts = Array.isArray(temperatures) && temperatures.some((t: any) => t.status === 'failed' || t.status === 'warning')
+  const hasIncompleteChecklist = checklistItems.some((item: any) =>
+    typeof item === 'object' ? item.completed === false : false
   )
+  const hasFailedYesNo = yesNoChecklistItems.some((item: any) => item.answer === 'no')
+  const hasNotesContent = typeof notes === 'string' && notes.trim().length > 0
+  const hasFollowUpIssue = Boolean(
+    (tempAction && ['monitor', 'callout'].includes(tempAction)) ||
+    monitoringTaskId ||
+    calloutId ||
+    passFailResult === 'fail' ||
+    isCalloutReport ||
+    hasTemperatureAlerts ||
+    hasIncompleteChecklist ||
+    hasFailedYesNo ||
+    (normalizedFlagReason && !['completed_late', 'completed_early'].includes(normalizedFlagReason)) ||
+    (task.flagged && !['completed_late', 'completed_early'].includes(normalizedFlagReason))
+  )
+  const hasIssue = hasNotesContent || hasFollowUpIssue
+  const statusVariant: 'green' | 'yellow' | 'red' = hasIssue
+    ? 'red'
+    : (isLateCompletion || isEarlyCompletion ? 'yellow' : 'green')
+  const statusLabel =
+    statusVariant === 'green'
+      ? 'Completed On Time'
+      : statusVariant === 'yellow'
+        ? (isLateCompletion ? 'Completed Late' : 'Completed Early')
+        : hasNotesContent
+          ? 'Completed with Notes'
+          : 'Follow-up Required'
+  const StatusIcon = statusVariant === 'green' ? CheckCircle2 : statusVariant === 'yellow' ? Clock : AlertTriangle
+  const variantStyles = {
+    green: {
+      cardBorder: 'border-green-500/20',
+      cardBg: 'bg-green-500/5',
+      headerHover: 'hover:bg-green-500/10',
+      badge: 'bg-green-500/10 text-green-400 border-green-500/20',
+      expanded: 'border-green-500/20 bg-green-500/5'
+    },
+    yellow: {
+      cardBorder: 'border-yellow-500/30',
+      cardBg: 'bg-yellow-500/5',
+      headerHover: 'hover:bg-yellow-500/10',
+      badge: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
+      expanded: 'border-yellow-500/20 bg-yellow-500/5'
+    },
+    red: {
+      cardBorder: 'border-red-500/30',
+      cardBg: 'bg-red-500/5',
+      headerHover: 'hover:bg-red-500/10',
+      badge: 'bg-red-500/10 text-red-400 border-red-500/20',
+      expanded: 'border-red-500/20 bg-red-500/5'
+    }
+  } as const
+  const variantStyle = variantStyles[statusVariant]
   
   // Convert photo paths to public URLs if needed
   const photoUrls = useMemo(() => {
@@ -320,18 +376,10 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   ).length
 
   // Color code based on whether there was an issue
-  const cardBorderColor = hasIssue 
-    ? 'border-red-500/30' 
-    : 'border-green-500/20'
-  const cardBgColor = hasIssue 
-    ? 'bg-red-500/5' 
-    : 'bg-green-500/5'
-  const headerHoverColor = hasIssue 
-    ? 'hover:bg-red-500/10' 
-    : 'hover:bg-green-500/10'
-  const statusBadgeColor = hasIssue
-    ? 'bg-red-500/10 text-red-400 border-red-500/20'
-    : 'bg-green-500/10 text-green-400 border-green-500/20'
+  const cardBorderColor = variantStyle.cardBorder
+  const cardBgColor = variantStyle.cardBg
+  const headerHoverColor = variantStyle.headerHover
+  const statusBadgeColor = variantStyle.badge
 
   const templateNote = task.template_notes || task.template?.notes || null
 
@@ -348,8 +396,8 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
               {task.custom_name || task.template?.name || 'Untitled Task'}
             </h3>
             <span className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${statusBadgeColor}`}>
-              <CheckCircle2 className="w-4 h-4" />
-              {hasIssue ? 'COMPLETED - ISSUE REPORTED' : 'COMPLETED'}
+              <StatusIcon className="w-4 h-4" />
+              {statusLabel.toUpperCase()}
             </span>
             {task.template?.category && (
               <span className="px-2 py-1 rounded-full text-xs font-medium border border-white/20 bg-white/5 text-white/70">
@@ -448,7 +496,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
 
       {/* Expandable Content - Read-Only View */}
       {isExpanded && (
-        <div className={`px-6 pb-6 border-t ${hasIssue ? 'border-red-500/20 bg-red-500/5' : 'border-green-500/20 bg-green-500/5'}`}>
+        <div className={`px-6 pb-6 border-t ${variantStyle.expanded}`}>
           <div className="pt-6 space-y-6">
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
             {temperatures.length > 0 && (

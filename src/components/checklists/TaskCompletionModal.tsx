@@ -1427,14 +1427,25 @@ export default function TaskCompletionModal({
     
     // Check for temperature warnings
     if (fieldName === 'temperature') {
+      // Only check if value is a valid number
+      const tempValue = value !== null && value !== undefined && value !== '' 
+        ? (typeof value === 'number' ? value : parseFloat(String(value)))
+        : null
+      
+      if (tempValue === null || isNaN(tempValue) || !isFinite(tempValue)) {
+        setShowWarning(false)
+        setOutOfRangeAssetId(null)
+        return
+      }
+      
       // Check against template's linked asset
       if (task.template?.asset_id) {
-        const isOutOfRange = checkTemperatureRange(value, task.template.asset_id)
+        const isOutOfRange = checkTemperatureRange(tempValue, task.template.asset_id)
         if (isOutOfRange) {
-        setShowWarning(true)
+          setShowWarning(true)
           setOutOfRangeAssetId(task.template.asset_id)
-      } else {
-        setShowWarning(false)
+        } else {
+          setShowWarning(false)
           setOutOfRangeAssetId(null)
         }
       }
@@ -2961,7 +2972,11 @@ export default function TaskCompletionModal({
             )}
             
             {/* Temperature Field - Show when template has temperature evidence */}
-            {task.template?.evidence_types?.includes('temperature') && (() => {
+            {(task.template?.evidence_types?.includes('temperature') ||
+              task.template?.slug === 'hot_holding_temperature_verification' ||
+              task.template?.slug === 'hot-holding-temps' ||
+              (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
+            ) && (() => {
               // Check for equipment select fields (legacy and new field names)
               // Note: asset_name can be both a select field AND a repeatable field name
               // We need to check if it's used as a select dropdown (has options) vs asset selection
@@ -2976,7 +2991,24 @@ export default function TaskCompletionModal({
                 f.field_type === 'number' && 
                 (f.field_name === 'temperature' || f.field_name?.toLowerCase().includes('temp'))
               )
-              const equipmentOptions = equipmentField?.options || []
+              const activeTemperatureField = temperatureField ?? {
+                field_name: 'temperature',
+                label: 'Temperature Reading',
+                field_label: 'Temperature Reading',
+                required: false,
+                min_value: null,
+                max_value: null,
+                help_text: null,
+                field_type: 'number'
+              }
+              const isHotHoldingTemplate = task.template?.slug === 'hot_holding_temperature_verification' ||
+                task.template?.slug === 'hot-holding-temps' ||
+                task.template?.repeatable_field_name === 'equipment_name' ||
+                task.template?.repeatable_field_name === 'hot_holding_unit' ||
+                (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
+              const equipmentOptions = (equipmentField?.options && Array.isArray(equipmentField.options)) 
+                ? equipmentField.options 
+                : []
               
               // Debug logging
               console.log('🌡️ Temperature field check:', {
@@ -3043,33 +3075,74 @@ export default function TaskCompletionModal({
                                 placeholder="°C"
                                 value={formData[`temp_${equipmentValue}`] || ''}
                                 onChange={(e) => {
-                                  const temp = parseFloat(e.target.value)
-                                  handleFieldChange(`temp_${equipmentValue}`, temp)
+                                  const tempRaw = e.target.value
+                                  const temp = tempRaw === '' || tempRaw === null || tempRaw === undefined 
+                                    ? null 
+                                    : parseFloat(tempRaw)
+                                  
+                                  // Only update if valid number or clearing the field
+                                  if (temp === null || (!isNaN(temp) && isFinite(temp))) {
+                                    handleFieldChange(`temp_${equipmentValue}`, temp)
+                                  }
+                                  
+                                  // Only check range if we have a valid temperature
+                                  if (temp === null || isNaN(temp) || !isFinite(temp)) {
+                                    // Clear out of range state if field is empty
+                                    setOutOfRangeAssets(prev => {
+                                      const newSet = new Set(prev)
+                                      newSet.delete(equipmentValue)
+                                      return newSet
+                                    })
+                                    return
+                                  }
                                   
                                   const assetId = equipmentValue
-                                  let isOutOfRange = checkTemperatureRange(temp, assetId)
                                   
-                                  if (!isOutOfRange) {
-                                    const tempField = temperatureField || templateFields.find((f: any) => 
-                                      f.field_type === 'number' && f.field_name === 'temperature'
-                                    )
+                                  // Check if this is a hot holding task - check this FIRST
+                                  const isHotHolding = equipmentField?.field_name === 'hot_holding_unit' || 
+                                    equipmentField?.field_name === 'equipment_name' ||
+                                    task.template?.repeatable_field_name === 'equipment_name' ||
+                                    task.template?.repeatable_field_name === 'hot_holding_unit' ||
+                                    task.template?.slug === 'hot_holding_temperature_verification' ||
+                                    task.template?.slug === 'hot-holding-temps' ||
+                                    (task.template?.name && task.template.name.toLowerCase().includes('hot holding')) ||
+                                    isHotHoldingTemplate
+                                  
+                                  console.log('🌡️ [MULTI-EQUIP HOT HOLDING CHECK]', {
+                                    equipmentFieldName: equipmentField?.field_name,
+                                    slug: task.template?.slug,
+                                    name: task.template?.name,
+                                    isHotHolding,
+                                    temp,
+                                    assetId
+                                  })
+                                  
+                                  let isOutOfRange = false
+                                  
+                                  if (isHotHolding) {
+                                    // For hot holding, always check 63°C threshold
+                                    if (temp < 63) {
+                                      console.log('✅ [MULTI-EQUIP HOT HOLDING] Setting out of range for temp:', temp)
+                                      isOutOfRange = true
+                                    }
+                                  } else {
+                                    // For non-hot-holding tasks, check asset range first
+                                    isOutOfRange = checkTemperatureRange(temp, assetId)
                                     
-                                    if (tempField) {
-                                      const minValue = tempField.min_value
-                                      const maxValue = tempField.max_value
+                                    // If not out of range from asset, check template field ranges
+                                    if (!isOutOfRange) {
+                                      const tempField = temperatureField ?? templateFields.find((f: any) => 
+                                        f.field_type === 'number' && f.field_name === 'temperature'
+                                      ) ?? activeTemperatureField
                                       
-                                      if (minValue !== null && temp < minValue) {
-                                        isOutOfRange = true
-                                      }
-                                      if (maxValue !== null && temp > maxValue) {
-                                        isOutOfRange = true
-                                      }
-                                      
-                                      // Check hot holding threshold (63°C minimum)
-                                      if (equipmentField?.field_name === 'hot_holding_unit' || 
-                                          equipmentField?.field_name === 'equipment_name' ||
-                                          task.template?.slug === 'hot_holding_temperature_verification') {
-                                        if (temp < 63) {
+                                      if (tempField) {
+                                        const minValue = tempField?.min_value ?? null
+                                        const maxValue = tempField?.max_value ?? null
+                                        
+                                        if (minValue !== null && temp < minValue) {
+                                          isOutOfRange = true
+                                        }
+                                        if (maxValue !== null && temp > maxValue) {
                                           isOutOfRange = true
                                         }
                                       }
@@ -3114,22 +3187,34 @@ export default function TaskCompletionModal({
                     </div>
                     
                     {/* Temperature Warnings - Show for each out of range asset independently */}
-                    {Array.from(outOfRangeAssets).map((assetId) => {
-                      const equipmentOption = equipmentOptions.find((opt: any) => {
-                        const optValue = opt.value || opt
-                        return optValue === assetId || optValue?.toString() === assetId?.toString()
-                      })
+                    {outOfRangeAssets && Array.from(outOfRangeAssets).map((assetId) => {
+                      const equipmentOption = (equipmentOptions && Array.isArray(equipmentOptions)) 
+                        ? equipmentOptions.find((opt: any) => {
+                            const optValue = opt.value || opt
+                            return optValue === assetId || optValue?.toString() === assetId?.toString()
+                          })
+                        : null
                       const optValue = equipmentOption?.value || equipmentOption
                       const optLabel = equipmentOption?.label || equipmentOption?.assetName || equipmentOption
                       const assetName = equipmentOption?.assetName || assetsMap.get(assetId)?.name || (typeof optLabel === 'string' ? optLabel : 'Equipment')
                       const nickname = equipmentOption?.nickname || ''
                       const displayName = nickname ? `${assetName} (${nickname})` : (typeof optLabel === 'string' ? optLabel : assetName)
                       const range = assetTempRanges.get(assetId)
-                      const tempValue = formData[`temp_${assetId}`] || formData.temperature
+                      const tempValueRaw = formData[`temp_${assetId}`] || formData.temperature
+                      // Convert to number and validate
+                      const tempValue = tempValueRaw !== null && tempValueRaw !== undefined && tempValueRaw !== '' 
+                        ? parseFloat(String(tempValueRaw)) 
+                        : null
                       const showActionOptionsForAsset = showActionOptions.get(assetId) || false
                       const selectedActionForAsset = selectedActions.get(assetId)
                       
+                      // If no temperature value, don't show warning
+                      if (tempValue === null || isNaN(tempValue)) {
+                        return null
+                      }
+                      
                       let isFailed = false
+                      let isWarning = false
                       let minThreshold = null
                       let maxThreshold = null
                       
@@ -3140,6 +3225,13 @@ export default function TaskCompletionModal({
                           (range.min !== null && tempValue < range.min - 2) ||
                           (range.max !== null && tempValue > range.max + 2)
                         )
+                        // Warning if within tolerance but still out of range
+                        if (!isFailed) {
+                          isWarning = (
+                            (range.min !== null && tempValue < range.min) ||
+                            (range.max !== null && tempValue > range.max)
+                          )
+                        }
                       } else {
                         // Check hot holding threshold
                         if (equipmentField?.field_name === 'hot_holding_unit' || 
@@ -3148,16 +3240,29 @@ export default function TaskCompletionModal({
                           minThreshold = 63
                           maxThreshold = null
                           isFailed = tempValue < 60 // Critical below 60°C
-                        } else if (temperatureField) {
-                          minThreshold = temperatureField.min_value
-                          maxThreshold = temperatureField.max_value
+                          // Warning if between 60-63°C (below minimum but not critical)
+                          isWarning = tempValue >= 60 && tempValue < 63
+                        } else if (activeTemperatureField) {
+                          minThreshold = activeTemperatureField.min_value
+                          maxThreshold = activeTemperatureField.max_value
                           if (minThreshold !== null && tempValue < minThreshold - 2) {
                             isFailed = true
+                          } else if (minThreshold !== null && tempValue < minThreshold) {
+                            isWarning = true
                           }
                           if (maxThreshold !== null && tempValue > maxThreshold + 2) {
                             isFailed = true
+                          } else if (maxThreshold !== null && tempValue > maxThreshold) {
+                            isWarning = true
                           }
                         }
+                      }
+                      
+                      // Show warning if failed OR warning (out of range)
+                      const showWarning = isFailed || isWarning
+                      
+                      if (!showWarning) {
+                        return null
                       }
                       
                       return (
@@ -3166,33 +3271,33 @@ export default function TaskCompletionModal({
                             ? 'bg-red-500/10 border-red-500/30' 
                             : 'bg-yellow-500/10 border-yellow-500/30'
                         }`}>
-                        <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-3">
                             <AlertCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
                               isFailed ? 'text-red-400' : 'text-yellow-400'
                             }`} />
-                          <div className="flex-1">
+                            <div className="flex-1">
                               <h4 className={`text-sm font-semibold mb-1 ${
                                 isFailed ? 'text-red-400' : 'text-yellow-400'
                               }`}>
-                                Temperature Out of Range - {displayName}
-                            </h4>
+                                {isFailed ? 'Temperature Critical' : 'Temperature Out of Range'} - {displayName}
+                              </h4>
                               <p className={`text-sm mb-2 ${
                                 isFailed ? 'text-red-300/80' : 'text-yellow-300/80'
                               }`}>
-                                Reading: <strong>{tempValue}°C</strong> 
+                                Reading: <strong>{tempValue !== null && !isNaN(tempValue) ? tempValue : 'N/A'}°C</strong> 
                                 {(minThreshold !== null || maxThreshold !== null) && (
                                   <span className="ml-2">
                                     {(equipmentField?.field_name === 'hot_holding_unit' || 
                                       equipmentField?.field_name === 'equipment_name' ||
                                       task.template?.slug === 'hot_holding_temperature_verification')
-                                      ? `(Minimum required: 63°C)`
+                                      ? `(Minimum required: 63°C${isWarning && !isFailed ? ' - Warning: Below minimum' : ''})`
                                       : `(Normal range: ${minThreshold !== null ? minThreshold : 'N/A'}°C to ${maxThreshold !== null ? maxThreshold : 'N/A'}°C)`
                                     }
                                   </span>
                                 )}
-                            </p>
+                              </p>
                               {!showActionOptionsForAsset && (
-                              <button
+                                <button
                                   onClick={() => {
                                     setShowActionOptions(prev => {
                                       const newMap = new Map(prev)
@@ -3203,47 +3308,47 @@ export default function TaskCompletionModal({
                                   className={`text-sm underline ${
                                     isFailed ? 'text-red-400 hover:text-red-300' : 'text-yellow-400 hover:text-yellow-300'
                                   }`}
-                              >
-                                Choose action →
-                              </button>
-                            )}
+                                >
+                                  Choose action →
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        {/* Action Options */}
+                          
+                          {/* Action Options */}
                           {showActionOptionsForAsset && (
-                          <div className="mt-4 space-y-3">
-                            <button
+                            <div className="mt-4 space-y-3">
+                              <button
                                 onClick={() => handleMonitorAction(assetId)}
                                 className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
                                   selectedActionForAsset === 'monitor'
                                     ? 'bg-yellow-500/20 border-yellow-500/50'
                                     : 'bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20'
                                 }`}
-                            >
-                              <Monitor className="h-5 w-5 text-yellow-400" />
-                              <div>
-                                <p className="text-sm font-medium text-white">Monitor</p>
-                                <p className="text-xs text-white/60">Schedule a follow-up check</p>
-                              </div>
-                            </button>
-                            <button
+                              >
+                                <Monitor className="h-5 w-5 text-yellow-400" />
+                                <div>
+                                  <p className="text-sm font-medium text-white">Monitor</p>
+                                  <p className="text-xs text-white/60">Schedule a follow-up check</p>
+                                </div>
+                              </button>
+                              <button
                                 onClick={() => handleCalloutAction(assetId)}
                                 className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
                                   selectedActionForAsset === 'callout'
                                     ? 'bg-red-500/20 border-red-500/50'
                                     : 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
                                 }`}
-                            >
-                              <PhoneCall className="h-5 w-5 text-red-400" />
-                              <div>
-                                <p className="text-sm font-medium text-white">Place Callout</p>
-                                <p className="text-xs text-white/60">Contact contractor immediately</p>
-                              </div>
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                              >
+                                <PhoneCall className="h-5 w-5 text-red-400" />
+                                <div>
+                                  <p className="text-sm font-medium text-white">Place Callout</p>
+                                  <p className="text-xs text-white/60">Contact contractor immediately</p>
+                                </div>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       )
                     })}
                   </div>
@@ -3278,33 +3383,66 @@ export default function TaskCompletionModal({
                       placeholder="Enter temperature"
                       value={formData[tempFieldName] || formData.temperature || ''}
                       onChange={(e) => {
-                        const temp = parseFloat(e.target.value)
-                        handleFieldChange(tempFieldName, temp)
-                        // Also update 'temperature' for backward compatibility
-                        if (tempFieldName !== 'temperature') {
-                          handleFieldChange('temperature', temp)
-                        }
+                        const tempRaw = e.target.value
+                        const temp = tempRaw === '' || tempRaw === null || tempRaw === undefined 
+                          ? null 
+                          : parseFloat(tempRaw)
                         
-                        // Check against template's linked asset if available
-                        if (task.template?.asset_id) {
-                          const isOutOfRange = checkTemperatureRange(temp, task.template.asset_id)
-                          if (isOutOfRange) {
-                            setShowWarning(true)
-                            setOutOfRangeAssetId(task.template.asset_id)
-                            setShowActionOptionsSingle(false)
-                            setSelectedAction(null)
-                          } else {
-                            setShowWarning(false)
-                            setOutOfRangeAssetId(null)
+                        // Only update if valid number or clearing the field
+                        if (temp === null || (!isNaN(temp) && isFinite(temp))) {
+                          handleFieldChange(tempFieldName, temp)
+                          // Also update 'temperature' for backward compatibility
+                          if (tempFieldName !== 'temperature') {
+                            handleFieldChange('temperature', temp)
                           }
                         }
                         
-                        // Check hot holding threshold
-                        if (task.template?.slug === 'hot_holding_temperature_verification' && temp < 63) {
-                          setShowWarning(true)
-                          setOutOfRangeAssetId(null) // No specific asset for hot holding
-                          setShowActionOptionsSingle(false)
-                          setSelectedAction(null)
+                        // Only check range if we have a valid temperature
+                        if (temp === null || isNaN(temp) || !isFinite(temp)) {
+                          // Clear warning state if field is empty
+                          setShowWarning(false)
+                          setOutOfRangeAssetId(null)
+                          return
+                        }
+                        
+                        // Check hot holding threshold FIRST (before asset_id check)
+                        // This ensures hot holding warnings take precedence
+                        const isHotHolding = isHotHoldingTemplate
+                        
+                        console.log('🌡️ [HOT HOLDING CHECK]', {
+                          slug: task.template?.slug,
+                          name: task.template?.name,
+                          isHotHolding,
+                          temp,
+                          showWarning: temp < 63
+                        })
+                        
+                        if (isHotHolding) {
+                          if (temp < 63) {
+                            console.log('✅ [HOT HOLDING] Setting warning for temp:', temp)
+                            setShowWarning(true)
+                            setOutOfRangeAssetId(null) // No specific asset for hot holding
+                            setShowActionOptionsSingle(false)
+                            setSelectedAction(null)
+                          } else {
+                            console.log('✅ [HOT HOLDING] Temp in range:', temp)
+                            setShowWarning(false)
+                            setOutOfRangeAssetId(null)
+                          }
+                        } else {
+                          // Check against template's linked asset if available (non-hot-holding tasks)
+                          if (task.template?.asset_id) {
+                            const isOutOfRange = checkTemperatureRange(temp, task.template.asset_id)
+                            if (isOutOfRange) {
+                              setShowWarning(true)
+                              setOutOfRangeAssetId(task.template.asset_id)
+                              setShowActionOptionsSingle(false)
+                              setSelectedAction(null)
+                            } else {
+                              setShowWarning(false)
+                              setOutOfRangeAssetId(null)
+                            }
+                          }
                         }
                       }}
                       className={`flex-1 px-4 py-3 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors ${
@@ -3318,65 +3456,108 @@ export default function TaskCompletionModal({
                   </div>
                   
                   {/* Temperature Warning for single field */}
-                  {showWarning && (
-                    <div className={`mt-3 p-4 border rounded-lg ${
-                      selectedAction === 'callout' || 
-                      (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60) ||
+                  {(() => {
+                    // Check if we should show warning - check both state and current value
+                    const tempValueRaw = formData[tempFieldName] || formData.temperature
+                    const tempValue = tempValueRaw !== null && tempValueRaw !== undefined && tempValueRaw !== '' 
+                      ? parseFloat(String(tempValueRaw)) 
+                      : null
+                    const isHotHolding = isHotHoldingTemplate
+                    
+                    console.log('🔍 [WARNING CHECK]', {
+                      tempFieldName,
+                      tempValueRaw,
+                      tempValue,
+                      isHotHolding,
+                      showWarning,
+                      templateSlug: task.template?.slug,
+                      templateName: task.template?.name,
+                      repeatableFieldName: task.template?.repeatable_field_name,
+                      formData: { [tempFieldName]: formData[tempFieldName], temperature: formData.temperature }
+                    })
+                    
+                    // Show warning if: state says so OR it's hot holding and temp < 63
+                    const shouldShowWarning = showWarning || (isHotHolding && tempValue !== null && !isNaN(tempValue) && tempValue < 63)
+                    
+                    if (!shouldShowWarning) {
+                      return null
+                    }
+                    
+                    // If no valid temperature, don't show warning
+                    if (tempValue === null || isNaN(tempValue)) {
+                      return null
+                    }
+                    
+                    const isCritical = selectedAction === 'callout' || 
+                      (isHotHolding && tempValue < 60) ||
                       (outOfRangeAssetId && assetTempRanges.get(outOfRangeAssetId) && (
-                        (assetTempRanges.get(outOfRangeAssetId)!.min !== null && (formData[tempFieldName] || formData.temperature) < assetTempRanges.get(outOfRangeAssetId)!.min! - 2) ||
-                        (assetTempRanges.get(outOfRangeAssetId)!.max !== null && (formData[tempFieldName] || formData.temperature) > assetTempRanges.get(outOfRangeAssetId)!.max! + 2)
+                        (assetTempRanges.get(outOfRangeAssetId)!.min !== null && tempValue < assetTempRanges.get(outOfRangeAssetId)!.min! - 2) ||
+                        (assetTempRanges.get(outOfRangeAssetId)!.max !== null && tempValue > assetTempRanges.get(outOfRangeAssetId)!.max! + 2)
                       ))
-                        ? 'bg-red-500/10 border-red-500/30' 
-                        : 'bg-yellow-500/10 border-yellow-500/30'
-                    }`}>
-                      <div className="flex items-start gap-3">
-                        <AlertCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
-                          selectedAction === 'callout' || 
-                          (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
-                            ? 'text-red-400' 
-                            : 'text-yellow-400'
-                        }`} />
-                        <div className="flex-1">
-                          <h4 className={`text-sm font-semibold mb-1 ${
-                            selectedAction === 'callout' || 
-                            (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
+                    const isWarningLevel = isHotHolding && tempValue >= 60 && tempValue < 63
+                    
+                    return (
+                      <div className={`mt-3 p-4 border rounded-lg ${
+                        isCritical
+                          ? 'bg-red-500/10 border-red-500/30' 
+                          : 'bg-yellow-500/10 border-yellow-500/30'
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
+                            isCritical
                               ? 'text-red-400' 
                               : 'text-yellow-400'
-                          }`}>
-                            Temperature Out of Range
-                          </h4>
-                          <p className={`text-sm mb-2 ${
-                            selectedAction === 'callout' || 
-                            (task.template?.slug === 'hot_holding_temperature_verification' && (formData[tempFieldName] || formData.temperature) < 60)
-                              ? 'text-red-300/80' 
-                              : 'text-yellow-300/80'
-                          }`}>
-                            Reading: <strong>{(formData[tempFieldName] || formData.temperature)}°C</strong>
-                            {task.template?.slug === 'hot_holding_temperature_verification' ? (
-                              <span className="ml-2">(Minimum required: 63°C)</span>
-                            ) : assetTempRanges.get(outOfRangeAssetId) ? (
-                              <span className="ml-2">
-                                (Normal range: {assetTempRanges.get(outOfRangeAssetId)!.min !== null ? assetTempRanges.get(outOfRangeAssetId)!.min : 'N/A'}°C to {assetTempRanges.get(outOfRangeAssetId)!.max !== null ? assetTempRanges.get(outOfRangeAssetId)!.max : 'N/A'}°C)
-                              </span>
-                            ) : null}
-                          </p>
-                          {!showActionOptionsSingle && (
-                            <button
-                              onClick={() => setShowActionOptionsSingle(true)}
-                              className={`text-sm underline ${
-                                selectedAction === 'callout' ? 'text-red-400 hover:text-red-300' : 'text-yellow-400 hover:text-yellow-300'
-                              }`}
-                            >
-                              Choose action →
-                            </button>
-                          )}
+                          }`} />
+                          <div className="flex-1">
+                            <h4 className={`text-sm font-semibold mb-1 ${
+                              isCritical
+                                ? 'text-red-400' 
+                                : 'text-yellow-400'
+                            }`}>
+                              {isCritical ? 'Temperature Critical' : 'Temperature Out of Range'}
+                            </h4>
+                            <p className={`text-sm mb-2 ${
+                              isCritical
+                                ? 'text-red-300/80' 
+                                : 'text-yellow-300/80'
+                            }`}>
+                              Reading: <strong>{tempValue !== null && !isNaN(tempValue) ? tempValue : 'N/A'}°C</strong>
+                              {isHotHolding ? (
+                                <span className="ml-2">
+                                  (Minimum required: 63°C{isWarningLevel ? ' - Warning: Below minimum' : ''})
+                                </span>
+                              ) : assetTempRanges.get(outOfRangeAssetId) ? (
+                                <span className="ml-2">
+                                  (Normal range: {assetTempRanges.get(outOfRangeAssetId)!.min !== null ? assetTempRanges.get(outOfRangeAssetId)!.min : 'N/A'}°C to {assetTempRanges.get(outOfRangeAssetId)!.max !== null ? assetTempRanges.get(outOfRangeAssetId)!.max : 'N/A'}°C)
+                                </span>
+                              ) : null}
+                            </p>
+                            {!showActionOptionsSingle && (
+                              <button
+                                onClick={() => setShowActionOptionsSingle(true)}
+                                className={`text-sm underline ${
+                                  isCritical ? 'text-red-400 hover:text-red-300' : 'text-yellow-400 hover:text-yellow-300'
+                                }`}
+                              >
+                                Choose action →
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      
-                      {showActionOptionsSingle && (
+                        
+                        {showActionOptionsSingle && (
                         <div className="mt-4 space-y-3">
                           <button
-                            onClick={handleMonitorAction}
+                            onClick={() => {
+                              setSelectedAction('monitor')
+                              const assetId = isHotHolding ? task.template?.asset_id : outOfRangeAssetId
+                              if (assetId) {
+                                setOutOfRangeAssetId(assetId)
+                                handleMonitorAction(assetId)
+                              } else {
+                                handleMonitorAction()
+                              }
+                            }}
                             className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
                               selectedAction === 'monitor'
                                 ? 'bg-yellow-500/20 border-yellow-500/50'
@@ -3390,7 +3571,19 @@ export default function TaskCompletionModal({
                             </div>
                           </button>
                           <button
-                            onClick={handleCalloutAction}
+                            onClick={() => {
+                              setSelectedAction('callout')
+                              const assetId = isHotHolding ? task.template?.asset_id : outOfRangeAssetId
+                              if (assetId) {
+                                handleCalloutAction(assetId)
+                              } else {
+                                showToast({
+                                  title: 'Error',
+                                  description: 'No asset available for callout. Please ensure the task has an associated asset.',
+                                  type: 'error'
+                                })
+                              }
+                            }}
                             className={`w-full flex items-center gap-3 p-3 border rounded-lg transition-colors text-left ${
                               selectedAction === 'callout'
                                 ? 'bg-red-500/20 border-red-500/50'
@@ -3404,9 +3597,10 @@ export default function TaskCompletionModal({
                             </div>
                           </button>
                         </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               )
             })()}
@@ -3420,12 +3614,20 @@ export default function TaskCompletionModal({
                   'fire_alarm_test_result', // Handled by fire alarm section
                   'emergency_lights_test_result', // Handled by emergency lighting section
                   'notes', // Handled by notes section below
+                  'text_note', // Also exclude text_note fields (they're notes)
+                  'additional_notes', // Also exclude additional_notes
                   'temperature', // Handled by temperature sections
                   'pass_fail_result', // Handled by pass_fail section if no template field
                   'initials', // Removed - user login is used instead (task is timestamped and completed_by is set)
                   'checked_by_initials', // Removed - user login is used instead
                   'checked_by', // Removed - user login is used instead
                 ]
+                
+                // Also exclude fields that look like notes fields (by label)
+                const isNotesField = (field.field_type === 'text' || field.field_type === 'textarea' || field.field_type === 'text_note') &&
+                  (field.field_name?.toLowerCase().includes('note') || 
+                   field.label?.toLowerCase().includes('note') ||
+                   field.label?.toLowerCase().includes('comment'))
                 
                 // Exclude equipment select fields (fridge_name, hot_holding_unit, equipment_name, asset_name) - handled by temperature sections
                 // BUT: Only exclude asset_name if it has options (dropdown), not if it's used for repeatable asset selection
@@ -3445,7 +3647,8 @@ export default function TaskCompletionModal({
                 return !excludedFieldNames.includes(field.field_name) && 
                        !isEquipmentField && 
                        !isRepeatableField &&
-                       !isPassFailField
+                       !isPassFailField &&
+                       !isNotesField
               })
               .map((field: any) => {
                 // Render based on field type
@@ -3681,19 +3884,56 @@ export default function TaskCompletionModal({
                 )
               })}
 
-            {/* Notes Section - Replaces dropdown fields */}
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Additional Notes
-              </label>
-              <textarea
-                value={formData.notes || ''}
-                onChange={(e) => handleFieldChange('notes', e.target.value)}
-                placeholder="Add any additional notes or observations..."
-                rows={4}
-                className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors resize-none"
-              />
-            </div>
+            {/* Notes Section - Only show if template doesn't already have a notes field */}
+            {(() => {
+              // Check if template already has a notes field (check multiple possible field names)
+              const hasNotesField = templateFields.some((f: any) => {
+                // Check by field name first (most reliable)
+                if (f.field_name === 'notes' || 
+                    f.field_name === 'text_note' || 
+                    f.field_name === 'additional_notes') {
+                  return true
+                }
+                // Check by field type and label
+                const isNotesType = f.field_type === 'text' || f.field_type === 'textarea' || f.field_type === 'text_note'
+                if (isNotesType) {
+                  const label = (f.label || f.field_label || '').toLowerCase()
+                  if (label.includes('note') || label.includes('comment')) {
+                    return true
+                  }
+                }
+                return false
+              });
+              
+              console.log('📝 [NOTES CHECK]', {
+                hasNotesField,
+                templateFields: templateFields.map((f: any) => ({ 
+                  name: f.field_name, 
+                  type: f.field_type, 
+                  label: f.label || f.field_label 
+                }))
+              })
+              
+              // Only show additional notes section if template doesn't have a notes field
+              if (hasNotesField) {
+                return null; // Template already has notes field, don't show duplicate
+              }
+              
+              return (
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Additional Notes
+                  </label>
+                  <textarea
+                    value={formData.notes || ''}
+                    onChange={(e) => handleFieldChange('notes', e.target.value)}
+                    placeholder="Add any additional notes or observations..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors resize-none"
+                  />
+                </div>
+              );
+            })()}
 
             {/* Fire Alarm Specific Fields - Only show if this is a fire alarm task */}
             {templateFields.some((f: any) => f.field_name === 'fire_alarm_call_point') && (
