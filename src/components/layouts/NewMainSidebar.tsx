@@ -18,6 +18,7 @@ import {
   Settings,
   HelpCircle,
   GraduationCap,
+  CalendarDays,
 } from "lucide-react";
 
 // Section with hover popup
@@ -46,6 +47,7 @@ const sections: SidebarSection[] = [
       { label: "Business Details", href: "/dashboard/business" },
       { label: "Sites", href: "/dashboard/sites" },
       { label: "Users", href: "/dashboard/users" },
+      { label: "Emergency Contacts", href: "/dashboard/organization/emergency-contacts" },
       { label: "Training Matrix", href: "/dashboard/training" },
       { label: "Documents", href: "/dashboard/documents" },
     ],
@@ -112,6 +114,7 @@ const sections: SidebarSection[] = [
 
 const directLinks: SidebarLink[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
+  { label: "Manager Calendar", href: "/dashboard/calendar", icon: CalendarDays },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: ShieldCheck },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -293,10 +296,17 @@ export default function NewMainSidebar() {
           );
         })}
 
+        {/* Manager Calendar - Right after Courses */}
+        <SidebarDirectLink
+          item={directLinks[1]}
+          isActive={pathname.startsWith(directLinks[1].href)}
+          isRestricted={false}
+        />
+
         <div className="w-12 h-px bg-white/[0.1] my-2" />
 
         {/* Bottom Direct Links */}
-        {directLinks.slice(1).map((link) => {
+        {directLinks.slice(2).map((link) => {
           const linkRestricted = roleGuard ? isRestricted(role, link.label) : false;
           return (
             <SidebarDirectLink

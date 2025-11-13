@@ -125,6 +125,33 @@ export default function TaskCompletionModal({
       // Load yes/no checklist items from task data
       if (taskData.yesNoChecklistItems && Array.isArray(taskData.yesNoChecklistItems)) {
         initialData.yes_no_checklist_items = taskData.yesNoChecklistItems;
+      } else if (task.template?.evidence_types?.includes('yes_no_checklist')) {
+        // Fallback: Load from template's default_checklist_items if not in task_data
+        // This handles tasks created before yes/no checklist items were properly saved
+        let recurrencePattern = task.template.recurrence_pattern;
+        if (typeof recurrencePattern === 'string') {
+          try {
+            recurrencePattern = JSON.parse(recurrencePattern);
+          } catch (e) {
+            console.error('Failed to parse recurrence_pattern:', e);
+            recurrencePattern = null;
+          }
+        }
+        
+        const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
+        if (Array.isArray(defaultChecklistItems) && defaultChecklistItems.length > 0) {
+          initialData.yes_no_checklist_items = defaultChecklistItems.map((item: any) => ({
+            text: typeof item === 'string' ? item : (item.text || item.label || ''),
+            answer: null as 'yes' | 'no' | null
+          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0);
+          
+          console.log('📋 Loaded yes/no checklist items from template:', {
+            templateId: task.template.id,
+            templateName: task.template.name,
+            itemsCount: initialData.yes_no_checklist_items.length,
+            items: initialData.yes_no_checklist_items
+          });
+        }
       }
       
       // CRITICAL: For monitoring tasks, DO NOT pre-populate temperatures

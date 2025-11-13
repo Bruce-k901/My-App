@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate } from "lucide-react";
+import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { getMenuItemsByRole } from "@/components/layout/navigation";
@@ -74,6 +74,7 @@ export default function DashboardHeader() {
     { label: "Incidents", href: "/dashboard/incidents", icon: AlertTriangle },
     { label: "Food Poisoning", href: "/dashboard/incidents/food-poisoning", icon: UtensilsCrossed },
     { label: "Customer Complaints", href: "/dashboard/incidents/customer-complaints", icon: MessageSquare },
+    { label: "Staff Sickness", href: "/dashboard/incidents/staff-sickness", icon: UserX },
     { label: "Incident Log", href: "/dashboard/incidents/storage", icon: FileText },
   ];
 

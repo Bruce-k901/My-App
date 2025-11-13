@@ -1,7 +1,7 @@
 "use client";
 
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
-import ShiftHandoverNotes from "@/components/dashboard/ShiftHandoverNotes";
+import EnhancedShiftHandover from "@/components/dashboard/EnhancedShiftHandover";
 import AlertsFeed from "@/components/dashboard/AlertsFeed";
 import EmergencyBreakdowns from "@/components/dashboard/EmergencyBreakdowns";
 import IncidentLog from "@/components/dashboard/IncidentLog";
@@ -18,6 +18,8 @@ export default function DashboardHomePage() {
     <div className="flex flex-col w-full items-center">
       <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white">
         <WelcomeHeader />
+        {/* Enhanced Shift Handover - Moved to top */}
+        <EnhancedShiftHandover />
         {/* Compliance Metrics Widget - Prominent placement */}
         <ComplianceMetricsWidget />
         
@@ -29,7 +31,6 @@ export default function DashboardHomePage() {
           </div>
           <div className="space-y-6">
             <AlertsFeed />
-            <ShiftHandoverNotes />
           </div>
         </div>
         <MetricsGrid tenantId={tenantId} siteId={siteId} />

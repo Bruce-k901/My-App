@@ -64,8 +64,10 @@ export function getTemplateFeatures(template: TaskTemplate | null | undefined): 
   const shouldEnableMonitorCallout = hasTemperature || hasPassFail || template.triggers_contractor_on_failure || false;
 
   return {
-    // Asset selection: Only show if repeatable_field_name is explicitly set (not null)
-    assetSelection: !!template.repeatable_field_name,
+    // Asset selection: Only show if repeatable_field_name is set AND asset_type is set (not null)
+    // This allows repeatable_field_name to be used for text-based repeatable fields (like probe names)
+    // without triggering asset selection UI
+    assetSelection: !!(template.repeatable_field_name && template.asset_type),
     
     // Evidence collection features
     checklist: hasTextNote && !hasYesNoChecklist,
