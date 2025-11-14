@@ -13,9 +13,16 @@ export async function POST(request: NextRequest) {
       serviceClient = getSupabaseAdmin()
     } catch (error: any) {
       console.error('❌ Failed to initialize Supabase admin client:', error)
+      console.error('❌ Environment check:', {
+        hasUrl: !!(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
+        hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
+        url: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'MISSING',
+        keyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10) || process.env.SUPABASE_SERVICE_ROLE?.substring(0, 10) || 'MISSING'
+      })
       return NextResponse.json({ 
-        error: 'Supabase key is required',
-        details: error.message 
+        error: 'Supabase service role key is required',
+        details: error.message,
+        hint: 'Please ensure SUPABASE_SERVICE_ROLE_KEY is set in your environment variables (Vercel deployment settings)'
       }, { status: 500 })
     }
 

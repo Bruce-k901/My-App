@@ -2719,6 +2719,7 @@ export default function TaskCompletionModal({
                           <div className="flex items-center gap-2 flex-shrink-0">
                             <input
                               type="number"
+                              inputMode="decimal"
                               step="0.1"
                               placeholder="°C"
                               min="-50"
@@ -3098,6 +3099,7 @@ export default function TaskCompletionModal({
                             <div className="flex items-center gap-2 flex-shrink-0">
                               <input
                                 type="number"
+                                inputMode="decimal"
                                 step="0.1"
                                 placeholder="°C"
                                 value={formData[`temp_${equipmentValue}`] || ''}

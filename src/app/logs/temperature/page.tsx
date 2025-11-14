@@ -264,7 +264,7 @@ function TemperatureLogsInner() {
         </div>
         <div>
           <label>Reading</label>
-          <input type="number" step="0.1" value={reading} onChange={e => setReading(e.target.value)} placeholder="e.g. 4.5" style={{ width: "100%", padding: 8, fontSize: 24 }} />
+          <input type="number" inputMode="decimal" step="0.1" value={reading} onChange={e => setReading(e.target.value)} placeholder="e.g. 4.5" style={{ width: "100%", padding: 8, fontSize: 24 }} />
         </div>
         <div>
           <label>Unit</label>

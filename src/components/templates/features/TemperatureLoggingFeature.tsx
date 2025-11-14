@@ -156,6 +156,7 @@ export function TemperatureLoggingFeature({
                 <div className="relative">
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={temp.temp || ''}
                     onChange={(e) => handleTempChange(index, e.target.value ? parseFloat(e.target.value) : undefined)}
                     placeholder="Temperature (°C)"
