@@ -8,7 +8,8 @@ interface GlassCardProps {
 
 export default function GlassCard({ children, className = "" }: GlassCardProps) {
   const base = cn(
-    "w-full max-w-md py-8 px-6",
+    "w-full max-w-md",
+    "py-6 px-4 sm:py-8 sm:px-6",
     "rounded-2xl backdrop-blur-md",
     // Cards & Containers tokens per docs/UI-Style-Guide.md - More transparent
     "bg-white/[0.03] border border-white/[0.2]",

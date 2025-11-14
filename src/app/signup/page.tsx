@@ -77,14 +77,14 @@ export default function SignupPage() {
 
   return (
     <MarketingSubPageLayout>
-      <main className="flex flex-col items-center justify-center min-h-screen px-6 py-10">
-        <GlassCard className="py-8 px-6">
-          <form onSubmit={handleSignup} className="w-full max-w-[460px] space-y-4">
-            <h1 className="text-3xl font-semibold text-center mb-4">Create Your Account</h1>
+      <main className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-6 sm:py-10">
+        <GlassCard className="py-6 sm:py-8 px-4 sm:px-6 w-full max-w-md mx-auto">
+          <form onSubmit={handleSignup} className="w-full space-y-4 sm:space-y-5">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6 text-white">Create Your Account</h1>
 
-            {error && <p className="text-xs text-red-400 text-center mb-2">{error}</p>}
+            {error && <p className="text-xs sm:text-sm text-red-400 text-center mb-3">{error}</p>}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-white/60 text-sm mb-2">First Name</label>
                 <Input
@@ -92,6 +92,7 @@ export default function SignupPage() {
                   value={form.firstName}
                   onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                   required
+                  className="w-full"
                 />
               </div>
               <div>
@@ -101,6 +102,7 @@ export default function SignupPage() {
                   value={form.lastName}
                   onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                   required
+                  className="w-full"
                 />
               </div>
             </div>
@@ -112,6 +114,7 @@ export default function SignupPage() {
                 value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
                 required
+                className="w-full"
               />
             </div>
 
@@ -123,6 +126,7 @@ export default function SignupPage() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
+                className="w-full"
               />
             </div>
 
@@ -135,28 +139,28 @@ export default function SignupPage() {
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   required
-                  className="pr-20"
+                  className="pr-20 sm:pr-24 w-full"
                 />
                 <button
                   type="button"
-                  className="absolute right-12 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+                  className="absolute right-10 sm:right-12 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}
                 </button>
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
                   onClick={generatePassword}
                   aria-label="Generate password"
                 >
-                  <RefreshCw size={18} />
+                  <RefreshCw size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </button>
               </div>
             </div>
 
-            <Button type="submit" variant="primary" fullWidth loading={loading}>
+            <Button type="submit" variant="primary" fullWidth loading={loading} className="mt-2">
               Sign Up
             </Button>
           </form>

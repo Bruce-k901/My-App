@@ -69,12 +69,12 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <GlassCard>
-        <h1 className="text-2xl font-semibold mb-2 text-center text-white">
+      <GlassCard className="mx-4 sm:mx-6 md:mx-auto">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-white">
           Log in to Checkly
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <div>
             <label className="block text-white/60 text-sm mb-2">Email</label>
             <Input
@@ -84,6 +84,7 @@ export default function LoginPage() {
               onChange={handleChange}
               required
               placeholder="you@example.com"
+              className="w-full"
             />
           </div>
 
@@ -97,45 +98,45 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
                 placeholder="Password"
-                className="pr-12"
+                className="pr-12 w-full"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} className="sm:w-5 sm:h-5" /> : <Eye size={18} className="sm:w-5 sm:h-5" />}
               </button>
             </div>
           </div>
 
-          <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading}>
+          <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading} className="mt-6">
             {loading ? "Signing in..." : "Log in"}
           </Button>
           {error && (
-            <p className="mt-3 text-sm text-red-400" role="alert">{error}</p>
+            <p className="mt-3 text-xs sm:text-sm text-red-400 text-center" role="alert">{error}</p>
           )}
         </form>
 
-        <div className="text-center mt-6">
-          <Link href="/forgot-password" className="text-magenta-400 hover:text-magenta-300 text-sm transition-colors">
+        <div className="text-center mt-5 sm:mt-6">
+          <Link href="/forgot-password" className="text-magenta-400 hover:text-magenta-300 text-xs sm:text-sm transition-colors">
             Forgotten your password?
           </Link>
         </div>
 
-        <p className="text-center text-white/60 mt-6 text-sm">
-          Don’t have an account?{" "}
+        <p className="text-center text-white/60 mt-5 sm:mt-6 text-xs sm:text-sm">
+          Don't have an account?{" "}
           <Link href="/signup" className="text-magenta-400 hover:text-magenta-300 transition-colors">
             Sign up
           </Link>
         </p>
 
-        <p className="mt-8 text-center text-xs text-white/40">
-          By continuing, you agree to our {""}
-          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+        <p className="mt-6 sm:mt-8 text-center text-[10px] sm:text-xs text-white/40 leading-relaxed px-2">
+          By continuing, you agree to our{" "}
+          <Link href="/terms" className="underline underline-offset-2 hover:text-gray-300">Terms</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-gray-300">Privacy Policy</Link>.
         </p>
       </GlassCard>
     </AuthLayout>
