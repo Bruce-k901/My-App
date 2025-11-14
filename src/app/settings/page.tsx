@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import { AppProvider } from '@/context/AppContext';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
+import { PWAInstallSection } from '@/components/pwa/PWAInstallSection';
 
 import Image from 'next/image';
 import logoFallback from '@/assets/checkly_logo_touching_blocks.svg';
@@ -159,6 +160,9 @@ function SettingsInner() {
       )}
 
       <div className="space-y-6">
+        {/* PWA Install Section */}
+        <PWAInstallSection />
+
         <div className="flex items-center justify-between p-4 rounded border border-neutral-800 bg-[#0f1220]">
           <div>
             <p className="font-medium">Receive Daily Email Digest</p>
