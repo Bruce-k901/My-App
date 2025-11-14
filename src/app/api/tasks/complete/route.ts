@@ -1,6 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,10 +8,16 @@ export async function POST(request: NextRequest) {
 
     // Use service role client to bypass RLS entirely
     // We'll verify the user's identity via the completed_by field
-    const serviceClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    let serviceClient
+    try {
+      serviceClient = getSupabaseAdmin()
+    } catch (error: any) {
+      console.error('❌ Failed to initialize Supabase admin client:', error)
+      return NextResponse.json({ 
+        error: 'Supabase key is required',
+        details: error.message 
+      }, { status: 500 })
+    }
 
     // Verify completed_by exists and get their profile
     if (!completionRecord.completed_by) {
