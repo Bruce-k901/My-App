@@ -11,8 +11,10 @@ import ComplianceMetricsWidget from "@/components/dashboard/ComplianceMetricsWid
 import { useAppContext } from "@/context/AppContext";
 
 export default function DashboardHomePage() {
-  const { companyId, siteId } = useAppContext();
-  const tenantId = companyId || "mock-tenant";
+  const { companyId, siteId, loading } = useAppContext();
+  
+  // Don't render MetricsGrid if companyId is not available
+  const shouldShowMetricsGrid = !loading && companyId;
 
   return (
     <div className="flex flex-col w-full items-center">
@@ -33,7 +35,16 @@ export default function DashboardHomePage() {
             <AlertsFeed />
           </div>
         </div>
-        <MetricsGrid tenantId={tenantId} siteId={siteId} />
+        {shouldShowMetricsGrid && (
+          <MetricsGrid tenantId={companyId} siteId={siteId} />
+        )}
+        {!loading && !companyId && (
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 w-full">
+            <p className="text-white/60 text-center">
+              Company setup required to view compliance summary. Please complete your company profile.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
