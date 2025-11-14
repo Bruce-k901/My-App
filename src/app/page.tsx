@@ -7,6 +7,19 @@ import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout"
 import Link from "next/link";
 import { Button } from "@/components/ui";
 import DarkVeil from "@/components/ui/DarkVeil";
+import {
+  Shield,
+  ClipboardCheck,
+  Thermometer,
+  Wrench,
+  LayoutDashboard,
+  Bell,
+  CheckCircle2,
+  ListChecks,
+  BarChart3,
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -80,8 +93,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA SECTION (condensed) */}
-      <section className="py-8 sm:py-12 bg-[#0b0e17] text-center px-4 sm:px-6">
+      {/* CTA SECTION (condensed) - Desktop only */}
+      <section className="hidden md:block py-8 sm:py-12 bg-[#0b0e17] text-center px-4 sm:px-6">
         <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-white px-4">
           Bring structure, calm, and compliance to your operation.
         </h3>
@@ -89,6 +102,243 @@ export default function HomePage() {
           <Button variant="primary">Start Free Trial</Button>
         </Link>
       </section>
+
+      {/* MOBILE-ONLY: Combined Features & Why Sections */}
+      <div className="block md:hidden">
+        {/* Single DarkVeil Background Container for mobile sections */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 w-full h-full -z-0">
+            <div className="w-full h-full min-h-screen">
+              <DarkVeil />
+            </div>
+          </div>
+
+          {/* WHY CHECKLY SECTION - Mobile Only */}
+          <section className="relative text-center pt-8 pb-6 text-gray-200">
+            <div className="relative z-10 max-w-7xl mx-auto px-4">
+              <h2 className="text-2xl font-bold leading-[1.4] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-4">
+                Because running a food business shouldn't feel like firefighting
+              </h2>
+              <p className="text-base text-checkly-gray max-w-2xl mx-auto mb-6 leading-relaxed">
+                From missed checks to broken fridges, we've seen the chaos. Here's how Checkly turns it into calm.
+              </p>
+            </div>
+          </section>
+
+          {/* WHY CARDS - Mobile Only */}
+          <section className="relative px-4 -mt-6 pb-8 text-gray-200">
+            <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 gap-4">
+              {[
+                { title: "Compliance without chaos", desc: "Logs, checks, and reports in one place. Be inspection-ready without last-minute firefighting." },
+                { title: "Less reactive, more proactive", desc: "Automate alerts, track temperature and incidents, and cut noisy WhatsApp threads." },
+                { title: "Built to scale", desc: "Start fast, roll out across sites, and keep your head office fully in the loop." },
+                { title: "Single source of truth", desc: "One platform for tasks, checks, logs, and incidents so everyone stays aligned." },
+                { title: "Bulletproof audit trails", desc: "Time-stamped records and attachments give you defensible proof when it matters." },
+                { title: "Smart automation & workflows", desc: "Assign tasks, trigger follow-ups, and auto-escalate issues to the right people." },
+                { title: "Real-time alerts & escalations", desc: "Get notified instantly, escalate when unresolved, and reduce noisy back-and-forth." },
+                { title: "Role-based access", desc: "Secure permissions for managers, staff, and auditors keep data safe and relevant." },
+                { title: "Integrations & API", desc: "Connect to your tools, export data, and automate with a flexible API." },
+                { title: "Mobile-first for busy teams", desc: "Easy on phones and tablets so field teams can log and resolve quickly." },
+              ].map((item, i) => (
+                <div key={i} className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                  <p className="text-gray-300 text-sm">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* FEATURES SECTION - Mobile Only */}
+          <section className="relative px-4 pb-8 text-gray-200">
+            <div className="relative z-10 max-w-7xl mx-auto mb-6">
+              <h2 className="text-2xl font-bold text-center text-white mb-2">
+                What it fixes — and how Checkly helps
+              </h2>
+            </div>
+            <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 gap-4">
+              {/* Feature Pair 1 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Inspection Panic</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Compliance records scattered and manual exports cause stress before EHO visits.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <Shield className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">EHO-Ready Pack</p>
+                    <p className="text-slate-400 text-sm">Automatic compliance export that removes inspection panic.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 2 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <ClipboardCheck className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Routines Without Reset/Proof</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Paper lists don't reset and lack logs or timestamps.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <ClipboardCheck className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Smart Digital Checklists</p>
+                    <p className="text-slate-400 text-sm">Resets daily/weekly, logged and time-stamped.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 3 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Forged or Missed Temp Logs</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Manual temperature logging can be skipped or falsified.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <Thermometer className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Temperature Logging with Alerts</p>
+                    <p className="text-slate-400 text-sm">Live readings, no forged data.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 4 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Breakdown Roulette</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Reactive maintenance leads to unpredictable downtime and costs.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <Wrench className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Asset Register & PPM Scheduler</p>
+                    <p className="text-slate-400 text-sm">Predictable maintenance, no breakdown roulette.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 5 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Untracked Maintenance Issues</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Problems lack evidence and stall without an end-to-end process.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <Wrench className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Maintenance & Fault Reporting</p>
+                    <p className="text-slate-400 text-sm">Photo-driven issue tracking with repair lifecycle.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 6 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <LayoutDashboard className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Fragmented Multi-Site Visibility</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Managers can't see performance and compliance across locations.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <LayoutDashboard className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Multi-Site Dashboards</p>
+                    <p className="text-slate-400 text-sm">Full visibility across all operations.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 7 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">No Early Warnings</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Failures are caught too late without proactive notifications.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <Bell className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Alerts & Escalations</p>
+                    <p className="text-slate-400 text-sm">Proactive warnings before something fails.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 8 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FileText className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">No Audit Trail</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Task completion is disputed or unverifiable.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Task Verification & Audit Trail</p>
+                    <p className="text-slate-400 text-sm">Indisputable evidence of completion.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 9 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <ListChecks className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Inconsistent SOPs</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Policies and templates vary by site and team.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <ListChecks className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Policy & Template Control</p>
+                    <p className="text-slate-400 text-sm">Company-wide SOP standardisation.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Pair 10 */}
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-5 border border-white/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <BarChart3 className="w-5 h-5 text-magenta-400" />
+                  <p className="text-sm font-semibold text-white">Blind Spots in Trends</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Compliance and cost trends aren't visible for decision-making.</p>
+                <div className="flex items-center space-x-2 pt-3 border-t border-white/10">
+                  <BarChart3 className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-400">Reporting & Analytics</p>
+                    <p className="text-slate-400 text-sm">Data-driven insights into compliance and cost trends.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* MOBILE CTA SECTION */}
+          <section className="relative flex flex-col items-center justify-center text-center px-4 py-10 pb-12">
+            <div className="relative z-10 max-w-4xl mx-auto">
+              <h2 className="text-2xl font-bold mb-4 text-white">
+                Ready to take your operation digital?
+              </h2>
+              <p className="text-gray-400 mb-6 max-w-xl mx-auto text-sm">
+                Start with a free 14-day trial or speak to our team about rolling Checkly out across your group.
+              </p>
+              <div className="flex flex-col gap-3">
+                <Link href="/signup">
+                  <Button variant="primary" className="w-full">Start Free Trial</Button>
+                </Link>
+                <Link href="/contact">
+                  <Button variant="primary" className="w-full">Contact Sales</Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </MarketingSubPageLayout>
   );
 }
