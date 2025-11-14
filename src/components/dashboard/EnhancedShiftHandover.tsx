@@ -440,22 +440,22 @@ export default function EnhancedShiftHandover() {
   };
 
   return (
-    <section className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6 shadow-[0_0_12px_rgba(236,72,153,0.05)] fade-in-soft">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-pink-500/10 border border-pink-500/20">
-            <FileText className="w-5 h-5 text-pink-400" />
+    <section className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-4 sm:p-6 shadow-[0_0_12px_rgba(236,72,153,0.05)] fade-in-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-pink-500/10 border border-pink-500/20">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
           </div>
           <div>
-            <h3 className="text-2xl font-semibold text-white">Shift Handover & Actions</h3>
-            <p className="text-xs text-slate-400">Notes, tasks, reminders, and messages</p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-white">Shift Handover & Actions</h3>
+            <p className="text-xs text-slate-400 hidden sm:block">Notes, tasks, reminders, and messages</p>
           </div>
         </div>
         {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-4 border-b border-white/10">
+      <div className="flex gap-1 sm:gap-2 mb-4 border-b border-white/10 overflow-x-auto">
         {[
           { id: "notes", label: "Notes", icon: FileText },
           { id: "tasks", label: `Tasks (${tasks.length})`, icon: CheckCircle2 },
@@ -467,14 +467,15 @@ export default function EnhancedShiftHandover() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
                   ? "border-pink-500 text-pink-400"
                   : "border-transparent text-slate-400 hover:text-slate-300"
               }`}
             >
-              <Icon className="w-4 h-4" />
-              {tab.label}
+              <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.id === "notes" ? "Notes" : tab.id === "tasks" ? `Tasks` : tab.id === "reminders" ? "Reminders" : "Messages"}</span>
             </button>
           );
         })}
@@ -488,7 +489,7 @@ export default function EnhancedShiftHandover() {
             onChange={(e) => setNotes(e.target.value)}
             onBlur={save}
             placeholder="Key updates for the next shift, important information, issues to follow up..."
-            className="w-full h-32 bg-black/30 border border-white/10 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/40 resize-none"
+            className="w-full h-24 sm:h-32 bg-black/30 border border-white/10 rounded-xl p-3 sm:p-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/40 resize-none"
           />
           <div className="flex justify-end">
             <button
@@ -532,11 +533,11 @@ export default function EnhancedShiftHandover() {
           )}
           
           {tasks.map((task) => (
-            <div key={task.id} className="bg-black/30 border border-white/10 rounded-lg p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h4 className="font-medium text-white mb-1">{task.title}</h4>
-                  <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
+            <div key={task.id} className="bg-black/30 border border-white/10 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-white mb-1 text-sm sm:text-base break-words">{task.title}</h4>
+                  <div className="flex items-center gap-2 sm:gap-4 text-xs text-slate-400 flex-wrap">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(task.dueDate).toLocaleDateString()}
@@ -558,10 +559,10 @@ export default function EnhancedShiftHandover() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => createTaskInSystem(task)}
-                    className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors"
+                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors whitespace-nowrap"
                   >
                     Create Task
                   </button>
@@ -577,7 +578,7 @@ export default function EnhancedShiftHandover() {
           ))}
 
           {showTaskForm ? (
-            <div className="bg-black/30 border border-white/10 rounded-lg p-4 space-y-3">
+            <div className="bg-black/30 border border-white/10 rounded-lg p-3 sm:p-4 space-y-3">
               <input
                 type="text"
                 placeholder="Task title"
@@ -585,7 +586,7 @@ export default function EnhancedShiftHandover() {
                 onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                 className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
               />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="date"
                   value={newTask.dueDate}
@@ -605,11 +606,36 @@ export default function EnhancedShiftHandover() {
                 className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
               >
                 <option value="">Assign to (optional)</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.full_name || user.email} {user.app_role ? `(${user.app_role})` : ""}
-                  </option>
-                ))}
+                {/* Staff */}
+                {users.filter(u => !u.app_role || u.app_role.toLowerCase() === 'staff').length > 0 && (
+                  <optgroup label="Staff">
+                    {users.filter(u => !u.app_role || u.app_role.toLowerCase() === 'staff').map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.full_name || user.email}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {/* Managers */}
+                {users.filter(u => u.app_role && u.app_role.toLowerCase() === 'manager').length > 0 && (
+                  <optgroup label="Managers">
+                    {users.filter(u => u.app_role && u.app_role.toLowerCase() === 'manager').map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.full_name || user.email}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {/* Owner/Admin */}
+                {users.filter(u => u.app_role && (u.app_role.toLowerCase() === 'admin' || u.app_role.toLowerCase() === 'owner')).length > 0 && (
+                  <optgroup label="Owner/Admin">
+                    {users.filter(u => u.app_role && (u.app_role.toLowerCase() === 'admin' || u.app_role.toLowerCase() === 'owner')).map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.full_name || user.email}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
               <select
                 value={newTask.priority}
