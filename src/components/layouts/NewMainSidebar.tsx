@@ -23,6 +23,7 @@ import {
   X,
   AlertTriangle,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 
 // Section with hover popup
@@ -121,6 +122,7 @@ const directLinks: SidebarLink[] = [
   { label: "Manager Calendar", href: "/dashboard/calendar", icon: CalendarDays },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: ShieldCheck },
+  { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: HelpCircle },
 ];

@@ -48,10 +48,22 @@ export default function TermsPage() {
         {/* 4. Subscriptions and Payment */}
         <div>
           <h2 className="text-xl font-semibold mb-2">4. Subscriptions and Payment</h2>
+          <p className="text-gray-300 mb-3">
+            <strong className="text-white">60-Day Free Trial:</strong> New accounts receive a 60-day free trial period. 
+            No payment information is required during the trial. You can use all features of your selected plan during this period.
+          </p>
+          <p className="text-gray-300 mb-3">
+            <strong className="text-white">Monthly Billing:</strong> After your trial ends, you will be invoiced monthly 
+            via email. We use manual invoicing - no automatic payments are set up. Invoices are due within 30 days of issue.
+          </p>
+          <p className="text-gray-300 mb-3">
+            <strong className="text-white">Cancellation:</strong> To cancel your subscription, you must provide 60 days 
+            written notice via email to billing@checkly.app. Your subscription will remain active during the notice period, 
+            and you will be invoiced for this period.
+          </p>
           <p className="text-gray-300">
-            Free trials may be offered before subscription. When you upgrade, you authorise recurring
-            charges until you cancel. Pricing and plans are published on our site and may change with
-            notice.
+            Pricing and plans are published on our site and may change with notice. Changes to pricing will not affect 
+            your current subscription until renewal.
           </p>
         </div>
 
@@ -91,10 +103,19 @@ export default function TermsPage() {
         {/* 8. Termination */}
         <div>
           <h2 className="text-xl font-semibold mb-2">8. Termination</h2>
+          <p className="text-gray-300 mb-3">
+            <strong className="text-white">Cancellation by You:</strong> You can cancel your subscription by providing 
+            60 days written notice via email to billing@checkly.app. Your subscription will remain active during the 
+            notice period, and you will be invoiced for this period.
+          </p>
+          <p className="text-gray-300 mb-3">
+            <strong className="text-white">Data Export:</strong> Upon cancellation or termination, you may request a 
+            full export of your data. We will provide your data in JSON format within 30 days of your request. 
+            Data export requests can be made through your billing dashboard or by emailing support@checkly.app.
+          </p>
           <p className="text-gray-300">
-            You can cancel your account anytime. We may terminate access if you breach these Terms
-            or misuse the platform. Upon termination, your access ends but relevant legal rights and
-            obligations survive (e.g. unpaid fees, indemnities).
+            We may terminate access if you breach these Terms or misuse the platform. Upon termination, your access 
+            ends but relevant legal rights and obligations survive (e.g. unpaid fees, indemnities).
           </p>
         </div>
 
