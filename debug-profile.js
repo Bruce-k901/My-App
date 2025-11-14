@@ -1,9 +1,49 @@
 const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
 
-const supabaseUrl = 'https://xijoybubtrgbrhquqwrx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4';
+// Load environment variables from .env.local manually
+try {
+  const envPath = path.join(__dirname, '.env.local');
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const envLines = envContent.split('\n');
+  
+  envLines.forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        // Remove quotes if present
+        const cleanValue = value.replace(/^["']|["']$/g, '');
+        process.env[key.trim()] = cleanValue;
+      }
+    }
+  });
+} catch (error) {
+  console.log('⚠️ No .env.local file found, using system environment variables');
+}
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase environment variables!');
+  console.error('Required:');
+  console.error('  - NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL');
+  console.error('  - SUPABASE_SERVICE_ROLE_KEY');
+  console.error('\nPlease add these to your .env.local file:');
+  console.error('  NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co');
+  console.error('  SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 async function checkUserDetails() {
   console.log('🔍 Checking user details...\n');
