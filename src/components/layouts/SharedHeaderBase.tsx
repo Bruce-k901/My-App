@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui";
-import logo from "@/assets/checkly_logo_touching_blocks.png";
+import logo from "@/assets/checkly_logo_touching_blocks.svg";
 
 interface SharedHeaderBaseProps {
   children?: React.ReactNode; // center nav content

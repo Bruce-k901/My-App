@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/checkly_logo_touching_blocks.png";
+import logo from "@/assets/checkly_logo_touching_blocks.svg";
 import { LinkButton } from "@/components/ui";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/checkly_logo_touching_blocks.png";
+import logo from "@/assets/checkly_logo_touching_blocks.svg";
 
 export default function AuthLogoHeader() {
   return (

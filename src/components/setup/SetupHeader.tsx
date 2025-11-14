@@ -24,7 +24,7 @@ export default function SetupHeader() {
   return (
     <div className="flex items-center justify-between">
       <Link href="/setup" className="flex items-center">
-        <Image src="/assets/logo.png" alt="Checkly" width={168} height={168} />
+        <Image src="/assets/logo.svg" alt="Checkly" width={168} height={168} />
       </Link>
       <nav className="hidden md:flex items-center gap-2">
         {steps.map((s) => {

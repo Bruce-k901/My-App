@@ -9,7 +9,7 @@ import { ToastProvider } from '@/components/ui/ToastProvider';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
 
 import Image from 'next/image';
-import logoFallback from '@/assets/checkly_logo_touching_blocks.png';
+import logoFallback from '@/assets/checkly_logo_touching_blocks.svg';
 
 type ProfileSettings = {
   user_id: string;

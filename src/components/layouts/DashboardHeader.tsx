@@ -29,7 +29,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   const incidentsMenuRef = useRef<HTMLDivElement>(null);
   const burgerMenuButtonRef = useRef<HTMLButtonElement>(null);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
-  const companyLogo = (company?.logo_url as string | undefined) || "/assets/logo.png";
+  const companyLogo = (company?.logo_url as string | undefined) || "/assets/logo.svg";
   
   // Map role to burger menu role format
   const burgerMenuRole = (role === 'Admin' ? 'admin' : role === 'Manager' ? 'manager' : 'team') as 'admin' | 'manager' | 'team';

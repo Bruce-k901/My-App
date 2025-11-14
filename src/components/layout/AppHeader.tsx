@@ -23,7 +23,7 @@ export function AppHeader({
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="/assets/logo.png"
+          src="/assets/logo.svg"
           alt="Checkly"
           className="h-11 w-auto"
         />
