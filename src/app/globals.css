@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* iOS Safari Sticky Header Fix */
+.ios-sticky-header {
+  position: -webkit-sticky; /* Safari fallback */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* Force hardware acceleration for iOS */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+  /* Ensure background is opaque */
+  background-color: #0b0d13 !important;
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .ios-sticky-header {
+    position: -webkit-sticky;
+    position: sticky;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Ensure parent containers don't break sticky */
+  .dashboard-page {
+    overflow: visible;
+  }
+
+  .dashboard-page > div {
+    overflow: visible;
+  }
+}
+
 /* PWA Standalone Mode - Improved Mobile Padding */
 @media (display-mode: standalone) {
   /* Better padding for standalone PWA on mobile */
@@ -31,6 +64,15 @@
       padding-left: 4rem;
       padding-right: 4rem;
     }
+  }
+
+  /* iOS PWA sticky header fix */
+  .ios-sticky-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 }
 

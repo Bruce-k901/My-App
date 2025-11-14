@@ -26,8 +26,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
       <div className="flex-1 lg:ml-20 flex flex-col min-h-screen">
-        {/* Sticky Header - Outside scrollable area */}
-        <div className="sticky top-0 z-50 bg-[#0B0D13]">
+        {/* Sticky Header - iOS Safari compatible */}
+        <div className="sticky top-0 z-50 bg-[#0B0D13] ios-sticky-header">
           <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
         </div>
         {/* Scrollable Content */}
