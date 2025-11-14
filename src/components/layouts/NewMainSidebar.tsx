@@ -22,6 +22,7 @@ import {
   CalendarDays,
   X,
   AlertTriangle,
+  LogOut,
 } from "lucide-react";
 
 // Section with hover popup
@@ -130,7 +131,7 @@ interface NewMainSidebarProps {
 
 export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
   const pathname = usePathname();
-  const { role: contextRole } = useAppContext();
+  const { role: contextRole, signOut } = useAppContext();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -505,6 +506,26 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 />
               );
             })}
+
+            <div className="h-px bg-white/[0.1] my-4" />
+
+            {/* Logout Button */}
+            <button
+              onClick={async () => {
+                onMobileClose?.();
+                try {
+                  await signOut();
+                } catch (error) {
+                  console.error('Logout error:', error);
+                  // Fallback: redirect to login
+                  window.location.href = '/login';
+                }
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
           </div>
         </aside>,
         document.body

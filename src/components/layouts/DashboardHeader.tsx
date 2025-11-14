@@ -166,22 +166,22 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   return (
     <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
       {/* Left: Mobile Menu Button + Logo */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {/* Mobile Menu Button - Only visible on mobile */}
         {onMobileMenuClick && (
           <button
             onClick={onMobileMenuClick}
-            className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors flex-shrink-0"
             aria-label="Open menu"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         )}
-        <Link href="/dashboard" aria-label="Go to dashboard">
+        <Link href="/dashboard" aria-label="Go to dashboard" className="min-w-0 flex-shrink">
           <img
             src={companyLogo}
             alt="Logo"
-            className="h-8 sm:h-10 w-auto transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.45)] hover:opacity-100"
+            className="h-7 sm:h-9 md:h-10 w-auto max-w-full transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.45)] hover:opacity-100 object-contain"
           />
         </Link>
       </div>
@@ -366,8 +366,8 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           </div>
         </div>
 
-        {/* Burger Menu */}
-        <div className="relative">
+        {/* Burger Menu - Hidden on mobile (sidebar burger handles navigation) */}
+        <div className="relative hidden lg:block">
           <button
             ref={burgerMenuButtonRef}
             onClick={() => setIsBurgerMenuOpen(!isBurgerMenuOpen)}
