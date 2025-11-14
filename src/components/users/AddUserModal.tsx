@@ -201,7 +201,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div 
         className="absolute inset-0 bg-black/60" 
         onClick={(e) => {
@@ -211,7 +211,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
           }
         }} 
       />
-      <div className="relative w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-4 shadow-xl">
+      <div className="relative w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-4 sm:p-6 shadow-xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-white">Add New User</h2>
           <button className="text-slate-300 hover:text-white" onClick={onClose}>×</button>

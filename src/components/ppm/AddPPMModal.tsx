@@ -156,7 +156,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
       onClick={(e) => {
         // Only close if clicking directly on the backdrop, not on dropdown content
         if (e.target === e.currentTarget) {
@@ -164,7 +164,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
         }
       }}
     >
-      <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">

@@ -289,7 +289,7 @@ export function FoodPoisoningIncidentModal({
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 overflow-hidden">
       <div className="absolute inset-0" onClick={onClose} />
       <div className="absolute right-0 top-0 h-full w-full max-w-4xl bg-[#1a1d2e] border-l border-orange-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-orange-500/20">
             <div className="flex items-center gap-3">

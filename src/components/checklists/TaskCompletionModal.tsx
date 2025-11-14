@@ -2328,10 +2328,10 @@ export default function TaskCompletionModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-neutral-900 border border-white/[0.06] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-neutral-900 border border-white/[0.06] rounded-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-neutral-900 border-b border-white/[0.06] p-6 flex items-start justify-between">
+        <div className="sticky top-0 bg-neutral-900 border-b border-white/[0.06] p-4 sm:p-6 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-bold text-magenta-400">{(task.custom_name || task.template?.name || 'Unknown Task')?.replace(' (Draft)', '')}</h2>
             {task.template?.compliance_standard && (

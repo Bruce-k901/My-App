@@ -40,7 +40,7 @@ export default function MonitorDurationModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-neutral-900 border border-white/[0.06] rounded-xl max-w-md w-full">
         {/* Header */}
-        <div className="border-b border-white/[0.06] p-6 flex items-center justify-between">
+        <div className="border-b border-white/[0.06] p-4 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-500/10 rounded-lg">
               <Clock className="h-5 w-5 text-orange-400" />
@@ -61,7 +61,7 @@ export default function MonitorDurationModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-white mb-4">
               Re-evaluation Required In:
@@ -98,7 +98,7 @@ export default function MonitorDurationModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-white/[0.06] p-6 flex gap-3">
+        <div className="border-t border-white/[0.06] p-4 sm:p-6 flex gap-3">
           <Button
             onClick={handleConfirm}
             className="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-all flex items-center justify-center gap-2"

@@ -207,7 +207,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         }
       }}
     >
-      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold text-white mb-6">
           {contractor ? "Edit Contractor" : "Add Contractor"}
         </h2>

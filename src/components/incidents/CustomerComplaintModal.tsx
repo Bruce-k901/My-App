@@ -357,10 +357,10 @@ export function CustomerComplaintModal({
   const canProceedToReview = formData.immediate_response;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#14161c] border border-white/[0.1] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
+      <div className="bg-[#14161c] border border-white/[0.1] rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.1]">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/[0.1]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-500/20 rounded-lg">
               <AlertTriangle className="w-6 h-6 text-red-400" />

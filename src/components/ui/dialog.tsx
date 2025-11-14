@@ -44,7 +44,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 }
 
 export function DialogContent({ children, className = '', style }: DialogContentProps) {
-  const base = "bg-neutral-900 p-6 rounded-lg border border-neutral-700 shadow-lg w-full max-w-md max-h-[85vh] overflow-y-auto";
+  const base = "bg-neutral-900 p-4 sm:p-6 rounded-lg border border-neutral-700 shadow-lg w-full max-w-md max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0";
   return (
     <div style={style} className={`${base} ${className}`}>
       {children}
