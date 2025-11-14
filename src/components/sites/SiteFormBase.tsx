@@ -591,6 +591,17 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       // 1️⃣ After site upsert succeeds and returns the site ID
       const siteId = siteResult.id;
 
+      // Update subscription site count
+      if (companyId) {
+        try {
+          const { updateSubscriptionSiteCount } = await import("@/lib/subscriptions");
+          await updateSubscriptionSiteCount(companyId);
+        } catch (err) {
+          console.error("Failed to update subscription site count:", err);
+          // Don't fail the site save if this fails
+        }
+      }
+
       // 2️⃣ When editing, delete existing closures first to avoid duplicates
       if (mode === "edit" && siteId) {
         const { error: deleteError } = await supabase

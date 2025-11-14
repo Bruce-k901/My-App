@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { createTrialSubscription } from "@/lib/subscriptions";
 
 export async function POST(request: Request) {
   try {
@@ -46,6 +47,14 @@ export async function POST(request: Request) {
       .eq("id", user_id);
     if (pErr) {
       return NextResponse.json({ error: pErr.message }, { status: 400 });
+    }
+
+    // Create 60-day trial subscription for the new company
+    try {
+      await createTrialSubscription(company.id, "starter");
+    } catch (subError: any) {
+      // Log but don't fail - subscription creation is not critical for company creation
+      console.error("Failed to create trial subscription:", subError);
     }
 
     return NextResponse.json({ id: company.id });

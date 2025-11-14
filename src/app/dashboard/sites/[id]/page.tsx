@@ -21,14 +21,6 @@ export default function SiteDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      setUserId(userRes?.user?.id || null);
-    })();
-  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -59,6 +51,16 @@ export default function SiteDetailPage() {
     if (error) {
       showToast({ title: "Delete failed", description: error.message || "Unable to delete", type: "error" });
     } else {
+      // Update subscription site count after deletion
+      if (profile?.company_id) {
+        try {
+          const { updateSubscriptionSiteCount } = await import("@/lib/subscriptions");
+          await updateSubscriptionSiteCount(profile.company_id);
+        } catch (err) {
+          console.error("Failed to update subscription site count:", err);
+          // Don't fail the delete if this fails
+        }
+      }
       showToast({ title: "Site deleted", type: "success" });
       router.replace("/dashboard/sites");
     }

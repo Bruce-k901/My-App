@@ -121,6 +121,13 @@ function SitesContent() {
         try {
           await supabase.from("companies").update({ setup_status: "sites_added" }).eq("id", companyId);
         } catch {}
+        // Update subscription site count
+        try {
+          const { updateSubscriptionSiteCount } = await import("@/lib/subscriptions");
+          await updateSubscriptionSiteCount(companyId);
+        } catch (err) {
+          console.error("Failed to update subscription site count:", err);
+        }
       }
 
       const successMsg = editingId ? "Site updated." : "Site created — defaults added.";

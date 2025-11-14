@@ -7,6 +7,7 @@ import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout"
 import { Button, Input } from "@/components/ui";
 import GlassCard from "@/components/ui/GlassCard";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { createTrialSubscription } from "@/lib/subscriptions";
 
 export default function SignupPage() {
   const supabase = createClient();
@@ -47,6 +48,8 @@ export default function SignupPage() {
     }
 
     const userId = signUpRes.user?.id;
+    let companyId: string | null = null;
+    
     if (!userId) {
       // In email-confirmation mode, the user record may be unavailable immediately.
       const { data: userRes } = await supabase.auth.getUser();
@@ -57,18 +60,47 @@ export default function SignupPage() {
       }
       
       try {
-        await supabase.from("companies").insert([{ name: form.company, user_id: userRes.user.id }]);
+        const { data: companyData, error: companyErr } = await supabase
+          .from("companies")
+          .insert([{ name: form.company, user_id: userRes.user.id }])
+          .select("id")
+          .single();
+        
+        if (companyErr) {
+          setError(companyErr.message || "Failed to create company");
+          setLoading(false);
+          return;
+        }
+        
+        companyId = companyData?.id || null;
       } catch (err: any) {
         setError(err?.message || "Failed to create company");
         setLoading(false);
         return;
       }
     } else {
-      const { error: companyError } = await supabase.from("companies").insert([{ name: form.company, user_id: userId }]);
+      const { data: companyData, error: companyError } = await supabase
+        .from("companies")
+        .insert([{ name: form.company, user_id: userId }])
+        .select("id")
+        .single();
+      
       if (companyError) {
         setError(companyError.message);
         setLoading(false);
         return;
+      }
+      
+      companyId = companyData?.id || null;
+    }
+
+    // Create 60-day trial subscription for the new company
+    if (companyId) {
+      try {
+        await createTrialSubscription(companyId, "starter");
+      } catch (subError: any) {
+        // Log but don't fail - subscription creation is not critical for signup
+        console.error("Failed to create trial subscription:", subError);
       }
     }
 
