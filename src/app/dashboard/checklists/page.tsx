@@ -535,19 +535,31 @@ export default function DailyChecklistPage() {
         }))
       })
       
-      // CRITICAL: For expanded tasks (multiple dayparts), we need to use _expandedKey for deduplication
-      // NOT task.id, because expanded tasks share the same task.id but have different dayparts/times
+      // CRITICAL: Deduplicate tasks to prevent duplicates from cron or expansion
+      // Use a composite key: template_id + site_id + daypart + due_time + due_date
+      // This catches duplicates even if they have different IDs
       const seen = new Map<string, ChecklistTaskWithTemplate>()
       const deduplicatedTasks = expandedTasks.filter(task => {
-        // Use _expandedKey if available (for expanded tasks), otherwise use task.id
-        const key = (task as any)._expandedKey || task.id
+        // Create a unique key based on task properties (not just ID)
+        // This catches duplicates from cron that have different IDs
+        const compositeKey = `${task.template_id || 'no-template'}_${task.site_id || 'no-site'}_${task.daypart || 'no-daypart'}_${task.due_time || 'no-time'}_${task.due_date || 'no-date'}`
+        
+        // Also check _expandedKey for expanded tasks
+        const expandedKey = (task as any)._expandedKey
+        
+        // Use composite key for deduplication (more reliable than just ID)
+        const key = expandedKey || compositeKey
+        
         if (seen.has(key)) {
-          // Already seen this exact key - skip it (true duplicate)
+          // Already seen this exact task pattern - skip it (true duplicate)
           console.log('⚠️ Duplicate task filtered:', { 
             key, 
+            compositeKey,
             taskId: task.id, 
             daypart: task.daypart,
             due_time: task.due_time,
+            due_date: task.due_date,
+            template_id: task.template_id,
             status: task.status 
           })
           return false
@@ -662,6 +674,8 @@ export default function DailyChecklistPage() {
       
       // Build a map of completed dayparts per task
       // Key: task_id, Value: Set of completed dayparts
+      // CRITICAL: For multi-daypart tasks, multiple instances share the same task.id
+      // so we need to track which specific daypart instances were completed
       const completedDaypartsMap = new Map<string, Set<string>>()
       allCompletionRecords.forEach(record => {
         const taskId = record.task_id
@@ -670,8 +684,23 @@ export default function DailyChecklistPage() {
           if (!completedDaypartsMap.has(taskId)) {
             completedDaypartsMap.set(taskId, new Set())
           }
-          completedDaypartsMap.get(taskId)!.add(normalizeDaypart(completedDaypart))
+          const normalizedDaypart = normalizeDaypart(completedDaypart)
+          completedDaypartsMap.get(taskId)!.add(normalizedDaypart)
+          console.log('📝 Mapped completion:', {
+            taskId,
+            completedDaypart,
+            normalizedDaypart,
+            allCompletedDayparts: Array.from(completedDaypartsMap.get(taskId)!)
+          })
         }
+      })
+      
+      console.log('📊 Completed dayparts map:', {
+        totalTasks: completedDaypartsMap.size,
+        details: Array.from(completedDaypartsMap.entries()).map(([taskId, dayparts]) => ({
+          taskId,
+          completedDayparts: Array.from(dayparts)
+        }))
       })
       
       // Build a set of task IDs that have completion records
@@ -681,40 +710,60 @@ export default function DailyChecklistPage() {
         totalTasks: tasksWithProfiles.length,
         completionRecordsFound: allCompletionRecords.length,
         tasksWithCompletionRecords: Array.from(tasksWithCompletionRecords),
-        sampleTaskChecks: tasksWithProfiles.slice(0, 3).map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          hasRecord: tasksWithCompletionRecords.has(t.id) 
-        }))
+        completedDaypartsMapSize: completedDaypartsMap.size,
+        sampleTaskChecks: tasksWithProfiles.slice(0, 5).map(t => {
+          const taskData = t.task_data || {}
+          const daypartsInData = taskData.dayparts || []
+          const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
+          const completedDayparts = completedDaypartsMap.get(t.id)
+          return { 
+            id: t.id, 
+            status: t.status,
+            daypart: t.daypart,
+            hasRecord: tasksWithCompletionRecords.has(t.id),
+            hasMultipleDayparts,
+            completedDayparts: completedDayparts ? Array.from(completedDayparts) : null,
+            willBeFiltered: hasMultipleDayparts && completedDayparts && t.daypart 
+              ? completedDayparts.has(normalizeDaypart(t.daypart))
+              : tasksWithCompletionRecords.has(t.id)
+          }
+        })
       })
       
       // Filter out completed tasks from active tasks
-      // SIMPLE RULE: Hide task if it has ANY completion record OR status is completed/skipped
+      // CRITICAL: For multi-daypart tasks, we need to check per-daypart completion
+      // For single-daypart tasks, we check if the task itself has a completion record
       let activeTasks = tasksWithProfiles.filter(task => {
         // Check 1: Skip if task status is completed or skipped
         if (task.status === 'completed' || task.status === 'skipped') {
           return false
         }
         
-        // Check 2: Skip if task has ANY completion record
-        // This is the PRIMARY check - if there's a completion record, hide the task
-        if (tasksWithCompletionRecords.has(task.id)) {
-          return false
-        }
-        
-        // Check 3: For multi-daypart tasks, hide specific daypart instances that have been completed
+        // Check 2: For multi-daypart tasks, check per-daypart completion
+        // This MUST come before the general completion check
         const taskData = task.task_data || {}
         const daypartsInData = taskData.dayparts || []
         const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
         
         if (hasMultipleDayparts && task.daypart) {
+          // For multi-daypart tasks, check if THIS specific daypart instance was completed
           const completedDayparts = completedDaypartsMap.get(task.id)
           if (completedDayparts) {
             const normalizedDaypart = normalizeDaypart(task.daypart)
             if (completedDayparts.has(normalizedDaypart)) {
+              // This specific daypart instance was completed, hide it
               return false
             }
           }
+          // If this daypart wasn't completed, show it (even if other dayparts were completed)
+          return true
+        }
+        
+        // Check 3: For single-daypart tasks (or tasks without daypart data), 
+        // skip if task has ANY completion record
+        // This only applies to non-multi-daypart tasks
+        if (tasksWithCompletionRecords.has(task.id)) {
+          return false
         }
         
         return true
@@ -969,14 +1018,14 @@ export default function DailyChecklistPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4 sm:px-6">
       {/* Simple Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400">
+        <p className="text-neutral-400 text-sm sm:text-base">
           {new Date().toLocaleDateString('en-US', { 
             weekday: 'long', 
             year: 'numeric', 
@@ -985,7 +1034,7 @@ export default function DailyChecklistPage() {
           })}
         </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {upcomingTasks.length > 0 && (
             <button
               onClick={() => {

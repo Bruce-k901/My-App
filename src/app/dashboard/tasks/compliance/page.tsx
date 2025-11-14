@@ -235,35 +235,35 @@ export default function CompliancePage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Compliance Templates</h1>
-        <p className="text-white/60">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
+    <div className="p-4 sm:p-6 md:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Compliance Templates</h1>
+        <p className="text-white/60 text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
+      <div className="mb-4 sm:mb-6">
+        <div className="relative max-w-md w-full">
           <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
           <input
             type="text"
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm sm:text-base"
           />
         </div>
       </div>
 
       {/* Templates List */}
       {loading ? (
-        <div className="text-white">Loading compliance templates...</div>
+        <div className="text-white text-center py-8">Loading compliance templates...</div>
       ) : filteredTemplates.length > 0 ? (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {Object.entries(groupedTemplates).map(([category, categoryTemplates]) => (
             <div key={category}>
-              <h2 className="text-xl font-semibold text-white mb-4">{category}</h2>
-              <div className="space-y-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">{category}</h2>
+              <div className="space-y-3 sm:space-y-4">
                 {categoryTemplates.map((template) => {
                   const Icon = getTemplateIcon(template);
                   const isExpanded = expandedTemplates.has(template.id);
@@ -272,17 +272,17 @@ export default function CompliancePage() {
                     <div
                       key={template.id}
                       onClick={(e) => handleUseTemplate(template.id, e)}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:bg-white/[0.05] hover:border-white/[0.1] transition-all cursor-pointer"
+                      className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 sm:p-6 hover:bg-white/[0.05] hover:border-white/[0.1] transition-all cursor-pointer"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className="p-3 bg-pink-500/10 rounded-lg">
-                            <Icon className="w-6 h-6 text-pink-400" />
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                          <div className="p-2 sm:p-3 bg-pink-500/10 rounded-lg flex-shrink-0">
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400" />
                           </div>
                           
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-lg font-semibold text-white">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <h3 className="text-base sm:text-lg font-semibold text-white break-words">
                                 {template.name}
                               </h3>
                               {template.is_critical && (
@@ -298,7 +298,7 @@ export default function CompliancePage() {
                               </p>
                             )}
                             
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-white/50">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-white/50">
                               {template.frequency && (
                                 <div className="flex items-center gap-1">
                                   <Calendar className="w-4 h-4" />
