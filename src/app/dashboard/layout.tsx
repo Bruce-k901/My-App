@@ -25,10 +25,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
-      <main className="flex-1 lg:ml-20 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16">
-        <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
-        {children}
-      </main>
+      <div className="flex-1 lg:ml-20 flex flex-col min-h-screen">
+        {/* Sticky Header - Outside scrollable area */}
+        <div className="sticky top-0 z-50 bg-[#0B0D13]">
+          <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
+        </div>
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16">
+          {children}
+        </main>
+      </div>
 
       {/* Dev toggle disabled */}
     </div>
