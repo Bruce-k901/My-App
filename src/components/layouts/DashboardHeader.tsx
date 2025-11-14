@@ -12,7 +12,11 @@ import { format } from "date-fns";
 
 // Menu items removed - now using BurgerMenu component
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMobileMenuClick?: () => void;
+}
+
+export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { company, role } = useAppContext();
@@ -160,20 +164,30 @@ export default function DashboardHeader() {
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
-      {/* Left: Logo */}
+    <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
+      {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-3">
+        {/* Mobile Menu Button - Only visible on mobile */}
+        {onMobileMenuClick && (
+          <button
+            onClick={onMobileMenuClick}
+            className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        )}
         <Link href="/dashboard" aria-label="Go to dashboard">
           <img
             src={companyLogo}
             alt="Logo"
-            className="h-10 w-auto transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.45)] hover:opacity-100"
+            className="h-8 sm:h-10 w-auto transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.45)] hover:opacity-100"
           />
         </Link>
       </div>
 
-      {/* Middle: Actions */}
-      <div className="flex items-center gap-4">
+      {/* Middle: Actions - Hidden on small mobile, visible on larger screens */}
+      <div className="hidden sm:flex items-center gap-4">
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/checklists"
@@ -343,8 +357,8 @@ export default function DashboardHeader() {
       </div>
 
       {/* Right: Clock and Menu */}
-      <div className="flex items-center gap-3">
-        {/* Clock */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Clock - Hidden on mobile */}
         <div className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-10">
           <Clock className="w-5 h-5 text-pink-400 flex-shrink-0" />
           <div className="font-mono text-sm text-white whitespace-nowrap">

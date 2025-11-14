@@ -40,10 +40,10 @@ export default function WelcomeHeader() {
       {/* Welcome + Date */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">
+          <h1 className="text-2xl sm:text-3xl font-semibold">
             Welcome{firstName ? `, ${firstName}` : ""}
           </h1>
-          <p className="text-white/60 text-sm md:text-base">{format(currentTime, "EEEE, d MMMM yyyy")}</p>
+          <p className="text-white/60 text-xs sm:text-sm md:text-base">{format(currentTime, "EEEE, d MMMM yyyy")}</p>
         </div>
       </div>
     </div>

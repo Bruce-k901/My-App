@@ -16,7 +16,7 @@ export default function DashboardHomePage() {
 
   return (
     <div className="flex flex-col w-full items-center">
-      <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white">
+      <div className="w-full max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col gap-4 sm:gap-6 text-white">
         <WelcomeHeader />
         {/* Enhanced Shift Handover - Moved to top */}
         <EnhancedShiftHandover />

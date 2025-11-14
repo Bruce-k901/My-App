@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { isRestricted, type AppRole } from "@/lib/accessControl";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
 import { useAppContext } from "@/context/AppContext";
@@ -19,6 +20,7 @@ import {
   HelpCircle,
   GraduationCap,
   CalendarDays,
+  X,
 } from "lucide-react";
 
 // Section with hover popup
@@ -120,11 +122,17 @@ const directLinks: SidebarLink[] = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: HelpCircle },
 ];
-export default function NewMainSidebar() {
+interface NewMainSidebarProps {
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
   const pathname = usePathname();
   const { role: contextRole } = useAppContext();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // Use ref to track actual hovering state for timeout closures
   const isHoveringRef = useRef(false);
@@ -132,6 +140,17 @@ export default function NewMainSidebar() {
   const role = (
     (contextRole as AppRole) || (roleGuard ? (null as any) : ("Admin" as AppRole))
   ) as AppRole;
+
+  // Handle mobile close on route change
+  useEffect(() => {
+    if (isMobileOpen && onMobileClose) {
+      onMobileClose();
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Create refs for each section button
   const orgRef = useRef<HTMLDivElement>(null);
@@ -264,10 +283,23 @@ export default function NewMainSidebar() {
     };
   }, []);
 
+  // Mobile drawer backdrop
+  const mobileBackdrop = mounted && isMobileOpen ? createPortal(
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+      onClick={onMobileClose}
+      style={{ zIndex: 40 }}
+    />,
+    document.body
+  ) : null;
+
   return (
     <>
-      {/* Main Sidebar */}
-      <aside className="fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col items-center py-6 gap-2 z-50">
+      {/* Mobile Backdrop */}
+      {mobileBackdrop}
+
+      {/* Main Sidebar - Hidden on mobile, visible on desktop */}
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-6 gap-2 z-50">
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -319,7 +351,7 @@ export default function NewMainSidebar() {
         })}
       </aside>
 
-      {/* Hover Popups */}
+      {/* Hover Popups - Desktop only */}
       {sections.map((section) => {
         const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
         return (
@@ -335,6 +367,108 @@ export default function NewMainSidebar() {
           />
         );
       })}
+
+      {/* Mobile Drawer Sidebar */}
+      {mounted && isMobileOpen ? createPortal(
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
+            <h2 className="text-lg font-semibold text-white">Menu</h2>
+            <button
+              onClick={onMobileClose}
+              className="p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Mobile Menu Content */}
+          <div className="flex-1 p-4 space-y-6">
+            {/* Dashboard Link */}
+            <MobileSidebarLink
+              item={directLinks[0]}
+              isActive={pathname === "/dashboard"}
+              isRestricted={false}
+              onClick={onMobileClose}
+            />
+
+            <div className="h-px bg-white/[0.1] my-4" />
+
+            {/* Sections */}
+            {sections.map((section) => {
+              const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+              if (sectionRestricted) return null;
+
+              // Find if any item in this section is active
+              const hasActiveItem = section.items.some((item) => 
+                pathname === item.href || pathname.startsWith(item.href + "/")
+              );
+
+              return (
+                <div key={section.label} className="space-y-2">
+                  <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
+                    {section.label}
+                  </div>
+                  {section.items.map((item) => {
+                    const itemRestricted = isRestricted(role, item.label);
+                    const isExactMatch = pathname === item.href;
+                    const isChildRoute = pathname.startsWith(item.href + "/");
+                    const longerMatchExists = section.items.some((other) =>
+                      other.href !== item.href &&
+                      other.href.length > item.href.length &&
+                      (pathname === other.href || pathname.startsWith(other.href + "/"))
+                    );
+                    const isActive = !itemRestricted && (isExactMatch || isChildRoute) && !longerMatchExists;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={itemRestricted ? "#" : item.href}
+                        onClick={(e) => {
+                          if (itemRestricted) {
+                            e.preventDefault();
+                          } else {
+                            onMobileClose?.();
+                          }
+                        }}
+                        className={`
+                          block px-4 py-2.5 rounded-lg text-sm transition-colors
+                          ${itemRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                          ${
+                            isActive
+                              ? "bg-pink-500/20 text-pink-300 font-medium"
+                              : "text-white/80 hover:text-white hover:bg-white/[0.08]"
+                          }
+                        `}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            })}
+
+            <div className="h-px bg-white/[0.1] my-4" />
+
+            {/* Bottom Direct Links */}
+            {directLinks.slice(1).map((link) => {
+              const linkRestricted = roleGuard ? isRestricted(role, link.label) : false;
+              return (
+                <MobileSidebarLink
+                  key={link.href}
+                  item={link}
+                  isActive={pathname.startsWith(link.href)}
+                  isRestricted={linkRestricted}
+                  onClick={onMobileClose}
+                />
+              );
+            })}
+          </div>
+        </aside>,
+        document.body
+      ) : null}
     </>
   );
 }
@@ -455,6 +589,51 @@ function SidebarSectionItem({
         </div>
       )}
     </div>
+  );
+}
+
+// Mobile Sidebar Link Component
+function MobileSidebarLink({
+  item,
+  isActive,
+  isRestricted,
+  onClick,
+}: {
+  item: SidebarLink;
+  isActive: boolean;
+  isRestricted: boolean;
+  onClick?: () => void;
+}) {
+  const Icon = item.icon;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isRestricted) {
+      e.preventDefault();
+    } else {
+      onClick?.();
+    }
+  };
+
+  return (
+    <Link
+      href={isRestricted ? "#" : item.href}
+      onClick={handleClick}
+      className={`
+        flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors
+        ${isRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+        ${
+          isActive && !isRestricted
+            ? "bg-pink-500/20 text-pink-300 font-medium"
+            : "text-white/80 hover:text-white hover:bg-white/[0.08]"
+        }
+      `}
+    >
+      <Icon size={20} />
+      <span>{item.label}</span>
+      {isRestricted && (
+        <span className="ml-auto text-white/30 text-xs">🔒</span>
+      )}
+    </Link>
   );
 }
 
