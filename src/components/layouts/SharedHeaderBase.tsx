@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui";
 import logo from "@/assets/checkly_logo_touching_blocks.png";
 
 interface SharedHeaderBaseProps {
@@ -65,26 +66,30 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-slate-800">
-            {/* Mobile Nav Links */}
-            {children && (
-              <nav className="flex flex-col gap-4 pt-4">
-                {React.Children.map(children, (child, index) => (
-                  <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
-                    {child}
-                  </div>
-                ))}
-              </nav>
-            )}
-            {/* Mobile CTAs */}
-            {cta && (
-              <div className="flex flex-col gap-3 pt-4">
-                {React.Children.map(cta, (child, index) => (
-                  <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
-                    {child}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Mobile Menu - Only Pricing, Sign Up, Login */}
+            <nav className="flex flex-col gap-3 pt-4">
+              <Link
+                href="/pricing"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-slate-200 hover:text-magenta-400 transition py-2 px-2 rounded-lg hover:bg-white/10"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block"
+              >
+                <Button variant="primary" className="w-full">Sign up</Button>
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block"
+              >
+                <Button variant="primary" className="w-full">Login</Button>
+              </Link>
+            </nav>
           </div>
         )}
       </div>
