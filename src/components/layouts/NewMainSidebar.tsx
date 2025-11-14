@@ -446,12 +446,18 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 pathname === item.href || pathname.startsWith(item.href + "/")
               );
 
+              // For Libraries section on mobile, only show "All Libraries" button
+              const isLibrariesSection = section.label === "Libraries";
+              const itemsToShow = isLibrariesSection 
+                ? section.items.filter(item => item.label === "All Libraries" || item.label === "Create Library" || item.label === "Library Templates")
+                : section.items;
+
               return (
                 <div key={section.label} className="space-y-2">
                   <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
                     {section.label}
                   </div>
-                  {section.items.map((item) => {
+                  {itemsToShow.map((item) => {
                     const itemRestricted = isRestricted(role, item.label);
                     const isExactMatch = pathname === item.href;
                     const isChildRoute = pathname.startsWith(item.href + "/");
