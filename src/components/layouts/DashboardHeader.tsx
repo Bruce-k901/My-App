@@ -194,7 +194,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
         >
           <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-          <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden min-[400px]:inline">Today's Tasks</span>
+          <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Today's Tasks</span>
         </Link>
 
         {/* Incidents Reports - With Dropdown */}
@@ -215,7 +215,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             }`}
           >
             <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-            <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden min-[400px]:inline">Incidents</span>
+            <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Incidents</span>
           </div>
 
           {/* Dropdown Menu - Matching Sidebar Popup UX */}
