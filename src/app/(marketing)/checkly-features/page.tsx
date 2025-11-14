@@ -29,16 +29,16 @@ export default function ChecklyFeaturesPage() {
         </div>
         
         {/* HERO */}
-        <section className="relative text-center pt-6 pb-10 md:pt-8 md:pb-12 min-h-[400px] flex flex-col justify-start">
+        <section className="relative text-center pt-6 pb-8 sm:pb-10 md:pt-8 md:pb-12 min-h-[350px] sm:min-h-[400px] flex flex-col justify-start">
           {/* Content */}
-          <div className="relative z-10 max-w-7xl mx-auto px-10 pt-8">
-            <h1 className="hero-title text-4xl md:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-6">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pt-6 sm:pt-8">
+            <h1 className="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-4 sm:mb-6 px-2">
               Everything your kitchen, store, and head office need in one place
             </h1>
-            <p className="text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
               Real-time logs, automated alerts, and ready-to-show reports. Less firefighting, more running your business..
             </p>
-            <div className="flex justify-center gap-4 mb-0">
+            <div className="flex justify-center gap-3 sm:gap-4 mb-0 px-4">
               <Link href="/signup" className="btn-glass-cta">
                 Get Started
               </Link>
@@ -47,13 +47,13 @@ export default function ChecklyFeaturesPage() {
         </section>
 
         {/* FEATURES SECTION - Cards overlay the background */}
-        <section id="features" className="relative px-6 -mt-20 md:-mt-24 pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto mb-8 px-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-center text-white mb-2">
+        <section id="features" className="relative px-4 sm:px-6 -mt-12 sm:-mt-16 md:-mt-24 pb-10 sm:pb-14 text-gray-200">
+          <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-white mb-2">
               What it fixes — and how Checkly helps
             </h2>
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Pitfall-Feature Pair 1 */}
             <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition">
               <div className="flex items-center space-x-2 mb-2">
@@ -218,10 +218,10 @@ export default function ChecklyFeaturesPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="bg-checkly-dark text-checkly-light py-4">
-        <div className="max-w-7xl mx-auto px-10 flex flex-col md:flex-row justify-between items-center text-sm">
+      <footer className="bg-checkly-dark text-checkly-light py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
           <p>© {new Date().getFullYear()} MyApp. All rights reserved.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             <Link href="/privacy" className="hover:underline">
               Privacy
             </Link>
