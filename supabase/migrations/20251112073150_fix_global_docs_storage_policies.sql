@@ -65,3 +65,5 @@ create policy global_docs_delete_company
         and split_part(storage.objects.name, '/', 1) = coalesce(p.company_id::text, '')
     )
   );
+
+

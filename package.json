@@ -38,6 +38,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "cheerio": "^1.1.2",
     "clsx": "^2.1.1",
+    "critters": "^0.0.23",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.24",
     "lru-cache": "^11.2.2",

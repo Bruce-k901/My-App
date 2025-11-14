@@ -647,11 +647,6 @@ export function TaskFromTemplateModal({
         due_time: daypartTimes[dp] || ''
       }));
       
-      // Initialize yes/no checklist items if feature is enabled
-      const yesNoChecklistItems = templateData.evidence_types?.includes('yes_no_checklist') 
-        ? [] // Start with empty array - user can add items
-        : [];
-      
       // Load default checklist items from template's recurrence_pattern if available
       // CRITICAL: Handle both object and string formats
       let recurrencePattern = templateData.recurrence_pattern;
@@ -665,7 +660,19 @@ export function TaskFromTemplateModal({
       }
       
       const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
-      const checklistItems = Array.isArray(defaultChecklistItems) 
+      
+      // Initialize yes/no checklist items if feature is enabled
+      // Convert default_checklist_items to yes/no checklist format
+      const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
+      const yesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
+        ? defaultChecklistItems.map((item: any) => ({
+            text: typeof item === 'string' ? item : (item.text || item.label || ''),
+            answer: null as 'yes' | 'no' | null
+          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0)
+        : [];
+      
+      // Regular checklist items (only if yes_no_checklist is NOT enabled)
+      const checklistItems = !hasYesNoChecklist && Array.isArray(defaultChecklistItems)
         ? defaultChecklistItems.map((item: any) => 
             typeof item === 'string' ? item : (item.text || item.label || '')
           ).filter((item: string) => item && item.trim().length > 0)
@@ -679,6 +686,9 @@ export function TaskFromTemplateModal({
         recurrence_pattern: recurrencePattern,
         default_checklist_items: defaultChecklistItems,
         default_checklist_items_type: Array.isArray(defaultChecklistItems),
+        hasYesNoChecklist: hasYesNoChecklist,
+        yesNoChecklistItems: yesNoChecklistItems,
+        yesNoChecklistItemsCount: yesNoChecklistItems.length,
         parsed_checklist_items: checklistItems,
         parsed_count: checklistItems.length,
         evidence_types: templateData.evidence_types
@@ -693,6 +703,8 @@ export function TaskFromTemplateModal({
       console.log('✅ Setting formData with checklist items:', {
         checklistItems: checklistItems,
         checklistItemsCount: checklistItems.length,
+        yesNoChecklistItems: yesNoChecklistItems,
+        yesNoChecklistItemsCount: yesNoChecklistItems.length,
         dayparts: daypartsArray,
         autoTaskName: autoTaskName
       });

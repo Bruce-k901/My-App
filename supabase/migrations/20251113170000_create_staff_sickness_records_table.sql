@@ -76,3 +76,4 @@ CREATE TRIGGER update_staff_sickness_records_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_staff_sickness_records_updated_at();
 
+

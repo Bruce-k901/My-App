@@ -170,7 +170,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
         // Training records
         supabase
           .from('training_bookings')
-          .select('training_type, status, site_id')
+          .select('course, status, site_id')
           .eq('site_id', siteId),
         
         // PAT appliances - filter by both site_id AND company_id to prevent cross-referencing
@@ -310,17 +310,17 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
           case 'training':
             // Check training_bookings
             const trainingMatch = training.find(t => {
-              const type = t.training_type?.toLowerCase() || ''
-              if (req.id === 'food-hygiene-training') return type.includes('food') || type.includes('hygiene')
-              if (req.id === 'allergen-training') return type.includes('allergen')
-              if (req.id === 'hs-training') return type.includes('safety') || type.includes('health')
-              if (req.id === 'fire-training') return type.includes('fire')
-              if (req.id === 'first-aid') return type.includes('first aid')
+              const course = (t.course || '').toLowerCase()
+              if (req.id === 'food-hygiene-training') return course.includes('food') || course.includes('hygiene')
+              if (req.id === 'allergen-training') return course.includes('allergen')
+              if (req.id === 'hs-training') return course.includes('safety') || course.includes('health')
+              if (req.id === 'fire-training') return course.includes('fire')
+              if (req.id === 'first-aid') return course.includes('first aid')
               return false
             })
             if (trainingMatch) {
               found = true
-              foundDetails = `${trainingMatch.training_type} (${training.length} records)`
+              foundDetails = `${trainingMatch.course} (${training.length} records)`
               status = 'valid'
             }
             break

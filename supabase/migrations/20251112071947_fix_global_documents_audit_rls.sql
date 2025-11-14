@@ -16,3 +16,5 @@ create policy global_documents_audit_insert
   on public.global_documents_audit
   for insert
   with check (auth.uid() is not null or public.is_service_role());
+
+

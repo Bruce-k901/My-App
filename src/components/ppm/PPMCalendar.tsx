@@ -23,6 +23,11 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
   // Use optimized calendar data hook
   const { assets, loading, error, refreshMonth } = usePPMCalendarData(currentDate);
 
+  // Debug: Log assets received
+  React.useEffect(() => {
+    console.log(`[PPM Calendar] Received ${assets.length} assets for ${format(currentDate, 'yyyy-MM')}`, assets.slice(0, 3))
+  }, [assets, currentDate])
+
   // Get the first day of the current month
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -47,7 +52,11 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
   // Group assets by date
   const assetsByDate = assets.reduce((acc, asset) => {
     if (asset.next_service_date) {
-      const dateKey = asset.next_service_date;
+      // Ensure date is in YYYY-MM-DD format for matching
+      let dateKey = asset.next_service_date
+      if (typeof dateKey === 'string' && dateKey.includes('T')) {
+        dateKey = dateKey.split('T')[0]
+      }
       if (!acc[dateKey]) {
         acc[dateKey] = [];
       }
@@ -55,6 +64,12 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
     }
     return acc;
   }, {} as Record<string, PPMAsset[]>);
+
+  // Debug: Log grouped assets
+  React.useEffect(() => {
+    const dateKeys = Object.keys(assetsByDate)
+    console.log(`[PPM Calendar] Grouped assets into ${dateKeys.length} dates:`, dateKeys.slice(0, 5))
+  }, [assetsByDate])
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {

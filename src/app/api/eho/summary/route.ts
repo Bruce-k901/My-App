@@ -62,35 +62,58 @@ export async function GET(request: NextRequest) {
     }
     
     console.log('Calling RPC function get_compliance_summary...')
-    const { data, error } = await supabase.rpc('get_compliance_summary', {
-      p_site_id: siteId,
-      p_start_date: startDate,
-      p_end_date: endDate
-    })
     
-    if (error) {
-      console.error('RPC error fetching compliance summary:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
+    // Check if the function exists first
+    try {
+      const { data, error } = await supabase.rpc('get_compliance_summary', {
+        p_site_id: siteId,
+        p_start_date: startDate,
+        p_end_date: endDate
       })
-      return NextResponse.json(
-        { 
-          error: 'Failed to fetch summary', 
-          details: error.message,
+      
+      if (error) {
+        console.error('RPC error fetching compliance summary:', {
+          message: error.message,
+          details: error.details,
           hint: error.hint,
           code: error.code
-        },
-        { status: 500 }
-      )
+        })
+        
+        // If function doesn't exist, return empty data instead of error
+        if (error.code === '42883' || error.message?.includes('does not exist')) {
+          console.warn('get_compliance_summary function not found, returning empty data')
+          return NextResponse.json({
+            success: true,
+            data: [],
+            warning: 'Compliance summary function not available'
+          })
+        }
+        
+        return NextResponse.json(
+          { 
+            error: 'Failed to fetch summary', 
+            details: error.message,
+            hint: error.hint,
+            code: error.code
+          },
+          { status: 500 }
+        )
+      }
+      
+      console.log('RPC call successful, returning data:', { count: data?.length || 0 })
+      return NextResponse.json({
+        success: true,
+        data: data || []
+      })
+    } catch (rpcError: any) {
+      console.error('Exception calling RPC function:', rpcError)
+      // If RPC call fails completely, return empty data
+      return NextResponse.json({
+        success: true,
+        data: [],
+        warning: 'Compliance summary temporarily unavailable'
+      })
     }
-    
-    console.log('RPC call successful, returning data:', { count: data?.length || 0 })
-    return NextResponse.json({
-      success: true,
-      data: data || []
-    })
   } catch (error: any) {
     console.error('EHO summary API error:', {
       message: error?.message,

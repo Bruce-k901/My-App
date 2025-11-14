@@ -96,5 +96,3 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 export function useAppContext() {
   return useContext(AppContext);
 }
-
-

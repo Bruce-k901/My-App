@@ -11,6 +11,8 @@ import { fetchAllAssets, AssetRecord } from '@/lib/fetchAssets';
 import { useAppContext } from '@/context/AppContext';
 import { PPMAsset } from '@/types/ppm';
 import { nullifyUndefined } from '@/lib/utils';
+import { generatePPMSchedulesForAllAssets } from '@/lib/ppm/generateSchedules';
+import { toast } from 'sonner';
 
 export default function PPMSchedulePage() {
   const [assets, setAssets] = useState<PPMAsset[]>([]);
@@ -31,6 +33,35 @@ export default function PPMSchedulePage() {
   const [contractors, setContractors] = useState<string[]>([]);
   
   const { profile } = useAppContext();
+  const [generatingSchedules, setGeneratingSchedules] = useState(false);
+
+  const handleGenerateSchedules = async () => {
+    if (!profile?.company_id) {
+      toast.error('Company ID not available');
+      return;
+    }
+
+    setGeneratingSchedules(true);
+    try {
+      const result = await generatePPMSchedulesForAllAssets(profile.company_id);
+      
+      if (result.success) {
+        toast.success(result.message || `Successfully created ${result.created} PPM schedules`);
+        // Refresh the data
+        await fetchPPMData();
+      } else {
+        toast.error(result.message || 'Failed to generate schedules');
+        if (result.errors && result.errors.length > 0) {
+          console.error('Schedule generation errors:', result.errors);
+        }
+      }
+    } catch (error: any) {
+      console.error('Error generating schedules:', error);
+      toast.error(`Failed to generate schedules: ${error.message || 'Unknown error'}`);
+    } finally {
+      setGeneratingSchedules(false);
+    }
+  };
 
   const fetchPPMData = async () => {
     try {
@@ -279,6 +310,25 @@ export default function PPMSchedulePage() {
           >
             <Filter className="w-4 h-4" />
             Filter
+          </button>
+
+          {/* Generate Schedules Button */}
+          <button 
+            onClick={handleGenerateSchedules}
+            disabled={generatingSchedules}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {generatingSchedules ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" />
+                Generate Schedules
+              </>
+            )}
           </button>
 
           {/* Add PPM Button */}
