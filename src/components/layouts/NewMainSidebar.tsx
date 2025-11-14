@@ -21,6 +21,7 @@ import {
   GraduationCap,
   CalendarDays,
   X,
+  AlertTriangle,
 } from "lucide-react";
 
 // Section with hover popup
@@ -385,6 +386,45 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
           {/* Mobile Menu Content */}
           <div className="flex-1 p-4 space-y-6">
+            {/* Quick Actions - Today's Tasks & Incidents */}
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
+                Quick Actions
+              </div>
+              <Link
+                href="/dashboard/checklists"
+                onClick={onMobileClose}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
+                  ${
+                    pathname === "/dashboard/checklists" || pathname.startsWith("/dashboard/checklists")
+                      ? "bg-pink-500/20 text-pink-300 font-medium"
+                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
+                  }
+                `}
+              >
+                <CheckSquare size={20} />
+                <span>Today's Tasks</span>
+              </Link>
+              <Link
+                href="/dashboard/incidents"
+                onClick={onMobileClose}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
+                  ${
+                    pathname === "/dashboard/incidents" || pathname.startsWith("/dashboard/incidents")
+                      ? "bg-pink-500/20 text-pink-300 font-medium"
+                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
+                  }
+                `}
+              >
+                <AlertTriangle size={20} />
+                <span>Incidents</span>
+              </Link>
+            </div>
+
+            <div className="h-px bg-white/[0.1] my-4" />
+
             {/* Dashboard Link */}
             <MobileSidebarLink
               item={directLinks[0]}

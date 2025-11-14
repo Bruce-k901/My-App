@@ -186,15 +186,15 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         </Link>
       </div>
 
-      {/* Middle: Actions - Hidden on small mobile, visible on larger screens */}
-      <div className="hidden sm:flex items-center gap-4">
+      {/* Middle: Actions - Show on all screens, compact on mobile */}
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/checklists"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-10"
+          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
         >
-          <ClipboardCheck className="w-5 h-5 text-pink-400 flex-shrink-0" />
-          <span className="font-semibold text-sm whitespace-nowrap">Today's Tasks</span>
+          <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+          <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden min-[400px]:inline">Today's Tasks</span>
         </Link>
 
         {/* Incidents Reports - With Dropdown */}
@@ -208,14 +208,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
               }
               setIsIncidentsMenuOpen((open) => !open);
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-10 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10 ${
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
                 ? 'bg-white/[0.12] text-white border-pink-500/30'
                 : ''
             }`}
           >
-            <AlertTriangle className="w-5 h-5 text-pink-400 flex-shrink-0" />
-            <span className="font-medium text-sm whitespace-nowrap">Incidents</span>
+            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+            <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden min-[400px]:inline">Incidents</span>
           </div>
 
           {/* Dropdown Menu - Matching Sidebar Popup UX */}
