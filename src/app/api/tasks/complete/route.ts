@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
         completed_by: completionRecord.completed_by
       })
 
+      // Use maybeSingle() to handle case where task might not exist
+      // But we already checked above, so this should work
       const { data: updatedTask, error: updateError } = await serviceClient
         .from('checklist_tasks')
         .update({
@@ -175,7 +177,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', completionRecord.task_id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (updateError) {
         console.error('❌ Task status update error:', {
