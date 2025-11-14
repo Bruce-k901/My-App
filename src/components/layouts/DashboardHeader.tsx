@@ -164,7 +164,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
+    <header className="sticky top-0 z-50 flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
       {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {/* Mobile Menu Button - Only visible on mobile */}
@@ -358,10 +358,10 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
 
       {/* Right: Clock and Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Clock - Hidden on mobile */}
-        <div className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-10">
-          <Clock className="w-5 h-5 text-pink-400 flex-shrink-0" />
-          <div className="font-mono text-sm text-white whitespace-nowrap">
+        {/* Clock - Always visible */}
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10">
+          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+          <div className="font-mono text-xs sm:text-sm text-white whitespace-nowrap">
             {format(currentTime, "HH:mm:ss")}
           </div>
         </div>

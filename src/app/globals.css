@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA Standalone Mode - Improved Mobile Padding */
+@media (display-mode: standalone) {
+  /* Better padding for standalone PWA on mobile */
+  .dashboard-page main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .dashboard-page main {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .dashboard-page main {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .dashboard-page main {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+}
+
 /* Animated CHECKLY Tiles - Magnetic snap effect */
 @keyframes magnet-slide-left {
   from {

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { registerServiceWorker } from '@/lib/pwa';
-import { InstallPrompt, PWAInstalledBadge } from './InstallPrompt';
+import { InstallPrompt } from './InstallPrompt';
 
 export function PWAProvider() {
   useEffect(() => {
@@ -10,11 +10,6 @@ export function PWAProvider() {
     registerServiceWorker();
   }, []);
 
-  return (
-    <>
-      <InstallPrompt />
-      <PWAInstalledBadge />
-    </>
-  );
+  return <InstallPrompt />;
 }
 
