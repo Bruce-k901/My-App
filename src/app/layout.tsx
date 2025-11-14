@@ -19,13 +19,7 @@ const manrope = Manrope({
 export const metadata = {
   title: "Checkly",
   description: "Chaos into clarity for hospitality operations.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
   manifest: "/manifest.json",
-  themeColor: "#10B981",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -43,6 +37,15 @@ export const metadata = {
     ],
   },
 };
+
+export function generateViewport() {
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    themeColor: "#10B981",
+  };
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   // kill GoTrueClient spam in dev logs
