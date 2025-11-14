@@ -144,17 +144,59 @@ export function setupInstallPrompt(
 }
 
 /**
+ * Detect browser type
+ */
+export function detectBrowser(): {
+  isDuckDuckGo: boolean;
+  isIOS: boolean;
+  isAndroid: boolean;
+  isChrome: boolean;
+  isSafari: boolean;
+  isFirefox: boolean;
+} {
+  if (typeof window === 'undefined') {
+    return {
+      isDuckDuckGo: false,
+      isIOS: false,
+      isAndroid: false,
+      isChrome: false,
+      isSafari: false,
+      isFirefox: false,
+    };
+  }
+
+  const ua = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = /android/.test(ua);
+  const isDuckDuckGo = ua.includes('duckduckgo') || ua.includes('ddg');
+  const isChrome = /chrome/.test(ua) && !/edg|opr|brave/.test(ua);
+  const isSafari = /safari/.test(ua) && !/chrome/.test(ua);
+  const isFirefox = /firefox/.test(ua);
+
+  return {
+    isDuckDuckGo,
+    isIOS,
+    isAndroid,
+    isChrome,
+    isSafari,
+    isFirefox,
+  };
+}
+
+/**
  * Get PWA install status
  */
 export function getPWAStatus(): {
   isInstalled: boolean;
   isInstallable: boolean;
   isSupported: boolean;
+  browser: ReturnType<typeof detectBrowser>;
 } {
   return {
     isInstalled: isInstalled(),
     isInstallable: isInstallable(),
     isSupported: 'serviceWorker' in navigator,
+    browser: detectBrowser(),
   };
 }
 
