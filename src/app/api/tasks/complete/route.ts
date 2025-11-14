@@ -74,14 +74,36 @@ export async function POST(request: NextRequest) {
 
     // Update task status to 'completed' using service role (bypasses RLS)
     // Check if task has multiple dayparts - if so, only mark complete if all dayparts are done
-    const { data: task } = await serviceClient
+    const { data: task, error: taskFetchError } = await serviceClient
       .from('checklist_tasks')
-      .select('id, task_data, flag_reason, flagged')
+      .select('id, task_data, flag_reason, flagged, status')
       .eq('id', completionRecord.task_id)
       .single()
 
+    if (taskFetchError) {
+      console.error('❌ Error fetching task for status update:', {
+        error: taskFetchError,
+        code: taskFetchError.code,
+        message: taskFetchError.message,
+        task_id: completionRecord.task_id
+      })
+      // Don't fail - completion record was saved successfully
+      // But log the error clearly
+    }
+
     if (!task) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+      console.error('❌ Task not found for status update:', {
+        task_id: completionRecord.task_id,
+        error: taskFetchError
+      })
+      // Don't fail - completion record was saved successfully
+      // Return success but indicate task update failed
+      return NextResponse.json({ 
+        data: insertedRecord,
+        taskUpdated: false,
+        taskUpdateSuccess: false,
+        warning: 'Task not found - completion record saved but task status not updated'
+      })
     }
 
     const taskData = task.task_data || {}
@@ -138,6 +160,12 @@ export async function POST(request: NextRequest) {
     // Update task status if it should be marked as completed
     let taskUpdateSuccess = false
     if (shouldMarkTaskCompleted) {
+      console.log('🔄 Attempting to update task status to completed:', {
+        task_id: completionRecord.task_id,
+        completed_at: completionRecord.completed_at,
+        completed_by: completionRecord.completed_by
+      })
+
       const { data: updatedTask, error: updateError } = await serviceClient
         .from('checklist_tasks')
         .update({
@@ -150,14 +178,28 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (updateError) {
-        console.error('❌ Task status update error:', updateError)
-        // Log but don't fail - completion record was saved successfully
+        console.error('❌ Task status update error:', {
+          error: updateError,
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint,
+          task_id: completionRecord.task_id
+        })
+        // For critical errors, we should still return success for the completion record
+        // but log the task update failure clearly
+        // Don't throw - completion record was saved successfully
       } else if (updatedTask) {
         taskUpdateSuccess = true
         console.log('✅ Task status updated successfully:', {
           taskId: updatedTask.id,
           status: updatedTask.status,
-          completed_at: updatedTask.completed_at
+          completed_at: updatedTask.completed_at,
+          completed_by: updatedTask.completed_by
+        })
+      } else {
+        console.warn('⚠️ Task update returned no data - task may not exist:', {
+          task_id: completionRecord.task_id
         })
       }
     } else {
