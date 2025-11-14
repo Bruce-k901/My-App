@@ -66,15 +66,8 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-slate-800">
-            {/* Mobile Menu - Only Pricing, Sign Up, Login */}
+            {/* Mobile Menu - Sign Up, Login, Pricing */}
             <nav className="flex flex-col gap-3 pt-4">
-              <Link
-                href="/pricing"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-slate-200 hover:text-magenta-400 transition py-2 px-2 rounded-lg hover:bg-white/10"
-              >
-                Pricing
-              </Link>
               <Link
                 href="/signup"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -88,6 +81,13 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
                 className="block"
               >
                 <Button variant="primary" className="w-full">Login</Button>
+              </Link>
+              <Link
+                href="/pricing"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block"
+              >
+                <Button variant="primary" className="w-full">Pricing</Button>
               </Link>
             </nav>
           </div>
