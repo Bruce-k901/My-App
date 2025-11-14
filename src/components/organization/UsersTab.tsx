@@ -490,7 +490,7 @@ export default function UsersTab() {
           {(role === "Admin" || role === "Manager") && !viewArchived && (
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
             >
               <Plus className="w-4 h-4" />
               Add User

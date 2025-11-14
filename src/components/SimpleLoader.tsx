@@ -17,7 +17,7 @@ export default function SimpleLoader({ children, fallback }: SimpleLoaderProps) 
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">❌ Error</div>
           <div className="text-white/80 mb-4">{error}</div>
-          <a href="/login" className="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600">
+          <a href="/login" className="bg-transparent border border-[#EC4899] text-[#EC4899] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200">
             Go to Login
           </a>
         </div>
@@ -43,7 +43,7 @@ export default function SimpleLoader({ children, fallback }: SimpleLoaderProps) 
       <div className="min-h-screen bg-neutral-950 text-white flex items-center justify-center">
         <div className="text-center">
           <div className="text-yellow-400 text-xl mb-4">No session found</div>
-          <a href="/login" className="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600">
+          <a href="/login" className="bg-transparent border border-[#EC4899] text-[#EC4899] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200">
             Go to Login
           </a>
         </div>

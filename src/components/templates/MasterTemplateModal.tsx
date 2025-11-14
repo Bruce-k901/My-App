@@ -1006,7 +1006,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-5 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
           >
             {isSaving 
               ? (editingTemplate ? 'Updating...' : 'Creating...')

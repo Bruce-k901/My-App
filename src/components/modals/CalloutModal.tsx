@@ -1735,7 +1735,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                             <Button
                               onClick={() => handleCloseCallout(callout.id)}
                               disabled={loading || !repairSummary.trim()}
-                              className="bg-green-500 hover:bg-green-600 text-white"
+                              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
                             >
                               <CheckCircle size={14} className="mr-1" />
                               Close Callout

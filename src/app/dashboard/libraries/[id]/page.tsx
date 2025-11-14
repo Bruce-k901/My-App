@@ -69,7 +69,7 @@ export default function LibraryPage({ params }: { params: Promise<{ id: string }
         {items.length === 0 ? (
           <div className="col-span-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
             <p className="text-white/60">No items in this library yet.</p>
-            <button className="mt-4 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors">
+            <button className="mt-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200">
               Add First Item
             </button>
           </div>

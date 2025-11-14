@@ -86,7 +86,7 @@ export default function QuickActions() {
           // Toggle menu; timer effect handles auto-close
           setOpen(!open);
         }}
-        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pink-500 text-white shadow-lg hover:shadow-pink-500/40 transition-all"
+        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-[#EC4899] text-[#EC4899] shadow-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
       >
         {open ? (
           <Minus className="w-5 h-5 sm:w-6 sm:h-6" />

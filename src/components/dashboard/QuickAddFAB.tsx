@@ -7,7 +7,7 @@ export default function QuickAddFAB() {
   const router = useRouter();
   return (
     <div className="fixed bottom-6 right-6 flex flex-col items-end gap-2 z-40">
-      <button className="w-12 h-12 rounded-full bg-pink-600 hover:bg-pink-500 text-white shadow-lg flex items-center justify-center">
+      <button className="w-12 h-12 rounded-full bg-transparent border-2 border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] shadow-lg flex items-center justify-center transition-all duration-200">
         <Plus className="w-5 h-5" />
       </button>
       <div className="flex flex-col gap-2">

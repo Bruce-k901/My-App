@@ -1321,7 +1321,7 @@ export function TaskFromTemplateModal({
           <p className="text-white mb-4">Template not found</p>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200"
           >
             Close
           </button>
@@ -1774,7 +1774,7 @@ export function TaskFromTemplateModal({
                             }
                           }}
                           disabled={!newCallPoint.name.trim()}
-                          className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
                         >
                           Add Call Point
                         </button>
@@ -1854,7 +1854,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="sop-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 cursor-pointer">
+                    <span className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer">
                       Upload SOP Document
                     </span>
                   </label>
@@ -1898,7 +1898,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 cursor-pointer">
+                    <span className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer">
                       Upload Risk Assessment
                     </span>
                   </label>
@@ -2084,7 +2084,7 @@ export function TaskFromTemplateModal({
                               toast.success(`Added ${tempLibrarySelection.length} item(s) from ${selectedLibraryType.replace('_', ' ')} library`);
                             }}
                             disabled={tempLibrarySelection.length === 0}
-                            className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
                           >
                             Add to Task
                           </button>
@@ -2418,7 +2418,7 @@ export function TaskFromTemplateModal({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
             >
               {saving ? (existingTask ? 'Updating...' : 'Creating...') : (existingTask ? 'Update Task' : 'Create Task')}
             </button>

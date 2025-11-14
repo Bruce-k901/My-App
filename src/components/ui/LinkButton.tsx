@@ -29,7 +29,11 @@ export default function LinkButton({
       "shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-[0_0_14px_rgba(236,72,153,0.25)]",
       "transition-all duration-150 ease-in-out backdrop-blur-md",
     ),
-    secondary: "bg-checkly-magenta text-white hover:bg-pink-600",
+    secondary: cn(
+      "bg-transparent text-[#EC4899] border border-[#EC4899]",
+      "hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]",
+      "transition-all duration-200 ease-in-out backdrop-blur-md"
+    ),
     outline:
       "border border-white/[0.1] text-white hover:bg-white/[0.05]",
     ghost: "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",

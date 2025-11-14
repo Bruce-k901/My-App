@@ -13,7 +13,7 @@ export function CourseHeader() {
         <div className="ml-auto flex flex-col items-start gap-2 sm:flex-row sm:items-center">
           <Link
             href="/training/courses/l2-food-hygiene/start"
-            className="rounded-lg bg-pink-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-600"
+            className="rounded-lg bg-transparent border border-[#EC4899] text-[#EC4899] px-4 py-2 text-sm font-semibold hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
           >
             Launch course
           </Link>

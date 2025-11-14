@@ -340,7 +340,7 @@ export default function UserEntityCard({
               {onUnarchive ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className="px-3 py-2 border border-pink-500 text-pink-400 rounded-md hover:bg-pink-500 hover:text-white transition"
+                  className="px-3 py-2 border border-[#EC4899] text-[#EC4899] rounded-md hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
                   title="Restore User"
                 >
                   Restore

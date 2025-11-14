@@ -25,7 +25,7 @@ export default function OrganizationDocumentsPage() {
           </p>
           <a 
             href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg"
+            className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
           >
             Complete Setup
           </a>

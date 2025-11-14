@@ -346,7 +346,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                       <button
                         onClick={() => setShowServiceModal(true)}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-medium transition-all duration-200 disabled:opacity-50 disabled:border-white/20 disabled:text-white/40"
                       >
                         <CheckCircle className="h-4 w-4" />
                         Mark Service Completed

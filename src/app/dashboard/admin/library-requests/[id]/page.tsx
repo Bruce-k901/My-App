@@ -341,7 +341,7 @@ export default function AdminLibraryRequestDetailPage() {
                 <button
                   onClick={handleApprove}
                   disabled={saving}
-                  className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 size={16} />
                   {saving ? 'Processing...' : 'Approve Request'}
@@ -389,7 +389,7 @@ export default function AdminLibraryRequestDetailPage() {
                 <button
                   onClick={handleMarkDeployed}
                   disabled={saving}
-                  className="w-full px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <Save size={16} />
                   {saving ? 'Processing...' : 'Mark as Deployed'}

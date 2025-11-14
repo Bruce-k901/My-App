@@ -277,7 +277,7 @@ export default function ContractorsPage() {
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
           <h2 className="text-xl font-semibold text-yellow-400 mb-2">Company Setup Required</h2>
           <p className="text-white/80 mb-4">Please complete your company setup to access this page.</p>
-          <a href="/dashboard/business" className="inline-block px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg">Complete Setup</a>
+          <a href="/dashboard/business" className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200">Complete Setup</a>
         </div>
       </div>
     );
@@ -311,7 +311,7 @@ export default function ContractorsPage() {
           <p className="text-slate-400 text-sm mt-1">{error}</p>
           <button 
             onClick={loadContractors}
-            className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+            className="mt-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
           >
             Try Again
           </button>
@@ -326,7 +326,7 @@ export default function ContractorsPage() {
           {!query && (
             <button 
               onClick={() => setOpenAdd(true)}
-              className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
             >
               Add First Contractor
             </button>

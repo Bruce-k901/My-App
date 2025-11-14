@@ -349,7 +349,7 @@ function EHOHistory({ companyId, siteId }: { companyId: string; siteId: string }
                 href={downloadUrl(f.name)}
                 target="_blank"
                 rel="noreferrer"
-                className="ml-4 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm rounded-lg transition-colors flex items-center gap-2"
+                className="ml-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] text-sm rounded-lg transition-all duration-200 flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download
@@ -401,7 +401,7 @@ function EHOGenerateButton({
       <button
         disabled={!payload || loading}
         onClick={onGenerate}
-        className="w-full px-6 py-3 bg-pink-600 hover:bg-pink-700 disabled:bg-white/10 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+        className="w-full px-6 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-40 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
@@ -429,7 +429,7 @@ function EHOGenerateButton({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] text-sm rounded-lg transition-all duration-200"
           >
             <Download className="w-4 h-4" />
             Download {format.toUpperCase()}

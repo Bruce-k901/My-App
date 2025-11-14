@@ -59,7 +59,7 @@ export default function UserCard({ user }: { user: any }) {
               e.stopPropagation();
               generateCode();
             }}
-            className="text-xs px-3 py-1 bg-pink-600/70 hover:bg-pink-600 rounded-lg text-white transition-colors"
+            className="text-xs px-3 py-1 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
           >
             Generate Code
           </button>

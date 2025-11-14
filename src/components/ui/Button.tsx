@@ -37,9 +37,9 @@ export function Button({
     destructive:
       "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
     secondary: cn(
-      "bg-checkly-magenta text-white",
-      "hover:bg-pink-600",
-      "border border-transparent"
+      "bg-transparent text-[#EC4899] border border-[#EC4899]",
+      "hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]",
+      "transition-all duration-200 ease-in-out backdrop-blur-md"
     ),
     outline: cn(
       "bg-transparent text-white border border-white/[0.2]",

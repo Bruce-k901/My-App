@@ -345,7 +345,7 @@ export default function IncidentsStoragePage() {
                 setError(null);
                 fetchIncidents();
               }}
-              className="bg-pink-600 hover:bg-pink-700 text-white"
+              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
             >
               Try Again
             </Button>

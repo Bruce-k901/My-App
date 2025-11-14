@@ -316,7 +316,7 @@ export default function PPMSchedulePage() {
           <button 
             onClick={handleGenerateSchedules}
             disabled={generatingSchedules}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
           >
             {generatingSchedules ? (
               <>
@@ -332,7 +332,7 @@ export default function PPMSchedulePage() {
           </button>
 
           {/* Add PPM Button */}
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors h-[42px] whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap">
             <Plus className="w-4 h-4" />
             Add PPM
           </button>
@@ -341,10 +341,10 @@ export default function PPMSchedulePage() {
           <div className="flex items-center bg-gray-800 border border-gray-700 rounded-lg p-1 h-[42px]">
             <button
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
                 viewMode === 'list' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
+                  : 'text-gray-400 hover:text-white border border-transparent'
               }`}
             >
               <List className="w-4 h-4" />
@@ -352,10 +352,10 @@ export default function PPMSchedulePage() {
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
                 viewMode === 'calendar' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
+                  : 'text-gray-400 hover:text-white border border-transparent'
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -390,7 +390,7 @@ export default function PPMSchedulePage() {
               {Object.values(filters).some(f => f) && (
                 <button
                   onClick={() => setFilters({ site: '', contractor: '', status: '', dateRange: '' })}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
                 >
                   Clear All Filters
                 </button>

@@ -238,7 +238,7 @@ export default function EmergencyContactsPage() {
         </div>
         <button
           onClick={handleNew}
-          className="flex items-center gap-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           Add Contact
@@ -449,7 +449,7 @@ export default function EmergencyContactsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors"
+                className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
               >
                 {editingContact ? 'Update' : 'Add'} Contact
               </button>

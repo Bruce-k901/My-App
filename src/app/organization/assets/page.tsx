@@ -253,7 +253,7 @@ export default function AssetsPage() {
           <p className="text-slate-400 text-sm mt-1">{error}</p>
           <button 
             onClick={loadAssets}
-            className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+            className="mt-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
           >
             Try Again
           </button>
@@ -268,7 +268,7 @@ export default function AssetsPage() {
           {!query && (
             <button 
               onClick={() => setOpenAdd(true)}
-              className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
+              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
             >
               Add First Asset
             </button>

@@ -305,7 +305,7 @@ export default function BusinessDetailsTab() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="px-4 py-2 bg-pink-500 rounded-md hover:bg-pink-600 text-sm"
+          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200 text-sm"
         >
           {saving ? "Saving..." : (form as any).id ? "Update Company" : "Create Company"}
         </button>

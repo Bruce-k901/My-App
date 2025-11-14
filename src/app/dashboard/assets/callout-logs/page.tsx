@@ -711,7 +711,7 @@ export default function CalloutLogsPage() {
                         <button
                           onClick={handleSaveUpdate}
                           disabled={uploading}
-                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
                         >
                           {uploading ? 'Saving...' : 'Save Changes'}
                         </button>
