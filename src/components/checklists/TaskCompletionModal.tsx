@@ -2057,7 +2057,7 @@ export default function TaskCompletionModal({
         throw new Error(`Failed to create completion record: ${errorData.error || 'Unknown error'}`)
       }
 
-      const { data: insertedRecord, taskUpdated } = await response.json()
+      const { data: insertedRecord, taskUpdated, taskUpdateSuccess, warning } = await response.json()
 
       // Verify the record was saved correctly
       if (insertedRecord) {
@@ -2065,6 +2065,8 @@ export default function TaskCompletionModal({
           record_id: insertedRecord.id,
           task_id: insertedRecord.task_id,
           taskUpdated,
+          taskUpdateSuccess,
+          warning,
           equipment_list_in_db: insertedRecord.completion_data?.equipment_list?.length || 0,
           completion_data_keys: Object.keys(insertedRecord.completion_data || {})
         })
@@ -2073,13 +2075,33 @@ export default function TaskCompletionModal({
       }
 
       // Task status update is now handled by the API route
-      if (taskUpdated) {
+      if (taskUpdated && taskUpdateSuccess) {
         console.log('✅ Task status updated to completed by API route')
+      } else if (warning) {
+        console.warn('⚠️', warning)
+        // If task update failed, try to update it directly as fallback
+        // This ensures the task gets marked as completed even if API route update failed
+        try {
+          const { error: directUpdateError } = await supabase
+            .from('checklist_tasks')
+            .update({
+              status: 'completed',
+              completed_at: completedAt,
+              completed_by: profile.id
+            })
+            .eq('id', task.id)
+          
+          if (directUpdateError) {
+            console.error('❌ Direct task update also failed:', directUpdateError)
+          } else {
+            console.log('✅ Task status updated directly (fallback)')
+          }
+        } catch (fallbackError) {
+          console.error('❌ Fallback task update error:', fallbackError)
+        }
       } else {
         console.log('ℹ️ Task has multiple dayparts - not marking as completed yet (waiting for all instances)')
       }
-
-      // Task status update is handled by the API route - no need to update here
 
       // Create alert if task was completed late (after window end)
       if (completedLate) {
