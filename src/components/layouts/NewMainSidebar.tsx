@@ -449,7 +449,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
               // For Libraries section on mobile, only show "All Libraries" button
               const isLibrariesSection = section.label === "Libraries";
               const itemsToShow = isLibrariesSection 
-                ? section.items.filter(item => item.label === "All Libraries" || item.label === "Create Library" || item.label === "Library Templates")
+                ? section.items.filter(item => item.label === "All Libraries")
                 : section.items;
 
               return (
