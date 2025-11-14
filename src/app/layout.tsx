@@ -8,6 +8,7 @@ import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";
 import { Toaster } from "sonner";
+import { PWAProvider } from "@/components/pwa/PWAProvider";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -23,6 +24,22 @@ export const metadata = {
     initialScale: 1,
     maximumScale: 5,
   },
+  manifest: "/manifest.json",
+  themeColor: "#10B981",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Checkly",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -37,11 +54,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="en" className={manrope.variable}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#10B981" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Checkly" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+      </head>
       <body className="bg-neutral-950 text-white font-sans">
         <ErrorBoundary>
           <ReactQueryProvider>
             <QueryProvider>
               <AppProvider>
+                <PWAProvider />
                 <RouteLogger />
                 {children}
                 <Footer />
