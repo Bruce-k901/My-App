@@ -187,7 +187,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Middle: Actions - Show on all screens, compact on mobile */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 mr-2 sm:mr-0">
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/checklists"

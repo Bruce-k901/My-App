@@ -623,23 +623,24 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Reports & Analytics</h1>
-          <p className="text-white/60">Drill down into compliance, assets, and operational performance</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Reports & Analytics</h1>
+          <p className="text-sm sm:text-base text-white/60">Drill down into compliance, assets, and operational performance</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.1] rounded-lg text-white text-sm transition-colors flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export Report
+          <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.1] rounded-lg text-white text-xs sm:text-sm transition-colors flex items-center gap-2">
+            <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Export Report</span>
+            <span className="sm:hidden">Export</span>
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 flex flex-wrap items-center gap-4">
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-white/60" />
           <span className="text-sm text-white/60">Date Range:</span>
@@ -669,7 +670,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-white/[0.1] overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -678,7 +679,7 @@ export default function ReportsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                px-4 py-3 flex items-center gap-2 text-sm font-medium transition-colors border-b-2
+                px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap
                 ${isActive
                   ? "border-pink-500 text-pink-400"
                   : "border-transparent text-white/60 hover:text-white/80"

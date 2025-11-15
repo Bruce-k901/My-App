@@ -62,6 +62,7 @@ export async function createTrialSubscription(companyId: string, planName: strin
 /**
  * Update site count for a subscription
  * Call this when sites are added/removed
+ * Automatically switches between Starter (1 site) and Pro (2+ sites)
  */
 export async function updateSubscriptionSiteCount(companyId: string) {
   try {
@@ -70,17 +71,65 @@ export async function updateSubscriptionSiteCount(companyId: string) {
       .select('id', { count: 'exact', head: true })
       .eq('company_id', companyId);
 
-    const { error } = await supabase
+    // Get current subscription
+    const { data: subscription, error: subError } = await supabase
       .from('company_subscriptions')
-      .update({ site_count: siteCount || 0 })
-      .eq('company_id', companyId);
+      .select('*, plan:subscription_plans(name)')
+      .eq('company_id', companyId)
+      .single();
 
-    if (error) {
-      console.error('Error updating site count:', error);
-      return { error: error.message };
+    if (subError && subError.code !== 'PGRST116') {
+      console.error('Error fetching subscription:', subError);
+      return { error: subError.message };
     }
 
-    return { success: true };
+    if (!subscription) {
+      // No subscription exists, create one
+      const planName = (siteCount || 0) === 1 ? 'starter' : 'pro';
+      return await createTrialSubscription(companyId, planName);
+    }
+
+    // Determine which plan should be used based on site count
+    const currentPlanName = (subscription.plan as any)?.name;
+    let targetPlanName = currentPlanName;
+
+    if ((siteCount || 0) === 1 && currentPlanName !== 'starter') {
+      // Switch to Starter for single site
+      targetPlanName = 'starter';
+    } else if ((siteCount || 0) >= 2 && currentPlanName === 'starter') {
+      // Switch to Pro for multiple sites
+      targetPlanName = 'pro';
+    }
+
+    // Get the target plan ID
+    const { data: targetPlan, error: planError } = await supabase
+      .from('subscription_plans')
+      .select('id')
+      .eq('name', targetPlanName)
+      .single();
+
+    if (planError || !targetPlan) {
+      console.error('Error fetching target plan:', planError);
+      return { error: 'Plan not found' };
+    }
+
+    // Update subscription with new site count and plan if changed
+    const updateData: any = { site_count: siteCount || 0 };
+    if (targetPlanName !== currentPlanName) {
+      updateData.plan_id = targetPlan.id;
+    }
+
+    const { error: updateError } = await supabase
+      .from('company_subscriptions')
+      .update(updateData)
+      .eq('company_id', companyId);
+
+    if (updateError) {
+      console.error('Error updating subscription:', updateError);
+      return { error: updateError.message };
+    }
+
+    return { success: true, planChanged: targetPlanName !== currentPlanName };
   } catch (error: any) {
     console.error('Error in updateSubscriptionSiteCount:', error);
     return { error: error.message };

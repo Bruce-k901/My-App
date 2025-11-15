@@ -46,10 +46,34 @@ interface ComplianceSummaryResponse {
   } | null;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => {
-  if (!res.ok) throw new Error(`Failed to fetch compliance summary: ${res.status}`);
-  return res.json();
-});
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  const data = await res.json();
+  
+  // If there's an error in the response but status is 200, return empty data structure
+  if (data.error && res.ok) {
+    console.warn("Compliance summary API returned error but 200 status:", data.error);
+    return {
+      tenant_id: data.tenant_id ?? null,
+      range: data.range ?? {
+        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        to: new Date().toISOString().split("T")[0],
+        days: 30,
+      },
+      tenant: {
+        overview: null,
+        sites: [],
+      },
+      site: null,
+    };
+  }
+  
+  if (!res.ok) {
+    throw new Error(`Failed to fetch compliance summary: ${res.status}`);
+  }
+  
+  return data;
+};
 
 function formatNumber(number: number | null | undefined, fallback = "-") {
   if (number === null || number === undefined || Number.isNaN(number)) return fallback;

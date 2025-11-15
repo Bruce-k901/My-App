@@ -459,14 +459,14 @@ export default function CalloutLogsPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Callout Logs</h1>
-        <p className="text-white/60">Track and manage contractor callout logs</p>
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Callout Logs</h1>
+        <p className="text-sm sm:text-base text-white/60">Track and manage contractor callout logs</p>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex gap-2">
+      <div className="mb-4 sm:mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium ${
@@ -527,25 +527,25 @@ export default function CalloutLogsPage() {
               key={callout.id}
               className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.06] transition-colors"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-white break-words">
                       {callout.asset_name || 'Unknown Asset'}
                     </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(callout.status)}`}>
+                    <span className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium border flex items-center gap-1 whitespace-nowrap ${getStatusColor(callout.status)}`}>
                       {getStatusIcon(callout.status)}
                       {callout.status.toUpperCase()}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(callout.callout_type)}`}>
+                    <span className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${getTypeColor(callout.callout_type)}`}>
                       {callout.callout_type.toUpperCase()}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(callout.priority)}`}>
+                    <span className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${getPriorityColor(callout.priority)}`}>
                       {callout.priority.toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-white/60 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm text-white/60 mb-3">
                     {callout.site_name && (
                       <div className="flex items-center gap-2">
                         <Building className="w-4 h-4" />
@@ -659,7 +659,7 @@ export default function CalloutLogsPage() {
                       )}
 
                       {/* File Uploads */}
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-white/80 mb-2">
                             <Upload className="w-4 h-4 inline mr-1" />

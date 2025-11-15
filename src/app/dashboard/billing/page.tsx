@@ -114,25 +114,43 @@ export default function BillingPage() {
 
     setExportLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('data_export_requests')
-        .insert({
+      // Call the API route to generate the export
+      const response = await fetch('/api/billing/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           company_id: companyId,
-          export_type: exportType,
-          status: 'pending'
-        })
-        .select()
-        .single();
+          exportType: exportType,
+        }),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to generate export');
+      }
 
-      // In a real implementation, this would trigger a background job
-      // For now, we'll just show a success message
-      alert('Data export requested. You will receive an email when your export is ready (usually within 24 hours).');
+      // Get the JSON data
+      const exportData = await response.json();
+
+      // Create a blob and download it
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `checkly-export-${companyId}-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Show success message
+      alert('Data export downloaded successfully!');
       
     } catch (err: any) {
       console.error('Error requesting data export:', err);
-      alert('Failed to request data export. Please try again or contact support.');
+      alert(`Failed to export data: ${err.message || 'Please try again or contact support.'}`);
     } finally {
       setExportLoading(false);
     }

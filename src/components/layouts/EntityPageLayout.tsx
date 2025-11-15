@@ -36,17 +36,17 @@ export default function EntityPageLayout({
   };
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 lg:px-12 py-3 text-white">
+    <div className="w-full max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 text-white">
       {/* Header */}
-      <div className="flex items-center justify-between w-full mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full mb-4 gap-3 sm:gap-4">
         {/* Left side - Title and Search */}
-        <div className="flex items-center gap-4">
-          {title && <h1 className="text-2xl font-semibold mb-2 flex-shrink-0">{title}</h1>}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+          {title && <h1 className="text-xl sm:text-2xl font-semibold mb-0 sm:mb-2 flex-shrink-0">{title}</h1>}
           
           {/* Search area */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             {/* Site Selector */}
-            {siteSelector && siteSelector}
+            {siteSelector && <div className="flex-shrink-0">{siteSelector}</div>}
             
             {/* Search Input */}
             <input 
@@ -54,13 +54,13 @@ export default function EntityPageLayout({
               value={q} 
               onChange={handleChange} 
               placeholder={searchPlaceholder}
-              className="h-10 px-3 rounded-md border border-neutral-700 bg-transparent text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-pink-400 w-[192px]" 
+              className="h-9 sm:h-10 px-2 sm:px-3 rounded-md border border-neutral-700 bg-transparent text-xs sm:text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-pink-400 flex-1 min-w-0 sm:w-[192px]" 
             />
           </div>
         </div>
 
         {/* Right side - Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {/* Custom Actions */}
           {customActions}
           
@@ -71,10 +71,10 @@ export default function EntityPageLayout({
                 console.log("🔥 ENTITY LAYOUT - Add button clicked");
                 onAdd();
               }}
-              className="h-10 w-10 flex items-center justify-center rounded-md border border-pink-400 text-pink-400 hover:bg-pink-500/10 transition-all"
+              className="h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center rounded-md border border-pink-400 text-pink-400 hover:bg-pink-500/10 transition-all"
               aria-label="Add"
             >
-              <span className="text-lg leading-none">+</span>
+              <span className="text-base sm:text-lg leading-none">+</span>
             </button>
           )}
           
@@ -82,10 +82,10 @@ export default function EntityPageLayout({
           {onDownload && (
             <button 
               onClick={onDownload}
-              className="h-10 w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
+              className="h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
               aria-label="Download CSV"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           )}
           
@@ -93,16 +93,16 @@ export default function EntityPageLayout({
           {onUpload && (
             <button 
               onClick={onUpload}
-              className="h-10 w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
+              className="h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center rounded-md border border-neutral-400 text-neutral-200 hover:bg-neutral-500/10 transition-all"
               aria-label="Upload CSV"
             >
-              <Upload className="h-4 w-4" />
+              <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           )}
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-3 sm:mt-4">
         {children}
       </div>
     </div>

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { MultiChoice } from '../components/MultiChoice';
 import { OnboardingForm } from '../components/OnboardingForm';
 import { PageShell as LayoutShell } from '../components/PageShell';
@@ -437,11 +439,28 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
     );
   };
 
+  // Check if course has been started (not on first page of first module)
+  const hasStarted = moduleIndex > 0 || pageIndex > 0;
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 text-white">
+    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-3 sm:px-4 py-6 sm:py-8 text-white">
       <header className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.35em] text-pink-200">{course.course_id}</p>
-        <h1 className="text-3xl font-semibold text-white">{course.title}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs uppercase tracking-[0.35em] text-pink-200">{course.course_id}</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-white">{course.title}</h1>
+          </div>
+          {hasStarted && (
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
+            </Link>
+          )}
+        </div>
       </header>
       <div className="flex flex-1 flex-col gap-6">
         <details className="rounded-2xl border border-white/10 bg-neutral-900/70 p-4 text-sm text-slate-200 transition">

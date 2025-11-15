@@ -295,28 +295,33 @@ export async function GET(request: NextRequest) {
       tenant_id: request.nextUrl.searchParams.get("tenant_id"),
       site_id: request.nextUrl.searchParams.get("site_id"),
     });
-    // Return a more graceful error response
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error?.details || error?.hint || error?.code || null;
     
-    return NextResponse.json(
-      { 
-        error: errorMessage,
-        details: errorDetails,
-        tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
-        range: {
-          from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-          to: new Date().toISOString().split("T")[0],
-          days: 30,
-        },
-        tenant: {
-          overview: null,
-          sites: [],
-        },
-        site: null,
+    // Return 200 with empty data instead of 500 to prevent widget errors
+    // The widget will display "No data available" instead of showing an error
+    const tenantId = request.nextUrl.searchParams.get("tenant_id");
+    const siteId = request.nextUrl.searchParams.get("site_id");
+    const toDate = new Date();
+    const fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    return NextResponse.json({
+      tenant_id: tenantId ?? null,
+      range: {
+        from: fromDate.toISOString().split("T")[0],
+        to: toDate.toISOString().split("T")[0],
+        days: 30,
       },
-      { status: 500 },
-    );
+      tenant: {
+        overview: null,
+        sites: [],
+      },
+      site: siteId
+        ? {
+            site_id: siteId,
+            latest: null,
+            history: [],
+          }
+        : null,
+    });
   }
 }
 

@@ -581,23 +581,23 @@ export default function ManagerCalendarPage() {
   const selectedDateNotes = selectedDate ? notes[selectedDate] || "" : "";
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-pink-500/10 border border-pink-500/20">
-              <CalendarDays className="w-6 h-6 text-pink-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 rounded-xl bg-pink-500/10 border border-pink-500/20">
+              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Manager Calendar & Diary</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Manager Calendar & Diary</h1>
               <p className="text-sm text-slate-400">Plan, organize, and track tasks, reminders, and messages</p>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-white/10">
+        <div className="flex gap-1 sm:gap-2 border-b border-white/10 overflow-x-auto">
           {[
             { id: "calendar", label: "Calendar", icon: CalendarDays },
             { id: "notes", label: "Notes", icon: FileText },
@@ -610,7 +610,7 @@ export default function ManagerCalendarPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
                     ? "border-pink-500 text-pink-400"
                     : "border-transparent text-slate-400 hover:text-slate-300"
@@ -646,15 +646,15 @@ export default function ManagerCalendarPage() {
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-2 mb-4">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 sm:mb-4">
               {dayNames.map(day => (
-                <div key={day} className="text-center text-xs font-medium text-slate-400 py-2">
+                <div key={day} className="text-center text-[10px] sm:text-xs font-medium text-slate-400 py-1 sm:py-2">
                   {day}
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {getDaysInMonth().map((date, idx) => {
                 if (!date) {
                   return <div key={`empty-${idx}`} className="aspect-square" />;

@@ -26,7 +26,7 @@ interface TemplateStatus {
 }
 
 export default function CompliancePage() {
-  const { companyId } = useAppContext();
+  const { companyId, session, loading: authLoading } = useAppContext();
   const [templates, setTemplates] = useState<TaskTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<TaskTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,31 +71,30 @@ export default function CompliancePage() {
   }
 
   useEffect(() => {
-    fetchTemplates();
-  }, [companyId]);
+    // Wait for auth to finish loading before fetching templates
+    if (authLoading) {
+      return;
+    }
+    
+    // Only fetch if we have a session and companyId
+    if (session?.user && companyId) {
+      fetchTemplates();
+    } else if (!authLoading && !session?.user) {
+      // Auth finished loading but no user - set loading to false
+      setLoading(false);
+      setTemplates([]);
+    }
+  }, [companyId, session, authLoading]);
 
   async function fetchTemplates() {
+    // Double-check we have session and companyId
+    if (!session?.user || !companyId) {
+      setTemplates([]);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('No user logged in');
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile?.company_id) {
-        console.error('Error fetching profile or no company_id:', profileError);
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
 
       // Fetch templates - include both global (company_id IS NULL) and company-specific
       // For compliance templates, we want global templates (company_id IS NULL) that are library templates
@@ -103,7 +102,7 @@ export default function CompliancePage() {
         .from('task_templates')
         .select('*')
         .eq('is_template_library', true)
-        .or(`company_id.is.null,company_id.eq.${profile.company_id}`)
+        .or(`company_id.is.null,company_id.eq.${companyId}`)
         .eq('is_active', true)
         .order('audit_category')
         .order('name');

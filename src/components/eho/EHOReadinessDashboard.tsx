@@ -576,7 +576,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
             <div className="text-xs text-white/60 mb-1">Status</div>
             <div className={`text-sm font-medium ${
               incidentCount === 0 
-                ? 'text-yellow-400' 
+                ? 'text-white/40' 
                 : 'text-green-400'
             }`}>
               {incidentCount === 0 

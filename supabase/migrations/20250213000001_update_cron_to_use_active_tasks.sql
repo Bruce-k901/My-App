@@ -40,6 +40,7 @@ BEGIN
 
   -- ===== DAILY TASKS =====
   -- Find all unique task patterns from checklist_tasks that are daily
+  -- CRITICAL: Only read from Active Tasks (manually created tasks, NOT cron-generated)
   -- A pattern is defined by: template_id + site_id + daypart + due_time
   -- We look at tasks from any date to find the patterns, but only generate for today
   FOR v_task_pattern IN
@@ -61,6 +62,8 @@ BEGIN
       AND (tt.is_active = true OR tt.is_active IS NULL)
       AND ct.template_id IS NOT NULL
       AND ct.site_id IS NOT NULL
+      -- EXCLUDE cron-generated tasks - only read Active Tasks (manually created)
+      AND (ct.task_data->>'source' IS NULL OR ct.task_data->>'source' != 'cron')
     ORDER BY ct.template_id, ct.site_id, ct.daypart, ct.due_time, ct.created_at DESC
   LOOP
     BEGIN
@@ -103,7 +106,11 @@ BEGIN
           COALESCE(v_task_pattern.priority, 'medium'),
           NOW(),
           v_today + INTERVAL '1 day',
-          COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+          -- Mark as cron-generated so it appears in Today's Tasks, not Active Tasks
+          jsonb_build_object(
+            'source', 'cron',
+            'original_task_data', COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+          )
         );
         v_daily_count := v_daily_count + 1;
       END IF;
@@ -114,6 +121,7 @@ BEGIN
 
   -- ===== WEEKLY TASKS =====
   -- Find weekly task patterns and generate if today matches the day of week
+  -- CRITICAL: Only read from Active Tasks (manually created tasks, NOT cron-generated)
   FOR v_task_pattern IN
     SELECT DISTINCT ON (ct.template_id, ct.site_id, ct.daypart, ct.due_time)
       ct.template_id,
@@ -134,6 +142,8 @@ BEGIN
       AND (tt.is_active = true OR tt.is_active IS NULL)
       AND ct.template_id IS NOT NULL
       AND ct.site_id IS NOT NULL
+      -- EXCLUDE cron-generated tasks - only read Active Tasks (manually created)
+      AND (ct.task_data->>'source' IS NULL OR ct.task_data->>'source' != 'cron')
     ORDER BY ct.template_id, ct.site_id, ct.daypart, ct.due_time, ct.created_at DESC
   LOOP
     BEGIN
@@ -193,7 +203,11 @@ BEGIN
             COALESCE(v_task_pattern.priority, 'medium'),
             NOW(),
             v_today + INTERVAL '7 days',
-            COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+            -- Mark as cron-generated so it appears in Today's Tasks, not Active Tasks
+            jsonb_build_object(
+              'source', 'cron',
+              'original_task_data', COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+            )
           );
           v_weekly_count := v_weekly_count + 1;
         END IF;
@@ -205,6 +219,7 @@ BEGIN
 
   -- ===== MONTHLY TASKS =====
   -- Find monthly task patterns and generate if today matches the date of month
+  -- CRITICAL: Only read from Active Tasks (manually created tasks, NOT cron-generated)
   FOR v_task_pattern IN
     SELECT DISTINCT ON (ct.template_id, ct.site_id, ct.daypart, ct.due_time)
       ct.template_id,
@@ -225,6 +240,8 @@ BEGIN
       AND (tt.is_active = true OR tt.is_active IS NULL)
       AND ct.template_id IS NOT NULL
       AND ct.site_id IS NOT NULL
+      -- EXCLUDE cron-generated tasks - only read Active Tasks (manually created)
+      AND (ct.task_data->>'source' IS NULL OR ct.task_data->>'source' != 'cron')
     ORDER BY ct.template_id, ct.site_id, ct.daypart, ct.due_time, ct.created_at DESC
   LOOP
     BEGIN
@@ -284,7 +301,11 @@ BEGIN
             COALESCE(v_task_pattern.priority, 'medium'),
             NOW(),
             v_today + INTERVAL '30 days',
-            COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+            -- Mark as cron-generated so it appears in Today's Tasks, not Active Tasks
+            jsonb_build_object(
+              'source', 'cron',
+              'original_task_data', COALESCE(v_task_pattern.task_data, '{}'::jsonb)
+            )
           );
           v_monthly_count := v_monthly_count + 1;
         END IF;
@@ -323,8 +344,10 @@ GRANT EXECUTE ON FUNCTION generate_daily_tasks_from_active_tasks() TO service_ro
 -- Add comment
 COMMENT ON FUNCTION generate_daily_tasks_from_active_tasks() IS
 'Generates daily, weekly, and monthly tasks from existing checklist_tasks (Active Tasks page).
+CRITICAL: Only reads from manually created tasks (task_data->>''source'' IS NULL OR != ''cron'').
 Uses DISTINCT ON to find unique task patterns (template_id + site_id + daypart + due_time)
 and regenerates them for today. Only generates tasks that don''t already exist for today.
-This ensures the cron regenerates tasks that have actually been created and are shown in the Active Tasks master registry.
+New tasks are marked with source=''cron'' so they appear in Today''s Tasks, not Active Tasks.
+This ensures the cron ONLY regenerates tasks that have actually been created manually from templates.
 Runs daily at 7:10 AM UTC (8:10 AM BST) for testing.';
 

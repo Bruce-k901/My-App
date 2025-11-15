@@ -20,15 +20,15 @@ export default function PricingPage() {
 
         {/* HERO */}
         <section className="relative text-center pt-6 pb-8 sm:pb-10 md:pt-8 md:pb-12 min-h-[350px] sm:min-h-[400px] flex flex-col justify-start">
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pt-6 sm:pt-8">
-            <h1 className="hero-title text-3xl sm:text-4xl md:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-4 sm:mb-6 px-2">
+          <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 md:px-10 pt-6 sm:pt-8">
+            <h1 className="hero-title text-3xl sm:text-4xl md:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-4 sm:mb-6">
               Less paperwork. More progress.
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
+            <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 px-2 sm:px-4">
               Keep your sites compliant, your teams organised, and your fridges under control. Try
               Checkly free for 14 days — no credit card needed.
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 sm:px-4 mb-4 sm:mb-0">
               <Link href="/signup">
                 <Button variant="primary">Start Free Trial</Button>
               </Link>
@@ -40,7 +40,7 @@ export default function PricingPage() {
         </section>
 
         {/* PRICING GRID */}
-        <section className="relative px-4 sm:px-6 -mt-12 sm:-mt-16 md:-mt-24 pb-10 sm:pb-14 text-gray-200">
+        <section className="relative px-3 sm:px-6 mt-8 sm:-mt-16 md:-mt-24 pb-10 sm:pb-14 text-gray-200">
           <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* STARTER */}
           <GlassCard className="max-w-none flex flex-col min-h-[480px] hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]">
@@ -127,13 +127,13 @@ export default function PricingPage() {
         </section>
 
         {/* SMART SENSOR BUNDLES - EXPANDED SECTION */}
-        <section className="relative px-4 sm:px-6 py-8 sm:py-12 text-gray-200">
+        <section className="relative px-3 sm:px-6 py-8 sm:py-12 text-gray-200">
           <div className="relative z-10 max-w-7xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
                 Smart Sensor Bundles
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto px-4">
+              <p className="text-gray-400 max-w-2xl mx-auto px-2 sm:px-4">
                 Plug-and-play temperature monitoring for fridges, freezers, and prep areas. 
                 Stop worrying about compliance and start preventing stock losses.
               </p>
@@ -253,13 +253,13 @@ export default function PricingPage() {
         </section>
 
         {/* MAINTENANCE HARDWARE KIT - EXPANDED SECTION */}
-        <section className="relative px-4 sm:px-6 py-8 sm:py-12 text-gray-200">
+        <section className="relative px-3 sm:px-6 py-8 sm:py-12 text-gray-200">
           <div className="relative z-10 max-w-7xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
                 Maintenance Hardware Kit
               </h2>
-              <p className="text-gray-400 max-w-3xl mx-auto px-4 mb-4">
+              <p className="text-gray-400 max-w-3xl mx-auto px-2 sm:px-4 mb-4">
                 Give every asset a digital passport. Small physical tags (QR, NFC, or both) that staff scan 
                 to instantly access PPM schedules, fault history, callouts, instruction sheets, warranty details, 
                 and sensor feeds. No more chasing paperwork or forgotten serial numbers.
@@ -408,9 +408,9 @@ export default function PricingPage() {
         </section>
 
         {/* OTHER ADD-ONS */}
-        <section className="relative px-4 sm:px-6 py-8 sm:py-12 text-gray-200">
+        <section className="relative px-3 sm:px-6 py-8 sm:py-12 text-gray-200">
           <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-white px-4">Other Optional Add-ons</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-white px-2 sm:px-4">Other Optional Add-ons</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left">
             <div className="rounded-2xl bg-white/5 backdrop-blur-md p-6 border border-white/10">
               <h4 className="text-lg font-semibold text-magenta-400 mb-2">Personalized Onboarding</h4>
@@ -433,16 +433,16 @@ export default function PricingPage() {
         </section>
 
         {/* CTA */}
-        <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 py-8 sm:py-10 pb-10 sm:pb-14">
+        <section className="relative flex flex-col items-center justify-center text-center px-3 sm:px-6 py-8 sm:py-10 pb-10 sm:pb-14">
           <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white px-2 sm:px-4">
               Ready to take your operation digital?
             </h2>
-            <p className="text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto px-4 text-sm sm:text-base">
+            <p className="text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto px-2 sm:px-4 text-sm sm:text-base">
               Start with a free 14-day trial or speak to our team about rolling Checkly out across your
               group.
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 sm:px-4">
               <Link href="/signup">
                 <Button variant="primary">Start Free Trial</Button>
               </Link>
