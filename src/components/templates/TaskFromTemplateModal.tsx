@@ -1173,6 +1173,21 @@ export function TaskFromTemplateModal({
           ? formData.dayparts[0].due_time 
           : formData.due_time || null;
         
+        // Ensure dayparts are stored in task_data for daily tasks
+        if (template?.frequency === 'daily' && formData.dayparts && formData.dayparts.length > 0) {
+          taskData.dayparts = formData.dayparts;
+          // Also store daypart_times mapping for reference
+          const daypartTimes: Record<string, string> = {};
+          formData.dayparts.forEach((dp: { daypart: string; due_time: string }) => {
+            if (dp.due_time) {
+              daypartTimes[dp.daypart] = dp.due_time;
+            }
+          });
+          if (Object.keys(daypartTimes).length > 0) {
+            taskData.daypart_times = daypartTimes;
+          }
+        }
+        
         const { data, error } = await supabase
           .from('checklist_tasks')
           .update({
@@ -1184,7 +1199,7 @@ export function TaskFromTemplateModal({
               ? formData.custom_name 
               : null,
             custom_instructions: instructions,
-            // Update task_data with feature data
+            // Update task_data with feature data including dayparts
             task_data: Object.keys(taskData).length > 0 ? taskData : {},
           })
           .eq('id', existingTask.id)
