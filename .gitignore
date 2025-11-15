@@ -47,3 +47,6 @@ Logo/
 public/favicon.png
 public/site.webmanifest
 public/web-app-manifest-*.png
+
+# MCP configuration with sensitive credentials
+.cursor/mcp.json

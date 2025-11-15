@@ -8,7 +8,7 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:WykLBNCnZerPxZPt@db.xijoybubtrgbrhquqwrx.supabase.co:5432/postgres"
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
       }
     }
   }
