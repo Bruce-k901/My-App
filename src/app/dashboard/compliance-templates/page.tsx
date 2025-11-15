@@ -153,6 +153,12 @@ export default function ComplianceTemplatesPage() {
       const presentSlugs = new Set((data || []).map(template => template.slug));
       const missingSlugs = COMPLIANCE_MODULE_SLUGS.filter(slug => !presentSlugs.has(slug));
 
+      // Debug: Log all slugs to verify template is included
+      console.log('COMPLIANCE_MODULE_SLUGS:', COMPLIANCE_MODULE_SLUGS);
+      console.log('Required slugs set:', Array.from(requiredSlugs));
+      console.log('Present slugs from DB:', Array.from(presentSlugs));
+      console.log('Is competent_health_safety_person_appointment in requiredSlugs?', requiredSlugs.has('competent_health_safety_person_appointment'));
+
       if (shouldAutoSeed && missingSlugs.length > 0) {
         console.log('Missing compliance templates detected:', missingSlugs);
         const seeded = await seedGlobalTemplates();
@@ -167,6 +173,14 @@ export default function ComplianceTemplatesPage() {
         const isDraft = template.name.toLowerCase().includes('(draft)') ||
           template.description?.toLowerCase().includes('draft');
         const isModuleTemplate = template.slug ? requiredSlugs.has(template.slug) : false;
+        if (template.slug === 'competent_health_safety_person_appointment') {
+          console.log('Found competent_health_safety_person_appointment template:', {
+            slug: template.slug,
+            isDraft,
+            isModuleTemplate,
+            inRequiredSlugs: requiredSlugs.has(template.slug)
+          });
+        }
         return !isDraft && isModuleTemplate;
       });
       
