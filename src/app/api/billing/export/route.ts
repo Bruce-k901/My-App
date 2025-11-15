@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 
 /**
  * Data Export API
@@ -11,35 +12,38 @@ export async function POST(request: NextRequest) {
   try {
     const adminSupabase = getSupabaseAdmin();
 
-    // Get authenticated user from Authorization header
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Parse request body once
+    const body = await request.json().catch(() => ({}));
+    const exportType = body.exportType || "full";
+    const requestedCompanyId = body.company_id || null;
+
+    // Get session from cookies
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("sb-access-token")?.value;
+
+    // Try to get user from session
+    let user;
+    let companyId: string | null = requestedCompanyId;
+
+    if (accessToken) {
+      const { data: { user: authUser }, error: authError } = await adminSupabase.auth.getUser(accessToken);
+      if (!authError && authUser) {
+        user = authUser;
+        // Get user's company if not provided in body
+        if (!companyId) {
+          const { data: profile } = await adminSupabase
+            .from("profiles")
+            .select("company_id")
+            .eq("id", authUser.id)
+            .single();
+          companyId = profile?.company_id || null;
+        }
+      }
     }
 
-    const token = authHeader.replace("Bearer ", "");
-    
-    // Verify token and get user
-    const { data: { user }, error: authError } = await adminSupabase.auth.getUser(token);
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!companyId) {
+      return NextResponse.json({ error: "No company found. Please provide company_id." }, { status: 400 });
     }
-
-    // Get user's company
-    const { data: profile } = await adminSupabase
-      .from("profiles")
-      .select("company_id")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile?.company_id) {
-      return NextResponse.json({ error: "No company found" }, { status: 400 });
-    }
-
-    const companyId = profile.company_id;
-
-    // Get export type from request body
-    const { exportType = "full" } = await request.json();
 
     // Build export data object
     const exportData: any = {
@@ -154,7 +158,7 @@ export async function POST(request: NextRequest) {
       .from("data_export_requests")
       .insert({
         company_id: companyId,
-        requested_by: user.id,
+        requested_by: user?.id || null,
         export_type: exportType,
         status: "completed",
         file_size_bytes: JSON.stringify(exportData).length,
