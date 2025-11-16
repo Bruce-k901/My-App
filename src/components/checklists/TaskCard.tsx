@@ -223,15 +223,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
           </div>
         )}
 
-        {!isCompleted && timingStatus && (
-          <div className={`text-xs font-medium ${
-            timingStatus === 'late' ? 'text-red-400' :
-            timingStatus === 'due' ? 'text-green-400' :
-            'text-yellow-400'
-          }`}>
-            {getTimingStatusLabel()}
-          </div>
-        )}
+        {/* Status tags removed per user request */}
 
         {tempWarning && !isCompleted && (
           <div className={`text-xs font-medium flex items-center gap-2 ${

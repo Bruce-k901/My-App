@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
 import { CheckCircle2, AlertTriangle, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react'
@@ -39,22 +39,38 @@ export default function ComplianceMetricsWidget() {
   const [recentCompletions, setRecentCompletions] = useState<RecentCompletion[]>([])
   const [complianceTrend, setComplianceTrend] = useState<ComplianceTrend[]>([])
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
+  const loadingRef = useRef(false)
 
+  // Cleanup on unmount
   useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  const loadComplianceMetrics = useCallback(async () => {
     if (!siteId || !companyId) {
-      setLoading(false)
+      if (mountedRef.current) {
+        setLoading(false)
+        setTodayStats(null)
+        setRecentCompletions([])
+        setComplianceTrend([])
+        setError(null)
+      }
       return
     }
-    loadComplianceMetrics()
-  }, [siteId, companyId])
 
-  async function loadComplianceMetrics() {
-    if (!siteId || !companyId) {
+    // Prevent multiple simultaneous loads
+    if (loadingRef.current) {
       return
     }
 
-    setLoading(true)
-    setError(null)
+    loadingRef.current = true
+    if (mountedRef.current) {
+      setLoading(true)
+      setError(null)
+    }
 
     try {
       const today = new Date().toISOString().split('T')[0]
@@ -91,16 +107,18 @@ export default function ComplianceMetricsWidget() {
         t.template?.is_critical && t.status === 'completed'
       ).length || 0
 
-      setTodayStats({
-        total,
-        completed,
-        pending,
-        overdue,
-        critical,
-        criticalCompleted,
-        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-        criticalCompletionRate: critical > 0 ? Math.round((criticalCompleted / critical) * 100) : 0
-      })
+      if (mountedRef.current) {
+        setTodayStats({
+          total,
+          completed,
+          pending,
+          overdue,
+          critical,
+          criticalCompleted,
+          completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+          criticalCompletionRate: critical > 0 ? Math.round((criticalCompleted / critical) * 100) : 0
+        })
+      }
 
       // Fetch recent completions (last 5)
       // First get completion records, then fetch task details separately
@@ -158,7 +176,9 @@ export default function ComplianceMetricsWidget() {
             }
           })
         
-        setRecentCompletions(completions)
+        if (mountedRef.current) {
+          setRecentCompletions(completions)
+        }
       } else if (recentError) {
         console.warn('Failed to fetch recent completions:', recentError)
       }
@@ -186,7 +206,9 @@ export default function ComplianceMetricsWidget() {
           date: entry.score_date,
           score: entry.score || 0
         }))
-        setComplianceTrend(trend)
+        if (mountedRef.current) {
+          setComplianceTrend(trend)
+        }
       } else {
         // Calculate on-the-fly for the last 7 days
         const trend: ComplianceTrend[] = []
@@ -254,10 +276,12 @@ export default function ComplianceMetricsWidget() {
           })
         }
         
-        setComplianceTrend(trend)
+        if (mountedRef.current) {
+          setComplianceTrend(trend)
+        }
         
         // Optionally trigger the function to store today's score
-        if (trend.length > 0) {
+        if (trend.length > 0 && mountedRef.current) {
           const todayScore = trend[trend.length - 1]
           // Store today's score via RPC call (if function exists)
           try {
@@ -271,11 +295,22 @@ export default function ComplianceMetricsWidget() {
 
     } catch (err: any) {
       console.error('Error loading compliance metrics:', err)
-      setError(err.message || 'Failed to load compliance metrics')
+      if (mountedRef.current) {
+        setError(err.message || 'Failed to load compliance metrics')
+      }
     } finally {
-      setLoading(false)
+      loadingRef.current = false
+      if (mountedRef.current) {
+        setLoading(false)
+      }
     }
-  }
+  }, [siteId, companyId])
+
+  useEffect(() => {
+    // Reset loading ref when dependencies change
+    loadingRef.current = false
+    loadComplianceMetrics()
+  }, [loadComplianceMetrics])
 
   if (!siteId) {
     return (

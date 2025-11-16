@@ -65,6 +65,8 @@ export function useMessages({
             content,
             sender_id,
             created_at,
+            message_type,
+            file_name,
             metadata
           )
         `)
@@ -432,7 +434,9 @@ export function useMessages({
           reply_to:messages!reply_to_id(
             id,
             content,
-            sender:profiles!sender_id(full_name)
+            message_type,
+            file_name,
+            sender:profiles!sender_id(full_name, email)
           )
         `)
         .single();
@@ -745,6 +749,8 @@ export function useMessages({
                     content: repliedToMessage.content,
                     sender_id: repliedToMessage.sender_id,
                     created_at: repliedToMessage.created_at,
+                    message_type: repliedToMessage.message_type,
+                    file_name: repliedToMessage.file_name,
                     sender: repliedToMessage.sender,
                   };
                 }

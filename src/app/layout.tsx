@@ -9,6 +9,7 @@ import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
+import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -65,13 +66,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Checkly" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png?v=2" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png?v=2" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" />
-        <link rel="shortcut icon" href="/favicon.ico?v=2" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png?v=3" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png?v=3" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=3" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3" />
+        <link rel="shortcut icon" href="/favicon.ico?v=3" />
       </head>
       <body className="bg-neutral-950 text-white font-sans">
         <ErrorBoundary>
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <QueryProvider>
               <AppProvider>
                 <PWAProvider />
+                <NotificationInitializer />
                 <RouteLogger />
                 {children}
                 <Footer />

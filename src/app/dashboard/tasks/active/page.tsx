@@ -421,19 +421,14 @@ export default function ActiveTasksPage() {
                       <h3 className="text-lg font-semibold text-white">
                         {taskName}
                       </h3>
-                      <span className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(task.status)}`}>
-                        {task.status.replace('_', ' ')}
-                      </span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                        {task.priority}
-                      </span>
+                      {/* Status and priority tags removed per user request */}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs text-white/50">
-                      {task.due_date && (
+                      {task.template?.frequency && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          <span>{new Date(task.due_date).toLocaleDateString()}</span>
+                          <span className="capitalize">{task.template.frequency}</span>
                         </div>
                       )}
                       {task.due_time && (

@@ -192,13 +192,19 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Reply className="w-3 h-3 text-pink-400" />
-                        <div className="text-xs text-white/50">
-                          Replying to:
+                        <Reply className="w-3 h-3 text-pink-400 flex-shrink-0" />
+                        <div className="text-xs text-white/50 font-medium">
+                          {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
                       <div className="text-white/70 truncate max-w-[250px]">
-                        {message.reply_to.content}
+                        {message.reply_to.message_type === 'image' ? (
+                          <span className="italic">📷 Photo</span>
+                        ) : message.reply_to.message_type === 'file' ? (
+                          <span className="italic">📎 {message.reply_to.file_name || 'File'}</span>
+                        ) : (
+                          message.reply_to.content
+                        )}
                       </div>
                     </div>
                   )}

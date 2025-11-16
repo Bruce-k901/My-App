@@ -266,7 +266,29 @@ export function useConversations({
         };
       });
 
-      setConversations(conversationsWithMessages);
+      // Sort conversations by last message activity (most recent first)
+      // Use last_message.created_at if available, otherwise fall back to last_message_at or updated_at
+      const sortedConversations = conversationsWithMessages.sort((a, b) => {
+        // Get the most recent activity timestamp for each conversation
+        const getLastActivity = (conv: Conversation) => {
+          // Priority: last_message.created_at > last_message_at > updated_at
+          if (conv.last_message?.created_at) {
+            return new Date(conv.last_message.created_at).getTime();
+          }
+          if (conv.last_message_at) {
+            return new Date(conv.last_message_at).getTime();
+          }
+          return new Date(conv.updated_at).getTime();
+        };
+
+        const timeA = getLastActivity(a);
+        const timeB = getLastActivity(b);
+
+        // Sort descending (most recent first)
+        return timeB - timeA;
+      });
+
+      setConversations(sortedConversations);
       if (!options?.silent) setLoading(false);
     } catch (err: any) {
       // Better error logging
@@ -551,6 +573,15 @@ export function useConversations({
           event: '*',
           schema: 'public',
           table: 'conversation_participants',
+        },
+        scheduleReload
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
         },
         scheduleReload
       )

@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { getMenuItemsByRole } from "@/components/layout/navigation";
 import { format } from "date-fns";
 import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
+import { ClockInButton } from "@/components/notifications/ClockInButton";
 
 // Menu items removed - now using BurgerMenu component
 
@@ -380,6 +381,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             </span>
           )}
         </Link>
+
+        {/* Clock In Button */}
+        <div className="hidden sm:block">
+          <ClockInButton />
+        </div>
 
         {/* Clock - Always visible */}
         <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10">

@@ -22,6 +22,7 @@ export function ConversationList({
   const [searchTerm, setSearchTerm] = useState('');
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
 
+  // Filter conversations while maintaining sort order (already sorted by last activity)
   const filteredConversations = conversations.filter((conv) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
@@ -33,6 +34,9 @@ export function ConversationList({
       conv.last_message?.content?.toLowerCase().includes(searchLower)
     );
   });
+  
+  // Conversations are already sorted by last activity in useConversations hook
+  // No need to re-sort here - just use filtered array as-is
 
   const getConversationIcon = (type: Conversation['type']) => {
     switch (type) {

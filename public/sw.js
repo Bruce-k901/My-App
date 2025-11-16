@@ -1,6 +1,6 @@
 // Service Worker for PWA - Offline Support & Push Notifications
-const CACHE_NAME = 'checkly-v1';
-const RUNTIME_CACHE = 'checkly-runtime-v1';
+const CACHE_NAME = 'checkly-v2'; // Updated to clear old favicon cache
+const RUNTIME_CACHE = 'checkly-runtime-v2';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -55,6 +55,11 @@ self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
+  }
+
+  // Don't cache favicon - always fetch fresh
+  if (event.request.url.includes('favicon') || event.request.url.includes('icon')) {
+    return fetch(event.request);
   }
 
   event.respondWith(

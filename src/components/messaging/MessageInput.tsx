@@ -4,6 +4,7 @@ import { useState, useRef, KeyboardEvent } from 'react';
 import { Send, Paperclip, Smile, X } from 'lucide-react';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { supabase } from '@/lib/supabase';
+import { compressImage } from '@/lib/messaging/utils';
 
 interface MessageInputProps {
   conversationId: string;
@@ -54,13 +55,27 @@ export function MessageInput({
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      // Compress images before upload (maintains high resolution but reduces file size)
+      let fileToUpload = file;
+      let originalSize = file.size;
+      
+      if (file.type.startsWith('image/')) {
+        try {
+          fileToUpload = await compressImage(file);
+          console.log(`Image compression: ${(originalSize / 1024).toFixed(1)}KB → ${(fileToUpload.size / 1024).toFixed(1)}KB`);
+        } catch (compressionError) {
+          console.warn('Image compression failed, using original:', compressionError);
+          // Continue with original file if compression fails
+        }
+      }
+
+      const fileExt = fileToUpload.name.split('.').pop();
       const fileName = `${conversationId}/${Date.now()}.${fileExt}`;
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('message_attachments')
-        .upload(fileName, file);
+        .upload(fileName, fileToUpload);
 
       if (uploadError) throw uploadError;
 
@@ -73,17 +88,17 @@ export function MessageInput({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const messageType = file.type.startsWith('image/') ? 'image' : 'file';
+      const messageType = fileToUpload.type.startsWith('image/') ? 'image' : 'file';
 
       await supabase.from('messages').insert({
         conversation_id: conversationId,
         sender_id: user.id,
-        content: file.name,
+        content: fileToUpload.name,
         message_type: messageType,
         file_url: urlData.publicUrl,
-        file_name: file.name,
-        file_size: file.size,
-        file_type: file.type,
+        file_name: fileToUpload.name,
+        file_size: fileToUpload.size,
+        file_type: fileToUpload.type,
         reply_to_id: replyTo?.id || null,
       });
 

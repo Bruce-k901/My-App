@@ -83,3 +83,107 @@ export function getFileIcon(fileType: string): string {
   return '📎';
 }
 
+/**
+ * Compress and optimize image while maintaining high resolution
+ * Uses canvas API to resize and compress images
+ * 
+ * @param file - Original image file
+ * @param maxWidth - Maximum width (default: 1920px for high res)
+ * @param maxHeight - Maximum height (default: 1920px for high res)
+ * @param quality - JPEG quality 0-1 (default: 0.92 for high quality)
+ * @returns Promise<File> - Compressed image file
+ */
+export async function compressImage(
+  file: File,
+  maxWidth: number = 1920,
+  maxHeight: number = 1920,
+  quality: number = 0.92
+): Promise<File> {
+  return new Promise((resolve, reject) => {
+    // Only compress image files
+    if (!file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = width * ratio;
+          height = height * ratio;
+        }
+        
+        // Create canvas and draw resized image
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Use high-quality image rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw the resized image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to blob with compression
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Failed to compress image'));
+              return;
+            }
+            
+            // Create new File with original name but compressed data
+            const compressedFile = new File(
+              [blob],
+              file.name,
+              {
+                type: file.type, // Keep original MIME type
+                lastModified: Date.now(),
+              }
+            );
+            
+            // Only use compressed version if it's actually smaller
+            // This prevents unnecessary compression of already small images
+            if (compressedFile.size < file.size) {
+              resolve(compressedFile);
+            } else {
+              // If compression didn't help, return original
+              resolve(file);
+            }
+          },
+          file.type, // Use original MIME type (JPEG, PNG, etc.)
+          quality // Compression quality
+        );
+      };
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = e.target?.result as string;
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsDataURL(file);
+  });
+}
+

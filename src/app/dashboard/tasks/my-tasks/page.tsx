@@ -296,18 +296,7 @@ export default function MyTasksPage() {
                     <h3 className="text-lg font-semibold text-white">
                       {task.template?.name || 'Untitled Task'}
                     </h3>
-                    {/* Status badge removed per user request - only show for non-pending statuses */}
-                    {task.status !== 'pending' && (
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(task.status)}`}>
-                        {getStatusIcon(task.status)}
-                        {task.status.replace('_', ' ').toUpperCase()}
-                      </span>
-                    )}
-                    {task.template?.category && (
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(task.template.category)}`}>
-                        {task.template.category.replace('_', ' ').toUpperCase()}
-                      </span>
-                    )}
+                    {/* Status and category tags removed per user request */}
                   </div>
                   
                   <p className="text-white/60 text-sm mb-3">
