@@ -970,9 +970,17 @@ export default function FoodSOPTemplatePage() {
                   <div>
                     <label className="block text-xs text-neutral-400 mb-1">Temperature (°C)</label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="-?[0-9]*\.?[0-9]*"
                       value={step.temperature}
-                      onChange={(e) => updateProcessStep(step.id, 'temperature', e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow negative numbers, decimals, and empty string
+                        if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                          updateProcessStep(step.id, 'temperature', value);
+                        }
+                      }}
                       className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
                       placeholder="Optional"
                     />

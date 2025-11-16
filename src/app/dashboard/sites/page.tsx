@@ -230,7 +230,7 @@ export default function OrganizationSitesPage() {
           <p className="text-gray-400">No sites yet. Add one to get started.</p>
         )
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {filteredSites.map((site) => (
             <SiteCard 
               key={site.id} 

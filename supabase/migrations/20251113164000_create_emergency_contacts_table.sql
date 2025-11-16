@@ -52,7 +52,7 @@ create policy emergency_contacts_insert on public.emergency_contacts
     company_id in (
       select company_id from public.profiles 
       where id = auth.uid() 
-        and role in ('owner', 'admin', 'manager')
+        and app_role in ('Owner', 'Admin', 'Manager')
     )
   );
 
@@ -61,7 +61,7 @@ create policy emergency_contacts_update on public.emergency_contacts
     company_id in (
       select company_id from public.profiles 
       where id = auth.uid() 
-        and role in ('owner', 'admin', 'manager')
+        and app_role in ('Owner', 'Admin', 'Manager')
     )
   );
 
@@ -70,7 +70,7 @@ create policy emergency_contacts_delete on public.emergency_contacts
     company_id in (
       select company_id from public.profiles 
       where id = auth.uid() 
-        and role in ('owner', 'admin', 'manager')
+        and app_role in ('Owner', 'Admin', 'Manager')
     )
   );
 

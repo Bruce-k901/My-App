@@ -76,12 +76,12 @@ export function ConversationList({
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white/[0.03] border-r border-white/[0.1] overflow-hidden">
+      <div className="flex flex-col h-full bg-white/[0.03] overflow-hidden">
         {/* Header with Start Button - Fixed at top with exact height */}
         <div className="flex-shrink-0 p-4 border-b border-white/[0.1] bg-white/[0.03] h-[140px] flex flex-col justify-between">
           <button
             onClick={() => setIsStartModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition-colors h-[40px]"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[40px]"
           >
             <Plus className="w-4 h-4" />
             Start Conversation

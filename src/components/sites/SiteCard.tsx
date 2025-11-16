@@ -22,15 +22,15 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
   const gm = site.gm_profile || null;
 
   // Create subtitle with address and contact details
+  // Mobile: Show address only, GM details in expanded view
   const createSubtitle = () => {
     const addressParts = [site.address_line1, site.address_line2, site.city]
       .filter(Boolean)
       .join(", ");
     const address = site.postcode ? `${addressParts} • ${site.postcode.toUpperCase()}` : addressParts;
     
-    if (gm) {
-      return `${address} • ${gm.full_name} • ${gm.email} • ${gm.phone}`;
-    }
+    // On mobile, don't show GM details in subtitle (too cluttered)
+    // They'll be shown in the expanded view instead
     return address;
   };
 
@@ -56,26 +56,45 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
       }
     >
       {isOpen && (
-        <div className="mt-3 text-sm text-gray-300 pt-2">
-          <div className="mb-1">Region: {site.region || "—"}</div>
-          <div className="mb-1">City: {site.city || "—"}</div>
+        <div className="mt-3 text-sm text-gray-300 pt-2 px-1">
+          {/* Mobile: Stack fields vertically, Desktop: Keep horizontal */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mb-3">
+            <div>
+              <span className="text-gray-500 text-xs uppercase tracking-wide">Region</span>
+              <div className="text-white mt-0.5">{site.region || "—"}</div>
+            </div>
+            <div>
+              <span className="text-gray-500 text-xs uppercase tracking-wide">City</span>
+              <div className="text-white mt-0.5">{site.city || "—"}</div>
+            </div>
+          </div>
 
           {/* GM Information in expanded view */}
           {gm && (
-            <div className="mb-3">
-              <div className="font-semibold text-gray-200">General Manager</div>
-              <div className="mt-1 text-gray-300">
-                <div>{gm.full_name}</div>
+            <div className="mb-4 p-3 bg-white/[0.03] rounded-lg border border-white/[0.05]">
+              <div className="font-semibold text-gray-200 mb-2 text-sm">General Manager</div>
+              <div className="mt-1 text-gray-300 space-y-1.5">
+                <div className="text-white font-medium">{gm.full_name}</div>
                 {gm.phone && (
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <Phone size={14} className="text-gray-500" />
-                    <span>{gm.phone}</span>
+                  <div className="flex items-center gap-2">
+                    <Phone size={14} className="text-gray-500 flex-shrink-0" />
+                    <a 
+                      href={`tel:${gm.phone}`}
+                      className="hover:text-pink-400 transition-colors break-all"
+                    >
+                      {gm.phone}
+                    </a>
                   </div>
                 )}
                 {gm.email && (
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <Mail size={14} className="text-gray-500" />
-                    <span>{gm.email}</span>
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} className="text-gray-500 flex-shrink-0" />
+                    <a 
+                      href={`mailto:${gm.email}`}
+                      className="hover:text-pink-400 transition-colors break-all text-xs md:text-sm"
+                    >
+                      {gm.email}
+                    </a>
                   </div>
                 )}
               </div>
@@ -83,93 +102,97 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
           )}
 
           {site.operating_schedule && typeof site.operating_schedule === "object" ? (
-            <div className="mb-3">
-              <div className="font-semibold text-gray-200">Operating Schedule</div>
-              <table className="mt-1 w-auto border-collapse text-gray-300">
-                <tbody>
-                  {(() => {
-                    const weekdayOrder = [
-                      "Monday",
-                      "Tuesday", 
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ];
+            <div className="mb-4">
+              <div className="font-semibold text-gray-200 mb-2 text-sm">Operating Schedule</div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[200px] border-collapse text-gray-300">
+                  <tbody>
+                    {(() => {
+                      const weekdayOrder = [
+                        "Monday",
+                        "Tuesday", 
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday",
+                      ];
 
-                    const orderedSchedule = Object.entries(site.operating_schedule).sort(
-                      ([dayA], [dayB]) => weekdayOrder.indexOf(dayA) - weekdayOrder.indexOf(dayB)
-                    );
-
-                    return orderedSchedule.map(([day, info]) => {
-                      if (!info || typeof info !== "object") return null;
-
-                      const formatTime = (obj: any) => {
-                        if (!obj || typeof obj !== "object") return "—";
-                        const { hh, mm } = obj;
-                        if (hh == null || mm == null) return "—";
-                        return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
-                      };
-
-                      const infoTyped = info as any;
-                      const open = formatTime(infoTyped.open);
-                      const close = formatTime(infoTyped.close);
-                      const active = infoTyped.active ?? true;
-
-                      return (
-                        <tr key={day} className={!active ? "text-gray-500" : ""}>
-                          <td className="pr-6 capitalize">{day}:</td>
-                          <td className="tabular-nums">
-                            {active ? (
-                              <>
-                                {open} <span className="px-1 text-gray-500">→</span> {close}
-                              </>
-                            ) : (
-                              "Closed"
-                            )}
-                          </td>
-                        </tr>
+                      const orderedSchedule = Object.entries(site.operating_schedule).sort(
+                        ([dayA], [dayB]) => weekdayOrder.indexOf(dayA) - weekdayOrder.indexOf(dayB)
                       );
-                    });
-                  })()}
-                </tbody>
-              </table>
+
+                      return orderedSchedule.map(([day, info]) => {
+                        if (!info || typeof info !== "object") return null;
+
+                        const formatTime = (obj: any) => {
+                          if (!obj || typeof obj !== "object") return "—";
+                          const { hh, mm } = obj;
+                          if (hh == null || mm == null) return "—";
+                          return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+                        };
+
+                        const infoTyped = info as any;
+                        const open = formatTime(infoTyped.open);
+                        const close = formatTime(infoTyped.close);
+                        const active = infoTyped.active ?? true;
+
+                        return (
+                          <tr key={day} className={!active ? "text-gray-500" : ""}>
+                            <td className="pr-3 md:pr-6 py-1 capitalize text-xs md:text-sm">{day}:</td>
+                            <td className="tabular-nums text-xs md:text-sm">
+                              {active ? (
+                                <>
+                                  {open} <span className="px-1 text-gray-500">→</span> {close}
+                                </>
+                              ) : (
+                                "Closed"
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
-            <div className="text-gray-500">No operating schedule</div>
+            <div className="text-gray-500 text-sm mb-4">No operating schedule</div>
           )}
 
           {Array.isArray(site.planned_closures) && site.planned_closures.length > 0 ? (
-            <div className="mb-3">
-              <div className="font-semibold text-gray-200 mt-2">Planned Closures</div>
-              <ul className="list-disc ml-5 mt-1">
+            <div className="mb-4">
+              <div className="font-semibold text-gray-200 mb-2 text-sm">Planned Closures</div>
+              <ul className="list-disc ml-5 mt-1 space-y-1 text-xs md:text-sm">
                 {site.planned_closures
                   .filter((c: any) => c.is_active)
                   .map((c: any) => (
-                    <li key={c.id}>
-                      {c.closure_start} → {c.closure_end}
-                      {c.notes && ` — ${c.notes}`}
+                    <li key={c.id} className="break-words">
+                      <span className="text-gray-300">{c.closure_start} → {c.closure_end}</span>
+                      {c.notes && <span className="text-gray-400"> — {c.notes}</span>}
                     </li>
                   ))}
               </ul>
             </div>
           ) : (
-            <div className="text-gray-500">No planned closures</div>
+            <div className="text-gray-500 text-sm mb-4">No planned closures</div>
           )}
 
-          <div className="flex justify-end pt-3">
+          <div className="flex justify-end pt-2 border-t border-white/[0.05]">
             <button
               onClick={(e) => {
                 e.stopPropagation(); // don't collapse card
                 onEdit?.(site);
               }}
               className="
-                p-2 rounded
+                p-2 md:p-2 rounded
                 border border-pink-500 text-pink-500
                 hover:shadow-[0_0_6px_#ec4899]
                 transition
+                active:scale-95
               "
+              aria-label="Edit site"
             >
               <Pencil size={16} />
             </button>

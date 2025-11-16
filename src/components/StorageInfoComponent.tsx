@@ -276,9 +276,17 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                     <span className="text-gray-500 text-sm w-16 text-center">–</span>
                   ) : (
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="-?[0-9]*\.?[0-9]*"
                       value={row.temp_min === 0 ? "" : row.temp_min}
-                      onChange={(e) => updateRow(index, "temp_min", Number(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow negative numbers, decimals, and empty string
+                        if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                          updateRow(index, "temp_min", value === '' || value === '-' ? 0 : Number(value) || 0);
+                        }
+                      }}
                       className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-white focus:outline-none ${
                         !isRecommended(row) 
                           ? 'border-amber-400/50 bg-amber-500/10' 
@@ -296,9 +304,17 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                     <span className="text-gray-500 text-sm w-16 text-center">–</span>
                   ) : (
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="-?[0-9]*\.?[0-9]*"
                       value={row.temp_max === 0 ? "" : row.temp_max}
-                      onChange={(e) => updateRow(index, "temp_max", Number(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow negative numbers, decimals, and empty string
+                        if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                          updateRow(index, "temp_max", value === '' || value === '-' ? 0 : Number(value) || 0);
+                        }
+                      }}
                       className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-white focus:outline-none ${
                         !isRecommended(row) 
                           ? 'border-amber-400/50 bg-amber-500/10' 

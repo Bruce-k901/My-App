@@ -320,7 +320,7 @@ export function StartConversationModal({
           <button
             onClick={handleCreate}
             disabled={isButtonDisabled}
-            className="px-4 py-2 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-magenta-500/50 disabled:text-magenta-500/50 transition-all"
             title={
               isButtonDisabled
                 ? `Disabled: ${creating ? 'Creating...' : selectedUsers.length === 0 ? 'Select at least one user' : conversationType === 'group' && !groupName.trim() ? 'Enter group name' : 'Unknown'}`

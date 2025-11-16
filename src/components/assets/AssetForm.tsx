@@ -384,10 +384,17 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                     </Tooltip>
                   </label>
                   <Input
-                    type="number"
-                    step="0.1"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="-?[0-9]*\.?[0-9]*"
                     value={form.watch('working_temp_min') || ''}
-                    onChange={(e) => form.setValue('working_temp_min', e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Allow negative numbers, decimals, and empty string
+                      if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                        form.setValue('working_temp_min', value);
+                      }
+                    }}
                     placeholder="e.g. 0 for fridges, -20 for freezers"
                     className="w-full"
                   />
@@ -400,10 +407,17 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                     </Tooltip>
                   </label>
                   <Input
-                    type="number"
-                    step="0.1"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="-?[0-9]*\.?[0-9]*"
                     value={form.watch('working_temp_max') || ''}
-                    onChange={(e) => form.setValue('working_temp_max', e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Allow negative numbers, decimals, and empty string
+                      if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                        form.setValue('working_temp_max', value);
+                      }
+                    }}
                     placeholder="e.g. 5 for fridges, -18 for freezers"
                     className="w-full"
                   />

@@ -21,13 +21,13 @@ export default function CardHeader({
 }: CardHeaderProps) {
   return (
     <div 
-      className={`flex justify-between items-center px-4 py-3 cursor-pointer select-none ${className}`}
+      className={`flex justify-between items-start md:items-center px-3 md:px-4 py-2.5 md:py-3 cursor-pointer select-none ${className}`}
       onClick={onToggle}
     >
-      <div className="flex flex-col gap-0.5 truncate flex-1">
-        <div className="text-lg font-semibold text-white">{title}</div>
+      <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
+        <div className="text-base md:text-lg font-semibold text-white truncate">{title}</div>
         {subtitle && (
-          <div className="text-sm text-gray-400 flex gap-1 items-center">
+          <div className="text-xs md:text-sm text-gray-400 flex flex-wrap gap-1 items-center">
             {subtitle.split(' • ').map((part, index, array) => {
               const trimmedPart = part.trim();
               

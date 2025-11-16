@@ -47,61 +47,178 @@ type Company = {
 };
 
 export default function BusinessDetailsTab() {
+  console.log('🚀 BusinessDetailsTab component MOUNTED');
+  
   const { company: contextCompany, setCompany, profile, companyId, userId } = useAppContext();
-  const [form, setForm] = useState<Company>(contextCompany || {});
+  
+  console.log('📊 BusinessDetailsTab context values:', {
+    hasContextCompany: !!contextCompany,
+    contextCompanyId: contextCompany?.id,
+    userId,
+    companyId,
+    profileId: profile?.id,
+    profileCompanyId: profile?.company_id,
+  });
+  
+  const [form, setForm] = useState<Company>({});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    console.log('🔍 BusinessDetailsTab useEffect TRIGGERED', {
+      userId,
+      companyId,
+      contextCompanyId: contextCompany?.id,
+      profileCompanyId: profile?.company_id,
+    });
+
     async function initCompany() {
-      if (contextCompany) {
+      console.log('🔍 BusinessDetailsTab initCompany START:', {
+        contextCompany: !!contextCompany,
+        contextCompanyId: contextCompany?.id,
+        contextCompanyName: contextCompany?.name,
+        userId,
+        companyId,
+        profileCompanyId: profile?.company_id,
+        profileId: profile?.id,
+        hasInitialized,
+        formId: form?.id,
+      });
+
+      // First priority: Use contextCompany if available and has data
+      if (contextCompany && contextCompany.id && contextCompany.name) {
+        console.log('✅ Using contextCompany directly:', contextCompany.name);
         setForm(contextCompany);
+        setHasInitialized(true);
         setLoading(false);
         return;
       }
 
+      // Wait for userId to be available
       if (!userId) {
-        setLoading(false);
+        console.warn('⚠️ No userId yet, will retry when available');
         return;
       }
 
-      const { data: profileRow } = await supabase
-        .from("profiles")
-        .select("id, email, full_name, company_id, site_id, app_role, position_title, boh_foh, last_login, pin_code")
-        .eq("id", userId)
-        .maybeSingle();
+      setLoading(true);
 
-      const { data } = await supabase
-        .from("companies")
-        .select("*")
-        .or(`created_by.eq.${userId},id.eq.${profileRow?.company_id || ""}`)
-        .limit(1);
+      try {
+        // Use profile from context if available
+        let profileRow = profile;
+        
+        if (!profileRow) {
+          console.log('🔄 Fetching profile...');
+          const { data, error: profileError } = await supabase
+            .from("profiles")
+            .select("id, email, full_name, company_id, site_id")
+            .eq("id", userId)
+            .maybeSingle();
 
-      const row = Array.isArray(data) ? data?.[0] : (data as any);
-      if (row) {
-        setCompany(row);
-        setForm(row);
-      } else {
-        setForm({
-          name: "",
-          legal_name: "",
-          industry: "",
-          vat_number: "",
-          company_number: "",
-          phone: "",
-          website: "",
-          country: "",
-          contact_email: profile?.email ?? "",
-        });
+          if (profileError) {
+            console.error('❌ Profile fetch error:', profileError);
+          } else if (data) {
+            profileRow = data;
+            console.log('✅ Profile fetched:', { id: profileRow.id, company_id: profileRow.company_id });
+          } else {
+            console.warn('⚠️ No profile found for userId:', userId);
+          }
+        } else {
+          console.log('✅ Using profile from context:', { id: profileRow.id, company_id: profileRow.company_id });
+        }
+
+        // Determine which company_id to use
+        const companyIdToUse = profileRow?.company_id || companyId || contextCompany?.id;
+        console.log('🔍 Company ID to use:', companyIdToUse);
+
+        if (companyIdToUse) {
+          console.log('🔄 Fetching company with ID:', companyIdToUse);
+          
+          // Try multiple query strategies
+          let companyData = null;
+          let companyError = null;
+
+          // Strategy 1: Direct ID lookup
+          const { data: directData, error: directError } = await supabase
+            .from("companies")
+            .select("*")
+            .eq("id", companyIdToUse)
+            .maybeSingle();
+
+          if (!directError && directData) {
+            companyData = directData;
+            console.log('✅ Company found via direct ID lookup:', directData.name);
+          } else {
+            console.log('⚠️ Direct lookup failed, trying created_by:', directError);
+            
+            // Strategy 2: Created by user
+            const { data: createdData, error: createdError } = await supabase
+              .from("companies")
+              .select("*")
+              .eq("created_by", userId)
+              .maybeSingle();
+
+            if (!createdError && createdData) {
+              companyData = createdData;
+              console.log('✅ Company found via created_by:', createdData.name);
+            } else {
+              companyError = createdError;
+              console.log('⚠️ Created_by lookup failed:', createdError);
+            }
+          }
+
+          if (companyData && companyData.id) {
+            console.log('✅ Setting company data:', companyData.name);
+            setCompany(companyData);
+            setForm(companyData);
+            setHasInitialized(true);
+          } else {
+            console.warn('⚠️ No company found, using empty form');
+            console.log('Company query errors:', { directError, companyError });
+            setForm({
+              name: "",
+              legal_name: "",
+              industry: "",
+              vat_number: "",
+              company_number: "",
+              phone: "",
+              website: "",
+              country: "",
+              contact_email: profileRow?.email || "",
+            });
+            setHasInitialized(true);
+          }
+        } else {
+          console.warn('⚠️ No company_id available anywhere');
+          setForm({
+            name: "",
+            legal_name: "",
+            industry: "",
+            vat_number: "",
+            company_number: "",
+            phone: "",
+            website: "",
+            country: "",
+            contact_email: profileRow?.email || "",
+          });
+          setHasInitialized(true);
+        }
+      } catch (err) {
+        console.error('❌ Exception in initCompany:', err);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
-    initCompany();
-  }, [contextCompany]);
+    // Only run if we haven't initialized or if key values changed
+    if (!hasInitialized || !form?.id) {
+      initCompany();
+    } else {
+      console.log('⏭️ Skipping - already initialized with form ID:', form.id);
+    }
+  }, [userId, companyId, contextCompany?.id, profile?.company_id]); // Depend on IDs only
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -206,7 +323,17 @@ export default function BusinessDetailsTab() {
     setSaving(false);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    console.log('⏳ BusinessDetailsTab showing loading state');
+    return <p>Loading...</p>;
+  }
+
+  console.log('✅ BusinessDetailsTab rendered, form:', {
+    hasForm: !!form,
+    formId: form?.id,
+    formName: form?.name,
+    formKeys: Object.keys(form || {}),
+  });
 
   const requiredFields = ["name", "industry", "country", "contact_email"];
   const fields = [

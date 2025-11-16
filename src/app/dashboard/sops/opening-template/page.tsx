@@ -272,11 +272,11 @@ export default function OpeningProcedureTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
             >
-              <option value="Draft">Draft</option>
-              <option value="Published">Published</option>
-              <option value="Archived">Archived</option>
+              <option value="Draft" className="bg-neutral-900 text-white">Draft</option>
+              <option value="Published" className="bg-neutral-900 text-white">Published</option>
+              <option value="Archived" className="bg-neutral-900 text-white">Archived</option>
             </select>
           </div>
 
@@ -323,11 +323,11 @@ export default function OpeningProcedureTemplatePage() {
             <select
               value={siteLocation}
               onChange={(e) => setSiteLocation(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
             >
-              <option value="">Select site...</option>
+              <option value="" className="bg-neutral-900 text-white">Select site...</option>
               {sites.map(site => (
-                <option key={site.id} value={site.name}>{site.name}</option>
+                <option key={site.id} value={site.name} className="bg-neutral-900 text-white">{site.name}</option>
               ))}
             </select>
           </div>
@@ -431,11 +431,11 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.equipment_id}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'equipment_id', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
                 >
-                  <option value="">Select equipment...</option>
+                  <option value="" className="bg-neutral-900 text-white">Select equipment...</option>
                   {equipmentLibrary.map(equip => (
-                    <option key={equip.id} value={equip.id}>{equip.equipment_name}</option>
+                    <option key={equip.id} value={equip.id} className="bg-neutral-900 text-white">{equip.equipment_name}</option>
                   ))}
                 </select>
               </div>
@@ -444,12 +444,12 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.startup_status}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'startup_status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
                 >
-                  <option value="">Status...</option>
-                  <option value="Operational">Operational</option>
-                  <option value="Needs Maintenance">Needs Maintenance</option>
-                  <option value="Out of Order">Out of Order</option>
+                  <option value="" className="bg-neutral-900 text-white">Status...</option>
+                  <option value="Operational" className="bg-neutral-900 text-white">Operational</option>
+                  <option value="Needs Maintenance" className="bg-neutral-900 text-white">Needs Maintenance</option>
+                  <option value="Out of Order" className="bg-neutral-900 text-white">Out of Order</option>
                 </select>
               </div>
               <div className="col-span-4">
@@ -504,11 +504,11 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={check.status}
                   onChange={(e) => updateSafetyCheck(check.id, 'status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
                 >
-                  <option value="Pending">Pending</option>
-                  <option value="Complete">Complete</option>
-                  <option value="Issue">Issue</option>
+                  <option value="Pending" className="bg-neutral-900 text-white">Pending</option>
+                  <option value="Complete" className="bg-neutral-900 text-white">Complete</option>
+                  <option value="Issue" className="bg-neutral-900 text-white">Issue</option>
                 </select>
               </div>
               <div className="col-span-2">
