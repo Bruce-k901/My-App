@@ -109,3 +109,4 @@ CREATE TRIGGER auto_update_plan_by_site_count_trigger
 COMMENT ON FUNCTION calculate_monthly_amount() IS 'Calculates monthly subscription amount based on pricing model (per-site, flat-rate, or custom)';
 COMMENT ON FUNCTION auto_update_plan_by_site_count() IS 'Automatically switches between Starter (1 site) and Pro (2+ sites) based on site count';
 
+

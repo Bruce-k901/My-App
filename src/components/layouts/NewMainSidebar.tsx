@@ -24,6 +24,7 @@ import {
   AlertTriangle,
   LogOut,
   CreditCard,
+  MessageSquare,
 } from "lucide-react";
 
 // Section with hover popup
@@ -119,6 +120,7 @@ const sections: SidebarSection[] = [
 
 const directLinks: SidebarLink[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
+  { label: "Messages", href: "/dashboard/messaging", icon: MessageSquare },
   { label: "Manager Calendar", href: "/dashboard/calendar", icon: CalendarDays },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: ShieldCheck },

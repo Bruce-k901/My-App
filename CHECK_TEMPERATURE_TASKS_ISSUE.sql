@@ -128,3 +128,4 @@ WHERE ct.due_date = CURRENT_DATE
 -- 6. Check the cron function return value
 SELECT * FROM generate_daily_tasks_direct();
 
+

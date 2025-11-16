@@ -43,3 +43,4 @@ SELECT
 FROM cron.job
 WHERE jobname = 'generate-daily-tasks-cron';
 
+

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { MessagingWidget } from "./MessagingWidget";
 
 export default function ManagerDashboard() {
   const { loading, tasks, assets, incidents, siteId } = useAppContext();
@@ -35,6 +36,8 @@ export default function ManagerDashboard() {
   return (
     <section className="px-6 py-8 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
       {!siteId && <SetupPrompt />}
+
+      <MessagingWidget />
 
       <Widget title="EHO Compliance Pack">
         <p className="text-slate-300 text-sm mb-3">

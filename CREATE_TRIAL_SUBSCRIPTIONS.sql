@@ -52,3 +52,4 @@ JOIN companies c ON c.id = cs.company_id
 JOIN subscription_plans sp ON sp.id = cs.plan_id
 ORDER BY cs.trial_ends_at DESC;
 
+

@@ -158,3 +158,4 @@ GRANT SELECT, INSERT, UPDATE ON public.incidents TO authenticated;
 
 
 
+

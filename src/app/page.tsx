@@ -25,20 +25,32 @@ export default function HomePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
   const [showMarketing, setShowMarketing] = useState(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
+    // Prevent multiple redirects
+    if (hasRedirected) return;
+    
     async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        console.log("Session exists, redirecting to dashboard");
-        router.replace("/dashboard");
-      } else {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          console.log("Session exists, redirecting to dashboard");
+          setHasRedirected(true);
+          router.replace("/dashboard");
+        } else {
+          setShowMarketing(true);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
         setShowMarketing(true);
+      } finally {
+        setChecking(false);
       }
-      setChecking(false);
     }
     checkSession();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
 
   if (checking) {
     return (

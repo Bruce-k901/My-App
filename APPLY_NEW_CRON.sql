@@ -16,3 +16,4 @@ END $$;
 -- Now run the full migration file: supabase/migrations/20250214000000_create_daily_task_cron.sql
 -- Copy and paste the entire contents of that file here, or run it separately
 
+

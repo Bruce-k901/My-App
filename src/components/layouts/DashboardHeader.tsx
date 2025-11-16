@@ -9,6 +9,7 @@ import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { getMenuItemsByRole } from "@/components/layout/navigation";
 import { format } from "date-fns";
+import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
 
 // Menu items removed - now using BurgerMenu component
 
@@ -25,6 +26,9 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const incidentsHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Get unread message count (lightweight - doesn't load all conversations)
+  const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
   const incidentsButtonRef = useRef<HTMLButtonElement>(null);
   const incidentsMenuRef = useRef<HTMLDivElement>(null);
   const burgerMenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -40,6 +44,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
     const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
   
   // Icon mapping for menu items
   const iconMap: Record<string, any> = {
@@ -356,8 +361,26 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         </div>
       </div>
 
-      {/* Right: Clock and Menu */}
+      {/* Right: Messages, Clock and Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Messages Button - Quick access */}
+        <Link
+          href="/dashboard/messaging"
+          className={`relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10 ${
+            pathname.startsWith('/dashboard/messaging')
+              ? 'bg-white/[0.12] text-white border-pink-500/30'
+              : ''
+          }`}
+        >
+          <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+          <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Messages</span>
+          {unreadMessageCount > 0 && (
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
+              {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
+            </span>
+          )}
+        </Link>
+
         {/* Clock - Always visible */}
         <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10">
           <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />

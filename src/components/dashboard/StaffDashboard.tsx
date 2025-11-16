@@ -2,6 +2,7 @@
 
 import { useAppContext } from "@/context/AppContext";
 import StaffTaskList from "@/components/tasks/StaffTaskList";
+import { MessagingWidget } from "./MessagingWidget";
 
 export default function StaffDashboard() {
   const { loading, tasks, temperatureLogs, incidents, siteId } = useAppContext();
@@ -10,6 +11,8 @@ export default function StaffDashboard() {
   return (
     <section className="px-6 py-8 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
       {!siteId && <SetupPrompt />}
+
+      <MessagingWidget />
 
       {/* Operational Task List */}
       <StaffTaskList />

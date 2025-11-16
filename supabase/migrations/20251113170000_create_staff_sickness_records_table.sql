@@ -77,3 +77,4 @@ CREATE TRIGGER update_staff_sickness_records_updated_at
   EXECUTE FUNCTION update_staff_sickness_records_updated_at();
 
 
+
