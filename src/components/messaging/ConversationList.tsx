@@ -17,7 +17,7 @@ export function ConversationList({
   selectedConversationId,
   onSelectConversation,
 }: ConversationListProps) {
-  const { conversations, loading, deleteConversation } = useConversations();
+  const { conversations, loading, deleteConversation, refresh } = useConversations();
   const { user } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
@@ -76,30 +76,30 @@ export function ConversationList({
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white/[0.03] border-r border-white/[0.1]">
-        {/* Header with Start Button */}
-        <div className="p-4 border-b border-white/[0.1]">
+      <div className="flex flex-col h-full bg-white/[0.03] border-r border-white/[0.1] overflow-hidden">
+        {/* Header with Start Button - Fixed at top with exact height */}
+        <div className="flex-shrink-0 p-4 border-b border-white/[0.1] bg-white/[0.03] h-[140px] flex flex-col justify-between">
           <button
             onClick={() => setIsStartModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition-colors mb-3"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition-colors h-[40px]"
           >
             <Plus className="w-4 h-4" />
             Start Conversation
           </button>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <div className="relative h-[40px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full h-full pl-10 pr-4 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
             />
           </div>
         </div>
 
-      {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Conversations List - Scrollable */}
+      <div className="flex-1 overflow-y-auto min-h-0">
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-white/20 mb-4" />
@@ -118,21 +118,24 @@ export function ConversationList({
               return (
                 <div
                   key={conversation.id}
-                  className={`w-full p-4 hover:bg-white/[0.05] transition-colors ${
-                    isSelected ? 'bg-white/[0.08] border-l-2 border-pink-500' : ''
+                  onClick={() => onSelectConversation(conversation.id)}
+                  className={`w-full p-4 hover:bg-white/[0.05] transition-colors cursor-pointer relative ${
+                    isSelected ? 'bg-white/[0.05]' : ''
                   }`}
                 >
+                  {/* Left border highlight for selected conversation */}
+                  {isSelected && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500 rounded-r" />
+                  )}
                   <div className="flex items-start gap-3">
-                    <button
-                      onClick={() => onSelectConversation(conversation.id)}
-                      className="flex-shrink-0 p-2 bg-pink-500/10 rounded-lg"
-                      aria-label="Open conversation"
-                    >
+                    <div className="flex-shrink-0 p-2 bg-pink-500/10 rounded-lg">
                       <Icon className="w-5 h-5 text-pink-400" />
-                    </button>
-                    <div className="flex-1 min-w-0" onClick={() => onSelectConversation(conversation.id)}>
+                    </div>
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-semibold text-white truncate">
+                        <h3 className={`text-sm font-semibold truncate ${
+                          isSelected ? 'text-pink-300' : 'text-white'
+                        }`}>
                           {name}
                         </h3>
                         {conversation.last_message_at && (
@@ -150,7 +153,7 @@ export function ConversationList({
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       {unreadCount > 0 && (
                         <div className="flex-shrink-0">
                           <span className="px-2 py-0.5 bg-pink-500 text-white text-xs font-semibold rounded-full">
@@ -189,8 +192,10 @@ export function ConversationList({
       <StartConversationModal
         isOpen={isStartModalOpen}
         onClose={() => setIsStartModalOpen(false)}
-        onConversationCreated={(conversationId) => {
+        onConversationCreated={async (conversationId) => {
           setIsStartModalOpen(false);
+          // Refresh the conversation list to show the new conversation
+          await refresh();
           onSelectConversation(conversationId);
         }}
       />

@@ -129,3 +129,4 @@ WHERE ct.due_date = CURRENT_DATE
 SELECT * FROM generate_daily_tasks_direct();
 
 
+

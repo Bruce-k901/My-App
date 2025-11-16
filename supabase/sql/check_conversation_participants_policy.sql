@@ -28,3 +28,4 @@ WHERE schemaname = 'public'
   AND cmd = 'INSERT';
 
 
+

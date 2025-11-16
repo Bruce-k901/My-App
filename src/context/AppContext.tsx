@@ -66,8 +66,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .single();
       if (error) throw error;
       setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch (error: any) {
+      console.error('Error fetching profile:', {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint,
+        error: error,
+      });
       setProfile(null);
     } finally {
       setLoading(false);

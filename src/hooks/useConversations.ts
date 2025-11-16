@@ -172,7 +172,7 @@ export function useConversations({
         .from('messages')
         .select(`
           *,
-          sender:profiles(id, full_name, email),
+          sender:profiles!sender_id(id, full_name, email),
           conversation_id
         `)
         .in('conversation_id', conversationIds)
@@ -426,7 +426,13 @@ export function useConversations({
         // Don't throw - conversation is created, participants can be added later
       }
 
-      await loadConversations();
+      // Immediately refresh conversations list and return the new conversation
+      // Use a small delay to ensure database consistency
+      setTimeout(async () => {
+        await loadConversations({ silent: true });
+      }, 100);
+      
+      // Also return the conversation immediately so UI can update
       return conversation as Conversation;
     } catch (err: any) {
       // Better error logging

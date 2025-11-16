@@ -40,3 +40,4 @@ END $$;
 -- SELECT * FROM generate_daily_tasks_direct();
 
 
+

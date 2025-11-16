@@ -70,6 +70,9 @@ export interface Message {
   reactions?: MessageReaction[];
   mentions?: MessageMention[];
   read_by?: string[]; // Array of user IDs who read this message
+  delivered_to?: string[]; // Array of user IDs who received this message
+  // Receipt status (for UI display)
+  receipt_status?: 'sent' | 'delivered' | 'read'; // Status for own messages
 }
 
 export interface MessageReaction {

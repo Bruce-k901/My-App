@@ -53,3 +53,4 @@ JOIN subscription_plans sp ON sp.id = cs.plan_id
 ORDER BY cs.trial_ends_at DESC;
 
 
+

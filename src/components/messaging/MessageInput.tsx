@@ -7,14 +7,14 @@ import { supabase } from '@/lib/supabase';
 
 interface MessageInputProps {
   conversationId: string;
-  onSendMessage: (content: string, replyToId?: string) => Promise<void>;
+  sendMessage: (content: string, replyToId?: string) => Promise<any>;
   replyTo?: { id: string; content: string; senderName: string } | null;
   onCancelReply?: () => void;
 }
 
 export function MessageInput({
   conversationId,
-  onSendMessage,
+  sendMessage,
   replyTo,
   onCancelReply,
 }: MessageInputProps) {
@@ -26,7 +26,7 @@ export function MessageInput({
   const handleSend = async () => {
     if (!content.trim() && !replyTo) return;
 
-    await onSendMessage(content.trim(), replyTo?.id);
+    await sendMessage(content.trim(), replyTo?.id);
     setContent('');
     setTyping(false);
     if (onCancelReply) onCancelReply();
@@ -99,25 +99,27 @@ export function MessageInput({
   };
 
   return (
-    <div className="border-t border-white/[0.1] bg-white/[0.03] p-4">
-      {/* Reply Preview */}
-      {replyTo && (
-        <div className="mb-3 px-3 py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between">
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-white/60 mb-1">Replying to {replyTo.senderName}</div>
-            <div className="text-sm text-white/80 truncate">{replyTo.content}</div>
+    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-4">
+      {/* Reply Preview - Fixed height to prevent layout shift */}
+      <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
+        {replyTo && (
+          <div className="px-3 py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between h-full">
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-white/60 mb-1">Replying to {replyTo.senderName}</div>
+              <div className="text-sm text-white/80 truncate">{replyTo.content}</div>
+            </div>
+            <button
+              onClick={onCancelReply}
+              className="flex-shrink-0 ml-2 p-1 hover:bg-white/10 rounded transition-colors"
+            >
+              <X className="w-4 h-4 text-white/60" />
+            </button>
           </div>
-          <button
-            onClick={onCancelReply}
-            className="flex-shrink-0 ml-2 p-1 hover:bg-white/10 rounded transition-colors"
-          >
-            <X className="w-4 h-4 text-white/60" />
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Input Area */}
-      <div className="flex items-end gap-2">
+      {/* Input Area - Fixed height */}
+      <div className="flex items-center gap-2 h-[44px]">
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
@@ -135,7 +137,7 @@ export function MessageInput({
           accept="image/*,.pdf,.doc,.docx,.txt"
         />
 
-        <div className="flex-1 relative">
+        <div className="flex-1 relative h-full">
           <textarea
             value={content}
             onChange={(e) => handleInputChange(e.target.value)}
@@ -143,10 +145,10 @@ export function MessageInput({
             onBlur={() => setTyping(false)}
             placeholder="Type a message..."
             rows={1}
-            className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm"
+            className="w-full h-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm leading-tight"
             style={{
               minHeight: '44px',
-              maxHeight: '120px',
+              maxHeight: '44px',
             }}
           />
         </div>
@@ -154,16 +156,19 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 p-2 bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Send message"
         >
           <Send className="w-5 h-5" />
         </button>
       </div>
 
-      {uploading && (
-        <div className="mt-2 text-xs text-white/60">Uploading file...</div>
-      )}
+      {/* Upload status - Fixed height to prevent layout shift */}
+      <div className={`h-[20px] transition-all duration-200 ${uploading ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
+        {uploading && (
+          <div className="text-xs text-white/60">Uploading file...</div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
@@ -25,44 +25,78 @@ export default function HomePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
   const [showMarketing, setShowMarketing] = useState(false);
-  const [hasRedirected, setHasRedirected] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const hasCheckedRef = React.useRef(false);
+
+  // Ensure we're on client-side before checking session
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    // Prevent multiple redirects
-    if (hasRedirected) return;
+    // Only run after component is mounted (client-side)
+    if (!mounted) return;
+    
+    // Prevent multiple checks
+    if (hasCheckedRef.current) return;
+    hasCheckedRef.current = true;
+    
+    // Safety timeout: if check takes too long, show marketing page
+    const safetyTimeout = setTimeout(() => {
+      console.warn("Session check taking too long, showing marketing page");
+      setShowMarketing(true);
+      setChecking(false);
+    }, 3000);
     
     async function checkSession() {
       try {
-        const { data } = await supabase.auth.getSession();
-        if (data?.session) {
-          console.log("Session exists, redirecting to dashboard");
-          setHasRedirected(true);
-          router.replace("/dashboard");
-        } else {
+        // Add timeout to prevent hanging
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session check timeout')), 5000)
+        );
+        
+        const { data } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        
+        clearTimeout(safetyTimeout);
+        
+      if (data?.session) {
+        console.log("Session exists, redirecting to dashboard");
+        router.replace("/dashboard");
+          // Don't set checking to false if redirecting - let the redirect happen
+          return;
+      } else {
           setShowMarketing(true);
+          setChecking(false);
         }
       } catch (error) {
+        clearTimeout(safetyTimeout);
         console.error("Error checking session:", error);
+        // On error, show marketing page (user can still navigate)
         setShowMarketing(true);
-      } finally {
         setChecking(false);
       }
     }
     checkSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once on mount
+    
+    return () => {
+      clearTimeout(safetyTimeout);
+    };
+  }, [router, mounted]);
 
-  if (checking) {
+  // Show loading state only briefly, then show marketing page as fallback
+  if (checking && !showMarketing) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-neutral-950">
         <div className="text-white">Checking authentication...</div>
       </div>
     );
   }
 
-  if (!showMarketing) {
+  // If we're redirecting, show a brief message
+  if (!showMarketing && !checking) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-neutral-950">
         <div className="text-white">Redirecting...</div>
       </div>
     );
