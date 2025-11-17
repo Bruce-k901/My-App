@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, AlertTriangle, Download, Link as LinkIcon, Shield } from 'lucide-react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { Plus, Trash2, Save, AlertTriangle, Download, Link as LinkIcon, Shield, CheckCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -16,7 +16,7 @@ const RISK_LEVELS = ['Low', 'Medium', 'High', 'Very High'];
 const EXPOSURE_ROUTES = ['Inhalation', 'Skin contact', 'Eye contact', 'Ingestion'];
 const SEVERITY_LEVELS = ['Low', 'Medium', 'High'];
 
-export default function COSHHRiskAssessmentTemplate() {
+function COSHHRiskAssessmentTemplateContent() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
   const router = useRouter();
@@ -711,5 +711,17 @@ export default function COSHHRiskAssessmentTemplate() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function COSHHRiskAssessmentTemplate() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
+        <div className="text-neutral-400">Loading COSHH template...</div>
+      </div>
+    }>
+      <COSHHRiskAssessmentTemplateContent />
+    </Suspense>
   );
 }

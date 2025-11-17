@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -56,7 +56,7 @@ const getRiskLevel = (score) => {
   return { level: 'Very High', color: 'bg-red-500/20 text-red-400 border-red-500/40' };
 };
 
-export default function GeneralRiskAssessmentTemplate() {
+function GeneralRiskAssessmentTemplateContent() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
   const router = useRouter();
@@ -684,5 +684,17 @@ export default function GeneralRiskAssessmentTemplate() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function GeneralRiskAssessmentTemplate() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
+        <div className="text-neutral-400">Loading risk assessment template...</div>
+      </div>
+    }>
+      <GeneralRiskAssessmentTemplateContent />
+    </Suspense>
   );
 }
