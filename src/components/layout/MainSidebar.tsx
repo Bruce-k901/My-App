@@ -31,9 +31,11 @@ import {
   CheckSquare,
   GraduationCap,
   CalendarDays,
+  Clock,
 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
+import ClockInOut from "@/components/attendance/ClockInOut";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
@@ -73,6 +75,10 @@ const navItems = [
   { label: "Daily Checklists", href: "/dashboard/checklists", icon: CheckSquare, section: "checklists" },
   { label: "Checklist Templates", href: "/dashboard/checklists/templates", icon: LayoutTemplate, section: "checklists" },
   
+  // Logs Section
+  { label: "Attendance Register", href: "/dashboard/logs/attendance", icon: Clock, section: "logs" },
+  { label: "Temperature Logs", href: "/logs/temperature", icon: BarChart3, section: "logs" },
+  
   // Other Main Items
   { label: "EHO Readiness", href: "/dashboard/eho-report", icon: BadgeCheck },
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3 },
@@ -107,19 +113,31 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
   let currentSection: string | undefined = undefined;
 
   filtered.forEach((item) => {
-    if (item.section !== currentSection) {
+    // Handle items without sections (like Dashboard, EHO Readiness, etc.)
+    const itemSection = item.section || undefined;
+    
+    if (itemSection !== currentSection) {
+      // Save previous group if it has items
       if (currentGroup.length > 0) {
         groupedItems.push({ section: currentSection, items: currentGroup });
       }
+      // Start new group
       currentGroup = [item];
-      currentSection = item.section;
+      currentSection = itemSection;
     } else {
+      // Add to current group
       currentGroup.push(item);
     }
   });
   
+  // Don't forget the last group
   if (currentGroup.length > 0) {
     groupedItems.push({ section: currentSection, items: currentGroup });
+  }
+  
+  // Debug: Log grouped items to console (remove in production)
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log('Sidebar grouped items:', groupedItems.map(g => ({ section: g.section, count: g.items.length })));
   }
 
   const sidebarWidth = isHovered ? 'w-64' : 'w-16';
@@ -130,6 +148,22 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Clock In/Out Component - Show full component when expanded, icon when collapsed */}
+      {isHovered ? (
+        <div className="px-2 mb-2">
+          <ClockInOut />
+        </div>
+      ) : (
+        <div className="px-2 mb-2">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white/70 hover:text-pink-400 hover:bg-white/[0.08] transition-all duration-200 cursor-pointer group relative">
+            <Clock className="w-5 h-5" />
+            <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-sm rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(236,72,153,0.25)] opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+              Clock In/Out
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Nav Items */}
       <nav className="flex flex-col gap-1 px-2 w-full">
         {groupedItems.map((group, groupIdx) => (
@@ -137,6 +171,15 @@ export function MainSidebar({ isMinimized, onToggleMinimize, currentPage }: Main
             {/* Add subtle divider between sections */}
             {groupIdx > 0 && (
               <div className={`h-px bg-white/[0.05] my-3 ${isHovered ? 'w-full' : 'w-8 mx-auto'}`} />
+            )}
+            
+            {/* Section header (only show when hovered/expanded) */}
+            {isHovered && group.section && (
+              <div className="px-3 py-2 mb-1">
+                <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+                  {group.section}
+                </span>
+              </div>
             )}
             
             {group.items.map(({ label, href, icon: Icon }) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, Upload, CalendarPlus } from "lucide-react";
+import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, Upload, CalendarPlus, Edit2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
@@ -149,6 +149,16 @@ export default function TrainingMatrixPage() {
   const [bookingSaveLoading, setBookingSaveLoading] = useState(false);
   const [uploadingCertificate, setUploadingCertificate] = useState(false);
   const [expandedProfiles, setExpandedProfiles] = useState<Record<string, boolean>>({});
+  const [editingCertificate, setEditingCertificate] = useState<{
+    userId: string;
+    type: 'foodSafety' | 'healthSafety' | 'fireMarshal' | 'firstAid' | 'cossh';
+  } | null>(null);
+  const [editForm, setEditForm] = useState<{
+    level?: number | null;
+    expiryDate?: string | null;
+    trained?: boolean | null;
+  }>({});
+  const [savingCertificate, setSavingCertificate] = useState(false);
 
   const [formState, setFormState] = useState({
     userId: "",
@@ -658,6 +668,84 @@ export default function TrainingMatrixPage() {
     }
   };
 
+  const handleSaveCertificate = async () => {
+    if (!editingCertificate) return;
+
+    setSavingCertificate(true);
+
+    try {
+      const updates: Record<string, any> = {};
+
+      switch (editingCertificate.type) {
+        case 'foodSafety':
+          if (editForm.level !== undefined) {
+            updates.food_safety_level = editForm.level;
+          }
+          if (editForm.expiryDate !== undefined) {
+            updates.food_safety_expiry_date = editForm.expiryDate || null;
+          }
+          break;
+        case 'healthSafety':
+          if (editForm.level !== undefined) {
+            updates.h_and_s_level = editForm.level;
+          }
+          if (editForm.expiryDate !== undefined) {
+            updates.h_and_s_expiry_date = editForm.expiryDate || null;
+          }
+          break;
+        case 'fireMarshal':
+          if (editForm.trained !== undefined) {
+            updates.fire_marshal_trained = editForm.trained;
+          }
+          if (editForm.expiryDate !== undefined) {
+            updates.fire_marshal_expiry_date = editForm.expiryDate || null;
+          }
+          break;
+        case 'firstAid':
+          if (editForm.trained !== undefined) {
+            updates.first_aid_trained = editForm.trained;
+          }
+          if (editForm.expiryDate !== undefined) {
+            updates.first_aid_expiry_date = editForm.expiryDate || null;
+          }
+          break;
+        case 'cossh':
+          if (editForm.trained !== undefined) {
+            updates.cossh_trained = editForm.trained;
+          }
+          if (editForm.expiryDate !== undefined) {
+            updates.cossh_expiry_date = editForm.expiryDate || null;
+          }
+          break;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        toast.error('No changes to save');
+        setSavingCertificate(false);
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', editingCertificate.userId);
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Certificate updated successfully');
+      setEditingCertificate(null);
+      setEditForm({});
+      fetchMatrixData();
+    } catch (err: any) {
+      console.error('Failed to save certificate:', err);
+      toast.error(err?.message || 'Failed to save certificate');
+    } finally {
+      setSavingCertificate(false);
+    }
+  };
+
   const handleCertificateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -858,22 +946,69 @@ export default function TrainingMatrixPage() {
                   <TrainingStatusCard
                     title="Food Safety"
                     status={certificationSummaries.foodSafety}
+                    profile={profile}
+                    certificationType="foodSafety"
+                    onEdit={() => {
+                      setEditingCertificate({ userId: profile.id, type: 'foodSafety' });
+                      setEditForm({
+                        level: profile.food_safety_level ?? null,
+                        expiryDate: profile.food_safety_expiry_date ? profile.food_safety_expiry_date.split('T')[0] : null,
+                        trained: profile.food_safety_level ? true : null,
+                      });
+                    }}
                   />
                   <TrainingStatusCard
                     title="Health & Safety"
                     status={certificationSummaries.healthSafety}
+                    profile={profile}
+                    certificationType="healthSafety"
+                    onEdit={() => {
+                      setEditingCertificate({ userId: profile.id, type: 'healthSafety' });
+                      setEditForm({
+                        level: profile.h_and_s_level ?? null,
+                        expiryDate: profile.h_and_s_expiry_date ? profile.h_and_s_expiry_date.split('T')[0] : null,
+                        trained: profile.h_and_s_level ? true : null,
+                      });
+                    }}
                   />
                   <TrainingStatusCard
                     title="Fire Marshal"
                     status={certificationSummaries.fireMarshal}
+                    profile={profile}
+                    certificationType="fireMarshal"
+                    onEdit={() => {
+                      setEditingCertificate({ userId: profile.id, type: 'fireMarshal' });
+                      setEditForm({
+                        trained: profile.fire_marshal_trained ?? false,
+                        expiryDate: profile.fire_marshal_expiry_date ? profile.fire_marshal_expiry_date.split('T')[0] : null,
+                      });
+                    }}
                   />
                   <TrainingStatusCard
                     title="First Aid"
                     status={certificationSummaries.firstAid}
+                    profile={profile}
+                    certificationType="firstAid"
+                    onEdit={() => {
+                      setEditingCertificate({ userId: profile.id, type: 'firstAid' });
+                      setEditForm({
+                        trained: profile.first_aid_trained ?? false,
+                        expiryDate: profile.first_aid_expiry_date ? profile.first_aid_expiry_date.split('T')[0] : null,
+                      });
+                    }}
                   />
                   <TrainingStatusCard
                     title="COSHH / Allergen"
                     status={certificationSummaries.cossh}
+                    profile={profile}
+                    certificationType="cossh"
+                    onEdit={() => {
+                      setEditingCertificate({ userId: profile.id, type: 'cossh' });
+                      setEditForm({
+                        trained: profile.cossh_trained ?? false,
+                        expiryDate: profile.cossh_expiry_date ? profile.cossh_expiry_date.split('T')[0] : null,
+                      });
+                    }}
                   />
                 </div>
               </article>
@@ -1043,6 +1178,104 @@ export default function TrainingMatrixPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Certificate Modal */}
+      <Dialog open={!!editingCertificate} onOpenChange={(open) => !open && setEditingCertificate(null)}>
+        <DialogContent className="w-full max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Edit {editingCertificate && {
+                foodSafety: 'Food Safety',
+                healthSafety: 'Health & Safety',
+                fireMarshal: 'Fire Marshal',
+                firstAid: 'First Aid',
+                cossh: 'COSHH / Allergen'
+              }[editingCertificate.type]} Certificate
+            </DialogTitle>
+            {editingCertificate && (
+              <p className="text-sm text-slate-400 mt-1">
+                {profiles.find(p => p.id === editingCertificate.userId)?.full_name || 
+                 profiles.find(p => p.id === editingCertificate.userId)?.email || 
+                 'Unknown user'}
+              </p>
+            )}
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4">
+            {(editingCertificate?.type === 'foodSafety' || editingCertificate?.type === 'healthSafety') && (
+              <label className="flex flex-col gap-2 text-sm text-slate-200">
+                Level
+                <select
+                  value={editForm.level?.toString() || ''}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, level: e.target.value ? parseInt(e.target.value) : null }))}
+                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                >
+                  <option value="">No level</option>
+                  {editingCertificate.type === 'foodSafety' ? (
+                    <>
+                      <option value="2">Level 2</option>
+                      <option value="3">Level 3</option>
+                      <option value="4">Level 4</option>
+                      <option value="5">Level 5</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="2">Level 2</option>
+                      <option value="3">Level 3</option>
+                      <option value="4">Level 4</option>
+                    </>
+                  )}
+                </select>
+              </label>
+            )}
+
+            {(editingCertificate?.type === 'fireMarshal' || editingCertificate?.type === 'firstAid' || editingCertificate?.type === 'cossh') && (
+              <label className="flex items-center gap-3 text-sm text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={editForm.trained ?? false}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, trained: e.target.checked }))}
+                  className="h-4 w-4 rounded border-white/20 bg-[#0f1220] text-magenta-500 focus:ring-2 focus:ring-magenta-500"
+                />
+                <span>Trained</span>
+              </label>
+            )}
+
+            <label className="flex flex-col gap-2 text-sm text-slate-200">
+              Expiry Date
+              <input
+                type="date"
+                value={editForm.expiryDate || ''}
+                onChange={(e) => setEditForm(prev => ({ ...prev, expiryDate: e.target.value || null }))}
+                className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              />
+            </label>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingCertificate(null);
+                  setEditForm({});
+                }}
+                className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-200 hover:bg-white/10"
+                disabled={savingCertificate}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveCertificate}
+                className="inline-flex items-center gap-2 rounded-lg border border-magenta-500 px-4 py-2 text-sm font-medium text-magenta-400 transition hover:bg-magenta-500/10 hover:shadow-[0_0_14px_rgba(236,72,153,0.45)] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={savingCertificate}
+              >
+                {savingCertificate && <Loader2 className="h-4 w-4 animate-spin" />}
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isBookingModalOpen} onOpenChange={setIsBookingModalOpen}>
         <DialogContent className="w-full max-w-2xl">
           <DialogHeader>
@@ -1209,13 +1442,26 @@ function SummaryCard({
 function TrainingStatusCard({
   title,
   status,
+  profile,
+  certificationType,
+  onEdit,
 }: {
   title: string;
   status: CertificationSummary;
+  profile: ProfileRow;
+  certificationType: 'foodSafety' | 'healthSafety' | 'fireMarshal' | 'firstAid' | 'cossh';
+  onEdit: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-[#0f1220] p-4">
-      <div className="flex items-center justify-between gap-3">
+    <div className="rounded-lg border border-white/10 bg-[#0f1220] p-4 relative group">
+      <button
+        onClick={onEdit}
+        className="absolute top-2 right-2 p-1.5 rounded-md border border-white/10 bg-white/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-white/10 hover:border-magenta-500/40"
+        title="Edit certificate"
+      >
+        <Edit2 className="h-3.5 w-3.5 text-slate-400 hover:text-magenta-400" />
+      </button>
+      <div className="flex items-center justify-between gap-3 pr-8">
         <h4 className="text-sm font-semibold text-white">{title}</h4>
         <StatusBadge status={status.status}>{status.statusLabel}</StatusBadge>
       </div>

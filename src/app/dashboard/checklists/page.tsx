@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button'
 import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/temperature'
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
+import { buildTaskQueryFilter, isTaskDueNow } from '@/lib/shift-utils'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -155,6 +156,19 @@ export default function DailyChecklistPage() {
       
       console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
       
+      // Apply shift-based filtering
+      const shiftFilter = await buildTaskQueryFilter()
+      console.log('🕐 Shift filter applied:', shiftFilter)
+      
+      // If staff is not on shift, return empty tasks array
+      if (!shiftFilter.showAll && !shiftFilter.siteId) {
+        console.log('⏸️ Staff not on shift - no tasks to show')
+        setTasks([])
+        setCompletedTasks([])
+        setLoading(false)
+        return
+      }
+      
       // Fetch tasks with visibility window logic:
       // Tasks are visible if:
       // 1. due_date is within visibility window (due_date - visibility_before <= today <= due_date + visibility_after)
@@ -189,9 +203,18 @@ export default function DailyChecklistPage() {
         .lte('due_date', dateRangeEndStr)
         // Don't filter by status here - we'll filter in JavaScript to show completed tasks separately
       
-      // Filter by site_id if available
-      if (siteId) {
-        query = query.eq('site_id', siteId)
+      // Apply shift-based site filtering
+      // Managers/admins see all sites, staff only see their current site when on shift
+      if (shiftFilter.showAll) {
+        // Managers/admins: filter by siteId from context if available, otherwise show all
+        if (siteId) {
+          query = query.eq('site_id', siteId)
+        }
+      } else {
+        // Staff on shift: only show tasks for their current site
+        if (shiftFilter.siteId) {
+          query = query.eq('site_id', shiftFilter.siteId)
+        }
       }
       
       const { data: allTasks, error } = await query
@@ -256,11 +279,21 @@ export default function DailyChecklistPage() {
         }
       }
       
-      // Filter tasks by visibility windows
+      // Filter tasks by visibility windows and shift-based timing
       const data = (allTasks || []).filter(task => {
         // Exclude callout_followup tasks - they're shown in the upcoming section
         if (task.flag_reason === 'callout_followup') {
           return false
+        }
+        
+        // For staff on shift: only show tasks that are due now (within 2 hours window)
+        // Managers/admins see all tasks regardless of timing
+        if (!shiftFilter.showAll && shiftFilter.siteId) {
+          const isDueNow = isTaskDueNow(task)
+          if (!isDueNow) {
+            console.log(`⏰ Task ${task.id} filtered: not due now (due_time: ${task.due_time})`)
+            return false
+          }
         }
         
         // Get visibility window settings from template or task_data

@@ -25,6 +25,7 @@ import {
   LogOut,
   CreditCard,
   MessageSquare,
+  Clock,
 } from "lucide-react";
 
 // Section with hover popup
@@ -116,6 +117,14 @@ const sections: SidebarSection[] = [
       { label: "Food Safety", href: "/dashboard/courses/food-safety" },
     ],
   },
+  {
+    label: "Logs",
+    icon: Clock,
+    items: [
+      { label: "Attendance Register", href: "/dashboard/logs/attendance" },
+      { label: "Temperature Logs", href: "/logs/temperature" },
+    ],
+  },
 ];
 
 const directLinks: SidebarLink[] = [
@@ -165,6 +174,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
   const librariesRef = useRef<HTMLDivElement>(null);
   const assetsRef = useRef<HTMLDivElement>(null);
   const coursesRef = useRef<HTMLDivElement>(null);
+  const logsRef = useRef<HTMLDivElement>(null);
   
   // Map section labels to refs
   const buttonRefs: { [key: string]: React.RefObject<HTMLDivElement> } = {
@@ -174,6 +184,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
     "Libraries": librariesRef,
     "Assets": assetsRef,
     "Courses": coursesRef,
+    "Logs": logsRef,
   };
 
   // Handle hover with delay
@@ -305,7 +316,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-6 gap-2 z-50">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto">
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -313,7 +324,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
           isRestricted={false}
         />
 
-        <div className="w-12 h-px bg-white/[0.1] my-2" />
+        <div className="w-12 h-px bg-white/[0.1] my-1" />
 
         {/* Hover Sections */}
         {sections.map((section) => {
@@ -334,14 +345,15 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
           );
         })}
 
-        {/* Manager Calendar - Right after Courses */}
+        {/* Manager Calendar - Right after sections */}
+        <div className="w-12 h-px bg-white/[0.1] my-1" />
         <SidebarDirectLink
           item={directLinks[1]}
           isActive={pathname.startsWith(directLinks[1].href)}
           isRestricted={false}
         />
 
-        <div className="w-12 h-px bg-white/[0.1] my-2" />
+        <div className="w-12 h-px bg-white/[0.1] my-1" />
 
         {/* Bottom Direct Links */}
         {directLinks.slice(2).map((link) => {
@@ -567,7 +579,7 @@ function SidebarDirectLink({
       href={isRestricted ? "#" : item.href}
       onClick={handleClick}
       className={`
-        relative group flex items-center justify-center w-14 h-14 rounded-xl
+        relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
         transition-all duration-200
         ${isRestricted ? "opacity-40 cursor-not-allowed" : ""}
         ${
@@ -577,7 +589,7 @@ function SidebarDirectLink({
         }
       `}
     >
-      <Icon size={22} />
+      <Icon size={18} />
       {isRestricted && (
         <div className="absolute top-1 right-1 text-white/40">
           <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
@@ -640,7 +652,7 @@ function SidebarSectionItem({
     <div
       ref={buttonRef}
       className={`
-        relative flex items-center justify-center w-14 h-14 rounded-xl
+        relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
         transition-all duration-200 ${isRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
         ${
           (isActive || isHovered) && !isRestricted
@@ -651,7 +663,7 @@ function SidebarSectionItem({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      <Icon size={22} />
+      <Icon size={18} />
       {isRestricted && (
         <div className="absolute top-1 right-1 text-white/40">
           <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
@@ -699,7 +711,7 @@ function MobileSidebarLink({
         }
       `}
     >
-      <Icon size={20} />
+      <Icon size={18} />
       <span>{item.label}</span>
       {isRestricted && (
         <span className="ml-auto text-white/30 text-xs">🔒</span>

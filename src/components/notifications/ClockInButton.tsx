@@ -80,7 +80,27 @@ export function ClockInButton() {
   }
 
   if (isClockedIn && currentAttendance) {
-    const clockInTime = new Date(currentAttendance.clock_in_at)
+    // Handle both old (clock_in_at) and new (clock_in_time) field names
+    const clockInTimeValue = currentAttendance.clock_in_time || currentAttendance.clock_in_at
+    if (!clockInTimeValue) {
+      return (
+        <div className="px-3 py-2 text-white/60 text-sm">
+          Clocked in (time unavailable)
+        </div>
+      )
+    }
+    
+    const clockInTime = new Date(clockInTimeValue)
+    // Validate the date before using formatDistanceToNow
+    if (isNaN(clockInTime.getTime())) {
+      console.error('Invalid clock in time:', clockInTimeValue)
+      return (
+        <div className="px-3 py-2 text-white/60 text-sm">
+          Clocked in (invalid time)
+        </div>
+      )
+    }
+    
     const duration = formatDistanceToNow(clockInTime, { addSuffix: false })
 
     return (

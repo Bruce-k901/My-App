@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NewMainSidebar from "@/components/layouts/NewMainSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
 import { useAppContext } from "@/context/AppContext";
@@ -9,16 +9,18 @@ import type { AppRole } from "@/lib/accessControl";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { role: actualRole, loading } = useAppContext();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const isDevMode = false;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0B0D13]">
-        <div className="text-white">Loading dashboard...</div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
+  // CRITICAL FIX: Always render the EXACT same structure on server and client
+  // Never conditionally render different top-level structures
+  // The structure below is ALWAYS rendered, regardless of loading state
+  // This ensures server HTML matches client HTML exactly during hydration
+  
   return (
     <div className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white">
       <NewMainSidebar 
@@ -31,12 +33,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
         </div>
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16">
+        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative">
+          {/* Always render children - never conditionally render different structures */}
           {children}
+          {/* Loading overlay only appears after client-side mount (isMounted=true) */}
+          {/* This prevents hydration mismatch because isMounted is false during SSR */}
+          {isMounted && loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#0B0D13]/80 z-50">
+              <div className="text-white">Loading dashboard...</div>
+            </div>
+          )}
         </main>
       </div>
-
-      {/* Dev toggle disabled */}
     </div>
   );
 }

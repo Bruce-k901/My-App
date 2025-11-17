@@ -11,10 +11,13 @@ export interface AttendanceLog {
   user_id: string
   company_id: string
   site_id: string | null
-  clock_in_at: string
-  clock_out_at: string | null
-  location: { lat: number; lng: number; accuracy: number } | null
-  notes: string | null
+  clock_in_time: string
+  clock_out_time: string | null
+  shift_status: 'on_shift' | 'off_shift'
+  total_hours: number | null
+  shift_notes: string | null
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -42,13 +45,14 @@ export async function clockIn(
       return { success: false, error: 'Failed to fetch user profile' }
     }
 
-    // Check if already clocked in (any active clock-in, not just today's)
+    // Check if already clocked in (any active shift)
     const { data: existing } = await supabase
-      .from('attendance_logs')
+      .from('staff_attendance')
       .select('id')
       .eq('user_id', user.id)
-      .is('clock_out_at', null)
-      .order('clock_in_at', { ascending: false })
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
+      .order('clock_in_time', { ascending: false })
       .limit(1)
       .maybeSingle()
 
@@ -61,14 +65,14 @@ export async function clockIn(
       user_id: user.id,
       company_id: profile.company_id,
       site_id: siteId,
-      location: location || null,
-      notes: notes || null
+      shift_status: 'on_shift' as const,
+      shift_notes: notes || (location ? `Location: ${location.lat}, ${location.lng}` : null)
     }
     
     console.log('🕐 Clocking in with data:', insertData)
     
     const { data: attendanceLog, error } = await supabase
-      .from('attendance_logs')
+      .from('staff_attendance')
       .insert(insertData)
       .select()
       .single()
@@ -96,16 +100,17 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
       return { success: false, error: 'User not authenticated' }
     }
 
-    // Find active clock-in (any active clock-in, not just today's)
+    // Find active clock-in (any active shift)
     // This allows clocking out even if clocked in yesterday
     console.log('🕐 Looking for active clock-in for user:', user.id)
     
     const { data: activeLog, error: findError } = await supabase
-      .from('attendance_logs')
-      .select('id, clock_in_at, site_id')
+      .from('staff_attendance')
+      .select('id, clock_in_time, site_id')
       .eq('user_id', user.id)
-      .is('clock_out_at', null)
-      .order('clock_in_at', { ascending: false })
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
+      .order('clock_in_time', { ascending: false })
       .limit(1)
       .maybeSingle()
 
@@ -119,10 +124,10 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
     if (!activeLog) {
       // Debug: Check if there are ANY attendance logs for this user
       const { data: allLogs } = await supabase
-        .from('attendance_logs')
-        .select('id, clock_in_at, clock_out_at, site_id')
+        .from('staff_attendance')
+        .select('id, clock_in_time, clock_out_time, site_id')
         .eq('user_id', user.id)
-        .order('clock_in_at', { ascending: false })
+        .order('clock_in_time', { ascending: false })
         .limit(5)
       
       console.log('📋 All attendance logs for user:', allLogs)
@@ -131,12 +136,12 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
     
     console.log('✅ Found active clock-in:', activeLog)
 
-    // Update clock-out time
+    // Update clock-out time (trigger will auto-calculate total_hours and set shift_status)
     const { error: updateError } = await supabase
-      .from('attendance_logs')
+      .from('staff_attendance')
       .update({
-        clock_out_at: new Date().toISOString(),
-        notes: notes || null
+        clock_out_time: new Date().toISOString(),
+        shift_notes: notes || null
       })
       .eq('id', activeLog.id)
 
@@ -160,13 +165,14 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return false
 
-    // Check for any active clock-in (not just today's)
+    // Check for any active shift
     let query = supabase
-      .from('attendance_logs')
+      .from('staff_attendance')
       .select('id')
       .eq('user_id', user.id)
-      .is('clock_out_at', null)
-      .order('clock_in_at', { ascending: false })
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
+      .order('clock_in_time', { ascending: false })
       .limit(1)
 
     if (siteId) {
@@ -195,13 +201,14 @@ export async function getCurrentAttendance(): Promise<AttendanceLog | null> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
-    // Get any active clock-in (not just today's)
+    // Get any active shift
     const { data, error } = await supabase
-      .from('attendance_logs')
+      .from('staff_attendance')
       .select('*')
       .eq('user_id', user.id)
-      .is('clock_out_at', null)
-      .order('clock_in_at', { ascending: false })
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
+      .order('clock_in_time', { ascending: false })
       .limit(1)
       .maybeSingle()
 
