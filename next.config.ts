@@ -16,9 +16,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Optimize CSS loading to reduce preload warnings
+  // CSS optimization disabled in dev to prevent preload warnings
+  // These warnings are harmless but annoying - they occur due to HMR in development
   experimental: {
-    optimizeCss: true,
+    optimizeCss: process.env.NODE_ENV === 'production', // Only enable in production
   },
 
   // Explicitly disable Turbopack to use webpack

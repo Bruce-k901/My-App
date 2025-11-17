@@ -236,42 +236,60 @@ export default function OpeningProcedureTemplatePage() {
 
   // Save handler
   const handleSave = async () => {
-    if (!title || !companyId) {
-      showToast({ title: 'Missing required fields', description: 'Please fill in all required fields', type: 'error' });
+    if (!title || !author || !companyId) {
+      showToast({ 
+        title: 'Missing required fields', 
+        description: 'Please fill in title and author', 
+        type: 'error' 
+      });
       return;
     }
 
     setSaving(true);
     try {
       const sopData = {
-        company_id: companyId,
-        category: 'Opening Procedures',
-        title,
-        ref_code: refCode,
-        version,
-        status,
-        author,
-        site_location: siteLocation,
-        estimated_time: "",
-        sop_data: {
-          time_slots: timeSlots,
-          equipment_startup: equipmentStartup,
-          safety_checks: safetyChecks,
-          stock_checks: stockChecks,
-          walkthrough_checklist: walkthroughChecklist,
-          manager_sign_off: managerSignOff
-        }
+        header: { title, refCode, version, status, author, site_location: siteLocation },
+        time_slots: timeSlots,
+        equipment_startup: equipmentStartup,
+        safety_checks: safetyChecks,
+        stock_checks: stockChecks,
+        walkthrough_checklist: walkthroughChecklist,
+        manager_sign_off: managerSignOff
       };
 
-      const { error } = await supabase.from('sop_entries').insert(sopData);
+      const { data, error } = await supabase
+        .from('sop_entries')
+        .insert({
+          company_id: companyId,
+          title,
+          ref_code: refCode,
+          version,
+          status,
+          author,
+          category: 'Opening',
+          sop_data: sopData,
+          created_by: profile?.id,
+          updated_by: profile?.id
+        })
+        .select()
+        .single();
       
       if (error) throw error;
       
-      showToast({ title: 'Success', description: 'Opening procedure saved successfully', type: 'success' });
-      router.push('/dashboard/sops');
+      showToast({ 
+        title: 'SOP saved successfully', 
+        description: `Saved as ${refCode}`, 
+        type: 'success' 
+      });
+      router.push('/dashboard/sops/list');
     } catch (error) {
       console.error('Error saving SOP:', error);
-      showToast({ title: 'Error saving', description: error.message, type: 'error' });
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || 'Unknown error occurred';
+      showToast({ 
+        title: 'Error saving SOP', 
+        description: errorMessage, 
+        type: 'error' 
+      });
     } finally {
       setSaving(false);
     }

@@ -10,6 +10,7 @@ import RouteLogger from "@/components/RouteLogger";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
+import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -49,7 +50,7 @@ export function generateViewport() {
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // kill GoTrueClient spam in dev logs
+  // Suppress GoTrueClient spam in dev logs (server-side only)
   if (process.env.NODE_ENV === "development") {
     const originalLog = console.log;
     console.log = (...args) => {
@@ -61,6 +62,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={manrope.variable}>
       <head>
+        {process.env.NODE_ENV === "development" && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                // Suppress CSS preload warnings in development (harmless HMR artifacts)
+                (function() {
+                  const originalWarn = console.warn;
+                  console.warn = function(...args) {
+                    const message = args[0]?.toString() || '';
+                    if (message.includes('was preloaded using link preload but not used')) {
+                      return;
+                    }
+                    originalWarn.apply(console, args);
+                  };
+                })();
+              `,
+            }}
+          />
+        )}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10B981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -79,6 +99,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <ReactQueryProvider>
             <QueryProvider>
               <AppProvider>
+                <SuppressConsoleWarnings />
                 <PWAProvider />
                 <NotificationInitializer />
                 <RouteLogger />

@@ -6,10 +6,12 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
+import { useRouter } from 'next/navigation';
 
 export default function HotDrinksSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -210,6 +212,9 @@ export default function HotDrinksSOPTemplatePage() {
       if (error) throw error;
 
       showToast({ title: 'SOP saved successfully', description: `Saved as ${refCode}`, type: 'success' });
+      
+      // Redirect to MY SOPs page after successful save
+      router.push('/dashboard/sops/list');
     } catch (error) {
       console.error('Error saving SOP:', error);
       showToast({ title: 'Error saving SOP', description: error.message, type: 'error' });

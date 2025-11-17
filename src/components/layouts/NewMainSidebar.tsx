@@ -73,7 +73,8 @@ const sections: SidebarSection[] = [
     label: "SOPs",
     icon: FileText,
     items: [
-      { label: "My SOPs", href: "/dashboard/sops" },
+      { label: "My SOPs", href: "/dashboard/sops/list" },
+      { label: "Archived SOPs", href: "/dashboard/sops/archive" },
       { label: "SOP Templates", href: "/dashboard/sops/templates" },
       { label: "My RA's", href: "/dashboard/sops/my-ras" },
       { label: "RA Templates", href: "/dashboard/sops/ra-templates" },

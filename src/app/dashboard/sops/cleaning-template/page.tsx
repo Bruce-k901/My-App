@@ -7,6 +7,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SmartSearch from '@/components/SmartSearch';
 import BackButton from '@/components/ui/BackButton';
+import { useRouter } from 'next/navigation';
 
 const FREQUENCY_OPTIONS = [
   { value: "daily", label: "Daily" },
@@ -19,6 +20,7 @@ const FREQUENCY_OPTIONS = [
 export default function CleaningSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -292,6 +294,9 @@ export default function CleaningSOPTemplatePage() {
         description: `Saved as ${refCode}`, 
         type: 'success' 
       });
+      
+      // Redirect to MY SOPs page after successful save
+      router.push('/dashboard/sops/list');
     } catch (error) {
       console.error('Error saving SOP:', error);
       showToast({ 

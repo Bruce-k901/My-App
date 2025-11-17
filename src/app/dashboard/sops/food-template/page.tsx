@@ -7,6 +7,8 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SmartSearch from '@/components/SmartSearch';
 import BackButton from '@/components/ui/BackButton';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { getVersioningInfo, createVersionPayload } from '@/lib/utils/sopVersioning';
 
 const COLOUR_CODES = [
   "Red – Raw Meat",
@@ -34,6 +36,9 @@ const UNIT_OPTIONS = [
 export default function FoodSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
   
   // Loading state
   const [loading, setLoading] = useState(true);
@@ -43,6 +48,7 @@ export default function FoodSOPTemplatePage() {
   const [recentIngredients, setRecentIngredients] = useState([]);
   const [recentEquipment, setRecentEquipment] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false); // Prevent duplicate loads
+  const [sopLoaded, setSopLoaded] = useState(false); // Track if SOP data has been loaded
 
   // Header state
   const [title, setTitle] = useState("");
@@ -243,16 +249,124 @@ export default function FoodSOPTemplatePage() {
     loadEquipment();
   }, []);
 
-  // Set default author from profile
+  // Store original SOP data for versioning
+  const [originalSOP, setOriginalSOP] = useState<any>(null);
+
+  // Load existing SOP data when editing
   useEffect(() => {
-    if (profile?.full_name) {
+    if (!editId || !companyId || sopLoaded) return;
+
+    const loadSOP = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('sop_entries')
+          .select('*')
+          .eq('id', editId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (error) throw error;
+        if (!data) {
+          showToast({ 
+            title: 'SOP not found', 
+            description: 'The requested SOP could not be found', 
+            type: 'error' 
+          });
+          router.push('/dashboard/sops/list');
+          return;
+        }
+
+        // Store original SOP for versioning
+        setOriginalSOP(data);
+
+        // Populate header fields
+        setTitle(data.title || '');
+        setRefCode(data.ref_code || '');
+        setVersion(data.version || '1.0');
+        setStatus(data.status || 'Draft');
+        setAuthor(data.author || '');
+        setCategory(data.category || 'Food Prep');
+
+        // Populate SOP data
+        const sopData = data.sop_data || {};
+        const header = sopData.header || {};
+        
+        // Update header fields if they exist in sop_data
+        if (header.title) setTitle(header.title);
+        if (header.refCode) setRefCode(header.refCode);
+        if (header.version) setVersion(header.version);
+        if (header.status) setStatus(header.status);
+        if (header.author) setAuthor(header.author);
+        if (header.category) setCategory(header.category);
+        if (header.isSubRecipe !== undefined) setIsSubRecipe(header.isSubRecipe);
+
+        // Populate ingredients
+        if (sopData.ingredients && Array.isArray(sopData.ingredients)) {
+          setIngredients(sopData.ingredients.map((ing: any) => ({
+            ...ing,
+            id: ing.id || Date.now() + Math.random()
+          })));
+        }
+
+        // Populate equipment
+        if (sopData.equipment && Array.isArray(sopData.equipment)) {
+          setEquipment(sopData.equipment.map((eq: any) => ({
+            ...eq,
+            id: eq.id || Date.now() + Math.random()
+          })));
+        }
+
+        // Populate process steps
+        if (sopData.processSteps && Array.isArray(sopData.processSteps)) {
+          setProcessSteps(sopData.processSteps.map((step: any) => ({
+            ...step,
+            id: step.id || Date.now() + Math.random()
+          })));
+        }
+
+        // Populate storage
+        if (sopData.storage) {
+          setStorageType(sopData.storage.storageType || 'chilled');
+          setShelfLife(sopData.storage.shelfLife || '');
+          setContainerType(sopData.storage.containerType || '');
+        }
+
+        // Populate calculated values
+        if (sopData.calculated) {
+          setTotalCost(sopData.calculated.totalCost || 0);
+          setTotalYield(sopData.calculated.totalYield || 0);
+          setAllergensList(sopData.calculated.allergensList || []);
+          setToolColours(sopData.calculated.toolColours || []);
+        }
+
+        setSopLoaded(true);
+      } catch (error) {
+        console.error('Error loading SOP:', error);
+        showToast({ 
+          title: 'Error loading SOP', 
+          description: error.message || 'Failed to load SOP data', 
+          type: 'error' 
+        });
+        router.push('/dashboard/sops/list');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSOP();
+  }, [editId, companyId, sopLoaded, router, showToast]);
+
+  // Set default author from profile (only if not editing)
+  useEffect(() => {
+    if (!editId && profile?.full_name) {
       setAuthor(profile.full_name);
     }
-  }, [profile]);
+  }, [profile, editId]);
 
-  // Auto-generate reference code
+  // Auto-generate reference code (only for new SOPs, not when editing)
   useEffect(() => {
-    if (title && category) {
+    if (!editId && title && category && !refCode) {
       const prefixMap = {
         'Food Prep': 'PREP',
         'Service (FOH)': 'FOH',
@@ -267,7 +381,7 @@ export default function FoodSOPTemplatePage() {
       const nameBit = title.replace(/\s+/g, '').slice(0, 4).toUpperCase();
       setRefCode(`${prefix}-${nameBit}-001`);
     }
-  }, [title, category]);
+  }, [title, category, editId, refCode]);
 
   // Calculate totals and allergens from ingredients
   useEffect(() => {
@@ -538,22 +652,64 @@ export default function FoodSOPTemplatePage() {
         category
       });
       
-      const { data, error } = await supabase
-        .from('sop_entries')
-        .insert({
+      let result;
+      if (editId && originalSOP) {
+        // Create new version instead of updating
+        const versioningInfo = await getVersioningInfo(
+          originalSOP.ref_code,
+          companyId,
+          originalSOP
+        );
+        
+        const baseData = {
           company_id: companyId,
           title,
-          ref_code: refCode,
-          version,
+          ref_code: originalSOP.ref_code, // Will be replaced with incremented ref_code in createVersionPayload
           status,
           author,
           category,
           sop_data: sopData,
           created_by: profile?.id,
           updated_by: profile?.id
-        })
-        .select()
-        .single();
+        };
+        
+        const insertData = createVersionPayload(baseData, versioningInfo, profile, false);
+        
+        const { data, error } = await supabase
+          .from('sop_entries')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      } else {
+        // Insert new SOP (first version)
+        const baseData = {
+          company_id: companyId,
+          title,
+          ref_code: refCode,
+          status,
+          author,
+          category,
+          sop_data: sopData,
+          created_by: profile?.id,
+          updated_by: profile?.id
+        };
+        
+        const insertData = createVersionPayload(baseData, { newVersion: '1.0', versionNumber: 1, parentId: null }, profile, true);
+        
+        const { data, error } = await supabase
+          .from('sop_entries')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      }
+      
+      const { data, error } = result;
 
       if (error) {
         console.error('Supabase error:', error);
@@ -610,14 +766,25 @@ export default function FoodSOPTemplatePage() {
           });
         }
       } else {
-        showToast({ 
-          title: 'SOP saved successfully', 
-          description: `Saved as ${refCode}`, 
-          type: 'success' 
-        });
+        if (editId && originalSOP) {
+          showToast({ 
+            title: 'New version created', 
+            description: `Version ${data.version} saved as ${data.ref_code} (was ${originalSOP.ref_code})`, 
+            type: 'success' 
+          });
+        } else {
+          showToast({ 
+            title: 'SOP saved successfully', 
+            description: `Saved as ${refCode}`, 
+            type: 'success' 
+          });
+        }
       }
 
       console.log('SOP saved:', data);
+      
+      // Redirect to MY SOPs page after successful save
+      router.push('/dashboard/sops/list');
     } catch (error) {
       console.error('Error saving SOP:', error);
       const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || 'Unknown error occurred';

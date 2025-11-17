@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -11,27 +11,32 @@ const CATEGORY_GROUPS = {
   'FOH': {
     label: 'FOH (Front of House)',
     categories: ['Service (FOH)'],
-    color: 'blue'
+    bgColor: 'bg-blue-500/20',
+    iconColor: 'text-blue-400'
   },
   'BOH': {
     label: 'BOH (Back of House)',
     categories: ['Food Prep'],
-    color: 'orange'
+    bgColor: 'bg-orange-500/20',
+    iconColor: 'text-orange-400'
   },
   'Cleaning': {
     label: 'Cleaning & Maintenance',
     categories: ['Cleaning'],
-    color: 'teal'
+    bgColor: 'bg-teal-500/20',
+    iconColor: 'text-teal-400'
   },
   'Opening': {
     label: 'Opening/Closing Procedures',
-    categories: ['Opening', 'Closing'],
-    color: 'yellow'
+    categories: ['Opening', 'Closing', 'Opening Procedures', 'Closing Procedures'], // Support both old and new category names
+    bgColor: 'bg-yellow-500/20',
+    iconColor: 'text-yellow-400'
   },
   'Drinks': {
     label: 'Drinks & Beverages',
     categories: ['Drinks', 'Hot Beverages', 'Cold Beverages'],
-    color: 'purple'
+    bgColor: 'bg-purple-500/20',
+    iconColor: 'text-purple-400'
   }
 };
 
@@ -44,6 +49,7 @@ export default function SOPsListPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [sops, setSops] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [archivingId, setArchivingId] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState({
     FOH: true,
     BOH: true,
@@ -52,22 +58,60 @@ export default function SOPsListPage() {
     Drinks: true
   });
 
-  // Load existing SOPs
+  // Load existing SOPs - only show latest version of each SOP
   useEffect(() => {
     const loadSOPs = async () => {
       if (!companyId) return;
       
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        // Get all SOPs (excluding archived)
+        const { data: allSOPs, error } = await supabase
           .from('sop_entries')
           .select('*')
           .eq('company_id', companyId)
-          .order('created_at', { ascending: false });
+          .neq('status', 'Archived')
+          .order('ref_code', { ascending: true })
+          .order('version_number', { ascending: false });
         
         if (error) throw error;
         
-        setSops(data || []);
+        // Filter to get only the latest version of each SOP base
+        // Since ref_code increments (PREP-BESH-001 -> PREP-BESH-002), we group by base pattern
+        const latestVersions = new Map();
+        (allSOPs || []).forEach((sop: any) => {
+          // Extract base pattern from ref_code (e.g., PREP-BESH-001 -> PREP-BESH)
+          const refCode = sop.ref_code;
+          const baseMatch = refCode.match(/^(.+)-\d+$/);
+          const basePattern = baseMatch ? baseMatch[1] : refCode;
+          
+          if (!latestVersions.has(basePattern)) {
+            latestVersions.set(basePattern, sop);
+          } else {
+            const existing = latestVersions.get(basePattern);
+            // Keep the one with higher version_number (or higher ref_code number if version_number is same)
+            const existingVersion = existing.version_number || 1;
+            const currentVersion = sop.version_number || 1;
+            
+            if (currentVersion > existingVersion) {
+              latestVersions.set(basePattern, sop);
+            } else if (currentVersion === existingVersion) {
+              // If version numbers are equal, compare ref_code numbers
+              const existingNum = parseInt(existing.ref_code.match(/-(\d+)$/)?.[1] || '0', 10);
+              const currentNum = parseInt(refCode.match(/-(\d+)$/)?.[1] || '0', 10);
+              if (currentNum > existingNum) {
+                latestVersions.set(basePattern, sop);
+              }
+            }
+          }
+        });
+        
+        // Convert map to array and sort by created_at
+        const latestSOPs = Array.from(latestVersions.values()).sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        
+        setSops(latestSOPs);
       } catch (error) {
         console.error('Error loading SOPs:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
@@ -85,9 +129,10 @@ export default function SOPsListPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
-  const handleEditSOP = (sop) => {
+  const handleEditSOP = (sop: any) => {
     // Determine which template to navigate to based on category
-    const templateMap = {
+    // Support both old and new category names for backward compatibility
+    const templateMap: Record<string, string> = {
       'Food Prep': '/dashboard/sops/food-template',
       'Service (FOH)': '/dashboard/sops/service-template',
       'Drinks': '/dashboard/sops/drinks-template',
@@ -95,13 +140,83 @@ export default function SOPsListPage() {
       'Cold Beverages': '/dashboard/sops/cold-drinks-template',
       'Cleaning': '/dashboard/sops/cleaning-template',
       'Opening': '/dashboard/sops/opening-template',
-      'Closing': '/dashboard/sops/closing-template'
+      'Opening Procedures': '/dashboard/sops/opening-template', // Support old category name
+      'Closing': '/dashboard/sops/closing-template',
+      'Closing Procedures': '/dashboard/sops/closing-template' // Support old category name
     };
 
     const templatePath = templateMap[sop.category] || '/dashboard/sops/food-template';
     
     // Navigate with SOP ID and data
     router.push(`${templatePath}?edit=${sop.id}`);
+  };
+
+  const handleArchiveSOP = async (sopId: string) => {
+    if (!confirm('Archive this SOP? The original version (001) will be moved to archived SOPs.')) return;
+
+    try {
+      setArchivingId(sopId);
+      
+      // Find the current SOP to get its ref_code base
+      const { data: currentSOP, error: fetchError } = await supabase
+        .from('sop_entries')
+        .select('ref_code, parent_id')
+        .eq('id', sopId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (fetchError) throw fetchError;
+      if (!currentSOP) throw new Error('SOP not found');
+
+      // Extract base pattern from ref_code (e.g., PREP-BESH-002 -> PREP-BESH)
+      const refCode = currentSOP.ref_code;
+      const baseMatch = refCode.match(/^(.+)-\d+$/);
+      const basePattern = baseMatch ? baseMatch[1] : refCode;
+
+      // Find the original 001 version (version_number = 1 or ref_code ends with -001)
+      const { data: originalVersion, error: findError } = await supabase
+        .from('sop_entries')
+        .select('id')
+        .eq('company_id', companyId)
+        .like('ref_code', `${basePattern}-001`)
+        .eq('version_number', 1)
+        .maybeSingle();
+
+      if (findError) throw findError;
+
+      // Archive the original 001 version if found, otherwise archive current
+      const versionToArchive = originalVersion?.id || sopId;
+
+      const { error } = await supabase
+        .from('sop_entries')
+        .update({ status: 'Archived' })
+        .eq('id', versionToArchive)
+        .eq('company_id', companyId);
+
+      if (error) throw error;
+
+      // Remove from local state (remove all versions of this SOP base)
+      setSops(prev => prev.filter(sop => {
+        const sopBaseMatch = sop.ref_code.match(/^(.+)-\d+$/);
+        const sopBasePattern = sopBaseMatch ? sopBaseMatch[1] : sop.ref_code;
+        return sopBasePattern !== basePattern;
+      }));
+
+      showToast({
+        title: 'SOP archived',
+        description: 'Original version (001) has been moved to archived SOPs',
+        type: 'success'
+      });
+    } catch (error: any) {
+      console.error('Error archiving SOP:', error);
+      showToast({
+        title: 'Error archiving SOP',
+        description: error.message || 'Failed to archive SOP',
+        type: 'error'
+      });
+    } finally {
+      setArchivingId(null);
+    }
   };
 
   const toggleCategory = (category) => {
@@ -154,8 +269,14 @@ export default function SOPsListPage() {
           <option value="all">All Status</option>
           <option value="Published">Published</option>
           <option value="Draft">Draft</option>
-          <option value="Archived">Archived</option>
         </select>
+        <button
+          onClick={() => router.push('/dashboard/sops/archive')}
+          className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center gap-2 transition-colors"
+        >
+          <Archive size={16} />
+          Archived SOPs
+        </button>
       </div>
 
       {/* SOPs List */}
@@ -182,8 +303,8 @@ export default function SOPsListPage() {
                   className="w-full flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg bg-${group.color}-500/20`}>
-                      <FileText size={20} className={`text-${group.color}-400`} />
+                    <div className={`p-2 rounded-lg ${group.bgColor}`}>
+                      <FileText size={20} className={group.iconColor} />
                     </div>
                     <div className="text-left">
                       <h3 className="text-lg font-semibold text-white">{group.label}</h3>
@@ -235,6 +356,18 @@ export default function SOPsListPage() {
                             >
                               <Edit size={16} />
                               Edit
+                            </button>
+                            <button
+                              onClick={() => handleArchiveSOP(sop.id)}
+                              disabled={archivingId === sop.id}
+                              className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                              title="Archive SOP"
+                            >
+                              {archivingId === sop.id ? (
+                                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <FileBox size={18} />
+                              )}
                             </button>
                           </div>
                         </div>

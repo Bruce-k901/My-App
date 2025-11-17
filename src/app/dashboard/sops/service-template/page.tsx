@@ -6,10 +6,12 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
+import { useRouter } from 'next/navigation';
 
 export default function ServiceSOPTemplatePage() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -144,6 +146,9 @@ export default function ServiceSOPTemplatePage() {
         description: `Saved as ${refCode}`, 
         type: 'success' 
       });
+      
+      // Redirect to MY SOPs page after successful save
+      router.push('/dashboard/sops/list');
     } catch (error) {
       console.error('Error saving SOP:', error);
       showToast({ 
