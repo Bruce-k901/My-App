@@ -1,8 +1,21 @@
 "use client";
 
+import { Suspense } from 'react';
 import { Messaging } from '@/components/messaging/Messaging';
 
-export default function MessagingPage() {
+function MessagingContent() {
   return <Messaging />;
+}
+
+export default function MessagingPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-[calc(100vh-72px)] bg-[#0B0D13]">
+        <div className="text-white">Loading messaging...</div>
+      </div>
+    }>
+      <MessagingContent />
+    </Suspense>
+  );
 }
 
