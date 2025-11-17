@@ -404,6 +404,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
                 {task.template.category.replace('_', ' ').toUpperCase()}
               </span>
             )}
+            {task.template?.frequency && (
+              <span className="px-2 py-1 rounded-full text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-300">
+                {task.template.frequency.charAt(0).toUpperCase() + task.template.frequency.slice(1)}
+              </span>
+            )}
           </div>
           
           <div className="flex items-center gap-4 text-sm text-white/60 mb-3">
