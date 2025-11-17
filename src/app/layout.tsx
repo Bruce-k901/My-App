@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { AppProvider } from "@/context/AppContext";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";

@@ -88,6 +88,7 @@ const sections: SidebarSection[] = [
     items: [
       { label: "All Libraries", href: "/dashboard/libraries" },
       { label: "Create Library", href: "/dashboard/libraries/create" },
+      { label: "Library Templates", href: "/dashboard/libraries/templates" },
       // All created libraries
       { label: "Ingredients Library", href: "/dashboard/libraries/ingredients" },
       { label: "PPE Library", href: "/dashboard/libraries/ppe" },

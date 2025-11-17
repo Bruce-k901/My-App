@@ -12,7 +12,7 @@ interface State {
   errorInfo?: ErrorInfo;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -110,6 +110,12 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+// Default export for easier usage in layouts
+export default ErrorBoundary;
+
+// Named export for convenience
+export { ErrorBoundary };
 
 // Convenience wrapper component for easier usage
 export function withErrorBoundary<P extends object>(

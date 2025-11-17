@@ -13,6 +13,7 @@ export const ACCESS_RULES = {
       'Compliance Templates',
       'Drafts',
       'Create Library',
+      'Library Templates',
       'Contractors',
       'Reports',
       'Settings',
