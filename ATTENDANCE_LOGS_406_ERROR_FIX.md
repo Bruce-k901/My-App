@@ -31,18 +31,28 @@ Adds a `clock_in_date` DATE column that's automatically populated via trigger. T
 
 ## Finding the Source
 
-The query is likely coming from:
+Based on the error URL you provided:
 
-- A notification system function
-- A task filtering system
-- Some background process checking who's clocked in
+```
+GET /rest/v1/attendance_logs?select=id&user_id=eq.8066c4f2-fbff-4255-be96-71acf151473d&clock_out_at=is.null&clock_in_at%3A%3Adate=eq.2025-11-17&site_id=eq.1d5d6f99-72cc-4335-946d-13ff8f0b0419
+```
 
-To find it:
+This query checks if a user is clocked in today at a specific site. The source could be:
+
+- A database function/trigger querying attendance_logs
+- Some cached frontend code
+- A browser extension or dev tool
+- A Supabase realtime subscription filter
+
+**To find it:**
 
 1. Open browser DevTools → Network tab
-2. Look for the failing request
-3. Check the "Initiator" column to see what code made the request
-4. Or check Supabase Dashboard → Logs → API Logs
+2. Look for the failing request to `attendance_logs`
+3. Check the "Initiator" or "Call Stack" to see what code triggered it
+4. Or check Supabase Dashboard → Logs → API Logs → filter by `attendance_logs`
+
+**If you can't find the source:**
+The migrations below will add a `clock_in_date` column. Once applied, search your codebase for any code using `clock_in_at::date` or `clock_in_at%3A%3Adate` and update it to use `clock_in_date`.
 
 ## Temporary Workaround
 
