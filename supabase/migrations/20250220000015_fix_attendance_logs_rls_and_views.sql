@@ -70,10 +70,10 @@ CREATE POLICY attendance_logs_update_own
   );
 
 -- Create a computed column for date filtering (REST API friendly)
--- This allows filtering by date without using ::date cast
+-- Use date_trunc which is immutable (unlike ::date cast)
 ALTER TABLE public.attendance_logs 
 ADD COLUMN IF NOT EXISTS clock_in_date DATE 
-GENERATED ALWAYS AS (clock_in_at::date) STORED;
+GENERATED ALWAYS AS (date_trunc('day', clock_in_at)::date) STORED;
 
 -- Create index on the computed date column for performance
 CREATE INDEX IF NOT EXISTS idx_attendance_logs_clock_in_date 
