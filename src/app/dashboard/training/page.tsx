@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
 import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, Upload, CalendarPlus, Edit2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -131,7 +131,7 @@ function StatusBadge({ status, children }: { status: TrainingStatus; children: R
   );
 }
 
-export default function TrainingMatrixPage() {
+function TrainingMatrixPageContent() {
   const { loading: authLoading, companyId, siteId, profile: currentUserProfile } = useAppContext();
   const searchParams = useSearchParams();
   const siteParam = useMemo(() => searchParams?.get("site"), [searchParams]);
@@ -1407,6 +1407,18 @@ export default function TrainingMatrixPage() {
         </DialogContent>
       </Dialog>
     </OrgContentWrapper>
+  );
+}
+
+export default function TrainingMatrixPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-[#0B0D13]">
+        <div className="text-neutral-400">Loading training matrix...</div>
+      </div>
+    }>
+      <TrainingMatrixPageContent />
+    </Suspense>
   );
 }
 

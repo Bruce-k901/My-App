@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -33,7 +33,7 @@ const UNIT_OPTIONS = [
   "tsp", "tbsp", "pcs"
 ];
 
-export default function FoodSOPTemplatePage() {
+function FoodSOPTemplatePageContent() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
   const router = useRouter();
@@ -1307,6 +1307,18 @@ export default function FoodSOPTemplatePage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function FoodSOPTemplatePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
+        <div className="text-neutral-400">Loading food SOP template...</div>
+      </div>
+    }>
+      <FoodSOPTemplatePageContent />
+    </Suspense>
   );
 }
 
