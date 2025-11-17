@@ -69,16 +69,24 @@ CREATE POLICY attendance_logs_update_own
     )
   );
 
+-- Create a computed column for date filtering (REST API friendly)
+-- This allows filtering by date without using ::date cast
+ALTER TABLE public.attendance_logs 
+ADD COLUMN IF NOT EXISTS clock_in_date DATE 
+GENERATED ALWAYS AS (clock_in_at::date) STORED;
+
+-- Create index on the computed date column for performance
+CREATE INDEX IF NOT EXISTS idx_attendance_logs_clock_in_date 
+ON public.attendance_logs(clock_in_date);
+
 -- Create a view for today's attendance that works with REST API
--- This view filters by date without using ::date cast
 DROP VIEW IF EXISTS public.todays_attendance_logs CASCADE;
 
 CREATE VIEW public.todays_attendance_logs AS
 SELECT 
   al.*
 FROM public.attendance_logs al
-WHERE al.clock_in_at >= CURRENT_DATE
-  AND al.clock_in_at < CURRENT_DATE + INTERVAL '1 day';
+WHERE al.clock_in_date = CURRENT_DATE;
 
 -- Grant access to the view
 GRANT SELECT ON public.todays_attendance_logs TO authenticated;
