@@ -310,7 +310,8 @@ export default function ComplianceMetricsWidget() {
     // Reset loading ref when dependencies change
     loadingRef.current = false
     loadComplianceMetrics()
-  }, [loadComplianceMetrics])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId, companyId]) // Only depend on siteId and companyId, not the callback
 
   if (!siteId) {
     return (

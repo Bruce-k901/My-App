@@ -27,7 +27,7 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   const handleConfirm = () => {
     onConfirm();
-    onClose();
+    onClose(); // Close dialog after confirming
   };
 
   return (

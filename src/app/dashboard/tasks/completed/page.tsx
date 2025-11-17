@@ -54,6 +54,13 @@ export default function CompletedTasksPage() {
 
       if (error) {
         console.error('Error fetching completion records:', error);
+        const errorMessage = error.message || error.code || 'Unknown error';
+        console.error('Full error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         setCompletedTasks([]);
         setLoading(false);
         return;

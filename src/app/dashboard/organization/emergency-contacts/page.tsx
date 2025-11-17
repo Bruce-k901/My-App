@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Plus, Search, Edit, Trash2, Phone, Mail, User, AlertCircle, Wrench, Building2 } from 'lucide-react';
@@ -59,13 +59,7 @@ export default function EmergencyContactsPage() {
     language: 'en'
   });
 
-  useEffect(() => {
-    if (companyId) {
-      loadContacts();
-    }
-  }, [companyId]);
-
-  const loadContacts = async () => {
+  const loadContacts = useCallback(async () => {
     if (!companyId) {
       console.warn('No companyId available for loading emergency contacts');
       setLoading(false);
@@ -112,7 +106,16 @@ export default function EmergencyContactsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId]);
+
+  useEffect(() => {
+    if (companyId) {
+      loadContacts();
+    } else {
+      setLoading(false);
+      setContacts([]);
+    }
+  }, [companyId, loadContacts]);
 
   const handleSave = async () => {
     if (!companyId) return;

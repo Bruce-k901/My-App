@@ -57,9 +57,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Don't cache favicon - always fetch fresh
+  // Don't cache favicon - always fetch fresh (but handle errors gracefully)
   if (event.request.url.includes('favicon') || event.request.url.includes('icon')) {
-    return fetch(event.request);
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        // If fetch fails (server down), return a valid empty response
+        return new Response('', { status: 200, headers: { 'Content-Type': 'image/png' } });
+      })
+    );
+    return;
   }
 
   event.respondWith(
@@ -89,12 +95,27 @@ self.addEventListener('fetch', (event) => {
 
             return response;
           })
-          .catch(() => {
-            // If network fails and no cache, return offline page
+          .catch((error) => {
+            // If network fails and no cache, return offline page or empty response
+            console.error('[SW] Fetch failed:', error);
             if (event.request.destination === 'document') {
-              return caches.match('/');
+              return caches.match('/').catch(() => {
+                // If even cache fails, return a valid empty HTML response
+                return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1></body></html>', {
+                  headers: { 'Content-Type': 'text/html' }
+                });
+              });
             }
+            // For non-document requests, return a valid empty response
+            return new Response('', { status: 200 });
           });
+      })
+      .catch((error) => {
+        // If cache match fails, try network or return empty response
+        console.error('[SW] Cache match failed:', error);
+        return fetch(event.request).catch(() => {
+          return new Response('', { status: 200 });
+        });
       })
   );
 });

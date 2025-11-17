@@ -100,7 +100,14 @@ export default function EnhancedShiftHandover() {
         if (error) throw error;
         setUsers(data || []);
       } catch (error: any) {
-        console.error("Failed to load users:", error);
+        const errorMessage = error?.message || error?.code || 'Unknown error';
+        const errorDetails = {
+          message: error?.message || null,
+          code: error?.code || null,
+          details: error?.details || null,
+          hint: error?.hint || null
+        };
+        console.error("Failed to load users:", errorMessage, errorDetails);
       }
     };
 

@@ -70,6 +70,7 @@ export default function StaffSicknessPage() {
       if (!companyId) {
         console.warn('No company ID available');
         setRecords([]);
+        setLoading(false);
         return;
       }
       
@@ -85,11 +86,18 @@ export default function StaffSicknessPage() {
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching staff sickness records:', error);
+        toast.error(`Failed to load staff sickness records: ${error.message || 'Unknown error'}`);
+        setRecords([]);
+        return;
+      }
+      
       setRecords(data || []);
     } catch (err: any) {
       console.error('Error fetching staff sickness records:', err);
-      toast.error('Failed to load staff sickness records');
+      toast.error(`Failed to load staff sickness records: ${err?.message || 'Unknown error'}`);
+      setRecords([]);
     } finally {
       setLoading(false);
     }
@@ -206,12 +214,12 @@ export default function StaffSicknessPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Staff Sickness & Exclusion Log</h1>
-          <p className="text-white/60 mt-1">Record and track staff illness, exclusions, and return-to-work clearance</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Staff Sickness & Exclusion Log</h1>
+          <p className="text-white/60 mt-1 text-sm sm:text-base">Record and track staff illness, exclusions, and return-to-work clearance</p>
         </div>
-        <Button onClick={handleNew} className="flex items-center gap-2">
+        <Button onClick={handleNew} className="flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4 py-2 whitespace-nowrap w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
           Log Sickness
         </Button>

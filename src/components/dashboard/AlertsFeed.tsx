@@ -32,7 +32,13 @@ export default function AlertsFeed() {
 
   useEffect(() => {
     let mounted = true;
+    let isLoading = false; // Prevent concurrent loads
+    
     const load = async () => {
+      // Prevent multiple simultaneous loads
+      if (isLoading) return;
+      isLoading = true;
+      
       setLoading(true);
       setError(null);
       try {
@@ -298,21 +304,37 @@ export default function AlertsFeed() {
 
         if (mounted) setAlerts(alertRows);
       } catch (e: any) {
-        setError(e?.message || "Failed to load alerts");
+        if (mounted) setError(e?.message || "Failed to load alerts");
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+          isLoading = false;
+        }
       }
     };
+    
     load();
+    
+    // Set up realtime subscriptions with debouncing to prevent infinite loops
+    let debounceTimeout: NodeJS.Timeout;
+    const debouncedLoad = () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        if (mounted) load();
+      }, 500); // 500ms debounce
+    };
+    
     const channel = supabase
       .channel("dashboard-alerts-feed")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, () => load())
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications" }, () => load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, () => load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "temperature_breach_actions" }, () => load())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, debouncedLoad)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications" }, debouncedLoad)
+      .on("postgres_changes", { event: "*", schema: "public", table: "checklist_tasks" }, debouncedLoad)
+      .on("postgres_changes", { event: "*", schema: "public", table: "temperature_breach_actions" }, debouncedLoad)
       .subscribe();
+    
     return () => {
       mounted = false;
+      clearTimeout(debounceTimeout);
       supabase.removeChannel(channel);
     };
   }, [companyId, since]);

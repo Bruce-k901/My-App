@@ -75,8 +75,23 @@ export default function AssetOverview() {
       });
 
       setAssetSummary(summary);
-    } catch (error) {
-      console.error("Error loading asset summary:", error);
+    } catch (error: any) {
+      const errorMessage = error?.message || error?.code || 'Unknown error';
+      const errorDetails = {
+        message: error?.message || null,
+        code: error?.code || null,
+        details: error?.details || null,
+        hint: error?.hint || null,
+        name: error?.name || null
+      };
+      console.error("Error loading asset summary:", errorMessage, errorDetails);
+      
+      // Try to log full error if possible
+      try {
+        console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      } catch (e) {
+        console.error("Error keys:", Object.keys(error || {}));
+      }
     } finally {
       setLoading(false);
     }

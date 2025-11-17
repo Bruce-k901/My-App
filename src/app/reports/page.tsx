@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAppContext } from "@/context/AppContext";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
 
 type EventRow = {
@@ -14,8 +15,10 @@ type EventRow = {
 };
 
 export default function ReportsPage() {
+  const { companyId } = useAppContext();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [date, setDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
   const [siteFilter, setSiteFilter] = useState<string>("");
 
@@ -24,24 +27,46 @@ export default function ReportsPage() {
   useEffect(() => {
     let mounted = true;
     const load = async () => {
+      if (!companyId) {
+        setLoading(false);
+        setEvents([]);
+        return;
+      }
+      
       setLoading(true);
-      let query = supabase
-        .from("task_events")
-        .select("id,task_id,site_id,user_id,action,details,created_at")
-        .gte("created_at", since)
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (siteFilter) query = query.eq("site_id", siteFilter);
-      const { data, error } = await query;
-      setLoading(false);
-      if (error) return;
-      if (mounted) setEvents((data || []) as any);
+      setError(null);
+      try {
+        let query = supabase
+          .from("task_events")
+          .select("id,task_id,site_id,user_id,action,details,created_at")
+          .eq("company_id", companyId) // CRITICAL: Filter by company_id
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(200);
+        if (siteFilter) query = query.eq("site_id", siteFilter);
+        const { data, error } = await query;
+        
+        if (error) {
+          console.error('Error loading reports:', error);
+          setError(error.message || 'Failed to load reports');
+          if (mounted) setEvents([]);
+          return;
+        }
+        
+        if (mounted) setEvents((data || []) as any);
+      } catch (err: any) {
+        console.error('Exception loading reports:', err);
+        setError(err?.message || 'Failed to load reports');
+        if (mounted) setEvents([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
     load();
     return () => {
       mounted = false;
     };
-  }, [since, siteFilter]);
+  }, [since, siteFilter, companyId]);
 
   return (
     <EntityPageLayout title="Reports" searchPlaceholder="Search">
@@ -71,6 +96,10 @@ export default function ReportsPage() {
 
         {loading ? (
           <p className="text-slate-400">Loading…</p>
+        ) : error ? (
+          <div className="bg-red-500/10 border border-red-500/40 rounded-lg p-4">
+            <p className="text-red-400 text-sm">Error: {error}</p>
+          </div>
         ) : events.length === 0 ? (
           <p className="text-slate-500 text-sm">No events found for the selected date.</p>
         ) : (

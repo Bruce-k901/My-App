@@ -144,8 +144,17 @@ export default function CalloutLogsPage() {
       });
 
       setCallouts(enrichedCallouts);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load callouts:', error);
+      const errorMessage = error?.message || error?.code || 'Unknown error';
+      console.error('Full error details:', {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint
+      });
+      toast.error(`Failed to load callouts: ${errorMessage}`);
+      setCallouts([]);
     } finally {
       setLoading(false);
     }

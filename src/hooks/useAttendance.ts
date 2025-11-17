@@ -59,6 +59,13 @@ export function useAttendance() {
       if (result.success && result.attendanceLog) {
         setIsClockedIn(true)
         setCurrentAttendance(result.attendanceLog)
+        // Refresh status to ensure consistency
+        const clockedIn = await attendanceService.isClockedIn(siteId)
+        setIsClockedIn(clockedIn)
+        if (clockedIn) {
+          const attendance = await attendanceService.getCurrentAttendance()
+          setCurrentAttendance(attendance)
+        }
         return { success: true }
       } else {
         throw new Error(result.error || 'Failed to clock in')
@@ -78,6 +85,12 @@ export function useAttendance() {
       if (result.success) {
         setIsClockedIn(false)
         setCurrentAttendance(null)
+        // Refresh status to ensure consistency
+        const clockedIn = await attendanceService.isClockedIn(siteId)
+        setIsClockedIn(clockedIn)
+        if (!clockedIn) {
+          setCurrentAttendance(null)
+        }
         return { success: true }
       } else {
         throw new Error(result.error || 'Failed to clock out')
@@ -88,7 +101,7 @@ export function useAttendance() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [siteId])
 
   return {
     isClockedIn,

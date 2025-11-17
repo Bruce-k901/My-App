@@ -156,20 +156,21 @@ export default function FoodPoisoningPage() {
     <div className="w-full">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-orange-400" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400" />
               Food Poisoning Reports
             </h1>
-            <p className="text-white/60">Track and manage food poisoning incidents and customer complaints</p>
+            <p className="text-white/60 text-sm sm:text-base">Track and manage food poisoning incidents and customer complaints</p>
           </div>
           <Button
             onClick={() => setIsIncidentModalOpen(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base px-3 sm:px-4 py-2 flex items-center gap-2 whitespace-nowrap"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Report Food Poisoning
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Report Food Poisoning</span>
+            <span className="sm:hidden">Report</span>
           </Button>
         </div>
 

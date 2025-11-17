@@ -48,8 +48,11 @@ export default function ActiveTasksPage() {
       fetchCountRef.current += 1;
       console.log(`🔄 [${fetchCountRef.current}] Fetching tasks for company:`, companyId);
       fetchTasks();
+    } else {
+      setLoading(false);
+      setTasks([]);
     }
-  }, [companyId]);
+  }, [companyId]); // Remove fetchTasks from deps to prevent infinite loops
 
   async function fetchTasks() {
     if (!companyId) {
@@ -72,13 +75,11 @@ export default function ActiveTasksPage() {
       // Tasks are only removed from this page when manually deleted by the user
       // Use DISTINCT ON to get only one task per unique combination at the database level
       // This prevents duplicates from even being fetched
+      // Fetch all tasks first, then filter in JavaScript to avoid complex query issues
       const { data: tasksData, error: tasksError } = await supabase
         .from('checklist_tasks')
         .select('*')
         .eq('company_id', companyId)
-        // EXCLUDE cron-generated tasks - they have task_data->>'source' = 'cron'
-        // Only show manually created tasks from templates
-        .or('task_data->>source.is.null,task_data->>source.neq.cron')
         // Don't filter by status - show all tasks (this is the master registry)
         .order('template_id', { ascending: true })
         .order('site_id', { ascending: true })
@@ -90,8 +91,16 @@ export default function ActiveTasksPage() {
       if (tasksError) {
         console.error('Error fetching tasks:', tasksError);
         console.error('Error details:', JSON.stringify(tasksError, null, 2));
+        const errorMessage = tasksError.message || tasksError.code || 'Unknown error';
+        console.error('Full error:', {
+          message: tasksError.message,
+          code: tasksError.code,
+          details: tasksError.details,
+          hint: tasksError.hint
+        });
         setTasks([]);
         setLoading(false);
+        isFetchingRef.current = false;
         return;
       }
 

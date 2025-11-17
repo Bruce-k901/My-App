@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Clock, CheckCircle2, AlertCircle, Calendar } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
@@ -72,14 +72,43 @@ export default function DailyChecklistPage() {
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
 
+  // Use ref to store latest fetchTodaysTasks function
+  const fetchTodaysTasksRef = useRef<() => Promise<void>>()
+
   useEffect(() => {
-    fetchTodaysTasks()
-    fetchUpcomingTasks()
-    loadBreachActions()
-  }, [siteId])
+    if (companyId) {
+      fetchTodaysTasks()
+      fetchUpcomingTasks()
+      loadBreachActions()
+    } else {
+      setLoading(false)
+      setTasks([])
+    }
+  }, [siteId, companyId, fetchTodaysTasks])
+
+  // Listen for refresh events (e.g., after clock-in)
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('🔄 Refreshing tasks after clock-in/out')
+      if (fetchTodaysTasksRef.current) {
+        fetchTodaysTasksRef.current()
+        fetchUpcomingTasks()
+      }
+    }
+
+    window.addEventListener('refresh-tasks', handleRefresh)
+    return () => window.removeEventListener('refresh-tasks', handleRefresh)
+  }, []) // Empty deps - use ref instead
 
   async function fetchUpcomingTasks() {
     try {
+      // CRITICAL: Check companyId before fetching
+      if (!companyId) {
+        console.warn('⚠️ No companyId available, cannot fetch upcoming tasks')
+        setUpcomingTasks([])
+        return
+      }
+      
       const today = new Date().toISOString().split('T')[0]
       
       // Fetch tasks for next 7 days
@@ -90,6 +119,7 @@ export default function DailyChecklistPage() {
       const { data, error } = await supabase
         .from('checklist_tasks')
         .select('*')
+        .eq('company_id', companyId) // CRITICAL: Filter by company_id
         .eq('flag_reason', 'callout_followup')
         .gte('due_date', today)
         .lte('due_date', nextWeekDate)
@@ -107,14 +137,23 @@ export default function DailyChecklistPage() {
     }
   }
 
-  async function fetchTodaysTasks() {
+  const fetchTodaysTasks = useCallback(async () => {
     try {
       console.log('🔄 fetchTodaysTasks called at:', new Date().toISOString())
+      
+      // CRITICAL: Check companyId before fetching
+      if (!companyId) {
+        console.warn('⚠️ No companyId available, cannot fetch tasks')
+        setLoading(false)
+        setTasks([])
+        return
+      }
+      
       setLoading(true)
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0]
       
-      console.log('🔍 Fetching tasks for:', { today: todayStr, siteId })
+      console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
       
       // Fetch tasks with visibility window logic:
       // Tasks are visible if:
@@ -142,6 +181,8 @@ export default function DailyChecklistPage() {
       let query = supabase
         .from('checklist_tasks')
         .select('*')
+        // CRITICAL: Filter by company_id first
+        .eq('company_id', companyId)
         // Fetch a wider date range to catch all visibility windows
         // We'll filter by visibility windows in JavaScript
         .gte('due_date', dateRangeStartStr)
@@ -227,6 +268,21 @@ export default function DailyChecklistPage() {
         const taskData = task.task_data as any
         const recurrencePattern = template?.recurrence_pattern || {}
         
+        // Get template frequency - daily tasks should show EVERY DAY regardless of due_date
+        const frequency = template?.frequency
+        
+        // Daily tasks: Always show (they're due every day)
+        // But only if template exists - if no template, fall back to due_date check
+        if (frequency === 'daily' && template) {
+          console.log(`✅ Daily task showing: ${task.id} (template: ${template.name}, due_date: ${task.due_date})`)
+          return true
+        }
+        
+        // Debug: Log why tasks are being filtered
+        if (!template && (task as any).template_id) {
+          console.log(`⚠️ Task ${task.id} has template_id ${(task as any).template_id} but template not found in map`)
+        }
+        
         // Get visibility settings (from task_data if stored there, otherwise from template)
         const visibilityBefore = taskData?.visibility_window_days_before ?? 
                                  recurrencePattern?.visibility_window_days_before ?? 
@@ -252,9 +308,16 @@ export default function DailyChecklistPage() {
         
         // If no visibility window settings (backwards compatibility), only show tasks due today
         if (visibilityBefore === 0 && visibilityAfter === 0) {
-          return task.due_date === todayStr
+          const matches = task.due_date === todayStr
+          if (!matches) {
+            console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr} (no visibility window)`)
+          }
+          return matches
         }
         
+        if (!isVisible) {
+          console.log(`❌ Task ${task.id} filtered: not in visibility window (due_date: ${task.due_date}, window: ${windowStart.toISOString().split('T')[0]} to ${windowEnd.toISOString().split('T')[0]})`)
+        }
         return isVisible
       })
       
@@ -888,7 +951,12 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks
+
+  // Update ref whenever fetchTodaysTasks changes
+  useEffect(() => {
+    fetchTodaysTasksRef.current = fetchTodaysTasks
+  }, [fetchTodaysTasks])
 
   async function loadBreachActions() {
     if (!siteId) {
@@ -1034,6 +1102,16 @@ export default function DailyChecklistPage() {
           })}
         </p>
         </div>
+        <button
+          onClick={() => {
+            console.log('🔄 Manual refresh clicked')
+            fetchTodaysTasks()
+            fetchUpcomingTasks()
+          }}
+          className="px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/50 text-magenta-400 rounded-lg transition-colors text-sm"
+        >
+          🔄 Refresh Tasks
+        </button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {upcomingTasks.length > 0 && (
             <button

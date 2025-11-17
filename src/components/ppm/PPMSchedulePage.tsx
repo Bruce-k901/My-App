@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Filter, Plus, List, Calendar } from 'lucide-react';
 import PPMCard from './PPMCard';
 import PPMDrawer from './PPMDrawer';
@@ -63,15 +63,18 @@ export default function PPMSchedulePage() {
     }
   };
 
-  const fetchPPMData = async () => {
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const fetchPPMData = useCallback(async () => {
+    if (!profile?.company_id) {
+      console.log("PPM Debug - No company ID available");
+      setLoading(false);
+      setAssets([]);
+      return;
+    }
+
     try {
       setLoading(true);
-      
-      if (!profile?.company_id) {
-        console.log("PPM Debug - No company ID available");
-        return;
-      }
-
       console.log("PPM Debug - Company ID:", profile.company_id);
 
       // Fetch assets using the new fetchAllAssets function
@@ -125,23 +128,36 @@ export default function PPMSchedulePage() {
 
     } catch (error) {
       console.error('Error in fetchPPMData:', error);
+      setAssets([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile?.company_id]);
 
-  // Real-time sync for PPM updates
+  // Debounced version for realtime updates
+  const debouncedFetchPPMData = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchPPMData();
+    }, 500);
+  }, [fetchPPMData]);
+  
   usePPMRealtime({
-    onPPMUpdate: fetchPPMData,
-    onTaskUpdate: fetchPPMData,
+    onPPMUpdate: debouncedFetchPPMData,
+    onTaskUpdate: debouncedFetchPPMData,
     companyId: profile?.company_id || ''
   });
 
   useEffect(() => {
     if (profile?.company_id) {
       fetchPPMData();
+    } else {
+      setLoading(false);
+      setAssets([]);
     }
-  }, [profile?.company_id]);
+  }, [profile?.company_id, fetchPPMData]);
 
   useEffect(() => {
     filterAssets();

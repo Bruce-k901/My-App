@@ -1,0 +1,19 @@
+# Manual Test Command for Task Notification Cron
+# Copy and paste this into your terminal/PowerShell
+
+# Option 1: Using curl (if you have curl installed)
+curl -X POST "https://xijoybubtrgbrhquqwrx.supabase.co/functions/v1/check-task-notifications" ^
+  -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY_HERE" ^
+  -H "Content-Type: application/json"
+
+# Option 2: Using PowerShell Invoke-RestMethod
+# Replace YOUR_SERVICE_ROLE_KEY_HERE with your actual key
+$headers = @{
+    "Authorization" = "Bearer YOUR_SERVICE_ROLE_KEY_HERE"
+    "Content-Type" = "application/json"
+}
+Invoke-RestMethod -Uri "https://xijoybubtrgbrhquqwrx.supabase.co/functions/v1/check-task-notifications" -Method POST -Headers $headers
+
+# Option 3: Using Supabase CLI (if installed)
+supabase functions invoke check-task-notifications --no-verify-jwt
+

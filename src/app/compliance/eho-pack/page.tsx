@@ -401,17 +401,18 @@ function EHOGenerateButton({
       <button
         disabled={!payload || loading}
         onClick={onGenerate}
-        className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-40 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 text-sm sm:text-base font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+        className="w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-40 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 text-xs sm:text-base font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden"
       >
         {loading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>Generating {format.toUpperCase()}...</span>
+            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin flex-shrink-0" />
+            <span className="truncate">Generating {format.toUpperCase()}...</span>
           </>
         ) : (
           <>
-            <FileText className="w-5 h-5" />
-            <span>Generate EHO Pack ({format.toUpperCase()})</span>
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <span className="hidden sm:inline">Generate EHO Pack ({format.toUpperCase()})</span>
+            <span className="sm:hidden truncate">Generate ({format.toUpperCase()})</span>
           </>
         )}
       </button>

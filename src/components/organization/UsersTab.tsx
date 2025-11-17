@@ -134,14 +134,26 @@ export default function UsersTab() {
 
       if (error) {
         console.error("Failed to fetch users:", error);
+        const errorMessage = error.message || error.code || "Unknown error";
+        console.error("Full error details:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         setUsers([]);
+        setLoading(false);
         return;
       }
 
       setUsers(data || []);
+      setLoading(false);
     } catch (error: any) {
       console.error("Failed to fetch users:", error);
+      const errorMessage = error?.message || "Unknown error";
+      console.error("Exception details:", errorMessage);
       setUsers([]);
+      setLoading(false);
     }
   }, [companyId, viewArchived]);
 

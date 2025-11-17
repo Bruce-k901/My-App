@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui";
 import UploadGlobalDocModal from "@/components/modals/UploadGlobalDocModal";
@@ -30,51 +30,73 @@ export default function DocumentsPoliciesSection() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    let query = supabase
-      .from("global_documents")
-      .select("id,category,name,version,expiry_date,notes,file_path,created_at");
-    if (companyId) {
-      query = query.eq("company_id", companyId);
-    }
-    const { data, error } = await query.order("created_at", { ascending: false });
-    if (error) {
-      setError(error.message);
+  const load = useCallback(async () => {
+    if (!companyId) {
+      setLoading(false);
       setDocs([]);
       setLatestDoc(null);
-    } else {
-      const list = (data || []) as GlobalDoc[];
-      setDocs(list);
-      setLatestDoc(list[0] || null);
+      return;
     }
-    setLoading(false);
-  };
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase
+        .from("global_documents")
+        .select("id,category,name,version,expiry_date,notes,file_path,created_at")
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false });
+        
+      if (error) {
+        setError(error.message);
+        setDocs([]);
+        setLatestDoc(null);
+      } else {
+        const list = (data || []) as GlobalDoc[];
+        setDocs(list);
+        setLatestDoc(list[0] || null);
+      }
+    } catch (err: any) {
+      setError(err?.message || "Failed to load documents");
+      setDocs([]);
+      setLatestDoc(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [companyId]);
 
   useEffect(() => {
     // Load (or reload) whenever company context changes
     load();
-  }, [companyId]);
+  }, [load]);
 
   // Live updates: re-fetch when global_documents changes for this company
   useEffect(() => {
     if (!companyId) return;
+    
+    // Debounce realtime updates to prevent infinite loops
+    let debounceTimeout: NodeJS.Timeout;
+    const debouncedLoad = () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        load();
+      }, 500); // 500ms debounce
+    };
+    
     const channel = supabase
       .channel("global_documents_updates")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "global_documents", filter: `company_id=eq.${companyId}` },
-        () => {
-          load();
-        }
+        debouncedLoad
       )
       .subscribe();
 
     return () => {
-      channel.unsubscribe();
+      clearTimeout(debounceTimeout);
+      supabase.removeChannel(channel);
     };
-  }, [companyId]);
+  }, [companyId, load]);
   // Fade the highlight after 20 seconds
   useEffect(() => {
     if (!highlightId) return;

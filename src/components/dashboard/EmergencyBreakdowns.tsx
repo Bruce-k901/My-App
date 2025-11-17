@@ -38,7 +38,26 @@ export default function EmergencyBreakdowns() {
           .order("created_at", { ascending: false });
           
         if (error) {
-          console.error("Error fetching breakdowns:", error);
+          // Check if error is empty
+          const errorKeys = Object.keys(error || {});
+          const isEmpty = errorKeys.length === 0;
+          
+          if (isEmpty) {
+            console.error("Error fetching breakdowns: Empty error object", {
+              query: 'assets.select(...).eq(status, maintenance)',
+              companyId: companyId
+            });
+          } else {
+            const errorMessage = error.message || error.code || 'Unknown error';
+            const errorDetails = {
+              message: error.message || null,
+              code: error.code || null,
+              details: error.details || null,
+              hint: error.hint || null,
+              keys: errorKeys
+            };
+            console.error("Error fetching breakdowns:", errorMessage, errorDetails);
+          }
           setData([]);
           return;
         }

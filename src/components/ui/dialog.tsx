@@ -32,7 +32,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+      className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center"
       onMouseDown={handleBackdropClick}
     >
       {/* stopPropagation to prevent backdrop close when clicking inside content */}

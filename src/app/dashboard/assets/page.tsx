@@ -120,10 +120,10 @@ export default function AssetsPage() {
   };
 
   const { data: assets = [], isLoading, isError, error } = useQuery({
-    queryKey: ["assets", selectedSite],
+    queryKey: ["assets", companyId, selectedSite],
     queryFn: fetchAssets,
     staleTime: 1000 * 60 * 5, // cache for 5 min
-    enabled: !authLoading && !!companyId,
+    enabled: !authLoading && !!companyId && !!session?.user?.id,
   });
   
   // Wait for auth to load before proceeding

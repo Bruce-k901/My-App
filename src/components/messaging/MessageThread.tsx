@@ -161,7 +161,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 {showAvatar && isOwn && <div className="flex-shrink-0 w-8" />}
 
                 <div
-                  className={`flex flex-col max-w-[70%] ${
+                  className={`flex flex-col max-w-[85%] sm:max-w-[75%] md:max-w-[70%] ${
                     isOwn ? 'items-end' : 'items-start'
                   }`}
                 >
@@ -197,7 +197,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-white/70 truncate max-w-[250px]">
+                      <div className="text-white/70 truncate max-w-[200px] sm:max-w-[250px]">
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (

@@ -119,8 +119,18 @@ export default function OrganizationSitesPage() {
 
       if (sitesError) {
         console.error("Error fetching sites:", sitesError);
-        setError("Failed to load sites");
+        const errorMessage = sitesError.message || sitesError.code || "Failed to load sites";
+        setError(`Failed to load sites: ${errorMessage}`);
         setSites([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Ensure we have data
+      if (!sitesData) {
+        console.warn("No sites data returned");
+        setSites([]);
+        setLoading(false);
         return;
       }
 
@@ -153,10 +163,12 @@ export default function OrganizationSitesPage() {
       }) || [];
 
       setSites(enrichedSites);
+      setLoading(false);
     } catch (err: any) {
       console.error("Error in fetchSites:", err);
-      setError("Failed to load data");
-    } finally {
+      const errorMessage = err?.message || err?.code || "Failed to load sites";
+      setError(`Failed to load sites: ${errorMessage}`);
+      setSites([]);
       setLoading(false);
     }
   }, [profile?.company_id]);

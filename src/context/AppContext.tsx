@@ -68,15 +68,137 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   async function fetchProfile(userId: string) {
     try {
       console.log('🔍 AppContext fetchProfile:', userId);
+      
+      if (!userId) {
+        console.warn('⚠️ AppContext fetchProfile: No userId provided');
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .or(`id.eq.${userId},auth_user_id.eq.${userId}`)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to handle "no rows" gracefully
       
       if (error) {
-        console.error('❌ AppContext profile error:', error);
-        throw error;
+        // Check if error is truly empty
+        const errorKeys = error ? Object.keys(error) : [];
+        const errorOwnProps = error ? Object.getOwnPropertyNames(error) : [];
+        const isEmpty = errorKeys.length === 0 && errorOwnProps.length === 0;
+        
+        // Extract error information - handle empty objects
+        let errorMessage = 'Unknown error';
+        let errorCode = null;
+        let errorDetails = null;
+        let errorHint = null;
+        
+        if (isEmpty) {
+          // Error object is truly empty
+          errorMessage = 'Empty error object from Supabase query';
+          console.error('❌ AppContext profile error: Empty error object detected', {
+            userId,
+            errorType: typeof error,
+            errorValue: error,
+            query: 'profiles.select(*).or(...).maybeSingle()'
+          });
+        } else {
+          // Try to get error properties
+          try {
+            errorMessage = error.message || error.msg || String(error) || 'Unknown error';
+            errorCode = error.code || null;
+            errorDetails = error.details || null;
+            errorHint = error.hint || null;
+            
+            // If message is still generic, try String conversion
+            if (errorMessage === 'Unknown error' || errorMessage === '[object Object]') {
+              try {
+                const errorStr = String(error);
+                if (errorStr !== '[object Object]' && errorStr !== '{}') {
+                  errorMessage = errorStr;
+                } else {
+                  errorMessage = 'Error object could not be converted to string';
+                }
+              } catch (e) {
+                errorMessage = 'Could not extract error information';
+              }
+            }
+          } catch (e) {
+            errorMessage = `Error extraction failed: ${String(e)}`;
+          }
+          
+          // Build error info object
+          const errorInfo: Record<string, any> = {
+            message: errorMessage,
+            userId: userId
+          };
+          
+          if (errorCode) errorInfo.code = errorCode;
+          if (errorDetails) errorInfo.details = errorDetails;
+          if (errorHint) errorInfo.hint = errorHint;
+          
+          // Add key information
+          if (errorKeys.length > 0) {
+            errorInfo.keys = errorKeys;
+            const errorValues: Record<string, any> = {};
+            errorKeys.forEach(key => {
+              try {
+                const value = (error as any)[key];
+                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
+                  errorValues[key] = value;
+                } else if (typeof value === 'object') {
+                  errorValues[key] = '[object]';
+                } else {
+                  errorValues[key] = typeof value;
+                }
+              } catch (e) {
+                errorValues[key] = '[unable to access]';
+              }
+            });
+            errorInfo.values = errorValues;
+          }
+          
+          if (errorOwnProps.length > errorKeys.length) {
+            errorInfo.ownPropertyNames = errorOwnProps.filter(k => !errorKeys.includes(k));
+          }
+          
+          console.error('❌ AppContext profile error:', errorInfo);
+          
+          // Try to serialize the full error
+          try {
+            const serialized = JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+            if (serialized && serialized !== '{}' && serialized !== 'null') {
+              console.error('Full error object:', serialized);
+            }
+          } catch (e) {
+            console.error('Could not serialize error');
+          }
+        }
+        
+        // Handle specific error cases
+        if (error.code === 'PGRST116') {
+          // No rows returned - user doesn't have a profile yet
+          console.warn('⚠️ No profile found for user:', userId);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+        
+        // For other errors, still set loading to false but don't throw
+        // This prevents the app from crashing
+        console.error('Profile fetch failed, continuing without profile');
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      
+      // Handle case where data is null (no profile found)
+      if (!data) {
+        console.warn('⚠️ AppContext: No profile data returned for user:', userId);
+        setProfile(null);
+        setLoading(false);
+        return;
       }
       
       console.log('✅ AppContext profile loaded:', { 
@@ -99,7 +221,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         
         // If that fails, try created_by
         if (companyError || !companyData) {
-          console.log('⚠️ Direct lookup failed, trying created_by:', companyError);
+          console.log('⚠️ Direct lookup failed, trying created_by:', {
+            error: companyError?.message || companyError?.code,
+            hasData: !!companyData
+          });
           const { data: createdData, error: createdError } = await supabase
             .from('companies')
             .select('*')
@@ -110,6 +235,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             companyData = createdData;
             companyError = null;
             console.log('✅ AppContext company found via created_by:', createdData.name);
+          } else if (createdError) {
+            console.error('❌ AppContext: Error fetching company via created_by:', {
+              message: createdError.message,
+              code: createdError.code,
+              details: createdError.details
+            });
           }
         }
         
@@ -117,22 +248,144 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           console.log('✅ AppContext company loaded:', companyData.name);
           setCompany(companyData);
         } else {
-          console.error('❌ AppContext company error:', companyError);
-          console.log('Company data:', companyData);
+          console.warn('⚠️ AppContext: No company found', {
+            hasError: !!companyError,
+            errorMessage: companyError?.message,
+            errorCode: companyError?.code,
+            hasData: !!companyData,
+            company_id: data.company_id
+          });
+          setCompany(null);
         }
       } else {
-        console.warn('⚠️ AppContext profile has no company_id');
+        console.log('ℹ️ AppContext: No company_id in profile');
+        setCompany(null);
       }
+      
+      setLoading(false);
     } catch (error: any) {
-      console.error('❌ AppContext fetchProfile error:', {
-        message: error?.message,
-        code: error?.code,
-        details: error?.details,
-        hint: error?.hint,
-        error: error,
-      });
+      // Catch any unexpected errors - handle empty objects
+      let errorMessage = 'Unknown error';
+      let errorCode = null;
+      let errorDetails = null;
+      let errorHint = null;
+      let errorStack = null;
+      
+      // Try to extract error information
+      try {
+        if (error) {
+          errorMessage = error.message || error.msg || error.toString() || 'Unknown error';
+          errorCode = error.code || null;
+          errorDetails = error.details || null;
+          errorHint = error.hint || null;
+          errorStack = error.stack || null;
+          
+          // If message is still generic, try String conversion
+          if (errorMessage === 'Unknown error' || errorMessage === '[object Object]') {
+            try {
+              const errorStr = String(error);
+              if (errorStr !== '[object Object]') {
+                errorMessage = errorStr;
+              }
+            } catch (e) {
+              // Ignore
+            }
+          }
+        }
+      } catch (e) {
+        errorMessage = 'Could not extract error information';
+      }
+      
+      // Build comprehensive error info
+      const errorInfo: Record<string, any> = {
+        message: errorMessage,
+        userId: userId,
+        errorType: typeof error,
+        isNull: error === null,
+        isUndefined: error === undefined
+      };
+      
+      if (errorCode) errorInfo.code = errorCode;
+      if (errorDetails) errorInfo.details = errorDetails;
+      if (errorHint) errorInfo.hint = errorHint;
+      if (errorStack) errorInfo.stack = errorStack;
+      
+      // Try to enumerate error properties
+      try {
+        if (error && typeof error === 'object') {
+          const errorKeys = Object.keys(error);
+          const errorOwnKeys = Object.getOwnPropertyNames(error);
+          
+          if (errorKeys.length > 0) {
+            errorInfo.enumerableKeys = errorKeys;
+            const errorValues: Record<string, any> = {};
+            errorKeys.forEach(key => {
+              try {
+                const value = (error as any)[key];
+                // Only include primitive values or short strings
+                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
+                  errorValues[key] = value;
+                } else if (typeof value === 'object') {
+                  errorValues[key] = '[object]';
+                } else {
+                  errorValues[key] = typeof value;
+                }
+              } catch (e) {
+                errorValues[key] = '[unable to access]';
+              }
+            });
+            errorInfo.enumerableValues = errorValues;
+          } else {
+            errorInfo.note = 'Error object has no enumerable keys';
+          }
+          
+          if (errorOwnKeys.length > errorKeys.length) {
+            errorInfo.ownPropertyNames = errorOwnKeys.filter(k => !errorKeys.includes(k));
+          }
+        }
+      } catch (e) {
+        errorInfo.enumerationError = String(e);
+      }
+      
+      console.error('❌ AppContext fetchProfile exception:', errorInfo);
+      
+      // Try to stringify the error object for better debugging
+      try {
+        if (error) {
+          const serialized = JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+          if (serialized && serialized !== '{}' && serialized !== 'null') {
+            console.error('Full error object:', serialized);
+          } else {
+            console.error('Error object serializes to empty/null');
+            // Try alternative serialization
+            try {
+              const altSerialized = JSON.stringify(error, null, 2);
+              if (altSerialized && altSerialized !== '{}') {
+                console.error('Alternative serialization:', altSerialized);
+              }
+            } catch (e) {
+              console.error('Alternative serialization failed');
+            }
+          }
+        } else {
+          console.error('Error is null or undefined');
+        }
+      } catch (stringifyError) {
+        console.error('Could not stringify error:', stringifyError);
+        console.error('Error type:', typeof error);
+        if (error && typeof error === 'object') {
+          try {
+            console.error('Error constructor:', error.constructor?.name);
+            console.error('Error prototype:', Object.getPrototypeOf(error)?.constructor?.name);
+          } catch (e) {
+            console.error('Could not inspect error prototype');
+          }
+        }
+      }
+      
+      // Set state to prevent infinite loading
       setProfile(null);
-    } finally {
+      setCompany(null);
       setLoading(false);
     }
   }

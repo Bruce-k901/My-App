@@ -42,37 +42,43 @@ export async function clockIn(
       return { success: false, error: 'Failed to fetch user profile' }
     }
 
-    // Check if already clocked in
+    // Check if already clocked in (any active clock-in, not just today's)
     const { data: existing } = await supabase
       .from('attendance_logs')
       .select('id')
       .eq('user_id', user.id)
       .is('clock_out_at', null)
-      .eq('clock_in_at::date', new Date().toISOString().split('T')[0])
-      .single()
+      .order('clock_in_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
     if (existing) {
-      return { success: false, error: 'Already clocked in' }
+      return { success: false, error: 'Already clocked in. Please clock out first.' }
     }
 
     // Create attendance log
+    const insertData = {
+      user_id: user.id,
+      company_id: profile.company_id,
+      site_id: siteId,
+      location: location || null,
+      notes: notes || null
+    }
+    
+    console.log('🕐 Clocking in with data:', insertData)
+    
     const { data: attendanceLog, error } = await supabase
       .from('attendance_logs')
-      .insert({
-        user_id: user.id,
-        company_id: profile.company_id,
-        site_id: siteId,
-        location: location || null,
-        notes: notes || null
-      })
+      .insert(insertData)
       .select()
       .single()
 
     if (error) {
-      console.error('Error clocking in:', error)
+      console.error('❌ Error clocking in:', error)
       return { success: false, error: error.message }
     }
 
+    console.log('✅ Clock-in successful:', attendanceLog)
     return { success: true, attendanceLog: attendanceLog as AttendanceLog }
   } catch (error: any) {
     console.error('Error in clockIn:', error)
@@ -90,18 +96,40 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
       return { success: false, error: 'User not authenticated' }
     }
 
-    // Find active clock-in
+    // Find active clock-in (any active clock-in, not just today's)
+    // This allows clocking out even if clocked in yesterday
+    console.log('🕐 Looking for active clock-in for user:', user.id)
+    
     const { data: activeLog, error: findError } = await supabase
       .from('attendance_logs')
-      .select('id')
+      .select('id, clock_in_at, site_id')
       .eq('user_id', user.id)
       .is('clock_out_at', null)
-      .eq('clock_in_at::date', new Date().toISOString().split('T')[0])
-      .single()
+      .order('clock_in_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-    if (findError || !activeLog) {
-      return { success: false, error: 'No active clock-in found' }
+    console.log('🔍 Active clock-in query result:', { activeLog, error: findError })
+
+    if (findError) {
+      console.error('❌ Error finding active clock-in:', findError)
+      return { success: false, error: `Database error: ${findError.message}` }
     }
+
+    if (!activeLog) {
+      // Debug: Check if there are ANY attendance logs for this user
+      const { data: allLogs } = await supabase
+        .from('attendance_logs')
+        .select('id, clock_in_at, clock_out_at, site_id')
+        .eq('user_id', user.id)
+        .order('clock_in_at', { ascending: false })
+        .limit(5)
+      
+      console.log('📋 All attendance logs for user:', allLogs)
+      return { success: false, error: 'No active clock-in found. Please clock in first.' }
+    }
+    
+    console.log('✅ Found active clock-in:', activeLog)
 
     // Update clock-out time
     const { error: updateError } = await supabase
@@ -132,21 +160,29 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return false
 
+    // Check for any active clock-in (not just today's)
     let query = supabase
       .from('attendance_logs')
       .select('id')
       .eq('user_id', user.id)
       .is('clock_out_at', null)
-      .eq('clock_in_at::date', new Date().toISOString().split('T')[0])
+      .order('clock_in_at', { ascending: false })
+      .limit(1)
 
     if (siteId) {
       query = query.eq('site_id', siteId)
     }
 
-    const { data, error } = await query.single()
+    const { data, error } = await query.maybeSingle()
 
-    return !error && !!data
+    if (error) {
+      console.error('Error checking clock-in status:', error)
+      return false
+    }
+
+    return !!data
   } catch (error) {
+    console.error('Exception checking clock-in status:', error)
     return false
   }
 }
@@ -159,18 +195,26 @@ export async function getCurrentAttendance(): Promise<AttendanceLog | null> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
+    // Get any active clock-in (not just today's)
     const { data, error } = await supabase
       .from('attendance_logs')
       .select('*')
       .eq('user_id', user.id)
       .is('clock_out_at', null)
-      .eq('clock_in_at::date', new Date().toISOString().split('T')[0])
-      .single()
+      .order('clock_in_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-    if (error || !data) return null
+    if (error) {
+      console.error('Error getting current attendance:', error)
+      return null
+    }
+
+    if (!data) return null
 
     return data as AttendanceLog
   } catch (error) {
+    console.error('Exception getting current attendance:', error)
     return null
   }
 }

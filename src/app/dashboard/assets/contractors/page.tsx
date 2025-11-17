@@ -92,8 +92,13 @@ export default function ContractorsPage() {
   }, [companyId]);
 
   useEffect(() => {
-    if (companyId) loadContractors();
-  }, [companyId, loadContractors]);
+    if (companyId) {
+      loadContractors();
+    } else {
+      setLoading(false);
+      setContractors([]);
+    }
+  }, [companyId]); // Remove loadContractors from deps to prevent infinite loops
 
   const handleSaved = async () => {
     setOpenAdd(false);
