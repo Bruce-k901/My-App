@@ -6,6 +6,11 @@
 
 BEGIN;
 
+-- Drop existing functions first to avoid return type conflicts
+DROP FUNCTION IF EXISTS public.is_user_clocked_in(UUID, UUID);
+DROP FUNCTION IF EXISTS public.get_active_staff_on_site(UUID);
+DROP FUNCTION IF EXISTS public.get_managers_on_shift(UUID, UUID);
+
 -- Update is_user_clocked_in function (if it still exists with old code)
 CREATE OR REPLACE FUNCTION public.is_user_clocked_in(p_user_id UUID, p_site_id UUID DEFAULT NULL)
 RETURNS BOOLEAN
