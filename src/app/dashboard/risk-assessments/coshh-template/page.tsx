@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Save, AlertTriangle, Download, Link as LinkIcon, Shield } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { getRAVersioningInfo, createRAVersionPayload } from '@/lib/utils/raVersioning';
 
 const USAGE_METHODS = ['Spraying', 'Wiping', 'Mopping', 'Pouring', 'Diluting', 'Other'];
 const FREQUENCY_OPTIONS = ['Multiple daily', 'Daily', 'Weekly', 'Monthly', 'Rarely'];
@@ -17,12 +19,19 @@ const SEVERITY_LEVELS = ['Low', 'Medium', 'High'];
 export default function COSHHRiskAssessmentTemplate() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [raLoaded, setRALoaded] = useState(false);
   const [sites, setSites] = useState([]);
   const [chemicalsLibrary, setChemicalsLibrary] = useState([]);
   const [coshhSheets, setCOSHHSheets] = useState([]);
+  
+  // Store original RA data for versioning
+  const [originalRA, setOriginalRA] = useState<any>(null);
 
   // Header state
   const [title, setTitle] = useState("");
@@ -127,12 +136,110 @@ export default function COSHHRiskAssessmentTemplate() {
     }
   }, [profile]);
 
+  // Load existing RA data when editing
   useEffect(() => {
-    if (title) {
+    if (!editId || !companyId || raLoaded) return;
+
+    const loadRA = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .select('*')
+          .eq('id', editId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (error) throw error;
+        if (!data) {
+          showToast({ 
+            title: 'RA not found', 
+            description: 'The requested risk assessment could not be found', 
+            type: 'error' 
+          });
+          router.push('/dashboard/risk-assessments');
+          return;
+        }
+
+        // Store original RA for versioning
+        setOriginalRA(data);
+
+        // Populate header fields
+        setTitle(data.title || '');
+        setRefCode(data.ref_code || '');
+        setSiteId(data.site_id || '');
+        setAssessorName(data.assessor_name || '');
+        setAssessmentDate(data.assessment_date || '');
+        setReviewDate(data.review_date || '');
+        setStatus(data.status || 'Draft');
+
+        // Populate assessment data
+        const assessmentData = data.assessment_data || {};
+        
+        if (assessmentData.chemicals && Array.isArray(assessmentData.chemicals)) {
+          setChemicals(assessmentData.chemicals.map((c: any) => ({
+            ...c,
+            id: c.id || Date.now() + Math.random()
+          })));
+        }
+
+        if (assessmentData.exposureRoutes) {
+          setExposureRoutes(assessmentData.exposureRoutes);
+        }
+
+        if (assessmentData.controlMeasures && Array.isArray(assessmentData.controlMeasures)) {
+          setControlMeasures(assessmentData.controlMeasures.map((cm: any) => ({
+            ...cm,
+            id: cm.id || Date.now() + Math.random()
+          })));
+        }
+
+        if (assessmentData.healthSurveillance) {
+          setHealthSurveillanceRequired(assessmentData.healthSurveillance.healthSurveillanceRequired || false);
+          setMonitoringType(assessmentData.healthSurveillance.monitoringType || '');
+          setMonitoringFrequency(assessmentData.healthSurveillance.monitoringFrequency || '');
+          setSurveillanceResponsible(assessmentData.healthSurveillance.surveillanceResponsible || '');
+          setLastSurveillanceDate(assessmentData.healthSurveillance.lastSurveillanceDate || '');
+        }
+
+        if (assessmentData.emergency) {
+          setSpillKitLocation(assessmentData.emergency.spillKitLocation || '');
+          setEmergencyContacts(assessmentData.emergency.emergencyContacts || '');
+          setDisposalProcedures(assessmentData.emergency.disposalProcedures || '');
+          setEnvironmentalInfo(assessmentData.emergency.environmentalInfo || '');
+        }
+
+        if (assessmentData.riskAssessment) {
+          setOverallRiskLevel(assessmentData.riskAssessment.overallRiskLevel || 'Medium');
+          setRiskBeforeControls(assessmentData.riskAssessment.riskBeforeControls || 3);
+          setRiskAfterControls(assessmentData.riskAssessment.riskAfterControls || 2);
+          setRiskNotes(assessmentData.riskAssessment.riskNotes || '');
+        }
+
+        setRALoaded(true);
+      } catch (error: any) {
+        console.error('Error loading RA:', error);
+        showToast({ 
+          title: 'Error loading RA', 
+          description: error.message || 'Failed to load risk assessment data', 
+          type: 'error' 
+        });
+        router.push('/dashboard/risk-assessments');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRA();
+  }, [editId, companyId, raLoaded, router, showToast]);
+
+  // Auto-generate ref_code only for new RAs
+  useEffect(() => {
+    if (!editId && title) {
       const nameBit = title.replace(/\s+/g, '').slice(0, 4).toUpperCase();
       setRefCode(`COSHH-${nameBit}-001`);
     }
-  }, [title]);
+  }, [title, editId]);
 
   useEffect(() => {
     if (assessmentDate) {
@@ -166,9 +273,47 @@ export default function COSHHRiskAssessmentTemplate() {
     try {
       setSaving(true);
       
-      const { data, error } = await supabase
-        .from('risk_assessments')
-        .insert({
+      let result;
+      if (editId && originalRA) {
+        // Create new version instead of updating
+        const versioningInfo = await getRAVersioningInfo(
+          originalRA.ref_code,
+          companyId,
+          originalRA
+        );
+        
+        const baseData = {
+          company_id: companyId,
+          template_type: 'coshh',
+          title,
+          ref_code: originalRA.ref_code, // Will be replaced with incremented ref_code
+          site_id: siteId || null,
+          assessor_name: assessorName,
+          assessment_date: assessmentDate,
+          review_date: reviewDate,
+          next_review_date: reviewDate,
+          status,
+          assessment_data: assessmentData,
+          linked_chemicals: chemicals.map(c => c.chemical_id).filter(Boolean),
+          highest_risk_level: overallRiskLevel,
+          total_hazards: chemicals.length,
+          hazards_controlled: chemicals.filter(c => c.substitutionConsidered).length,
+          created_by: profile?.auth_user_id || null
+        };
+        
+        const insertData = createRAVersionPayload(baseData, versioningInfo, profile, false);
+        
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      } else {
+        // Insert new RA (first version)
+        const baseData = {
           company_id: companyId,
           template_type: 'coshh',
           title,
@@ -184,17 +329,39 @@ export default function COSHHRiskAssessmentTemplate() {
           highest_risk_level: overallRiskLevel,
           total_hazards: chemicals.length,
           hazards_controlled: chemicals.filter(c => c.substitutionConsidered).length,
-          created_by: profile?.id
-        })
-        .select()
-        .single();
+          created_by: profile?.auth_user_id || null
+        };
+        
+        const insertData = createRAVersionPayload(baseData, { newVersion: '1.0', versionNumber: 1, parentId: null, newRefCode: refCode }, profile, true);
+        
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      }
+      
+      const { data, error } = result;
 
       if (error) throw error;
 
-      showToast({ title: 'COSHH Assessment saved', description: `Saved as ${refCode}`, type: 'success' });
-    } catch (error) {
+      if (editId && originalRA) {
+        showToast({ 
+          title: 'New version created', 
+          description: `Version ${data.version_number || '2.0'} saved as ${data.ref_code} (was ${originalRA.ref_code})`, 
+          type: 'success' 
+        });
+      } else {
+        showToast({ title: 'COSHH Assessment saved', description: `Saved as ${refCode}`, type: 'success' });
+      }
+      
+      router.push('/dashboard/risk-assessments');
+    } catch (error: any) {
       console.error('Error saving assessment:', error);
-      showToast({ title: 'Error saving', description: error.message, type: 'error' });
+      showToast({ title: 'Error saving', description: error.message || 'Failed to save risk assessment', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -275,7 +442,7 @@ export default function COSHHRiskAssessmentTemplate() {
                 {/* Chemical selection */}
                 <div className="mb-3">
                   <label className="block text-xs text-neutral-400 mb-1">Chemical Name</label>
-                  <select value={chem.chemical_id} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, chemical_id: e.target.value } : c))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
+                  <select value={chem.chemical_id || ''} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, chemical_id: e.target.value || null } : c))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
                     <option value="">Select chemical...</option>
                     {chemicalsLibrary.map(c => <option key={c.id} value={c.id}>{c.product_name}</option>)}
                   </select>

@@ -2,38 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, FileText, AlertTriangle, CheckCircle, Calendar, Filter } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
-
-const TEMPLATES = [
-  {
-    id: 'general',
-    title: 'General Risk Assessment',
-    description: 'Comprehensive risk assessment for all activities',
-    color: 'from-red-500/20 to-orange-500/20',
-    borderColor: 'border-red-500/30',
-    link: '/dashboard/risk-assessments/general-template'
-  },
-  {
-    id: 'coshh',
-    title: 'COSHH Risk Assessment',
-    description: 'Control of Substances Hazardous to Health',
-    color: 'from-amber-500/20 to-yellow-500/20',
-    borderColor: 'border-amber-500/30',
-    link: '/dashboard/risk-assessments/coshh-template'
-  }
-];
+import { useToast } from '@/components/ui/ToastProvider';
 
 export default function RiskAssessmentsPage() {
   const router = useRouter();
   const { companyId } = useAppContext();
+  const { showToast } = useToast();
   
   const [riskAssessments, setRiskAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [archivingId, setArchivingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadRiskAssessments();
@@ -44,14 +28,54 @@ export default function RiskAssessmentsPage() {
     
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      // Get all RAs (excluding archived)
+      // Note: version_number column may not exist if migration hasn't run yet
+      const { data: allRAs, error } = await supabase
         .from('risk_assessments')
         .select('*')
         .eq('company_id', companyId)
+        .neq('status', 'Archived')
+        .order('ref_code', { ascending: true })
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      setRiskAssessments(data || []);
+      
+      // Filter to get only the latest version of each RA base
+      // Since ref_code increments (RA-GEN-BESH-001 -> RA-GEN-BESH-002), we group by base pattern
+      const latestVersions = new Map();
+      (allRAs || []).forEach((ra: any) => {
+        // Extract base pattern from ref_code (e.g., RA-GEN-BESH-001 -> RA-GEN-BESH)
+        const refCode = ra.ref_code;
+        const baseMatch = refCode.match(/^(.+)-\d+$/);
+        const basePattern = baseMatch ? baseMatch[1] : refCode;
+        
+        if (!latestVersions.has(basePattern)) {
+          latestVersions.set(basePattern, ra);
+        } else {
+          const existing = latestVersions.get(basePattern);
+          // Keep the one with higher version_number (or higher ref_code number if version_number is same)
+          const existingVersion = existing.version_number || 1;
+          const currentVersion = ra.version_number || 1;
+          
+          if (currentVersion > existingVersion) {
+            latestVersions.set(basePattern, ra);
+          } else if (currentVersion === existingVersion) {
+            // If version numbers are equal, compare ref_code numbers
+            const existingNum = parseInt(existing.ref_code.match(/-(\d+)$/)?.[1] || '0', 10);
+            const currentNum = parseInt(refCode.match(/-(\d+)$/)?.[1] || '0', 10);
+            if (currentNum > existingNum) {
+              latestVersions.set(basePattern, ra);
+            }
+          }
+        }
+      });
+      
+      // Convert map to array and sort by created_at
+      const latestRAs = Array.from(latestVersions.values()).sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      
+      setRiskAssessments(latestRAs);
     } catch (error) {
       console.error('Error loading risk assessments:', error);
     } finally {
@@ -101,71 +125,78 @@ export default function RiskAssessmentsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
-          <div className="text-neutral-400 text-sm">Total RAs</div>
-          <div className="text-2xl font-bold text-white mt-1">{stats.total}</div>
+      {/* Stats Cards - Improved Design */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 border border-white/[0.1] rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] hover:border-magenta-500/30 group">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-neutral-400 text-sm font-medium">Total RAs</div>
+            <FileText className="w-5 h-5 text-neutral-500 group-hover:text-magenta-400 transition-colors" />
+          </div>
+          <div className="text-3xl font-bold text-white">{stats.total}</div>
+          <div className="text-xs text-neutral-500 mt-1">Active assessments</div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
-          <div className="text-neutral-400 text-sm">Overdue</div>
-          <div className={`text-2xl font-bold mt-1 ${stats.overdue > 0 ? 'text-red-400' : 'text-white'}`}>
+        
+        <div className={`bg-gradient-to-br ${stats.overdue > 0 ? 'from-red-500/10 to-red-600/5' : 'from-neutral-800/50 to-neutral-900/50'} border ${stats.overdue > 0 ? 'border-red-500/30' : 'border-white/[0.1]'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] group`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className={`text-sm font-medium ${stats.overdue > 0 ? 'text-red-300' : 'text-neutral-400'}`}>Overdue</div>
+            <AlertTriangle className={`w-5 h-5 transition-colors ${stats.overdue > 0 ? 'text-red-400' : 'text-neutral-500 group-hover:text-red-400'}`} />
+          </div>
+          <div className={`text-3xl font-bold ${stats.overdue > 0 ? 'text-red-400' : 'text-white'}`}>
             {stats.overdue}
           </div>
-        </div>
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
-          <div className="text-neutral-400 text-sm">High Risk</div>
-          <div className={`text-2xl font-bold mt-1 ${stats.highRisk > 0 ? 'text-orange-400' : 'text-white'}`}>
-            {stats.highRisk}
+          <div className={`text-xs mt-1 ${stats.overdue > 0 ? 'text-red-300/70' : 'text-neutral-500'}`}>
+            {stats.overdue > 0 ? 'Requires attention' : 'All up to date'}
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]">
-          <div className="text-neutral-400 text-sm">Published</div>
-          <div className="text-2xl font-bold text-white mt-1">{stats.published}</div>
+        
+        <div className={`bg-gradient-to-br ${stats.highRisk > 0 ? 'from-orange-500/10 to-orange-600/5' : 'from-neutral-800/50 to-neutral-900/50'} border ${stats.highRisk > 0 ? 'border-orange-500/30' : 'border-white/[0.1]'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] group`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className={`text-sm font-medium ${stats.highRisk > 0 ? 'text-orange-300' : 'text-neutral-400'}`}>High Risk</div>
+            <Shield className={`w-5 h-5 transition-colors ${stats.highRisk > 0 ? 'text-orange-400' : 'text-neutral-500 group-hover:text-orange-400'}`} />
+          </div>
+          <div className={`text-3xl font-bold ${stats.highRisk > 0 ? 'text-orange-400' : 'text-white'}`}>
+            {stats.highRisk}
+          </div>
+          <div className={`text-xs mt-1 ${stats.highRisk > 0 ? 'text-orange-300/70' : 'text-neutral-500'}`}>
+            {stats.highRisk > 0 ? 'Needs review' : 'Low risk levels'}
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:border-green-500/30 group">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-green-300 text-sm font-medium">Published</div>
+            <CheckCircle className="w-5 h-5 text-green-400 group-hover:text-green-300 transition-colors" />
+          </div>
+          <div className="text-3xl font-bold text-green-400">{stats.published}</div>
+          <div className="text-xs text-green-300/70 mt-1">Active & published</div>
         </div>
       </div>
 
       {/* Overdue Banner */}
       {stats.overdue > 0 && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle size={20} className="text-red-400" />
+          <AlertTriangle size={20} className="text-red-400 flex-shrink-0" />
           <div className="flex-1">
             <div className="text-red-400 font-semibold">Warning: {stats.overdue} risk assessment(s) overdue for review</div>
             <div className="text-red-300 text-sm">Please update assessments to maintain compliance</div>
           </div>
         </div>
       )}
-      {/* Create New Templates */}
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Create New Risk Assessment</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {TEMPLATES.map((template) => (
-            <button
-              key={template.id}
-              onClick={() => router.push(template.link)}
-              className={`bg-gradient-to-br ${template.color} border ${template.borderColor} rounded-xl p-6 text-left hover:scale-105 transition-all cursor-pointer group`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors">
-                  <FileText size={24} className="text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-white">{template.title}</h3>
-              </div>
-              <p className="text-sm text-neutral-300">{template.description}</p>
-              <div className="mt-4 flex items-center gap-2 text-xs text-neutral-400">
-                <Plus size={14} />
-                <span>Create new</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Existing Risk Assessments */}
+      {/* Risk Assessments List */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">Existing Risk Assessments</h2>
-          <div className="text-sm text-neutral-400">{filteredAssessments.length} assessment{filteredAssessments.length !== 1 ? 's' : ''}</div>
+          <h2 className="text-xl font-semibold text-white">Risk Assessments</h2>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-neutral-400">{filteredAssessments.length} assessment{filteredAssessments.length !== 1 ? 's' : ''}</div>
+            <button
+              onClick={() => router.push('/dashboard/risk-assessments/archive')}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200"
+            >
+              <FileBox size={18} />
+              <span className="text-sm font-medium">Archived RAs</span>
+            </button>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -189,7 +220,6 @@ export default function RiskAssessmentsPage() {
             <option value="Draft">Draft</option>
             <option value="Published">Published</option>
             <option value="Under Review">Under Review</option>
-            <option value="Archived">Archived</option>
           </select>
           <select
             value={filterType}
@@ -257,6 +287,101 @@ export default function RiskAssessmentsPage() {
                           <span>{assessment.linked_sops.length} linked SOP{assessment.linked_sops.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
+                    </div>
+                    <div className="flex items-center gap-2 ml-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const templatePath = assessment.template_type === 'coshh' 
+                            ? '/dashboard/risk-assessments/coshh-template'
+                            : '/dashboard/risk-assessments/general-template';
+                          router.push(`${templatePath}?edit=${assessment.id}`);
+                        }}
+                        className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
+                        title="Edit RA"
+                      >
+                        <Edit size={16} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!confirm('Archive this Risk Assessment? The original version (001) will be moved to archived RAs.')) return;
+
+                          try {
+                            setArchivingId(assessment.id);
+                            
+                            // Find the current RA to get its ref_code base
+                            const { data: currentRA, error: fetchError } = await supabase
+                              .from('risk_assessments')
+                              .select('ref_code, parent_id')
+                              .eq('id', assessment.id)
+                              .eq('company_id', companyId)
+                              .single();
+
+                            if (fetchError) throw fetchError;
+                            if (!currentRA) throw new Error('RA not found');
+
+                            // Extract base pattern from ref_code (e.g., RA-GEN-BESH-002 -> RA-GEN-BESH)
+                            const refCode = currentRA.ref_code;
+                            const baseMatch = refCode.match(/^(.+)-\d+$/);
+                            const basePattern = baseMatch ? baseMatch[1] : refCode;
+
+                            // Find the original 001 version (version_number = 1 or ref_code ends with -001)
+                            const { data: originalVersion, error: findError } = await supabase
+                              .from('risk_assessments')
+                              .select('id')
+                              .eq('company_id', companyId)
+                              .like('ref_code', `${basePattern}-001`)
+                              .eq('version_number', 1)
+                              .maybeSingle();
+
+                            if (findError) throw findError;
+
+                            // Archive the original 001 version if found, otherwise archive current
+                            const versionToArchive = originalVersion?.id || assessment.id;
+
+                            const { error } = await supabase
+                              .from('risk_assessments')
+                              .update({ status: 'Archived' })
+                              .eq('id', versionToArchive)
+                              .eq('company_id', companyId);
+
+                            if (error) throw error;
+
+                            // Remove from local state (remove all versions of this RA base)
+                            setRiskAssessments(prev => prev.filter(ra => {
+                              const raBaseMatch = ra.ref_code.match(/^(.+)-\d+$/);
+                              const raBasePattern = raBaseMatch ? raBaseMatch[1] : ra.ref_code;
+                              return raBasePattern !== basePattern;
+                            }));
+
+                            showToast({
+                              title: 'RA archived',
+                              description: 'Original version (001) has been moved to archived RAs',
+                              type: 'success'
+                            });
+                          } catch (error: any) {
+                            console.error('Error archiving RA:', error);
+                            showToast({
+                              title: 'Error archiving RA',
+                              description: error.message || 'Failed to archive RA',
+                              type: 'error'
+                            });
+                          } finally {
+                            setArchivingId(null);
+                          }
+                        }}
+                        disabled={archivingId === assessment.id}
+                        className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        title="Archive RA"
+                      >
+                        {archivingId === assessment.id ? (
+                          <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <FileBox size={18} />
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>

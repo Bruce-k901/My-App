@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { getRAVersioningInfo, createRAVersionPayload } from '@/lib/utils/raVersioning';
 
 const HAZARD_CATEGORIES = [
   'Slips, Trips & Falls',
@@ -57,12 +59,19 @@ const getRiskLevel = (score) => {
 export default function GeneralRiskAssessmentTemplate() {
   const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [raLoaded, setRALoaded] = useState(false);
   const [sites, setSites] = useState([]);
   const [sops, setSOPs] = useState([]);
   const [ppeLibrary, setPPELibrary] = useState([]);
+  
+  // Store original RA data for versioning
+  const [originalRA, setOriginalRA] = useState<any>(null);
 
   // Header state
   const [title, setTitle] = useState("");
@@ -154,12 +163,95 @@ export default function GeneralRiskAssessmentTemplate() {
     }
   }, [profile]);
 
+  // Load existing RA data when editing
   useEffect(() => {
-    if (title) {
+    if (!editId || !companyId || raLoaded) return;
+
+    const loadRA = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .select('*')
+          .eq('id', editId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (error) throw error;
+        if (!data) {
+          showToast({ 
+            title: 'RA not found', 
+            description: 'The requested risk assessment could not be found', 
+            type: 'error' 
+          });
+          router.push('/dashboard/risk-assessments');
+          return;
+        }
+
+        // Store original RA for versioning
+        setOriginalRA(data);
+
+        // Populate header fields
+        setTitle(data.title || '');
+        setRefCode(data.ref_code || '');
+        setSiteId(data.site_id || '');
+        setAssessorName(data.assessor_name || '');
+        setAssessmentDate(data.assessment_date || '');
+        setReviewDate(data.review_date || '');
+        setStatus(data.status || 'Draft');
+
+        // Populate assessment data
+        const assessmentData = data.assessment_data || {};
+        
+        if (assessmentData.hazards && Array.isArray(assessmentData.hazards)) {
+          setHazards(assessmentData.hazards.map((h: any) => ({
+            ...h,
+            id: h.id || Date.now() + Math.random()
+          })));
+        }
+
+        if (assessmentData.selectedPPE && Array.isArray(assessmentData.selectedPPE)) {
+          setSelectedPPE(assessmentData.selectedPPE);
+        }
+
+        if (assessmentData.training) {
+          setTrainingNeeded(assessmentData.training.trainingNeeded || false);
+          setTrainingProvider(assessmentData.training.trainingProvider || '');
+          setTrainingFrequency(assessmentData.training.trainingFrequency || '');
+          setLastTrainingDate(assessmentData.training.lastTrainingDate || '');
+        }
+
+        if (assessmentData.review) {
+          setReviewFrequency(assessmentData.review.reviewFrequency || '');
+          setAssessorSignature(assessmentData.review.assessorSignature || '');
+          setManagerApproval(assessmentData.review.managerApproval || false);
+          setManagerApprovalDate(assessmentData.review.managerApprovalDate || '');
+        }
+
+        setRALoaded(true);
+      } catch (error: any) {
+        console.error('Error loading RA:', error);
+        showToast({ 
+          title: 'Error loading RA', 
+          description: error.message || 'Failed to load risk assessment data', 
+          type: 'error' 
+        });
+        router.push('/dashboard/risk-assessments');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRA();
+  }, [editId, companyId, raLoaded, router, showToast]);
+
+  // Auto-generate ref_code only for new RAs
+  useEffect(() => {
+    if (!editId && title) {
       const nameBit = title.replace(/\s+/g, '').slice(0, 4).toUpperCase();
       setRefCode(`RA-GEN-${nameBit}-001`);
     }
-  }, [title]);
+  }, [title, editId]);
 
   useEffect(() => {
     if (assessmentDate) {
@@ -190,9 +282,48 @@ export default function GeneralRiskAssessmentTemplate() {
     try {
       setSaving(true);
       
-      const { data, error } = await supabase
-        .from('risk_assessments')
-        .insert({
+      let result;
+      if (editId && originalRA) {
+        // Create new version instead of updating
+        const versioningInfo = await getRAVersioningInfo(
+          originalRA.ref_code,
+          companyId,
+          originalRA
+        );
+        
+        const baseData = {
+          company_id: companyId,
+          template_type: 'general',
+          title,
+          ref_code: originalRA.ref_code, // Will be replaced with incremented ref_code
+          site_id: siteId || null,
+          assessor_name: assessorName,
+          assessment_date: assessmentDate,
+          review_date: reviewDate,
+          next_review_date: reviewDate,
+          status,
+          assessment_data: assessmentData,
+          linked_sops: hazards.map(h => h.linkedSOP).filter(Boolean),
+          linked_ppe: selectedPPE,
+          highest_risk_level: highestRisk.level,
+          total_hazards: hazards.length,
+          hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
+          created_by: profile?.auth_user_id || null
+        };
+        
+        const insertData = createRAVersionPayload(baseData, versioningInfo, profile, false);
+        
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      } else {
+        // Insert new RA (first version)
+        const baseData = {
           company_id: companyId,
           template_type: 'general',
           title,
@@ -209,17 +340,39 @@ export default function GeneralRiskAssessmentTemplate() {
           highest_risk_level: highestRisk.level,
           total_hazards: hazards.length,
           hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
-          created_by: profile?.id
-        })
-        .select()
-        .single();
+          created_by: profile?.auth_user_id || null
+        };
+        
+        const insertData = createRAVersionPayload(baseData, { newVersion: '1.0', versionNumber: 1, parentId: null, newRefCode: refCode }, profile, true);
+        
+        const { data, error } = await supabase
+          .from('risk_assessments')
+          .insert(insertData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = { data, error };
+      }
+      
+      const { data, error } = result;
 
       if (error) throw error;
 
-      showToast({ title: 'Risk Assessment saved', description: `Saved as ${refCode}`, type: 'success' });
-    } catch (error) {
+      if (editId && originalRA) {
+        showToast({ 
+          title: 'New version created', 
+          description: `Version ${data.version_number || '2.0'} saved as ${data.ref_code} (was ${originalRA.ref_code})`, 
+          type: 'success' 
+        });
+      } else {
+        showToast({ title: 'Risk Assessment saved', description: `Saved as ${refCode}`, type: 'success' });
+      }
+      
+      router.push('/dashboard/risk-assessments');
+    } catch (error: any) {
       console.error('Error saving risk assessment:', error);
-      showToast({ title: 'Error saving', description: error.message, type: 'error' });
+      showToast({ title: 'Error saving', description: error.message || 'Failed to save risk assessment', type: 'error' });
     } finally {
       setSaving(false);
     }
