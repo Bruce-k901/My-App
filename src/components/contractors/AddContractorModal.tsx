@@ -146,6 +146,12 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     setLoading(true);
 
     try {
+      // Build notes field - include address if provided (contractors table doesn't have address column)
+      let notes = form.service_description || "";
+      if (form.address?.trim()) {
+        notes = notes ? `${form.address.trim()}\n\n${notes}` : form.address.trim();
+      }
+      
       const contractorData = {
         company_id: companyId,
         name: form.name.trim(),
@@ -153,11 +159,11 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         email: form.email.trim(),
         phone: form.phone.trim(),
         ooh_phone: form.ooh_phone?.trim() || null,
-        address: form.address.trim(),
+        // Note: address field doesn't exist in contractors table, so we store it in notes
         postcode: form.postcode.trim(),
         hourly_rate: form.hourly_rate !== null && form.hourly_rate !== "" ? Number(form.hourly_rate) : null,
         callout_fee: form.callout_fee !== null && form.callout_fee !== "" ? Number(form.callout_fee) : null,
-        notes: form.service_description || null,
+        notes: notes || null,
         website: form.website || null,
         // category and region will be set by triggers if not provided
       };

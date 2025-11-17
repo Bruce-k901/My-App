@@ -19,7 +19,19 @@ export default function ReportsPage() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [date, setDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
+  // Use client-safe date initialization to prevent hydration mismatch
+  const [date, setDate] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return new Date().toISOString().split("T")[0];
+  });
+  
+  // Initialize date after hydration
+  useEffect(() => {
+    if (!date && typeof window !== 'undefined') {
+      setDate(new Date().toISOString().split("T")[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once after mount
   const [siteFilter, setSiteFilter] = useState<string>("");
 
   const since = useMemo(() => `${date}T00:00:00.000Z`, [date]);

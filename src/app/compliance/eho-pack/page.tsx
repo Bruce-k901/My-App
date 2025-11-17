@@ -27,7 +27,19 @@ function EHOForm({
   const [sites, setSites] = useState<{ id: string; name: string }[]>([]);
   const [selectedSite, setSelectedSite] = useState<string>(siteId || "");
   const [start, setStart] = useState<string>(daysAgo(30));
-  const [end, setEnd] = useState<string>(new Date().toISOString().split("T")[0]);
+  // Use client-safe date initialization to prevent hydration mismatch
+  const [end, setEnd] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return new Date().toISOString().split("T")[0];
+  });
+  
+  // Initialize date after hydration
+  useEffect(() => {
+    if (!end && typeof window !== 'undefined') {
+      setEnd(new Date().toISOString().split("T")[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once after mount
   const [include, setInclude] = useState<Include>({ tasks: true, temperature: true, maintenance: true, incidents: true });
   const [format, setFormat] = useState<ExportFormat>("pdf");
 

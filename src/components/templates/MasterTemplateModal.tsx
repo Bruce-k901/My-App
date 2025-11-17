@@ -65,7 +65,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
 };
 
 export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, mode = 'template' }: MasterTemplateModalProps) {
-  const { companyId } = useAppContext();
+  const { companyId, user } = useAppContext();
   const [isSaving, setIsSaving] = useState(false);
   
   const [templateConfig, setTemplateConfig] = useState({
@@ -547,8 +547,37 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         return;
       }
 
+      // Verify companyId is valid before saving
+      if (!companyId) {
+        toast.error('Company ID is missing. Please refresh the page and try again.');
+        setIsSaving(false);
+        return;
+      }
+
+      // Verify user has access to this company by checking their profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('company_id')
+        .or(`id.eq.${user?.id},auth_user_id.eq.${user?.id}`)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error checking profile:', profileError);
+        toast.error('Unable to verify your access. Please refresh and try again.');
+        setIsSaving(false);
+        return;
+      }
+
+      if (!profileData || profileData.company_id !== companyId) {
+        toast.error('You do not have access to create templates for this company.');
+        setIsSaving(false);
+        return;
+      }
+
       // Save to database (create or update)
       console.log('Saving template data:', templateData);
+      console.log('Company ID:', companyId);
+      console.log('User ID:', user?.id);
       
       let savedTemplate;
       let error;
@@ -578,17 +607,75 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
       if (error) {
         console.error('Error saving template:', error);
-        const errorMessage = error.message || error.details || JSON.stringify(error);
-        toast.error(`Failed to save template: ${errorMessage}`);
+        
+        // Enhanced error logging
+        const errorInfo = {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error,
+          fullError: error
+        };
+        
+        console.error('Full error details:', errorInfo);
+        console.error('Error object keys:', Object.keys(error || {}));
+        console.error('Error object values:', Object.values(error || {}));
+        
+        // Better error handling - check for common issues
+        let errorMessage = 'Failed to save template';
+        
+        // Check for RLS/permission errors
+        if (error.code === 'PGRST116' || 
+            error.code === '42501' || 
+            error.message?.includes('permission denied') || 
+            error.message?.includes('403') ||
+            error.status === 403) {
+          errorMessage = 'Permission denied. The RLS policy check failed. Please ensure:\n' +
+            '1. You are logged in\n' +
+            '2. Your profile has the correct company_id\n' +
+            '3. The company_id matches your current company context';
+        } else if (error.code === '23503') {
+          errorMessage = 'Foreign key constraint violation. Please check that the company_id exists.';
+        } else if (error.code === '23505') {
+          errorMessage = 'A template with this slug already exists. Please use a different template name.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        } else if (error.details) {
+          errorMessage = error.details;
+        } else if (error.hint) {
+          errorMessage = `${errorMessage}: ${error.hint}`;
+        } else {
+          // Try to stringify the error object with all properties
+          try {
+            const errorStr = JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+            if (errorStr !== '{}') {
+              errorMessage = `Error: ${errorStr}`;
+            } else {
+              errorMessage = 'Unknown error occurred. Check browser console for details. Error code: ' + (error.code || 'N/A');
+            }
+          } catch (e) {
+            errorMessage = 'Unknown error occurred. Please check console for details.';
+          }
+        }
+        
+        toast.error(errorMessage);
         setIsSaving(false);
         return;
       }
 
       toast.success(editingTemplate ? 'Template updated successfully!' : 'Template created successfully!');
 
-      // Call onSave callback if provided
+      // Call onSave callback if provided - pass savedTemplate so parent can use it
       if (onSave) {
-        onSave({ template: templateConfig, features, savedTemplate });
+        onSave({ 
+          template: templateConfig, 
+          features, 
+          savedTemplate,
+          shouldCreateTask: !editingTemplate // Only auto-create task for new templates
+        });
       }
 
       // Reset state and close modal
@@ -619,16 +706,16 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#0f1220] rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-pink-500/20">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-[#0f1220] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-pink-500/20 flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-white/10">
+        <div className="p-4 sm:p-6 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-pink-500 mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-pink-500 mb-2">
                 {editingTemplate ? 'Edit Template Configuration' : 'Template Builder'}
               </h1>
-              <p className="text-gray-400">
+              <p className="text-gray-400 text-sm sm:text-base">
                 {editingTemplate 
                   ? 'Modify template features and configuration. This will affect all future tasks created from this template.'
                   : 'Create comprehensive compliance task templates with all required elements'
@@ -637,15 +724,16 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-gray-400"
+              className="p-2 rounded-lg hover:bg-white/10 text-gray-400 flex-shrink-0"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-[#141823]">
+        {/* Content - Scrollable area */}
+        <div className="flex-1 overflow-y-auto bg-[#141823] min-h-0">
+          <div className="p-4 sm:p-6">
           {/* Template Configuration */}
           <div className="mb-6 pb-6 border-b border-white/10">
             <h2 className="text-lg font-semibold text-white mb-1">Template Configuration</h2>
@@ -924,7 +1012,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                 <label className="block text-sm font-medium mb-3">
                   When to Run Task (Day Parts)
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {DAYPARTS.map((part) => (
                     <button
                       key={part.value}
@@ -949,7 +1037,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                 <label className="block text-sm font-medium mb-3">
                   Check Times
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {selectedDayparts.map((dayPart) => (
                     <div key={dayPart}>
                       <label className="block text-xs text-slate-400 mb-1 capitalize">
@@ -977,7 +1065,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             <h2 className="text-lg font-semibold text-white mb-1">Template Features</h2>
             <p className="text-sm text-gray-400 mb-4">Select the features and requirements for this template</p>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {featureList.map((feature) => (
                 <FeatureItem
                   key={feature.id}
@@ -993,20 +1081,21 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
           {/* Task Instructions section hidden from builder - will be shown in curated template view */}
           {/* Instructions are still saved to template, just not displayed in builder */}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/10 bg-[#0f1220]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-white/10 bg-[#0f1220] flex-shrink-0">
           <button
             onClick={onClose}
-            className="px-5 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors font-medium"
+            className="w-full sm:w-auto px-5 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+            className="w-full sm:w-auto px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
           >
             {isSaving 
               ? (editingTemplate ? 'Updating...' : 'Creating...')

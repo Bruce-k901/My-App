@@ -7,6 +7,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
+import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
 
 export default function OpeningProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -29,30 +30,40 @@ export default function OpeningProcedureTemplatePage() {
   const [author, setAuthor] = useState("");
   const [siteLocation, setSiteLocation] = useState("");
 
-  // Time-based checklist
-  const [timeSlots, setTimeSlots] = useState([
-    { id: Date.now(), time: "06:00", tasks: [{ id: Date.now(), task: "", completed: false }] }
-  ]);
+  // Time-based checklist - use client-safe initialization to prevent hydration mismatch
+  const [timeSlots, setTimeSlots] = useState(() => 
+    createInitialStateWithIds(() => [
+      { id: Date.now(), time: "06:00", tasks: [{ id: Date.now(), task: "", completed: false }] }
+    ])
+  );
 
   // Equipment startup sequence
-  const [equipmentStartup, setEquipmentStartup] = useState([
-    { id: Date.now(), equipment_id: "", startup_status: "", notes: "", check_status: "Pending" }
-  ]);
+  const [equipmentStartup, setEquipmentStartup] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), equipment_id: "", startup_status: "", notes: "", check_status: "Pending" }
+    ])
+  );
 
   // Safety checks
-  const [safetyChecks, setSafetyChecks] = useState([
-    { id: Date.now(), check_item: "", status: "Pending", checked_by: "", notes: "" }
-  ]);
+  const [safetyChecks, setSafetyChecks] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), check_item: "", status: "Pending", checked_by: "", notes: "" }
+    ])
+  );
 
   // Stock checks
-  const [stockChecks, setStockChecks] = useState([
-    { id: Date.now(), item_name: "", quantity_on_hand: "", expiry_check: false, notes: "" }
-  ]);
+  const [stockChecks, setStockChecks] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), item_name: "", quantity_on_hand: "", expiry_check: false, notes: "" }
+    ])
+  );
 
   // Final walkthrough checklist
-  const [walkthroughChecklist, setWalkthroughChecklist] = useState([
-    { id: Date.now(), item: "", verified: false, notes: "" }
-  ]);
+  const [walkthroughChecklist, setWalkthroughChecklist] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), item: "", verified: false, notes: "" }
+    ])
+  );
 
   // Manager sign-off
   const [managerSignOff, setManagerSignOff] = useState({
@@ -96,6 +107,32 @@ export default function OpeningProcedureTemplatePage() {
   useEffect(() => {
     loadLibraries();
   }, [loadLibraries]);
+
+  // Initialize state after hydration to prevent hydration mismatch
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    // Only initialize once after mount
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      // Only initialize if arrays are empty (from SSR)
+      if (timeSlots.length === 0) {
+        setTimeSlots([{ id: Date.now(), time: "06:00", tasks: [{ id: Date.now(), task: "", completed: false }] }]);
+      }
+      if (equipmentStartup.length === 0) {
+        setEquipmentStartup([{ id: Date.now(), equipment_id: "", startup_status: "", notes: "", check_status: "Pending" }]);
+      }
+      if (safetyChecks.length === 0) {
+        setSafetyChecks([{ id: Date.now(), check_item: "", status: "Pending", checked_by: "", notes: "" }]);
+      }
+      if (stockChecks.length === 0) {
+        setStockChecks([{ id: Date.now(), item_name: "", quantity_on_hand: "", expiry_check: false, notes: "" }]);
+      }
+      if (walkthroughChecklist.length === 0) {
+        setWalkthroughChecklist([{ id: Date.now(), item: "", verified: false, notes: "" }]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once after mount
 
   // Set default author
   useEffect(() => {

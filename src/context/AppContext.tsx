@@ -37,9 +37,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [company, setCompany] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize loading as false to prevent hydration mismatch
+  // It will be set to true in useEffect if needed
+  const [loading, setLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // Mark as mounted to prevent hydration issues
+    setIsMounted(true);
+    setLoading(true);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);

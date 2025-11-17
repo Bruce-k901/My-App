@@ -29,7 +29,19 @@ export default function COSHHRiskAssessmentTemplate() {
   const [refCode, setRefCode] = useState("");
   const [siteId, setSiteId] = useState("");
   const [assessorName, setAssessorName] = useState("");
-  const [assessmentDate, setAssessmentDate] = useState(new Date().toISOString().split('T')[0]);
+  // Use client-safe date initialization to prevent hydration mismatch
+  const [assessmentDate, setAssessmentDate] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return new Date().toISOString().split('T')[0];
+  });
+  
+  // Initialize date after hydration
+  useEffect(() => {
+    if (!assessmentDate && typeof window !== 'undefined') {
+      setAssessmentDate(new Date().toISOString().split('T')[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once after mount
   const [reviewDate, setReviewDate] = useState("");
   const [status, setStatus] = useState("Draft");
 

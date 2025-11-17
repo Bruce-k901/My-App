@@ -91,10 +91,23 @@ export default function TemplatesPage() {
     }
   }
 
-  const handleTemplateSaved = () => {
+  const handleTemplateSaved = (result?: any) => {
     setIsBuilderOpen(false);
     setEditingTemplate(null);
-    fetchTemplates(); // Refresh the list
+    
+    // If a new template was created and should create a task instance, open TaskFromTemplateModal
+    if (result?.shouldCreateTask && result?.savedTemplate) {
+      // Refresh templates first to ensure the new template is in the list
+      fetchTemplates().then(() => {
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          setSelectedTemplateId(result.savedTemplate.id);
+        }, 100);
+      });
+    } else {
+      // Just refresh the list for updates
+      fetchTemplates();
+    }
   };
 
   const handleTaskCreated = () => {
@@ -191,12 +204,12 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-8">
+    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">My Task Templates</h1>
-          <p className="text-white/60">Custom task templates you've created</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">My Task Templates</h1>
+          <p className="text-white/60 text-sm sm:text-base">Custom task templates you've created</p>
         </div>
         <button
           onClick={handleNewTemplate}
@@ -216,7 +229,7 @@ export default function TemplatesPage() {
 
       {/* Templates Grid */}
       {!loading && templates.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           {templates.map((template) => (
             <div
               key={template.id}

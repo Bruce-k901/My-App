@@ -7,6 +7,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
+import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
 
 export default function ClosingProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -29,30 +30,40 @@ export default function ClosingProcedureTemplatePage() {
   const [author, setAuthor] = useState("");
   const [siteLocation, setSiteLocation] = useState("");
 
-  // Time-based checklist
-  const [timeSlots, setTimeSlots] = useState([
-    { id: Date.now(), time: "22:00", tasks: [{ id: Date.now(), task: "", completed: false }] }
-  ]);
+  // Time-based checklist - use client-safe initialization to prevent hydration mismatch
+  const [timeSlots, setTimeSlots] = useState(() => 
+    createInitialStateWithIds(() => [
+      { id: Date.now(), time: "22:00", tasks: [{ id: Date.now(), task: "", completed: false }] }
+    ])
+  );
 
   // Equipment shutdown sequence
-  const [equipmentShutdown, setEquipmentShutdown] = useState([
-    { id: Date.now(), equipment_id: "", shutdown_status: "", notes: "", verified: false }
-  ]);
+  const [equipmentShutdown, setEquipmentShutdown] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), equipment_id: "", shutdown_status: "", notes: "", verified: false }
+    ])
+  );
 
   // Cleaning checklist by area
-  const [cleaningAreas, setCleaningAreas] = useState([
-    { id: Date.now(), area: "", cleaning_tasks: [{ id: Date.now(), task: "", chemical_id: "", completed: false }], notes: "" }
-  ]);
+  const [cleaningAreas, setCleaningAreas] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), area: "", cleaning_tasks: [{ id: Date.now(), task: "", chemical_id: "", completed: false }], notes: "" }
+    ])
+  );
 
   // Security checks
-  const [securityChecks, setSecurityChecks] = useState([
-    { id: Date.now(), check_item: "", status: "Pending", verified_by: "", notes: "" }
-  ]);
+  const [securityChecks, setSecurityChecks] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), check_item: "", status: "Pending", verified_by: "", notes: "" }
+    ])
+  );
 
   // Stock & waste
-  const [stockWaste, setStockWaste] = useState([
-    { id: Date.now(), item: "", action: "Store", quantity: "", notes: "" }
-  ]);
+  const [stockWaste, setStockWaste] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), item: "", action: "Store", quantity: "", notes: "" }
+    ])
+  );
 
   // Cash handling
   const [cashHandling, setCashHandling] = useState({
@@ -65,9 +76,11 @@ export default function ClosingProcedureTemplatePage() {
   });
 
   // Next day prep
-  const [nextDayPrep, setNextDayPrep] = useState([
-    { id: Date.now(), prep_item: "", location: "", completed: false, notes: "" }
-  ]);
+  const [nextDayPrep, setNextDayPrep] = useState(() =>
+    createInitialStateWithIds(() => [
+      { id: Date.now(), prep_item: "", location: "", completed: false, notes: "" }
+    ])
+  );
 
   // Final walkthrough & sign-off
   const [finalWalkthrough, setFinalWalkthrough] = useState({
@@ -113,6 +126,35 @@ export default function ClosingProcedureTemplatePage() {
   useEffect(() => {
     loadLibraries();
   }, [loadLibraries]);
+
+  // Initialize state after hydration to prevent hydration mismatch
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    // Only initialize once after mount
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      // Only initialize if arrays are empty (from SSR)
+      if (timeSlots.length === 0) {
+        setTimeSlots([{ id: Date.now(), time: "22:00", tasks: [{ id: Date.now(), task: "", completed: false }] }]);
+      }
+      if (equipmentShutdown.length === 0) {
+        setEquipmentShutdown([{ id: Date.now(), equipment_id: "", shutdown_status: "", notes: "", verified: false }]);
+      }
+      if (cleaningAreas.length === 0) {
+        setCleaningAreas([{ id: Date.now(), area: "", cleaning_tasks: [{ id: Date.now(), task: "", chemical_id: "", completed: false }], notes: "" }]);
+      }
+      if (securityChecks.length === 0) {
+        setSecurityChecks([{ id: Date.now(), check_item: "", status: "Pending", verified_by: "", notes: "" }]);
+      }
+      if (stockWaste.length === 0) {
+        setStockWaste([{ id: Date.now(), item: "", action: "Store", quantity: "", notes: "" }]);
+      }
+      if (nextDayPrep.length === 0) {
+        setNextDayPrep([{ id: Date.now(), prep_item: "", location: "", completed: false, notes: "" }]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once after mount
 
   // Set default author
   useEffect(() => {
