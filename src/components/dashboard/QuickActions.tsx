@@ -45,7 +45,7 @@ export default function QuickActions() {
     { 
       label: "Add User", 
       icon: Users,
-      action: () => router.push("/dashboard/organization/users")
+      action: () => router.push("/dashboard/users")
     },
     { 
       label: "Add Asset", 

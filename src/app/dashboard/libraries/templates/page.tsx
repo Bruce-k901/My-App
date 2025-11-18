@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, Download, FileText, Package, Shield, Droplets, Coffee, Box, Wine, ShoppingBag, UtensilsCrossed, Zap, Heart } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useRouter } from 'next/navigation';
 
@@ -133,7 +131,6 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
 ];
 
 export default function LibraryTemplatesPage() {
-  const { companyId } = useAppContext();
   const { showToast } = useToast();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');

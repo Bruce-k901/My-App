@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, Download, Upload, X, Loader2, Droplet } from 'lucide-react';
+import { Plus, Trash2, Save, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -70,8 +70,8 @@ export default function ColdDrinksSOPTemplatePage() {
   });
 
   // Photo upload refs
-  const photoInputRefs = useRef({});
-  const [uploadingPhotos, setUploadingPhotos] = useState({});
+  const _photoInputRefs = useRef({});
+  const [_uploadingPhotos, _setUploadingPhotos] = useState({});
 
   // Load libraries
   const loadLibraries = useCallback(async () => {
@@ -178,7 +178,7 @@ export default function ColdDrinksSOPTemplatePage() {
     try {
       setSaving(true);
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sop_entries')
         .insert({
           company_id: companyId,

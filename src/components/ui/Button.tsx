@@ -43,7 +43,7 @@ export function Button({
     ),
     outline: cn(
       "bg-transparent text-white border border-white/[0.2]",
-      "hover:border-pink-500/40 hover:bg-white/[0.05]",
+      "hover:border-[#EC4899]/50 hover:bg-white/[0.05]",
       "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
   } as const;

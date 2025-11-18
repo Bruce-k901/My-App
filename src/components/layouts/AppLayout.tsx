@@ -3,8 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/checkly_logo_touching_blocks.svg";
 import { LinkButton } from "@/components/ui";
+
+// Use static path instead of import to prevent Next.js preload warning
+const LOGO_PATH = "/assets/checkly_logo_touching_blocks.svg";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center space-x-4">
           <Link href="/">
             <Image
-              src={logo}
+              src={LOGO_PATH}
               alt="Checkly logo"
               width={468}
               height={144}

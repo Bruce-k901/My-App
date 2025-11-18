@@ -10,7 +10,9 @@ import CheckboxCustom from '@/components/ui/CheckboxCustom';
 import { PWAInstallSection } from '@/components/pwa/PWAInstallSection';
 
 import Image from 'next/image';
-import logoFallback from '@/assets/checkly_logo_touching_blocks.svg';
+
+// Use static path instead of import to prevent Next.js preload warning
+const LOGO_FALLBACK_PATH = "/assets/checkly_logo_touching_blocks.svg";
 
 type ProfileSettings = {
   user_id: string;
@@ -139,7 +141,7 @@ function SettingsInner() {
             {logoUrl ? (
               <img src={logoUrl} alt="Company logo" className="h-12 w-auto object-contain border border-neutral-800 rounded" />
             ) : (
-              <Image src={logoFallback} alt="Default logo" className="h-12 w-auto object-contain" />
+              <Image src={LOGO_FALLBACK_PATH} alt="Default logo" className="h-12 w-auto object-contain" />
             )}
             <label className="btn-glass text-sm px-3 py-2 cursor-pointer">
               {uploading ? "Uploading…" : "Upload Logo"}

@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { label: "Business Details", href: "/organization/business" },
-  { label: "Sites", href: "/organization/sites" },
-  { label: "Users", href: "/organization/users" },
+  { label: "Business Details", href: "/dashboard/business" },
+  { label: "Sites", href: "/dashboard/sites" },
+  { label: "Users", href: "/dashboard/users" },
   { label: "Emergency Contacts", href: "/dashboard/organization/emergency-contacts" },
-  { label: "Contractors", href: "/organization/contractors" },
-  { label: "Documents/Policies", href: "/organization/documents" },
+  { label: "Contractors", href: "/dashboard/assets/contractors" },
+  { label: "Documents/Policies", href: "/dashboard/documents" },
 ];
 
 export default function OrgSubHeader() {
@@ -19,11 +19,11 @@ export default function OrgSubHeader() {
     return p.endsWith("/") ? p.slice(0, -1) : p;
   };
   const current = normalize(pathname);
-  const defaultToBusiness = current === "/organization"; // first load of org root
+  const defaultToBusiness = current === "/organization" || current === "/dashboard/organization"; // first load of org root
 
   const isActive = (href: string) => {
     const target = normalize(href);
-    if (defaultToBusiness && target === "/organization/business") return true;
+    if (defaultToBusiness && target === "/dashboard/business") return true;
     return current.startsWith(target);
   };
 

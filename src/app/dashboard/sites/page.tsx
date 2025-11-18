@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SiteFormNew from "@/components/sites/SiteFormNew";
@@ -41,16 +40,7 @@ export default function OrganizationSitesPage() {
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<Site | null>(null);
   const [activeSite, setActiveSite] = useState<Site | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
-  // 3. Effect hooks - MUST BE CALLED EVERY RENDER
-  useEffect(() => {
-    (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      setUserId(userRes?.user?.id || null);
-    })();
-  }, []);
 
   const fetchGMList = useCallback(async () => {
     if (!profile?.company_id) return;

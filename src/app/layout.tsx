@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { AppProvider } from "@/context/AppContext";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 import Footer from "@/components/layouts/Footer";
 import RouteLogger from "@/components/RouteLogger";
@@ -62,25 +62,72 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={manrope.variable}>
       <head>
-        {process.env.NODE_ENV === "development" && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                // Suppress CSS preload warnings in development (harmless HMR artifacts)
-                (function() {
-                  const originalWarn = console.warn;
-                  console.warn = function(...args) {
-                    const message = args[0]?.toString() || '';
-                    if (message.includes('was preloaded using link preload but not used')) {
-                      return;
+        {/* Early suppression script - runs IMMEDIATELY before any resources load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // CRITICAL: This must run FIRST, before Next.js or React loads
+              // Suppress preload warnings (harmless - resources are loaded when components render)
+              (function() {
+                'use strict';
+                const originalWarn = console.warn.bind(console);
+                const originalError = console.error.bind(console);
+                
+                function shouldSuppress(message) {
+                  if (!message || typeof message !== 'string') return false;
+                  const msg = message.toLowerCase();
+                  // Catch all variations of preload warnings
+                  return (
+                    msg.includes('was preloaded using link preload but not used') ||
+                    msg.includes('preloaded using link preload') ||
+                    msg.includes('preload but not used') ||
+                    msg.includes('checkly_logo_touching_blocks') ||
+                    (msg.includes('preload') && (msg.includes('svg') || msg.includes('media') || msg.includes('static') || msg.includes('_next'))) ||
+                    (msg.includes('resource') && msg.includes('preload') && msg.includes('not used'))
+                  );
+                }
+
+                // Override console.warn - catch everything
+                Object.defineProperty(console, 'warn', {
+                  value: function(...args) {
+                    const message = String(args[0] || '');
+                    if (shouldSuppress(message)) {
+                      return; // Suppress silently
                     }
                     originalWarn.apply(console, args);
-                  };
-                })();
-              `,
-            }}
-          />
-        )}
+                  },
+                  writable: true,
+                  configurable: true
+                });
+
+                // Override console.error - also catch errors
+                Object.defineProperty(console, 'error', {
+                  value: function(...args) {
+                    const message = String(args[0] || '');
+                    if (shouldSuppress(message)) {
+                      return; // Suppress silently
+                    }
+                    originalError.apply(console, args);
+                  },
+                  writable: true,
+                  configurable: true
+                });
+
+                // Also hook into window.onerror as a fallback
+                const originalOnError = window.onerror;
+                window.onerror = function(msg, source, lineno, colno, error) {
+                  if (msg && shouldSuppress(String(msg))) {
+                    return true; // Suppress
+                  }
+                  if (originalOnError) {
+                    return originalOnError.apply(window, arguments);
+                  }
+                  return false;
+                };
+              })();
+            `,
+          }}
+        />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10B981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -95,7 +142,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="shortcut icon" href="/favicon.ico?v=3" />
       </head>
       <body className="bg-neutral-950 text-white font-sans">
-        <ErrorBoundary>
+        <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>
               <AppProvider>
@@ -109,7 +156,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AppProvider>
             </QueryProvider>
           </ReactQueryProvider>
-        </ErrorBoundary>
+        </ErrorBoundaryWrapper>
       </body>
     </html>
   );

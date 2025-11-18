@@ -220,7 +220,7 @@ export default function ChecklyFeaturesPage() {
       {/* FOOTER */}
       <footer className="bg-checkly-dark text-checkly-light py-4 sm:py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
-          <p>© {new Date().getFullYear()} MyApp. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Checkly. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             <Link href="/privacy" className="hover:underline">
               Privacy

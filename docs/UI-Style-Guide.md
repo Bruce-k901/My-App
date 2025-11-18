@@ -252,10 +252,22 @@ Guidelines
 ## Floating Quick Actions
 
 - Fixed top-right, 2rem from header bottom, 2rem from right edge.
-- Primary button: circular, 48px, bg-pink-500, text-white.
-- Hover: shadow-pink-500/40.
+- Primary button: circular, 48px, bg-transparent, text-[#EC4899], border border-[#EC4899].
+- Hover: shadow-[0_0_12px_rgba(236,72,153,0.7)] (magenta glow).
 - Expanded state: reveals vertical list of actions.
 - Transition: 300ms ease-out with translate and opacity fade.
+
+## Button UX Language
+
+**Standard Button Style:**
+
+- Background: `bg-transparent`
+- Text: `text-[#EC4899]` (magenta)
+- Border: `border border-[#EC4899]` (magenta)
+- Hover: `hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]` (magenta glow)
+- Transition: `transition-all duration-200 ease-in-out`
+
+**DO NOT USE:** Pink backgrounds (`bg-pink-500`) or solid pink buttons. All accent buttons should use magenta text with magenta border and glow on hover.
 
 ## Sidebar Label Typography
 

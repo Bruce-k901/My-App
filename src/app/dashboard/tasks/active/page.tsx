@@ -52,6 +52,7 @@ export default function ActiveTasksPage() {
       setLoading(false);
       setTasks([]);
     }
+   
   }, [companyId]); // Remove fetchTasks from deps to prevent infinite loops
 
   async function fetchTasks() {
@@ -91,7 +92,6 @@ export default function ActiveTasksPage() {
       if (tasksError) {
         console.error('Error fetching tasks:', tasksError);
         console.error('Error details:', JSON.stringify(tasksError, null, 2));
-        const errorMessage = tasksError.message || tasksError.code || 'Unknown error';
         console.error('Full error:', {
           message: tasksError.message,
           code: tasksError.code,
@@ -331,27 +331,6 @@ export default function ActiveTasksPage() {
     }
   }
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'pending': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-      'in_progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      'completed': 'bg-green-500/10 text-green-400 border-green-500/20',
-      'overdue': 'bg-red-500/10 text-red-400 border-red-500/20',
-      'skipped': 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-      'failed': 'bg-red-500/10 text-red-400 border-red-500/20'
-    };
-    return colors[status] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
-  };
-
-  const getPriorityColor = (priority: string) => {
-    const colors: Record<string, string> = {
-      'low': 'bg-green-500/10 text-green-400',
-      'medium': 'bg-yellow-500/10 text-yellow-400',
-      'high': 'bg-orange-500/10 text-orange-400',
-      'critical': 'bg-red-500/10 text-red-400'
-    };
-    return colors[priority] || 'bg-gray-500/10 text-gray-400';
-  };
 
   const handleDeleteTask = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) return;
@@ -415,7 +394,7 @@ export default function ActiveTasksPage() {
               });
             }
             
-            return tasks.map((task, index) => {
+            return tasks.map((task) => {
               // Prioritize custom_name over template name (custom_name is required for new tasks)
               const taskName = task.custom_name || task.template?.name || 'Unknown Task';
 

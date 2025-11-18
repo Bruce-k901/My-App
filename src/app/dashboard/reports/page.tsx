@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import SiteSelector from "@/components/ui/SiteSelector";
 import { 
-  BarChart3, 
   Shield, 
   Package, 
   ClipboardCheck, 

@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui";
-import logo from "@/assets/checkly_logo_touching_blocks.svg";
+
+// Use dynamic import to prevent preload when component doesn't render immediately
+const LOGO_PATH = "/assets/checkly_logo_touching_blocks.svg";
 
 interface SharedHeaderBaseProps {
   children?: React.ReactNode; // center nav content
@@ -35,7 +37,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
               />
             ) : (
               <Image
-                src={logo as any}
+                src={LOGO_PATH}
                 alt={logoAlt ?? "Checkly logo"}
                 width={192}
                 height={48}

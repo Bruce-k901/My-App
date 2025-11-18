@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, Download, Upload, X, Loader2, Sun, Clock, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Save, X, Loader2, Clock, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -19,7 +19,7 @@ export default function OpeningProcedureTemplatePage() {
   
   // Library data
   const [equipmentLibrary, setEquipmentLibrary] = useState([]);
-  const [disposablesLibrary, setDisposablesLibrary] = useState([]);
+  const [_disposablesLibrary, setDisposablesLibrary] = useState([]);
   const [sites, setSites] = useState([]);
 
   // Header state
@@ -73,8 +73,8 @@ export default function OpeningProcedureTemplatePage() {
   });
 
   // Photo upload refs
-  const photoInputRefs = useRef({});
-  const [uploadingPhotos, setUploadingPhotos] = useState({});
+  const _photoInputRefs = useRef({});
+  const [_uploadingPhotos, _setUploadingPhotos] = useState({});
 
   // Load libraries
   const loadLibraries = useCallback(async () => {
@@ -131,7 +131,7 @@ export default function OpeningProcedureTemplatePage() {
         setWalkthroughChecklist([{ id: Date.now(), item: "", verified: false, notes: "" }]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
 
   // Set default author
@@ -257,7 +257,7 @@ export default function OpeningProcedureTemplatePage() {
         manager_sign_off: managerSignOff
       };
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sop_entries')
         .insert({
           company_id: companyId,
@@ -406,7 +406,7 @@ export default function OpeningProcedureTemplatePage() {
         </div>
 
         <div className="space-y-4">
-          {timeSlots.map((slot, index) => (
+          {timeSlots.map((slot) => (
             <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
               <div className="flex items-center gap-3 mb-3">
                 <input
@@ -424,7 +424,7 @@ export default function OpeningProcedureTemplatePage() {
               </div>
 
               <div className="space-y-2">
-                {slot.tasks.map((task, taskIndex) => (
+                {slot.tasks.map((task) => (
                   <div key={task.id} className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -676,7 +676,7 @@ export default function OpeningProcedureTemplatePage() {
         </div>
 
         <div className="space-y-2">
-          {walkthroughChecklist.map((item, index) => (
+          {walkthroughChecklist.map((item) => (
             <div key={item.id} className="flex items-center gap-2">
               <input
                 type="checkbox"

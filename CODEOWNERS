@@ -1,0 +1,29 @@
+# CODEOWNERS file
+# This file defines code ownership for different parts of the codebase
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Core application routes
+/src/app/dashboard/* @bruce
+/src/app/organization/* @bruce
+
+# UI Components
+/src/components/ui/* @bruce
+/src/components/layout/* @bruce
+
+# Core libraries
+/src/lib/supabase/* @bruce
+/src/lib/featureFlags.ts @bruce
+
+# Database migrations
+/supabase/migrations/* @bruce
+
+# Configuration files
+*.json @bruce
+*.config.* @bruce
+tsconfig.json @bruce
+next.config.* @bruce
+
+# Documentation
+/docs/* @bruce
+*.md @bruce
+

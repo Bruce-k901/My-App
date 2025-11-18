@@ -223,7 +223,7 @@ function FoodSOPTemplatePageContent() {
     };
 
     loadIngredients();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [dataLoaded]); // Only run once when dataLoaded is false
 
   // Load equipment library from Supabase
@@ -411,7 +411,7 @@ function FoodSOPTemplatePageContent() {
     setTotalYield(yieldVal / 1000);
     setAllergensList(Array.from(allergensSet));
     setToolColours(Array.from(coloursSet));
-  }, [ingredients, ingredientsLibrary]);
+  }, [ingredients, ingredientsLibrary, convertToGrams, convertToUnit]);
 
   // Ingredient handlers
   const addIngredient = () => {
@@ -555,7 +555,7 @@ function FoodSOPTemplatePageContent() {
       const filePath = `${fileName}`;
 
       // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('sop-photos')
         .upload(filePath, file, {
           cacheControl: '3600',

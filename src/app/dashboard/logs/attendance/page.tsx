@@ -7,60 +7,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 // import { Button } from '@/components/ui';
 import { format as formatDate } from 'date-fns';
-import { parseLocationFromNotes, reverseGeocode } from '@/lib/geocoding';
 
-// Component to display location/address
-function LocationDisplay({ notes }: { notes: string | null }) {
-  const [address, setAddress] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    async function fetchAddress() {
-      if (!notes) {
-        setAddress('—');
-        return;
-      }
-
-      // Try to parse location from notes
-      const location = parseLocationFromNotes(notes);
-      if (!location) {
-        // No coordinates found, return notes as-is (might be regular notes)
-        setAddress(notes);
-        return;
-      }
-
-      // Reverse geocode the coordinates
-      setLoading(true);
-      try {
-        const result = await reverseGeocode(location.lat, location.lng);
-        if (result.address && !result.error) {
-          setAddress(result.address);
-        } else {
-          // Fallback: return formatted coordinates
-          setAddress(`${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
-        }
-      } catch (error) {
-        console.error('Geocoding error:', error);
-        // Fallback: return formatted coordinates
-        setAddress(`${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAddress();
-  }, [notes]);
-
-  if (loading) {
-    return <span className="text-white/40">Loading address...</span>;
-  }
-
-  return (
-    <div className="truncate" title={address}>
-      {address || '—'}
-    </div>
-  );
-}
 
 interface AttendanceRecord {
   id: string;
@@ -87,9 +34,11 @@ export default function AttendanceLogsPage() {
   const { profile, companyId, siteId } = useAppContext();
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'today' | 'week' | 'month'>('week');
+  const [filter, setFilter] = useState<'all' | 'today' | 'week' | 'month' | 'custom'>('week');
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(siteId || null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(profile?.id || null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [sites, setSites] = useState<Array<{ id: string; name: string }>>([]);
   const [users, setUsers] = useState<Array<{ id: string; full_name: string }>>([]);
 
@@ -100,12 +49,12 @@ export default function AttendanceLogsPage() {
       loadUsers();
       loadAttendance();
     }
-  }, [companyId, filter, selectedSiteId, selectedUserId]);
+    }, [companyId, filter, selectedSiteId, selectedUserId, startDate, endDate]);
 
   // Safety check - ensure we have required context (after hooks)
   if (!companyId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0B0D13] p-6 flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     );
@@ -150,22 +99,31 @@ export default function AttendanceLogsPage() {
 
       // Calculate date range based on filter
       const now = new Date();
-      let startDate: Date;
+      let startDateFilter: Date;
       
       switch (filter) {
         case 'today':
-          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          startDateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate());
           break;
         case 'week':
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 7);
+          startDateFilter = new Date(now);
+          startDateFilter.setDate(now.getDate() - 7);
           break;
         case 'month':
-          startDate = new Date(now);
-          startDate.setMonth(now.getMonth() - 1);
+          startDateFilter = new Date(now);
+          startDateFilter.setMonth(now.getMonth() - 1);
+          break;
+        case 'custom':
+          // Use custom date range if provided
+          if (startDate) {
+            startDateFilter = new Date(startDate);
+            startDateFilter.setHours(0, 0, 0, 0);
+          } else {
+            startDateFilter = new Date(0); // All time if no start date
+          }
           break;
         default:
-          startDate = new Date(0); // All time
+          startDateFilter = new Date(0); // All time
       }
 
       let query = supabase
@@ -176,9 +134,16 @@ export default function AttendanceLogsPage() {
           sites:site_id (name)
         `)
         .eq('company_id', companyId)
-        .gte('clock_in_time', startDate.toISOString())
-        .order('clock_in_time', { ascending: false })
-        .limit(100);
+        .gte('clock_in_time', startDateFilter.toISOString());
+
+      // Apply end date filter if custom range is selected
+      if (filter === 'custom' && endDate) {
+        const endDateFilter = new Date(endDate);
+        endDateFilter.setHours(23, 59, 59, 999);
+        query = query.lte('clock_in_time', endDateFilter.toISOString());
+      }
+
+      query = query.order('clock_in_time', { ascending: false }).limit(100);
 
       // Apply site filter
       if (selectedSiteId) {
@@ -227,7 +192,7 @@ export default function AttendanceLogsPage() {
   const isManager = profile?.app_role && ['Manager', 'General Manager', 'Admin', 'Owner'].includes(profile.app_role);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <div className="min-h-screen bg-[#0B0D13] p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -239,26 +204,56 @@ export default function AttendanceLogsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4 mb-6 space-y-4">
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6 space-y-4">
           <div className="flex flex-wrap gap-4">
             {/* Time Filter */}
             <div>
               <label className="block text-sm text-white/80 mb-2">Time Period</label>
-              <div className="flex gap-2">
-                {(['all', 'today', 'week', 'month'] as const).map((f) => (
+              <div className="flex gap-2 flex-wrap">
+                {(['all', 'today', 'week', 'month', 'custom'] as const).map((f) => (
                   <button
                     key={f}
-                    onClick={() => setFilter(f)}
+                    onClick={() => {
+                      setFilter(f);
+                      if (f !== 'custom') {
+                        setStartDate('');
+                        setEndDate('');
+                      }
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filter === f
-                        ? 'bg-pink-500 text-white'
-                        : 'bg-white/[0.06] text-white/80 hover:bg-white/[0.1]'
+                        ? 'bg-transparent text-[#EC4899] border border-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]'
+                        : 'bg-transparent border border-white/[0.1] text-white/80 hover:border-white/[0.2] hover:text-white'
                     }`}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
                   </button>
                 ))}
               </div>
+              
+              {/* Custom Date Range */}
+              {filter === 'custom' && (
+                <div className="flex gap-4 mt-3 flex-wrap">
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">Start Date</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">End Date</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Site Filter */}
@@ -268,11 +263,11 @@ export default function AttendanceLogsPage() {
                 <select
                   value={selectedSiteId || ''}
                   onChange={(e) => setSelectedSiteId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
                 >
-                  <option value="">All Sites</option>
+                  <option value="" className="bg-[#0B0D13]">All Sites</option>
                   {sites.map((site) => (
-                    <option key={site.id} value={site.id}>
+                    <option key={site.id} value={site.id} className="bg-[#0B0D13]">
                       {site.name}
                     </option>
                   ))}
@@ -287,11 +282,11 @@ export default function AttendanceLogsPage() {
                 <select
                   value={selectedUserId || ''}
                   onChange={(e) => setSelectedUserId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
                 >
-                  <option value="">All Staff</option>
+                  <option value="" className="bg-[#0B0D13]">All Staff</option>
                   {users.map((user) => (
-                    <option key={user.id} value={user.id}>
+                    <option key={user.id} value={user.id} className="bg-[#0B0D13]">
                       {user.full_name}
                     </option>
                   ))}
@@ -303,7 +298,7 @@ export default function AttendanceLogsPage() {
             <div className="flex items-end">
               <button
                 onClick={loadAttendance}
-                className="px-4 py-2 bg-transparent text-white border border-white/[0.2] rounded-lg hover:border-pink-500/40 hover:bg-white/[0.05] transition-all whitespace-nowrap"
+                className="px-4 py-2 bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all whitespace-nowrap"
               >
                 Refresh
               </button>
@@ -312,10 +307,10 @@ export default function AttendanceLogsPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl overflow-hidden">
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-8 h-8 border-4 border-[#EC4899] border-t-transparent rounded-full animate-spin" />
               <p className="mt-4 text-white/60">Loading attendance records...</p>
             </div>
           ) : attendance.length === 0 ? (
@@ -326,7 +321,7 @@ export default function AttendanceLogsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/[0.05] border-b border-white/[0.1]">
+                <thead className="bg-white/[0.05] border-b border-white/[0.06]">
                   <tr>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Date</th>
                     {isManager && (
@@ -337,7 +332,6 @@ export default function AttendanceLogsPage() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Clock Out</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Duration</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Notes</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -388,9 +382,6 @@ export default function AttendanceLogsPage() {
                           >
                             {record.shift_status === 'on_shift' ? 'On Shift' : 'Completed'}
                           </span>
-                        </td>
-                        <td className="py-3 px-4 text-white/60 text-sm max-w-xs truncate">
-                          {record.shift_notes || '—'}
                         </td>
                       </tr>
                     );

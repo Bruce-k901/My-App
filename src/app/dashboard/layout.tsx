@@ -22,7 +22,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // This ensures server HTML matches client HTML exactly during hydration
   
   return (
-    <div className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white">
+    <div 
+      className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white"
+      suppressHydrationWarning
+    >
       <NewMainSidebar 
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={() => setIsMobileSidebarOpen(false)}
@@ -38,8 +41,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
           {/* Loading overlay only appears after client-side mount (isMounted=true) */}
           {/* This prevents hydration mismatch because isMounted is false during SSR */}
+          {/* Use suppressHydrationWarning since this content intentionally differs between SSR and client */}
           {isMounted && loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#0B0D13]/80 z-50">
+            <div 
+              className="absolute inset-0 flex items-center justify-center bg-[#0B0D13]/80 z-50"
+              suppressHydrationWarning
+            >
               <div className="text-white">Loading dashboard...</div>
             </div>
           )}

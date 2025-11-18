@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, Download, Upload, X, Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -12,11 +12,11 @@ export default function ColdBeveragesSOPTemplatePage() {
   const { showToast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [saving] = useState(false);
   
   // Library data
-  const [drinksLibrary, setDrinksLibrary] = useState([]);
-  const [disposablesLibrary, setDisposablesLibrary] = useState([]);
+  const [_drinksLibrary, setDrinksLibrary] = useState([]);
+  const [_disposablesLibrary, setDisposablesLibrary] = useState([]);
 
   // Header state
   const [title, setTitle] = useState("");
@@ -27,26 +27,26 @@ export default function ColdBeveragesSOPTemplatePage() {
   const [estimatedTime, setEstimatedTime] = useState("");
 
   // Drink structure
-  const [beverages, setBeverages] = useState([
+  const [_beverages, _setBeverages] = useState([
     { id: Date.now(), drink_id: "", quantity: "", temperature: "", allergens: [] }
   ]);
   
-  const [garnishes, setGarnishes] = useState([
+  const [_garnishes, _setGarnishes] = useState([
     { id: Date.now(), drink_id: "", quantity: "", prep_notes: "" }
   ]);
   
-  const [disposables, setDisposables] = useState([
+  const [_disposables, _setDisposables] = useState([
     { id: Date.now(), disposable_id: "", quantity: "" }
   ]);
 
   // Process steps
-  const [processSteps, setProcessSteps] = useState([
+  const [_processSteps, _setProcessSteps] = useState([
     { id: Date.now(), step: "", timing: "", photo_url: "" }
   ]);
 
   // Photo upload refs
-  const photoInputRefs = useRef({});
-  const [uploadingPhotos, setUploadingPhotos] = useState({});
+  const _photoInputRefs = useRef({});
+  const [_uploadingPhotos, _setUploadingPhotos] = useState({});
 
   // Load libraries
   const loadLibraries = useCallback(async () => {

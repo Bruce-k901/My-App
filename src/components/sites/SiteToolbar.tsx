@@ -197,7 +197,7 @@ export default function SiteToolbar({
 
           {showBack && (
             <button
-              onClick={() => router.push("/dashboard/organization")}
+              onClick={() => router.push("/dashboard/business")}
               className="flex items-center justify-center w-10 h-10 rounded-md bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]"
               title="Back"
             >

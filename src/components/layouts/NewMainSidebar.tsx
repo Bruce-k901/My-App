@@ -405,7 +405,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
           {/* Mobile Menu Content */}
           <div className="flex-1 p-4 space-y-6">
-            {/* Quick Actions - Today's Tasks & Incidents */}
+            {/* Quick Actions - Today's Tasks, Incidents & Attendance */}
             <div className="space-y-2">
               <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
                 Quick Actions
@@ -439,6 +439,21 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
               >
                 <AlertTriangle size={20} />
                 <span>Incidents</span>
+              </Link>
+              <Link
+                href="/dashboard/logs/attendance"
+                onClick={onMobileClose}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
+                  ${
+                    pathname === "/dashboard/logs/attendance" || pathname.startsWith("/dashboard/logs/attendance")
+                      ? "bg-pink-500/20 text-pink-300 font-medium"
+                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
+                  }
+                `}
+              >
+                <Clock size={20} />
+                <span>Attendance</span>
               </Link>
             </div>
 

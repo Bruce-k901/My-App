@@ -25,9 +25,10 @@ Adds a `clock_in_date` DATE column that's automatically populated via trigger. T
 
 ## What to Do
 
-1. **Apply Migration 20250220000017** in Supabase SQL Editor
+1. **Apply Migration 20250220000019** in Supabase SQL Editor (this ensures everything is set up correctly)
 2. **Find what's making the query** - Check browser Network tab or Supabase logs to see what's calling this
 3. **Update the query** to use `clock_in_date` instead of `clock_in_at::date`
+4. **Use the helper functions** in `src/lib/attendance-logs.ts` for client-side queries
 
 ## Finding the Source
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Save, Download, Upload, X, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Save, Loader2, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -13,7 +13,7 @@ export default function ServiceSOPTemplatePage() {
   const { showToast } = useToast();
   const router = useRouter();
   
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Header state
@@ -55,8 +55,8 @@ export default function ServiceSOPTemplatePage() {
   ]);
 
   // Photo upload refs
-  const photoInputRefs = useRef({});
-  const [uploadingPhotos, setUploadingPhotos] = useState({});
+  const _photoInputRefs = useRef({});
+  const [_uploadingPhotos, _setUploadingPhotos] = useState({});
 
   // Set default author
   useEffect(() => {
@@ -78,23 +78,23 @@ export default function ServiceSOPTemplatePage() {
     setServiceStandards([...serviceStandards, { id: Date.now(), standard: "", description: "" }]);
   };
 
-  const addGuestGuideline = () => {
+  const _addGuestGuideline = () => {
     setGuestGuidelines([...guestGuidelines, { id: Date.now(), situation: "", response: "", example: "" }]);
   };
 
-  const addTableSetupItem = () => {
+  const _addTableSetupItem = () => {
     setTableSetup([...tableSetup, { id: Date.now(), item: "", checked: false, photo_url: "" }]);
   };
 
-  const addServiceStep = () => {
+  const _addServiceStep = () => {
     setServiceSteps([...serviceSteps, { id: Date.now(), step: "", timing: "", photo_url: "" }]);
   };
 
-  const addUpsellingPrompt = () => {
+  const _addUpsellingPrompt = () => {
     setUpsellingPrompts([...upsellingPrompts, { id: Date.now(), prompt: "", context: "" }]);
   };
 
-  const addCommonIssue = () => {
+  const _addCommonIssue = () => {
     setCommonIssues([...commonIssues, { id: Date.now(), issue: "", solution: "", escalation: "" }]);
   };
 
@@ -122,7 +122,7 @@ export default function ServiceSOPTemplatePage() {
     try {
       setSaving(true);
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sop_entries')
         .insert({
           company_id: companyId,

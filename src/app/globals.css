@@ -438,6 +438,14 @@ p {
   display: none;
 }
 
+/* ----------------------------- */
+/* Marketing-specific tweaks      */
+/* ----------------------------- */
+/* Hide global footer on marketing pages (they have their own inline footers) */
+body:has(.marketing-page) .global-footer {
+  display: none;
+}
+
 /* Utility: hide scrollbars within a container but allow scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

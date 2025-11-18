@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/checkly_logo_touching_blocks.svg";
+
+// Use static path instead of import to prevent Next.js preload warning
+const LOGO_PATH = "/assets/checkly_logo_touching_blocks.svg";
 
 export default function AuthLogoHeader() {
   return (
@@ -10,7 +12,7 @@ export default function AuthLogoHeader() {
       <div className="max-w-7xl mx-auto flex items-center justify-center px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5">
         <Link href="/" className="flex items-center">
           <Image
-            src={logo as any}
+            src={LOGO_PATH}
             alt="Checkly logo"
             width={288}
             height={72}
