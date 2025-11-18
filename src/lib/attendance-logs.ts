@@ -1,9 +1,14 @@
 /**
  * Attendance Logs Helper
- * Provides functions to query attendance_logs table using REST API-compatible methods
+ * 
+ * NOTE: The attendance_logs table may have been dropped in favor of staff_attendance.
+ * These functions use attendance_logs IF it exists with clock_in_date column.
  * 
  * IMPORTANT: PostgREST doesn't support PostgreSQL casting operators (::date) in URL filters.
  * Use clock_in_date column instead of clock_in_at::date
+ * 
+ * If attendance_logs table doesn't exist, use staff_attendance table instead via:
+ * @/lib/notifications/attendance
  */
 
 import { supabase } from '@/lib/supabase'
@@ -15,7 +20,7 @@ export interface AttendanceLog {
   site_id: string | null
   clock_in_at: string
   clock_out_at: string | null
-  clock_in_date: string // Date column (YYYY-MM-DD format)
+  clock_in_date?: string // Date column (YYYY-MM-DD format) - may not exist
   location: { lat: number; lng: number; accuracy: number } | null
   notes: string | null
   created_at: string
@@ -24,7 +29,7 @@ export interface AttendanceLog {
 
 /**
  * Check if a user is clocked in today at a specific site
- * Uses clock_in_date column instead of clock_in_at::date (REST API compatible)
+ * Uses staff_attendance table (new system) or attendance_logs with clock_in_date (legacy)
  */
 export async function isUserClockedInToday(
   userId: string,
@@ -32,23 +37,24 @@ export async function isUserClockedInToday(
   date?: string
 ): Promise<boolean> {
   try {
-    const targetDate = date || new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-
-    const { data, error } = await supabase
-      .from('attendance_logs')
+    // First try staff_attendance (new system)
+    const targetDate = date || new Date().toISOString().split('T')[0]
+    
+    const { data: staffData, error: staffError } = await supabase
+      .from('staff_attendance')
       .select('id')
       .eq('user_id', userId)
       .eq('site_id', siteId)
-      .eq('clock_in_date', targetDate) // Use clock_in_date, not clock_in_at::date
-      .is('clock_out_at', null)
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
       .maybeSingle()
 
-    if (error) {
-      console.error('Error checking clock-in status:', error)
-      return false
+    if (!staffError && staffData) {
+      return true // Found in staff_attendance
     }
 
-    return !!data
+    // Return result from staff_attendance (new system)
+    return !!staffData
   } catch (error) {
     console.error('Exception checking clock-in status:', error)
     return false
@@ -57,7 +63,7 @@ export async function isUserClockedInToday(
 
 /**
  * Get attendance log for a user on a specific date at a site
- * Uses clock_in_date column instead of clock_in_at::date (REST API compatible)
+ * Uses staff_attendance table (new system) or attendance_logs with clock_in_date (legacy)
  */
 export async function getAttendanceLogForDate(
   userId: string,
@@ -65,22 +71,35 @@ export async function getAttendanceLogForDate(
   date?: string
 ): Promise<AttendanceLog | null> {
   try {
-    const targetDate = date || new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-
-    const { data, error } = await supabase
-      .from('attendance_logs')
+    // First try staff_attendance (new system)
+    const targetDate = date || new Date().toISOString().split('T')[0]
+    
+    const { data: staffData, error: staffError } = await supabase
+      .from('staff_attendance')
       .select('*')
       .eq('user_id', userId)
       .eq('site_id', siteId)
-      .eq('clock_in_date', targetDate) // Use clock_in_date, not clock_in_at::date
       .maybeSingle()
 
-    if (error) {
-      console.error('Error fetching attendance log:', error)
-      return null
+    if (!staffError && staffData) {
+      // Map staff_attendance to AttendanceLog format
+      return {
+        id: staffData.id,
+        user_id: staffData.user_id,
+        company_id: staffData.company_id,
+        site_id: staffData.site_id,
+        clock_in_at: staffData.clock_in_time,
+        clock_out_at: staffData.clock_out_time || null,
+        clock_in_date: staffData.clock_in_time ? new Date(staffData.clock_in_time).toISOString().split('T')[0] : undefined,
+        location: null,
+        notes: staffData.shift_notes || null,
+        created_at: staffData.created_at,
+        updated_at: staffData.updated_at,
+      } as AttendanceLog
     }
 
-    return data as AttendanceLog | null
+    // Return result from staff_attendance (new system)
+    return null
   } catch (error) {
     console.error('Exception fetching attendance log:', error)
     return null
@@ -89,29 +108,43 @@ export async function getAttendanceLogForDate(
 
 /**
  * Get active attendance logs for a site today
- * Uses clock_in_date column instead of clock_in_at::date (REST API compatible)
+ * Uses staff_attendance table (new system) or attendance_logs with clock_in_date (legacy)
  */
 export async function getActiveAttendanceLogsForSite(
   siteId: string,
   date?: string
 ): Promise<AttendanceLog[]> {
   try {
-    const targetDate = date || new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-
-    const { data, error } = await supabase
-      .from('attendance_logs')
+    // First try staff_attendance (new system)
+    const targetDate = date || new Date().toISOString().split('T')[0]
+    
+    const { data: staffData, error: staffError } = await supabase
+      .from('staff_attendance')
       .select('*')
       .eq('site_id', siteId)
-      .eq('clock_in_date', targetDate) // Use clock_in_date, not clock_in_at::date
-      .is('clock_out_at', null)
-      .order('clock_in_at', { ascending: false })
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null)
+      .order('clock_in_time', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching active attendance logs:', error)
-      return []
+    if (!staffError && staffData && staffData.length > 0) {
+      // Map staff_attendance to AttendanceLog format
+      return staffData.map((item: any) => ({
+        id: item.id,
+        user_id: item.user_id,
+        company_id: item.company_id,
+        site_id: item.site_id,
+        clock_in_at: item.clock_in_time,
+        clock_out_at: item.clock_out_time || null,
+        clock_in_date: item.clock_in_time ? new Date(item.clock_in_time).toISOString().split('T')[0] : undefined,
+        location: null,
+        notes: item.shift_notes || null,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      })) as AttendanceLog[]
     }
 
-    return (data || []) as AttendanceLog[]
+    // Return result from staff_attendance (new system)
+    return []
   } catch (error) {
     console.error('Exception fetching active attendance logs:', error)
     return []

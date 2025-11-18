@@ -1,4 +1,3 @@
-cat > /home/claude/CLAUDE.md << 'EOF'
 # Project Context & Guidelines for AI Assistants
 
 ## Project Overview
@@ -10,19 +9,27 @@ This is a Next.js 15 web application for managing health & safety, food safety, 
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
-- **State Management**: React hooks, Zustand
+- **State Management**: React Context (AppContext)
 - **Auth**: Supabase Auth
 
 ## Project Structure
 ```
-/app                    # Next.js App Router pages
-/components            # React components
-  /ui                 # shadcn/ui components
-  /dashboard          # Dashboard-specific components
-/lib                   # Utilities and helpers
-  /supabase          # Supabase client & utilities
-/public               # Static assets
-/types                # TypeScript type definitions
+/src
+  /app                    # Next.js App Router pages
+    /dashboard           # Dashboard routes
+    /organization        # Legacy redirects to /dashboard/*
+  /components            # React components
+    /ui                  # shadcn/ui components (Button, Input, etc.)
+    /layouts             # Layout components (NewMainSidebar, etc.)
+    /dashboard           # Dashboard-specific components
+  /lib                   # Utilities and helpers
+    /supabase.ts         # Client-side Supabase client
+    /supabase-server.ts  # Server-side Supabase client
+  /context               # React Context providers (AppContext, SOPContext)
+  /types                 # TypeScript type definitions
+  /hooks                 # Custom React hooks
+/public                  # Static assets
+  /assets                # Images and SVGs
 ```
 
 ## Key Architecture Decisions
@@ -33,10 +40,21 @@ This is a Next.js 15 web application for managing health & safety, food safety, 
 - Leverage Server Actions for data mutations when appropriate
 
 ### 2. Supabase Patterns
-- Use `createClient()` for client-side operations
-- Use `createServerClient()` for server-side operations
+**Client-side (browser):**
+```typescript
+import { supabase } from '@/lib/supabase';
+// Uses createBrowserClient internally, singleton instance
+```
+
+**Server-side (API routes, Server Components):**
+```typescript
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+const supabase = await createServerSupabaseClient();
+```
+
 - Always handle errors gracefully
-- Use TypeScript types generated from database schema
+- Use TypeScript types from `@/types/supabase`
+- The `supabase` export from `@/lib/supabase` is a singleton browser client
 
 ### 3. Component Patterns
 - Prefer composition over prop drilling
@@ -49,6 +67,19 @@ This is a Next.js 15 web application for managing health & safety, food safety, 
 - Follow mobile-first responsive design
 - Maintain consistent spacing scale (4, 8, 16, 24, 32px)
 - Use design tokens from Tailwind config
+- Background: `bg-[#0B0D13]` for main app background
+- Borders: `border-white/[0.06]` for card borders
+- Cards: `bg-white/[0.03]` with `border border-white/[0.06]`
+
+### 5. Button UX Language
+**Standard Button Style:**
+- Background: `bg-transparent`
+- Text: `text-[#EC4899]` (magenta, NOT pink)
+- Border: `border border-[#EC4899]` (magenta)
+- Hover: `hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]` (magenta glow)
+- Transition: `transition-all duration-200 ease-in-out`
+
+**DO NOT USE:** Pink backgrounds (`bg-pink-500`) or solid pink buttons. All accent buttons should use magenta text with magenta border and glow on hover.
 
 ## Code Style Guidelines
 
@@ -103,21 +134,47 @@ const { data } = await supabase.from('tasks').select('*'); // No error handling
 
 ## Common Patterns in This Project
 
-### 1. Fetching Data
+### 1. Fetching Data (Client Component)
 ```typescript
-// Server Component (app/dashboard/page.tsx)
+'use client';
+import { supabase } from '@/lib/supabase';
+
+export default function TasksPage() {
+  const [tasks, setTasks] = useState([]);
+  
+  useEffect(() => {
+    async function loadTasks() {
+      const { data, error } = await supabase.from('tasks').select('*');
+      if (error) console.error('Error:', error);
+      else setTasks(data || []);
+    }
+    loadTasks();
+  }, []);
+  
+  return <TaskList tasks={tasks} />;
+}
+```
+
+### 2. Fetching Data (Server Component)
+```typescript
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+
 export default async function DashboardPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerSupabaseClient();
   const { data: tasks } = await supabase.from('tasks').select('*');
   
   return <TaskList tasks={tasks} />;
 }
 ```
 
-### 2. Form Handling
+### 3. Form Handling
 ```typescript
 // Client Component
 'use client';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui';
+import { toast } from 'sonner';
+
 export function TaskForm() {
   const [formData, setFormData] = useState<TaskFormData>(initialState);
   
@@ -135,18 +192,27 @@ export function TaskForm() {
 }
 ```
 
-### 3. Protected Routes
+### 4. Protected Routes
 ```typescript
-// middleware.ts or layout.tsx
-export default async function ProtectedLayout({ children }) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+// Use AppContext for auth state
+'use client';
+import { useAppContext } from '@/context/AppContext';
+import { useRouter } from 'next/navigation';
+
+export default function ProtectedPage() {
+  const { user, loading } = useAppContext();
+  const router = useRouter();
   
-  if (!user) {
-    redirect('/login');
-  }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
   
-  return <>{children}</>;
+  if (loading) return <div>Loading...</div>;
+  if (!user) return null;
+  
+  return <div>Protected content</div>;
 }
 ```
 
@@ -190,9 +256,9 @@ export default async function ProtectedLayout({ children }) {
 'use client'; // Needed because we use useState and form events
 
 import { useState, FormEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui/Input';
 import { toast } from 'sonner';
 
 interface TemperatureReading {
@@ -217,8 +283,6 @@ export function TemperatureForm() {
     setIsLoading(true);
     
     try {
-      const supabase = createClient();
-      
       // Insert the reading into database
       const { error } = await supabase
         .from('temperature_readings')
@@ -259,24 +323,33 @@ export function TemperatureForm() {
 ## Testing & Debugging Tips
 
 ### Common Issues & Solutions
-1. **Hydration Errors**: Ensure server/client HTML matches - don't use random IDs or timestamps in Server Components
-2. **Supabase Errors**: Always check `error` object and log it
-3. **TypeScript Errors**: Don't use `any` - define proper types
+1. **Hydration Errors**: Ensure server/client HTML matches - don't use random IDs or timestamps in Server Components. Use `suppressHydrationWarning` when necessary.
+2. **Supabase Errors**: Always check `error` object and log it. Use `maybeSingle()` instead of `single()` when rows might not exist.
+3. **TypeScript Errors**: Don't use `any` - define proper types. Types are in `/src/types` directory.
 4. **Build Errors**: Run `npm run build` locally before deploying
+5. **React Hooks Rules**: Always call hooks at the top level, before any conditional returns
 
 ### Debugging Checklist
 - [ ] Check browser console for errors
 - [ ] Verify Supabase connection in Network tab
 - [ ] Confirm environment variables are set
 - [ ] Check if you need 'use client' directive
-- [ ] Verify user authentication status
+- [ ] Verify user authentication status via AppContext
+- [ ] Check for hydration mismatches in server/client HTML
 
 ## File Naming Conventions
-- Components: `kebab-case.tsx` (e.g., `task-card.tsx`)
-- Pages: `kebab-case` folders with `page.tsx`
-- Types: `PascalCase` for interfaces/types
+- Components: `PascalCase.tsx` (e.g., `TaskCard.tsx`)
+- Pages: `page.tsx` in kebab-case folders (e.g., `/dashboard/tasks/active/page.tsx`)
+- Types: `PascalCase` for interfaces/types (e.g., `TaskFormData`)
 - Functions: `camelCase`
 - Constants: `UPPER_SNAKE_CASE`
+
+## Import Paths
+- Components: `@/components/ui` (barrel export) or `@/components/ui/Button`
+- Supabase client: `@/lib/supabase` (client-side) or `@/lib/supabase-server` (server-side)
+- Types: `@/types/supabase` or specific type files in `@/types`
+- Context: `@/context/AppContext` or `@/context/SOPContext`
+- Hooks: `@/hooks/useAttendance` etc.
 
 ## Git Commit Message Format
 ```
@@ -302,5 +375,4 @@ Remember: This developer is a novice, so:
 - Explain WHY, not just WHAT
 - Provide context about where code should go
 - Suggest how to test the changes
-
-EOF
+- Be careful not to break existing functionality when making changes
