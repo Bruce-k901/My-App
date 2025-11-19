@@ -50,6 +50,26 @@ if (typeof window !== 'undefined') {
         let fixedUrl = url;
         let wasFixed = false;
         
+        // ALWAYS check for clock_in_at::date pattern FIRST (before method check)
+        // This fixes the 406 error for SELECT queries
+        if (url.includes('clock_in_at%3A%3Adate') || url.includes('clock_in_at::date')) {
+          console.warn('🚨 INTERCEPTED: Query with clock_in_at::date detected!');
+          console.warn('📋 Original URL:', url);
+          
+          // Replace URL-encoded ::date syntax first (%3A%3A = ::)
+          fixedUrl = url
+            // Replace URL-encoded ::date syntax (%3A%3Adate -> clock_in_date)
+            .replace(/clock_in_at%3A%3Adate/g, 'clock_in_date')
+            // Replace non-encoded ::date syntax (in case it's partially decoded)
+            .replace(/clock_in_at::date/g, 'clock_in_date')
+            // Handle any remaining ::date patterns on clock_in_at
+            .replace(/clock_in_at%3A%3A/g, 'clock_in_at')
+            .replace(/clock_in_at::/g, 'clock_in_at');
+          
+          wasFixed = true;
+          console.warn('✅ Fixed URL (converted clock_in_at::date to clock_in_date):', fixedUrl);
+        }
+        
         // CRITICAL: Views are read-only - redirect INSERT/UPDATE/DELETE to staff_attendance
         if (method === 'POST' || method === 'PATCH' || method === 'PUT' || method === 'DELETE') {
           console.error('🚨🚨🚨 CRITICAL: Write operation on attendance_logs view detected!');
@@ -102,26 +122,8 @@ if (typeof window !== 'undefined') {
           console.error('✅ Redirected to staff_attendance:', fixedUrl);
           console.error('⚠️ If you see this message, there is likely a database trigger that needs to be removed!');
           console.error('⚠️ Run NUCLEAR_FIX_ATTENDANCE.sql in Supabase SQL Editor to remove all triggers.');
-        } else {
-          // For SELECT queries, fix clock_in_at::date patterns
-          if (url.includes('clock_in_at%3A%3Adate') || url.includes('clock_in_at::date')) {
-            console.warn('🚨 INTERCEPTED: Query with clock_in_at::date detected!');
-            console.warn('📋 Original URL:', url);
-            
-            // Replace URL-encoded ::date syntax first (%3A%3A = ::)
-            fixedUrl = url
-              // Replace URL-encoded ::date syntax (%3A%3Adate -> clock_in_date)
-              .replace(/clock_in_at%3A%3Adate/g, 'clock_in_date')
-              // Replace non-encoded ::date syntax (in case it's partially decoded)
-              .replace(/clock_in_at::date/g, 'clock_in_date')
-              // Handle any remaining ::date patterns on clock_in_at
-              .replace(/clock_in_at%3A%3A/g, 'clock_in_at')
-              .replace(/clock_in_at::/g, 'clock_in_at');
-            
-            wasFixed = true;
-            console.warn('✅ Fixed URL (converted clock_in_at::date to clock_in_date):', fixedUrl);
-          }
         }
+        // Note: clock_in_at::date fix is handled above before method check
         
         // Update the request safely if we made changes
         if (wasFixed) {
