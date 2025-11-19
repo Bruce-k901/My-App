@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useAppContext } from '@/context/AppContext';
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useAppContext } from "@/context/AppContext";
 
 /**
  * Lightweight hook to get just the unread message count
@@ -33,10 +33,10 @@ export function useUnreadMessageCount() {
 
         // Lightweight query: just get conversation IDs where user is a participant
         const { data: participantData } = await supabase
-          .from('conversation_participants')
-          .select('conversation_id, last_read_at, last_read_message_id')
-          .eq('user_id', user.id)
-          .is('left_at', null);
+          .from("messaging_channel_members")
+          .select("channel_id, last_read_at, last_read_message_id")
+          .eq("user_id", user.id)
+          .is("left_at", null);
 
         if (!participantData || participantData.length === 0) {
           if (mounted) {
@@ -46,30 +46,30 @@ export function useUnreadMessageCount() {
           return;
         }
 
-        const conversationIds = participantData.map(p => p.conversation_id);
+        const channelIds = participantData.map((p) => p.channel_id);
 
         // Get all unread messages in one query
         // Fetch all messages in conversations where user is a participant
         const { data: allMessages } = await supabase
-          .from('messages')
-          .select('conversation_id, created_at, sender_id')
-          .in('conversation_id', conversationIds)
-          .is('deleted_at', null)
-          .neq('sender_id', user.id);
+          .from("messaging_messages")
+          .select("channel_id, created_at, sender_id")
+          .in("channel_id", channelIds)
+          .is("deleted_at", null)
+          .neq("sender_id", user.id);
 
         // Calculate unread count per conversation
         let totalUnread = 0;
         if (allMessages) {
           participantData.forEach((participant) => {
-            const lastRead = participant.last_read_at 
+            const lastRead = participant.last_read_at
               ? new Date(participant.last_read_at)
               : new Date(0);
-            
-            const unreadInConv = allMessages.filter(msg => 
-              msg.conversation_id === participant.conversation_id &&
+
+            const unreadInConv = allMessages.filter((msg) =>
+              msg.channel_id === participant.channel_id &&
               new Date(msg.created_at) > lastRead
             ).length;
-            
+
             totalUnread += unreadInConv;
           });
         }
@@ -79,7 +79,7 @@ export function useUnreadMessageCount() {
           setLoading(false);
         }
       } catch (error) {
-        console.error('Error fetching unread count:', error);
+        console.error("Error fetching unread count:", error);
         if (mounted) {
           setUnreadCount(0);
           setLoading(false);
@@ -91,30 +91,30 @@ export function useUnreadMessageCount() {
 
     // Set up real-time subscription for unread counts
     const channel = supabase
-      .channel('unread-message-count')
+      .channel("unread-message-count")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'messages',
+          event: "*",
+          schema: "public",
+          table: "messaging_messages",
         },
         () => {
           // Refetch when messages change
           fetchUnreadCount();
-        }
+        },
       )
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'conversation_participants',
+          event: "*",
+          schema: "public",
+          table: "messaging_channel_members",
         },
         () => {
           // Refetch when participants change
           fetchUnreadCount();
-        }
+        },
       )
       .subscribe();
 
@@ -126,4 +126,3 @@ export function useUnreadMessageCount() {
 
   return { unreadCount, loading };
 }
-

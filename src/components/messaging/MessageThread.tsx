@@ -4,9 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '@/hooks/useMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check } from 'lucide-react';
+import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
-import type { Message } from '@/types/messaging';
+import { supabase } from '@/lib/supabase';
+import type { Message, Conversation } from '@/types/messaging';
+import ConvertToTaskModal from './ConvertToTaskModal';
+import ConvertToCalloutModal from './ConvertToCalloutModal';
+import { ActionPrompt } from './ActionPrompt';
+import { analyzeMessage } from '@/lib/messaging/detectAction';
 
 interface MessageThreadProps {
   conversationId: string;
@@ -22,12 +27,45 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   const threadRef = useRef<HTMLDivElement>(null);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [taskModalMessage, setTaskModalMessage] = useState<Message | null>(null);
+  const [calloutModalMessage, setCalloutModalMessage] = useState<Message | null>(null);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [dismissedActions, setDismissedActions] = useState<Set<string>>(new Set());
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // Auto-scroll to bottom
+  // Fetch conversation details for context
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!conversationId) return;
+
+    const loadConversation = async () => {
+      const { data } = await supabase
+        .from('messaging_channels')
+        .select('*')
+        .eq('id', conversationId)
+        .single();
+      
+      if (data) {
+        // Map to Conversation type for backward compatibility
+        setConversation({
+          ...data,
+          type: data.channel_type || data.type,
+          site_id: data.entity_type === 'site' ? data.entity_id : data.site_id,
+        } as Conversation);
+      }
+    };
+
+    loadConversation();
+  }, [conversationId]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0) {
+      // Use setTimeout to ensure DOM has updated
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages.length, messages]);
 
   // Mark messages as delivered and read when viewing
   useEffect(() => {
@@ -101,6 +139,54 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
     }
   };
 
+  // Check if message should show action prompt
+  const shouldShowActionPrompt = (message: Message): { show: boolean; type?: 'callout' | 'task'; confidence?: 'high' | 'medium' | 'low' } => {
+    // Don't show if already converted to task/callout
+    if (message.is_task || message.metadata?.action_taken) {
+      return { show: false };
+    }
+
+    // Don't show if dismissed
+    if (dismissedActions.has(message.id)) {
+      return { show: false };
+    }
+
+    // Don't show for system messages
+    if (message.is_system || message.message_type === 'system') {
+      return { show: false };
+    }
+
+    // Analyze message
+    const suggestion = analyzeMessage(message.content, {
+      topic_category: conversation?.topic_category || undefined,
+      context_type: conversation?.context_type || undefined,
+      context_id: conversation?.context_id || undefined,
+      site_id: conversation?.site_id || undefined,
+    });
+
+    if (suggestion.shouldSuggest && suggestion.type) {
+      return {
+        show: true,
+        type: suggestion.type,
+        confidence: suggestion.confidence,
+      };
+    }
+
+    return { show: false };
+  };
+
+  const handleDismissAction = (messageId: string) => {
+    setDismissedActions(prev => new Set(prev).add(messageId));
+  };
+
+  const handleQuickAction = (message: Message, actionType: 'callout' | 'task') => {
+    if (actionType === 'callout') {
+      setCalloutModalMessage(message);
+    } else {
+      setTaskModalMessage(message);
+    }
+  };
+
   // Show loading overlay instead of replacing content to prevent flicker
   if (loading && messages.length === 0) {
     return (
@@ -115,7 +201,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
+        className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4 min-h-0"
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -151,7 +237,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
               <div
                 key={message.id}
                 data-message-id={message.id}
-                className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+                className={`flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-400">
@@ -197,11 +283,11 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-white/70 truncate max-w-[200px] sm:max-w-[250px]">
+                      <div className="text-white/70 truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (
-                          <span className="italic">📎 {message.reply_to.file_name || 'File'}</span>
+                          <span className="italic break-all">📎 {message.reply_to.file_name || 'File'}</span>
                         ) : (
                           message.reply_to.content
                         )}
@@ -210,7 +296,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   )}
 
                   <div
-                    className={`group relative px-4 py-2 rounded-lg ${
+                    className={`group relative px-3 sm:px-4 py-2 rounded-lg ${
                       isOwn
                         ? 'bg-pink-500/20 text-white'
                         : 'bg-white/[0.05] text-white/90'
@@ -220,18 +306,21 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       <img
                         src={message.file_url}
                         alt={message.file_name || 'Image'}
-                        className="max-w-full rounded-lg mb-2"
+                        className="max-w-full h-auto rounded-lg mb-2"
+                        style={{ maxWidth: '100%', height: 'auto' }}
                       />
                     ) : message.message_type === 'file' && message.file_url ? (
                       <a
                         href={message.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-pink-400 hover:text-pink-300"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 text-pink-400 hover:text-pink-300 break-words max-w-full"
                       >
-                        <span>{message.file_name || 'Download file'}</span>
+                        <span className="break-all text-sm sm:text-base min-w-0 max-w-full">
+                          {message.file_name || 'Download file'}
+                        </span>
                         {message.file_size && (
-                          <span className="text-xs text-white/40">
+                          <span className="text-xs text-white/40 whitespace-nowrap flex-shrink-0">
                             ({(message.file_size / 1024).toFixed(1)} KB)
                           </span>
                         )}
@@ -334,6 +423,19 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 </>
                               )}
                             </button>
+                            {!message.is_task && message.message_type === 'text' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTaskModalMessage(message);
+                                  setActiveMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                              >
+                                <CheckSquare className="w-4 h-4" />
+                                Convert to Task
+                              </button>
+                            )}
                             {isOwn && (
                               <button
                                 onClick={async (e) => {
@@ -355,6 +457,25 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     </div>
                   </div>
                 </div>
+
+                {/* Action Prompt */}
+                {(() => {
+                  const actionCheck = shouldShowActionPrompt(message);
+                  if (actionCheck.show && actionCheck.type) {
+                    return (
+                      <div className={`mt-2 ${isOwn ? 'ml-auto max-w-[85%] sm:max-w-[75%] md:max-w-[70%]' : ''}`}>
+                        <ActionPrompt
+                          message={message}
+                          suggestionType={actionCheck.type}
+                          confidence={actionCheck.confidence || 'medium'}
+                          onAction={(type) => handleQuickAction(message, type)}
+                          onDismiss={() => handleDismissAction(message.id)}
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             );
           })
@@ -384,6 +505,38 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Convert to Task Modal */}
+      {taskModalMessage && (
+        <ConvertToTaskModal
+          message={taskModalMessage}
+          conversationContext={{
+            site_id: conversation?.site_id || undefined,
+            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
+          }}
+          onClose={() => setTaskModalMessage(null)}
+          onSuccess={(taskId) => {
+            setTaskModalMessage(null);
+            // Messages will update automatically via real-time subscription
+          }}
+        />
+      )}
+
+      {/* Convert to Callout Modal */}
+      {calloutModalMessage && (
+        <ConvertToCalloutModal
+          message={calloutModalMessage}
+          conversationContext={{
+            site_id: conversation?.site_id || undefined,
+            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
+          }}
+          onClose={() => setCalloutModalMessage(null)}
+          onSuccess={(calloutId) => {
+            setCalloutModalMessage(null);
+            // Messages will update automatically via real-time subscription
+          }}
+        />
+      )}
     </div>
   );
 }

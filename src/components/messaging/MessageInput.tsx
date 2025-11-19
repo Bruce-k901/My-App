@@ -90,16 +90,18 @@ export function MessageInput({
 
       const messageType = fileToUpload.type.startsWith('image/') ? 'image' : 'file';
 
-      await supabase.from('messages').insert({
-        conversation_id: conversationId,
+      await supabase.from('messaging_messages').insert({
+        channel_id: conversationId,
         sender_id: user.id,
+        sender_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
         content: fileToUpload.name,
         message_type: messageType,
         file_url: urlData.publicUrl,
         file_name: fileToUpload.name,
         file_size: fileToUpload.size,
         file_type: fileToUpload.type,
-        reply_to_id: replyTo?.id || null,
+        parent_message_id: replyTo?.id || null,
+        attachments: [],
       });
 
       if (onCancelReply) onCancelReply();
@@ -119,9 +121,9 @@ export function MessageInput({
       <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
           <div className="px-3 py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between h-full">
-            <div className="flex-1 min-w-0">
-              <div className="text-xs text-white/60 mb-1">Replying to {replyTo.senderName}</div>
-              <div className="text-sm text-white/80 truncate">{replyTo.content}</div>
+            <div className="flex-1 min-w-0 overflow-hidden">
+              <div className="text-xs text-white/60 mb-1 truncate">Replying to {replyTo.senderName}</div>
+              <div className="text-sm text-white/80 truncate break-words">{replyTo.content}</div>
             </div>
             <button
               onClick={onCancelReply}

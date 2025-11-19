@@ -109,10 +109,26 @@ export default function CalloutLogsPage() {
       const createdByIds = [...new Set(data.map(c => c.created_by).filter(Boolean))];
 
       const [assetsResult, sitesResult, contractorsResult, profilesResult] = await Promise.all([
-        assetIds.length > 0 ? supabase.from('assets').select('id, name').in('id', assetIds) : { data: [] },
-        siteIds.length > 0 ? supabase.from('sites').select('id, name').in('id', siteIds) : { data: [] },
-        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] },
-        createdByIds.length > 0 ? supabase.from('profiles').select('id, full_name').in('id', createdByIds) : { data: [] }
+        assetIds.length > 0 
+          ? assetIds.length === 1 
+            ? supabase.from('assets').select('id, name').eq('id', assetIds[0])
+            : supabase.from('assets').select('id, name').in('id', assetIds)
+          : { data: [] },
+        siteIds.length > 0 
+          ? siteIds.length === 1
+            ? supabase.from('sites').select('id, name').eq('id', siteIds[0])
+            : supabase.from('sites').select('id, name').in('id', siteIds)
+          : { data: [] },
+        contractorIds.length > 0 
+          ? contractorIds.length === 1
+            ? supabase.from('contractors').select('id, name').eq('id', contractorIds[0])
+            : supabase.from('contractors').select('id, name').in('id', contractorIds)
+          : { data: [] },
+        createdByIds.length > 0 
+          ? createdByIds.length === 1
+            ? supabase.from('profiles').select('id, full_name').eq('id', createdByIds[0])
+            : supabase.from('profiles').select('id, full_name').in('id', createdByIds)
+          : { data: [] }
       ]);
 
       const assetsMap = new Map((assetsResult.data || []).map(a => [a.id, a.name]));

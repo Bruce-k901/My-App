@@ -140,10 +140,12 @@ export default function CompletedTasksPage() {
       }
 
       if (userIds.length > 0) {
-        const { data: profiles } = await supabase
+        const query = supabase
           .from('profiles')
-          .select('id, full_name, email')
-          .in('id', userIds);
+          .select('id, full_name, email');
+        const { data: profiles } = userIds.length === 1
+          ? await query.eq('id', userIds[0])
+          : await query.in('id', userIds);
 
         if (profiles) {
           profilesMap = new Map(profiles.map(p => [p.id, p]));

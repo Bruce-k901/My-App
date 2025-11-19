@@ -5,9 +5,11 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { ConversationList } from './ConversationList';
 import { MessageThread } from './MessageThread';
 import { MessageInput } from './MessageInput';
+import ConversationContentTabs from './ConversationContentTabs';
 import { useMessages } from '@/hooks/useMessages';
 import { MessageSquare, Menu } from 'lucide-react';
 import type { Message } from '@/types/messaging';
+import { supabase } from '@/lib/supabase';
 
 export function Messaging() {
   const searchParams = useSearchParams();
@@ -23,6 +25,16 @@ export function Messaging() {
     content: string;
     senderName: string;
   } | null>(null);
+
+  // TEST: Check get_user_company_id RPC function
+  useEffect(() => {
+    const testFunction = async () => {
+      const { data, error } = await supabase.rpc('get_user_company_id');
+      console.log('get_user_company_id Result:', data);
+      console.log('get_user_company_id Error:', error);
+    };
+    testFunction();
+  }, []);
 
   // Detect mobile on mount and resize
   useEffect(() => {
@@ -139,9 +151,13 @@ export function Messaging() {
       )}
 
       {/* Main - Message Thread */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden w-full md:w-auto">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden w-full md:w-auto max-w-full">
         {selectedConversationId ? (
           <>
+            {/* Content Tabs - Fixed at top */}
+            <div className="flex-shrink-0">
+              <ConversationContentTabs conversationId={selectedConversationId} />
+            </div>
             {/* Message Thread - Scrollable */}
             <div className="flex-1 min-h-0 overflow-hidden">
               <MessageThread 

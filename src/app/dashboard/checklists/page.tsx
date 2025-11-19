@@ -691,10 +691,13 @@ export default function DailyChecklistPage() {
       
       let profilesMap = new Map()
       if (completedByUserIds.length > 0) {
-        const { data: profiles } = await supabase
+        const uniqueUserIds = [...new Set(completedByUserIds)];
+        const query = supabase
           .from('profiles')
-          .select('id, full_name, email')
-          .in('id', [...new Set(completedByUserIds)])
+          .select('id, full_name, email');
+        const { data: profiles } = uniqueUserIds.length === 1
+          ? await query.eq('id', uniqueUserIds[0])
+          : await query.in('id', uniqueUserIds)
         
         if (profiles) {
           profilesMap = new Map(profiles.map(p => [p.id, p]))

@@ -151,10 +151,16 @@ export default function ComplianceMetricsWidget() {
 
         // Fetch user profiles
         const userIds = [...new Set(recentData.map(r => r.completed_by).filter(Boolean))]
-        const { data: profilesData } = userIds.length > 0 ? await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', userIds) : { data: [] }
+        let profilesData = null;
+        if (userIds.length > 0) {
+          const query = supabase
+            .from('profiles')
+            .select('id, full_name');
+          const result = userIds.length === 1
+            ? await query.eq('id', userIds[0])
+            : await query.in('id', userIds);
+          profilesData = result.data;
+        }
 
         const tasksMap = new Map((tasksData || []).map((t: any) => [t.id, t]))
         const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p.full_name]))
@@ -310,7 +316,7 @@ export default function ComplianceMetricsWidget() {
     // Reset loading ref when dependencies change
     loadingRef.current = false
     loadComplianceMetrics()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [siteId, companyId]) // Only depend on siteId and companyId, not the callback
 
   if (!siteId) {
