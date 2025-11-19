@@ -5,42 +5,43 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   
-  // Create Supabase client using @supabase/ssr (replaces deprecated auth-helpers-nextjs)
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return req.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          // In middleware, we can only write to res.cookies, not req.cookies
-          cookiesToSet.forEach(({ name, value, options }) => {
-            res.cookies.set(name, value, options);
-          });
-        },
-      },
+  try {
+    // Only create Supabase client if env vars are available
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      // Skip Supabase setup if env vars are missing (e.g., during build)
+      return res;
     }
-  );
+    
+    // Create Supabase client using @supabase/ssr (replaces deprecated auth-helpers-nextjs)
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            // In middleware, we can only write to res.cookies, not req.cookies
+            cookiesToSet.forEach(({ name, value, options }) => {
+              res.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
 
-  // Always refresh session
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const pathname = req.nextUrl.pathname;
-
-  // Define route types
-  const isPublicRoute = ["/", "/login", "/signup", "/forgot-password"].includes(
-    pathname
-  );
-  const isDashboardRoute = pathname.startsWith("/dashboard");
-
-  // Temporarily allow dashboard without edge session to avoid redirect ping-pong
-  // Client-side guard will handle redirect if needed
-
-  // Allow login page to render even if a session exists to avoid redirect loops
+    // Always refresh session (with error handling)
+    try {
+      await supabase.auth.getSession();
+    } catch (sessionError) {
+      // If session refresh fails, continue anyway (don't block the request)
+      console.warn('Middleware: Session refresh failed:', sessionError);
+    }
+  } catch (error) {
+    // If anything fails in middleware, continue anyway (don't crash)
+    console.error('Middleware error:', error);
+  }
 
   return res;
 }
