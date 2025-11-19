@@ -15,8 +15,8 @@ export async function middleware(req: NextRequest) {
           return req.cookies.getAll();
         },
         setAll(cookiesToSet) {
+          // In middleware, we can only write to res.cookies, not req.cookies
           cookiesToSet.forEach(({ name, value, options }) => {
-            req.cookies.set(name, value);
             res.cookies.set(name, value, options);
           });
         },
