@@ -29,7 +29,9 @@ export async function clockIn(
   notes?: string
 ): Promise<{ success: boolean; error?: string; attendanceLog?: AttendanceLog }> {
   try {
+    // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('Current user:', user)
     if (!user) {
       return { success: false, error: 'User not authenticated' }
     }
@@ -95,7 +97,9 @@ export async function clockIn(
  */
 export async function clockOut(notes?: string): Promise<{ success: boolean; error?: string }> {
   try {
+    // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('Current user:', user)
     if (!user) {
       return { success: false, error: 'User not authenticated' }
     }
@@ -136,11 +140,13 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
     
     console.log('✅ Found active clock-in:', activeLog)
 
-    // Update clock-out time (trigger will auto-calculate total_hours and set shift_status)
+    // Update clock-out time and shift status
+    // Note: total_hours will be auto-calculated by database trigger
     const { error: updateError } = await supabase
       .from('staff_attendance')
       .update({
         clock_out_time: new Date().toISOString(),
+        shift_status: 'off_shift', // ✅ Explicitly set to 'off_shift' (not 'clocked_out')
         shift_notes: notes || null
       })
       .eq('id', activeLog.id)
@@ -162,7 +168,9 @@ export async function clockOut(notes?: string): Promise<{ success: boolean; erro
  */
 export async function isClockedIn(siteId?: string): Promise<boolean> {
   try {
+    // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('Current user:', user)
     if (!user) return false
 
     // Check for any active shift
@@ -182,13 +190,25 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
     const { data, error } = await query.maybeSingle()
 
     if (error) {
-      console.error('Error checking clock-in status:', error)
+      console.error('❌ Supabase error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      console.error('💥 Full error object:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error keys:', Object.keys(error || {}));
       return false
     }
 
     return !!data
-  } catch (error) {
-    console.error('Exception checking clock-in status:', error)
+  } catch (error: any) {
+    console.error('💥 Exception checking clock-in status:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error keys:', Object.keys(error || {}));
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
     return false
   }
 }
@@ -198,7 +218,9 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
  */
 export async function getCurrentAttendance(): Promise<AttendanceLog | null> {
   try {
+    // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('Current user:', user)
     if (!user) return null
 
     // Get any active shift

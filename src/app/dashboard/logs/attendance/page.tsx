@@ -96,6 +96,16 @@ export default function AttendanceLogsPage() {
 
     try {
       setLoading(true);
+      console.log('🔍 Starting to load attendance...');
+
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current user:', user);
+      if (!user) {
+        console.error('❌ User not authenticated');
+        setLoading(false);
+        return;
+      }
 
       // Calculate date range based on filter
       const now = new Date();
@@ -158,16 +168,39 @@ export default function AttendanceLogsPage() {
         query = query.eq('user_id', profile.id);
       }
 
+      console.log('📊 Executing query with filters:', {
+        companyId,
+        selectedSiteId,
+        selectedUserId,
+        filter,
+        startDateFilter: startDateFilter.toISOString()
+      });
+
       const { data, error } = await query;
 
+      console.log('📊 Query result:', { data: data?.length || 0, error });
+
       if (error) {
-        console.error('Error loading attendance:', error);
+        console.error('❌ Supabase error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        console.error('💥 Full error object:', error);
+        console.error('Error type:', typeof error);
+        console.error('Error keys:', Object.keys(error || {}));
         return;
       }
 
+      console.log('✅ Successfully loaded attendance:', data?.length || 0, 'records');
       setAttendance(data || []);
-    } catch (error) {
-      console.error('Error loading attendance:', error);
+    } catch (error: any) {
+      console.error('💥 Full error object:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error keys:', Object.keys(error || {}));
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
     } finally {
       setLoading(false);
     }
