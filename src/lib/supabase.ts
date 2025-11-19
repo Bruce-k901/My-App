@@ -19,6 +19,7 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_A
 
 // Intercept fetch requests to attendance_logs table BEFORE Supabase client is created
 // This catches queries at the network level, even from cached code
+// IMPORTANT: Only intercept attendance_logs requests, don't interfere with auth/cookies
 if (typeof window !== 'undefined') {
   const originalFetch = window.fetch;
   window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
@@ -37,8 +38,14 @@ if (typeof window !== 'undefined') {
         return originalFetch.call(window, input, init);
       }
       
-      // Check if this is a request to attendance_logs table
-      if (url && url.includes('/rest/v1/attendance_logs')) {
+      // CRITICAL: Only intercept attendance_logs REST API requests
+      // Skip auth endpoints, storage, functions, etc. to avoid breaking cookies/auth
+      if (url && 
+          url.includes('/rest/v1/attendance_logs') && 
+          !url.includes('/auth/') &&
+          !url.includes('/storage/') &&
+          !url.includes('/functions/') &&
+          !url.includes('/realtime/')) {
         const method = init?.method || (input && typeof input === 'object' && 'method' in input ? (input as any).method : 'GET');
         let fixedUrl = url;
         let wasFixed = false;
@@ -118,31 +125,28 @@ if (typeof window !== 'undefined') {
         
         // Update the request safely if we made changes
         if (wasFixed) {
-          let fixedInput: RequestInfo | URL;
-          if (typeof input === 'string') {
-            fixedInput = fixedUrl;
-          } else if (input instanceof URL) {
-            fixedInput = new URL(fixedUrl);
+          // For string/URL inputs, just update the URL in init
+          if (typeof input === 'string' || input instanceof URL) {
+            // Update init with the new URL, preserving all other properties
+            const newInit = { ...init };
+            return originalFetch.call(window, fixedUrl, newInit);
           } else if (input && typeof input === 'object') {
-            // Preserve all request properties when creating new Request
+            // For Request objects, create a new one preserving all properties
             const requestInit: RequestInit = {
               method: init?.method || (input as Request).method || 'GET',
               headers: init?.headers || (input as Request).headers || {},
               body: init?.body || (input as Request).body || null,
               cache: init?.cache || (input as Request).cache,
-              credentials: init?.credentials || (input as Request).credentials,
+              credentials: init?.credentials || (input as Request).credentials || 'include', // Preserve credentials for cookies
               mode: init?.mode || (input as Request).mode,
               redirect: init?.redirect || (input as Request).redirect,
               referrer: init?.referrer || (input as Request).referrer,
               referrerPolicy: init?.referrerPolicy || (input as Request).referrerPolicy,
               integrity: init?.integrity || (input as Request).integrity,
             };
-            fixedInput = new Request(fixedUrl, requestInit);
-          } else {
-            fixedInput = input;
+            const fixedInput = new Request(fixedUrl, requestInit);
+            return originalFetch.call(window, fixedInput);
           }
-          
-          return originalFetch.call(window, fixedInput, init);
         }
       }
     } catch (error) {
