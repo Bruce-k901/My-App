@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useConversations } from '@/hooks/useConversations';
 import { useAppContext } from '@/context/AppContext';
-import { MessageSquare, Users, Building2, User, Search, Plus, Trash2, Pin } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { MessageSquare, Users, Building2, User, Search, Plus, Trash2, Pin, ChevronDown, ChevronUp } from 'lucide-react';
+import { formatConversationTime } from '@/lib/utils/dateUtils';
 import { supabase } from '@/lib/supabase';
 import type { Conversation, ConversationFilters, TopicCategory } from '@/types/messaging';
 import { StartConversationModal } from './StartConversationModal';
 import TopicFilter from './TopicFilter';
+import FilteredMessagesView from './FilteredMessagesView';
 
 interface ConversationListProps {
   selectedConversationId: string | null;
@@ -24,22 +25,118 @@ export function ConversationList({
   const [searchTerm, setSearchTerm] = useState('');
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [filters, setFilters] = useState<ConversationFilters>({});
+  const [isTopicFilterExpanded, setIsTopicFilterExpanded] = useState(false);
+  const [topicCounts, setTopicCounts] = useState<Record<TopicCategory | 'pinned' | 'all', number>>({
+    all: 0,
+    pinned: 0,
+    safety: 0,
+    maintenance: 0,
+    operations: 0,
+    hr: 0,
+    compliance: 0,
+    incidents: 0,
+    general: 0,
+  });
+  const [userChannelIds, setUserChannelIds] = useState<string[]>([]);
 
-  // Calculate topic counts for filter badges
-  const topicCounts = useMemo(() => {
-    const counts: Record<TopicCategory | 'pinned' | 'all', number> = {
-      all: conversations.length,
-      pinned: conversations.filter(c => c.is_pinned).length,
-      safety: conversations.filter(c => c.topic_category === 'safety').length,
-      maintenance: conversations.filter(c => c.topic_category === 'maintenance').length,
-      operations: conversations.filter(c => c.topic_category === 'operations').length,
-      hr: conversations.filter(c => c.topic_category === 'hr').length,
-      compliance: conversations.filter(c => c.topic_category === 'compliance').length,
-      incidents: conversations.filter(c => c.topic_category === 'incidents').length,
-      general: conversations.filter(c => c.topic_category === 'general' || !c.topic_category).length,
+  // Get user's channel IDs
+  useEffect(() => {
+    const fetchUserChannels = async () => {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('messaging_channel_members')
+        .select('channel_id')
+        .eq('user_id', user.id);
+      
+      if (data) {
+        setUserChannelIds(data.map(m => m.channel_id));
+      }
     };
-    return counts;
-  }, [conversations]);
+    
+    fetchUserChannels();
+  }, [user?.id]);
+
+  // Fetch message topic counts (per-message topics, not conversation topics)
+  const fetchTopicCounts = useCallback(async () => {
+    if (userChannelIds.length === 0) {
+      setTopicCounts({
+        all: conversations.length,
+        pinned: conversations.filter(c => c.is_pinned).length,
+        safety: 0,
+        maintenance: 0,
+        operations: 0,
+        hr: 0,
+        compliance: 0,
+        incidents: 0,
+        general: 0,
+      });
+      return;
+    }
+
+    try {
+      const { data } = await supabase
+        .from('messaging_messages')
+        .select('topic, channel_id')
+        .in('channel_id', userChannelIds)
+        .not('topic', 'is', null)
+        .is('deleted_at', null);
+
+      const counts: Record<TopicCategory | 'pinned' | 'all', number> = {
+        all: conversations.length,
+        pinned: conversations.filter(c => c.is_pinned).length,
+        safety: 0,
+        maintenance: 0,
+        operations: 0,
+        hr: 0,
+        compliance: 0,
+        incidents: 0,
+        general: 0,
+      };
+
+      data?.forEach((msg: any) => {
+        if (msg.topic && counts[msg.topic as TopicCategory] !== undefined) {
+          counts[msg.topic as TopicCategory] = (counts[msg.topic as TopicCategory] || 0) + 1;
+        }
+      });
+
+      setTopicCounts(counts);
+    } catch (error) {
+      console.error('Error fetching topic counts:', error);
+    }
+  }, [userChannelIds, conversations]);
+
+  // Initial fetch and refresh when dependencies change
+  useEffect(() => {
+    fetchTopicCounts();
+  }, [fetchTopicCounts]);
+
+  // Real-time subscription for message topic updates
+  useEffect(() => {
+    if (userChannelIds.length === 0) return;
+
+    const channel = supabase
+      .channel('message-topic-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'messaging_messages',
+          filter: `channel_id=in.(${userChannelIds.join(',')})`,
+        },
+        (payload) => {
+          // Refresh topic counts when any message topic changes
+          console.log('Message topic changed, refreshing counts:', payload);
+          fetchTopicCounts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userChannelIds, fetchTopicCounts]);
 
   // Filter conversations by topic and search term
   const filteredConversations = useMemo(() => {
@@ -94,12 +191,30 @@ export function ConversationList({
   // Toggle pin status
   const togglePin = async (conversationId: string, currentPinStatus: boolean) => {
     try {
+      const newPinStatus = !currentPinStatus;
+      const updateData: { is_pinned: boolean; pinned_at?: string | null; pinned_by?: string | null } = {
+        is_pinned: newPinStatus,
+      };
+
+      if (newPinStatus) {
+        // When pinning, set pinned_at and pinned_by
+        updateData.pinned_at = new Date().toISOString();
+        updateData.pinned_by = user?.id || null;
+      } else {
+        // When unpinning, clear pinned_at and pinned_by
+        updateData.pinned_at = null;
+        updateData.pinned_by = null;
+      }
+
       const { error } = await supabase
         .from('messaging_channels')
-        .update({ is_pinned: !currentPinStatus })
+        .update(updateData)
         .eq('id', conversationId);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error toggling pin:', error);
+        throw error;
+      }
       await refresh();
     } catch (error) {
       console.error('Error toggling pin:', error);
@@ -170,17 +285,50 @@ export function ConversationList({
           </div>
         </div>
 
-        {/* Topic Filter */}
-        <div className="flex-shrink-0">
-          <TopicFilter 
-            currentFilters={filters}
-            onFilterChange={setFilters}
-            counts={topicCounts}
-          />
+        {/* Topic Filter - Expandable */}
+        <div className="flex-shrink-0 border-b border-white/[0.06]">
+          <button
+            onClick={() => setIsTopicFilterExpanded(!isTopicFilterExpanded)}
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-medium text-white/70">Filter by Topic</h3>
+              {(filters.topicCategory || filters.isPinned) && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#EC4899]/30 text-[#EC4899]">
+                  Active
+                </span>
+              )}
+            </div>
+            {isTopicFilterExpanded ? (
+              <ChevronUp className="w-4 h-4 text-white/60" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-white/60" />
+            )}
+          </button>
+          
+          {isTopicFilterExpanded && (
+            <div className="px-4 pb-4">
+              <TopicFilter 
+                currentFilters={filters}
+                onFilterChange={setFilters}
+                counts={topicCounts}
+              />
+            </div>
+          )}
         </div>
 
-      {/* Conversations List - Scrollable */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      {/* Show FilteredMessagesView if topic filter is active, otherwise show conversations */}
+      {filters.topicCategory ? (
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <FilteredMessagesView
+            topic={filters.topicCategory}
+            onClearFilter={() => setFilters({ ...filters, topicCategory: undefined })}
+            userChannelIds={userChannelIds}
+          />
+        </div>
+      ) : (
+        /* Conversations List - Scrollable */
+        <div className="flex-1 overflow-y-auto min-h-0">
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-white/20 mb-4" />
@@ -219,11 +367,11 @@ export function ConversationList({
                         }`}>
                           {name}
                         </h3>
-                        {conversation.last_message_at && (
+                        {(conversation.last_message_at || conversation.last_message?.created_at) && (
                           <span className="text-xs text-white/40 flex-shrink-0 ml-2">
-                            {formatDistanceToNow(new Date(conversation.last_message_at), {
-                              addSuffix: true,
-                            })}
+                            {formatConversationTime(
+                              conversation.last_message_at || conversation.last_message?.created_at
+                            )}
                           </span>
                         )}
                       </div>
@@ -277,7 +425,8 @@ export function ConversationList({
             })}
           </div>
         )}
-      </div>
+        </div>
+      )}
       </div>
 
       {/* Start Conversation Modal */}

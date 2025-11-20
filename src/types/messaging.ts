@@ -95,6 +95,8 @@ export interface Message {
   is_task?: boolean;
   task_id?: string | null;
   is_system?: boolean;
+  // Topic tagging (per-message)
+  topic?: TopicCategory | null;
   // Workflow integration fields (stored in metadata)
   action_suggested?: boolean;
   action_taken?: boolean;

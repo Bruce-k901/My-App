@@ -16,6 +16,7 @@ interface UseMessagesReturn {
   error: string | null;
   hasMore: boolean;
   loadMore: () => Promise<void>;
+  refetchMessages: () => Promise<void>;
   sendMessage: (content: string, replyToId?: string) => Promise<Message | null>;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
@@ -42,7 +43,7 @@ export function useMessages({
     try {
       setError(null);
 
-      // Load messages with reply_to relationship
+      // Load messages - fetch parent messages separately to avoid relationship query issues
       let query = supabase
         .from("messaging_messages")
         .select(`
@@ -59,15 +60,7 @@ export function useMessages({
           file_size,
           file_type,
           metadata,
-          reply_to:messaging_messages!parent_message_id(
-            id,
-            content,
-            sender_id,
-            created_at,
-            message_type,
-            file_name,
-            metadata
-          )
+          topic
         `)
         .eq("channel_id", conversationId)
         .is("deleted_at", null)
@@ -102,6 +95,36 @@ export function useMessages({
 
       // Get current user info for own messages (from login/auth)
       const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      // Fetch parent messages (reply_to) separately
+      const parentMessageIds = [...new Set(data.map((msg: any) => msg.parent_message_id).filter(Boolean))];
+      let parentMessagesMap = new Map();
+      
+      if (parentMessageIds.length > 0) {
+        try {
+          const parentQuery = supabase
+            .from("messaging_messages")
+            .select(`
+              id,
+              content,
+              sender_id,
+              created_at,
+              message_type,
+              file_name,
+              metadata
+            `);
+          
+          const { data: parentMessages } = parentMessageIds.length === 1
+            ? await parentQuery.eq("id", parentMessageIds[0])
+            : await parentQuery.in("id", parentMessageIds);
+          
+          if (parentMessages) {
+            parentMessagesMap = new Map(parentMessages.map((msg: any) => [msg.id, msg]));
+          }
+        } catch (err) {
+          console.warn("Error fetching parent messages:", err);
+        }
+      }
 
       // Fetch delivery and read status for all messages
       const messageIds = data.map((msg: any) => msg.id);
@@ -221,37 +244,29 @@ export function useMessages({
           }
         }
 
-        // Handle reply_to - it might be an array or object
-        // IMPORTANT: Only set replyTo if parent_message_id actually exists
+        // Handle reply_to - fetch from parentMessagesMap
         let replyTo = null;
         const replyToId = msg.parent_message_id;
-        if (replyToId && msg.reply_to) {
-          if (Array.isArray(msg.reply_to) && msg.reply_to.length > 0) {
-            replyTo = msg.reply_to[0];
-          } else if (typeof msg.reply_to === "object" && msg.reply_to.id) {
-            // Only use reply_to if it has an id (valid reply)
-            replyTo = msg.reply_to;
-          }
-
-          // If we have a reply_to, try to get its sender info (fast lookup only)
-          if (replyTo && replyTo.sender_id) {
-            // Try profilesMap first (already loaded)
-            let replySender = profilesMap.get(replyTo.sender_id);
-
-            // Try metadata if not in map
-            if (!replySender && replyTo.metadata?.sender_name) {
+        if (replyToId) {
+          const parentMessage = parentMessagesMap.get(replyToId);
+          if (parentMessage) {
+            // Get sender info for parent message
+            let replySender = null;
+            
+            // Try metadata first (stored at creation time)
+            if (parentMessage.metadata?.sender_name) {
               replySender = {
-                id: replyTo.sender_id,
-                full_name: replyTo.metadata.sender_name,
-                email: replyTo.metadata.sender_email || null,
+                id: parentMessage.sender_id,
+                full_name: parentMessage.metadata.sender_name,
+                email: parentMessage.metadata.sender_email || null,
               };
             }
-
+            // Try profilesMap (if we loaded profiles)
+            else if (profilesMap.has(parentMessage.sender_id)) {
+              replySender = profilesMap.get(parentMessage.sender_id);
+            }
             // If it's current user, use auth info
-            if (
-              !replySender && currentUser &&
-              replyTo.sender_id === currentUser.id
-            ) {
+            else if (currentUser && parentMessage.sender_id === currentUser.id) {
               replySender = {
                 id: currentUser.id,
                 full_name: currentUser.user_metadata?.full_name ||
@@ -260,9 +275,24 @@ export function useMessages({
                 email: currentUser.email || null,
               };
             }
+            // Fallback: create a basic sender object with just the ID
+            // We'll show "Unknown" in the UI if we don't have sender info
+            if (!replySender && parentMessage.sender_id) {
+              replySender = {
+                id: parentMessage.sender_id,
+                full_name: null,
+                email: null,
+              };
+            }
 
             replyTo = {
-              ...replyTo,
+              id: parentMessage.id,
+              content: parentMessage.content,
+              sender_id: parentMessage.sender_id,
+              created_at: parentMessage.created_at,
+              message_type: parentMessage.message_type,
+              file_name: parentMessage.file_name,
+              metadata: parentMessage.metadata,
               sender: replySender,
             };
           }
@@ -337,6 +367,25 @@ export function useMessages({
         email: user.email || null,
       };
 
+      // Find the parent message if replying
+      let replyToMessage: Message | null = null;
+      if (replyToId) {
+        // Find the parent message in current messages
+        const parentMsg = messages.find((m) => m.id === replyToId);
+        if (parentMsg) {
+          replyToMessage = {
+            id: parentMsg.id,
+            content: parentMsg.content,
+            sender_id: parentMsg.sender_id,
+            created_at: parentMsg.created_at,
+            message_type: parentMsg.message_type,
+            file_name: parentMsg.file_name,
+            metadata: parentMsg.metadata,
+            sender: parentMsg.sender,
+          };
+        }
+      }
+
       // Optimistically create a temporary message
       const tempId = `temp-${Date.now()}`;
       const tempMessage: Message = {
@@ -358,6 +407,7 @@ export function useMessages({
         edited_at: null,
         deleted_at: null,
         sender: senderInfo,
+        reply_to: replyToMessage,
       };
 
       // Add optimistically to state immediately
@@ -442,11 +492,11 @@ export function useMessages({
       const enrichedMessage: Message = {
         ...message,
         sender: senderInfo, // Use sender info we already have
-        reply_to: null, // Will be populated if needed
+        reply_to: replyToMessage, // Use reply_to we found earlier
       } as Message;
 
-      // If there's a reply_to_id, try to find the replied message in current messages
-      if (replyToId) {
+      // If there's a reply_to_id and we don't have reply_to yet, try to find it
+      if (replyToId && !replyToMessage) {
         setMessages((prev) => {
           const repliedToMessage = prev.find((m: Message) =>
             m.id === replyToId
@@ -739,11 +789,31 @@ export function useMessages({
                   "🔄 Updating existing message in real-time:",
                   messageId,
                 );
+                
+                // Handle reply_to for existing message update
+                let replyToMessage: Message | null = null;
+                if (messageData.parent_message_id) {
+                  const parentMsg = prev.find((m: Message) => m.id === messageData.parent_message_id);
+                  if (parentMsg) {
+                    replyToMessage = {
+                      id: parentMsg.id,
+                      content: parentMsg.content,
+                      sender_id: parentMsg.sender_id,
+                      created_at: parentMsg.created_at,
+                      message_type: parentMsg.message_type,
+                      file_name: parentMsg.file_name,
+                      metadata: parentMsg.metadata,
+                      sender: parentMsg.sender,
+                    };
+                  }
+                }
+                
                 return prev.map((msg) =>
                   msg.id === messageId
                     ? {
                       ...enrichedMessage,
                       sender: existingMsg.sender || enrichedMessage.sender,
+                      reply_to: replyToMessage || existingMsg.reply_to,
                     }
                     : msg
                 );
@@ -770,6 +840,7 @@ export function useMessages({
                     created_at: repliedToMessage.created_at,
                     message_type: repliedToMessage.message_type,
                     file_name: repliedToMessage.file_name,
+                    metadata: repliedToMessage.metadata,
                     sender: repliedToMessage.sender,
                   };
                 }
@@ -911,16 +982,22 @@ export function useMessages({
     };
   }, [conversationId, markAsRead]);
 
+  const refetchMessages = useCallback(async () => {
+    setOldestMessageId(null);
+    setHasMore(true);
+    await loadMessages();
+  }, [loadMessages]);
+
   return {
     messages,
     loading,
     error,
     hasMore,
     loadMore,
+    refetchMessages,
     sendMessage,
     editMessage,
     deleteMessage,
     markAsRead,
-    markAsDelivered,
   };
 }

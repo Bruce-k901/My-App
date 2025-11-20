@@ -3,15 +3,95 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '@/hooks/useMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
-import { format, formatDistanceToNow } from 'date-fns';
-import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare } from 'lucide-react';
+import { formatMessageTime } from '@/lib/utils/dateUtils';
+import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare, Tag } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import type { Message, Conversation } from '@/types/messaging';
+import { toast } from 'sonner';
+import type { Message, Conversation, TopicCategory } from '@/types/messaging';
 import ConvertToTaskModal from './ConvertToTaskModal';
+import CreateTaskModal from './CreateTaskModal';
 import ConvertToCalloutModal from './ConvertToCalloutModal';
+import ForwardMessageModal from './ForwardMessageModal';
+import TopicTagModal from './TopicTagModal';
 import { ActionPrompt } from './ActionPrompt';
 import { analyzeMessage } from '@/lib/messaging/detectAction';
+
+// Topic options for tagging messages
+const TOPICS: Array<{ label: string; value: TopicCategory; color: string }> = [
+  { label: '🛡️ Safety', value: 'safety', color: 'text-red-500' },
+  { label: '🔧 Maintenance', value: 'maintenance', color: 'text-orange-500' },
+  { label: '🔄 Operations', value: 'operations', color: 'text-cyan-500' },
+  { label: '👥 HR', value: 'hr', color: 'text-pink-500' },
+  { label: '✅ Compliance', value: 'compliance', color: 'text-green-500' },
+  { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-600' },
+  { label: '💬 General', value: 'general', color: 'text-gray-400' },
+];
+
+const getTopicLabel = (topic: TopicCategory): string => {
+  return TOPICS.find(t => t.value === topic)?.label || topic;
+};
+
+const getTopicColor = (topic: TopicCategory): string => {
+  return TOPICS.find(t => t.value === topic)?.color || 'text-gray-400';
+};
+
+// File attachment display component
+function FileAttachmentDisplay({ file }: { file: { url: string; name: string; size: number; type: string } }) {
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  };
+
+  const getFileIcon = (type: string) => {
+    if (type.includes('pdf')) return '📄';
+    if (type.includes('image')) return '🖼️';
+    if (type.includes('video')) return '🎥';
+    if (type.includes('word') || type.includes('document')) return '📝';
+    if (type.includes('excel') || type.includes('spreadsheet')) return '📊';
+    return '📎';
+  };
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback: just open in new tab
+      window.open(file.url, '_blank');
+    }
+  };
+
+  return (
+    <a
+      href={file.url}
+      onClick={handleDownload}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-center gap-3 p-3 rounded-lg border border-white/[0.06] hover:bg-white/[0.06] transition max-w-sm"
+    >
+      <span className="text-2xl flex-shrink-0">{getFileIcon(file.type)}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-pink-400 truncate group-hover:text-pink-300">
+          {file.name}
+        </div>
+        <div className="text-xs text-white/40">{formatFileSize(file.size)}</div>
+      </div>
+      <span className="text-white/40 group-hover:text-white/60 transition">↗</span>
+    </a>
+  );
+}
 
 interface MessageThreadProps {
   conversationId: string;
@@ -28,9 +108,12 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [taskModalMessage, setTaskModalMessage] = useState<Message | null>(null);
+  const [createTaskModalMessage, setCreateTaskModalMessage] = useState<Message | null>(null);
   const [calloutModalMessage, setCalloutModalMessage] = useState<Message | null>(null);
+  const [forwardModalMessage, setForwardModalMessage] = useState<Message | null>(null);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [dismissedActions, setDismissedActions] = useState<Set<string>>(new Set());
+  const [topicTagMessage, setTopicTagMessage] = useState<Message | null>(null);
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Fetch conversation details for context
@@ -85,19 +168,6 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
   const isOwnMessage = (message: Message) => message.sender_id === user?.id;
 
-  const formatMessageTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-
-    if (diffInHours < 24) {
-      return format(date, 'HH:mm');
-    } else if (diffInHours < 168) {
-      return format(date, 'EEE HH:mm');
-    } else {
-      return format(date, 'MMM d, HH:mm');
-    }
-  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -125,12 +195,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   };
 
   const handleForward = (message: Message) => {
-    // TODO: Implement forward functionality - open forward modal
-    // For now, copy the message content with forward prefix
-    const forwardText = `Forwarded message:\n"${message.content}"\n- ${message.sender?.full_name || 'Unknown'}`;
-    navigator.clipboard.writeText(forwardText).catch(console.error);
-    // Show a toast or notification
-    alert('Message copied to clipboard. Paste it in the conversation you want to forward to.');
+    setForwardModalMessage(message);
   };
 
   const handleReply = (message: Message) => {
@@ -184,6 +249,25 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       setCalloutModalMessage(message);
     } else {
       setTaskModalMessage(message);
+    }
+  };
+
+  const handleTopicSelect = async (topic: TopicCategory | null) => {
+    if (!topicTagMessage) return;
+
+    try {
+      const { error } = await supabase
+        .from('messaging_messages')
+        .update({ topic })
+        .eq('id', topicTagMessage.id);
+      
+      if (error) throw error;
+      
+      // Refresh messages to show updated tag
+      messagesHook.refetchMessages();
+      setTopicTagMessage(null);
+    } catch (error) {
+      console.error('Error updating topic tag:', error);
     }
   };
 
@@ -257,7 +341,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     </div>
                   )}
 
-                  {message.reply_to && message.reply_to.id && message.reply_to.content && (
+                  {message.reply_to && message.reply_to.id && (
                     <div
                       className={`mb-2 px-3 py-2 bg-white/[0.08] border-l-3 border-pink-500/70 rounded text-xs ${
                         isOwn ? 'ml-auto' : ''
@@ -289,7 +373,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         ) : message.reply_to.message_type === 'file' ? (
                           <span className="italic break-all">📎 {message.reply_to.file_name || 'File'}</span>
                         ) : (
-                          message.reply_to.content
+                          message.reply_to.content || 'Message'
                         )}
                       </div>
                     </div>
@@ -303,28 +387,23 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     }`}
                   >
                     {message.message_type === 'image' && message.file_url ? (
-                      <img
-                        src={message.file_url}
-                        alt={message.file_name || 'Image'}
-                        className="max-w-full h-auto rounded-lg mb-2"
-                        style={{ maxWidth: '100%', height: 'auto' }}
-                      />
+                      <div className="max-w-xs md:max-w-sm mb-2">
+                        <img
+                          src={message.file_url}
+                          alt={message.file_name || 'Image'}
+                          className="rounded-lg cursor-pointer hover:opacity-90 transition w-full h-auto max-h-64 object-contain"
+                          onClick={() => window.open(message.file_url || '', '_blank')}
+                        />
+                      </div>
                     ) : message.message_type === 'file' && message.file_url ? (
-                      <a
-                        href={message.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 text-pink-400 hover:text-pink-300 break-words max-w-full"
-                      >
-                        <span className="break-all text-sm sm:text-base min-w-0 max-w-full">
-                          {message.file_name || 'Download file'}
-                        </span>
-                        {message.file_size && (
-                          <span className="text-xs text-white/40 whitespace-nowrap flex-shrink-0">
-                            ({(message.file_size / 1024).toFixed(1)} KB)
-                          </span>
-                        )}
-                      </a>
+                      <FileAttachmentDisplay
+                        file={{
+                          url: message.file_url,
+                          name: message.file_name || 'Download file',
+                          size: message.file_size || 0,
+                          type: message.file_type || 'application/octet-stream',
+                        }}
+                      />
                     ) : (
                       <p className="text-sm whitespace-pre-wrap break-words">
                         {message.content}
@@ -335,6 +414,16 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       <span className="text-xs text-white/30 italic ml-2">
                         (edited)
                       </span>
+                    )}
+
+                    {/* Topic badge */}
+                    {message.topic && (
+                      <div className="flex items-center gap-1 text-xs mt-2">
+                        <Tag className="w-3 h-3" />
+                        <span className={getTopicColor(message.topic)}>
+                          {getTopicLabel(message.topic)}
+                        </span>
+                      </div>
                     )}
 
                     <div className="flex items-center justify-between mt-1">
@@ -423,6 +512,17 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 </>
                               )}
                             </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCreateTaskModalMessage(message);
+                                setActiveMenuId(null);
+                              }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                            >
+                              <CheckSquare className="w-4 h-4" />
+                              Create Task
+                            </button>
                             {!message.is_task && message.message_type === 'text' && (
                               <button
                                 onClick={(e) => {
@@ -436,6 +536,19 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 Convert to Task
                               </button>
                             )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTopicTagMessage(message);
+                                setActiveMenuId(null);
+                              }}
+                              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                                message.topic ? 'text-[#EC4899]' : 'text-gray-700'
+                              }`}
+                            >
+                              <Tag className="w-4 h-4" />
+                              {message.topic ? `Tagged: ${getTopicLabel(message.topic)}` : 'Add topic tag'}
+                            </button>
                             {isOwn && (
                               <button
                                 onClick={async (e) => {
@@ -506,6 +619,22 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Create Task Modal */}
+      {createTaskModalMessage && (
+        <CreateTaskModal
+          message={createTaskModalMessage}
+          conversationContext={{
+            site_id: conversation?.site_id || undefined,
+            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
+          }}
+          onClose={() => setCreateTaskModalMessage(null)}
+          onSuccess={(taskId) => {
+            setCreateTaskModalMessage(null);
+            toast.success('Task created successfully!');
+          }}
+        />
+      )}
+
       {/* Convert to Task Modal */}
       {taskModalMessage && (
         <ConvertToTaskModal
@@ -535,6 +664,29 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
             setCalloutModalMessage(null);
             // Messages will update automatically via real-time subscription
           }}
+        />
+      )}
+
+      {/* Forward Message Modal */}
+      {forwardModalMessage && (
+        <ForwardMessageModal
+          message={forwardModalMessage}
+          isOpen={!!forwardModalMessage}
+          onClose={() => setForwardModalMessage(null)}
+          onSuccess={() => {
+            setForwardModalMessage(null);
+            // Messages will update automatically via real-time subscription
+          }}
+        />
+      )}
+
+      {/* Topic Tag Modal */}
+      {topicTagMessage && (
+        <TopicTagModal
+          isOpen={!!topicTagMessage}
+          onClose={() => setTopicTagMessage(null)}
+          currentTopic={topicTagMessage.topic || null}
+          onSelectTopic={handleTopicSelect}
         />
       )}
     </div>

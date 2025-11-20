@@ -115,11 +115,9 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
   };
 
   return (
-    <div className="bg-white/[0.02] border-b border-white/[0.06] p-4">
-      <h3 className="text-sm font-medium text-white/60 mb-3">Filter by Topic</h3>
-      
-      {/* Horizontal scrollable filter chips */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+    <div>
+      {/* Wrap to multiple rows on desktop, scroll on mobile */}
+      <div className="flex flex-wrap gap-2">
         {categories.map((category) => {
           const config = topicConfig[category];
           const Icon = config.icon;

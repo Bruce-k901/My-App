@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquare, FileText, Image as ImageIcon, CheckSquare, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Message } from '@/types/messaging';
+import MessageImageGallery from './MessageImageGallery';
 
 interface ConversationContentTabsProps {
   conversationId: string;
@@ -14,6 +15,7 @@ type TabType = 'messages' | 'files' | 'images' | 'tasks';
 export default function ConversationContentTabs({ conversationId }: ConversationContentTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('messages');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +24,8 @@ export default function ConversationContentTabs({ conversationId }: Conversation
     const loadMessages = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Load messages
+        const { data: messagesData, error } = await supabase
           .from('messaging_messages')
           .select('*')
           .eq('channel_id', conversationId)
@@ -30,15 +33,82 @@ export default function ConversationContentTabs({ conversationId }: Conversation
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setMessages(data || []);
+
+        // Fetch sender profiles separately
+        if (messagesData && messagesData.length > 0) {
+          const senderIds = [...new Set(messagesData.map(m => m.sender_id).filter(Boolean))];
+          if (senderIds.length > 0) {
+            const query = supabase.from('profiles').select('id, full_name, email');
+            const { data: profiles } = senderIds.length === 1
+              ? await query.eq('id', senderIds[0])
+              : await query.in('id', senderIds);
+            
+            if (profiles) {
+              const profilesMap = new Map(profiles.map(p => [p.id, p]));
+              // Enrich messages with sender data
+              const enrichedMessages = messagesData.map(msg => ({
+                ...msg,
+                sender: profilesMap.get(msg.sender_id) || null,
+                sender_name: profilesMap.get(msg.sender_id)?.full_name || null,
+              }));
+              setMessages(enrichedMessages);
+            } else {
+              setMessages(messagesData);
+            }
+          } else {
+            setMessages(messagesData);
+          }
+        } else {
+          setMessages([]);
+        }
       } catch (error) {
         console.error('Error loading messages:', error);
+        setMessages([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadMessages();
+
+    // Load tasks created from messages in this conversation
+    const loadTasks = async () => {
+      try {
+        // Get all message IDs from this conversation
+        const { data: conversationMessages } = await supabase
+          .from('messaging_messages')
+          .select('id')
+          .eq('channel_id', conversationId)
+          .is('deleted_at', null);
+
+        if (!conversationMessages || conversationMessages.length === 0) {
+          setTasks([]);
+          return;
+        }
+
+        const messageIds = conversationMessages.map(m => m.id);
+
+        // Fetch tasks that were created from these messages
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .in('created_from_message_id', messageIds)
+          .order('created_at', { ascending: false });
+
+        if (tasksError) {
+          console.error('Error loading tasks:', tasksError);
+          setTasks([]);
+          return;
+        }
+
+        setTasks(tasksData || []);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+        setTasks([]);
+      }
+    };
+
+    loadTasks();
 
     // Subscribe to new messages
     const channel = supabase
@@ -53,6 +123,20 @@ export default function ConversationContentTabs({ conversationId }: Conversation
         },
         (payload) => {
           setMessages((prev) => [payload.new as Message, ...prev]);
+          // Reload tasks in case a new task was created from this message
+          loadTasks();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+        },
+        () => {
+          // Reload tasks when tasks table changes
+          loadTasks();
         }
       )
       .subscribe();
@@ -64,7 +148,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
 
   const files = messages.filter((m) => m.message_type === 'file' && m.file_url);
   const images = messages.filter((m) => m.message_type === 'image' && m.file_url);
-  const tasks = messages.filter((m) => m.is_task && m.task_id);
+  // Tasks are now fetched separately from the tasks table
 
   const tabs = [
     { id: 'messages' as TabType, label: 'Messages', icon: MessageSquare, count: messages.length },
@@ -129,13 +213,14 @@ export default function ConversationContentTabs({ conversationId }: Conversation
       </div>
 
       {/* Content */}
-      <div className="p-4 max-h-64 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {activeTab === 'files' && (
-          <div className="space-y-2">
-            {files.length === 0 ? (
-              <div className="text-center py-8 text-white/40 text-sm">No files shared</div>
-            ) : (
-              files.map((file) => (
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
+            <div className="space-y-2">
+              {files.length === 0 ? (
+                <div className="text-center py-8 text-white/40 text-sm">No files shared</div>
+              ) : (
+                files.map((file) => (
                 <div
                   key={file.id}
                   className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] transition-colors"
@@ -163,65 +248,82 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                 </div>
               ))
             )}
+            </div>
           </div>
         )}
 
         {activeTab === 'images' && (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="h-full overflow-hidden flex flex-col">
             {images.length === 0 ? (
-              <div className="col-span-3 text-center py-8 text-white/40 text-sm">No images shared</div>
+              <div className="flex flex-col items-center justify-center h-full text-white/40">
+                <span className="text-4xl mb-2">🖼️</span>
+                <p className="text-sm">No images in this conversation</p>
+              </div>
             ) : (
-              images.map((image) => (
-                <div
-                  key={image.id}
-                  className="relative aspect-square bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden group cursor-pointer"
-                  onClick={() => window.open(image.file_url || '', '_blank')}
-                >
-                  {image.file_url && (
-                    <img
-                      src={image.file_url}
-                      alt={image.file_name || 'Image'}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                </div>
-              ))
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <MessageImageGallery
+                  images={images.map(img => ({
+                    id: img.id,
+                    file_url: img.file_url || '',
+                    file_name: img.file_name || 'Image',
+                    created_at: img.created_at,
+                    sender_name: img.sender?.full_name || img.sender?.email?.split('@')[0],
+                    sender: img.sender,
+                  }))}
+                />
+              </div>
             )}
           </div>
         )}
 
         {activeTab === 'tasks' && (
-          <div className="space-y-2">
-            {tasks.length === 0 ? (
-              <div className="text-center py-8 text-white/40 text-sm">No tasks created</div>
-            ) : (
-              tasks.map((task) => (
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
+            <div className="space-y-2">
+              {tasks.length === 0 ? (
+                <div className="text-center py-8 text-white/40 text-sm">No tasks created from messages</div>
+              ) : (
+                tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg"
+                  className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] transition cursor-pointer"
+                  onClick={() => {
+                    window.location.href = `/dashboard/tasks?task=${task.id}`;
+                  }}
                 >
-                  <CheckSquare className="h-5 w-5 text-green-400 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{task.content}</p>
-                    {task.task_id && (
-                      <p className="text-xs text-white/40">Task ID: {task.task_id.substring(0, 8)}...</p>
-                    )}
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-sm font-medium text-white">
+                      {task.title}
+                    </h4>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      task.status === 'todo' ? 'bg-yellow-500/20 text-yellow-400' :
+                      task.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
+                      task.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                      'bg-gray-500/20 text-gray-400'
+                    }`}>
+                      {task.status}
+                    </span>
                   </div>
-                  {task.task_id && (
-                    <button
-                      onClick={() => {
-                        // Navigate to task detail page
-                        window.location.href = `/dashboard/tasks?task=${task.task_id}`;
-                      }}
-                      className="px-3 py-1.5 text-xs bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
-                    >
-                      View Task
-                    </button>
+                  {task.description && (
+                    <p className="text-xs text-white/60 mb-2 line-clamp-2">{task.description}</p>
                   )}
+                  {task.due_date && (
+                    <p className="text-xs text-white/40 mb-2">
+                      Due: {new Date(task.due_date).toLocaleDateString()}
+                    </p>
+                  )}
+                  <button
+                    className="mt-2 text-xs text-[#EC4899] hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = `/dashboard/tasks?task=${task.id}`;
+                    }}
+                  >
+                    View Task →
+                  </button>
                 </div>
               ))
             )}
+            </div>
           </div>
         )}
       </div>

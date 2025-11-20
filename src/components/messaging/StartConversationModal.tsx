@@ -31,8 +31,6 @@ export function StartConversationModal({
   const [users, setUsers] = useState<Profile[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
-  const [topic, setTopic] = useState('');
-  const [topicCategory, setTopicCategory] = useState<TopicCategory>('general');
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
 
@@ -121,11 +119,9 @@ export function StartConversationModal({
       if (!user) throw new Error('Not authenticated');
 
       const conversationData: any = {
-        type: conversationType,
+        channel_type: conversationType,
         company_id: companyId,
         created_by: user.id,
-        topic_category: topicCategory,
-        topic: topic.trim() || null,
       };
 
       if (conversationType === 'group' && groupName.trim()) {
@@ -169,8 +165,6 @@ export function StartConversationModal({
     setConversationType('direct');
     setSelectedUsers([]);
     setGroupName('');
-    setTopic('');
-    setTopicCategory('general');
     setSearchTerm('');
     onClose();
   };
@@ -245,36 +239,6 @@ export function StartConversationModal({
               />
             </div>
           )}
-
-          {/* Topic Category Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-white/80">Topic Category</label>
-            <select
-              value={topicCategory}
-              onChange={(e) => setTopicCategory(e.target.value as TopicCategory)}
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
-            >
-              <option value="general">General</option>
-              <option value="safety">Safety</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="operations">Operations</option>
-              <option value="hr">HR</option>
-              <option value="compliance">Compliance</option>
-              <option value="incidents">Incidents</option>
-            </select>
-          </div>
-
-          {/* Topic Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-white/80">Topic (Optional)</label>
-            <input
-              type="text"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="e.g., Freezer temperature issue"
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
-            />
-          </div>
 
           {/* User Search */}
           <div className="space-y-2">
