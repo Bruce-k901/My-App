@@ -210,7 +210,9 @@ export default function TaskCompletionModal({
         if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
           console.log('📋 [TEMPLATE FIELDS] Using pre-loaded template fields from task.template:', task.template.template_fields.length)
           loadedFields = [...task.template.template_fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+          // CRITICAL: Set state immediately and synchronously
           setTemplateFields(loadedFields)
+          console.log('✅ [TEMPLATE FIELDS] State set with', loadedFields.length, 'pre-loaded fields')
         } else if (task.template_id) {
           // Fallback: Fetch from database if not pre-loaded
           console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded, fetching from database for templateId:', task.template_id)
@@ -222,11 +224,20 @@ export default function TaskCompletionModal({
             if (loadedFields.length > 0) {
               // Double-check state was set (loadTemplateFields should have done this)
               setTemplateFields(loadedFields)
+              console.log('✅ [TEMPLATE FIELDS] State verified and set with', loadedFields.length, 'fields')
+            } else {
+              // Even if empty, set state to prevent stale data
+              setTemplateFields([])
+              console.warn('⚠️ [TEMPLATE FIELDS] No fields found, state set to empty array')
             }
           } catch (error) {
             console.error('❌ [TEMPLATE FIELDS] Error loading template fields:', error)
             loadedFields = []
+            setTemplateFields([]) // Set empty array on error
           }
+        } else {
+          console.warn('⚠️ [TEMPLATE FIELDS] No template_id available')
+          setTemplateFields([]) // Set empty array if no template_id
         }
         
         // CRITICAL: If we have template fields, extract asset IDs from them immediately
@@ -308,15 +319,27 @@ export default function TaskCompletionModal({
     
     // SAFEGUARD: Load template fields from task.template if state is empty
     // This ensures we use pre-loaded fields from Today's Tasks page even if database query fails
+    // CRITICAL: This runs after the main useEffect to catch any cases where initialization didn't load fields
     useEffect(() => {
       if (!isOpen) return
-      if (templateFields.length > 0) return // Already loaded
-      if (!task.template?.template_fields) return // No pre-loaded fields available
+      if (templateFields.length > 0) {
+        // Already loaded - verify it matches what we expect
+        console.log('✅ [TEMPLATE FIELDS] State already has', templateFields.length, 'fields')
+        return
+      }
+      if (!task.template?.template_fields) {
+        console.warn('⚠️ [TEMPLATE FIELDS] No pre-loaded fields available in task.template')
+        return // No pre-loaded fields available
+      }
       
       const preLoadedFields = task.template.template_fields
       if (Array.isArray(preLoadedFields) && preLoadedFields.length > 0) {
-        console.log('📋 [TEMPLATE FIELDS] Loading from pre-loaded task.template.template_fields:', preLoadedFields.length)
-        setTemplateFields(preLoadedFields)
+        console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Loading from pre-loaded task.template.template_fields:', preLoadedFields.length)
+        const sortedFields = [...preLoadedFields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+        setTemplateFields(sortedFields)
+        console.log('✅ [TEMPLATE FIELDS] SAFEGUARD: State set with', sortedFields.length, 'fields')
+      } else {
+        console.warn('⚠️ [TEMPLATE FIELDS] Pre-loaded fields array is empty or invalid')
       }
     }, [isOpen, task.template?.template_fields, templateFields.length])
     
