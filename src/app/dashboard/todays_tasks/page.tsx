@@ -294,6 +294,12 @@ export default function DailyChecklistPage() {
             .in('id', templateIds)
           
           if (!templatesError && templates) {
+            console.log('✅ [TEMPLATE LOADING] Fetched templates from database:', {
+              count: templates.length,
+              templateIds: templates.map((t: any) => t.id),
+              templateNames: templates.map((t: any) => t.name)
+            })
+            
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
               // CRITICAL: Log template_fields BEFORE enrichment to see what Supabase returns
               console.log('📋 [TEMPLATE LOADING] Template before enrichment:', {
@@ -333,8 +339,16 @@ export default function DailyChecklistPage() {
               acc[enriched.id] = enriched
               return acc
             }, {})
+            
+            console.log('✅ [TEMPLATE LOADING] TemplatesMap created:', {
+              size: Object.keys(templatesMap).length,
+              templateIds: Object.keys(templatesMap),
+              templatesWithFields: Object.values(templatesMap).filter((t: any) => t.template_fields && t.template_fields.length > 0).length
+            })
           } else if (templatesError) {
             console.error('❌ [TEMPLATE LOADING] Error fetching templates:', templatesError)
+          } else {
+            console.warn('⚠️ [TEMPLATE LOADING] No templates returned (templates is null/undefined)')
           }
         }
       }
@@ -405,10 +419,31 @@ export default function DailyChecklistPage() {
       }
       
       // Map tasks with templates
-      const tasksWithTemplates = data.map((task: any) => ({
-        ...task,
-        template: task.template_id ? templatesMap[task.template_id] : null
-      }))
+      const tasksWithTemplates = data.map((task: any) => {
+        const template = task.template_id ? templatesMap[task.template_id] : null
+        
+        // CRITICAL: Log template attachment for debugging
+        if (!template && task.template_id) {
+          console.warn('⚠️ [TEMPLATE ATTACHMENT] Template not found in templatesMap:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            templatesMapKeys: Object.keys(templatesMap),
+            templatesMapSize: Object.keys(templatesMap).length
+          })
+        } else if (template) {
+          console.log('✅ [TEMPLATE ATTACHMENT] Template attached to task:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            templateName: template.name,
+            templateFieldsCount: template.template_fields?.length || 0
+          })
+        }
+        
+        return {
+          ...task,
+          template: template
+        }
+      })
       
       // Filter out tasks with missing templates (orphaned tasks)
       const validTasks = tasksWithTemplates.filter(task => {
@@ -558,7 +593,9 @@ export default function DailyChecklistPage() {
               ...task,
               daypart: normalizedDaypart,
               due_time: finalTime,
-              _expandedKey: `${task.id}_${normalizedDaypart}_${index}`
+              _expandedKey: `${task.id}_${normalizedDaypart}_${index}`,
+              // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
+              template: task.template
             })
           })
           console.log(`✅ Expanded task into ${daypartsInData.length} instances`)
@@ -594,7 +631,9 @@ export default function DailyChecklistPage() {
             ...task,
             daypart: daypartStr, // Store normalized daypart
             due_time: daypartTime, // Use existing time if set, otherwise calculated
-            _expandedKey: `${task.id}_${daypartStr}`
+            _expandedKey: `${task.id}_${daypartStr}`,
+            // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
+            template: task.template
           })
           return // Skip expansion for this task
         }
@@ -634,7 +673,9 @@ export default function DailyChecklistPage() {
             daypart: daypartStr, // Set the specific daypart for this instance
             due_time: daypartTime, // Set appropriate time for this daypart
             // Create a unique key for React rendering
-            _expandedKey: `${task.id}_${daypartStr}_${daypartIndex}`
+            _expandedKey: `${task.id}_${daypartStr}_${daypartIndex}`,
+            // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
+            template: task.template
           })
         })
       })
@@ -727,7 +768,9 @@ export default function DailyChecklistPage() {
       
       const tasksWithProfiles = expandedTasks.map(task => ({
         ...task,
-        completed_by_profile: task.completed_by ? profilesMap.get(task.completed_by) : null
+        completed_by_profile: task.completed_by ? profilesMap.get(task.completed_by) : null,
+        // CRITICAL: Explicitly preserve template to ensure it's not lost during mapping
+        template: task.template
       }))
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
@@ -1084,7 +1127,9 @@ export default function DailyChecklistPage() {
           
           return {
             ...task,
-            completion_record: record
+            completion_record: record,
+            // CRITICAL: Explicitly preserve template to ensure it's not lost
+            template: task.template
           }
         })
         .filter((task): task is ChecklistTaskWithTemplate & { completion_record: any } => task !== null)
@@ -1415,6 +1460,21 @@ export default function DailyChecklistPage() {
                 key={key}
                 task={task}
                 onClick={() => {
+                  // CRITICAL: Verify template is attached before setting selected task
+                  console.log('🔍 [TASK SELECTION] Setting selected task:', {
+                    taskId: task.id,
+                    templateId: task.template_id,
+                    hasTemplate: !!task.template,
+                    templateName: task.template?.name,
+                    templateFieldsCount: task.template?.template_fields?.length || 0,
+                    templateFields: task.template?.template_fields
+                  })
+                  
+                  // Set window.selectedTask for debugging
+                  if (typeof window !== 'undefined') {
+                    (window as any).selectedTask = task
+                  }
+                  
                   setSelectedTask(task)
                   setShowCompletion(true)
                 }}
@@ -1437,6 +1497,21 @@ export default function DailyChecklistPage() {
                   key={uniqueKey}
                   task={task}
                   onClick={() => {
+                    // CRITICAL: Verify template is attached before setting selected task
+                    console.log('🔍 [TASK SELECTION] Setting selected task (upcoming):', {
+                      taskId: task.id,
+                      templateId: task.template_id,
+                      hasTemplate: !!task.template,
+                      templateName: task.template?.name,
+                      templateFieldsCount: task.template?.template_fields?.length || 0,
+                      templateFields: task.template?.template_fields
+                    })
+                    
+                    // Set window.selectedTask for debugging
+                    if (typeof window !== 'undefined') {
+                      (window as any).selectedTask = task
+                    }
+                    
                     setSelectedTask(task)
                     setShowCompletion(true)
                   }}
