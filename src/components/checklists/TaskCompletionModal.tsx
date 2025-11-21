@@ -14,6 +14,9 @@ import type { ComplianceTemplate } from '@/data/compliance-templates'
 import Image from 'next/image'
 import Link from 'next/link'
 import CheckboxCustom from '@/components/ui/CheckboxCustom'
+import { TemperatureLoggingFeature } from '@/components/templates/features/TemperatureLoggingFeature'
+import { AssetSelectionFeature } from '@/components/templates/features/AssetSelectionFeature'
+import { MonitorCalloutModal } from '@/components/templates/features/MonitorCalloutModal'
 
 interface TaskCompletionModalProps {
   task: ChecklistTaskWithTemplate
@@ -63,10 +66,22 @@ export default function TaskCompletionModal({
   
   // State for task data (assets, libraries, SOPs, RAs)
   const [selectedAssets, setSelectedAssets] = useState<any[]>([])
+  const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([]) // For AssetSelectionFeature
+  const [temperatures, setTemperatures] = useState<Array<{ assetId?: string; equipment?: string; nickname?: string; temp?: number }>>([])
+  const [allAssets, setAllAssets] = useState<Array<{ id: string; name: string; category?: string; site_name?: string }>>([])
+  const [sites, setSites] = useState<Array<{ id: string; name: string }>>([])
   const [selectedLibraries, setSelectedLibraries] = useState<Record<string, any[]>>({})
   const [sopUploads, setSopUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [raUploads, setRaUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [documentUploads, setDocumentUploads] = useState<Array<{ url: string; fileName: string }>>([])
+  const [notes, setNotes] = useState('')
+  const [isAssetSelectionExpanded, setIsAssetSelectionExpanded] = useState(true)
+  const [monitorCalloutModal, setMonitorCalloutModal] = useState<{
+    isOpen: boolean;
+    assetId?: string;
+    assetName?: string;
+    temp?: number;
+  }>({ isOpen: false })
   
   const templateNote = task.template_notes || task.template?.notes || null
   
@@ -192,7 +207,50 @@ export default function TaskCompletionModal({
       // CRITICAL: For monitoring tasks, DO NOT pre-populate temperatures
       // Monitoring tasks should start with empty temperature fields so user can record new reading
       
-      // Load temperature logs from task data (only for non-monitoring tasks)
+      // Initialize temperatures and selectedAssetIds for feature components
+      if (taskData.temperatures && Array.isArray(taskData.temperatures)) {
+        // For monitoring tasks, leave temperatures empty so user can enter new reading
+        if (!isMonitoringTask) {
+          setTemperatures(taskData.temperatures)
+        } else {
+          setTemperatures([])
+        }
+      } else {
+        setTemperatures([])
+      }
+      
+      // Initialize selectedAssetIds from task_data
+      if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets)) {
+        const assetIds = isMonitoringTask 
+          ? taskData.selectedAssets.slice(0, 1) // Only first asset for monitoring tasks
+          : taskData.selectedAssets
+        setSelectedAssetIds(assetIds)
+      } else if (task.template?.repeatable_field_name && taskData[task.template.repeatable_field_name]) {
+        const repeatableData = taskData[task.template.repeatable_field_name]
+        if (Array.isArray(repeatableData)) {
+          const assetIds = repeatableData
+            .map((item: any) => {
+              if (typeof item === 'string') return item
+              if (typeof item === 'object' && item !== null) {
+                return item.assetId || item.value || item.id || item.asset_id
+              }
+              return null
+            })
+            .filter((id): id is string => Boolean(id))
+          setSelectedAssetIds(isMonitoringTask ? assetIds.slice(0, 1) : assetIds)
+        }
+      } else {
+        setSelectedAssetIds([])
+      }
+      
+      // Initialize notes
+      if (taskData.notes) {
+        setNotes(taskData.notes)
+      } else {
+        setNotes('')
+      }
+      
+      // Load temperature logs from task data (only for non-monitoring tasks) - LEGACY
       // For monitoring tasks, leave temperatures empty so user can enter new reading
       if (!isMonitoringTask && taskData.temperatures && Array.isArray(taskData.temperatures)) {
         initialData.temperatures = taskData.temperatures;
@@ -412,6 +470,57 @@ export default function TaskCompletionModal({
       // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
       // Monitoring tasks should only show the asset that was out of range
       const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
+      // Load ALL assets for AssetSelectionFeature (filtered by company/site)
+      if (companyId) {
+        try {
+          let assetsQuery = supabase
+            .from('assets')
+            .select('id, name, category, site_id, sites(id, name)')
+            .eq('company_id', companyId)
+            .eq('archived', false)
+          
+          if (siteId) {
+            assetsQuery = assetsQuery.eq('site_id', siteId)
+          }
+          
+          const { data: allAssetsData, error: allAssetsError } = await assetsQuery.order('name')
+          
+          if (!allAssetsError && allAssetsData) {
+            const assetsWithSite = allAssetsData.map((asset: any) => {
+              const site = Array.isArray(asset.sites) ? asset.sites[0] : asset.sites
+              return {
+                id: asset.id,
+                name: asset.name,
+                category: asset.category,
+                site_name: site?.name || 'No site assigned'
+              }
+            })
+            setAllAssets(assetsWithSite)
+            
+            // Load unique sites for filter dropdown
+            const uniqueSiteIds = [...new Set(assetsWithSite.map((a: any) => a.site_id).filter(Boolean))]
+            if (uniqueSiteIds.length > 0) {
+              const { data: sitesData } = await supabase
+                .from('sites')
+                .select('id, name')
+                .in('id', uniqueSiteIds)
+                .eq('company_id', companyId)
+              
+              if (sitesData) {
+                setSites(sitesData)
+              }
+            }
+            
+            console.log('✅ Loaded all assets for selection:', {
+              assetCount: assetsWithSite.length,
+              siteCount: sites.length
+            })
+          }
+        } catch (error) {
+          console.error('Error loading all assets:', error)
+        }
+      }
       
       // CRITICAL: For PPM tasks, load the asset from task_data.source_id (or asset_id for backwards compatibility)
       // PPM tasks use source_id (not asset_id) - this is the asset ID
@@ -1771,8 +1880,51 @@ export default function TaskCompletionModal({
       // Save temperature records for each equipment/temperature entry
       const temperatureRecords: any[] = []
       
-      // Check if this is a temperature task with equipment fields
-      if (repeatableField && formData[repeatableField.field_name]) {
+      // REBUILT: Create temperature records from temperatures state (feature component)
+      if (temperatures.length > 0) {
+        for (const tempEntry of temperatures) {
+          if (tempEntry.temp !== undefined && tempEntry.temp !== null && tempEntry.temp !== '') {
+            const assetId = tempEntry.assetId
+            if (!assetId) continue
+            
+            const assetName = allAssets.find(a => a.id === assetId)?.name || tempEntry.equipment || 'Unknown Equipment'
+            const assetRange = assetTempRanges.get(assetId)
+            let status = 'ok'
+            
+            if (assetRange) {
+              const { min, max } = assetRange
+              const temp = typeof tempEntry.temp === 'number' ? tempEntry.temp : parseFloat(String(tempEntry.temp))
+              const tolerance = 2
+              const warningTolerance = 1
+              
+              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                status = 'failed'
+              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                status = 'warning'
+              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                status = 'warning'
+              }
+            }
+            
+            temperatureRecords.push({
+              company_id: companyId,
+              site_id: siteId,
+              asset_id: assetId,
+              recorded_by: profile.id,
+              reading: typeof tempEntry.temp === 'number' ? tempEntry.temp : parseFloat(String(tempEntry.temp)),
+              unit: '°C',
+              recorded_at: completedAt,
+              day_part: task.daypart || null,
+              status,
+              notes: `Recorded via task: ${task.template.name}${tempEntry.nickname ? ` (${tempEntry.nickname})` : ''}`,
+              photo_url: photoUrls.length > 0 ? photoUrls[0] : null
+            })
+          }
+        }
+      }
+      
+      // Legacy: Check if this is a temperature task with equipment fields (fallback)
+      if (temperatureRecords.length === 0 && repeatableField && formData[repeatableField.field_name]) {
         // Handle repeatable equipment list (e.g., multiple fridges)
         const equipmentList = formData[repeatableField.field_name] || []
         for (const equipment of equipmentList) {
@@ -2214,16 +2366,32 @@ export default function TaskCompletionModal({
       // This ensures compliance reporting shows all assets checked, even if no temp was recorded
       const equipmentList: any[] = []
       
-      // Get all assets from task_data (these are the assets chosen when task was created)
+      // REBUILT: Priority 1 - Use selectedAssetIds from feature component
+      let equipmentFromForm: any[] = []
+      
+      if (selectedAssetIds.length > 0) {
+        // Convert selectedAssetIds to equipment format
+        equipmentFromForm = selectedAssetIds.map(assetId => {
+          const asset = allAssets.find(a => a.id === assetId) || assetsMap.get(assetId)
+          return {
+            value: assetId,
+            asset_id: assetId,
+            id: assetId,
+            label: asset?.name || 'Unknown Equipment',
+            name: asset?.name || 'Unknown Equipment',
+            asset_name: asset?.name || 'Unknown Equipment'
+          }
+        })
+      }
+      
+      // Priority 2: Get all assets from task_data (these are the assets chosen when task was created)
       // First check formData (user's current selections)
       // Note: repeatableField is already declared above
-      let equipmentFromForm = []
-      
-      if (repeatableField && formData[repeatableField.field_name]) {
+      if (equipmentFromForm.length === 0 && repeatableField && formData[repeatableField.field_name]) {
         equipmentFromForm = formData[repeatableField.field_name] || []
       }
       
-      // Also check task_data as fallback (assets chosen when task was created)
+      // Priority 3: Also check task_data as fallback (assets chosen when task was created)
       if (equipmentFromForm.length === 0 && task.task_data && task.template?.repeatable_field_name) {
         const taskDataField = task.task_data[task.template.repeatable_field_name]
         if (Array.isArray(taskDataField)) {
@@ -2231,7 +2399,7 @@ export default function TaskCompletionModal({
         }
       }
       
-      // Also check selectedAssets state (loaded from task_data when modal opened)
+      // Priority 4: Also check selectedAssets state (loaded from task_data when modal opened)
       if (equipmentFromForm.length === 0 && selectedAssets.length > 0) {
         // Convert selectedAssets to equipment format
         equipmentFromForm = selectedAssets.map(asset => ({
@@ -2244,7 +2412,7 @@ export default function TaskCompletionModal({
         }))
       }
       
-      // Final fallback: check task_data.selectedAssets
+      // Priority 5: Final fallback: check task_data.selectedAssets
       if (equipmentFromForm.length === 0 && task.task_data?.selectedAssets && Array.isArray(task.task_data.selectedAssets)) {
         // Fetch asset names for these IDs
         const assetIds = task.task_data.selectedAssets.filter(Boolean)
@@ -2389,6 +2557,10 @@ export default function TaskCompletionModal({
         equipment_list: equipmentList, // All assets checked, with or without temps
         temperature_records_count: temperatureRecords.length,
         
+        // REBUILT: Temperatures from feature component state
+        temperatures: temperatures.length > 0 ? temperatures : (formData.temperatures || []),
+        selectedAssets: selectedAssetIds.length > 0 ? selectedAssetIds : (formData.selectedAssets || []),
+        
         // Checklist items (if any)
         checklist_items: formData.checklist_items || [],
         yes_no_checklist_items: formData.yes_no_checklist_items || [],
@@ -2396,8 +2568,8 @@ export default function TaskCompletionModal({
         // Pass/Fail result
         pass_fail_result: formData.pass_fail_result || null,
         
-        // Notes
-        notes: formData.notes || null,
+        // REBUILT: Notes from feature component state
+        notes: notes || formData.notes || null,
         
         // Monitoring task details (if created)
         monitoring_task_id: formData.monitoring_task_id || null,
@@ -3116,8 +3288,75 @@ export default function TaskCompletionModal({
 
           {/* Dynamic Fields */}
           <div className="space-y-6">
-            {/* Temperature Fields for Selected Assets - Show directly from task_data */}
-            {task.template?.evidence_types?.includes('temperature') && selectedAssets.length > 0 && (
+            {/* REBUILT: Temperature Task Section - Using Feature Components */}
+            {task.template?.evidence_types?.includes('temperature') && (
+              <>
+                {/* Asset Selection */}
+                {task.template?.repeatable_field_name && allAssets.length > 0 && (
+                  <AssetSelectionFeature
+                    selectedAssets={selectedAssetIds}
+                    assets={allAssets}
+                    sites={sites}
+                    onChange={(assetIds) => {
+                      setSelectedAssetIds(assetIds)
+                      // Update selectedAssets for legacy compatibility
+                      const updatedAssets = allAssets.filter(a => assetIds.includes(a.id))
+                      setSelectedAssets(updatedAssets)
+                    }}
+                    isExpanded={isAssetSelectionExpanded}
+                    onExpandedChange={setIsAssetSelectionExpanded}
+                  />
+                )}
+                
+                {/* Temperature Logging */}
+                <TemperatureLoggingFeature
+                  temperatures={temperatures}
+                  selectedAssets={selectedAssetIds}
+                  assets={allAssets}
+                  onChange={(temps) => {
+                    setTemperatures(temps)
+                  }}
+                  onMonitorCallout={(monitor, callout, notes, assetId, temp) => {
+                    if (callout && assetId) {
+                      handleCalloutAction(assetId)
+                    } else if (monitor && assetId) {
+                      setOutOfRangeAssetId(assetId)
+                      handleMonitorAction(assetId)
+                    }
+                  }}
+                  contractorType={task.template?.contractor_type}
+                  warnThreshold={(() => {
+                    const tempField = templateFields.find((f: any) => 
+                      f.field_type === 'number' && f.field_name?.toLowerCase().includes('temp')
+                    )
+                    return tempField?.warn_threshold
+                  })()}
+                  failThreshold={(() => {
+                    const tempField = templateFields.find((f: any) => 
+                      f.field_type === 'number' && f.field_name?.toLowerCase().includes('temp')
+                    )
+                    return tempField?.fail_threshold
+                  })()}
+                />
+                
+                {/* Notes Field */}
+                <div className="border-t border-white/10 pt-6">
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any additional notes about this task..."
+                    rows={4}
+                    className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 resize-y"
+                  />
+                </div>
+              </>
+            )}
+            
+            {/* Legacy Temperature Fields - REMOVED - Using rebuilt section above */}
+            {false && task.template?.evidence_types?.includes('temperature') && selectedAssets.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-white mb-3">
                   Temperature Readings
@@ -3442,8 +3681,8 @@ export default function TaskCompletionModal({
               </div>
             )}
             
-            {/* Temperature Field - Show when template has temperature evidence */}
-            {(task.template?.evidence_types?.includes('temperature') ||
+            {/* Legacy Temperature Field - REMOVED - Using rebuilt section above */}
+            {false && (task.template?.evidence_types?.includes('temperature') ||
               task.template?.slug === 'hot_holding_temperature_verification' ||
               task.template?.slug === 'hot-holding-temps' ||
               (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
@@ -5216,6 +5455,8 @@ export default function TaskCompletionModal({
         assetName={outOfRangeAssetId ? (selectedAssets.find(a => a.id === outOfRangeAssetId)?.name || assetsMap.get(outOfRangeAssetId)?.name) : undefined}
       />
 
+      {/* Monitor/Callout Modal is handled by TemperatureLoggingFeature component */}
+      
       {/* Callout Modal - Key ensures it resets for each unique asset */}
       {calloutAsset && (
         <CalloutModal
