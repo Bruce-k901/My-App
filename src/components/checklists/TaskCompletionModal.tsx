@@ -82,6 +82,14 @@ export default function TaskCompletionModal({
       // Set window.selectedTask for debugging
       if (typeof window !== 'undefined') {
         (window as any).selectedTask = task
+        console.log('🔍 [MODAL OPEN] Task passed to modal:', {
+          taskId: task.id,
+          templateId: task.template_id,
+          hasTemplate: !!task.template,
+          templateName: task.template?.name,
+          templateFieldsCount: task.template?.template_fields?.length || 0,
+          templateFields: task.template?.template_fields
+        })
       }
       
       // Load task data from task_data field (stored when task was created)
@@ -219,14 +227,33 @@ export default function TaskCompletionModal({
       
       // Load template fields - use task.template if available, otherwise fetch
       const initialize = async () => {
+        // CRITICAL: Debug logging to see what we have
+        console.log('🔍 [INITIALIZE] Starting initialization:', {
+          taskId: task.id,
+          templateId: task.template_id,
+          hasTemplate: !!task.template,
+          templateName: task.template?.name,
+          hasTemplateFields: !!task.template?.template_fields,
+          templateFieldsType: typeof task.template?.template_fields,
+          templateFieldsIsArray: Array.isArray(task.template?.template_fields),
+          templateFieldsCount: task.template?.template_fields?.length || 0,
+          templateFields: task.template?.template_fields
+        })
+        
         // Use template_fields from task.template if available (fastest path)
         if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
-          console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', task.template.template_fields.length)
+          console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', {
+            count: task.template.template_fields.length,
+            fieldNames: task.template.template_fields.map((f: any) => f.field_name || 'unknown')
+          })
           const sortedFields = [...task.template.template_fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
           setTemplateFields(sortedFields)
+          console.log('✅ [TEMPLATE FIELDS] Set templateFields state:', sortedFields.length)
         } else if (task.template_id) {
           // Fallback: fetch from database
-          console.log('📋 [TEMPLATE FIELDS] Fetching from database for templateId:', task.template_id)
+          console.log('📋 [TEMPLATE FIELDS] Fetching from database for templateId:', task.template_id, {
+            reason: !task.template ? 'No template object' : (!task.template.template_fields ? 'No template_fields in template' : 'template_fields is empty')
+          })
           try {
             await loadTemplateFields(task.template_id)
           } catch (error) {

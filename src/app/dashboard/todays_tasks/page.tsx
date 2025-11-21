@@ -220,10 +220,12 @@ export default function DailyChecklistPage() {
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
-        // Only show pending and in_progress tasks
-        // NOTE: We'll also filter by completion records below to catch tasks that were completed
-        // but their status wasn't updated (defensive filtering)
+        // CRITICAL: Only show pending and in_progress tasks - explicitly exclude completed/missed/skipped
+        // This is the primary filter - database should enforce this
         .in('status', ['pending', 'in_progress'])
+        // CRITICAL: Also exclude tasks with completed_at timestamp set (defensive)
+        // This catches tasks that were completed but status wasn't updated
+        .is('completed_at', null)
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
       
@@ -273,15 +275,38 @@ export default function DailyChecklistPage() {
       
       console.log('📥 Raw tasks from database:', {
         total: allTasks?.length || 0,
-        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
+        tasks: allTasks?.map(t => ({ 
+          id: t.id, 
+          status: t.status, 
+          daypart: t.daypart, 
+          flag_reason: t.flag_reason,
+          completed_at: t.completed_at 
+        }))
       })
+      
+      // CRITICAL: Defensive filter - remove any tasks that have completed_at set
+      // This catches any tasks that might have slipped through the database query
+      const tasksWithoutCompletedAt = (allTasks || []).filter((task: any) => {
+        if (task.completed_at) {
+          console.log(`❌ Task ${task.id} filtered: has completed_at timestamp (should not appear in query)`)
+          return false
+        }
+        return true
+      })
+      
+      if (tasksWithoutCompletedAt.length !== (allTasks || []).length) {
+        console.warn('⚠️ Filtered out', (allTasks || []).length - tasksWithoutCompletedAt.length, 'tasks with completed_at timestamp')
+      }
+      
+      // Use filtered tasks for the rest of the processing
+      const allTasksFiltered = tasksWithoutCompletedAt
       
       // Fetch templates separately if we have tasks
       // CRITICAL: Load ALL required fields needed by TaskCompletionModal
       // This includes: evidence_types, asset_id, repeatable_field_name, instructions, etc.
       let templatesMap: Record<string, any> = {}
-      if (allTasks && allTasks.length > 0) {
-        const templateIds = [...new Set(allTasks.map((t: any) => t.template_id).filter(Boolean))]
+      if (allTasksFiltered && allTasksFiltered.length > 0) {
+        const templateIds = [...new Set(allTasksFiltered.map((t: any) => t.template_id).filter(Boolean))]
         if (templateIds.length > 0) {
           const { data: templates, error: templatesError } = await supabase
             .from('task_templates')
@@ -355,7 +380,7 @@ export default function DailyChecklistPage() {
       
       // Filter tasks - only show tasks due TODAY
       // Database query already filters by due_date = today, but double-check here
-      const data = (allTasks || []).filter(task => {
+      const data = (allTasksFiltered || []).filter(task => {
         // CRITICAL: Only show tasks due TODAY (database should already filter, but verify)
         if (task.due_date !== todayStr) {
           console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr}`)
@@ -1020,8 +1045,7 @@ export default function DailyChecklistPage() {
       // Filter out completed tasks from active tasks
       // CRITICAL: For multi-daypart tasks, we need to check per-daypart completion
       // For single-daypart tasks, we check if the task itself has a completion record
-      // IMPORTANT: Always check completion records FIRST, even if status is 'pending'
-      // This is defensive filtering to catch tasks that were completed but status wasn't updated
+      // IMPORTANT: Check status FIRST, then completion records
       let activeTasks = tasksWithProfiles.filter(task => {
         // Check 1: CRITICAL - Skip if task status is completed, missed, or skipped
         // This should never happen since query filters by status, but defensive check
@@ -1037,7 +1061,17 @@ export default function DailyChecklistPage() {
           return false
         }
         
-        // Check 2: For multi-daypart tasks, check per-daypart completion
+        // Check 2: Check if task has completed_at timestamp (direct indicator of completion)
+        // This is the most reliable indicator - if completed_at is set, task is done
+        if (task.completed_at && task.completed_at !== null) {
+          const completedDate = new Date(task.completed_at).toISOString().split('T')[0]
+          if (completedDate === todayStr) {
+            console.log(`❌ Task ${task.id} filtered: has completed_at timestamp for today`)
+            return false
+          }
+        }
+        
+        // Check 3: For multi-daypart tasks, check per-daypart completion
         // This MUST come before the general completion check
         const taskData = task.task_data || {}
         const daypartsInData = taskData.dayparts || []
@@ -1058,40 +1092,26 @@ export default function DailyChecklistPage() {
           return true
         }
         
-        // Check 3: For single-daypart tasks (or tasks without daypart data), 
-        // skip if task has ANY completion record
-        // CRITICAL: This is defensive filtering - even if status is 'pending', 
-        // if there's a completion record, the task was completed and should be hidden
-        // Check both: tasks with completion records AND tasks completed without daypart
-        // ALSO check if task has completed_at timestamp (another indicator of completion)
-        const hasCompletionRecord = tasksWithCompletionRecords.has(task.id) || tasksCompletedWithoutDaypart.has(task.id)
-        const hasCompletedAt = task.completed_at && task.completed_at !== null
-        
-        // CRITICAL: Also check completion records directly to ensure we catch all completed tasks
-        const hasDirectCompletionRecord = allCompletionRecords.some(record => {
+        // Check 4: For single-daypart tasks (or tasks without daypart data), 
+        // skip if task has ANY completion record for today
+        // CRITICAL: Check completion records directly to ensure we catch all completed tasks
+        const hasCompletionRecordForToday = allCompletionRecords.some(record => {
           if (record.task_id !== task.id) return false
           // Verify the completion record is for today
           if (record.completed_at) {
             const recordDate = new Date(record.completed_at).toISOString().split('T')[0]
             if (recordDate !== todayStr) return false
           }
-          // For multi-daypart tasks, check if the completion record's daypart matches
-          if (task.daypart) {
-            const recordDaypart = record.completion_data?.completed_daypart
-            if (recordDaypart) {
-              return normalizeDaypart(recordDaypart) === normalizeDaypart(task.daypart)
-            }
-            // If record has no daypart but task has daypart, it's a different instance
-            return false
-          }
-          
           // For single-daypart tasks, any completion record for today means the task is completed
           return true
         })
         
+        // Also check the sets for quick lookup
+        const hasCompletionRecord = tasksWithCompletionRecords.has(task.id) || tasksCompletedWithoutDaypart.has(task.id)
+        
         // CRITICAL: Filter out if ANY completion indicator is present
-        if (hasCompletionRecord || hasCompletedAt || hasDirectCompletionRecord) {
-          console.log(`❌ Task ${task.id} filtered: has completion indicator (status: ${task.status}, hasRecord: ${hasCompletionRecord}, hasCompletedAt: ${hasCompletedAt}, hasDirectRecord: ${hasDirectCompletionRecord})`)
+        if (hasCompletionRecord || hasCompletionRecordForToday) {
+          console.log(`❌ Task ${task.id} filtered: has completion indicator (status: ${task.status}, hasRecord: ${hasCompletionRecord}, hasRecordForToday: ${hasCompletionRecordForToday})`)
           return false
         }
         
