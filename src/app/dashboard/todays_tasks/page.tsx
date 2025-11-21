@@ -629,7 +629,7 @@ export default function DailyChecklistPage() {
               due_time: finalTime,
               _expandedKey: `${task.id}_${normalizedDaypart}_${index}`,
               // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
-              template: task.template
+              template: task.template || (task.template_id ? templatesMap[task.template_id] : null)
             })
           })
           console.log(`✅ Expanded task into ${daypartsInData.length} instances`)
@@ -667,7 +667,7 @@ export default function DailyChecklistPage() {
             due_time: daypartTime, // Use existing time if set, otherwise calculated
             _expandedKey: `${task.id}_${daypartStr}`,
             // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
-            template: task.template
+            template: task.template || (task.template_id ? templatesMap[task.template_id] : null)
           })
           return // Skip expansion for this task
         }
@@ -709,7 +709,7 @@ export default function DailyChecklistPage() {
             // Create a unique key for React rendering
             _expandedKey: `${task.id}_${daypartStr}_${daypartIndex}`,
             // CRITICAL: Explicitly preserve template to ensure it's not lost during expansion
-            template: task.template
+            template: task.template || (task.template_id ? templatesMap[task.template_id] : null)
           })
         })
       })
@@ -800,12 +800,25 @@ export default function DailyChecklistPage() {
         }
       }
       
-      const tasksWithProfiles = expandedTasks.map(task => ({
-        ...task,
-        completed_by_profile: task.completed_by ? profilesMap.get(task.completed_by) : null,
-        // CRITICAL: Explicitly preserve template to ensure it's not lost during mapping
-        template: task.template
-      }))
+      const tasksWithProfiles = expandedTasks.map(task => {
+        // CRITICAL: Ensure template is attached - fallback to templatesMap if missing
+        const template = task.template || (task.template_id ? templatesMap[task.template_id] : null)
+        
+        if (!template && task.template_id) {
+          console.warn('⚠️ [TASKS WITH PROFILES] Template missing for task:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            templatesMapHasTemplate: !!templatesMap[task.template_id]
+          })
+        }
+        
+        return {
+          ...task,
+          completed_by_profile: task.completed_by ? profilesMap.get(task.completed_by) : null,
+          // CRITICAL: Explicitly preserve template to ensure it's not lost during mapping
+          template: template
+        }
+      })
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records for ALL tasks due today (not just pending/in_progress)
@@ -1209,18 +1222,55 @@ export default function DailyChecklistPage() {
       })
       
       // CRITICAL: Final verification - ensure all active tasks have templates attached
+      // This is the last chance to recover templates before setting state
       const tasksWithVerifiedTemplates = activeTasks.map(task => {
         if (!task.template && task.template_id) {
-          console.error('❌ [FINAL CHECK] Task missing template before setting state:', {
+          console.warn('⚠️ [FINAL CHECK] Task missing template before setting state, attempting recovery:', {
             taskId: task.id,
             templateId: task.template_id,
             templatesMapHasTemplate: !!templatesMap[task.template_id],
-            templatesMapKeys: Object.keys(templatesMap)
+            templatesMapKeys: Object.keys(templatesMap),
+            templatesMapSize: Object.keys(templatesMap).length
           })
           // Try to get template from map one more time
           const template = templatesMap[task.template_id]
           if (template) {
-            return { ...task, template }
+            console.log('✅ [FINAL CHECK] Recovered template for task:', {
+              taskId: task.id,
+              templateId: task.template_id,
+              templateName: template.name,
+              templateFieldsCount: template.template_fields?.length || 0
+            })
+            // Create a deep copy to ensure template_fields array is preserved
+            return { 
+              ...task, 
+              template: {
+                ...template,
+                template_fields: template.template_fields ? [...template.template_fields] : []
+              }
+            }
+          } else {
+            console.error('❌ [FINAL CHECK] Cannot recover template - not in templatesMap:', {
+              taskId: task.id,
+              templateId: task.template_id,
+              availableTemplateIds: Object.keys(templatesMap)
+            })
+          }
+        } else if (task.template && task.template.template_fields) {
+          // Ensure template_fields is a proper array (defensive)
+          if (!Array.isArray(task.template.template_fields)) {
+            console.warn('⚠️ [FINAL CHECK] template_fields is not an array, fixing:', {
+              taskId: task.id,
+              templateId: task.template_id,
+              templateFieldsType: typeof task.template.template_fields
+            })
+            return {
+              ...task,
+              template: {
+                ...task.template,
+                template_fields: []
+              }
+            }
           }
         }
         return task
@@ -1262,7 +1312,9 @@ export default function DailyChecklistPage() {
           templateName: sampleTask.template?.name,
           templateFieldsCount: sampleTask.template?.template_fields?.length || 0,
           templateFieldsType: typeof sampleTask.template?.template_fields,
-          templateFieldsIsArray: Array.isArray(sampleTask.template?.template_fields)
+          templateFieldsIsArray: Array.isArray(sampleTask.template?.template_fields),
+          templateFields: sampleTask.template?.template_fields,
+          fullTemplate: sampleTask.template
         })
       }
       
@@ -1531,13 +1583,26 @@ export default function DailyChecklistPage() {
                 key={key}
                 task={task}
                 onClick={() => {
+                  // CRITICAL: First, ensure we have the template - fallback to templatesMap if missing
+                  // This handles cases where template might have been lost during state updates
+                  let taskTemplate = task.template
+                  if (!taskTemplate && task.template_id) {
+                    // Try to get template from templatesMap (should still be in scope from fetchTodaysTasks)
+                    // Since templatesMap is not in scope here, we need to ensure template is preserved in state
+                    console.warn('⚠️ [TASK SELECTION] Template missing from task object, attempting recovery:', {
+                      taskId: task.id,
+                      templateId: task.template_id
+                    })
+                    // Template should already be attached - if not, this is a state issue
+                  }
+                  
                   // CRITICAL: Create a deep copy of the task to ensure template is preserved
                   // React state updates might lose nested properties if we just pass the reference
                   const taskWithTemplate = {
                     ...task,
-                    template: task.template ? {
-                      ...task.template,
-                      template_fields: task.template.template_fields ? [...task.template.template_fields] : []
+                    template: taskTemplate ? {
+                      ...taskTemplate,
+                      template_fields: taskTemplate.template_fields ? [...taskTemplate.template_fields] : []
                     } : null
                   }
                   
@@ -1548,12 +1613,19 @@ export default function DailyChecklistPage() {
                     hasTemplate: !!taskWithTemplate.template,
                     templateName: taskWithTemplate.template?.name,
                     templateFieldsCount: taskWithTemplate.template?.template_fields?.length || 0,
-                    templateFields: taskWithTemplate.template?.template_fields
+                    templateFields: taskWithTemplate.template?.template_fields,
+                    rawTaskHasTemplate: !!task.template,
+                    rawTaskTemplate: task.template
                   })
                   
                   // Set window.selectedTask for debugging
                   if (typeof window !== 'undefined') {
                     (window as any).selectedTask = taskWithTemplate
+                    console.log('🔍 [WINDOW DEBUG] window.selectedTask set:', {
+                      hasTemplate: !!taskWithTemplate.template,
+                      templateName: taskWithTemplate.template?.name,
+                      templateFieldsCount: taskWithTemplate.template?.template_fields?.length || 0
+                    })
                   }
                   
                   setSelectedTask(taskWithTemplate)
