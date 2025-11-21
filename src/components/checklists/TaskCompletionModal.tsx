@@ -1724,11 +1724,6 @@ export default function TaskCompletionModal({
       // Handle callout follow-up tasks - update/close the callout
       if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id && calloutData) {
         try {
-          // Validate that open callouts have repair summary
-          if (calloutData.status === 'open' && (!calloutRepairSummary || !calloutRepairSummary.trim())) {
-            throw new Error('Repair summary is required to close this callout and complete the task')
-          }
-
           const updateData: any = {
             updated_at: completedAt
           }
@@ -1741,46 +1736,124 @@ export default function TaskCompletionModal({
               : calloutUpdateNotes
           }
 
-          // If callout is open and repair summary is provided, close it
-          if (calloutData.status === 'open' && calloutRepairSummary && calloutRepairSummary.trim()) {
-            updateData.repair_summary = calloutRepairSummary
-            updateData.status = 'closed'
-            updateData.closed_at = completedAt
-
-            // Try RPC function first, fallback to direct update
-            try {
-              const { data: rpcData, error: rpcError } = await supabase.rpc('close_callout', {
-                p_callout_id: calloutData.id,
-                p_repair_summary: calloutRepairSummary,
-                p_documents: calloutData.documents || []
-              })
-
-              if (rpcError) {
-                console.warn('RPC close_callout error, using direct update:', rpcError)
-                // Fall through to direct update
-                const { error: updateError } = await supabase
-                  .from('callouts')
-                  .update(updateData)
-                  .eq('id', calloutData.id)
-
-                if (updateError) throw updateError
-              } else {
-                console.log('✅ Callout closed successfully via RPC')
+          // If callout is open, check if we're trying to close it
+          if (calloutData.status === 'open') {
+            // If repair summary is provided, we're closing the callout
+            if (calloutRepairSummary && calloutRepairSummary.trim()) {
+              // Upload documents if any
+              const documentUrls: Array<{ url: string; name: string; type: string }> = []
+              
+              if (calloutCloseDocuments.length > 0) {
+                for (const file of calloutCloseDocuments) {
+                  try {
+                    const fileExt = file.name.split('.').pop()
+                    const random = Math.random().toString(36).slice(2, 8)
+                    const filePath = `${companyId}/callout-documents/${calloutData.id}/${Date.now()}-${random}.${fileExt}`
+                    
+                    // Try callout-documents bucket first, fallback to global_docs
+                    let bucketName = 'callout-documents'
+                    let { error: uploadError } = await supabase.storage
+                      .from(bucketName)
+                      .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                        contentType: file.type || 'application/pdf'
+                      })
+                    
+                    if (uploadError) {
+                      // Fallback to global_docs bucket
+                      bucketName = 'global_docs'
+                      const fallbackResult = await supabase.storage
+                        .from(bucketName)
+                        .upload(filePath, file, {
+                          cacheControl: '3600',
+                          upsert: false,
+                          contentType: file.type || 'application/pdf'
+                        })
+                      uploadError = fallbackResult.error
+                    }
+                    
+                    if (uploadError) throw uploadError
+                    
+                    const { data: urlData } = supabase.storage
+                      .from(bucketName)
+                      .getPublicUrl(filePath)
+                    
+                    documentUrls.push({
+                      url: urlData.publicUrl,
+                      name: file.name,
+                      type: file.type?.includes('pdf') ? 'invoice' : 'worksheet' // Default to invoice for PDFs, worksheet for images
+                    })
+                  } catch (uploadErr: any) {
+                    console.error('Error uploading callout document:', uploadErr)
+                    showToast({
+                      title: 'Document upload failed',
+                      description: `Failed to upload ${file.name}: ${uploadErr.message}`,
+                      type: 'warning'
+                    })
+                    // Continue with other documents
+                  }
+                }
               }
-            } catch (error: any) {
-              console.error('Error closing callout:', error)
-              throw new Error(`Failed to close callout: ${error.message}`)
-            }
-          } else if (calloutData.status === 'open' && Object.keys(updateData).length > 1) {
-            // Just update notes if callout is still open and we have notes
-            const { error: updateError } = await supabase
-              .from('callouts')
-              .update(updateData)
-              .eq('id', calloutData.id)
 
-            if (updateError) {
-              console.warn('Error updating callout notes:', updateError)
-              // Don't fail the task completion if notes update fails
+              // Merge with existing documents
+              const existingDocuments = calloutData.documents || []
+              const allDocuments = [...existingDocuments, ...documentUrls]
+
+              updateData.repair_summary = calloutRepairSummary
+              updateData.status = 'closed'
+              updateData.closed_at = completedAt
+              updateData.documents = allDocuments
+
+              // Try RPC function first, fallback to direct update
+              try {
+                const { data: rpcData, error: rpcError } = await supabase.rpc('close_callout', {
+                  p_callout_id: calloutData.id,
+                  p_repair_summary: calloutRepairSummary,
+                  p_documents: allDocuments
+                })
+
+                if (rpcError) {
+                  console.warn('RPC close_callout error, using direct update:', rpcError)
+                  // Fall through to direct update
+                  const { error: updateError } = await supabase
+                    .from('callouts')
+                    .update(updateData)
+                    .eq('id', calloutData.id)
+
+                  if (updateError) throw updateError
+                } else {
+                  console.log('✅ Callout closed successfully via RPC')
+                }
+              } catch (error: any) {
+                console.error('Error closing callout:', error)
+                throw new Error(`Failed to close callout: ${error.message}`)
+              }
+            } else if (Object.keys(updateData).length > 1) {
+              // Just update notes if callout is still open and we have notes (but not closing)
+              const { error: updateError } = await supabase
+                .from('callouts')
+                .update(updateData)
+                .eq('id', calloutData.id)
+
+              if (updateError) {
+                console.warn('Error updating callout notes:', updateError)
+                // Don't fail the task completion if notes update fails
+              }
+            }
+            // If callout is open but no repair summary and no notes, that's fine - just complete the task
+          } else {
+            // Callout is already closed/reopened - just update notes if provided
+            if (Object.keys(updateData).length > 1) {
+              const { error: updateError } = await supabase
+                .from('callouts')
+                .update(updateData)
+                .eq('id', calloutData.id)
+
+              if (updateError) {
+                console.warn('Error updating callout notes:', updateError)
+                // Don't fail the task completion if notes update fails
+              }
             }
           }
         } catch (error: any) {
@@ -4732,18 +4805,51 @@ export default function TaskCompletionModal({
                             </div>
                             <div>
                               <label className="block text-xs font-medium text-white/80 mb-1">
-                                Repair Summary <span className="text-red-400">*</span>
+                                Repair Summary (Optional - Required to close callout)
                               </label>
                               <textarea
                                 value={calloutRepairSummary}
                                 onChange={(e) => setCalloutRepairSummary(e.target.value)}
-                                placeholder="Enter repair summary to close this callout..."
-                                required
+                                placeholder="Enter repair summary to close this callout. Leave empty to just update notes..."
                                 className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 rows={4}
                               />
                               <p className="text-xs text-white/50 mt-1">
-                                A repair summary is required to close this callout and complete the task.
+                                Enter a repair summary to close this callout. You can complete the task without closing the callout by leaving this empty.
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Documents (Optional - PDF/Photos)
+                              </label>
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                multiple
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || [])
+                                  setCalloutCloseDocuments(prev => [...prev, ...files])
+                                }}
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 file:cursor-pointer"
+                              />
+                              {calloutCloseDocuments.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {calloutCloseDocuments.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs text-white/70 bg-white/5 rounded px-2 py-1">
+                                      <span>{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setCalloutCloseDocuments(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-400 hover:text-red-300"
+                                      >
+                                        Remove
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              <p className="text-xs text-white/50 mt-1">
+                                Upload invoices, worksheets, or photos related to the repair.
                               </p>
                             </div>
                           </div>
