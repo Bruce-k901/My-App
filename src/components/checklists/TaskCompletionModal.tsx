@@ -204,61 +204,56 @@ export default function TaskCompletionModal({
       const initialize = async () => {
         // Step 1: Load template fields FIRST (required for temperature range loading)
         let loadedFields: any[] = []
-        if (task.template_id) {
-          console.log('📋 [TEMPLATE FIELDS] Loading template fields first for templateId:', task.template_id)
-          // Load fields and get them directly (don't wait for state update)
+        
+        // CRITICAL: Check for pre-loaded template fields FIRST (from Today's Tasks page)
+        // This is the fastest path and avoids unnecessary database queries
+        if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
+          console.log('📋 [TEMPLATE FIELDS] Using pre-loaded template fields from task.template:', task.template.template_fields.length)
+          loadedFields = [...task.template.template_fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+          setTemplateFields(loadedFields)
+        } else if (task.template_id) {
+          // Fallback: Fetch from database if not pre-loaded
+          console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded, fetching from database for templateId:', task.template_id)
           try {
             loadedFields = await loadTemplateFields(task.template_id)
-            console.log('✅ [TEMPLATE FIELDS] Template fields loaded:', loadedFields.length, 'fields')
+            console.log('✅ [TEMPLATE FIELDS] Template fields loaded from database:', loadedFields.length, 'fields')
             
-            // CRITICAL: Force a state update by waiting for React to process it
-            // Use a longer delay to ensure state has propagated
-            await new Promise(resolve => setTimeout(resolve, 200))
-            
-            // Verify state was set
-            console.log('🔍 [TEMPLATE FIELDS] Verifying state update...')
-            
-            // CRITICAL: If we have template fields, extract asset IDs from them immediately
-            // This ensures temperature ranges can be loaded even before state updates
+            // CRITICAL: Ensure state is set - loadTemplateFields should have set it, but verify
             if (loadedFields.length > 0) {
-              // Look for equipment/asset fields in template fields
-              const equipmentField = loadedFields.find((f: any) => 
-                f.field_type === 'select' && 
-                (f.field_name === 'fridge_name' || 
-                 f.field_name === 'hot_holding_unit' || 
-                 f.field_name === 'equipment_name' ||
-                 f.field_name === 'asset_name')
-              )
-              
-              if (equipmentField?.options && Array.isArray(equipmentField.options)) {
-                const assetIdsFromFields = equipmentField.options
-                  .map((opt: any) => opt?.value)
-                  .filter(Boolean)
-                
-                if (assetIdsFromFields.length > 0) {
-                  console.log('🌡️ [TEMPERATURE SYSTEM] Found asset IDs in template fields:', assetIdsFromFields.length)
-                  // Load temp ranges immediately with these asset IDs
-                  await loadAssetTempRanges(assetIdsFromFields)
-                }
-              }
-            } else {
-              console.warn('⚠️ [TEMPLATE FIELDS] No template fields found for templateId:', task.template_id)
-              // Check if template has template_fields pre-loaded
-              if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
-                console.log('📋 [TEMPLATE FIELDS] Using pre-loaded template fields from task.template:', task.template.template_fields.length)
-                loadedFields = task.template.template_fields
-                setTemplateFields(loadedFields)
-              }
+              // Double-check state was set (loadTemplateFields should have done this)
+              setTemplateFields(loadedFields)
             }
           } catch (error) {
             console.error('❌ [TEMPLATE FIELDS] Error loading template fields:', error)
-            // Fallback: try to use pre-loaded fields from task.template
-            if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
-              console.log('📋 [TEMPLATE FIELDS] Fallback: Using pre-loaded template fields from task.template:', task.template.template_fields.length)
-              loadedFields = task.template.template_fields
-              setTemplateFields(loadedFields)
+            loadedFields = []
+          }
+        }
+        
+        // CRITICAL: If we have template fields, extract asset IDs from them immediately
+        // This ensures temperature ranges can be loaded even before state updates
+        if (loadedFields.length > 0) {
+          // Look for equipment/asset fields in template fields
+          const equipmentField = loadedFields.find((f: any) => 
+            f.field_type === 'select' && 
+            (f.field_name === 'fridge_name' || 
+             f.field_name === 'hot_holding_unit' || 
+             f.field_name === 'equipment_name' ||
+             f.field_name === 'asset_name')
+          )
+          
+          if (equipmentField?.options && Array.isArray(equipmentField.options)) {
+            const assetIdsFromFields = equipmentField.options
+              .map((opt: any) => opt?.value)
+              .filter(Boolean)
+            
+            if (assetIdsFromFields.length > 0) {
+              console.log('🌡️ [TEMPERATURE SYSTEM] Found asset IDs in template fields:', assetIdsFromFields.length)
+              // Load temp ranges immediately with these asset IDs
+              await loadAssetTempRanges(assetIdsFromFields)
             }
           }
+        } else {
+          console.warn('⚠️ [TEMPLATE FIELDS] No template fields found for templateId:', task.template_id)
         }
         
         // Step 2: Load task resources (assets, libraries, SOPs, RAs) AFTER template fields are loaded
@@ -309,7 +304,7 @@ export default function TaskCompletionModal({
       return () => {
         clearTimeout(tempRangeTimeout)
       }
-    }, [task.id, task.template_id, isOpen])
+    }, [task.id, task.template_id, task.template, isOpen])
     
     // SAFEGUARD: Load template fields from task.template if state is empty
     // This ensures we use pre-loaded fields from Today's Tasks page even if database query fails
@@ -671,18 +666,30 @@ export default function TaskCompletionModal({
         
         if (error) {
           console.error('❌ [TEMPLATE FIELDS] Error fetching template fields:', error)
+          console.error('   Error details:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
           throw error
         }
         fields = data || []
         console.log('✅ [TEMPLATE FIELDS] Fetched', fields.length, 'fields from database')
+        if (fields.length > 0) {
+          console.log('   Field names:', fields.map((f: any) => f.field_name))
+        } else {
+          console.warn('⚠️ [TEMPLATE FIELDS] Database query returned 0 fields for templateId:', templateId)
+        }
       } else {
         console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', fields.length)
         // Ensure fields are sorted by field_order
         fields = [...fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
       }
       
+      // CRITICAL: Always set state, even if fields is empty (prevents stale data)
       console.log('📋 [TEMPLATE FIELDS] Setting templateFields state with', fields.length, 'fields')
       setTemplateFields(fields)
+      
+      // Verify state was set (for debugging)
+      if (fields.length > 0) {
+        console.log('✅ [TEMPLATE FIELDS] State should now contain', fields.length, 'fields')
+      }
       
       // Initialize form data with default values for each field type
       // IMPORTANT: Preserve existing formData (like checklist_items from task_data)
