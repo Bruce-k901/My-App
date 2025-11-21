@@ -359,7 +359,7 @@ export default function ComplianceMetricsWidget() {
           <p className="text-sm text-white/60 mt-1">Today's performance overview</p>
         </div>
         <Link 
-          href="/dashboard/tasks/active"
+          href="/dashboard/my_tasks"
           className="text-sm text-pink-400 hover:text-pink-300 transition-colors"
         >
           View All Tasks →

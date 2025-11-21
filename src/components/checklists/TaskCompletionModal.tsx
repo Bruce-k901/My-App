@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb } from 'lucide-react'
+import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb, ArrowRight } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskCompletionPayload } from '@/types/checklist-types'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -12,6 +12,7 @@ import CalloutModal from '@/components/modals/CalloutModal'
 import { handleWorkflow } from './workflows'
 import type { ComplianceTemplate } from '@/data/compliance-templates'
 import Image from 'next/image'
+import Link from 'next/link'
 import CheckboxCustom from '@/components/ui/CheckboxCustom'
 
 interface TaskCompletionModalProps {
@@ -256,7 +257,7 @@ export default function TaskCompletionModal({
       setRaUploads([])
       setDocumentUploads([])
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isOpen, task])
 
   // Load task resources (assets, libraries, SOPs, RAs) from task_data
@@ -265,6 +266,37 @@ export default function TaskCompletionModal({
       // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
       // Monitoring tasks should only show the asset that was out of range
       const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
+      // CRITICAL: For PPM tasks, load the asset from task_data.source_id (or asset_id for backwards compatibility)
+      // PPM tasks use source_id (not asset_id) - this is the asset ID
+      const ppmAssetId = taskData.source_id || taskData.asset_id
+      const isPPMTask = taskData.source_type === 'ppm_overdue' && ppmAssetId
+      if (isPPMTask && ppmAssetId) {
+        const { data: assetData, error: assetError } = await supabase
+          .from('assets')
+          .select('id, name, category, site_id, sites(id, name)')
+          .eq('id', ppmAssetId)
+          .single()
+        
+        if (!assetError && assetData) {
+          const site = Array.isArray(assetData.sites) ? assetData.sites[0] : assetData.sites
+          const assetWithSite = {
+            ...assetData,
+            site_name: site?.name || 'No site assigned'
+          }
+          setSelectedAssets([assetWithSite])
+          // Update assetsMap state
+          setAssetsMap(prev => {
+            const newMap = new Map(prev)
+            newMap.set(assetData.id, assetWithSite)
+            return newMap
+          })
+          console.log('🔧 PPM task: Loaded asset for callout:', {
+            assetId: assetData.id,
+            assetName: assetData.name
+          })
+        }
+      }
       
       // Load selected assets
       if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets) && taskData.selectedAssets.length > 0) {
@@ -4473,6 +4505,113 @@ export default function TaskCompletionModal({
               </div>
             )}
 
+            {/* Generic Task Navigation Section - Certificate, SOP, Document tasks */}
+            {(() => {
+              const taskData = task.task_data as any
+              if (!taskData?.source_type) return null
+              
+              let link: string | null = null
+              let label: string = ''
+              let description: string = ''
+              
+              switch (taskData.source_type) {
+                case 'certificate_expiry':
+                  if (taskData.profile_id) {
+                    link = `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
+                    label = 'View Training Details'
+                    description = 'Update certificate expiry date and training records'
+                  }
+                  break
+                
+                case 'sop_review':
+                  if (taskData.sop_id) {
+                    link = `/dashboard/sops/list?sop_id=${taskData.sop_id}`
+                    label = 'Review SOP'
+                    description = 'Review and update the SOP, set new review date'
+                  }
+                  break
+                
+                case 'document_expiry':
+                  if (taskData.document_id) {
+                    link = `/dashboard/documents?document_id=${taskData.document_id}`
+                    label = 'Review Document'
+                    description = 'Review and update the document, set new expiry date'
+                  }
+                  break
+                
+                case 'ppm_overdue':
+                  // PPM tasks use source_id (not asset_id) - this is the asset ID
+                  if (taskData.source_id || taskData.asset_id) {
+                    const assetId = taskData.source_id || taskData.asset_id
+                    link = `/dashboard/ppm?asset_id=${assetId}`
+                    label = 'View PPM Schedule'
+                    description = 'View and manage the PPM schedule for this asset'
+                  }
+                  break
+              }
+              
+              if (!link) return null
+              
+              return (
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <FileText className="h-5 w-5 text-blue-400 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium text-sm mb-1">Quick Navigation</h3>
+                      <p className="text-white/70 text-xs">
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href={link}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    {label}
+                  </Link>
+                </div>
+              )
+            })()}
+
+            {/* PPM Task Callout Section - Always show callout button for PPM tasks */}
+            {task.task_data?.source_type === 'ppm_overdue' && (task.task_data?.source_id || task.task_data?.asset_id) && (
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="h-5 w-5 text-orange-400 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-medium text-sm mb-1">PPM Service Required</h3>
+                    <p className="text-white/70 text-xs">
+                      This asset requires scheduled maintenance. If service is needed, create a callout for the contractor.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    // PPM tasks use source_id (not asset_id) - this is the asset ID
+                    const assetId = task.task_data?.source_id || task.task_data?.asset_id
+                    if (assetId) {
+                      await handleCalloutAction(assetId)
+                    } else {
+                      showToast({
+                        title: 'Error',
+                        description: 'Asset information not available for callout.',
+                        type: 'error'
+                      })
+                    }
+                  }}
+                  className="w-full flex items-center gap-3 p-3 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                >
+                  <PhoneCall className="h-5 w-5" />
+                  <div className="text-left">
+                    <p className="text-sm font-medium">Place Callout</p>
+                    <p className="text-xs text-red-400/70">Create a callout for PPM service</p>
+                  </div>
+                </button>
+              </div>
+            )}
+
             {/* Photo Upload - Mobile Optimized */}
             {task.template?.evidence_types?.includes('photo') && (
               <div>
@@ -4585,7 +4724,21 @@ export default function TaskCompletionModal({
             }, 300) // Small delay for smooth transition
           }}
           asset={calloutAsset}
-          requireTroubleshoot={true} // Always require troubleshooting when opened from task
+          requireTroubleshoot={(() => {
+            // PPM tasks should NOT require troubleshooting - they're scheduled maintenance
+            const taskData = task.task_data as any
+            const isPPMTask = taskData?.source_type === 'ppm_overdue'
+            
+            // Only require troubleshooting for temperature tasks that are out of range
+            // PPM tasks bypass troubleshooting
+            if (isPPMTask) {
+              return false
+            }
+            
+            // For temperature tasks, require troubleshooting if there's an out-of-range asset
+            // Otherwise, require troubleshooting when opened from task (default behavior)
+            return outOfRangeAssets.size > 0 || outOfRangeAssetId !== null
+          })()}
         />
       )}
     </div>

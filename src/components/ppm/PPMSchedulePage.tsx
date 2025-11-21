@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, Filter, Plus, List, Calendar } from 'lucide-react';
 import PPMCard from './PPMCard';
 import PPMDrawer from './PPMDrawer';
@@ -15,6 +16,9 @@ import { generatePPMSchedulesForAllAssets } from '@/lib/ppm/generateSchedules';
 import { toast } from 'sonner';
 
 export default function PPMSchedulePage() {
+  const searchParams = useSearchParams();
+  const assetIdParam = searchParams?.get('asset_id');
+  
   const [assets, setAssets] = useState<PPMAsset[]>([]);
   const [filteredAssets, setFilteredAssets] = useState<PPMAsset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +35,7 @@ export default function PPMSchedulePage() {
   });
   const [sites, setSites] = useState<string[]>([]);
   const [contractors, setContractors] = useState<string[]>([]);
+  const [highlightedAssetId, setHighlightedAssetId] = useState<string | null>(null);
   
   const { profile } = useAppContext();
   const [generatingSchedules, setGeneratingSchedules] = useState(false);
@@ -162,6 +167,35 @@ export default function PPMSchedulePage() {
   useEffect(() => {
     filterAssets();
   }, [assets, searchTerm, filters]);
+
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (assetIdParam && assets.length > 0) {
+      const asset = assets.find(a => a.id === assetIdParam);
+      if (asset) {
+        // Highlight the asset
+        setHighlightedAssetId(assetIdParam);
+        
+        // Open the drawer for this asset
+        setSelectedAsset(asset);
+        setDrawerOpen(true);
+        
+        // Scroll to the asset after a short delay (only if in list view)
+        if (viewMode === 'list') {
+          setTimeout(() => {
+            const element = document.getElementById(`ppm-asset-${assetIdParam}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Remove highlight after 5 seconds
+              setTimeout(() => {
+                setHighlightedAssetId(null);
+              }, 5000);
+            }
+          }, 500);
+        }
+      }
+    }
+  }, [assetIdParam, assets, viewMode]);
 
   const filterAssets = () => {
     let filtered = assets;
@@ -384,13 +418,22 @@ export default function PPMSchedulePage() {
       {/* Content */}
       {viewMode === 'list' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredAssets.map((asset) => (
-            <PPMCard
-              key={asset.id}
-              asset={asset}
-              onClick={() => handleCardClick(asset)}
-            />
-          ))}
+          {filteredAssets.map((asset) => {
+            const isHighlighted = highlightedAssetId === asset.id;
+            return (
+              <div
+                key={asset.id}
+                id={`ppm-asset-${asset.id}`}
+                className={isHighlighted ? 'animate-pulse' : ''}
+              >
+                <PPMCard
+                  asset={asset}
+                  onClick={() => handleCardClick(asset)}
+                  highlighted={isHighlighted}
+                />
+              </div>
+            );
+          })}
           {filteredAssets.length === 0 && !loading && (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
               <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">

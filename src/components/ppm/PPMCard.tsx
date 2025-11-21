@@ -9,9 +9,10 @@ import { nullifyUndefined } from '@/lib/utils';
 interface PPMCardProps {
   asset: PPMAsset;
   onClick: () => void;
+  highlighted?: boolean;
 }
 
-export default function PPMCard({ asset, onClick }: PPMCardProps) {
+export default function PPMCard({ asset, onClick, highlighted = false }: PPMCardProps) {
   const cleanAsset = nullifyUndefined(asset);
   const { status, color, borderColor } = getPPMStatus(cleanAsset.next_service_date, cleanAsset.ppm_status);
   const frequencyText = getFrequencyText(cleanAsset.frequency_months);
@@ -20,7 +21,11 @@ export default function PPMCard({ asset, onClick }: PPMCardProps) {
   return (
     <div
       onClick={onClick}
-      className={`bg-white/[0.02] backdrop-blur-md rounded-xl border-2 p-6 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer group ${borderColor}`}
+      className={`bg-white/[0.02] backdrop-blur-md rounded-xl border-2 p-6 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer group ${
+        highlighted 
+          ? 'border-blue-500/60 bg-blue-500/10 shadow-lg shadow-blue-500/20' 
+          : borderColor
+      }`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">

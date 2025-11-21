@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui";
 import UploadGlobalDocModal from "@/components/modals/UploadGlobalDocModal";
@@ -21,6 +22,8 @@ type GlobalDoc = {
 
 export default function DocumentsPoliciesSection() {
   const { companyId } = useAppContext();
+  const searchParams = useSearchParams();
+  const documentIdParam = searchParams?.get('document_id');
   const [open, setOpen] = useState(false);
   const [docs, setDocs] = useState<GlobalDoc[]>([]);
   const [latestDoc, setLatestDoc] = useState<GlobalDoc | null>(null);
@@ -103,6 +106,29 @@ export default function DocumentsPoliciesSection() {
     const timer = setTimeout(() => setHighlightId(null), 20000);
     return () => clearTimeout(timer);
   }, [highlightId]);
+
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (documentIdParam && docs.length > 0) {
+      const doc = docs.find(d => d.id === documentIdParam);
+      if (doc) {
+        // Highlight the document
+        setHighlightId(documentIdParam);
+        
+        // Scroll to the document after a short delay
+        setTimeout(() => {
+          const element = document.getElementById(`document-row-${documentIdParam}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+              setHighlightId(null);
+            }, 5000);
+          }
+        }, 500);
+      }
+    }
+  }, [documentIdParam, docs]);
 
   const getPublicUrl = (path: string) => {
     // Paths are stored company-scoped: `${companyId}/folder/filename`
@@ -316,7 +342,13 @@ export default function DocumentsPoliciesSection() {
               const showConfirm = confirmDeleteId === d.id
               
               return (
-                <li key={d.id} className="relative group">
+                <li
+                  key={d.id}
+                  id={`document-row-${d.id}`}
+                  className={`relative group ${isNew ? 'animate-pulse' : ''} ${
+                    isNew ? 'border-2 border-blue-500/60 bg-blue-500/10 rounded-xl' : ''
+                  }`}
+                >
                   {showConfirm ? (
                     <div className="rounded-xl p-4 border border-red-500/50 bg-red-500/10">
                       <div className="text-white font-medium mb-2">Delete "{d.name}"?</div>
@@ -346,7 +378,7 @@ export default function DocumentsPoliciesSection() {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`block rounded-xl p-4 border ${isNew ? "border-pink-500" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired ? "bg-green-500/5" : "bg-white/[0.06]"} hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12`}
+                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-500/60 bg-blue-500/10" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-500/5" : !isNew ? "bg-white/[0.06]" : ""} hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">

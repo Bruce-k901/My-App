@@ -64,8 +64,9 @@ const sections: SidebarSection[] = [
     icon: CheckSquare,
     items: [
       { label: "Compliance", href: "/dashboard/tasks/compliance" },
-      { label: "Templates", href: "/dashboard/tasks/templates" },
-      { label: "Active", href: "/dashboard/tasks/active" },
+      { label: "My Templates", href: "/dashboard/my_templates" },
+      { label: "My Tasks", href: "/dashboard/my_tasks" },
+      { label: "Today's Tasks", href: "/dashboard/todays_tasks" },
       { label: "Completed", href: "/dashboard/tasks/completed" },
     ],
   },
@@ -411,12 +412,12 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 Quick Actions
               </div>
               <Link
-                href="/dashboard/checklists"
+                href="/dashboard/todays_tasks"
                 onClick={onMobileClose}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
                   ${
-                    pathname === "/dashboard/checklists" || pathname.startsWith("/dashboard/checklists")
+                    pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
                       ? "bg-pink-500/20 text-pink-300 font-medium"
                       : "text-white/80 hover:text-white hover:bg-white/[0.08]"
                   }

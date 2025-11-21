@@ -135,6 +135,8 @@ function TrainingMatrixPageContent() {
   const { loading: authLoading, companyId, siteId, profile: currentUserProfile } = useAppContext();
   const searchParams = useSearchParams();
   const siteParam = useMemo(() => searchParams?.get("site"), [searchParams]);
+  const profileIdParam = useMemo(() => searchParams?.get("profile_id"), [searchParams]);
+  const certificateTypeParam = useMemo(() => searchParams?.get("certificate_type"), [searchParams]);
 
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [trainingRecords, setTrainingRecords] = useState<TrainingRecordRow[]>([]);
@@ -149,6 +151,8 @@ function TrainingMatrixPageContent() {
   const [bookingSaveLoading, setBookingSaveLoading] = useState(false);
   const [uploadingCertificate, setUploadingCertificate] = useState(false);
   const [expandedProfiles, setExpandedProfiles] = useState<Record<string, boolean>>({});
+  const [highlightedProfileId, setHighlightedProfileId] = useState<string | null>(null);
+  const [highlightedCertificateType, setHighlightedCertificateType] = useState<string | null>(null);
   const [editingCertificate, setEditingCertificate] = useState<{
     userId: string;
     type: 'foodSafety' | 'healthSafety' | 'fireMarshal' | 'firstAid' | 'cossh';
@@ -295,6 +299,78 @@ function TrainingMatrixPageContent() {
   useEffect(() => {
     fetchMatrixData();
   }, [fetchMatrixData]);
+
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (profileIdParam && profiles.length > 0) {
+      // Find the profile
+      const profile = profiles.find(p => p.id === profileIdParam);
+      if (profile) {
+        // Expand the profile row
+        setExpandedProfiles(prev => ({ ...prev, [profileIdParam]: true }));
+        
+        // Highlight the profile and certificate
+        setHighlightedProfileId(profileIdParam);
+        if (certificateTypeParam) {
+          setHighlightedCertificateType(certificateTypeParam);
+          
+          // Auto-open edit modal for the certificate
+          const certTypeMap: Record<string, 'foodSafety' | 'healthSafety' | 'fireMarshal' | 'firstAid' | 'cossh'> = {
+            'food_safety': 'foodSafety',
+            'h_and_s': 'healthSafety',
+            'fire_marshal': 'fireMarshal',
+            'first_aid': 'firstAid',
+            'cossh': 'cossh'
+          };
+          const mappedCertType = certTypeMap[certificateTypeParam];
+          
+          if (mappedCertType) {
+            setTimeout(() => {
+              setEditingCertificate({ userId: profileIdParam, type: mappedCertType });
+              const fieldMap: Record<string, { level?: number | null; expiryDate?: string | null; trained?: boolean | null }> = {
+                'foodSafety': {
+                  level: profile.food_safety_level ?? null,
+                  expiryDate: profile.food_safety_expiry_date ? profile.food_safety_expiry_date.split('T')[0] : null,
+                  trained: profile.food_safety_level ? true : null,
+                },
+                'healthSafety': {
+                  level: profile.h_and_s_level ?? null,
+                  expiryDate: profile.h_and_s_expiry_date ? profile.h_and_s_expiry_date.split('T')[0] : null,
+                  trained: profile.h_and_s_level ? true : null,
+                },
+                'fireMarshal': {
+                  trained: profile.fire_marshal_trained ?? false,
+                  expiryDate: profile.fire_marshal_expiry_date ? profile.fire_marshal_expiry_date.split('T')[0] : null,
+                },
+                'firstAid': {
+                  trained: profile.first_aid_trained ?? false,
+                  expiryDate: profile.first_aid_expiry_date ? profile.first_aid_expiry_date.split('T')[0] : null,
+                },
+                'cossh': {
+                  trained: profile.cossh_trained ?? false,
+                  expiryDate: profile.cossh_expiry_date ? profile.cossh_expiry_date.split('T')[0] : null,
+                },
+              };
+              setEditForm(fieldMap[mappedCertType] || {});
+            }, 800);
+          }
+        }
+        
+        // Scroll to the profile after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          const element = document.getElementById(`profile-row-${profileIdParam}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+              setHighlightedProfileId(null);
+              setHighlightedCertificateType(null);
+            }, 5000);
+          }
+        }, 500);
+      }
+    }
+  }, [profileIdParam, certificateTypeParam, profiles]);
 
   const recordsByUser = useMemo(() => {
     const map = new Map<string, TrainingRecordRow[]>();
@@ -902,8 +978,26 @@ function TrainingMatrixPageContent() {
             const isExpanded = expandedProfiles[profile.id] ?? false;
             const countsSummary = (Object.entries(statusCounts) as Array<[TrainingStatus, number]>).filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1]);
 
+            const isHighlighted = highlightedProfileId === profile.id;
+            const certTypeMap: Record<string, string> = {
+              'food_safety': 'foodSafety',
+              'h_and_s': 'healthSafety',
+              'fire_marshal': 'fireMarshal',
+              'first_aid': 'firstAid',
+              'cossh': 'cossh'
+            };
+            const mappedCertType = certificateTypeParam ? certTypeMap[certificateTypeParam] : null;
+            
             return (
-              <article key={profile.id} className="rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-magenta-500/40">
+              <article 
+                id={`profile-row-${profile.id}`}
+                key={profile.id} 
+                className={`rounded-xl border p-5 transition ${
+                  isHighlighted 
+                    ? 'border-blue-500/60 bg-blue-500/10 shadow-lg shadow-blue-500/20' 
+                    : 'border-white/10 bg-white/5 hover:border-magenta-500/40'
+                }`}
+              >
               <header className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-white">{profile.full_name || profile.email || "Unnamed user"}</h3>
@@ -948,6 +1042,7 @@ function TrainingMatrixPageContent() {
                     status={certificationSummaries.foodSafety}
                     profile={profile}
                     certificationType="foodSafety"
+                    highlighted={isHighlighted && mappedCertType === 'foodSafety'}
                     onEdit={() => {
                       setEditingCertificate({ userId: profile.id, type: 'foodSafety' });
                       setEditForm({
@@ -962,6 +1057,7 @@ function TrainingMatrixPageContent() {
                     status={certificationSummaries.healthSafety}
                     profile={profile}
                     certificationType="healthSafety"
+                    highlighted={isHighlighted && mappedCertType === 'healthSafety'}
                     onEdit={() => {
                       setEditingCertificate({ userId: profile.id, type: 'healthSafety' });
                       setEditForm({
@@ -976,6 +1072,7 @@ function TrainingMatrixPageContent() {
                     status={certificationSummaries.fireMarshal}
                     profile={profile}
                     certificationType="fireMarshal"
+                    highlighted={isHighlighted && mappedCertType === 'fireMarshal'}
                     onEdit={() => {
                       setEditingCertificate({ userId: profile.id, type: 'fireMarshal' });
                       setEditForm({
@@ -989,6 +1086,7 @@ function TrainingMatrixPageContent() {
                     status={certificationSummaries.firstAid}
                     profile={profile}
                     certificationType="firstAid"
+                    highlighted={isHighlighted && mappedCertType === 'firstAid'}
                     onEdit={() => {
                       setEditingCertificate({ userId: profile.id, type: 'firstAid' });
                       setEditForm({
@@ -1002,6 +1100,7 @@ function TrainingMatrixPageContent() {
                     status={certificationSummaries.cossh}
                     profile={profile}
                     certificationType="cossh"
+                    highlighted={isHighlighted && mappedCertType === 'cossh'}
                     onEdit={() => {
                       setEditingCertificate({ userId: profile.id, type: 'cossh' });
                       setEditForm({
@@ -1457,15 +1556,21 @@ function TrainingStatusCard({
   profile,
   certificationType,
   onEdit,
+  highlighted = false,
 }: {
   title: string;
   status: CertificationSummary;
   profile: ProfileRow;
   certificationType: 'foodSafety' | 'healthSafety' | 'fireMarshal' | 'firstAid' | 'cossh';
   onEdit: () => void;
+  highlighted?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-[#0f1220] p-4 relative group">
+    <div className={`rounded-lg border p-4 relative group ${
+      highlighted 
+        ? 'border-blue-500/60 bg-blue-500/10 shadow-lg shadow-blue-500/20 animate-pulse' 
+        : 'border-white/10 bg-[#0f1220]'
+    }`}>
       <button
         onClick={onEdit}
         className="absolute top-2 right-2 p-1.5 rounded-md border border-white/10 bg-white/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-white/10 hover:border-magenta-500/40"

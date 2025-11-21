@@ -211,39 +211,17 @@ export default function DailyChecklistPage() {
         return
       }
       
-      // Fetch tasks with visibility window logic:
-      // Tasks are visible if:
-      // 1. due_date is within visibility window (due_date - visibility_before <= today <= due_date + visibility_after)
-      // 2. OR task has no visibility window settings (backwards compatibility - show only today's tasks)
-      // 3. site_id matches (if set)
-      // 4. Exclude callout_followup tasks (shown separately)
-      
-      // Build query to get all potentially visible tasks
-      // We'll filter by visibility window in JavaScript after fetching template data
-      // Note: Using a simpler approach - fetch a wider date range to catch all visibility windows
-      
-      // Calculate date range: from 30 days ago to 30 days in the future
-      const dateRangeStart = new Date(today)
-      dateRangeStart.setDate(dateRangeStart.getDate() - 30)
-      const dateRangeStartStr = dateRangeStart.toISOString().split('T')[0]
-      
-      const dateRangeEnd = new Date(today)
-      dateRangeEnd.setDate(dateRangeEnd.getDate() + 30)
-      const dateRangeEndStr = dateRangeEnd.toISOString().split('T')[0]
-      
-      // Fetch tasks without relationship query (fetch templates separately)
-      // NOTE: We fetch ALL tasks (including completed) and filter in JavaScript
-      // This ensures we can show completed tasks in the completed section
+      // Fetch ONLY today's tasks that are pending or in_progress
+      // Completed and missed tasks are shown in the Completed Tasks page
       let query = supabase
         .from('checklist_tasks')
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
-        // Fetch a wider date range to catch all visibility windows
-        // We'll filter by visibility windows in JavaScript
-        .gte('due_date', dateRangeStartStr)
-        .lte('due_date', dateRangeEndStr)
-        // Don't filter by status here - we'll filter in JavaScript to show completed tasks separately
+        // Only show pending and in_progress tasks
+        .in('status', ['pending', 'in_progress'])
+        // Only show tasks due TODAY
+        .eq('due_date', todayStr)
       
       // Apply shift-based site filtering
       // Managers/admins see all sites, staff only see their current site when on shift
@@ -321,8 +299,15 @@ export default function DailyChecklistPage() {
         }
       }
       
-      // Filter tasks by visibility windows and shift-based timing
+      // Filter tasks - only show tasks due TODAY
+      // Database query already filters by due_date = today, but double-check here
       const data = (allTasks || []).filter(task => {
+        // CRITICAL: Only show tasks due TODAY (database should already filter, but verify)
+        if (task.due_date !== todayStr) {
+          console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr}`)
+          return false
+        }
+        
         // Exclude callout_followup tasks - they're shown in the upcoming section
         if (task.flag_reason === 'callout_followup') {
           return false
@@ -338,62 +323,7 @@ export default function DailyChecklistPage() {
           }
         }
         
-        // Get visibility window settings from template or task_data
-        const template = (task as any).template_id ? templatesMap[(task as any).template_id] : null
-        const taskData = task.task_data as any
-        const recurrencePattern = template?.recurrence_pattern || {}
-        
-        // Get template frequency - daily tasks should show EVERY DAY regardless of due_date
-        const frequency = template?.frequency
-        
-        // Daily tasks: Always show (they're due every day)
-        // But only if template exists - if no template, fall back to due_date check
-        if (frequency === 'daily' && template) {
-          console.log(`✅ Daily task showing: ${task.id} (template: ${template.name}, due_date: ${task.due_date})`)
-          return true
-        }
-        
-        // Debug: Log why tasks are being filtered
-        if (!template && (task as any).template_id) {
-          console.log(`⚠️ Task ${task.id} has template_id ${(task as any).template_id} but template not found in map`)
-        }
-        
-        // Get visibility settings (from task_data if stored there, otherwise from template)
-        const visibilityBefore = taskData?.visibility_window_days_before ?? 
-                                 recurrencePattern?.visibility_window_days_before ?? 
-                                 0
-        const visibilityAfter = taskData?.visibility_window_days_after ?? 
-                                recurrencePattern?.visibility_window_days_after ?? 
-                                0
-        
-        // Get actual due date (from task_data if stored, otherwise from due_date)
-        const actualDueDate = taskData?.actual_due_date ? 
-                              new Date(taskData.actual_due_date) : 
-                              new Date(task.due_date)
-        
-        // Calculate visibility window
-        const windowStart = new Date(actualDueDate)
-        windowStart.setDate(windowStart.getDate() - visibilityBefore)
-        
-        const windowEnd = new Date(actualDueDate)
-        windowEnd.setDate(windowEnd.getDate() + visibilityAfter)
-        
-        // Task is visible if today is within the visibility window
-        const isVisible = today >= windowStart && today <= windowEnd
-        
-        // If no visibility window settings (backwards compatibility), only show tasks due today
-        if (visibilityBefore === 0 && visibilityAfter === 0) {
-          const matches = task.due_date === todayStr
-          if (!matches) {
-            console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr} (no visibility window)`)
-          }
-          return matches
-        }
-        
-        if (!isVisible) {
-          console.log(`❌ Task ${task.id} filtered: not in visibility window (due_date: ${task.due_date}, window: ${windowStart.toISOString().split('T')[0]} to ${windowEnd.toISOString().split('T')[0]})`)
-        }
-        return isVisible
+        return true
       })
       
       if (!data || data.length === 0) {
@@ -727,7 +657,7 @@ export default function DailyChecklistPage() {
       
       // Load profiles for completed tasks
       const completedByUserIds = expandedTasks
-        .filter(t => t.status === 'completed' && t.completed_by)
+        .filter(t => (t.status === 'completed' || t.status === 'missed') && t.completed_at)
         .map(t => t.completed_by)
         .filter((id): id is string => id !== null)
       
@@ -875,8 +805,8 @@ export default function DailyChecklistPage() {
       // CRITICAL: For multi-daypart tasks, we need to check per-daypart completion
       // For single-daypart tasks, we check if the task itself has a completion record
       let activeTasks = tasksWithProfiles.filter(task => {
-        // Check 1: Skip if task status is completed or skipped
-        if (task.status === 'completed' || task.status === 'skipped') {
+        // Check 1: Skip if task status is completed, missed, or skipped
+        if (task.status === 'completed' || task.status === 'missed' || task.status === 'skipped') {
           return false
         }
         

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -44,6 +44,8 @@ export default function SOPsListPage() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
+  const searchParams = useSearchParams();
+  const sopIdParam = searchParams?.get('sop_id');
   
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -57,6 +59,7 @@ export default function SOPsListPage() {
     Opening: true,
     Drinks: true
   });
+  const [highlightedSopId, setHighlightedSopId] = useState<string | null>(null);
 
   // Load existing SOPs - only show latest version of each SOP
   useEffect(() => {
@@ -126,8 +129,41 @@ export default function SOPsListPage() {
     };
 
     loadSOPs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [companyId]);
+
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (sopIdParam && sops.length > 0) {
+      const sop = sops.find((s: any) => s.id === sopIdParam);
+      if (sop) {
+        // Find which category this SOP belongs to
+        const categoryKey = Object.keys(CATEGORY_GROUPS).find(key => 
+          CATEGORY_GROUPS[key].categories.includes(sop.category)
+        );
+        
+        if (categoryKey) {
+          // Expand the category
+          setExpandedCategories(prev => ({ ...prev, [categoryKey]: true }));
+        }
+        
+        // Highlight the SOP
+        setHighlightedSopId(sopIdParam);
+        
+        // Scroll to the SOP after a short delay
+        setTimeout(() => {
+          const element = document.getElementById(`sop-row-${sopIdParam}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+              setHighlightedSopId(null);
+            }, 5000);
+          }
+        }, 500);
+      }
+    }
+  }, [sopIdParam, sops]);
 
   const handleEditSOP = (sop: any) => {
     // Determine which template to navigate to based on category
@@ -321,10 +357,17 @@ export default function SOPsListPage() {
                       const statusBadge = getStatusBadge(sop.status);
                       const StatusIcon = statusBadge.icon;
                       
+                      const isHighlighted = highlightedSopId === sop.id;
+                      
                       return (
                         <div
+                          id={`sop-row-${sop.id}`}
                           key={sop.id}
-                          className="bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700 rounded-lg p-4 flex items-center justify-between group transition-colors"
+                          className={`rounded-lg p-4 flex items-center justify-between group transition-colors ${
+                            isHighlighted
+                              ? 'bg-blue-500/20 border-2 border-blue-500/60 shadow-lg shadow-blue-500/20 animate-pulse'
+                              : 'bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700'
+                          }`}
                         >
                           <div className="flex items-center gap-4 flex-1">
                             <div className={`p-2 rounded-lg ${statusBadge.bg}`}>

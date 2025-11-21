@@ -33,6 +33,7 @@ SENDGRID_KEY=your_sendgrid_api_key
 ### Environment Setup Process
 
 1. **Copy the template file:**
+
    ```bash
    cp .env.template .env.local
    ```
@@ -111,3 +112,50 @@ Notes:
 - In-app notifications are created regardless of email configuration.
 - Email delivery is skipped if `SENDGRID_KEY` is not set.
 - Notifications older than 14 days are auto-archived by the function.
+
+## 🔄 Today's Tasks Cron Job
+
+The app automatically generates daily checklist tasks at midnight UTC using a Supabase Edge Function.
+
+### Prerequisites
+
+- At least 1 active task template in `task_templates` table
+- At least 1 active site in `sites` table
+- Cron schedule configured in Supabase Dashboard
+
+### Verification
+
+Run the verification script to check if everything is set up correctly:
+
+```bash
+npm run verify-cron
+```
+
+### Manual Setup Required
+
+The cron schedule must be configured manually in Supabase Dashboard. See `docs/CRON_SETUP_INSTRUCTIONS.md` for step-by-step instructions.
+
+### Manual Testing
+
+To manually trigger task generation (useful for testing):
+
+```bash
+curl -X POST http://localhost:3000/api/admin/generate-tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### Monitoring
+
+- Check Edge Function logs: Supabase Dashboard → Edge Functions → generate-daily-tasks → Logs
+- Verify tasks were created: Query `checklist_tasks` table where `due_date = CURRENT_DATE`
+- Check for duplicates: See verification script or `docs/CRON_SETUP_INSTRUCTIONS.md`
+
+### Troubleshooting
+
+If tasks aren't generating:
+
+1. Run `npm run verify-cron` to check prerequisites
+2. Check Edge Function logs for errors
+3. Verify cron schedule is enabled in Supabase Dashboard
+4. Confirm Authorization header is set correctly

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink, ArrowRight } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskStatus } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import { calculateTaskTiming, TaskTimingStatus } from '@/utils/taskTiming'
@@ -22,9 +22,53 @@ interface TempWarning {
 
 export default function TaskCard({ task, onClick, showDetailLink = true }: TaskCardProps) {
   const isCompleted = task.status === 'completed'
+  const isOverdue = task.status === 'overdue' // Check for overdue status set by Edge Function
   const isCritical = task.template?.is_critical
   const [tempWarning, setTempWarning] = useState<TempWarning | null>(null)
   const templateNote = task.template_notes || task.template?.notes || null
+  
+  // Get navigation link for generic tasks
+  const getGenericTaskLink = () => {
+    const taskData = task.task_data as any
+    if (!taskData?.source_type) return null
+    
+    switch (taskData.source_type) {
+      case 'certificate_expiry':
+        // Link to training page with profile_id query param
+        if (taskData.profile_id) {
+          return `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
+        }
+        return '/dashboard/training'
+      
+      case 'sop_review':
+        // Link to SOPs list with sop_id query param
+        if (taskData.sop_id) {
+          return `/dashboard/sops/list?sop_id=${taskData.sop_id}`
+        }
+        return '/dashboard/sops/list'
+      
+      case 'document_expiry':
+        // Link to documents page with document_id query param
+        if (taskData.document_id) {
+          return `/dashboard/documents?document_id=${taskData.document_id}`
+        }
+        return '/dashboard/documents'
+      
+      case 'ppm_overdue':
+        // Link to PPM schedule page with asset_id query param
+        // PPM tasks use source_id (not asset_id) - this is the asset ID
+        if (taskData.source_id || taskData.asset_id) {
+          const assetId = taskData.source_id || taskData.asset_id
+          return `/dashboard/ppm?asset_id=${assetId}`
+        }
+        return '/dashboard/ppm'
+      
+      default:
+        return null
+    }
+  }
+  
+  const genericTaskLink = getGenericTaskLink()
   
   // Calculate task timing status
   const timing = !isCompleted 
@@ -93,6 +137,8 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
 
   const getStatusColor = () => {
     if (isCompleted) return 'border-green-500/50 bg-green-500/10'
+    // Overdue status (set by Edge Function) - highest priority styling
+    if (isOverdue) return 'border-red-600/60 bg-red-600/20 shadow-red-600/20'
     if (isMonitoringTask) return 'border-orange-500/50 bg-orange-500/10' // Orange border for monitoring tasks
     if (tempWarning?.status === 'failed') return 'border-red-500/50 bg-red-500/10'
     if (tempWarning?.status === 'warning') return 'border-orange-500/50 bg-orange-500/10'
@@ -108,6 +154,8 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
 
   const getStatusIcon = () => {
     if (isCompleted) return <CheckCircle2 className="h-5 w-5 text-green-400" />
+    // Overdue status (set by Edge Function) - highest priority icon
+    if (isOverdue) return <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
     if (tempWarning?.status === 'failed') return <AlertCircle className="h-5 w-5 text-red-400" />
     if (tempWarning?.status === 'warning') return <AlertCircle className="h-5 w-5 text-orange-400" />
     
@@ -171,8 +219,11 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
       <div className="flex items-start justify-between mb-3 pr-8">
         <div className="flex items-center gap-2">
           {getStatusIcon()}
-          <span className="text-sm font-medium text-white">
+          <span className={`text-sm font-medium ${isOverdue ? 'text-red-300 font-semibold' : 'text-white'}`}>
             {task.custom_name || task.template?.name || 'Unknown Task'}
+            {isOverdue && (
+              <span className="ml-2 text-xs text-red-400 font-semibold">OVERDUE</span>
+            )}
             {isMonitoringTask && (
               <span className="ml-2 text-xs text-orange-400 font-normal">(Monitoring)</span>
             )}
@@ -187,6 +238,21 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
         <p className="text-sm text-neutral-400 line-clamp-2">
           {task.custom_instructions || task.template?.description || 'No description available'}
         </p>
+
+        {/* Generic Task Navigation Link */}
+        {genericTaskLink && (
+          <Link
+            href={genericTaskLink}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-colors text-xs font-medium"
+          >
+            <ArrowRight className="w-3 h-3" />
+            {task.task_data?.source_type === 'certificate_expiry' && 'View Training Details'}
+            {task.task_data?.source_type === 'sop_review' && 'Review SOP'}
+            {task.task_data?.source_type === 'document_expiry' && 'Review Document'}
+            {task.task_data?.source_type === 'ppm_overdue' && 'View PPM Schedule'}
+          </Link>
+        )}
 
         {templateNote && (
           <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-100/90 text-xs p-3 flex gap-2">

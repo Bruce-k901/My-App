@@ -395,6 +395,12 @@ const photoPaths = completionRecord?.evidence_attachments ||
             <h3 className="text-lg font-semibold text-white">
               {task.custom_name || task.template?.name || 'Untitled Task'}
             </h3>
+            {task.status === 'missed' && (
+              <span className="px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 bg-red-500/20 text-red-300 border-red-500/40">
+                <AlertTriangle className="w-3 h-3" />
+                Missed
+              </span>
+            )}
             <span className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${statusBadgeColor}`}>
               <StatusIcon className="w-4 h-4" />
               {statusLabel.toUpperCase()}
