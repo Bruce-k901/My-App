@@ -646,11 +646,11 @@ export default function TaskCompletionModal({
               max: asset.working_temp_max
             })
           })
-        } else {
+        } else if (allAssetIds.size > 0) {
+          // Only warn if we expected to find assets but didn't
           console.warn('⚠️ [TEMPERATURE SYSTEM] No assets found with IDs:', Array.from(allAssetIds))
         }
-      } else {
-        console.warn('⚠️ [TEMPERATURE SYSTEM] No asset IDs to load ranges for')
+        // Note: No asset IDs is normal for tasks without asset selection - no warning needed
       }
       
       // CRITICAL: Always set the ranges, even if empty (prevents stale data)

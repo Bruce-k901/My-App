@@ -799,7 +799,7 @@ export default function DailyChecklistPage() {
               completed_by: r.completed_by
             })))
           } else {
-            console.warn('⚠️ No completion records found after filtering')
+            // This is normal for pending tasks - only log if we expected records but they were filtered out
             if (completionRecords && completionRecords.length > 0) {
               console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
                 task_id: r.task_id,
