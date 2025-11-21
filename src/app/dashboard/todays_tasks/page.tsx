@@ -78,8 +78,11 @@ export default function DailyChecklistPage() {
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
+  // CRITICAL: Only call this on initial page load and after task completion
+  // Do NOT call from fetchTodaysTasks to avoid unnecessary queries
   const loadBreachActions = useCallback(async () => {
-    if (!siteId) {
+    // Early return if no site context - prevents unnecessary queries
+    if (!siteId || !companyId) {
       setBreachActions([])
       return
     }
@@ -90,7 +93,7 @@ export default function DailyChecklistPage() {
       const weekAgo = new Date(today.getTime())
       weekAgo.setDate(weekAgo.getDate() - 7)
 
-      let query = supabase
+      const { data, error } = await supabase
         .from('temperature_breach_actions')
         .select(
           `
@@ -112,17 +115,19 @@ export default function DailyChecklistPage() {
             )
           `
         )
+        .eq('site_id', siteId)
         .in('status', ['pending', 'acknowledged'])
         .gte('created_at', weekAgo.toISOString())
         .order('created_at', { ascending: false })
 
-      if (siteId) {
-        query = query.eq('site_id', siteId)
+      if (error) {
+        // Only log errors, don't throw - empty results are normal
+        console.warn('Failed to load breach actions:', error?.message ?? error)
+        setBreachActions([])
+        return
       }
 
-      const { data, error } = await query
-
-      if (error) throw error
+      // Empty results are normal - no breach actions to show
       setBreachActions((data || []).map((row) => ({
         id: row.id,
         action_type: row.action_type,
@@ -135,11 +140,13 @@ export default function DailyChecklistPage() {
         temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
       })))
     } catch (error: any) {
-      console.error('Failed to load breach actions', error?.message ?? error)
+      // Silently handle errors - empty results are acceptable
+      console.warn('Error loading breach actions:', error?.message ?? error)
+      setBreachActions([])
     } finally {
       setBreachLoading(false)
     }
-  }, [siteId])
+  }, [siteId, companyId])
 
   // Define fetchUpcomingTasks (needed by useEffect)
   const fetchUpcomingTasks = useCallback(async () => {
@@ -989,7 +996,8 @@ export default function DailyChecklistPage() {
       
       setTasks(activeTasks)
       setCompletedTasks(completedTasksWithRecords)
-      await loadBreachActions()
+      // NOTE: loadBreachActions is called separately on initial load and after task completion
+      // Don't call it here to avoid unnecessary queries on every task refresh
     } catch (error: any) {
       // Enhanced error logging with better serialization
       const errorDetails: any = {
@@ -1025,7 +1033,7 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }, [companyId, siteId, loadBreachActions]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks - removed loadBreachActions to avoid unnecessary calls
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
@@ -1037,6 +1045,7 @@ export default function DailyChecklistPage() {
     if (companyId) {
       fetchTodaysTasks()
       fetchUpcomingTasks()
+      // Only load breach actions on initial page load, not on every task refresh
       loadBreachActions()
     } else {
       setLoading(false)
