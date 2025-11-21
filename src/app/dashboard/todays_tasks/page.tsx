@@ -754,44 +754,30 @@ export default function DailyChecklistPage() {
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
+      // IMPORTANT: Do NOT filter by site_id - if a task has a completion record, it's completed regardless of site
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
       
       if (allTaskIds.length > 0) {
-        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
+        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')')
         
-        // Try fetching WITHOUT site_id filter first to see if that's the issue
-        let completionQuery = supabase
+        // Fetch ALL completion records for these tasks - do NOT filter by site_id
+        // A task is completed if it has ANY completion record, regardless of site
+        const { data: completionRecords, error: completionError } = await supabase
           .from('task_completion_records')
           .select('*')
           .in('task_id', allTaskIds)
           .order('completed_at', { ascending: false })
         
-        // Filter by site_id if available (matches how we filter tasks)
-        // BUT: Also try without site_id filter if we get no results, in case site_id doesn't match
-        const { data: completionRecords, error: completionError } = await completionQuery
-        
         if (completionError) {
           console.error('❌ Error fetching completion records:', completionError)
           console.error('Error details:', JSON.stringify(completionError, null, 2))
         } else {
-          console.log('✅ Fetched completion records:', completionRecords?.length || 0)
+          allCompletionRecords = completionRecords || []
+          console.log('✅ Fetched completion records:', allCompletionRecords.length)
           
-          // Filter by site_id in JavaScript if needed (more permissive)
-          let filteredRecords = completionRecords || []
-          if (siteId && completionRecords) {
-            // Filter by site_id in JS, but also include records with null site_id
-            filteredRecords = completionRecords.filter(r => !r.site_id || r.site_id === siteId)
-            console.log('🔍 Filtered by site_id:', {
-              before: completionRecords.length,
-              after: filteredRecords.length,
-              siteId
-            })
-          }
-          
-          if (filteredRecords.length > 0) {
-            allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
+          if (allCompletionRecords.length > 0) {
+            console.log('📝 Completion records details:', allCompletionRecords.map(r => ({
               id: r.id,
               task_id: r.task_id,
               completed_at: r.completed_at,
@@ -799,15 +785,6 @@ export default function DailyChecklistPage() {
               site_id: r.site_id,
               completed_by: r.completed_by
             })))
-          } else {
-            // This is normal for pending tasks - only log if we expected records but they were filtered out
-            if (completionRecords && completionRecords.length > 0) {
-              console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
-                task_id: r.task_id,
-                site_id: r.site_id,
-                expected_site_id: siteId
-              })))
-            }
           }
         }
       }
