@@ -213,19 +213,13 @@ export default function DailyChecklistPage() {
       
       // Fetch ONLY today's tasks that are pending or in_progress
       // Completed and missed tasks are shown in the Completed Tasks page
-      // CRITICAL: We also need to check completion records to filter out tasks that have been completed
-      // even if their status hasn't been updated yet (defensive filtering)
       let query = supabase
         .from('checklist_tasks')
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
-        // CRITICAL: Only show pending and in_progress tasks - explicitly exclude completed/missed/skipped
-        // This is the primary filter - database should enforce this
+        // Only show pending and in_progress tasks
         .in('status', ['pending', 'in_progress'])
-        // CRITICAL: Also exclude tasks with completed_at timestamp set (defensive)
-        // This catches tasks that were completed but status wasn't updated
-        .is('completed_at', null)
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
       
@@ -275,36 +269,12 @@ export default function DailyChecklistPage() {
       
       console.log('📥 Raw tasks from database:', {
         total: allTasks?.length || 0,
-        tasks: allTasks?.map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          daypart: t.daypart, 
-          flag_reason: t.flag_reason,
-          completed_at: t.completed_at 
-        }))
+        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
       })
-      
-      // CRITICAL: Defensive filter - remove any tasks that have completed_at set
-      // This catches any tasks that might have slipped through the database query
-      const tasksWithoutCompletedAt = (allTasks || []).filter((task: any) => {
-        if (task.completed_at) {
-          console.log(`❌ Task ${task.id} filtered: has completed_at timestamp (should not appear in query)`)
-          return false
-        }
-        return true
-      })
-      
-      if (tasksWithoutCompletedAt.length !== (allTasks || []).length) {
-        console.warn('⚠️ Filtered out', (allTasks || []).length - tasksWithoutCompletedAt.length, 'tasks with completed_at timestamp')
-      }
-      
-      // Use filtered tasks for the rest of the processing
-      const allTasksFiltered = tasksWithoutCompletedAt
       
       // Fetch templates separately if we have tasks
       // CRITICAL: Load ALL required fields needed by TaskCompletionModal
       // This includes: evidence_types, asset_id, repeatable_field_name, instructions, etc.
-      // IMPORTANT: Use allTasks (not allTasksFiltered) to ensure we get all templates
       let templatesMap: Record<string, any> = {}
       if (allTasks && allTasks.length > 0) {
         const templateIds = [...new Set(allTasks.map((t: any) => t.template_id).filter(Boolean))]
@@ -331,7 +301,7 @@ export default function DailyChecklistPage() {
       
       // Filter tasks - only show tasks due TODAY
       // Database query already filters by due_date = today, but double-check here
-      const data = (allTasksFiltered || []).filter(task => {
+      const data = (allTasks || []).filter(task => {
         // CRITICAL: Only show tasks due TODAY (database should already filter, but verify)
         if (task.due_date !== todayStr) {
           console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr}`)
@@ -380,25 +350,8 @@ export default function DailyChecklistPage() {
         
         if (fullTemplates) {
           fullTemplates.forEach(t => {
-            // CRITICAL: Enrich template with definition (same as first fetch)
             const enriched = enrichTemplateWithDefinition(t)
-            
-            // CRITICAL: Ensure template_fields is always an array
-            if (enriched.template_fields) {
-              if (!Array.isArray(enriched.template_fields)) {
-                console.warn('⚠️ Template fields is not an array for template:', enriched.id, 'type:', typeof enriched.template_fields)
-                enriched.template_fields = []
-              }
-            } else {
-              enriched.template_fields = []
-            }
-            
             templatesMap[enriched.id] = enriched
-            console.log('✅ [TEMPLATE LOADING] Added template from second fetch:', {
-              templateId: enriched.id,
-              templateName: enriched.name,
-              templateFieldsCount: enriched.template_fields?.length || 0
-            })
           })
         }
       }
@@ -406,24 +359,22 @@ export default function DailyChecklistPage() {
       // Map tasks with templates
       const tasksWithTemplates = data.map((task: any) => {
         const template = task.template_id ? templatesMap[task.template_id] : null
-        
-        // CRITICAL: Log template attachment for debugging
-        if (!template && task.template_id) {
-          console.warn('⚠️ [TEMPLATE ATTACHMENT] Template not found in templatesMap:', {
+        // CRITICAL DEBUG: Log template attachment to verify it's working
+        if (template) {
+          console.log('✅ [TEMPLATE ATTACHMENT] Template attached:', {
             taskId: task.id,
-            templateId: task.template_id,
-            templatesMapKeys: Object.keys(templatesMap),
-            templatesMapSize: Object.keys(templatesMap).length
-          })
-        } else if (template) {
-          console.log('✅ [TEMPLATE ATTACHMENT] Template attached to task:', {
-            taskId: task.id,
-            templateId: task.template_id,
+            templateId: template.id,
             templateName: template.name,
-            templateFieldsCount: template.template_fields?.length || 0
+            hasTemplateFields: !!template.template_fields,
+            templateFieldsCount: Array.isArray(template.template_fields) ? template.template_fields.length : 0
+          })
+        } else if (task.template_id) {
+          console.error('❌ [TEMPLATE ATTACHMENT] Template NOT found:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            availableTemplateIds: Object.keys(templatesMap)
           })
         }
-        
         return {
           ...task,
           template: template
@@ -815,16 +766,10 @@ export default function DailyChecklistPage() {
       // CRITICAL: For multi-daypart tasks, multiple instances share the same task.id
       // so we need to track which specific daypart instances were completed
       const completedDaypartsMap = new Map<string, Set<string>>()
-      // Also track tasks that have completion records but no daypart (single-daypart tasks)
-      const tasksCompletedWithoutDaypart = new Set<string>()
-      
       allCompletionRecords.forEach(record => {
         const taskId = record.task_id
-        if (!taskId) return
-        
         const completedDaypart = record.completion_data?.completed_daypart
-        if (completedDaypart) {
-          // Multi-daypart task - track which daypart was completed
+        if (completedDaypart && taskId) {
           if (!completedDaypartsMap.has(taskId)) {
             completedDaypartsMap.set(taskId, new Set())
           }
@@ -836,21 +781,15 @@ export default function DailyChecklistPage() {
             normalizedDaypart,
             allCompletedDayparts: Array.from(completedDaypartsMap.get(taskId)!)
           })
-        } else {
-          // Single-daypart task - no daypart in completion_data means the whole task was completed
-          tasksCompletedWithoutDaypart.add(taskId)
-          console.log('📝 Task completed without daypart (single-daypart task):', taskId)
         }
       })
       
       console.log('📊 Completed dayparts map:', {
         totalTasks: completedDaypartsMap.size,
-        tasksCompletedWithoutDaypart: tasksCompletedWithoutDaypart.size,
         details: Array.from(completedDaypartsMap.entries()).map(([taskId, dayparts]) => ({
           taskId,
           completedDayparts: Array.from(dayparts)
-        })),
-        tasksWithoutDaypart: Array.from(tasksCompletedWithoutDaypart)
+        }))
       })
       
       // Build a set of task IDs that have completion records
@@ -860,26 +799,22 @@ export default function DailyChecklistPage() {
         totalTasks: tasksWithProfiles.length,
         completionRecordsFound: allCompletionRecords.length,
         tasksWithCompletionRecords: Array.from(tasksWithCompletionRecords),
-        tasksCompletedWithoutDaypart: Array.from(tasksCompletedWithoutDaypart),
         completedDaypartsMapSize: completedDaypartsMap.size,
         sampleTaskChecks: tasksWithProfiles.slice(0, 5).map(t => {
           const taskData = t.task_data || {}
           const daypartsInData = taskData.dayparts || []
           const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
           const completedDayparts = completedDaypartsMap.get(t.id)
-          const hasRecord = tasksWithCompletionRecords.has(t.id)
-          const completedWithoutDaypart = tasksCompletedWithoutDaypart.has(t.id)
           return { 
             id: t.id, 
             status: t.status,
             daypart: t.daypart,
-            hasRecord,
-            completedWithoutDaypart,
+            hasRecord: tasksWithCompletionRecords.has(t.id),
             hasMultipleDayparts,
             completedDayparts: completedDayparts ? Array.from(completedDayparts) : null,
             willBeFiltered: hasMultipleDayparts && completedDayparts && t.daypart 
               ? completedDayparts.has(normalizeDaypart(t.daypart))
-              : (hasRecord || completedWithoutDaypart)
+              : tasksWithCompletionRecords.has(t.id)
           }
         })
       })
