@@ -317,31 +317,59 @@ export default function TaskCompletionModal({
       }
     }, [task.id, task.template_id, task.template, isOpen])
     
-    // SAFEGUARD: Load template fields from task.template if state is empty
-    // This ensures we use pre-loaded fields from Today's Tasks page even if database query fails
-    // CRITICAL: This runs after the main useEffect to catch any cases where initialization didn't load fields
-    useEffect(() => {
-      if (!isOpen) return
-      if (templateFields.length > 0) {
-        // Already loaded - verify it matches what we expect
-        console.log('✅ [TEMPLATE FIELDS] State already has', templateFields.length, 'fields')
-        return
-      }
-      if (!task.template?.template_fields) {
-        console.warn('⚠️ [TEMPLATE FIELDS] No pre-loaded fields available in task.template')
-        return // No pre-loaded fields available
-      }
-      
-      const preLoadedFields = task.template.template_fields
-      if (Array.isArray(preLoadedFields) && preLoadedFields.length > 0) {
-        console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Loading from pre-loaded task.template.template_fields:', preLoadedFields.length)
-        const sortedFields = [...preLoadedFields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
-        setTemplateFields(sortedFields)
-        console.log('✅ [TEMPLATE FIELDS] SAFEGUARD: State set with', sortedFields.length, 'fields')
-      } else {
-        console.warn('⚠️ [TEMPLATE FIELDS] Pre-loaded fields array is empty or invalid')
-      }
-    }, [isOpen, task.template?.template_fields, templateFields.length])
+      // SAFEGUARD: Load template fields from task.template if state is empty
+      // This ensures we use pre-loaded fields from Today's Tasks page even if database query fails
+      // CRITICAL: This runs after the main useEffect to catch any cases where initialization didn't load fields
+      useEffect(() => {
+        if (!isOpen) return
+        
+        // If we already have fields, verify they're correct
+        if (templateFields.length > 0) {
+          console.log('✅ [TEMPLATE FIELDS] State already has', templateFields.length, 'fields')
+          // Double-check: if task.template has more fields, use those (they might be more up-to-date)
+          const preLoadedFields = task.template?.template_fields
+          if (Array.isArray(preLoadedFields) && preLoadedFields.length > templateFields.length) {
+            console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Pre-loaded fields have more items, updating state')
+            const sortedFields = [...preLoadedFields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+            setTemplateFields(sortedFields)
+          }
+          return
+        }
+        
+        // State is empty - try to load from pre-loaded template fields
+        const preLoadedFields = task.template?.template_fields
+        if (!preLoadedFields) {
+          console.warn('⚠️ [TEMPLATE FIELDS] SAFEGUARD: No pre-loaded fields available in task.template')
+          // Last resort: try to fetch from database if we have template_id
+          if (task.template_id) {
+            console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Attempting database fetch as last resort')
+            loadTemplateFields(task.template_id).catch((error) => {
+              console.error('❌ [TEMPLATE FIELDS] SAFEGUARD: Database fetch also failed:', error)
+            })
+          }
+          return
+        }
+        
+        if (Array.isArray(preLoadedFields) && preLoadedFields.length > 0) {
+          console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Loading from pre-loaded task.template.template_fields:', preLoadedFields.length)
+          const sortedFields = [...preLoadedFields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+          setTemplateFields(sortedFields)
+          console.log('✅ [TEMPLATE FIELDS] SAFEGUARD: State set with', sortedFields.length, 'fields')
+        } else {
+          console.warn('⚠️ [TEMPLATE FIELDS] SAFEGUARD: Pre-loaded fields is not a valid array:', {
+            type: typeof preLoadedFields,
+            isArray: Array.isArray(preLoadedFields),
+            length: Array.isArray(preLoadedFields) ? preLoadedFields.length : 'N/A'
+          })
+          // Last resort: try database fetch
+          if (task.template_id) {
+            console.log('📋 [TEMPLATE FIELDS] SAFEGUARD: Attempting database fetch as last resort')
+            loadTemplateFields(task.template_id).catch((error) => {
+              console.error('❌ [TEMPLATE FIELDS] SAFEGUARD: Database fetch also failed:', error)
+            })
+          }
+        }
+      }, [isOpen, task.template?.template_fields, task.template_id, templateFields.length])
     
     // SAFEGUARD: Reload temperature ranges when templateFields state updates
     // This ensures ranges are loaded even if template fields load after initialization
@@ -693,11 +721,19 @@ export default function TaskCompletionModal({
           throw error
         }
         fields = data || []
-        console.log('✅ [TEMPLATE FIELDS] Fetched', fields.length, 'fields from database')
+        console.log('✅ [TEMPLATE FIELDS] Fetched', fields.length, 'fields from database for templateId:', templateId)
         if (fields.length > 0) {
           console.log('   Field names:', fields.map((f: any) => f.field_name))
+          console.log('   Field types:', fields.map((f: any) => ({ name: f.field_name, type: f.field_type })))
         } else {
           console.warn('⚠️ [TEMPLATE FIELDS] Database query returned 0 fields for templateId:', templateId)
+          console.warn('   This could mean:')
+          console.warn('   1. Template fields were never created for this template')
+          console.warn('   2. Template fields were deleted')
+          console.warn('   3. There is a database connection issue')
+          console.warn('   Template ID:', templateId)
+          console.warn('   Template name:', task.template?.name || 'Unknown')
+          console.warn('   Template slug:', task.template?.slug || 'Unknown')
         }
       } else {
         console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', fields.length)
@@ -3486,9 +3522,13 @@ export default function TaskCompletionModal({
             ) && (() => {
               // CRITICAL: Use templateFields if loaded, otherwise fallback to task.template.template_fields
               // This ensures temperature fields show even if templateFields state hasn't updated yet
+              // IMPORTANT: Check if task.template.template_fields is an array before using it
+              const preLoadedFields = task.template?.template_fields
               const fieldsToUse = templateFields.length > 0 
                 ? templateFields 
-                : (task.template?.template_fields || [])
+                : (Array.isArray(preLoadedFields) && preLoadedFields.length > 0
+                    ? preLoadedFields
+                    : [])
               
               // Check for equipment select fields (legacy and new field names)
               // Note: asset_name can be both a select field AND a repeatable field name
@@ -3552,10 +3592,19 @@ export default function TaskCompletionModal({
                                                  equipmentField?.field_name === repeatableFieldName && 
                                                  !equipmentFieldHasOptions
               
-              // Only hide if using asset selection AND no temperature field exists
-              // If temperature field exists, always show it (even if using asset selection)
-              if (usesAssetSelection && isRepeatableAssetSelection && !equipmentFieldHasOptions && !temperatureField) {
+              // Only hide if using asset selection AND no temperature field exists AND no selectedAssets
+              // If temperature field exists OR we have selectedAssets, always show temperature inputs
+              // CRITICAL: Even if template_fields are missing, show temperature inputs if we have selectedAssets
+              if (usesAssetSelection && isRepeatableAssetSelection && !equipmentFieldHasOptions && !temperatureField && selectedAssets.length === 0) {
+                console.log('⚠️ [TEMPERATURE RENDERING] Hiding temperature section: using asset selection, no temperature field, no selectedAssets')
                 return null
+              }
+              
+              // CRITICAL: If we have selectedAssets but no template_fields, still show temperature inputs
+              // This handles cases where template_fields aren't loaded yet or don't exist
+              if (selectedAssets.length > 0 && fieldsToUse.length === 0) {
+                console.log('📋 [TEMPERATURE RENDERING] Showing temperature inputs based on selectedAssets (template_fields not loaded yet)')
+                // Continue to render temperature inputs below
               }
               
               // Render equipment list with temperature inputs (for equipment select fields with options)

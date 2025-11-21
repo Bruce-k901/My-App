@@ -295,7 +295,18 @@ export default function DailyChecklistPage() {
           
           if (!templatesError && templates) {
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
+              // CRITICAL: Log template_fields BEFORE enrichment to see what Supabase returns
+              console.log('📋 [TEMPLATE LOADING] Template before enrichment:', {
+                id: template.id,
+                name: template.name,
+                template_fields_type: typeof template.template_fields,
+                template_fields_isArray: Array.isArray(template.template_fields),
+                template_fields_length: Array.isArray(template.template_fields) ? template.template_fields.length : 'N/A',
+                template_fields_raw: template.template_fields
+              })
+              
               const enriched = enrichTemplateWithDefinition(template)
+              
               // CRITICAL: Ensure template_fields is always an array
               // Supabase might return it as null, undefined, or in different formats
               if (enriched.template_fields) {
@@ -303,13 +314,27 @@ export default function DailyChecklistPage() {
                   // If it's not an array, try to convert it
                   console.warn('⚠️ Template fields is not an array for template:', enriched.id, 'type:', typeof enriched.template_fields)
                   enriched.template_fields = []
+                } else {
+                  console.log('✅ [TEMPLATE LOADING] Template fields preserved after enrichment:', {
+                    templateId: enriched.id,
+                    templateName: enriched.name,
+                    fieldsCount: enriched.template_fields.length,
+                    fieldNames: enriched.template_fields.map((f: any) => f.field_name || f.fieldName || 'unknown')
+                  })
                 }
               } else {
+                console.warn('⚠️ [TEMPLATE LOADING] Template fields missing after enrichment for template:', {
+                  id: enriched.id,
+                  name: enriched.name,
+                  hadFieldsBefore: !!template.template_fields
+                })
                 enriched.template_fields = []
               }
               acc[enriched.id] = enriched
               return acc
             }, {})
+          } else if (templatesError) {
+            console.error('❌ [TEMPLATE LOADING] Error fetching templates:', templatesError)
           }
         }
       }
@@ -759,13 +784,22 @@ export default function DailyChecklistPage() {
         // IMPORTANT: Use date range to catch all records for today, regardless of timezone issues
         // Use a wider date range to catch any edge cases (yesterday 23:00 to tomorrow 01:00)
         // This ensures we don't miss completion records due to timezone differences
-        const yesterday = new Date(today)
+        // CRITICAL: Use todayStr to build dates consistently (avoids timezone issues)
+        const todayDate = new Date(todayStr + 'T12:00:00') // Use noon to avoid timezone edge cases
+        const yesterday = new Date(todayDate)
         yesterday.setDate(yesterday.getDate() - 1)
-        const tomorrow = new Date(today)
+        const tomorrow = new Date(todayDate)
         tomorrow.setDate(tomorrow.getDate() + 1)
         
         const startDate = yesterday.toISOString().split('T')[0] + 'T23:00:00'
         const endDate = tomorrow.toISOString().split('T')[0] + 'T01:00:00'
+        
+        console.log('📅 [COMPLETION RECORDS] Date range for query:', {
+          todayStr,
+          startDate,
+          endDate,
+          taskIdsCount: taskIdsToCheck.length
+        })
         
         let completionQuery = supabase
           .from('task_completion_records')
@@ -965,8 +999,18 @@ export default function DailyChecklistPage() {
         
         // Check 4: Additional defensive check - look for completion records that might have been missed
         // Check if any completion record matches this task (bypassing the map for extra safety)
+        // CRITICAL: Also verify the completion record's date matches today
         const hasDirectCompletionRecord = allCompletionRecords.some(record => {
           if (record.task_id !== task.id) return false
+          
+          // CRITICAL: Verify the completion record is for today
+          if (record.completed_at) {
+            const recordDate = new Date(record.completed_at).toISOString().split('T')[0]
+            if (recordDate !== todayStr) {
+              // Completion record is not for today - ignore it
+              return false
+            }
+          }
           
           // For multi-daypart tasks, check if the completion record's daypart matches
           if (task.daypart) {
@@ -978,15 +1022,16 @@ export default function DailyChecklistPage() {
             return false
           }
           
-          // For single-daypart tasks, any completion record means the task is completed
+          // For single-daypart tasks, any completion record for today means the task is completed
           return true
         })
         
         if (hasDirectCompletionRecord) {
-          console.log(`❌ Task ${task.id} filtered: found direct completion record match`)
+          console.log(`❌ Task ${task.id} filtered: found direct completion record match for today`)
           return false
         }
         
+        // Task passed all filters - it's active
         return true
       })
       
