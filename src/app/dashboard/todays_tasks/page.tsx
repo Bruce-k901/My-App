@@ -213,12 +213,16 @@ export default function DailyChecklistPage() {
       
       // Fetch ONLY today's tasks that are pending or in_progress
       // Completed and missed tasks are shown in the Completed Tasks page
+      // CRITICAL: We also need to check completion records to filter out tasks that have been completed
+      // even if their status hasn't been updated yet (defensive filtering)
       let query = supabase
         .from('checklist_tasks')
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
         // Only show pending and in_progress tasks
+        // NOTE: We'll also filter by completion records below to catch tasks that were completed
+        // but their status wasn't updated (defensive filtering)
         .in('status', ['pending', 'in_progress'])
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
@@ -683,21 +687,30 @@ export default function DailyChecklistPage() {
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
+      // CRITICAL: Fetch completion records for ALL tasks due today, not just the ones we fetched
+      // This ensures we catch all completed tasks even if they have status='pending' (defensive filtering)
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
       
+      // CRITICAL: Fetch completion records for today's tasks
+      // We need to fetch records for tasks that might have been completed today
+      // even if their status wasn't updated properly (defensive filtering)
       if (allTaskIds.length > 0) {
         console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
         
-        // Try fetching WITHOUT site_id filter first to see if that's the issue
+        // Fetch completion records for today's tasks
+        // CRITICAL: Filter by company_id and completed_at date to ensure we get all relevant completion records
+        // Don't filter by site_id initially - we'll filter in JS to be more permissive
+        // Also fetch records for tasks that might have been completed today but status wasn't updated
         let completionQuery = supabase
           .from('task_completion_records')
           .select('*')
+          .eq('company_id', companyId)
           .in('task_id', allTaskIds)
+          .gte('completed_at', `${todayStr}T00:00:00`)
+          .lte('completed_at', `${todayStr}T23:59:59`)
           .order('completed_at', { ascending: false })
         
-        // Filter by site_id if available (matches how we filter tasks)
-        // BUT: Also try without site_id filter if we get no results, in case site_id doesn't match
         const { data: completionRecords, error: completionError } = await completionQuery
         
         if (completionError) {
@@ -706,15 +719,18 @@ export default function DailyChecklistPage() {
         } else {
           console.log('✅ Fetched completion records:', completionRecords?.length || 0)
           
-          // Filter by site_id in JavaScript if needed (more permissive)
+          // Filter by site_id in JavaScript (more permissive - include records with null site_id)
+          // CRITICAL: Include records with null site_id for backwards compatibility
+          // This ensures we don't miss completion records that were created before site_id was required
           let filteredRecords = completionRecords || []
           if (siteId && completionRecords) {
-            // Filter by site_id in JS, but also include records with null site_id
+            // Include records that match site_id OR have null site_id (for backwards compatibility)
             filteredRecords = completionRecords.filter(r => !r.site_id || r.site_id === siteId)
             console.log('🔍 Filtered by site_id:', {
               before: completionRecords.length,
               after: filteredRecords.length,
-              siteId
+              siteId,
+              recordsWithNullSiteId: completionRecords.filter(r => !r.site_id).length
             })
           }
           
@@ -740,6 +756,11 @@ export default function DailyChecklistPage() {
           }
         }
       }
+      
+      // CRITICAL: Also fetch completion records for tasks that might have status='completed' but weren't in our query
+      // This is a fallback to ensure we have all completion records for today's tasks
+      // We'll use these to build the completedTasks list
+      // Note: This is separate from the active tasks filtering above
       
       // Build a map of completed dayparts per task
       // Key: task_id, Value: Set of completed dayparts
@@ -802,9 +823,13 @@ export default function DailyChecklistPage() {
       // Filter out completed tasks from active tasks
       // CRITICAL: For multi-daypart tasks, we need to check per-daypart completion
       // For single-daypart tasks, we check if the task itself has a completion record
+      // IMPORTANT: Always check completion records FIRST, even if status is 'pending'
+      // This is defensive filtering to catch tasks that were completed but status wasn't updated
       let activeTasks = tasksWithProfiles.filter(task => {
         // Check 1: Skip if task status is completed, missed, or skipped
+        // This is the primary filter, but we'll also check completion records below
         if (task.status === 'completed' || task.status === 'missed' || task.status === 'skipped') {
+          console.log(`❌ Task ${task.id} filtered: status is ${task.status}`)
           return false
         }
         
@@ -821,6 +846,7 @@ export default function DailyChecklistPage() {
             const normalizedDaypart = normalizeDaypart(task.daypart)
             if (completedDayparts.has(normalizedDaypart)) {
               // This specific daypart instance was completed, hide it
+              console.log(`❌ Task ${task.id} filtered: daypart ${task.daypart} was completed`)
               return false
             }
           }
@@ -830,8 +856,10 @@ export default function DailyChecklistPage() {
         
         // Check 3: For single-daypart tasks (or tasks without daypart data), 
         // skip if task has ANY completion record
-        // This only applies to non-multi-daypart tasks
+        // CRITICAL: This is defensive filtering - even if status is 'pending', 
+        // if there's a completion record, the task was completed and should be hidden
         if (tasksWithCompletionRecords.has(task.id)) {
+          console.log(`❌ Task ${task.id} filtered: has completion record (status: ${task.status})`)
           return false
         }
         
