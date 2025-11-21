@@ -249,20 +249,17 @@ export default function TaskCompletionModal({
           const sortedFields = [...task.template.template_fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
           setTemplateFields(sortedFields)
           console.log('✅ [TEMPLATE FIELDS] Set templateFields state:', sortedFields.length)
-        } else if (task.template_id) {
-          // Fallback: fetch from database
+        } else {
+          // Fallback: fetch from database (loadTemplateFields uses task.template_id from prop)
           console.log('📋 [TEMPLATE FIELDS] Fetching from database for templateId:', task.template_id, {
             reason: !task.template ? 'No template object' : (!task.template.template_fields ? 'No template_fields in template' : 'template_fields is empty')
           })
           try {
-            await loadTemplateFields(task.template_id)
+            await loadTemplateFields()
           } catch (error) {
             console.error('❌ [TEMPLATE FIELDS] Error loading template fields:', error)
             setTemplateFields([]) // Set empty array on error
           }
-        } else {
-          console.warn('⚠️ [TEMPLATE FIELDS] No template_id available and no pre-loaded fields')
-          setTemplateFields([]) // Set empty array if no template_id
         }
         
         // Load task resources (assets, libraries, SOPs, RAs)
@@ -632,12 +629,8 @@ export default function TaskCompletionModal({
     }
   }
 
-  const loadTemplateFields = async (templateId: string): Promise<any[]> => {
-    if (!templateId) {
-      console.warn('⚠️ [TEMPLATE FIELDS] No templateId provided to loadTemplateFields')
-      return []
-    }
-    console.log('📋 [TEMPLATE FIELDS] Loading template fields for templateId:', templateId)
+  const loadTemplateFields = async () => {
+    if (!task.template_id) return
     try {
       // CRITICAL: Use template_fields from task.template if already loaded (from Today's Tasks page)
       // This avoids unnecessary database queries and ensures fields are available immediately
@@ -645,47 +638,22 @@ export default function TaskCompletionModal({
       
       // If template_fields weren't included in the template, fetch them separately
       if (!fields || fields.length === 0) {
-        console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded, fetching from database with templateId:', templateId)
+        console.log('📋 Template fields not pre-loaded, fetching from database...')
         const { data, error } = await supabase
           .from('template_fields')
           .select('*')
-          .eq('template_id', templateId)
+          .eq('template_id', task.template_id)
           .order('field_order')
         
-        if (error) {
-          console.error('❌ [TEMPLATE FIELDS] Error fetching template fields:', error)
-          console.error('   Error details:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
-          throw error
-        }
+        if (error) throw error
         fields = data || []
-        console.log('✅ [TEMPLATE FIELDS] Fetched', fields.length, 'fields from database for templateId:', templateId)
-        if (fields.length > 0) {
-          console.log('   Field names:', fields.map((f: any) => f.field_name))
-          console.log('   Field types:', fields.map((f: any) => ({ name: f.field_name, type: f.field_type })))
-        } else {
-          console.warn('⚠️ [TEMPLATE FIELDS] Database query returned 0 fields for templateId:', templateId)
-          console.warn('   This could mean:')
-          console.warn('   1. Template fields were never created for this template')
-          console.warn('   2. Template fields were deleted')
-          console.warn('   3. There is a database connection issue')
-          console.warn('   Template ID:', templateId)
-          console.warn('   Template name:', task.template?.name || 'Unknown')
-          console.warn('   Template slug:', task.template?.slug || 'Unknown')
-        }
       } else {
-        console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', fields.length)
+        console.log('✅ Using pre-loaded template fields:', fields.length)
         // Ensure fields are sorted by field_order
         fields = [...fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
       }
       
-      // CRITICAL: Always set state, even if fields is empty (prevents stale data)
-      console.log('📋 [TEMPLATE FIELDS] Setting templateFields state with', fields.length, 'fields')
       setTemplateFields(fields)
-      
-      // Verify state was set (for debugging)
-      if (fields.length > 0) {
-        console.log('✅ [TEMPLATE FIELDS] State should now contain', fields.length, 'fields')
-      }
       
       // Initialize form data with default values for each field type
       // IMPORTANT: Preserve existing formData (like checklist_items from task_data)
@@ -714,12 +682,9 @@ export default function TaskCompletionModal({
         })
         return initialFormData
       })
-      
-      // CRITICAL: Return the fields so they can be used immediately without waiting for state update
-      return fields
     } catch (error) {
       console.error('Error loading template fields:', error)
-      return []
+      setTemplateFields([])
     }
   }
 

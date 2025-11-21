@@ -751,86 +751,22 @@ export default function DailyChecklistPage() {
       }))
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
-      // Fetch ALL completion records for ALL tasks due today (not just pending/in_progress)
-      // This ensures we catch all completed tasks even if their status wasn't updated (defensive filtering)
+      // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
       
-      // CRITICAL: Fetch completion records for ALL tasks due today, not just the ones in our query
-      // This is essential because:
-      // 1. Tasks with status='pending' might have completion records (status wasn't updated)
-      // 2. We need to filter them out from active tasks
-      // 3. We also need them for the completed tasks list
-      // 
-      // Strategy: Fetch all completion records for today, then filter by task_id and site_id
-      console.log('🔍 Fetching ALL completion records for today:', { today: todayStr, siteId, companyId })
-      
-      // First, get ALL task IDs for today (including completed ones) to ensure we fetch all completion records
-      // This is a separate query to get all task IDs due today
-      let allTodayTaskIds: string[] = []
-      try {
-        let allTodayTasksQuery = supabase
-          .from('checklist_tasks')
-          .select('id')
-          .eq('company_id', companyId)
-          .eq('due_date', todayStr)
+      if (allTaskIds.length > 0) {
+        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
         
-        // Apply site filtering if available
-        if (siteId) {
-          allTodayTasksQuery = allTodayTasksQuery.eq('site_id', siteId)
-        }
-        
-        const { data: allTodayTasks, error: allTodayError } = await allTodayTasksQuery
-        
-        if (!allTodayError && allTodayTasks) {
-          allTodayTaskIds = allTodayTasks.map((t: any) => t.id).filter(Boolean)
-          console.log('📋 Found', allTodayTaskIds.length, 'tasks due today (all statuses)')
-        }
-      } catch (error) {
-        console.error('❌ Error fetching all today tasks:', error)
-        // Fallback to using task IDs from our filtered query
-        allTodayTaskIds = allTaskIds
-      }
-      
-      // Use all today task IDs if we got them, otherwise fall back to filtered task IDs
-      const taskIdsToCheck = allTodayTaskIds.length > 0 ? allTodayTaskIds : allTaskIds
-      
-      if (taskIdsToCheck.length > 0) {
-        console.log('🔍 Fetching completion records for task IDs:', taskIdsToCheck.slice(0, 5), '... (total:', taskIdsToCheck.length, ')')
-        
-        // Fetch completion records for today's tasks
-        // CRITICAL: Filter by company_id and completed_at date to ensure we get all relevant completion records
-        // Don't filter by site_id initially - we'll filter in JS to be more permissive
-        // IMPORTANT: Use date range to catch all records for today, regardless of timezone issues
-        // Use a wider date range to catch any edge cases (yesterday 23:00 to tomorrow 01:00)
-        // This ensures we don't miss completion records due to timezone differences
-        // CRITICAL: Use todayStr to build dates consistently (avoids timezone issues)
-        const todayDate = new Date(todayStr + 'T12:00:00') // Use noon to avoid timezone edge cases
-        const yesterday = new Date(todayDate)
-        yesterday.setDate(yesterday.getDate() - 1)
-        const tomorrow = new Date(todayDate)
-        tomorrow.setDate(tomorrow.getDate() + 1)
-        
-        const startDate = yesterday.toISOString().split('T')[0] + 'T23:00:00'
-        const endDate = tomorrow.toISOString().split('T')[0] + 'T01:00:00'
-        
-        console.log('📅 [COMPLETION RECORDS] Date range for query:', {
-          todayStr,
-          startDate,
-          endDate,
-          taskIdsCount: taskIdsToCheck.length
-        })
-        
+        // Try fetching WITHOUT site_id filter first to see if that's the issue
         let completionQuery = supabase
           .from('task_completion_records')
           .select('*')
-          .eq('company_id', companyId)
-          .in('task_id', taskIdsToCheck)
-          // Use wider date range to catch all records for today (handles timezone issues)
-          .gte('completed_at', startDate)
-          .lte('completed_at', endDate)
+          .in('task_id', allTaskIds)
           .order('completed_at', { ascending: false })
         
+        // Filter by site_id if available (matches how we filter tasks)
+        // BUT: Also try without site_id filter if we get no results, in case site_id doesn't match
         const { data: completionRecords, error: completionError } = await completionQuery
         
         if (completionError) {
@@ -839,76 +775,39 @@ export default function DailyChecklistPage() {
         } else {
           console.log('✅ Fetched completion records:', completionRecords?.length || 0)
           
-          // Filter by site_id in JavaScript (more permissive - include records with null site_id)
-          // CRITICAL: Include records with null site_id for backwards compatibility
-          // This ensures we don't miss completion records that were created before site_id was required
-          // ALSO filter by date to ensure we only include records for today (not yesterday/tomorrow from wider query)
+          // Filter by site_id in JavaScript if needed (more permissive)
           let filteredRecords = completionRecords || []
-          if (completionRecords) {
-            // First, filter by date to only include records for today
-            filteredRecords = completionRecords.filter(r => {
-              if (!r.completed_at) return false
-              const completedDate = new Date(r.completed_at).toISOString().split('T')[0]
-              return completedDate === todayStr
-            })
-            
-            console.log('🔍 Filtered by date (today only):', {
+          if (siteId && completionRecords) {
+            // Filter by site_id in JS, but also include records with null site_id
+            filteredRecords = completionRecords.filter(r => !r.site_id || r.site_id === siteId)
+            console.log('🔍 Filtered by site_id:', {
               before: completionRecords.length,
               after: filteredRecords.length,
-              todayStr
+              siteId
             })
-            
-            // Then filter by site_id if available
-            if (siteId && filteredRecords.length > 0) {
-              // Include records that match site_id OR have null site_id (for backwards compatibility)
-              const beforeSiteFilter = filteredRecords.length
-              filteredRecords = filteredRecords.filter(r => !r.site_id || r.site_id === siteId)
-              console.log('🔍 Filtered by site_id:', {
-                before: beforeSiteFilter,
-                after: filteredRecords.length,
-                siteId,
-                recordsWithNullSiteId: filteredRecords.filter(r => !r.site_id).length
-              })
-            }
           }
           
           if (filteredRecords.length > 0) {
             allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', {
-              total: filteredRecords.length,
-              records: filteredRecords.map(r => ({
-                id: r.id,
-                task_id: r.task_id,
-                completed_at: r.completed_at,
-                completedDate: r.completed_at ? new Date(r.completed_at).toISOString().split('T')[0] : 'N/A',
-                company_id: r.company_id,
-                site_id: r.site_id,
-                completed_by: r.completed_by,
-                completed_daypart: r.completion_data?.completed_daypart || 'N/A'
-              }))
-            })
+            console.log('📝 Completion records details:', filteredRecords.map(r => ({
+              id: r.id,
+              task_id: r.task_id,
+              completed_at: r.completed_at,
+              company_id: r.company_id,
+              site_id: r.site_id,
+              completed_by: r.completed_by
+            })))
           } else {
             // This is normal for pending tasks - only log if we expected records but they were filtered out
             if (completionRecords && completionRecords.length > 0) {
-              console.warn('⚠️ Records exist but were filtered out:', {
-                totalBeforeFilter: completionRecords.length,
-                totalAfterFilter: filteredRecords.length,
-                filteredOut: completionRecords.length - filteredRecords.length,
-                sampleFilteredOut: completionRecords.filter(r => !filteredRecords.includes(r)).slice(0, 3).map(r => ({
-                  task_id: r.task_id,
-                  site_id: r.site_id,
-                  expected_site_id: siteId,
-                  completed_at: r.completed_at,
-                  completedDate: r.completed_at ? new Date(r.completed_at).toISOString().split('T')[0] : 'N/A'
-                }))
-              })
-            } else {
-              console.log('ℹ️ No completion records found for today (this is normal for pending tasks)')
+              console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
+                task_id: r.task_id,
+                site_id: r.site_id,
+                expected_site_id: siteId
+              })))
             }
           }
         }
-      } else {
-        console.log('ℹ️ No task IDs to check for completion records')
       }
       
       // Build a map of completed dayparts per task
