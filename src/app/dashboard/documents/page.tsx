@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useAppContext } from "@/context/AppContext";
 import DocumentsPoliciesSection from "@/components/organisation/DocumentsPoliciesSection";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
@@ -36,7 +37,9 @@ export default function OrganizationDocumentsPage() {
 
   return (
     <OrgContentWrapper title="Documents & Policies">
-      <DocumentsPoliciesSection />
+      <Suspense fallback={<div className="text-neutral-400 text-center py-8">Loading...</div>}>
+        <DocumentsPoliciesSection />
+      </Suspense>
     </OrgContentWrapper>
   );
 }

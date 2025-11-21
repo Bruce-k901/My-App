@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -40,7 +40,7 @@ const CATEGORY_GROUPS = {
   }
 };
 
-export default function SOPsListPage() {
+function SOPsListContent() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
@@ -424,6 +424,14 @@ export default function SOPsListPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SOPsListPage() {
+  return (
+    <Suspense fallback={<div className="text-neutral-400 text-center py-8">Loading...</div>}>
+      <SOPsListContent />
+    </Suspense>
   );
 }
 
