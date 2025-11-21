@@ -298,15 +298,34 @@ export default function BusinessDetailsTab() {
       }
 
       // Also ensure profile table reflects the company (match id OR auth_user_id)
+      // IMPORTANT: Use .maybeSingle() first to find the correct profile, then update by specific id
+      // This prevents updating multiple profiles if duplicates exist
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.id) {
-          const { error: profileError } = await supabase
+          // First, find the correct profile (check both id and auth_user_id)
+          const { data: profile, error: findError } = await supabase
             .from("profiles")
-            .update({ company_id: result.data.id, updated_at: new Date().toISOString() })
-            .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`);
-          if (profileError) {
-            console.error("Failed to update profile:", profileError);
+            .select("id")
+            .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
+            .maybeSingle();
+          
+          if (findError) {
+            console.error("Failed to find profile:", findError);
+          } else if (profile?.id) {
+            // Update ONLY the specific profile by its id (not using .or() which could match multiple)
+            const { error: profileError } = await supabase
+              .from("profiles")
+              .update({ company_id: result.data.id, updated_at: new Date().toISOString() })
+              .eq("id", profile.id); // Use specific id, not .or()
+            
+            if (profileError) {
+              console.error("Failed to update profile:", profileError);
+            } else {
+              console.log("✅ Successfully updated profile company_id:", profile.id);
+            }
+          } else {
+            console.warn("⚠️ No profile found for user:", user.id);
           }
         }
       } catch (e) {

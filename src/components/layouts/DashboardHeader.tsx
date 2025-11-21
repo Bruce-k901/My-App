@@ -205,7 +205,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       <div className="flex items-center gap-2 sm:gap-4 mr-2 sm:mr-0">
         {/* Today's Tasks - Main Priority */}
         <Link
-          href="/dashboard/checklists"
+          href="/dashboard/todays_tasks"
           className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
         >
           <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />

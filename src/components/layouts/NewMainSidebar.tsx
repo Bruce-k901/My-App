@@ -64,8 +64,9 @@ const sections: SidebarSection[] = [
     icon: CheckSquare,
     items: [
       { label: "Compliance", href: "/dashboard/tasks/compliance" },
-      { label: "Templates", href: "/dashboard/tasks/templates" },
-      { label: "Active", href: "/dashboard/tasks/active" },
+      { label: "My Templates", href: "/dashboard/my_templates" },
+      { label: "My Tasks", href: "/dashboard/my_tasks" },
+      { label: "Today's Tasks", href: "/dashboard/todays_tasks" },
       { label: "Completed", href: "/dashboard/tasks/completed" },
     ],
   },
@@ -318,7 +319,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto overflow-x-hidden">
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -390,7 +391,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
       {/* Mobile Drawer Sidebar */}
       {mounted && isMobileOpen ? createPortal(
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto">
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden">
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
             <h2 className="text-lg font-semibold text-white">Menu</h2>
@@ -411,12 +412,12 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 Quick Actions
               </div>
               <Link
-                href="/dashboard/checklists"
+                href="/dashboard/todays_tasks"
                 onClick={onMobileClose}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
                   ${
-                    pathname === "/dashboard/checklists" || pathname.startsWith("/dashboard/checklists")
+                    pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
                       ? "bg-pink-500/20 text-pink-300 font-medium"
                       : "text-white/80 hover:text-white hover:bg-white/[0.08]"
                   }

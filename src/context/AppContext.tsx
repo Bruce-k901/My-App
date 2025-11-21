@@ -89,6 +89,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .or(`id.eq.${userId},auth_user_id.eq.${userId}`)
         .maybeSingle(); // Use maybeSingle instead of single to handle "no rows" gracefully
       
+      // DEBUG: Log profile query result
+      console.log('Profile query result (AppContext):', { 
+        data, 
+        error, 
+        userId 
+      });
+      
       if (error) {
         // Check if error is truly empty
         const errorKeys = error ? Object.keys(error) : [];
