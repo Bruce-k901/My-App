@@ -67,6 +67,13 @@ export default function TaskCompletionModal({
   const [raUploads, setRaUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [documentUploads, setDocumentUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const templateNote = task.template_notes || task.template?.notes || null
+  
+  // Callout follow-up task state
+  const [calloutData, setCalloutData] = useState<any>(null)
+  const [calloutLoading, setCalloutLoading] = useState(false)
+  const [calloutRepairSummary, setCalloutRepairSummary] = useState('')
+  const [calloutUpdateNotes, setCalloutUpdateNotes] = useState('')
+  const [calloutCloseDocuments, setCalloutCloseDocuments] = useState<File[]>([])
 
   useEffect(() => {
     if (isOpen) {
@@ -256,9 +263,50 @@ export default function TaskCompletionModal({
       setSopUploads([])
       setRaUploads([])
       setDocumentUploads([])
+      // Reset callout follow-up state
+      setCalloutData(null)
+      setCalloutRepairSummary('')
+      setCalloutUpdateNotes('')
+      setCalloutCloseDocuments([])
     }
      
   }, [isOpen, task])
+
+  // Load callout data for callout follow-up tasks
+  useEffect(() => {
+    if (isOpen && task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
+      loadCalloutData(task.task_data.source_id)
+    }
+  }, [isOpen, task.task_data?.source_type, task.task_data?.source_id])
+
+  async function loadCalloutData(calloutId: string) {
+    setCalloutLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('callouts')
+        .select('*, assets(id, name, category), sites(id, name)')
+        .eq('id', calloutId)
+        .single()
+
+      if (error) throw error
+      if (data) {
+        setCalloutData(data)
+        // Pre-fill notes if callout has existing notes
+        if (data.notes) {
+          setCalloutUpdateNotes(data.notes)
+        }
+      }
+    } catch (error: any) {
+      console.error('Error loading callout data:', error)
+      showToast({
+        title: 'Error',
+        description: 'Failed to load callout details',
+        type: 'error'
+      })
+    } finally {
+      setCalloutLoading(false)
+    }
+  }
 
   // Load task resources (assets, libraries, SOPs, RAs) from task_data
   async function loadTaskResources(taskData: Record<string, any>) {
@@ -1670,6 +1718,74 @@ export default function TaskCompletionModal({
           // Don't fail the whole operation, but log it
         } else {
           console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`)
+        }
+      }
+
+      // Handle callout follow-up tasks - update/close the callout
+      if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id && calloutData) {
+        try {
+          // Validate that open callouts have repair summary
+          if (calloutData.status === 'open' && (!calloutRepairSummary || !calloutRepairSummary.trim())) {
+            throw new Error('Repair summary is required to close this callout and complete the task')
+          }
+
+          const updateData: any = {
+            updated_at: completedAt
+          }
+
+          // Add update notes if provided
+          if (calloutUpdateNotes && calloutUpdateNotes.trim()) {
+            const existingNotes = calloutData.notes || ''
+            updateData.notes = existingNotes 
+              ? `${existingNotes}\n\n[${new Date().toLocaleString()}] ${calloutUpdateNotes}`
+              : calloutUpdateNotes
+          }
+
+          // If callout is open and repair summary is provided, close it
+          if (calloutData.status === 'open' && calloutRepairSummary && calloutRepairSummary.trim()) {
+            updateData.repair_summary = calloutRepairSummary
+            updateData.status = 'closed'
+            updateData.closed_at = completedAt
+
+            // Try RPC function first, fallback to direct update
+            try {
+              const { data: rpcData, error: rpcError } = await supabase.rpc('close_callout', {
+                p_callout_id: calloutData.id,
+                p_repair_summary: calloutRepairSummary,
+                p_documents: calloutData.documents || []
+              })
+
+              if (rpcError) {
+                console.warn('RPC close_callout error, using direct update:', rpcError)
+                // Fall through to direct update
+                const { error: updateError } = await supabase
+                  .from('callouts')
+                  .update(updateData)
+                  .eq('id', calloutData.id)
+
+                if (updateError) throw updateError
+              } else {
+                console.log('✅ Callout closed successfully via RPC')
+              }
+            } catch (error: any) {
+              console.error('Error closing callout:', error)
+              throw new Error(`Failed to close callout: ${error.message}`)
+            }
+          } else if (calloutData.status === 'open' && Object.keys(updateData).length > 1) {
+            // Just update notes if callout is still open and we have notes
+            const { error: updateError } = await supabase
+              .from('callouts')
+              .update(updateData)
+              .eq('id', calloutData.id)
+
+            if (updateError) {
+              console.warn('Error updating callout notes:', updateError)
+              // Don't fail the task completion if notes update fails
+            }
+          }
+        } catch (error: any) {
+          console.error('Error handling callout follow-up:', error)
+          throw error // Re-throw to prevent task completion if callout update fails
         }
       }
 
@@ -4573,6 +4689,78 @@ export default function TaskCompletionModal({
                 </div>
               )
             })()}
+
+            {/* Callout Follow-up Task Section */}
+            {task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id && (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3 mb-4">
+                  <PhoneCall className="h-5 w-5 text-blue-400 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-sm mb-1">Callout Follow-up Required</h3>
+                    {calloutLoading ? (
+                      <p className="text-white/70 text-xs">Loading callout details...</p>
+                    ) : calloutData ? (
+                      <div className="space-y-2">
+                        <p className="text-white/70 text-xs">
+                          <span className="font-medium">Status:</span> {calloutData.status}
+                          {calloutData.asset_id && calloutData.assets && (
+                            <>
+                              <br />
+                              <span className="font-medium">Asset:</span> {calloutData.assets.name || 'Unknown'}
+                            </>
+                          )}
+                          {calloutData.fault_description && (
+                            <>
+                              <br />
+                              <span className="font-medium">Issue:</span> {calloutData.fault_description}
+                            </>
+                          )}
+                        </p>
+                        {calloutData.status === 'open' && (
+                          <div className="mt-3 space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Update Notes (Optional)
+                              </label>
+                              <textarea
+                                value={calloutUpdateNotes}
+                                onChange={(e) => setCalloutUpdateNotes(e.target.value)}
+                                placeholder="Add any updates or notes about this callout..."
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                rows={3}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Repair Summary <span className="text-red-400">*</span>
+                              </label>
+                              <textarea
+                                value={calloutRepairSummary}
+                                onChange={(e) => setCalloutRepairSummary(e.target.value)}
+                                placeholder="Enter repair summary to close this callout..."
+                                required
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                rows={4}
+                              />
+                              <p className="text-xs text-white/50 mt-1">
+                                A repair summary is required to close this callout and complete the task.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {calloutData.status !== 'open' && (
+                          <p className="text-white/50 text-xs mt-2">
+                            This callout is already {calloutData.status}. You can still complete the task to acknowledge the follow-up.
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-white/70 text-xs">Callout details not available</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* PPM Task Callout Section - Always show callout button for PPM tasks */}
             {task.task_data?.source_type === 'ppm_overdue' && (task.task_data?.source_id || task.task_data?.asset_id) && (
