@@ -70,7 +70,66 @@ Deno.serve(async (req) => {
       dueTime: string | null;
       daypart: string | null;
       equipmentConfig?: any;
+      template?: any; // Template data to get repeatable_field_name
     }): Promise<boolean> {
+      // Build task_data from equipment_config and template
+      let taskData: Record<string, any> | null = null;
+      
+      if (params.equipmentConfig && Array.isArray(params.equipmentConfig) && params.equipmentConfig.length > 0) {
+        taskData = {};
+        
+        // Handle both cases: array of IDs (strings) or array of objects
+        const isArrayOfIds = typeof params.equipmentConfig[0] === 'string';
+        
+        // Extract selected asset IDs
+        const selectedAssets = isArrayOfIds
+          ? params.equipmentConfig.filter((id: any) => typeof id === 'string' && id.length > 0)
+          : params.equipmentConfig
+              .map((item: any) => item.id || item.asset_id || item.value || (typeof item === 'string' ? item : null))
+              .filter(Boolean);
+        
+        if (selectedAssets.length > 0) {
+          taskData.selectedAssets = selectedAssets;
+        }
+        
+        // Map equipment_config to repeatable field if template has one
+        if (params.template?.repeatable_field_name) {
+          const repeatableFieldName = params.template.repeatable_field_name;
+          
+          if (isArrayOfIds) {
+            // If it's an array of IDs, create objects with just the ID
+            taskData[repeatableFieldName] = params.equipmentConfig.map((id: string) => ({
+              value: id,
+              asset_id: id,
+              id: id
+            }));
+          } else {
+            // If it's an array of objects, map them properly
+            taskData[repeatableFieldName] = params.equipmentConfig.map((item: any) => ({
+              value: item.id || item.asset_id || item.value || item,
+              asset_id: item.id || item.asset_id || item.value || item,
+              id: item.id || item.asset_id || item.value || item,
+              nickname: item.nickname || item.equipment || null,
+              equipment: item.equipment || item.name || null,
+              asset_name: item.name || item.equipment || null
+            }));
+          }
+        }
+        
+        // Preserve any other fields from equipment_config (only if it's an array of objects)
+        if (!isArrayOfIds && params.equipmentConfig[0] && typeof params.equipmentConfig[0] === 'object') {
+          // Check if there are temperature fields
+          const firstItem = params.equipmentConfig[0];
+          if (firstItem.temp !== undefined || firstItem.temperature !== undefined) {
+            taskData.temperatures = params.equipmentConfig.map((item: any) => ({
+              assetId: item.id || item.asset_id || item.value,
+              temp: item.temp || item.temperature || null,
+              nickname: item.nickname || null
+            }));
+          }
+        }
+      }
+      
       const { error } = await supabase.from("checklist_tasks").insert({
         site_checklist_id: params.siteChecklistId,
         template_id: params.templateId,
@@ -81,7 +140,7 @@ Deno.serve(async (req) => {
         daypart: params.daypart,
         status: "pending",
         generated_at: today.toISOString(),
-        task_data: params.equipmentConfig ? { equipment: params.equipmentConfig } : null
+        task_data: taskData
       });
 
       if (error) {
@@ -123,7 +182,8 @@ Deno.serve(async (req) => {
                 dueDate: todayString,
                 dueTime: time,
                 daypart: daypart,
-                equipmentConfig: config.equipment_config
+                equipmentConfig: config.equipment_config,
+                template: config.task_templates
               });
 
               if (success) log.daily_tasks_created++;
@@ -144,7 +204,9 @@ Deno.serve(async (req) => {
             siteId: config.site_id,
             dueDate: todayString,
             dueTime: time,
-            daypart: daypart
+            daypart: daypart,
+            equipmentConfig: config.equipment_config,
+            template: config.task_templates
           });
 
           if (success) log.daily_tasks_created++;
@@ -178,7 +240,9 @@ Deno.serve(async (req) => {
           siteId: config.site_id,
           dueDate: todayString,
           dueTime: null,
-          daypart: "anytime"
+          daypart: "anytime",
+          equipmentConfig: config.equipment_config,
+          template: config.task_templates
         });
 
         if (success) log.weekly_tasks_created++;
@@ -213,7 +277,9 @@ Deno.serve(async (req) => {
           siteId: config.site_id,
           dueDate: todayString,
           dueTime: null,
-          daypart: "anytime"
+          daypart: "anytime",
+          equipmentConfig: config.equipment_config,
+          template: config.task_templates
         });
 
         if (success) log.monthly_tasks_created++;
@@ -254,7 +320,9 @@ Deno.serve(async (req) => {
           siteId: config.site_id,
           dueDate: todayString,
           dueTime: null,
-          daypart: "anytime"
+          daypart: "anytime",
+          equipmentConfig: config.equipment_config,
+          template: config.task_templates
         });
 
         if (success) log.annual_tasks_created++;
@@ -384,7 +452,7 @@ Deno.serve(async (req) => {
               site_id: profile.site_id,
               custom_name: taskName,
               due_date: todayString, // Always create for today
-              status: "pending",
+                status: "pending",
               generated_at: today.toISOString(),
               task_data: {
                 source_type: "certificate_expiry",
@@ -680,7 +748,7 @@ Deno.serve(async (req) => {
             site_id: null, // Documents are company-wide, not site-specific
             custom_name: taskName,
             due_date: todayString,
-            status: "pending",
+                status: "pending",
             generated_at: today.toISOString(),
             task_data: {
               source_type: "document_expiry",
