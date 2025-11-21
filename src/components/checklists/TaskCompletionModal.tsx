@@ -198,51 +198,82 @@ export default function TaskCompletionModal({
       // Set formData with task data immediately
       setFormData(initialData)
       
-      // Load task resources (assets, libraries, SOPs, RAs) - await to ensure assets are loaded before temp ranges
-      // CRITICAL: Temperature warning system depends on selectedAssets being loaded first
-      // Note: loadTaskResources now calls loadAssetTempRanges internally with asset IDs
-      // This ensures ranges load immediately when assets are available, avoiding state timing issues
-      loadTaskResources(taskData).then(() => {
-        // Additional safeguard: Load ranges again after a short delay to catch any edge cases
-        // This is a fallback in case the internal call didn't work
-        setTimeout(() => {
-          console.log('🌡️ [TEMPERATURE SYSTEM] Final check: Loading temperature ranges...')
-          loadAssetTempRanges();
-        }, 500)
-      }).catch((error) => {
-        console.error('❌ [TEMPERATURE SYSTEM] Error loading task resources:', error)
-        // Still try to load temp ranges even if task resources fail
-        // Try to get asset IDs from task_data directly
-        const assetIdsFromTaskData = taskData.selectedAssets || []
-        if (assetIdsFromTaskData.length > 0) {
-          loadAssetTempRanges(assetIdsFromTaskData)
-        } else {
-          loadAssetTempRanges();
+      // CRITICAL: Load template fields FIRST, then load task resources
+      // This ensures template fields are available when temperature ranges are loaded
+      // Temperature range loading depends on template fields for equipment field lookups
+      const initialize = async () => {
+        // Step 1: Load template fields FIRST (required for temperature range loading)
+        let loadedFields: any[] = []
+        if (task.template_id) {
+          console.log('📋 [TEMPLATE FIELDS] Loading template fields first...')
+          // Load fields and wait for state to be set
+          await loadTemplateFields(task.template_id)
+          
+          // Wait a tick for React state to update
+          await new Promise(resolve => setTimeout(resolve, 100))
+          
+          // Get the fields that were just loaded (from state or fetch directly)
+          loadedFields = task.template?.template_fields || []
+          if (loadedFields.length === 0) {
+            // If not in template, fetch them to ensure we have them
+            const { data } = await supabase
+              .from('template_fields')
+              .select('*')
+              .eq('template_id', task.template_id)
+              .order('field_order')
+            loadedFields = data || []
+          }
+          console.log('✅ [TEMPLATE FIELDS] Template fields loaded:', loadedFields.length, 'fields')
         }
+        
+        // Step 2: Load task resources (assets, libraries, SOPs, RAs) AFTER template fields are loaded
+        // CRITICAL: Temperature warning system depends on selectedAssets being loaded first
+        // Note: loadTaskResources now calls loadAssetTempRanges internally with asset IDs
+        // This ensures ranges load immediately when assets are available, avoiding state timing issues
+        await loadTaskResources(taskData).then(() => {
+          // Additional safeguard: Load ranges again after a short delay to catch any edge cases
+          // This is a fallback in case the internal call didn't work
+          setTimeout(() => {
+            console.log('🌡️ [TEMPERATURE SYSTEM] Final check: Loading temperature ranges...')
+            loadAssetTempRanges();
+          }, 500)
+        }).catch((error) => {
+          console.error('❌ [TEMPERATURE SYSTEM] Error loading task resources:', error)
+          // Still try to load temp ranges even if task resources fail
+          // Try to get asset IDs from task_data directly
+          const assetIdsFromTaskData = taskData.selectedAssets || []
+          if (assetIdsFromTaskData.length > 0) {
+            loadAssetTempRanges(assetIdsFromTaskData)
+          } else {
+            loadAssetTempRanges();
+          }
+        })
+        
+        // Step 3: Final safeguard - reload temp ranges after everything is loaded
+        // This ensures we catch all assets, even if they're in template fields
+        // Wait a bit longer to ensure all state updates have completed
+        console.log('🌡️ [TEMPERATURE SYSTEM] Template fields and assets loaded, final temperature range check...')
+        setTimeout(() => {
+          loadAssetTempRanges()
+        }, 500)
+      }
+      
+      // Execute initialization sequence
+      initialize().catch((error) => {
+        console.error('❌ Error during initialization:', error)
       })
       
-      // SAFEGUARD: Also load temp ranges after a short delay to catch any missed assets
-      // This ensures ranges are loaded even if loadTaskResources doesn't complete properly
+      // SAFEGUARD: Also load temp ranges after a longer delay to catch any missed assets
+      // This ensures ranges are loaded even if initialization doesn't complete properly
       const tempRangeTimeout = setTimeout(() => {
         console.log('🌡️ [TEMPERATURE SYSTEM] Safety timeout: Re-checking temperature ranges...')
         loadAssetTempRanges();
-      }, 1500)
+      }, 2000)
       
       // Cleanup timeout on unmount
       return () => {
         clearTimeout(tempRangeTimeout)
       }
-      
-      // Then load template fields (which will preserve existing formData)
-      const initialize = async () => {
-        // Pass the template ID!
-        await loadTemplateFields(task.template_id)
-        // SAFEGUARD: Reload temp ranges after template fields load (in case equipment field has assets)
-        // This ensures we catch all assets, even if they're in template fields
-        console.log('🌡️ [TEMPERATURE SYSTEM] Template fields loaded, re-checking temperature ranges...')
-        loadAssetTempRanges()
-      }
-      initialize()
       setPhotos([])
       setError('')
       setInstructionsExpanded(false)
@@ -489,7 +520,11 @@ export default function TaskCompletionModal({
   }
 
   const loadTemplateFields = async (templateId: string) => {
-    if (!templateId) return
+    if (!templateId) {
+      console.warn('⚠️ [TEMPLATE FIELDS] No templateId provided to loadTemplateFields')
+      return
+    }
+    console.log('📋 [TEMPLATE FIELDS] Loading template fields for templateId:', templateId)
     try {
       // CRITICAL: Use template_fields from task.template if already loaded (from Today's Tasks page)
       // This avoids unnecessary database queries and ensures fields are available immediately
@@ -497,21 +532,26 @@ export default function TaskCompletionModal({
       
       // If template_fields weren't included in the template, fetch them separately
       if (!fields || fields.length === 0) {
-        console.log('📋 Template fields not pre-loaded, fetching from database...')
+        console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded, fetching from database with templateId:', templateId)
         const { data, error } = await supabase
           .from('template_fields')
           .select('*')
           .eq('template_id', templateId)
           .order('field_order')
         
-        if (error) throw error
+        if (error) {
+          console.error('❌ [TEMPLATE FIELDS] Error fetching template fields:', error)
+          throw error
+        }
         fields = data || []
+        console.log('✅ [TEMPLATE FIELDS] Fetched', fields.length, 'fields from database')
       } else {
-        console.log('✅ Using pre-loaded template fields:', fields.length)
+        console.log('✅ [TEMPLATE FIELDS] Using pre-loaded template fields:', fields.length)
         // Ensure fields are sorted by field_order
         fields = [...fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
       }
       
+      console.log('📋 [TEMPLATE FIELDS] Setting templateFields state with', fields.length, 'fields')
       setTemplateFields(fields)
       
       // Initialize form data with default values for each field type
