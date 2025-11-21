@@ -1806,29 +1806,82 @@ export default function TaskCompletionModal({
               updateData.documents = allDocuments
 
               // Try RPC function first, fallback to direct update
+              // Note: RPC may fail due to permissions or function not existing, so we always have a fallback
+              let calloutClosed = false
+              
               try {
+                // Ensure documents is properly formatted as JSONB array
+                const documentsArray = Array.isArray(allDocuments) ? allDocuments : []
+                
                 const { data: rpcData, error: rpcError } = await supabase.rpc('close_callout', {
                   p_callout_id: calloutData.id,
                   p_repair_summary: calloutRepairSummary,
-                  p_documents: allDocuments
+                  p_documents: documentsArray
                 })
 
                 if (rpcError) {
                   console.warn('RPC close_callout error, using direct update:', rpcError)
+                  console.warn('RPC error details:', {
+                    message: rpcError.message,
+                    code: rpcError.code,
+                    details: rpcError.details,
+                    hint: rpcError.hint
+                  })
+                  
                   // Fall through to direct update
                   const { error: updateError } = await supabase
                     .from('callouts')
                     .update(updateData)
                     .eq('id', calloutData.id)
 
-                  if (updateError) throw updateError
+                  if (updateError) {
+                    console.error('Direct update also failed:', updateError)
+                    // Don't throw - log error but allow task completion
+                    showToast({
+                      title: 'Warning',
+                      description: 'Callout may not have been closed. Please check manually.',
+                      type: 'warning'
+                    })
+                  } else {
+                    console.log('✅ Callout closed successfully via direct update (RPC failed)')
+                    calloutClosed = true
+                  }
                 } else {
                   console.log('✅ Callout closed successfully via RPC')
+                  calloutClosed = true
                 }
               } catch (error: any) {
                 console.error('Error closing callout:', error)
-                throw new Error(`Failed to close callout: ${error.message}`)
+                // Try direct update as final fallback
+                try {
+                  const { error: updateError } = await supabase
+                    .from('callouts')
+                    .update(updateData)
+                    .eq('id', calloutData.id)
+                  
+                  if (updateError) {
+                    console.error('Direct update failed:', updateError)
+                    showToast({
+                      title: 'Warning',
+                      description: 'Callout may not have been closed. Please check manually.',
+                      type: 'warning'
+                    })
+                  } else {
+                    console.log('✅ Callout closed successfully via direct update (fallback)')
+                    calloutClosed = true
+                  }
+                } catch (fallbackError: any) {
+                  console.error('Fallback update also failed:', fallbackError)
+                  showToast({
+                    title: 'Warning',
+                    description: 'Callout may not have been closed. Please check manually.',
+                    type: 'warning'
+                  })
+                }
               }
+              
+              // Note: We don't throw an error here - task completion should proceed even if callout close fails
+              // The user can manually close the callout later if needed
             } else if (Object.keys(updateData).length > 1) {
               // Just update notes if callout is still open and we have notes (but not closing)
               const { error: updateError } = await supabase
