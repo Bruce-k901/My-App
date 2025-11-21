@@ -404,16 +404,25 @@ export default function DailyChecklistPage() {
         
         if (fullTemplates) {
           fullTemplates.forEach(t => {
+            // CRITICAL: Enrich template with definition (same as first fetch)
+            const enriched = enrichTemplateWithDefinition(t)
+            
             // CRITICAL: Ensure template_fields is always an array
-            if (t.template_fields) {
-              if (!Array.isArray(t.template_fields)) {
-                console.warn('⚠️ Template fields is not an array for template:', t.id, 'type:', typeof t.template_fields)
-                t.template_fields = []
+            if (enriched.template_fields) {
+              if (!Array.isArray(enriched.template_fields)) {
+                console.warn('⚠️ Template fields is not an array for template:', enriched.id, 'type:', typeof enriched.template_fields)
+                enriched.template_fields = []
               }
             } else {
-              t.template_fields = []
+              enriched.template_fields = []
             }
-            templatesMap[t.id] = t
+            
+            templatesMap[enriched.id] = enriched
+            console.log('✅ [TEMPLATE LOADING] Added template from second fetch:', {
+              templateId: enriched.id,
+              templateName: enriched.name,
+              templateFieldsCount: enriched.template_fields?.length || 0
+            })
           })
         }
       }
@@ -1183,19 +1192,50 @@ export default function DailyChecklistPage() {
         }))
       })
       
+      // CRITICAL: Final verification - ensure all active tasks have templates attached
+      const tasksWithVerifiedTemplates = activeTasks.map(task => {
+        if (!task.template && task.template_id) {
+          console.error('❌ [FINAL CHECK] Task missing template before setting state:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            templatesMapHasTemplate: !!templatesMap[task.template_id],
+            templatesMapKeys: Object.keys(templatesMap)
+          })
+          // Try to get template from map one more time
+          const template = templatesMap[task.template_id]
+          if (template) {
+            return { ...task, template }
+          }
+        }
+        return task
+      })
+      
+      // Verify all tasks have templates
+      const tasksWithoutTemplates = tasksWithVerifiedTemplates.filter(t => t.template_id && !t.template)
+      if (tasksWithoutTemplates.length > 0) {
+        console.error('❌ [FINAL CHECK] Tasks without templates:', tasksWithoutTemplates.map(t => ({
+          taskId: t.id,
+          templateId: t.template_id
+        })))
+      } else {
+        console.log('✅ [FINAL CHECK] All tasks have templates attached')
+      }
+      
       console.log('✅ Setting tasks (sorted chronologically):', {
-        activeTasksCount: activeTasks.length,
+        activeTasksCount: tasksWithVerifiedTemplates.length,
         completedTasksCount: completedTasksWithRecords.length,
-        activeTasks: activeTasks.slice(0, 5).map(t => ({ 
+        activeTasks: tasksWithVerifiedTemplates.slice(0, 5).map(t => ({ 
           id: t.id, 
           status: t.status, 
           daypart: t.daypart, 
           due_time: t.due_time,
-          name: t.template?.name || 'Unknown'
+          name: t.template?.name || 'Unknown',
+          hasTemplate: !!t.template,
+          templateFieldsCount: t.template?.template_fields?.length || 0
         }))
       })
       
-      setTasks(activeTasks)
+      setTasks(tasksWithVerifiedTemplates)
       setCompletedTasks(completedTasksWithRecords)
       await loadBreachActions()
     } catch (error: any) {

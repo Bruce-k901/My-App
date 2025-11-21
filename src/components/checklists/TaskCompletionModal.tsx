@@ -2,7 +2,7 @@
 
 import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb, ArrowRight } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskCompletionPayload } from '@/types/checklist-types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAppContext } from '@/context/AppContext'
 import MonitorDurationModal from './MonitorDurationModal'
@@ -38,6 +38,20 @@ export default function TaskCompletionModal({
   const [templateFields, setTemplateFields] = useState<any[]>([])
   const [assetsMap, setAssetsMap] = useState<Map<string, any>>(new Map())
   const [assetTempRanges, setAssetTempRanges] = useState<Map<string, { min: number | null, max: number | null }>>(new Map())
+  // CRITICAL: Store template in state to ensure re-renders when fetched
+  const [resolvedTemplate, setResolvedTemplate] = useState<any>(task.template || null)
+  
+  // CRITICAL: Sync resolvedTemplate when task.template changes (when modal opens with new task)
+  useEffect(() => {
+    if (task.template) {
+      setResolvedTemplate(task.template)
+      // Also update window.selectedTask for debugging
+      if (typeof window !== 'undefined') {
+        (window as any).selectedTask = task
+      }
+    }
+  }, [task.template, task.id])
+  
   // Track out-of-range assets independently - use Set to store asset IDs that are out of range
   const [outOfRangeAssets, setOutOfRangeAssets] = useState<Set<string>>(new Set())
   // Track action options visibility per asset
@@ -66,7 +80,12 @@ export default function TaskCompletionModal({
   const [sopUploads, setSopUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [raUploads, setRaUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [documentUploads, setDocumentUploads] = useState<Array<{ url: string; fileName: string }>>([])
-  const templateNote = task.template_notes || task.template?.notes || null
+  
+  // CRITICAL: Use resolvedTemplate for templateNote to ensure it's available even if template was fetched
+  // Use useMemo to recompute when resolvedTemplate changes
+  const templateNote = useMemo(() => {
+    return task.template_notes || resolvedTemplate?.notes || task.template?.notes || null
+  }, [task.template_notes, resolvedTemplate?.notes, task.template?.notes])
   
   // Callout follow-up task state
   const [calloutData, setCalloutData] = useState<any>(null)
@@ -77,6 +96,70 @@ export default function TaskCompletionModal({
 
   useEffect(() => {
     if (isOpen) {
+      // CRITICAL SAFEGUARD: If template is missing, fetch it immediately
+      // This ensures the modal always has the template data it needs
+      const fetchMissingTemplate = async (): Promise<any> => {
+        if (!task.template && task.template_id) {
+          console.warn('⚠️ [MODAL] Template missing from task, fetching from database...', {
+            taskId: task.id,
+            templateId: task.template_id
+          })
+          
+          try {
+            const { data: templateData, error: templateError } = await supabase
+              .from('task_templates')
+              .select(`
+                id, name, slug, description, category, frequency, compliance_standard, is_critical, 
+                evidence_types, repeatable_field_name, instructions, dayparts, recurrence_pattern, 
+                asset_id, time_of_day,
+                template_fields (*)
+              `)
+              .eq('id', task.template_id)
+              .single()
+            
+            if (templateError) {
+              console.error('❌ [MODAL] Error fetching missing template:', templateError)
+              return null
+            }
+            
+            if (templateData) {
+              // Enrich template with definition
+              const { enrichTemplateWithDefinition } = await import('@/lib/templates/enrich-template')
+              const enriched = enrichTemplateWithDefinition(templateData)
+              
+              // Ensure template_fields is an array
+              if (enriched.template_fields && !Array.isArray(enriched.template_fields)) {
+                enriched.template_fields = []
+              } else if (!enriched.template_fields) {
+                enriched.template_fields = []
+              }
+              
+              // Attach template to task object (mutate for immediate use)
+              ;(task as any).template = enriched
+              
+              // CRITICAL: Update state to trigger re-render
+              setResolvedTemplate(enriched)
+              
+              // Also set window.selectedTask for debugging
+              if (typeof window !== 'undefined') {
+                (window as any).selectedTask = { ...task, template: enriched }
+              }
+              
+              console.log('✅ [MODAL] Fetched and attached missing template:', {
+                templateId: enriched.id,
+                templateName: enriched.name,
+                templateFieldsCount: enriched.template_fields?.length || 0
+              })
+              
+              return enriched
+            }
+          } catch (error) {
+            console.error('❌ [MODAL] Exception fetching missing template:', error)
+          }
+        }
+        return resolvedTemplate || task.template || null
+      }
+      
       // Load task data from task_data field (stored when task was created)
       let taskData: Record<string, any> = {};
       if (task.task_data && typeof task.task_data === 'object') {
@@ -214,18 +297,26 @@ export default function TaskCompletionModal({
       // This ensures template fields are available when temperature ranges are loaded
       // Temperature range loading depends on template fields for equipment field lookups
       const initialize = async () => {
+        // CRITICAL: Wait for template to be fetched if it was missing
+        const fetchedTemplate = await fetchMissingTemplate()
+        
+        // Use resolved template from state (which may have been updated by fetchMissingTemplate)
+        // or the fetched template, or task.template
+        const currentTemplate = resolvedTemplate || fetchedTemplate || task.template
+        
         // DEBUG: Log task.template state at the start
         console.log('🔍 [INITIALIZE] Starting initialization:', {
           taskId: task.id,
           templateId: task.template_id,
-          hasTemplate: !!task.template,
-          templateName: task.template?.name,
-          templateSlug: task.template?.slug,
-          hasTemplateFields: !!(task.template?.template_fields),
-          templateFieldsType: typeof task.template?.template_fields,
-          templateFieldsIsArray: Array.isArray(task.template?.template_fields),
-          templateFieldsLength: Array.isArray(task.template?.template_fields) ? task.template.template_fields.length : 'N/A',
-          templateFieldsRaw: task.template?.template_fields
+          hasTemplate: !!currentTemplate,
+          templateName: currentTemplate?.name,
+          templateSlug: currentTemplate?.slug,
+          hasTemplateFields: !!(currentTemplate?.template_fields),
+          templateFieldsType: typeof currentTemplate?.template_fields,
+          templateFieldsIsArray: Array.isArray(currentTemplate?.template_fields),
+          templateFieldsLength: Array.isArray(currentTemplate?.template_fields) ? currentTemplate.template_fields.length : 'N/A',
+          templateFieldsRaw: currentTemplate?.template_fields,
+          templateWasFetched: !!resolvedTemplate
         })
         
         // Step 1: Load template fields FIRST (required for temperature range loading)
@@ -233,8 +324,9 @@ export default function TaskCompletionModal({
         
         // CRITICAL: Use template_fields that are already on the task object (from Today's Tasks page)
         // This is the fastest path and avoids unnecessary database queries and timing issues
-        if (task.template?.template_fields) {
-          const preLoadedFields = task.template.template_fields
+        // Use currentTemplate (which may have been just fetched)
+        if (currentTemplate?.template_fields) {
+          const preLoadedFields = currentTemplate.template_fields
           
           // Ensure it's an array and has items
           if (Array.isArray(preLoadedFields) && preLoadedFields.length > 0) {
@@ -257,10 +349,17 @@ export default function TaskCompletionModal({
         }
         
         // Fallback: Load from database if not pre-loaded or if pre-loaded fields were empty
+        // Also check if we have a template but no fields
         if (loadedFields.length === 0 && task.template_id) {
-          console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded or empty, fetching from database for templateId:', task.template_id)
-          try {
-            loadedFields = await loadTemplateFields(task.template_id)
+          // If we just fetched the template, try using its template_fields first
+          if (currentTemplate?.template_fields && Array.isArray(currentTemplate.template_fields) && currentTemplate.template_fields.length > 0) {
+            console.log('📋 [TEMPLATE FIELDS] Using template_fields from fetched template:', currentTemplate.template_fields.length)
+            loadedFields = [...currentTemplate.template_fields].sort((a: any, b: any) => (a.field_order || a.fieldOrder || 0) - (b.field_order || b.fieldOrder || 0))
+            setTemplateFields(loadedFields)
+          } else {
+            console.log('📋 [TEMPLATE FIELDS] Template fields not pre-loaded or empty, fetching from database for templateId:', task.template_id)
+            try {
+              loadedFields = await loadTemplateFields(task.template_id)
             console.log('✅ [TEMPLATE FIELDS] Template fields loaded from database:', loadedFields.length, 'fields')
             
             // CRITICAL: Ensure state is set - loadTemplateFields should have set it, but verify
@@ -2910,16 +3009,20 @@ export default function TaskCompletionModal({
 
   if (!isOpen) return null
 
+  // CRITICAL: Use resolvedTemplate (from state) which may have been fetched if missing
+  // This ensures the modal always has the template data, even if it wasn't passed from parent
+  const currentTemplate = resolvedTemplate || task.template
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-neutral-900 border border-white/[0.06] rounded-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-neutral-900 border-b border-white/[0.06] p-4 sm:p-6 flex items-start justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-magenta-400">{(task.custom_name || task.template?.name || 'Unknown Task')?.replace(' (Draft)', '')}</h2>
-            {task.template?.compliance_standard && (
+            <h2 className="text-2xl font-bold text-magenta-400">{(task.custom_name || currentTemplate?.name || 'Unknown Task')?.replace(' (Draft)', '')}</h2>
+            {currentTemplate?.compliance_standard && (
               <p className="text-sm text-neutral-400 mt-1">
-                {task.template.compliance_standard}
+                {currentTemplate.compliance_standard}
               </p>
             )}
           </div>
@@ -2944,7 +3047,7 @@ export default function TaskCompletionModal({
           )}
           
           {/* Instructions - Expandable */}
-          {(task.custom_instructions || task.template?.instructions) && (
+          {(task.custom_instructions || currentTemplate?.instructions) && (
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg">
               <button
                 onClick={() => setInstructionsExpanded(!instructionsExpanded)}
@@ -2962,7 +3065,7 @@ export default function TaskCompletionModal({
               {instructionsExpanded && (
                 <div className="px-4 pb-4">
                   <div className="text-white/80 text-sm whitespace-pre-line">
-                    {task.custom_instructions || task.template?.instructions || ''}
+                    {task.custom_instructions || currentTemplate?.instructions || ''}
                   </div>
                 </div>
               )}
@@ -2971,7 +3074,7 @@ export default function TaskCompletionModal({
           
           {/* Show warning only if instructions are truly missing or very minimal (just equipment names) */}
           {(() => {
-            const instructions = task.custom_instructions || task.template?.instructions || '';
+            const instructions = task.custom_instructions || currentTemplate?.instructions || '';
             const hasInstructions = instructions && instructions.trim().length > 0;
             
             // Only show warning if instructions are completely missing
@@ -3010,12 +3113,12 @@ export default function TaskCompletionModal({
           {/* Task Resources Section - Assets, Libraries, SOPs, RAs */}
           {(Object.keys(selectedLibraries).length > 0 || sopUploads.length > 0 || raUploads.length > 0 || documentUploads.length > 0 || 
             // Show assets section only if temperature fields are NOT shown (i.e., no temp evidence or no selected assets for temp)
-            (selectedAssets.length > 0 && !task.template?.evidence_types?.includes('temperature'))) && (
+            (selectedAssets.length > 0 && !currentTemplate?.evidence_types?.includes('temperature'))) && (
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-4">
               <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-wide">Task Resources</h3>
               
               {/* Selected Assets with Yes/No Questions - Only show if not showing temperature fields */}
-              {selectedAssets.length > 0 && !task.template?.evidence_types?.includes('temperature') && (
+              {selectedAssets.length > 0 && !currentTemplate?.evidence_types?.includes('temperature') && (
                 <div className="space-y-4">
                   {selectedAssets.map((asset) => {
                     // Find yes/no questions related to this asset (if any)
@@ -3257,7 +3360,7 @@ export default function TaskCompletionModal({
           {/* Dynamic Fields */}
           <div className="space-y-6">
             {/* Temperature Fields for Selected Assets - Show directly from task_data */}
-            {task.template?.evidence_types?.includes('temperature') && selectedAssets.length > 0 && (
+            {currentTemplate?.evidence_types?.includes('temperature') && selectedAssets.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-white mb-3">
                   Temperature Readings
@@ -3583,15 +3686,15 @@ export default function TaskCompletionModal({
             )}
             
             {/* Temperature Field - Show when template has temperature evidence */}
-            {(task.template?.evidence_types?.includes('temperature') ||
-              task.template?.slug === 'hot_holding_temperature_verification' ||
-              task.template?.slug === 'hot-holding-temps' ||
-              (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
+            {(currentTemplate?.evidence_types?.includes('temperature') ||
+              currentTemplate?.slug === 'hot_holding_temperature_verification' ||
+              currentTemplate?.slug === 'hot-holding-temps' ||
+              (currentTemplate?.name && currentTemplate.name.toLowerCase().includes('hot holding'))
             ) && (() => {
-              // CRITICAL: Use templateFields if loaded, otherwise fallback to task.template.template_fields
+              // CRITICAL: Use templateFields if loaded, otherwise fallback to currentTemplate.template_fields
               // This ensures temperature fields show even if templateFields state hasn't updated yet
-              // IMPORTANT: Check if task.template.template_fields is an array before using it
-              const preLoadedFields = task.template?.template_fields
+              // IMPORTANT: Check if currentTemplate.template_fields is an array before using it
+              const preLoadedFields = currentTemplate?.template_fields
               const fieldsToUse = templateFields.length > 0 
                 ? templateFields 
                 : (Array.isArray(preLoadedFields) && preLoadedFields.length > 0
@@ -3622,19 +3725,19 @@ export default function TaskCompletionModal({
                 help_text: null,
                 field_type: 'number'
               }
-              const isHotHoldingTemplate = task.template?.slug === 'hot_holding_temperature_verification' ||
-                task.template?.slug === 'hot-holding-temps' ||
-                task.template?.repeatable_field_name === 'equipment_name' ||
-                task.template?.repeatable_field_name === 'hot_holding_unit' ||
-                (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
+              const isHotHoldingTemplate = currentTemplate?.slug === 'hot_holding_temperature_verification' ||
+                currentTemplate?.slug === 'hot-holding-temps' ||
+                currentTemplate?.repeatable_field_name === 'equipment_name' ||
+                currentTemplate?.repeatable_field_name === 'hot_holding_unit' ||
+                (currentTemplate?.name && currentTemplate.name.toLowerCase().includes('hot holding'))
               const equipmentOptions = (equipmentField?.options && Array.isArray(equipmentField.options)) 
                 ? equipmentField.options 
                 : []
               
               // Debug logging
               console.log('🌡️ Temperature field check:', {
-                templateSlug: task.template?.slug,
-                hasTemperatureEvidence: task.template?.evidence_types?.includes('temperature'),
+                templateSlug: currentTemplate?.slug,
+                hasTemperatureEvidence: currentTemplate?.evidence_types?.includes('temperature'),
                 templateFieldsCount: templateFields.length,
                 fieldsToUseCount: fieldsToUse.length,
                 usingFallbackFields: templateFields.length === 0 && fieldsToUse.length > 0,
@@ -3644,7 +3747,8 @@ export default function TaskCompletionModal({
                 equipmentFieldName: equipmentField?.field_name,
                 equipmentOptionsCount: equipmentOptions.length,
                 selectedAssetsCount: selectedAssets.length,
-                repeatableFieldName: task.template?.repeatable_field_name
+                repeatableFieldName: currentTemplate?.repeatable_field_name,
+                hasCurrentTemplate: !!currentTemplate
               })
               
               // CRITICAL: Only hide temperature section if:
@@ -3653,7 +3757,7 @@ export default function TaskCompletionModal({
               // 3. AND the equipment field doesn't have options (meaning it's used for asset selection, not dropdown)
               // Equipment select fields with options should always show temperature inputs
               // ALWAYS show temperature field if it exists, even if using asset selection
-              const repeatableFieldName = task.template?.repeatable_field_name
+              const repeatableFieldName = currentTemplate?.repeatable_field_name
               const usesAssetSelection = repeatableFieldName && selectedAssets.length > 0
               const equipmentFieldHasOptions = equipmentField && equipmentOptions && equipmentOptions.length > 0
               const isRepeatableAssetSelection = repeatableFieldName && 
