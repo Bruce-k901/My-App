@@ -206,24 +206,35 @@ export default function TaskCompletionModal({
         let loadedFields: any[] = []
         if (task.template_id) {
           console.log('📋 [TEMPLATE FIELDS] Loading template fields first...')
-          // Load fields and wait for state to be set
-          await loadTemplateFields(task.template_id)
+          // Load fields and get them directly (don't wait for state update)
+          loadedFields = await loadTemplateFields(task.template_id)
           
           // Wait a tick for React state to update
           await new Promise(resolve => setTimeout(resolve, 100))
           
-          // Get the fields that were just loaded (from state or fetch directly)
-          loadedFields = task.template?.template_fields || []
-          if (loadedFields.length === 0) {
-            // If not in template, fetch them to ensure we have them
-            const { data } = await supabase
-              .from('template_fields')
-              .select('*')
-              .eq('template_id', task.template_id)
-              .order('field_order')
-            loadedFields = data || []
-          }
           console.log('✅ [TEMPLATE FIELDS] Template fields loaded:', loadedFields.length, 'fields')
+          
+          // CRITICAL: If we have template fields, extract asset IDs from them immediately
+          // This ensures temperature ranges can be loaded even before state updates
+          if (loadedFields.length > 0) {
+            // Look for equipment/asset fields in template fields
+            const equipmentField = loadedFields.find((f: any) => 
+              f.field_type === 'select' && 
+              (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit' || f.field_name === 'equipment')
+            )
+            
+            if (equipmentField?.options && Array.isArray(equipmentField.options)) {
+              const assetIdsFromFields = equipmentField.options
+                .map((opt: any) => opt?.value)
+                .filter(Boolean)
+              
+              if (assetIdsFromFields.length > 0) {
+                console.log('🌡️ [TEMPERATURE SYSTEM] Found asset IDs in template fields:', assetIdsFromFields.length)
+                // Load temp ranges immediately with these asset IDs
+                loadAssetTempRanges(assetIdsFromFields)
+              }
+            }
+          }
         }
         
         // Step 2: Load task resources (assets, libraries, SOPs, RAs) AFTER template fields are loaded
@@ -274,6 +285,40 @@ export default function TaskCompletionModal({
       return () => {
         clearTimeout(tempRangeTimeout)
       }
+    }, [task.id, task.template_id, isOpen])
+    
+    // SAFEGUARD: Reload temperature ranges when templateFields state updates
+    // This ensures ranges are loaded even if template fields load after initialization
+    useEffect(() => {
+      if (!isOpen || !task.template?.evidence_types?.includes('temperature')) return
+      if (templateFields.length === 0) return
+      
+      console.log('🌡️ [TEMPERATURE SYSTEM] Template fields updated, reloading temperature ranges...')
+      // Extract asset IDs from template fields
+      const equipmentField = templateFields.find((f: any) => 
+        f.field_type === 'select' && 
+        (f.field_name === 'fridge_name' || f.field_name === 'hot_holding_unit' || f.field_name === 'equipment')
+      )
+      
+      if (equipmentField?.options && Array.isArray(equipmentField.options)) {
+        const assetIdsFromFields = equipmentField.options
+          .map((opt: any) => opt?.value)
+          .filter(Boolean)
+        
+        if (assetIdsFromFields.length > 0) {
+          console.log('🌡️ [TEMPERATURE SYSTEM] Reloading ranges for assets from template fields:', assetIdsFromFields.length)
+          loadAssetTempRanges(assetIdsFromFields)
+        }
+      } else {
+        // No equipment field found, try loading from other sources
+        loadAssetTempRanges()
+      }
+    }, [templateFields, isOpen, task.template?.evidence_types])
+    
+    // Reset state when modal opens/closes
+    useEffect(() => {
+      if (!isOpen) return
+      
       setPhotos([])
       setError('')
       setInstructionsExpanded(false)
@@ -519,10 +564,10 @@ export default function TaskCompletionModal({
     }
   }
 
-  const loadTemplateFields = async (templateId: string) => {
+  const loadTemplateFields = async (templateId: string): Promise<any[]> => {
     if (!templateId) {
       console.warn('⚠️ [TEMPLATE FIELDS] No templateId provided to loadTemplateFields')
-      return
+      return []
     }
     console.log('📋 [TEMPLATE FIELDS] Loading template fields for templateId:', templateId)
     try {
@@ -582,29 +627,11 @@ export default function TaskCompletionModal({
         return initialFormData
       })
       
-      // Load assets for equipment information (check fridge_name, hot_holding_unit, and equipment_name)
-      const equipmentField = fields?.find((f: any) => 
-        f.field_type === 'select' && 
-        (f.field_name === 'fridge_name' || 
-         f.field_name === 'hot_holding_unit' || 
-         f.field_name === 'equipment_name')
-      )
-      if (equipmentField?.options && Array.isArray(equipmentField.options)) {
-        const assetIds = equipmentField.options.map((opt: any) => opt.value).filter(Boolean)
-        if (assetIds.length > 0) {
-          const { data: assets, error: assetsError } = await supabase
-            .from('assets')
-            .select('id, name')
-            .in('id', assetIds)
-          
-          if (!assetsError && assets) {
-            const assetsMapData = new Map(assets.map(a => [a.id, a]))
-            setAssetsMap(assetsMapData)
-          }
-        }
-      }
+      // CRITICAL: Return the fields so they can be used immediately without waiting for state update
+      return fields
     } catch (error) {
       console.error('Error loading template fields:', error)
+      return []
     }
   }
 

@@ -686,27 +686,61 @@ export default function DailyChecklistPage() {
       }))
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
-      // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
-      // CRITICAL: Fetch completion records for ALL tasks due today, not just the ones we fetched
-      // This ensures we catch all completed tasks even if they have status='pending' (defensive filtering)
+      // Fetch ALL completion records for ALL tasks due today (not just pending/in_progress)
+      // This ensures we catch all completed tasks even if their status wasn't updated (defensive filtering)
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
       
-      // CRITICAL: Fetch completion records for today's tasks
-      // We need to fetch records for tasks that might have been completed today
-      // even if their status wasn't updated properly (defensive filtering)
-      if (allTaskIds.length > 0) {
-        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
+      // CRITICAL: Fetch completion records for ALL tasks due today, not just the ones in our query
+      // This is essential because:
+      // 1. Tasks with status='pending' might have completion records (status wasn't updated)
+      // 2. We need to filter them out from active tasks
+      // 3. We also need them for the completed tasks list
+      // 
+      // Strategy: Fetch all completion records for today, then filter by task_id and site_id
+      console.log('🔍 Fetching ALL completion records for today:', { today: todayStr, siteId, companyId })
+      
+      // First, get ALL task IDs for today (including completed ones) to ensure we fetch all completion records
+      // This is a separate query to get all task IDs due today
+      let allTodayTaskIds: string[] = []
+      try {
+        let allTodayTasksQuery = supabase
+          .from('checklist_tasks')
+          .select('id')
+          .eq('company_id', companyId)
+          .eq('due_date', todayStr)
+        
+        // Apply site filtering if available
+        if (siteId) {
+          allTodayTasksQuery = allTodayTasksQuery.eq('site_id', siteId)
+        }
+        
+        const { data: allTodayTasks, error: allTodayError } = await allTodayTasksQuery
+        
+        if (!allTodayError && allTodayTasks) {
+          allTodayTaskIds = allTodayTasks.map((t: any) => t.id).filter(Boolean)
+          console.log('📋 Found', allTodayTaskIds.length, 'tasks due today (all statuses)')
+        }
+      } catch (error) {
+        console.error('❌ Error fetching all today tasks:', error)
+        // Fallback to using task IDs from our filtered query
+        allTodayTaskIds = allTaskIds
+      }
+      
+      // Use all today task IDs if we got them, otherwise fall back to filtered task IDs
+      const taskIdsToCheck = allTodayTaskIds.length > 0 ? allTodayTaskIds : allTaskIds
+      
+      if (taskIdsToCheck.length > 0) {
+        console.log('🔍 Fetching completion records for task IDs:', taskIdsToCheck.slice(0, 5), '... (total:', taskIdsToCheck.length, ')')
         
         // Fetch completion records for today's tasks
         // CRITICAL: Filter by company_id and completed_at date to ensure we get all relevant completion records
         // Don't filter by site_id initially - we'll filter in JS to be more permissive
-        // Also fetch records for tasks that might have been completed today but status wasn't updated
         let completionQuery = supabase
           .from('task_completion_records')
           .select('*')
           .eq('company_id', companyId)
-          .in('task_id', allTaskIds)
+          .in('task_id', taskIdsToCheck)
           .gte('completed_at', `${todayStr}T00:00:00`)
           .lte('completed_at', `${todayStr}T23:59:59`)
           .order('completed_at', { ascending: false })
@@ -756,11 +790,6 @@ export default function DailyChecklistPage() {
           }
         }
       }
-      
-      // CRITICAL: Also fetch completion records for tasks that might have status='completed' but weren't in our query
-      // This is a fallback to ensure we have all completion records for today's tasks
-      // We'll use these to build the completedTasks list
-      // Note: This is separate from the active tasks filtering above
       
       // Build a map of completed dayparts per task
       // Key: task_id, Value: Set of completed dayparts
