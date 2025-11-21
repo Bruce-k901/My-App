@@ -235,7 +235,8 @@ export default function TaskCompletionModal({
       
       // Then load template fields (which will preserve existing formData)
       const initialize = async () => {
-        await loadTemplateFields()
+        // Pass the template ID!
+        await loadTemplateFields(task.template_id)
         // SAFEGUARD: Reload temp ranges after template fields load (in case equipment field has assets)
         // This ensures we catch all assets, even if they're in template fields
         console.log('🌡️ [TEMPERATURE SYSTEM] Template fields loaded, re-checking temperature ranges...')
@@ -487,8 +488,8 @@ export default function TaskCompletionModal({
     }
   }
 
-  const loadTemplateFields = async () => {
-    if (!task.template_id) return
+  const loadTemplateFields = async (templateId: string) => {
+    if (!templateId) return
     try {
       // CRITICAL: Use template_fields from task.template if already loaded (from Today's Tasks page)
       // This avoids unnecessary database queries and ensures fields are available immediately
@@ -500,7 +501,7 @@ export default function TaskCompletionModal({
         const { data, error } = await supabase
           .from('template_fields')
           .select('*')
-          .eq('template_id', task.template_id)
+          .eq('template_id', templateId)
           .order('field_order')
         
         if (error) throw error
