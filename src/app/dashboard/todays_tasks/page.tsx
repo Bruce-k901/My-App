@@ -736,13 +736,16 @@ export default function DailyChecklistPage() {
         // Fetch completion records for today's tasks
         // CRITICAL: Filter by company_id and completed_at date to ensure we get all relevant completion records
         // Don't filter by site_id initially - we'll filter in JS to be more permissive
+        // IMPORTANT: Use date range to catch all records for today, regardless of timezone issues
         let completionQuery = supabase
           .from('task_completion_records')
           .select('*')
           .eq('company_id', companyId)
           .in('task_id', taskIdsToCheck)
+          // Use date range to ensure we catch all records for today
+          // This handles timezone issues and ensures we get all completion records
           .gte('completed_at', `${todayStr}T00:00:00`)
-          .lte('completed_at', `${todayStr}T23:59:59`)
+          .lte('completed_at', `${todayStr}T23:59:59.999`)
           .order('completed_at', { ascending: false })
         
         const { data: completionRecords, error: completionError } = await completionQuery
@@ -796,10 +799,16 @@ export default function DailyChecklistPage() {
       // CRITICAL: For multi-daypart tasks, multiple instances share the same task.id
       // so we need to track which specific daypart instances were completed
       const completedDaypartsMap = new Map<string, Set<string>>()
+      // Also track tasks that have completion records but no daypart (single-daypart tasks)
+      const tasksCompletedWithoutDaypart = new Set<string>()
+      
       allCompletionRecords.forEach(record => {
         const taskId = record.task_id
+        if (!taskId) return
+        
         const completedDaypart = record.completion_data?.completed_daypart
-        if (completedDaypart && taskId) {
+        if (completedDaypart) {
+          // Multi-daypart task - track which daypart was completed
           if (!completedDaypartsMap.has(taskId)) {
             completedDaypartsMap.set(taskId, new Set())
           }
@@ -811,15 +820,21 @@ export default function DailyChecklistPage() {
             normalizedDaypart,
             allCompletedDayparts: Array.from(completedDaypartsMap.get(taskId)!)
           })
+        } else {
+          // Single-daypart task - no daypart in completion_data means the whole task was completed
+          tasksCompletedWithoutDaypart.add(taskId)
+          console.log('📝 Task completed without daypart (single-daypart task):', taskId)
         }
       })
       
       console.log('📊 Completed dayparts map:', {
         totalTasks: completedDaypartsMap.size,
+        tasksCompletedWithoutDaypart: tasksCompletedWithoutDaypart.size,
         details: Array.from(completedDaypartsMap.entries()).map(([taskId, dayparts]) => ({
           taskId,
           completedDayparts: Array.from(dayparts)
-        }))
+        })),
+        tasksWithoutDaypart: Array.from(tasksCompletedWithoutDaypart)
       })
       
       // Build a set of task IDs that have completion records
@@ -829,22 +844,26 @@ export default function DailyChecklistPage() {
         totalTasks: tasksWithProfiles.length,
         completionRecordsFound: allCompletionRecords.length,
         tasksWithCompletionRecords: Array.from(tasksWithCompletionRecords),
+        tasksCompletedWithoutDaypart: Array.from(tasksCompletedWithoutDaypart),
         completedDaypartsMapSize: completedDaypartsMap.size,
         sampleTaskChecks: tasksWithProfiles.slice(0, 5).map(t => {
           const taskData = t.task_data || {}
           const daypartsInData = taskData.dayparts || []
           const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
           const completedDayparts = completedDaypartsMap.get(t.id)
+          const hasRecord = tasksWithCompletionRecords.has(t.id)
+          const completedWithoutDaypart = tasksCompletedWithoutDaypart.has(t.id)
           return { 
             id: t.id, 
             status: t.status,
             daypart: t.daypart,
-            hasRecord: tasksWithCompletionRecords.has(t.id),
+            hasRecord,
+            completedWithoutDaypart,
             hasMultipleDayparts,
             completedDayparts: completedDayparts ? Array.from(completedDayparts) : null,
             willBeFiltered: hasMultipleDayparts && completedDayparts && t.daypart 
               ? completedDayparts.has(normalizeDaypart(t.daypart))
-              : tasksWithCompletionRecords.has(t.id)
+              : (hasRecord || completedWithoutDaypart)
           }
         })
       })
@@ -887,8 +906,9 @@ export default function DailyChecklistPage() {
         // skip if task has ANY completion record
         // CRITICAL: This is defensive filtering - even if status is 'pending', 
         // if there's a completion record, the task was completed and should be hidden
-        if (tasksWithCompletionRecords.has(task.id)) {
-          console.log(`❌ Task ${task.id} filtered: has completion record (status: ${task.status})`)
+        // Check both: tasks with completion records AND tasks completed without daypart
+        if (tasksWithCompletionRecords.has(task.id) || tasksCompletedWithoutDaypart.has(task.id)) {
+          console.log(`❌ Task ${task.id} filtered: has completion record (status: ${task.status}, hasRecord: ${tasksWithCompletionRecords.has(task.id)}, completedWithoutDaypart: ${tasksCompletedWithoutDaypart.has(task.id)})`)
           return false
         }
         

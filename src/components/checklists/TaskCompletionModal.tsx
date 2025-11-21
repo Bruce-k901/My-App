@@ -3369,17 +3369,23 @@ export default function TaskCompletionModal({
               task.template?.slug === 'hot-holding-temps' ||
               (task.template?.name && task.template.name.toLowerCase().includes('hot holding'))
             ) && (() => {
+              // CRITICAL: Use templateFields if loaded, otherwise fallback to task.template.template_fields
+              // This ensures temperature fields show even if templateFields state hasn't updated yet
+              const fieldsToUse = templateFields.length > 0 
+                ? templateFields 
+                : (task.template?.template_fields || [])
+              
               // Check for equipment select fields (legacy and new field names)
               // Note: asset_name can be both a select field AND a repeatable field name
               // We need to check if it's used as a select dropdown (has options) vs asset selection
-              const equipmentField = templateFields.find((f: any) => 
+              const equipmentField = fieldsToUse.find((f: any) => 
                 f.field_type === 'select' && 
                 (f.field_name === 'fridge_name' || 
                  f.field_name === 'hot_holding_unit' || 
                  f.field_name === 'equipment_name' ||
                  f.field_name === 'asset_name')
               )
-              const temperatureField = templateFields.find((f: any) => 
+              const temperatureField = fieldsToUse.find((f: any) => 
                 f.field_type === 'number' && 
                 (f.field_name === 'temperature' || f.field_name?.toLowerCase().includes('temp'))
               )
@@ -3407,6 +3413,8 @@ export default function TaskCompletionModal({
                 templateSlug: task.template?.slug,
                 hasTemperatureEvidence: task.template?.evidence_types?.includes('temperature'),
                 templateFieldsCount: templateFields.length,
+                fieldsToUseCount: fieldsToUse.length,
+                usingFallbackFields: templateFields.length === 0 && fieldsToUse.length > 0,
                 temperatureFieldFound: !!temperatureField,
                 temperatureFieldName: temperatureField?.field_name,
                 equipmentFieldFound: !!equipmentField,
@@ -3524,7 +3532,7 @@ export default function TaskCompletionModal({
                                     
                                     // If not out of range from asset, check template field ranges
                                     if (!isOutOfRange) {
-                                      const tempField = temperatureField ?? templateFields.find((f: any) => 
+                                      const tempField = temperatureField ?? fieldsToUse.find((f: any) => 
                                         f.field_type === 'number' && f.field_name === 'temperature'
                                       ) ?? activeTemperatureField
                                       
