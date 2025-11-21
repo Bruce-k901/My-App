@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense, useRef } from "react";
 import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, Upload, CalendarPlus, Edit2, X, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -133,10 +134,14 @@ function StatusBadge({ status, children }: { status: TrainingStatus; children: R
 
 function TrainingMatrixPageContent() {
   const { loading: authLoading, companyId, siteId, profile: currentUserProfile } = useAppContext();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const siteParam = useMemo(() => searchParams?.get("site"), [searchParams]);
   const profileIdParam = useMemo(() => searchParams?.get("profile_id"), [searchParams]);
   const certificateTypeParam = useMemo(() => searchParams?.get("certificate_type"), [searchParams]);
+  
+  // Track if we're saving to prevent useEffect from reopening modal
+  const isSavingRef = useRef(false);
 
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [trainingRecords, setTrainingRecords] = useState<TrainingRecordRow[]>([]);
@@ -302,6 +307,9 @@ function TrainingMatrixPageContent() {
 
   // Handle query params for navigation from tasks
   useEffect(() => {
+    // Don't auto-open modal if we're in the process of saving
+    if (isSavingRef.current) return;
+    
     if (profileIdParam && profiles.length > 0) {
       // Find the profile
       const profile = profiles.find(p => p.id === profileIdParam);
@@ -748,6 +756,7 @@ function TrainingMatrixPageContent() {
     if (!editingCertificate) return;
 
     setSavingCertificate(true);
+    isSavingRef.current = true; // Prevent useEffect from reopening modal
 
     try {
       const updates: Record<string, any> = {};
@@ -798,6 +807,7 @@ function TrainingMatrixPageContent() {
       if (Object.keys(updates).length === 0) {
         toast.error('No changes to save');
         setSavingCertificate(false);
+        isSavingRef.current = false;
         return;
       }
 
@@ -811,14 +821,29 @@ function TrainingMatrixPageContent() {
       }
 
       toast.success('Certificate updated successfully');
+      
+      // Close modal and clear form
       setEditingCertificate(null);
       setEditForm({});
-      fetchMatrixData();
+      
+      // If we came from a task (has query params), navigate back to today's tasks
+      const cameFromTask = profileIdParam && certificateTypeParam;
+      if (cameFromTask) {
+        // Clear query params to prevent modal from reopening
+        router.push('/dashboard/todays_tasks');
+      } else {
+        // Just refresh data if we're already on the training page
+        fetchMatrixData();
+      }
     } catch (err: any) {
       console.error('Failed to save certificate:', err);
       toast.error(err?.message || 'Failed to save certificate');
     } finally {
       setSavingCertificate(false);
+      // Reset the flag after a short delay to allow navigation
+      setTimeout(() => {
+        isSavingRef.current = false;
+      }, 1000);
     }
   };
 
