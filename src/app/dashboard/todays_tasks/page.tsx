@@ -1047,6 +1047,16 @@ export default function DailyChecklistPage() {
       // For single-daypart tasks, we check if the task itself has a completion record
       // IMPORTANT: Check status FIRST, then completion records
       let activeTasks = tasksWithProfiles.filter(task => {
+        // Check 0: CRITICAL - Check completed_at FIRST (most reliable indicator)
+        // This must be the first check to catch any tasks that slipped through the database query
+        if (task.completed_at && task.completed_at !== null && task.completed_at !== undefined) {
+          const completedDate = new Date(task.completed_at).toISOString().split('T')[0]
+          if (completedDate === todayStr) {
+            console.log(`❌ Task ${task.id} filtered: has completed_at timestamp for today (${task.completed_at})`)
+            return false
+          }
+        }
+        
         // Check 1: CRITICAL - Skip if task status is completed, missed, or skipped
         // This should never happen since query filters by status, but defensive check
         if (task.status === 'completed' || task.status === 'missed' || task.status === 'skipped') {
@@ -1059,16 +1069,6 @@ export default function DailyChecklistPage() {
         if (task.status !== 'pending' && task.status !== 'in_progress') {
           console.log(`❌ Task ${task.id} filtered: invalid status ${task.status}`)
           return false
-        }
-        
-        // Check 2: Check if task has completed_at timestamp (direct indicator of completion)
-        // This is the most reliable indicator - if completed_at is set, task is done
-        if (task.completed_at && task.completed_at !== null) {
-          const completedDate = new Date(task.completed_at).toISOString().split('T')[0]
-          if (completedDate === todayStr) {
-            console.log(`❌ Task ${task.id} filtered: has completed_at timestamp for today`)
-            return false
-          }
         }
         
         // Check 3: For multi-daypart tasks, check per-daypart completion
@@ -1250,6 +1250,21 @@ export default function DailyChecklistPage() {
           templateFieldsCount: t.template?.template_fields?.length || 0
         }))
       })
+      
+      // CRITICAL: Verify templates are attached before setting state
+      // Log a sample task to verify template structure
+      if (tasksWithVerifiedTemplates.length > 0) {
+        const sampleTask = tasksWithVerifiedTemplates[0]
+        console.log('🔍 [STATE SET] Sample task before setTasks:', {
+          taskId: sampleTask.id,
+          templateId: sampleTask.template_id,
+          hasTemplate: !!sampleTask.template,
+          templateName: sampleTask.template?.name,
+          templateFieldsCount: sampleTask.template?.template_fields?.length || 0,
+          templateFieldsType: typeof sampleTask.template?.template_fields,
+          templateFieldsIsArray: Array.isArray(sampleTask.template?.template_fields)
+        })
+      }
       
       setTasks(tasksWithVerifiedTemplates)
       setCompletedTasks(completedTasksWithRecords)
@@ -1516,22 +1531,32 @@ export default function DailyChecklistPage() {
                 key={key}
                 task={task}
                 onClick={() => {
+                  // CRITICAL: Create a deep copy of the task to ensure template is preserved
+                  // React state updates might lose nested properties if we just pass the reference
+                  const taskWithTemplate = {
+                    ...task,
+                    template: task.template ? {
+                      ...task.template,
+                      template_fields: task.template.template_fields ? [...task.template.template_fields] : []
+                    } : null
+                  }
+                  
                   // CRITICAL: Verify template is attached before setting selected task
                   console.log('🔍 [TASK SELECTION] Setting selected task:', {
-                    taskId: task.id,
-                    templateId: task.template_id,
-                    hasTemplate: !!task.template,
-                    templateName: task.template?.name,
-                    templateFieldsCount: task.template?.template_fields?.length || 0,
-                    templateFields: task.template?.template_fields
+                    taskId: taskWithTemplate.id,
+                    templateId: taskWithTemplate.template_id,
+                    hasTemplate: !!taskWithTemplate.template,
+                    templateName: taskWithTemplate.template?.name,
+                    templateFieldsCount: taskWithTemplate.template?.template_fields?.length || 0,
+                    templateFields: taskWithTemplate.template?.template_fields
                   })
                   
                   // Set window.selectedTask for debugging
                   if (typeof window !== 'undefined') {
-                    (window as any).selectedTask = task
+                    (window as any).selectedTask = taskWithTemplate
                   }
                   
-                  setSelectedTask(task)
+                  setSelectedTask(taskWithTemplate)
                   setShowCompletion(true)
                 }}
               />
@@ -1553,22 +1578,32 @@ export default function DailyChecklistPage() {
                   key={uniqueKey}
                   task={task}
                   onClick={() => {
+                    // CRITICAL: Create a deep copy of the task to ensure template is preserved
+                    // React state updates might lose nested properties if we just pass the reference
+                    const taskWithTemplate = {
+                      ...task,
+                      template: task.template ? {
+                        ...task.template,
+                        template_fields: task.template.template_fields ? [...task.template.template_fields] : []
+                      } : null
+                    }
+                    
                     // CRITICAL: Verify template is attached before setting selected task
                     console.log('🔍 [TASK SELECTION] Setting selected task (upcoming):', {
-                      taskId: task.id,
-                      templateId: task.template_id,
-                      hasTemplate: !!task.template,
-                      templateName: task.template?.name,
-                      templateFieldsCount: task.template?.template_fields?.length || 0,
-                      templateFields: task.template?.template_fields
+                      taskId: taskWithTemplate.id,
+                      templateId: taskWithTemplate.template_id,
+                      hasTemplate: !!taskWithTemplate.template,
+                      templateName: taskWithTemplate.template?.name,
+                      templateFieldsCount: taskWithTemplate.template?.template_fields?.length || 0,
+                      templateFields: taskWithTemplate.template?.template_fields
                     })
                     
                     // Set window.selectedTask for debugging
                     if (typeof window !== 'undefined') {
-                      (window as any).selectedTask = task
+                      (window as any).selectedTask = taskWithTemplate
                     }
                     
-                    setSelectedTask(task)
+                    setSelectedTask(taskWithTemplate)
                     setShowCompletion(true)
                   }}
                 />
