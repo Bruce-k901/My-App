@@ -65,3 +65,46 @@ export function formatConversationTime(timestamp: string | Date | null | undefin
   // Show year for very old conversations
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
+
+/**
+ * Calculate asset age from install date
+ * Returns formatted string like "2 years 3 months" or "6 months" or "45 days"
+ */
+export function calculateAssetAge(installDate: string | null | undefined): string {
+  if (!installDate) return 'Unknown';
+  
+  const install = new Date(installDate);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - install.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  
+  if (years > 0 && months > 0) {
+    return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+  } else if (years > 0) {
+    return `${years} year${years > 1 ? 's' : ''}`;
+  } else if (months > 0) {
+    return `${months} month${months > 1 ? 's' : ''}`;
+  } else {
+    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  }
+}
+
+/**
+ * Calculate next service date from last service date and frequency
+ * Returns formatted date string or null if calculation not possible
+ */
+export function calculateNextServiceDate(
+  lastServiceDate: string | null | undefined,
+  frequencyMonths: number | null | undefined
+): string | null {
+  if (!lastServiceDate || !frequencyMonths) return null;
+  
+  const lastDate = new Date(lastServiceDate);
+  const nextDate = new Date(lastDate);
+  nextDate.setMonth(nextDate.getMonth() + frequencyMonths);
+  
+  return nextDate.toISOString().split('T')[0];
+}
