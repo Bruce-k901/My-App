@@ -73,11 +73,52 @@ Deno.serve(async (req) => {
       template?: any; // Template data to get repeatable_field_name
     }): Promise<boolean> {
       // Build task_data from equipment_config and template
-      let taskData: Record<string, any> | null = null;
+      // Always initialize taskData as an object to ensure features can be added
+      let taskData: Record<string, any> = {};
       
-      if (params.equipmentConfig && Array.isArray(params.equipmentConfig) && params.equipmentConfig.length > 0) {
-        taskData = {};
+      // ========================================================================
+      // 1. POPULATE CHECKLIST ITEMS FROM TEMPLATE
+      // ========================================================================
+      if (params.template) {
+        // Parse recurrence_pattern (could be string or object)
+        let recurrencePattern = params.template.recurrence_pattern;
+        if (typeof recurrencePattern === 'string') {
+          try {
+            recurrencePattern = JSON.parse(recurrencePattern);
+          } catch (e) {
+            console.error('Failed to parse recurrence_pattern:', e);
+            recurrencePattern = null;
+          }
+        }
         
+        // Get default checklist items from template
+        const defaultChecklistItems = recurrencePattern?.default_checklist_items || [];
+        const evidenceTypes = params.template.evidence_types || [];
+        const hasYesNoChecklist = evidenceTypes.includes('yes_no_checklist');
+        const hasTemperature = evidenceTypes.includes('temperature');
+        
+        // Populate checklist items based on evidence type
+        if (Array.isArray(defaultChecklistItems) && defaultChecklistItems.length > 0) {
+          if (hasYesNoChecklist) {
+            // Yes/No checklist format
+            taskData.yesNoChecklistItems = defaultChecklistItems.map((item: any) => ({
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null as 'yes' | 'no' | null
+            })).filter((item: { text: string }) => item.text && item.text.trim().length > 0);
+          } else {
+            // Regular checklist format
+            taskData.checklistItems = defaultChecklistItems.map((item: any) => 
+              typeof item === 'string' ? item : (item.text || item.label || '')
+            ).filter((item: string) => item && item.trim().length > 0);
+          }
+        }
+        
+      }
+      
+      // ========================================================================
+      // 2. POPULATE EQUIPMENT/ASSET DATA
+      // ========================================================================
+      if (params.equipmentConfig && Array.isArray(params.equipmentConfig) && params.equipmentConfig.length > 0) {
         // Handle both cases: array of IDs (strings) or array of objects
         const isArrayOfIds = typeof params.equipmentConfig[0] === 'string';
         
@@ -128,6 +169,34 @@ Deno.serve(async (req) => {
             }));
           }
         }
+      }
+      
+      // ========================================================================
+      // 3. INITIALIZE TEMPERATURE ARRAY FOR TEMPLATES WITH TEMPERATURE EVIDENCE
+      // ========================================================================
+      // If template has temperature evidence type but temperatures haven't been populated yet,
+      // initialize it based on selected assets
+      if (params.template?.evidence_types?.includes('temperature')) {
+        // Only initialize if temperatures array doesn't exist or is empty
+        if (!taskData.temperatures || (Array.isArray(taskData.temperatures) && taskData.temperatures.length === 0)) {
+          if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets) && taskData.selectedAssets.length > 0) {
+            // Initialize temperatures array with one entry per selected asset
+            taskData.temperatures = taskData.selectedAssets.map((assetId: string) => ({
+              assetId: assetId,
+              temp: null,
+              nickname: null
+            }));
+          } else {
+            // No selected assets, initialize as empty array
+            taskData.temperatures = [];
+          }
+        }
+      }
+      
+      // Set taskData to null only if it's completely empty (no features at all)
+      // This maintains backward compatibility
+      if (Object.keys(taskData).length === 0) {
+        taskData = null;
       }
       
       const { error } = await supabase.from("checklist_tasks").insert({
