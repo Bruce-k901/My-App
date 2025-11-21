@@ -290,11 +290,47 @@ export default function DailyChecklistPage() {
             .in('id', templateIds)
           
           if (!templatesError && templates) {
+            console.log('📦 [TEMPLATE FETCH] Raw templates from Supabase:', {
+              count: templates.length,
+              templates: templates.map((t: any) => ({
+                id: t.id,
+                name: t.name,
+                hasTemplateFields: !!t.template_fields,
+                templateFieldsType: typeof t.template_fields,
+                templateFieldsIsArray: Array.isArray(t.template_fields),
+                templateFieldsCount: Array.isArray(t.template_fields) ? t.template_fields.length : (t.template_fields ? 'not-array' : 0),
+                templateFieldsKeys: t.template_fields ? Object.keys(t.template_fields) : []
+              }))
+            })
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
               const enriched = enrichTemplateWithDefinition(template)
+              // CRITICAL: Ensure template_fields is an array (Supabase returns it as array from nested select)
+              // Supabase nested select returns template_fields as an array of objects
+              if (enriched.template_fields && !Array.isArray(enriched.template_fields)) {
+                console.warn('⚠️ Template fields is not an array, converting:', {
+                  templateId: enriched.id,
+                  type: typeof enriched.template_fields,
+                  value: enriched.template_fields
+                })
+                enriched.template_fields = []
+              }
+              // Ensure template_fields is always an array (even if empty)
+              if (!enriched.template_fields) {
+                enriched.template_fields = []
+              }
               acc[enriched.id] = enriched
+              console.log('✅ [FIRST FETCH] Added template to map:', {
+                templateId: enriched.id,
+                templateName: enriched.name,
+                hasTemplateFields: !!enriched.template_fields,
+                templateFieldsCount: Array.isArray(enriched.template_fields) ? enriched.template_fields.length : 0,
+                templateFieldsType: typeof enriched.template_fields,
+                templateFields: enriched.template_fields
+              })
               return acc
             }, {})
+          } else if (templatesError) {
+            console.error('❌ [TEMPLATE FETCH] Error fetching templates:', templatesError)
           }
         }
       }
@@ -350,8 +386,23 @@ export default function DailyChecklistPage() {
         
         if (fullTemplates) {
           fullTemplates.forEach(t => {
+            // CRITICAL: Enrich template to ensure template_fields are preserved
             const enriched = enrichTemplateWithDefinition(t)
+            // CRITICAL: Ensure template_fields is an array (Supabase returns it as array from nested select)
+            if (enriched.template_fields && !Array.isArray(enriched.template_fields)) {
+              console.warn('⚠️ Template fields is not an array, converting:', {
+                templateId: enriched.id,
+                type: typeof enriched.template_fields
+              })
+              enriched.template_fields = []
+            }
             templatesMap[enriched.id] = enriched
+            console.log('✅ [SECOND FETCH] Added template to map:', {
+              templateId: enriched.id,
+              templateName: enriched.name,
+              hasTemplateFields: !!enriched.template_fields,
+              templateFieldsCount: Array.isArray(enriched.template_fields) ? enriched.template_fields.length : 0
+            })
           })
         }
       }
@@ -1224,6 +1275,18 @@ export default function DailyChecklistPage() {
                 key={key}
                 task={task}
                 onClick={() => {
+                  // CRITICAL: Verify template is attached before setting selectedTask
+                  console.log('🖱️ [TASK CLICK] Task clicked:', {
+                    taskId: task.id,
+                    templateId: task.template_id,
+                    hasTemplate: !!task.template,
+                    templateName: task.template?.name,
+                    hasTemplateFields: !!task.template?.template_fields,
+                    templateFieldsType: typeof task.template?.template_fields,
+                    templateFieldsIsArray: Array.isArray(task.template?.template_fields),
+                    templateFieldsCount: Array.isArray(task.template?.template_fields) ? task.template.template_fields.length : 0,
+                    templateFields: task.template?.template_fields
+                  })
                   // Set window.selectedTask for debugging
                   if (typeof window !== 'undefined') {
                     (window as any).selectedTask = task
