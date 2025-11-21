@@ -64,11 +64,17 @@ export function enrichTemplateWithDefinition<T extends TemplateLike | null | und
     return template
   }
 
+  // CRITICAL: Preserve template_fields from the original template
+  // The definition might not have template_fields, so we must preserve them from the template
+  const templateFields = template.template_fields
+
   const merged = {
     ...(definition ? { ...definition } : {}),
     ...template,
     workflowType,
     workflowConfig,
+    // CRITICAL: Explicitly preserve template_fields to ensure they're not lost
+    template_fields: templateFields
   }
 
   return merged as T

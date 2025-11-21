@@ -78,8 +78,11 @@ export default function DailyChecklistPage() {
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
+  // CRITICAL: Only call this on initial page load and after task completion
+  // Do NOT call from fetchTodaysTasks to avoid unnecessary queries
   const loadBreachActions = useCallback(async () => {
-    if (!siteId) {
+    // Early return if no site context - prevents unnecessary queries
+    if (!siteId || !companyId) {
       setBreachActions([])
       return
     }
@@ -90,7 +93,7 @@ export default function DailyChecklistPage() {
       const weekAgo = new Date(today.getTime())
       weekAgo.setDate(weekAgo.getDate() - 7)
 
-      let query = supabase
+      const { data, error } = await supabase
         .from('temperature_breach_actions')
         .select(
           `
@@ -112,17 +115,19 @@ export default function DailyChecklistPage() {
             )
           `
         )
+        .eq('site_id', siteId)
         .in('status', ['pending', 'acknowledged'])
         .gte('created_at', weekAgo.toISOString())
         .order('created_at', { ascending: false })
 
-      if (siteId) {
-        query = query.eq('site_id', siteId)
+      if (error) {
+        // Only log errors, don't throw - empty results are normal
+        console.warn('Failed to load breach actions:', error?.message ?? error)
+        setBreachActions([])
+        return
       }
 
-      const { data, error } = await query
-
-      if (error) throw error
+      // Empty results are normal - no breach actions to show
       setBreachActions((data || []).map((row) => ({
         id: row.id,
         action_type: row.action_type,
@@ -135,11 +140,13 @@ export default function DailyChecklistPage() {
         temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
       })))
     } catch (error: any) {
-      console.error('Failed to load breach actions', error?.message ?? error)
+      // Silently handle errors - empty results are acceptable
+      console.warn('Error loading breach actions:', error?.message ?? error)
+      setBreachActions([])
     } finally {
       setBreachLoading(false)
     }
-  }, [siteId])
+  }, [siteId, companyId])
 
   // Define fetchUpcomingTasks (needed by useEffect)
   const fetchUpcomingTasks = useCallback(async () => {
@@ -290,11 +297,47 @@ export default function DailyChecklistPage() {
             .in('id', templateIds)
           
           if (!templatesError && templates) {
+            console.log('📦 [TEMPLATE FETCH] Raw templates from Supabase:', {
+              count: templates.length,
+              templates: templates.map((t: any) => ({
+                id: t.id,
+                name: t.name,
+                hasTemplateFields: !!t.template_fields,
+                templateFieldsType: typeof t.template_fields,
+                templateFieldsIsArray: Array.isArray(t.template_fields),
+                templateFieldsCount: Array.isArray(t.template_fields) ? t.template_fields.length : (t.template_fields ? 'not-array' : 0),
+                templateFieldsKeys: t.template_fields ? Object.keys(t.template_fields) : []
+              }))
+            })
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
               const enriched = enrichTemplateWithDefinition(template)
+              // CRITICAL: Ensure template_fields is an array (Supabase returns it as array from nested select)
+              // Supabase nested select returns template_fields as an array of objects
+              if (enriched.template_fields && !Array.isArray(enriched.template_fields)) {
+                console.warn('⚠️ Template fields is not an array, converting:', {
+                  templateId: enriched.id,
+                  type: typeof enriched.template_fields,
+                  value: enriched.template_fields
+                })
+                enriched.template_fields = []
+              }
+              // Ensure template_fields is always an array (even if empty)
+              if (!enriched.template_fields) {
+                enriched.template_fields = []
+              }
               acc[enriched.id] = enriched
+              console.log('✅ [FIRST FETCH] Added template to map:', {
+                templateId: enriched.id,
+                templateName: enriched.name,
+                hasTemplateFields: !!enriched.template_fields,
+                templateFieldsCount: Array.isArray(enriched.template_fields) ? enriched.template_fields.length : 0,
+                templateFieldsType: typeof enriched.template_fields,
+                templateFields: enriched.template_fields
+              })
               return acc
             }, {})
+          } else if (templatesError) {
+            console.error('❌ [TEMPLATE FETCH] Error fetching templates:', templatesError)
           }
         }
       }
@@ -350,16 +393,51 @@ export default function DailyChecklistPage() {
         
         if (fullTemplates) {
           fullTemplates.forEach(t => {
-            templatesMap[t.id] = t
+            // CRITICAL: Enrich template to ensure template_fields are preserved
+            const enriched = enrichTemplateWithDefinition(t)
+            // CRITICAL: Ensure template_fields is an array (Supabase returns it as array from nested select)
+            if (enriched.template_fields && !Array.isArray(enriched.template_fields)) {
+              console.warn('⚠️ Template fields is not an array, converting:', {
+                templateId: enriched.id,
+                type: typeof enriched.template_fields
+              })
+              enriched.template_fields = []
+            }
+            templatesMap[enriched.id] = enriched
+            console.log('✅ [SECOND FETCH] Added template to map:', {
+              templateId: enriched.id,
+              templateName: enriched.name,
+              hasTemplateFields: !!enriched.template_fields,
+              templateFieldsCount: Array.isArray(enriched.template_fields) ? enriched.template_fields.length : 0
+            })
           })
         }
       }
       
       // Map tasks with templates
-      const tasksWithTemplates = data.map((task: any) => ({
-        ...task,
-        template: task.template_id ? templatesMap[task.template_id] : null
-      }))
+      const tasksWithTemplates = data.map((task: any) => {
+        const template = task.template_id ? templatesMap[task.template_id] : null
+        // CRITICAL DEBUG: Log template attachment to verify it's working
+        if (template) {
+          console.log('✅ [TEMPLATE ATTACHMENT] Template attached:', {
+            taskId: task.id,
+            templateId: template.id,
+            templateName: template.name,
+            hasTemplateFields: !!template.template_fields,
+            templateFieldsCount: Array.isArray(template.template_fields) ? template.template_fields.length : 0
+          })
+        } else if (task.template_id) {
+          console.error('❌ [TEMPLATE ATTACHMENT] Template NOT found:', {
+            taskId: task.id,
+            templateId: task.template_id,
+            availableTemplateIds: Object.keys(templatesMap)
+          })
+        }
+        return {
+          ...task,
+          template: template
+        }
+      })
       
       // Filter out tasks with missing templates (orphaned tasks)
       const validTasks = tasksWithTemplates.filter(task => {
@@ -683,44 +761,30 @@ export default function DailyChecklistPage() {
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
+      // IMPORTANT: Do NOT filter by site_id - if a task has a completion record, it's completed regardless of site
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
       
       if (allTaskIds.length > 0) {
-        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
+        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')')
         
-        // Try fetching WITHOUT site_id filter first to see if that's the issue
-        let completionQuery = supabase
+        // Fetch ALL completion records for these tasks - do NOT filter by site_id
+        // A task is completed if it has ANY completion record, regardless of site
+        const { data: completionRecords, error: completionError } = await supabase
           .from('task_completion_records')
           .select('*')
           .in('task_id', allTaskIds)
           .order('completed_at', { ascending: false })
         
-        // Filter by site_id if available (matches how we filter tasks)
-        // BUT: Also try without site_id filter if we get no results, in case site_id doesn't match
-        const { data: completionRecords, error: completionError } = await completionQuery
-        
         if (completionError) {
           console.error('❌ Error fetching completion records:', completionError)
           console.error('Error details:', JSON.stringify(completionError, null, 2))
         } else {
-          console.log('✅ Fetched completion records:', completionRecords?.length || 0)
+          allCompletionRecords = completionRecords || []
+          console.log('✅ Fetched completion records:', allCompletionRecords.length)
           
-          // Filter by site_id in JavaScript if needed (more permissive)
-          let filteredRecords = completionRecords || []
-          if (siteId && completionRecords) {
-            // Filter by site_id in JS, but also include records with null site_id
-            filteredRecords = completionRecords.filter(r => !r.site_id || r.site_id === siteId)
-            console.log('🔍 Filtered by site_id:', {
-              before: completionRecords.length,
-              after: filteredRecords.length,
-              siteId
-            })
-          }
-          
-          if (filteredRecords.length > 0) {
-            allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
+          if (allCompletionRecords.length > 0) {
+            console.log('📝 Completion records details:', allCompletionRecords.map(r => ({
               id: r.id,
               task_id: r.task_id,
               completed_at: r.completed_at,
@@ -728,15 +792,6 @@ export default function DailyChecklistPage() {
               site_id: r.site_id,
               completed_by: r.completed_by
             })))
-          } else {
-            // This is normal for pending tasks - only log if we expected records but they were filtered out
-            if (completionRecords && completionRecords.length > 0) {
-              console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
-                task_id: r.task_id,
-                site_id: r.site_id,
-                expected_site_id: siteId
-              })))
-            }
           }
         }
       }
@@ -841,7 +896,25 @@ export default function DailyChecklistPage() {
       console.log('✅ Filtered tasks:', {
         before: tasksWithProfiles.length,
         after: activeTasks.length,
-        filteredOut: tasksWithProfiles.length - activeTasks.length
+        filteredOut: tasksWithProfiles.length - activeTasks.length,
+        allCompletionRecordsCount: allCompletionRecords.length,
+        tasksWithCompletionRecordsCount: tasksWithCompletionRecords.size,
+        tasksCompletedWithoutDaypartCount: tasksCompletedWithoutDaypart.size,
+        completedDaypartsMapSize: completedDaypartsMap.size,
+        sampleFilteredTasks: activeTasks.slice(0, 3).map(t => ({
+          id: t.id,
+          status: t.status,
+          daypart: t.daypart,
+          templateName: t.template?.name
+        })),
+        sampleFilteredOutTasks: tasksWithProfiles.filter(t => !activeTasks.includes(t)).slice(0, 3).map(t => ({
+          id: t.id,
+          status: t.status,
+          daypart: t.daypart,
+          templateName: t.template?.name,
+          hasCompletionRecord: tasksWithCompletionRecords.has(t.id),
+          hasCompletedAt: !!(t.completed_at && t.completed_at !== null)
+        }))
       })
       
       // Create one entry per completion record (not just one per task)
@@ -853,7 +926,9 @@ export default function DailyChecklistPage() {
           
           return {
             ...task,
-            completion_record: record
+            completion_record: record,
+            // CRITICAL: Explicitly preserve template to ensure it's not lost
+            template: task.template
           }
         })
         .filter((task): task is ChecklistTaskWithTemplate & { completion_record: any } => task !== null)
@@ -921,7 +996,8 @@ export default function DailyChecklistPage() {
       
       setTasks(activeTasks)
       setCompletedTasks(completedTasksWithRecords)
-      await loadBreachActions()
+      // NOTE: loadBreachActions is called separately on initial load and after task completion
+      // Don't call it here to avoid unnecessary queries on every task refresh
     } catch (error: any) {
       // Enhanced error logging with better serialization
       const errorDetails: any = {
@@ -957,7 +1033,7 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }, [companyId, siteId, loadBreachActions]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks - removed loadBreachActions to avoid unnecessary calls
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
@@ -969,6 +1045,7 @@ export default function DailyChecklistPage() {
     if (companyId) {
       fetchTodaysTasks()
       fetchUpcomingTasks()
+      // Only load breach actions on initial page load, not on every task refresh
       loadBreachActions()
     } else {
       setLoading(false)
@@ -1184,6 +1261,23 @@ export default function DailyChecklistPage() {
                 key={key}
                 task={task}
                 onClick={() => {
+                  // CRITICAL: Verify template is attached before setting selectedTask
+                  console.log('🖱️ [TASK CLICK] Task clicked:', {
+                    taskId: task.id,
+                    templateId: task.template_id,
+                    hasTemplate: !!task.template,
+                    templateName: task.template?.name,
+                    hasTemplateFields: !!task.template?.template_fields,
+                    templateFieldsType: typeof task.template?.template_fields,
+                    templateFieldsIsArray: Array.isArray(task.template?.template_fields),
+                    templateFieldsCount: Array.isArray(task.template?.template_fields) ? task.template.template_fields.length : 0,
+                    templateFields: task.template?.template_fields
+                  })
+                  // Set window.selectedTask for debugging
+                  if (typeof window !== 'undefined') {
+                    (window as any).selectedTask = task
+                  }
+                  
                   setSelectedTask(task)
                   setShowCompletion(true)
                 }}
@@ -1206,6 +1300,11 @@ export default function DailyChecklistPage() {
                   key={uniqueKey}
                   task={task}
                   onClick={() => {
+                    // Set window.selectedTask for debugging
+                    if (typeof window !== 'undefined') {
+                      (window as any).selectedTask = task
+                    }
+                    
                     setSelectedTask(task)
                     setShowCompletion(true)
                   }}
