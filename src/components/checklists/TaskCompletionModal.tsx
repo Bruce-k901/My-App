@@ -81,6 +81,16 @@ export default function TaskCompletionModal({
       let taskData: Record<string, any> = {};
       if (task.task_data && typeof task.task_data === 'object') {
         taskData = task.task_data;
+        console.log('📦 [TASK DATA] Loaded task_data:', {
+          keys: Object.keys(taskData),
+          selectedAssets: taskData.selectedAssets,
+          selectedAssetsCount: Array.isArray(taskData.selectedAssets) ? taskData.selectedAssets.length : 0,
+          repeatableField: task.template?.repeatable_field_name,
+          repeatableFieldValue: taskData[task.template?.repeatable_field_name || ''],
+          repeatableFieldValueCount: Array.isArray(taskData[task.template?.repeatable_field_name || '']) ? taskData[task.template?.repeatable_field_name || ''].length : 0,
+          temperatures: taskData.temperatures,
+          temperaturesCount: Array.isArray(taskData.temperatures) ? taskData.temperatures.length : 0
+        })
       } else if (task.completion_notes) {
         // Fallback: try loading from completion_notes (for backwards compatibility)
         try {
@@ -91,6 +101,8 @@ export default function TaskCompletionModal({
         } catch (e) {
           // Not JSON, treat as regular completion notes
         }
+      } else {
+        console.warn('⚠️ [TASK DATA] No task_data found for task:', task.id)
       }
       
       // Initialize form data with task data FIRST (before loading template fields)
@@ -202,14 +214,30 @@ export default function TaskCompletionModal({
       // This ensures template fields are available when temperature ranges are loaded
       // Temperature range loading depends on template fields for equipment field lookups
       const initialize = async () => {
+        // DEBUG: Log task.template state at the start
+        console.log('🔍 [INITIALIZE] Starting initialization:', {
+          taskId: task.id,
+          templateId: task.template_id,
+          hasTemplate: !!task.template,
+          templateName: task.template?.name,
+          templateSlug: task.template?.slug,
+          hasTemplateFields: !!(task.template?.template_fields),
+          templateFieldsType: typeof task.template?.template_fields,
+          templateFieldsIsArray: Array.isArray(task.template?.template_fields),
+          templateFieldsLength: Array.isArray(task.template?.template_fields) ? task.template.template_fields.length : 'N/A',
+          templateFieldsRaw: task.template?.template_fields
+        })
+        
         // Step 1: Load template fields FIRST (required for temperature range loading)
         let loadedFields: any[] = []
         
         // CRITICAL: Check for pre-loaded template fields FIRST (from Today's Tasks page)
         // This is the fastest path and avoids unnecessary database queries
-        if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
-          console.log('📋 [TEMPLATE FIELDS] Using pre-loaded template fields from task.template:', task.template.template_fields.length)
-          loadedFields = [...task.template.template_fields].sort((a: any, b: any) => (a.field_order || 0) - (b.field_order || 0))
+        const preLoadedFields = task.template?.template_fields
+        if (preLoadedFields && Array.isArray(preLoadedFields) && preLoadedFields.length > 0) {
+          console.log('📋 [TEMPLATE FIELDS] Using pre-loaded template fields from task.template:', preLoadedFields.length)
+          console.log('   Field names:', preLoadedFields.map((f: any) => f.field_name || f.fieldName || 'unknown'))
+          loadedFields = [...preLoadedFields].sort((a: any, b: any) => (a.field_order || a.fieldOrder || 0) - (b.field_order || b.fieldOrder || 0))
           // CRITICAL: Set state immediately and synchronously
           setTemplateFields(loadedFields)
           console.log('✅ [TEMPLATE FIELDS] State set with', loadedFields.length, 'pre-loaded fields')
@@ -864,15 +892,40 @@ export default function TaskCompletionModal({
       }
 
       // SAFEGUARD 3: Also load ranges for assets referenced in repeatable fields (equipment lists) - legacy support
-      const currentFields = templateFields.length > 0 ? templateFields : await (async () => {
+      // CRITICAL: First check task.template.template_fields, then templateFields state, then fetch from DB
+      let currentFields: any[] = []
+      
+      // Priority 1: Check task.template.template_fields (pre-loaded)
+      if (task.template?.template_fields && Array.isArray(task.template.template_fields) && task.template.template_fields.length > 0) {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Using pre-loaded template_fields from task.template for asset lookup')
+        currentFields = task.template.template_fields
+      }
+      // Priority 2: Check templateFields state
+      else if (templateFields.length > 0) {
+        console.log('🌡️ [TEMPERATURE SYSTEM] Using templateFields state for asset lookup')
+        currentFields = templateFields
+      }
+      // Priority 3: Fetch from database as last resort
+      else {
         console.log('🌡️ [TEMPERATURE SYSTEM] Fetching template fields for asset lookup...')
-        const { data } = await supabase
-          .from('template_fields')
-          .select('*')
-          .eq('template_id', task.template_id)
-          .order('field_order')
-        return data || []
-      })()
+        try {
+          const { data, error } = await supabase
+            .from('template_fields')
+            .select('*')
+            .eq('template_id', task.template_id)
+            .order('field_order')
+          
+          if (error) {
+            console.error('❌ [TEMPERATURE SYSTEM] Error fetching template fields:', error)
+          } else {
+            currentFields = data || []
+            console.log('🌡️ [TEMPERATURE SYSTEM] Fetched', currentFields.length, 'template fields for asset lookup')
+          }
+        } catch (error) {
+          console.error('❌ [TEMPERATURE SYSTEM] Exception fetching template fields:', error)
+          currentFields = []
+        }
+      }
       
       const equipmentField = currentFields.find((f: any) => 
         f.field_type === 'select' && 

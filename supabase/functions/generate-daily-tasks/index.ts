@@ -118,9 +118,21 @@ Deno.serve(async (req) => {
       // ========================================================================
       // 2. POPULATE EQUIPMENT/ASSET DATA
       // ========================================================================
+      console.log('🔧 [EDGE FUNCTION] Processing equipment_config:', {
+        hasEquipmentConfig: !!params.equipmentConfig,
+        equipmentConfigType: typeof params.equipmentConfig,
+        equipmentConfigIsArray: Array.isArray(params.equipmentConfig),
+        equipmentConfigLength: Array.isArray(params.equipmentConfig) ? params.equipmentConfig.length : 'N/A',
+        templateId: params.templateId,
+        templateName: params.template?.name,
+        repeatableFieldName: params.template?.repeatable_field_name
+      })
+      
       if (params.equipmentConfig && Array.isArray(params.equipmentConfig) && params.equipmentConfig.length > 0) {
         // Handle both cases: array of IDs (strings) or array of objects
         const isArrayOfIds = typeof params.equipmentConfig[0] === 'string';
+        
+        console.log('🔧 [EDGE FUNCTION] Equipment config is array of IDs:', isArrayOfIds, 'length:', params.equipmentConfig.length)
         
         // Extract selected asset IDs
         const selectedAssets = isArrayOfIds
@@ -128,6 +140,11 @@ Deno.serve(async (req) => {
           : params.equipmentConfig
               .map((item: any) => item.id || item.asset_id || item.value || (typeof item === 'string' ? item : null))
               .filter(Boolean);
+        
+        console.log('🔧 [EDGE FUNCTION] Extracted selectedAssets:', {
+          count: selectedAssets.length,
+          assets: selectedAssets.slice(0, 5) // Log first 5
+        })
         
         if (selectedAssets.length > 0) {
           taskData.selectedAssets = selectedAssets;
@@ -155,6 +172,11 @@ Deno.serve(async (req) => {
               asset_name: item.name || item.equipment || null
             }));
           }
+          
+          console.log('🔧 [EDGE FUNCTION] Mapped to repeatable field:', {
+            fieldName: repeatableFieldName,
+            count: taskData[repeatableFieldName]?.length || 0
+          })
         }
         
         // Preserve any other fields from equipment_config (only if it's an array of objects)
@@ -169,6 +191,13 @@ Deno.serve(async (req) => {
             }));
           }
         }
+      } else {
+        console.warn('⚠️ [EDGE FUNCTION] No equipment_config or equipment_config is empty:', {
+          hasEquipmentConfig: !!params.equipmentConfig,
+          equipmentConfigType: typeof params.equipmentConfig,
+          equipmentConfigIsArray: Array.isArray(params.equipmentConfig),
+          equipmentConfigLength: Array.isArray(params.equipmentConfig) ? params.equipmentConfig.length : 'N/A'
+        })
       }
       
       // ========================================================================
@@ -198,6 +227,25 @@ Deno.serve(async (req) => {
       if (Object.keys(taskData).length === 0) {
         taskData = null;
       }
+      
+      // DEBUG: Log what we're about to save
+      console.log('💾 [EDGE FUNCTION] Creating task with task_data:', {
+        templateId: params.templateId,
+        templateName: params.template?.name,
+        hasTaskData: !!taskData,
+        taskDataKeys: taskData ? Object.keys(taskData) : [],
+        selectedAssets: taskData?.selectedAssets,
+        selectedAssetsCount: Array.isArray(taskData?.selectedAssets) ? taskData.selectedAssets.length : 0,
+        repeatableField: params.template?.repeatable_field_name,
+        repeatableFieldValue: taskData?.[params.template?.repeatable_field_name || ''],
+        repeatableFieldValueCount: Array.isArray(taskData?.[params.template?.repeatable_field_name || '']) ? taskData[params.template?.repeatable_field_name || ''].length : 0,
+        checklistItems: taskData?.checklistItems,
+        checklistItemsCount: Array.isArray(taskData?.checklistItems) ? taskData.checklistItems.length : 0,
+        yesNoChecklistItems: taskData?.yesNoChecklistItems,
+        yesNoChecklistItemsCount: Array.isArray(taskData?.yesNoChecklistItems) ? taskData.yesNoChecklistItems.length : 0,
+        temperatures: taskData?.temperatures,
+        temperaturesCount: Array.isArray(taskData?.temperatures) ? taskData.temperatures.length : 0
+      })
       
       const { error } = await supabase.from("checklist_tasks").insert({
         site_checklist_id: params.siteChecklistId,

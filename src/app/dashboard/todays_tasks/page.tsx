@@ -854,25 +854,41 @@ export default function DailyChecklistPage() {
           
           if (filteredRecords.length > 0) {
             allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
-              id: r.id,
-              task_id: r.task_id,
-              completed_at: r.completed_at,
-              company_id: r.company_id,
-              site_id: r.site_id,
-              completed_by: r.completed_by
-            })))
+            console.log('📝 Completion records details:', {
+              total: filteredRecords.length,
+              records: filteredRecords.map(r => ({
+                id: r.id,
+                task_id: r.task_id,
+                completed_at: r.completed_at,
+                completedDate: r.completed_at ? new Date(r.completed_at).toISOString().split('T')[0] : 'N/A',
+                company_id: r.company_id,
+                site_id: r.site_id,
+                completed_by: r.completed_by,
+                completed_daypart: r.completion_data?.completed_daypart || 'N/A'
+              }))
+            })
           } else {
             // This is normal for pending tasks - only log if we expected records but they were filtered out
             if (completionRecords && completionRecords.length > 0) {
-              console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
-                task_id: r.task_id,
-                site_id: r.site_id,
-                expected_site_id: siteId
-              })))
+              console.warn('⚠️ Records exist but were filtered out:', {
+                totalBeforeFilter: completionRecords.length,
+                totalAfterFilter: filteredRecords.length,
+                filteredOut: completionRecords.length - filteredRecords.length,
+                sampleFilteredOut: completionRecords.filter(r => !filteredRecords.includes(r)).slice(0, 3).map(r => ({
+                  task_id: r.task_id,
+                  site_id: r.site_id,
+                  expected_site_id: siteId,
+                  completed_at: r.completed_at,
+                  completedDate: r.completed_at ? new Date(r.completed_at).toISOString().split('T')[0] : 'N/A'
+                }))
+              })
+            } else {
+              console.log('ℹ️ No completion records found for today (this is normal for pending tasks)')
             }
           }
         }
+      } else {
+        console.log('ℹ️ No task IDs to check for completion records')
       }
       
       // Build a map of completed dayparts per task
@@ -1038,7 +1054,25 @@ export default function DailyChecklistPage() {
       console.log('✅ Filtered tasks:', {
         before: tasksWithProfiles.length,
         after: activeTasks.length,
-        filteredOut: tasksWithProfiles.length - activeTasks.length
+        filteredOut: tasksWithProfiles.length - activeTasks.length,
+        allCompletionRecordsCount: allCompletionRecords.length,
+        tasksWithCompletionRecordsCount: tasksWithCompletionRecords.size,
+        tasksCompletedWithoutDaypartCount: tasksCompletedWithoutDaypart.size,
+        completedDaypartsMapSize: completedDaypartsMap.size,
+        sampleFilteredTasks: activeTasks.slice(0, 3).map(t => ({
+          id: t.id,
+          status: t.status,
+          daypart: t.daypart,
+          templateName: t.template?.name
+        })),
+        sampleFilteredOutTasks: tasksWithProfiles.filter(t => !activeTasks.includes(t)).slice(0, 3).map(t => ({
+          id: t.id,
+          status: t.status,
+          daypart: t.daypart,
+          templateName: t.template?.name,
+          hasCompletionRecord: tasksWithCompletionRecords.has(t.id),
+          hasCompletedAt: !!(t.completed_at && t.completed_at !== null)
+        }))
       })
       
       // Create one entry per completion record (not just one per task)
