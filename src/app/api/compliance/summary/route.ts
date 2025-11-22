@@ -28,44 +28,67 @@ export async function GET(request: NextRequest) {
       supabase = getSupabaseAdmin();
     } catch (initError: any) {
       console.error("Failed to initialize Supabase admin client:", initError);
-      return NextResponse.json(
-        { 
-          error: "Database configuration error",
-          details: initError?.message || "Failed to initialize database connection",
-          tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
-          range: {
-            from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-            to: new Date().toISOString().split("T")[0],
-            days: 30,
-          },
-          tenant: {
-            overview: null,
-            sites: [],
-          },
-          site: null,
+      // Return 200 with empty data instead of 500 to prevent UI breaking
+      // The widget will display "No data available" instead of showing an error
+      const tenantId = request.nextUrl.searchParams.get("tenant_id");
+      const siteId = request.nextUrl.searchParams.get("site_id");
+      const toDate = new Date();
+      const fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      
+      return NextResponse.json({
+        tenant_id: tenantId ?? null,
+        range: {
+          from: fromDate.toISOString().split("T")[0],
+          to: toDate.toISOString().split("T")[0],
+          days: 30,
         },
-        { status: 500 },
-      );
+        tenant: {
+          overview: null,
+          sites: [],
+        },
+        site: siteId
+          ? {
+              site_id: siteId,
+              latest: null,
+              history: [],
+            }
+          : null,
+        _error: {
+          message: "Database configuration error",
+          details: initError?.message || "Failed to initialize database connection",
+        },
+      });
     }
 
     if (!supabase) {
-      return NextResponse.json(
-        { 
-          error: "Database client not initialized",
-          tenant_id: request.nextUrl.searchParams.get("tenant_id") ?? null,
-          range: {
-            from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-            to: new Date().toISOString().split("T")[0],
-            days: 30,
-          },
-          tenant: {
-            overview: null,
-            sites: [],
-          },
-          site: null,
+      // Return 200 with empty data instead of 500 to prevent UI breaking
+      const tenantId = request.nextUrl.searchParams.get("tenant_id");
+      const siteId = request.nextUrl.searchParams.get("site_id");
+      const toDate = new Date();
+      const fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      
+      return NextResponse.json({
+        tenant_id: tenantId ?? null,
+        range: {
+          from: fromDate.toISOString().split("T")[0],
+          to: toDate.toISOString().split("T")[0],
+          days: 30,
         },
-        { status: 500 },
-      );
+        tenant: {
+          overview: null,
+          sites: [],
+        },
+        site: siteId
+          ? {
+              site_id: siteId,
+              latest: null,
+              history: [],
+            }
+          : null,
+        _error: {
+          message: "Database client not initialized",
+        },
+      });
     }
 
     const tenantId = request.nextUrl.searchParams.get("tenant_id");
@@ -294,15 +317,18 @@ export async function GET(request: NextRequest) {
         : null,
     });
   } catch (error: any) {
-    console.error("Compliance summary error", {
+    console.error("❌ Compliance summary error", {
       error,
       message: error?.message,
       stack: error?.stack,
       details: error?.details,
       hint: error?.hint,
       code: error?.code,
+      name: error?.name,
       tenant_id: request.nextUrl.searchParams.get("tenant_id"),
       site_id: request.nextUrl.searchParams.get("site_id"),
+      hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
+      serviceKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 15) || process.env.SUPABASE_SERVICE_ROLE?.substring(0, 15) || 'MISSING',
     });
     
     // Return 200 with empty data instead of 500 to prevent widget errors
@@ -330,6 +356,10 @@ export async function GET(request: NextRequest) {
             history: [],
           }
         : null,
+      _error: {
+        message: error?.message || "Unknown error",
+        code: error?.code,
+      },
     });
   }
 }
