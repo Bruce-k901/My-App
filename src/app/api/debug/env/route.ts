@@ -5,34 +5,87 @@ import { NextResponse } from "next/server";
  * This helps diagnose why NEXT_PUBLIC_* variables might not be working
  */
 export async function GET() {
-  // Server-side check
+  // Server-side check - comprehensive diagnostic
+  const allEnvKeys = Object.keys(process.env).sort();
+  const nextPublicVars = allEnvKeys.filter((k) => k.startsWith("NEXT_PUBLIC_"));
+  const supabaseVars = allEnvKeys.filter((k) => k.includes("SUPABASE"));
+  
   const serverEnv = {
-    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "NOT SET",
-    hasVapidKey: !!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-    vapidKeyLength: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.length || 0,
-    allNextPublicVars: Object.keys(process.env)
-      .filter((k) => k.startsWith("NEXT_PUBLIC_"))
-      .sort(),
-    nodeEnv: process.env.NODE_ENV,
-    vercelEnv: process.env.VERCEL_ENV,
+    // VAPID Key
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: {
+      exists: !!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      value: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY 
+        ? `${process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.substring(0, 20)}...` 
+        : "NOT SET",
+      length: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.length || 0,
+      expectedLength: 87,
+    },
+    // Service Role Key
+    SUPABASE_SERVICE_ROLE_KEY: {
+      exists: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      value: process.env.SUPABASE_SERVICE_ROLE_KEY 
+        ? `${process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 20)}...` 
+        : "NOT SET",
+      length: process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0,
+      startsWithEyJ: process.env.SUPABASE_SERVICE_ROLE_KEY?.startsWith("eyJ") || false,
+    },
+    // Alternative names
+    SUPABASE_SERVICE_ROLE: {
+      exists: !!process.env.SUPABASE_SERVICE_ROLE,
+      value: process.env.SUPABASE_SERVICE_ROLE 
+        ? `${process.env.SUPABASE_SERVICE_ROLE.substring(0, 20)}...` 
+        : "NOT SET",
+    },
+    // Environment info
+    environment: {
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL: process.env.VERCEL,
+    },
+    // All related variables
+    allNextPublicVars: nextPublicVars,
+    allSupabaseVars: supabaseVars,
+    totalEnvVars: allEnvKeys.length,
   };
+
+  // Determine issues
+  const issues = [];
+  if (!serverEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY.exists) {
+    issues.push("NEXT_PUBLIC_VAPID_PUBLIC_KEY is not set on server");
+  }
+  if (!serverEnv.SUPABASE_SERVICE_ROLE_KEY.exists && !serverEnv.SUPABASE_SERVICE_ROLE.exists) {
+    issues.push("SUPABASE_SERVICE_ROLE_KEY is not set on server");
+  }
+  if (serverEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY.exists && serverEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY.length !== 87) {
+    issues.push(`NEXT_PUBLIC_VAPID_PUBLIC_KEY has wrong length: ${serverEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY.length} (expected 87)`);
+  }
+  if (serverEnv.SUPABASE_SERVICE_ROLE_KEY.exists && !serverEnv.SUPABASE_SERVICE_ROLE_KEY.startsWithEyJ) {
+    issues.push("SUPABASE_SERVICE_ROLE_KEY doesn't start with 'eyJ' - might be wrong key type");
+  }
 
   return NextResponse.json({
     message: "Environment variable debug info",
     server: serverEnv,
-    note: "This shows server-side env vars. Client-side vars are embedded at build time.",
+    issues: issues.length > 0 ? issues : ["No issues detected"],
+    note: "This shows server-side env vars. NEXT_PUBLIC_* vars are embedded at build time for client.",
     troubleshooting: {
-      ifVapidKeyNotSet: [
+      ifBothKeysMissing: [
         "1. Check Vercel Settings → Environment Variables",
-        "2. Verify variable name is exactly: NEXT_PUBLIC_VAPID_PUBLIC_KEY",
-        "3. Check all environments are selected (Production, Preview, Development)",
-        "4. Redeploy after adding/updating the variable",
-        "5. Check Vercel build logs for any warnings about env vars",
+        "2. Verify you're checking the correct environment (Production vs Preview)",
+        "3. Check Vercel build logs for env var warnings",
+        "4. Try deleting and re-adding the variables",
+        "5. Ensure all environments are selected (Production, Preview, Development)",
       ],
-      ifVapidKeySetButNotWorking: [
-        "1. Clear browser cache and hard refresh",
-        "2. Check browser console for client-side debug logs",
-        "3. Verify the value matches exactly (no quotes, no spaces)",
+      ifKeysSetButNotWorking: [
+        "1. Check which environment you're testing (Production/Preview)",
+        "2. Verify variables are set for that specific environment",
+        "3. Check for typos in variable names",
+        "4. Check for extra characters (quotes, spaces) in values",
+        "5. Clear Vercel build cache and redeploy",
+      ],
+      environmentMismatch: [
+        "If testing on Preview but variables only set for Production, they won't work.",
+        "Solution: Set variables for ALL environments (Production, Preview, Development)",
       ],
     },
   });
