@@ -2,61 +2,46 @@
 
 ## Overview
 
-This document explains how to set up **automated task generation** that runs every day at **3:00 AM UTC** to populate today's tasks.
+This document explains how to set up **automated task generation** that runs every day at **3:00 AM UTC** to populate today's tasks using Supabase Edge Functions.
 
-## Two Approaches
+## Recommended Approach: Database-Level Scheduling via pg_cron
 
-### Option 1: Supabase Dashboard Scheduling (Recommended)
+This method uses `pg_cron` within your database to trigger the Edge Function. This is robust and keeps the schedule definition in your database.
 
-Supabase has built-in scheduling for Edge Functions. This is the easiest and most reliable method.
+### Prerequisites
 
-#### Steps:
+1.  **Enable Extensions**: Ensure `pg_cron` and `pg_net` are enabled in your Supabase project.
+2.  **Get Service Role Key**: Find this in your Supabase Dashboard > Project Settings > API.
 
-1. **Deploy the Edge Function** (if not already deployed):
+### Steps
 
-   ```bash
-   supabase functions deploy generate-daily-tasks
-   ```
+1.  **Run the following SQL in your Supabase SQL Editor**:
 
-2. **Set up Schedule in Supabase Dashboard**:
-   - Go to your Supabase Dashboard
-   - Navigate to **Edge Functions** → **generate-daily-tasks**
-   - Click **"Schedule"** or **"Add Schedule"**
-   - Configure:
-     - **Name**: `daily-task-generation`
-     - **Cron Expression**: `0 3 * * *` (3:00 AM UTC every day)
-     - **Authorization**: `Bearer YOUR_SERVICE_ROLE_KEY`
-     - **Method**: `POST`
-   - Click **"Save"**
+```sql
+-- 1. Enable required extensions
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
 
-3. **Verify**:
-   - The schedule will appear in the Edge Functions schedules list
-   - Check the function logs after 3am to verify it ran
+-- 2. Schedule the Edge Function
+-- REPLACE [YOUR_SERVICE_ROLE_KEY] below with your actual secret key
+select cron.schedule(
+  'generate-daily-tasks-edge-function', -- Job name
+  '0 3 * * *',                          -- Schedule (3:00 AM UTC)
+  $$
+  select
+    net.http_post(
+        url:='https://xijoybubtrgbrhquqwrx.supabase.co/functions/v1/generate-daily-tasks',
+        headers:='{"Content-Type": "application/json", "Authorization": "Bearer [YOUR_SERVICE_ROLE_KEY]"}'::jsonb,
+        body:='{}'::jsonb
+    ) as request_id;
+  $$
+);
+```
 
-### Option 2: Database-Level pg_cron (Alternative)
-
-If pg_cron extension is enabled in your Supabase project, you can use the SQL migration.
-
-#### Steps:
-
-1. **Run the migration**:
-
-   ```bash
-   supabase db push
-   ```
-
-   Or manually run: `supabase/migrations/20250202000003_setup_task_generation_cron.sql`
-
-2. **Verify cron job exists**:
-
-   ```sql
-   SELECT * FROM cron.job WHERE jobname = 'generate-daily-tasks-cron';
-   ```
-
-3. **Test manually** (optional):
-   ```sql
-   SELECT generate_daily_tasks_direct();
-   ```
+2.  **Verify**:
+    ```sql
+    select * from cron.job;
+    ```
 
 ## What the Automation Does
 
