@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
     // This avoids the deployment and auth issues with Edge Functions
 
     // 1. Fetch report data
+    console.log("Fetching report data...");
     const { data: reportData, error: reportError } = await supabase.rpc(
       "get_eho_report_data",
       {
@@ -119,11 +120,13 @@ export async function POST(request: NextRequest) {
     );
 
     if (reportError) {
+      console.error("Error fetching report data:", reportError);
       throw new Error(`Failed to fetch report data: ${reportError.message}`);
     }
 
     // 2. Fetch compliance summary
-    const { data: summaryData } = await supabase.rpc(
+    console.log("Fetching compliance summary...");
+    const { data: summaryData, error: summaryError } = await supabase.rpc(
       "get_compliance_summary",
       {
         p_site_id: siteId,
@@ -131,6 +134,11 @@ export async function POST(request: NextRequest) {
         p_end_date: endDate,
       },
     );
+
+    if (summaryError) {
+      console.error("Error fetching compliance summary:", summaryError);
+      // Don't throw here, just log it, so we can see if other parts work
+    }
 
     // 3. Fetch site info
     const { data: siteData } = await supabase
@@ -151,6 +159,23 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Fetch extended data in parallel
+    console.log("Fetching extended data...");
+
+    // Helper to safely fetch data without crashing the whole request
+    const safeRpc = async (name: string, params: any) => {
+      try {
+        const { data, error } = await supabase.rpc(name, params);
+        if (error) {
+          console.error(`Error calling RPC ${name}:`, error);
+          return { data: [] };
+        }
+        return { data: data || [] };
+      } catch (e) {
+        console.error(`Exception calling RPC ${name}:`, e);
+        return { data: [] };
+      }
+    };
+
     const [
       trainingRecords,
       temperatureRecords,
@@ -163,52 +188,52 @@ export async function POST(request: NextRequest) {
       staffHealthDeclarations,
       allergenInformation,
     ] = await Promise.all([
-      supabase.rpc("get_eho_training_records", {
+      safeRpc("get_eho_training_records", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_temperature_records", {
+      safeRpc("get_eho_temperature_records", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_incident_reports", {
+      safeRpc("get_eho_incident_reports", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_cleaning_records", {
+      safeRpc("get_eho_cleaning_records", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_pest_control_records", {
+      safeRpc("get_eho_pest_control_records", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_opening_closing_checklists", {
+      safeRpc("get_eho_opening_closing_checklists", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_supplier_delivery_records", {
+      safeRpc("get_eho_supplier_delivery_records", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_maintenance_logs", {
+      safeRpc("get_eho_maintenance_logs", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_staff_health_declarations", {
+      safeRpc("get_eho_staff_health_declarations", {
         p_site_id: siteId,
         p_start_date: startDate,
         p_end_date: endDate,
       }),
-      supabase.rpc("get_eho_allergen_information", {
+      safeRpc("get_eho_allergen_information", {
         p_site_id: siteId,
       }),
     ]);
