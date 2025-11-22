@@ -9,8 +9,16 @@ async function getSupabaseClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (url && key) {
+    console.log("✅ Using Service Role Key for EHO Export");
     return createClient(url, key);
   }
+
+  console.log("🔍 Debug Env:", {
+    hasUrl: !!url,
+    hasKey: !!key,
+    keyPrefix: key ? key.substring(0, 5) + "..." : "missing",
+    env: process.env.VERCEL_ENV,
+  });
 
   console.warn(
     "⚠️ SUPABASE_SERVICE_ROLE_KEY missing, falling back to user session",
