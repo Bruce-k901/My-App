@@ -2,11 +2,20 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 
-  if (!url || !key) {
-    throw new Error("Supabase credentials are not configured");
+  if (!url) {
+    throw new Error("Supabase URL is not configured (NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL)");
+  }
+
+  if (!key) {
+    throw new Error("Supabase service role key is not configured (SUPABASE_SERVICE_ROLE_KEY)");
+  }
+
+  // Guard against using publishable key
+  if (key.startsWith('sb_publishable_')) {
+    throw new Error("Invalid service role key: received publishable anon key. Use service_role key (starts with eyJ...)");
   }
 
   return createClient(url, key);

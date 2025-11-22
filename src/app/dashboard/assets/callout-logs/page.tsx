@@ -371,12 +371,22 @@ export default function CalloutLogsPage() {
               message: rpcError.message,
               code: rpcError.code,
               details: rpcError.details,
-              hint: rpcError.hint
+              hint: rpcError.hint,
+              calloutId: editingCallout.id,
+              hasRepairSummary: !!updateData.repair_summary,
+              documentsCount: allDocuments?.length || 0
             });
-            // If RPC fails, fall through to direct update
+            
+            // If it's a 400 error, it might be a parameter issue or function doesn't exist
+            // Fall through to direct update which should work
+            if (rpcError.code === 'P0001' || rpcError.message?.includes('not found') || rpcError.message?.includes('authenticated')) {
+              console.warn('RPC function issue detected, using direct update fallback');
+            }
             useDirectUpdate = true;
           } else {
             console.log('Callout closed successfully via RPC:', rpcData);
+            // RPC succeeded, skip direct update
+            useDirectUpdate = false;
           }
         } catch (rpcException: any) {
           console.log('RPC function exception, using direct update:', rpcException);

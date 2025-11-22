@@ -51,3 +51,6 @@ BEGIN
 END;
 $$;
 
+-- Grant execute permission to authenticated users
+GRANT EXECUTE ON FUNCTION close_callout(UUID, TEXT, JSONB) TO authenticated;
+
