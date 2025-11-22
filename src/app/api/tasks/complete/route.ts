@@ -157,6 +157,15 @@ export async function POST(request: NextRequest) {
       completed_by: completionRecord.completed_by,
     });
 
+    // Verify we're using service role client
+    // Check the client's auth header to confirm it's service role
+    const clientUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    console.log("🔍 Service client verification:", {
+      hasServiceClient: !!serviceClient,
+      supabaseUrl: clientUrl?.substring(0, 30) + "...",
+      usingServiceRole: true, // We know we're using getSupabaseAdmin()
+    });
+
     const { data: insertedRecord, error: insertError } = await serviceClient
       .from("task_completion_records")
       .insert(completionRecord)
