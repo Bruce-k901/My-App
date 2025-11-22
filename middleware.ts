@@ -7,6 +7,7 @@ export async function middleware(req: NextRequest) {
   
   // Explicitly skip middleware for static files and manifest
   // This ensures these files are never blocked, even if matcher pattern fails
+  // IMPORTANT: manifest.json route handler must be completely bypassed
   if (
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/api/') ||
@@ -15,6 +16,14 @@ export async function middleware(req: NextRequest) {
     pathname === '/favicon.ico' ||
     /\.(svg|png|jpg|jpeg|gif|webp|json|ico|woff|woff2|ttf|eot|css|js)$/.test(pathname)
   ) {
+    // For manifest.json, return immediately without any processing
+    if (pathname === '/manifest.json') {
+      return NextResponse.next({
+        headers: {
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
+    }
     return NextResponse.next();
   }
   
