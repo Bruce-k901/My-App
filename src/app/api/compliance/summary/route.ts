@@ -1,25 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
-
-  if (!url) {
-    throw new Error("Supabase URL is not configured (NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL)");
-  }
-
-  if (!key) {
-    throw new Error("Supabase service role key is not configured (SUPABASE_SERVICE_ROLE_KEY)");
-  }
-
-  // Guard against using publishable key
-  if (key.startsWith('sb_publishable_')) {
-    throw new Error("Invalid service role key: received publishable anon key. Use service_role key (starts with eyJ...)");
-  }
-
-  return createClient(url, key);
-}
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +7,15 @@ export async function GET(request: NextRequest) {
     try {
       supabase = getSupabaseAdmin();
     } catch (initError: any) {
-      console.error("Failed to initialize Supabase admin client:", initError);
+      console.error("Failed to initialize Supabase admin client:", {
+        error: initError,
+        message: initError?.message,
+        stack: initError?.stack,
+        hasUrl: !!(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL),
+        hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
+        serviceKeyPrefix: (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE)?.substring(0, 15) || 'MISSING',
+        environment: process.env.VERCEL_ENV || 'development',
+      });
       // Return 200 with empty data instead of 500 to prevent UI breaking
       // The widget will display "No data available" instead of showing an error
       const tenantId = request.nextUrl.searchParams.get("tenant_id");
