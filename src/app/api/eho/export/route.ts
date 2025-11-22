@@ -5,8 +5,21 @@ import { createServerClient } from "@supabase/ssr";
 
 async function getSupabaseClient() {
   // Try service role first
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
+
+  if (!url) {
+    throw new Error("Supabase URL is not configured (NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL)");
+  }
+
+  if (!key) {
+    throw new Error("Supabase service role key is not configured (SUPABASE_SERVICE_ROLE_KEY). This is required for EHO export.");
+  }
+
+  // Guard against using publishable key
+  if (key.startsWith('sb_publishable_')) {
+    throw new Error("Invalid service role key: received publishable anon key. Use service_role key (starts with eyJ...)");
+  }
 
   if (url && key) {
     console.log("✅ Using Service Role Key for EHO Export");
@@ -16,7 +29,8 @@ async function getSupabaseClient() {
   console.log("🔍 Debug Env:", {
     hasUrl: !!url,
     hasKey: !!key,
-    keyPrefix: key ? key.substring(0, 5) + "..." : "missing",
+    keyPrefix: key ? key.substring(0, 15) + "..." : "missing",
+    keyType: key?.startsWith('eyJ') ? 'JWT (CORRECT)' : key?.startsWith('sb_publishable_') ? 'PUBLISHABLE (WRONG!)' : 'UNKNOWN',
     env: process.env.VERCEL_ENV,
   });
 
@@ -108,20 +122,72 @@ export async function POST(request: NextRequest) {
     // This avoids the deployment and auth issues with Edge Functions
 
     // 1. Fetch report data
-    console.log("Fetching report data...");
-    const { data: reportData, error: reportError } = await supabase.rpc(
-      "get_eho_report_data",
-      {
-        p_site_id: siteId,
-        p_start_date: startDate,
-        p_end_date: endDate,
-        p_template_categories: categories || null,
-      },
-    );
+    console.log("Fetching report data...", {
+      siteId,
+      startDate,
+      endDate,
+      categories,
+      hasSupabaseClient: !!supabase,
+    });
+    
+    let reportData = null;
+    let reportError = null;
+    
+    try {
+      const result = await supabase.rpc(
+        "get_eho_report_data",
+        {
+          p_site_id: siteId,
+          p_start_date: startDate,
+          p_end_date: endDate,
+          p_template_categories: categories || null,
+        },
+      );
+      reportData = result.data;
+      reportError = result.error;
+    } catch (rpcException: any) {
+      console.error("Exception calling get_eho_report_data:", {
+        error: rpcException,
+        message: rpcException?.message,
+        code: rpcException?.code,
+        details: rpcException?.details,
+        hint: rpcException?.hint,
+      });
+      reportError = {
+        message: rpcException?.message || "RPC function call failed",
+        code: rpcException?.code || "P0001",
+        details: rpcException?.details,
+        hint: rpcException?.hint || "The get_eho_report_data function may not exist or may have an error",
+      };
+    }
 
     if (reportError) {
-      console.error("Error fetching report data:", reportError);
-      throw new Error(`Failed to fetch report data: ${reportError.message}`);
+      console.error("Error fetching report data:", {
+        error: reportError,
+        message: reportError.message,
+        code: reportError.code,
+        details: reportError.details,
+        hint: reportError.hint,
+        siteId,
+        startDate,
+        endDate,
+      });
+      
+      // Return a helpful error instead of throwing
+      return NextResponse.json(
+        {
+          error: "Failed to fetch report data",
+          details: reportError.message,
+          hint: reportError.hint || "The get_eho_report_data RPC function may not exist. Please check your database migrations.",
+          code: reportError.code,
+          troubleshooting: {
+            checkMigrations: "Run migration 20251111150000_create_eho_report_functions.sql",
+            checkPermissions: "Ensure GRANT EXECUTE was run on the function",
+            checkServiceRole: "Verify SUPABASE_SERVICE_ROLE_KEY is set in Vercel",
+          },
+        },
+        { status: 500 },
+      );
     }
 
     // 2. Fetch compliance summary
@@ -271,9 +337,28 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("EHO export error:", error);
+    console.error("❌ EHO export error:", {
+      error,
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint,
+      siteId: request.nextUrl.searchParams.get("site_id"),
+      startDate: request.nextUrl.searchParams.get("start_date"),
+      endDate: request.nextUrl.searchParams.get("end_date"),
+      hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
+      serviceKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 15) || process.env.SUPABASE_SERVICE_ROLE?.substring(0, 15) || 'MISSING',
+    });
+    
     return NextResponse.json(
-      { error: "Internal server error", details: error.message },
+      {
+        error: "Internal server error",
+        details: error?.message || "Unknown error occurred",
+        hint: error?.hint || "Check Vercel function logs for more details",
+        code: error?.code,
+      },
       { status: 500 },
     );
   }
