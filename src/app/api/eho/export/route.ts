@@ -120,8 +120,18 @@ export async function POST(request: NextRequest) {
 
     if (pdfError) {
       console.error("Error calling PDF Edge Function:", pdfError);
+      // Log the full error object to see if there's more info
+      console.error(
+        "Full PDF Error Object:",
+        JSON.stringify(pdfError, null, 2),
+      );
+
       return NextResponse.json(
-        { error: "Failed to generate PDF", details: pdfError.message },
+        {
+          error: "Failed to generate PDF",
+          details: pdfError.message || "Unknown error from Edge Function",
+          rawError: pdfError,
+        },
         { status: 500 },
       );
     }
