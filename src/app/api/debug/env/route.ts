@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 /**
  * Debug endpoint to check what environment variables are available
  * This helps diagnose why NEXT_PUBLIC_* variables might not be working
+ * 
+ * Access this at: https://YOUR-VERCEL-URL.vercel.app/api/debug/env
+ * Or on your custom domain: https://yourdomain.com/api/debug/env
  */
 export async function GET() {
   // Server-side check - comprehensive diagnostic
