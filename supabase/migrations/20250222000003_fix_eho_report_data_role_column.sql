@@ -43,7 +43,11 @@ BEGIN
     tt.slug AS template_slug,
     tcr.completed_at,
     p.full_name AS completed_by_name,
-    COALESCE(p.app_role, p.role)::text AS completed_by_role, -- Use app_role, fallback to role
+    COALESCE(
+      NULLIF(p.app_role::text, ''),
+      NULLIF(p.role::text, ''),
+      'Unknown'
+    ) AS completed_by_role, -- Use app_role first, fallback to role, then 'Unknown'
     ct.due_date,
     ct.due_time,
     ct.daypart,
@@ -55,7 +59,11 @@ BEGIN
   FROM public.task_completion_records tcr
   INNER JOIN public.checklist_tasks ct ON ct.id = tcr.task_id
   LEFT JOIN public.task_templates tt ON tt.id = tcr.template_id
-  LEFT JOIN public.profiles p ON p.id = tcr.completed_by OR p.auth_user_id = tcr.completed_by
+  LEFT JOIN public.profiles p ON (
+    p.id = tcr.completed_by 
+    OR p.auth_user_id = tcr.completed_by
+    OR (p.id::text = tcr.completed_by::text)
+  )
   WHERE tcr.site_id = p_site_id
     AND tcr.completed_at::date >= p_start_date
     AND tcr.completed_at::date <= p_end_date

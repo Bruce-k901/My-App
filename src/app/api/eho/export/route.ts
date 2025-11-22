@@ -76,8 +76,18 @@ async function getSupabaseClient() {
  * - include_missed: boolean (optional)
  */
 export async function POST(request: NextRequest) {
+  const requestId = Math.random().toString(36).substring(7);
+  console.log(`[${requestId}] EHO Export request started`);
+  
   try {
     const { searchParams } = new URL(request.url);
+    console.log(`[${requestId}] Request params:`, {
+      site_id: searchParams.get("site_id"),
+      start_date: searchParams.get("start_date"),
+      end_date: searchParams.get("end_date"),
+      format: searchParams.get("format"),
+      categories: searchParams.get("categories"),
+    });
     const format = (searchParams.get("format") || "pdf") as
       | "pdf"
       | "json"
@@ -167,6 +177,14 @@ export async function POST(request: NextRequest) {
     let reportError = null;
     
     try {
+      // First, verify the RPC function exists by checking if we can call it
+      console.log("Calling get_eho_report_data RPC...", {
+        p_site_id: siteId,
+        p_start_date: startDate,
+        p_end_date: endDate,
+        p_template_categories: categories,
+      });
+      
       const result = await supabase.rpc(
         "get_eho_report_data",
         {
@@ -176,21 +194,31 @@ export async function POST(request: NextRequest) {
           p_template_categories: categories || null,
         },
       );
+      
+      console.log("RPC call result:", {
+        hasData: !!result.data,
+        dataLength: result.data?.length || 0,
+        hasError: !!result.error,
+        error: result.error,
+      });
+      
       reportData = result.data;
       reportError = result.error;
     } catch (rpcException: any) {
-      console.error("Exception calling get_eho_report_data:", {
+      console.error("❌ Exception calling get_eho_report_data:", {
         error: rpcException,
         message: rpcException?.message,
         code: rpcException?.code,
         details: rpcException?.details,
         hint: rpcException?.hint,
+        name: rpcException?.name,
+        stack: rpcException?.stack,
       });
       reportError = {
         message: rpcException?.message || "RPC function call failed",
         code: rpcException?.code || "P0001",
         details: rpcException?.details,
-        hint: rpcException?.hint || "The get_eho_report_data function may not exist or may have an error",
+        hint: rpcException?.hint || "The get_eho_report_data function may not exist or may have an error. Run migration 20250222000003_fix_eho_report_data_role_column.sql",
       };
     }
 
@@ -370,7 +398,8 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("❌ EHO export error:", {
+    const requestId = Math.random().toString(36).substring(7);
+    console.error(`[${requestId}] ❌ EHO export error:`, {
       error,
       message: error?.message,
       stack: error?.stack,
@@ -383,14 +412,23 @@ export async function POST(request: NextRequest) {
       endDate: request.nextUrl.searchParams.get("end_date"),
       hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
       serviceKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 15) || process.env.SUPABASE_SERVICE_ROLE?.substring(0, 15) || 'MISSING',
+      environment: process.env.VERCEL_ENV || 'development',
     });
     
+    // Return detailed error for debugging
     return NextResponse.json(
       {
         error: "Internal server error",
         details: error?.message || "Unknown error occurred",
-        hint: error?.hint || "Check Vercel function logs for more details",
+        hint: error?.hint || "Check Vercel function logs for more details. Request ID: " + requestId,
         code: error?.code,
+        requestId,
+        troubleshooting: {
+          checkMigrations: "Run migrations: 20251111150000_create_eho_report_functions.sql and 20250222000003_fix_eho_report_data_role_column.sql",
+          checkServiceRole: "Verify SUPABASE_SERVICE_ROLE_KEY is set in Vercel (starts with eyJ...)",
+          checkRPCFunctions: "Verify get_eho_report_data function exists in database",
+          checkLogs: `Check Vercel function logs for request ID: ${requestId}`,
+        },
       },
       { status: 500 },
     );
