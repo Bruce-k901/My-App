@@ -56,6 +56,12 @@ const mockCourse: Course = {
 
 describe("useCourseStore", () => {
     beforeEach(() => {
+        useCourseStore.setState({
+            course: null,
+            currentModuleId: null,
+            currentLessonId: null,
+            currentSlideId: null,
+        });
         useCourseStore.getState().resetProgress();
         useCourseStore.getState().setCourse(mockCourse);
     });

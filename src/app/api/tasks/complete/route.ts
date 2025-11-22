@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,70 +14,111 @@ export async function POST(request: NextRequest) {
     try {
       serviceClient = getSupabaseAdmin();
     } catch (error: any) {
-      // Try to find the key in various locations
-      const serviceKey1 = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      const serviceKey2 = process.env.SUPABASE_SERVICE_ROLE;
-      const serviceKey3 = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-
-      // Check if we can find it via bracket notation (sometimes helps with weird env parsing)
-      const serviceKey4 = process.env["SUPABASE_SERVICE_ROLE_KEY"];
-
-      const foundKey = serviceKey1 || serviceKey2 || serviceKey3 || serviceKey4;
-
-      console.error("❌ Failed to initialize Supabase admin client:", error);
-
-      // Get all available env keys (names only) for debugging
-      const availableKeys = Object.keys(process.env).filter((k) =>
-        k.includes("SUPABASE") || k.includes("VERCEL")
+      console.warn(
+        "⚠️ Failed to initialize Supabase admin client, falling back to user session:",
+        error.message,
       );
 
-      console.error("❌ Environment check:", {
-        environment: process.env.VERCEL_ENV || "development",
-        nodeEnv: process.env.NODE_ENV,
-        hasUrl:
-          !!(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
-        availableSupabaseKeys: availableKeys,
-        hasServiceKey1: !!serviceKey1,
-        hasServiceKey2: !!serviceKey2,
-        hasServiceKey3: !!serviceKey3,
-        hasServiceKey4: !!serviceKey4,
-        serviceKey1Prefix: serviceKey1
-          ? serviceKey1.substring(0, 10) + "..."
-          : "MISSING",
-        errorMessage: error.message,
-      });
+      // Fallback: Try to use the authenticated user's session
+      // This works if the user has permission to insert/update their own data (RLS)
+      try {
+        const cookieStore = await cookies();
+        serviceClient = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: {
+              getAll() {
+                return cookieStore.getAll();
+              },
+              setAll(cookiesToSet) {
+                try {
+                  cookiesToSet.forEach(({ name, value, options }) =>
+                    cookieStore.set(name, value, options)
+                  );
+                } catch {
+                  // Ignored in Route Handlers
+                }
+              },
+            },
+          },
+        );
+        console.log(
+          "✅ Successfully initialized Supabase client using user session (fallback)",
+        );
+      } catch (fallbackError: any) {
+        console.error("❌ Fallback also failed:", fallbackError);
 
-      // Provide specific error message based on what we found
-      let errorDetails = error.message;
-      let hint =
-        "Please ensure SUPABASE_SERVICE_ROLE_KEY is set in your environment variables (Vercel deployment settings)";
+        // If both fail, return the original error with diagnostics
+        const serviceKey1 = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const serviceKey2 = process.env.SUPABASE_SERVICE_ROLE;
+        const serviceKey3 = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+        const serviceKey4 = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+        const foundKey = serviceKey1 || serviceKey2 || serviceKey3 ||
+          serviceKey4;
+        const availableKeys = Object.keys(process.env).filter((k) =>
+          k.includes("SUPABASE") || k.includes("VERCEL")
+        );
 
-      if (foundKey?.startsWith("sb_publishable_")) {
-        errorDetails =
-          "Service role key is set to a publishable anon key. You need the service_role key (starts with eyJ...)";
-        hint =
-          "In Vercel, update SUPABASE_SERVICE_ROLE_KEY with the service_role key from Supabase Dashboard > Project Settings > API";
-      } else if (!foundKey) {
-        errorDetails = "No service role key found in any environment variable";
-        hint =
-          "Add SUPABASE_SERVICE_ROLE_KEY to Vercel environment variables. Make sure to select the correct environment (Production/Preview/Development)";
-      }
+        console.error("❌ Failed to initialize Supabase admin client:", error);
 
-      return NextResponse.json({
-        error: "Supabase service role key is required",
-        details: errorDetails,
-        hint,
-        debug: {
+        // Get all available env keys (names only) for debugging
+        const availableKeysDebug = Object.keys(process.env).filter((k) =>
+          k.includes("SUPABASE") || k.includes("VERCEL")
+        );
+
+        console.error("❌ Environment check:", {
           environment: process.env.VERCEL_ENV || "development",
-          hasKey: !!foundKey,
-          availableKeys: availableKeys,
-          keyType: foundKey?.startsWith("sb_publishable_")
-            ? "publishable"
-            : foundKey?.startsWith("eyJ")
-            ? "service_role"
-            : "unknown",
-        },
-      }, { status: 500 });
+          nodeEnv: process.env.NODE_ENV,
+          hasUrl:
+            !!(process.env.SUPABASE_URL ||
+              process.env.NEXT_PUBLIC_SUPABASE_URL),
+          availableSupabaseKeys: availableKeysDebug,
+          hasServiceKey1: !!serviceKey1,
+          hasServiceKey2: !!serviceKey2,
+          hasServiceKey3: !!serviceKey3,
+          hasServiceKey4: !!serviceKey4,
+          serviceKey1Prefix: serviceKey1
+            ? serviceKey1.substring(0, 10) + "..."
+            : "MISSING",
+          errorMessage: error.message,
+        });
+
+        // Provide specific error message based on what we found
+        let errorDetails = error.message;
+        let hint =
+          "Please ensure SUPABASE_SERVICE_ROLE_KEY is set in your environment variables (Vercel deployment settings)";
+
+        if (foundKey?.startsWith("sb_publishable_")) {
+          errorDetails =
+            "Service role key is set to a publishable anon key. You need the service_role key (starts with eyJ...)";
+          hint =
+            "In Vercel, update SUPABASE_SERVICE_ROLE_KEY with the service_role key from Supabase Dashboard > Project Settings > API";
+        } else if (!foundKey) {
+          errorDetails =
+            "No service role key found in any environment variable";
+          hint =
+            "Add SUPABASE_SERVICE_ROLE_KEY to Vercel environment variables. Make sure to select the correct environment (Production/Preview/Development)";
+        }
+
+        return NextResponse.json({
+          error:
+            "Supabase service role key is required and user session fallback failed",
+          details: errorDetails,
+          hint,
+          debug: {
+            environment: process.env.VERCEL_ENV || "development",
+            hasKey: !!foundKey,
+            availableKeys: availableKeys,
+            keyType: foundKey?.startsWith("sb_publishable_")
+              ? "publishable"
+              : foundKey?.startsWith("eyJ")
+              ? "service_role"
+              : "unknown",
+            fallbackError: fallbackError.message,
+          },
+        }, { status: 500 });
+      }
     }
 
     // Verify completed_by exists and get their profile
