@@ -3,6 +3,21 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  
+  // Explicitly skip middleware for static files and manifest
+  // This ensures these files are never blocked, even if matcher pattern fails
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/') ||
+    pathname === '/manifest.json' ||
+    pathname === '/sw.js' ||
+    pathname === '/favicon.ico' ||
+    /\.(svg|png|jpg|jpeg|gif|webp|json|ico|woff|woff2|ttf|eot|css|js)$/.test(pathname)
+  ) {
+    return NextResponse.next();
+  }
+  
   const res = NextResponse.next();
   
   try {
