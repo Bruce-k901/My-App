@@ -12,17 +12,46 @@ export async function POST(request: NextRequest) {
     try {
       serviceClient = getSupabaseAdmin()
     } catch (error: any) {
+      const serviceKey1 = process.env.SUPABASE_SERVICE_ROLE_KEY
+      const serviceKey2 = process.env.SUPABASE_SERVICE_ROLE
+      const serviceKey3 = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+      
       console.error('❌ Failed to initialize Supabase admin client:', error)
       console.error('❌ Environment check:', {
+        environment: process.env.VERCEL_ENV || 'development',
         hasUrl: !!(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
-        hasServiceKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
         url: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'MISSING',
-        keyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10) || process.env.SUPABASE_SERVICE_ROLE?.substring(0, 10) || 'MISSING'
+        hasServiceKey1: !!serviceKey1,
+        serviceKey1Prefix: serviceKey1 ? serviceKey1.substring(0, 15) + '...' : 'MISSING',
+        serviceKey1Type: serviceKey1 ? (serviceKey1.startsWith('sb_publishable_') ? 'PUBLISHABLE (WRONG!)' : serviceKey1.startsWith('eyJ') ? 'JWT (CORRECT)' : 'UNKNOWN') : 'MISSING',
+        hasServiceKey2: !!serviceKey2,
+        serviceKey2Prefix: serviceKey2 ? serviceKey2.substring(0, 15) + '...' : 'MISSING',
+        hasServiceKey3: !!serviceKey3,
+        serviceKey3Prefix: serviceKey3 ? serviceKey3.substring(0, 15) + '...' : 'MISSING',
+        errorMessage: error.message
       })
+      
+      // Provide specific error message based on what we found
+      let errorDetails = error.message
+      let hint = 'Please ensure SUPABASE_SERVICE_ROLE_KEY is set in your environment variables (Vercel deployment settings)'
+      
+      if (serviceKey1?.startsWith('sb_publishable_')) {
+        errorDetails = 'Service role key is set to a publishable anon key. You need the service_role key (starts with eyJ...)'
+        hint = 'In Vercel, update SUPABASE_SERVICE_ROLE_KEY with the service_role key from Supabase Dashboard > Project Settings > API'
+      } else if (!serviceKey1 && !serviceKey2 && !serviceKey3) {
+        errorDetails = 'No service role key found in any environment variable'
+        hint = 'Add SUPABASE_SERVICE_ROLE_KEY to Vercel environment variables. Make sure to select the correct environment (Production/Preview/Development)'
+      }
+      
       return NextResponse.json({ 
         error: 'Supabase service role key is required',
-        details: error.message,
-        hint: 'Please ensure SUPABASE_SERVICE_ROLE_KEY is set in your environment variables (Vercel deployment settings)'
+        details: errorDetails,
+        hint,
+        debug: {
+          environment: process.env.VERCEL_ENV || 'development',
+          hasKey: !!(serviceKey1 || serviceKey2 || serviceKey3),
+          keyType: serviceKey1?.startsWith('sb_publishable_') ? 'publishable' : serviceKey1?.startsWith('eyJ') ? 'service_role' : 'unknown'
+        }
       }, { status: 500 })
     }
 

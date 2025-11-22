@@ -2323,12 +2323,26 @@ export default function TaskCompletionModal({
         const errorDetails = {
           message: errorData.error || 'Unknown error',
           code: response.status.toString(),
-          details: null,
-          hint: null,
+          details: errorData.details || null,
+          hint: errorData.hint || null,
+          debug: errorData.debug || null,
           attemptedData: completionRecord
         }
         console.error('❌ Task completion record error:', JSON.stringify(errorDetails, null, 2))
-        throw new Error(`Failed to create completion record: ${errorData.error || 'Unknown error'}`)
+        
+        // Provide more helpful error message with diagnostic info
+        let errorMessage = `Failed to create completion record: ${errorData.error || 'Unknown error'}`
+        if (errorData.details) {
+          errorMessage += `\n\nDetails: ${errorData.details}`
+        }
+        if (errorData.hint) {
+          errorMessage += `\n\nHint: ${errorData.hint}`
+        }
+        if (errorData.debug) {
+          errorMessage += `\n\nDebug: Environment=${errorData.debug.environment}, HasKey=${errorData.debug.hasKey}, KeyType=${errorData.debug.keyType}`
+        }
+        
+        throw new Error(errorMessage)
       }
 
       const { data: insertedRecord, taskUpdated, taskUpdateSuccess, warning } = await response.json()
