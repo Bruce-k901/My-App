@@ -8,6 +8,20 @@ import { supabase } from "@/lib/supabase";
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 
 /**
+ * Get VAPID key status for debugging
+ */
+export function getVAPIDKeyStatus() {
+  const key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  return {
+    exists: !!key,
+    length: key?.length || 0,
+    prefix: key?.substring(0, 10) || "N/A",
+    expectedLength: 87, // VAPID keys are typically 87 characters
+    isCorrectFormat: key ? /^[A-Za-z0-9_-]{87}$/.test(key) : false,
+  };
+}
+
+/**
  * Check if push notifications are supported
  */
 export function isPushNotificationSupported(): boolean {
@@ -65,12 +79,32 @@ export async function registerPushSubscription(): Promise<boolean> {
 
     // Check VAPID key
     if (!VAPID_PUBLIC_KEY) {
+      const status = getVAPIDKeyStatus();
       console.error(
         "❌ VAPID public key is missing. Push notifications cannot be registered.",
       );
+      console.error("VAPID Key Status:", status);
       console.warn(
         "Please ensure NEXT_PUBLIC_VAPID_PUBLIC_KEY is set in your environment variables.",
       );
+      console.warn(
+        "⚠️ IMPORTANT: NEXT_PUBLIC_* variables are embedded at BUILD TIME.",
+      );
+      console.warn(
+        "If you just added this to Vercel, you MUST redeploy for it to take effect.",
+      );
+      console.warn(
+        "Expected value: BDrNyYQVW6601ShCx9AgL96dx5dtwl_s6rmivg_7xJBWG7s0oI6sgIREmU9PypeKHufuuHp0yhhmfZTjX1J4skk",
+      );
+      return false;
+    }
+
+    // Validate VAPID key format
+    if (VAPID_PUBLIC_KEY.length !== 87) {
+      console.error(
+        `❌ VAPID public key has incorrect length: ${VAPID_PUBLIC_KEY.length} (expected 87)`,
+      );
+      console.error("Current key:", VAPID_PUBLIC_KEY.substring(0, 20) + "...");
       return false;
     }
 
