@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 
+// This route is public and should not require authentication
 export async function GET() {
   try {
     // Read the manifest.json file from public directory
@@ -10,9 +11,13 @@ export async function GET() {
     const manifest = JSON.parse(fileContents)
     
     return NextResponse.json(manifest, {
+      status: 200,
       headers: {
         'Content-Type': 'application/manifest+json',
         'Cache-Control': 'public, max-age=3600',
+        // Ensure CORS headers for PWA
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
       },
     })
   } catch (error) {
@@ -24,8 +29,11 @@ export async function GET() {
       start_url: '/',
       display: 'standalone',
     }, {
+      status: 200,
       headers: {
         'Content-Type': 'application/manifest+json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
       },
     })
   }
