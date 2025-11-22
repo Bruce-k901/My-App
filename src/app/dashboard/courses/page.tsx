@@ -24,7 +24,7 @@ export default function CoursesPage() {
         {COURSES.map((course) => (
           <Link
             key={course.slug}
-            href={`/dashboard/courses/${course.slug}`}
+            href={course.slug === 'food-safety' ? '/learn/uk-l2-food-safety-v3' : `/dashboard/courses/${course.slug}`}
             className="group flex h-full flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-magenta-500/40 hover:shadow-[0_0_26px_rgba(236,72,153,0.2)]"
           >
             <div className="space-y-3">

@@ -1,0 +1,1465 @@
+{
+  "id": "uk-l2-food-safety-v3",
+  "title": "Level 2 Food Safety & Hygiene for Catering",
+  "description": "A comprehensive guide to food safety laws, hazards, and best practices for food handlers.",
+  "version": "3.0.0",
+  "refresherYears": 3,
+  "certificateTemplateId": "cert-l2-food-safety",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Food Safety & The Law",
+      "description": "Understand your legal responsibilities and the consequences of poor food hygiene.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Food Safety",
+          "slides": [
+            {
+              "id": "m1-l1-s1",
+              "type": "text-graphic-split",
+              "title": "Why Food Safety Matters",
+              "content": "## What is Food Safety?\n\nFood safety is about handling, preparing, and storing food in a way that best reduces the risk of individuals becoming sick from foodborne illnesses.\n\n### Key Statistics\n- **2.4 million** cases of foodborne illness occur in the UK every year.\n- **380,000** cases of norovirus are linked to food.\n- Poor hygiene can lead to business closure, fines, and even imprisonment.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m1-l1-s2",
+              "type": "text-graphic-split",
+              "title": "The Consequences",
+              "content": "## The Cost of Poor Hygiene\n\nWhen food safety standards slip, the consequences can be severe for everyone involved.\n\n### 1. For the Business\n- **Legal Action**: Unlimited fines and potential closure orders.\n- **Reputation**: Loss of customer trust and negative reviews.\n- **Staff**: Low morale and high turnover.\n\n### 2. For the Customer\n- **Illness**: Food poisoning can cause serious health issues, especially for vulnerable groups.\n- **Fatalities**: In severe cases (e.g., allergens), negligence can be fatal.",
+              "mediaUrl": "/images/course/legal-gavel.png"
+            },
+            {
+              "id": "m1-l1-s3",
+              "type": "text-graphic-split",
+              "title": "High Risk Foods",
+              "content": "## What are High Risk Foods?\n\nHigh risk foods are ready-to-eat foods that support the growth of harmful bacteria. They usually differ from raw foods because they do not require further cooking.\n\n### Examples Include:\n- **Cooked Meat & Poultry**: Sliced ham, chicken breast.\n- **Dairy Products**: Milk, cream, soft cheese.\n- **Eggs**: Cooked egg products, mayonnaise.\n- **Shellfish**: Prawns, crab, lobster.\n- **Cooked Rice & Pasta**: Highly susceptible to *Bacillus cereus*.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m1-l1-s4",
+              "type": "text-graphic-split",
+              "title": "Vulnerable Groups",
+              "content": "## Who is Most at Risk?\n\nCertain groups of people are more likely to suffer severe consequences from food poisoning. We often remember them using the acronym **YOPI**:\n\n- **Y**oung: Babies and toddlers have undeveloped immune systems.\n- **O**ld: The elderly often have weaker immune systems.\n- **P**regnant: Pregnant women and their unborn babies are at higher risk (e.g., from Listeria).\n- **I**mmunocompromised: Those with illnesses like cancer or HIV.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m1-l1-s5",
+              "type": "scenario-decision",
+              "title": "Scenario: The Busy Kitchen",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's 7 PM on a Friday. The kitchen is slammed. You drop a raw chicken breast on the floor. What do you do?",
+                    "options": [
+                      {
+                        "label": "Pick it up, rinse it, and cook it immediately.",
+                        "nextNodeId": "wrong-rinse"
+                      },
+                      {
+                        "label": "Throw it in the bin and wash your hands.",
+                        "nextNodeId": "correct-bin"
+                      },
+                      { "label": "Kick it under the fridge for later.", "nextNodeId": "wrong-kick" }
+                    ]
+                  },
+                  "wrong-rinse": {
+                    "text": "❌ **Incorrect.** Rinsing raw meat spreads bacteria (Campylobacter) through splashing water. You must dispose of the contaminated food.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-kick": {
+                    "text": "❌ **Incorrect.** This creates a pest hazard and leaves bacteria on the floor. You must clean the spill immediately.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-bin": {
+                    "text": "✅ **Correct!** Contaminated food must be disposed of, and handwashing prevents cross-contamination.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Legal Responsibilities",
+          "slides": [
+            {
+              "id": "m1-l2-s1",
+              "type": "text-graphic-split",
+              "title": "The Food Safety Act 1990",
+              "content": "The **Food Safety Act 1990** is the main framework for all food legislation in the UK. It ensures that:\n\n1. **Food is not damaging to health.**\n2. **Food is of the nature, substance, and quality expected.**\n3. **Food is not misleadingly labelled.**\n\n### Due Diligence\n'Due Diligence' is the principal defence in court. It means you took **all reasonable precautions** to prevent the offence.",
+              "mediaUrl": "/images/course/legal-gavel.png"
+            },
+            {
+              "id": "m1-l2-s1b",
+              "type": "text-graphic-split",
+              "title": "Starting a Food Business",
+              "content": "## Registration Requirements\n\nBy law, you must register your food business with the local authority at least **28 days before opening**.\n\n### Who needs to register?\n- Restaurants, cafes, and takeaways.\n- Mobile catering vans.\n- Home businesses selling food online.\n- Staff canteens.\n\nRegistration is free and cannot be refused. It allows the local authority to know where you are so they can inspect you.",
+              "mediaUrl": "/images/course/legal-gavel.png"
+            },
+            {
+              "id": "m1-l2-s1c",
+              "type": "text-graphic-split",
+              "title": "Legal Duties: Reporting Hazards",
+              "content": "## Your Duty of Care\n\nAs a food handler, you have a legal duty to report any hazards that could make food unsafe. You **must** report:\n\n1. **Pests**: Droppings, gnawed packaging, or sightings.\n2. **Illness**: Diarrhea, vomiting, or skin infections.\n3. **Broken Equipment**: Fridges not holding temperature, cracked chopping boards.\n\n**Whistleblowing**: If your manager ignores a serious hazard, you are protected by law if you report it to an EHO.",
+              "mediaUrl": "/images/course/legal-gavel.png"
+            },
+            {
+              "id": "m1-l2-s2",
+              "type": "text-graphic-split",
+              "title": "Enforcement Officers (EHOs)",
+              "content": "## Powers of an EHO\n\nEnvironmental Health Officers (EHOs) can inspect your premises at any reasonable time, without an appointment. They have the power to:\n\n- **Inspect food and records.**\n- **Seize unfit food.**\n- **Serve improvement notices.**\n- **Close the business immediately** if there is an imminent risk to health.\n\nIt is an offence to obstruct an EHO.",
+              "mediaUrl": "/images/course/legal-gavel.png"
+            },
+            {
+              "id": "m1-l2-s3",
+              "type": "scenario-decision",
+              "title": "Scenario: The Inspection",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "An EHO arrives during lunch service. They ask to see your fridge temperature records, but you haven't filled them in for 3 days. What do you say?",
+                    "options": [
+                      {
+                        "label": "Quickly fill them in while they are checking the store room.",
+                        "nextNodeId": "wrong-fake"
+                      },
+                      {
+                        "label": "Admit they are missing and explain why.",
+                        "nextNodeId": "correct-honest"
+                      },
+                      {
+                        "label": "Tell them the records are at the accountant's office.",
+                        "nextNodeId": "wrong-lie"
+                      }
+                    ]
+                  },
+                  "wrong-fake": {
+                    "text": "❌ **Incorrect.** Falsifying records is a serious offence (Fraud). EHOs can easily spot fresh ink or identical entries.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-lie": {
+                    "text": "❌ **Incorrect.** You must provide records upon request. Lying to an EHO is an obstruction of justice.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-honest": {
+                    "text": "✅ **Correct.** Honesty is the best policy. Admit the mistake, take immediate corrective action (check temps now), and ensure it doesn't happen again.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "m1-l3",
+          "title": "Practical Assessment",
+          "slides": [
+            {
+              "id": "m1-l3-s1",
+              "type": "scenario-decision",
+              "title": "Scenario 1: Pest Control",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You find what looks like mouse droppings in the dry store. What is your immediate action?",
+                    "options": [
+                      { "label": "Sweep them up and put down a trap.", "nextNodeId": "wrong-diy" },
+                      {
+                        "label": "Report it to your manager immediately.",
+                        "nextNodeId": "correct-report"
+                      },
+                      {
+                        "label": "Ignore it, it's probably just dirt.",
+                        "nextNodeId": "wrong-ignore"
+                      }
+                    ]
+                  },
+                  "wrong-diy": {
+                    "text": "❌ **Incorrect.** You are not a trained pest controller. You might disturb the nest or contaminate food. Report it.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-ignore": {
+                    "text": "❌ **Incorrect.** Pests carry serious diseases. Ignoring signs of infestation is negligence.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-report": {
+                    "text": "✅ **Correct.** Always report signs of pests immediately so professional pest control can be contacted.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-l3-s2",
+              "type": "scenario-decision",
+              "title": "Scenario 2: Sickness",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You have woken up with vomiting and diarrhea. You are due to start your shift in 2 hours. What do you do?",
+                    "options": [
+                      {
+                        "label": "Go to work but stay away from food prep.",
+                        "nextNodeId": "wrong-work"
+                      },
+                      { "label": "Take medicine and go to work.", "nextNodeId": "wrong-meds" },
+                      { "label": "Call your manager and stay home.", "nextNodeId": "correct-home" }
+                    ]
+                  },
+                  "wrong-work": {
+                    "text": "❌ **Incorrect.** You are highly infectious. You cannot enter a food business with these symptoms.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-meds": {
+                    "text": "❌ **Incorrect.** Medicine stops symptoms but not the infection. You can still spread the virus.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-home": {
+                    "text": "✅ **Correct.** You must stay off work for at least 48 hours after symptoms have stopped.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-l3-s3",
+              "type": "scenario-decision",
+              "title": "Scenario 3: The Unregistered Business",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your friend wants to start selling homemade cakes online but doesn't want to register with the local council because 'it's just a hobby'. What do you tell them?",
+                    "options": [
+                      {
+                        "label": "It's fine as long as they don't make much money.",
+                        "nextNodeId": "wrong-money"
+                      },
+                      {
+                        "label": "They must register at least 28 days before trading.",
+                        "nextNodeId": "correct-register"
+                      },
+                      {
+                        "label": "They only need to register if they have pets.",
+                        "nextNodeId": "wrong-pets"
+                      }
+                    ]
+                  },
+                  "wrong-money": {
+                    "text": "❌ **Incorrect.** Even small or part-time food businesses must register by law.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-pets": {
+                    "text": "❌ **Incorrect.** Registration is mandatory for all food businesses, regardless of pets.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-register": {
+                    "text": "✅ **Correct.** All food businesses must register with their local authority at least 28 days before opening.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-l3-s4",
+              "type": "scenario-decision",
+              "title": "Scenario 4: Due Diligence Record",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's the end of a busy shift. You realise you forgot to record the fridge temperatures earlier, but you know the fridge is working fine. What should you do?",
+                    "options": [
+                      {
+                        "label": "Guess the numbers and fill them in.",
+                        "nextNodeId": "wrong-guess"
+                      },
+                      { "label": "Leave it blank and record it now.", "nextNodeId": "correct-now" },
+                      { "label": "Copy yesterday's numbers.", "nextNodeId": "wrong-copy" }
+                    ]
+                  },
+                  "wrong-guess": {
+                    "text": "❌ **Incorrect.** Falsifying records is fraud. If something goes wrong, you have no defence.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-copy": {
+                    "text": "❌ **Incorrect.** EHOs can spot patterns. Never falsify records.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-now": {
+                    "text": "✅ **Correct.** Be honest. Check the temperature NOW and record it with the current time. Add a note explaining the missed check.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-l3-s5",
+              "type": "scenario-decision",
+              "title": "Scenario 5: Whistleblowing",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your manager tells you to serve chicken that smells slightly 'off' because 'we can't afford to waste it'. What is your legal duty?",
+                    "options": [
+                      {
+                        "label": "Do as you are told, they are the manager.",
+                        "nextNodeId": "wrong-obey"
+                      },
+                      {
+                        "label": "Cook it for longer to kill the smell.",
+                        "nextNodeId": "wrong-cook"
+                      },
+                      {
+                        "label": "Refuse to serve it and report the issue.",
+                        "nextNodeId": "correct-refuse"
+                      }
+                    ]
+                  },
+                  "wrong-obey": {
+                    "text": "❌ **Incorrect.** You have a legal duty not to serve unsafe food. 'Following orders' is not a defence in court.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-cook": {
+                    "text": "❌ **Incorrect.** Cooking does not remove toxins produced by bacteria. The food is unsafe.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-refuse": {
+                    "text": "✅ **Correct.** You must refuse to serve unfit food. If the manager insists, you should report it (whistleblowing).",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Food Safety Hazards",
+      "description": "Identify and control the four main types of food safety hazards.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "The 4 Types of Hazards",
+          "slides": [
+            {
+              "id": "m2-l1-s2",
+              "type": "text-graphic-split",
+              "title": "Biological Hazards: Bacteria",
+              "content": "## What do Bacteria Need to Grow?\n\nBacteria need 4 things to multiply (remember **FAT TOM** is often used, but here are the main 4):\n\n1. **Food**: High protein foods like meat, dairy, and fish.\n2. **Warmth**: The 'Danger Zone' is between **8°C and 63°C**.\n3. **Time**: In ideal conditions, bacteria can double every 10-20 minutes.\n4. **Moisture**: Dried foods (pasta, rice) are safe until cooked.\n\n### Spores & Toxins\nSome bacteria form spores to survive cooking, while others produce heat-resistant toxins.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l1-s3",
+              "type": "text-graphic-split",
+              "title": "Physical Hazards",
+              "content": "## What are Physical Hazards?\n\nPhysical hazards are foreign objects that can enter food and cause injury (choking, cuts, broken teeth).\n\n### Common Sources:\n- **Glass**: From broken jars or lightbulbs.\n- **Metal**: Screws from machinery or staples from packaging.\n- **Plastic**: Brittle plastic from containers.\n- **Pests**: Droppings, bodies, or webbing.\n- **Personal Items**: Jewellery, buttons, or hair.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l1-s4",
+              "type": "text-graphic-split",
+              "title": "Chemical Hazards",
+              "content": "## What are Chemical Hazards?\n\nChemical hazards occur when harmful chemicals contaminate food, causing poisoning or burns.\n\n### Prevention Tips:\n- **Storage**: Always store cleaning chemicals away from food.\n- **Labelling**: Keep chemicals in their original, clearly labelled containers.\n- **Usage**: Follow manufacturer instructions for dilution and contact time.\n- **Pesticides**: Ensure fruit and vegetables are washed thoroughly.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l1-s1",
+              "type": "drag-sort",
+              "title": "Categorise the Hazards",
+              "content": "Drag each hazard into the correct category: Biological, Chemical, Physical, or Allergenic.",
+              "dragSortData": {
+                "categories": [
+                  { "id": "bio", "label": "Biological" },
+                  { "id": "chem", "label": "Chemical" },
+                  { "id": "phys", "label": "Physical" },
+                  { "id": "allergen", "label": "Allergenic" }
+                ],
+                "items": [
+                  { "id": "salmonella", "label": "Salmonella", "categoryId": "bio" },
+                  { "id": "bleach", "label": "Bleach Spray", "categoryId": "chem" },
+                  { "id": "glass", "label": "Broken Glass", "categoryId": "phys" },
+                  { "id": "peanuts", "label": "Peanuts", "categoryId": "allergen" },
+                  { "id": "virus", "label": "Norovirus", "categoryId": "bio" },
+                  { "id": "plaster", "label": "Blue Plaster", "categoryId": "phys" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Allergens & Cross-Contamination",
+          "slides": [
+            {
+              "id": "m2-l2-s0",
+              "type": "text-graphic-split",
+              "title": "The 14 Major Allergens",
+              "content": "## What are Allergens?\n\nAllergens are substances that can trigger severe allergic reactions, including anaphylaxis (a life-threatening condition).\n\n### The 14 Major Allergens (UK Law):\n1. **Cereals** containing gluten (wheat, rye, barley, oats)\n2. **Crustaceans** (prawns, crab, lobster)\n3. **Eggs**\n4. **Fish**\n5. **Peanuts**\n6. **Soybeans**\n7. **Milk** (including lactose)\n8. **Nuts** (almonds, hazelnuts, walnuts, etc.)\n9. **Celery**\n10. **Mustard**\n11. **Sesame seeds**\n12. **Sulphur dioxide** (preservative in wine, dried fruit)\n13. **Lupin** (flour used in some breads)\n14. **Molluscs** (mussels, oysters, squid)\n\n**Cross-contamination** is the biggest risk. Even trace amounts can be fatal.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l2-s1",
+              "type": "hotspot-explorer",
+              "title": "Spot the Allergen Risks",
+              "content": "Identify 3 potential allergen cross-contamination risks in this kitchen setup.",
+              "hotspotData": {
+                "imageUrl": "/images/course/kitchen-allergens.png",
+                "hotspots": [
+                  {
+                    "id": "h1",
+                    "x": 30,
+                    "y": 45,
+                    "label": "Open Flour Bag",
+                    "description": "Flour dust can travel through the air and contaminate gluten-free meals."
+                  },
+                  {
+                    "id": "h2",
+                    "x": 60,
+                    "y": 50,
+                    "label": "Shared Chopping Board",
+                    "description": "Using the same board for nuts and salads can cause anaphylaxis."
+                  },
+                  {
+                    "id": "h3",
+                    "x": 80,
+                    "y": 20,
+                    "label": "Unlabelled Sauce",
+                    "description": "Sauces often contain hidden allergens like soy, mustard, or celery."
+                  }
+                ]
+              }
+            },
+            {
+              "id": "m2-l2-s2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Gluten-Free Order",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer orders a gluten-free burger. You are very busy. What is the safest way to prepare it?",
+                    "options": [
+                      {
+                        "label": "Use the main grill but scrape it clean first.",
+                        "nextNodeId": "wrong-scrape"
+                      },
+                      {
+                        "label": "Use a dedicated gluten-free pan and utensils.",
+                        "nextNodeId": "correct-pan"
+                      },
+                      {
+                        "label": "Just remove the bun from a regular burger.",
+                        "nextNodeId": "wrong-bun"
+                      }
+                    ]
+                  },
+                  "wrong-scrape": {
+                    "text": "❌ **Incorrect.** Scraping isn't enough to remove all traces of gluten. Cross-contamination is still highly likely.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-bun": {
+                    "text": "❌ **Incorrect.** The burger has already touched the bun. Even crumbs can trigger a reaction.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-pan": {
+                    "text": "✅ **Correct!** Using dedicated equipment is the only way to ensure the meal is truly gluten-free.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "m2-l3",
+          "title": "Hazard Spotting Challenge",
+          "slides": [
+            {
+              "id": "m2-l3-info1",
+              "type": "text-graphic-split",
+              "title": "Pest Control",
+              "content": "## Why Pests are a Serious Hazard\n\nPests (rodents, insects, birds) contaminate food with:\n- **Droppings and urine** (carry Salmonella, E. coli)\n- **Hair and body parts**\n- **Diseases** (Weil's disease from rats)\n\n### Signs of Infestation:\n- **Droppings**: Small, dark pellets\n- **Gnaw marks**: On packaging or wood\n- **Smear marks**: Greasy trails along walls\n- **Unusual smells**: Ammonia from urine\n- **Sightings**: Live or dead pests\n\n### Prevention:\n- **Proofing**: Seal gaps, install fly screens\n- **Deny food**: Store in sealed containers\n- **Deny shelter**: Keep areas clean and clutter-free\n- **Professional control**: Never attempt DIY pest control\n\n**Your duty**: Report ANY signs immediately to management.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l3-info2",
+              "type": "text-graphic-split",
+              "title": "Waste Management",
+              "content": "## Why Waste is a Hazard\n\nPoor waste management attracts pests and creates contamination risks.\n\n### Best Practices:\n1. **Use lidded bins**: Keeps pests out and smells in\n2. **Empty regularly**: Don't let bins overflow\n3. **Separate waste**: Food waste, recycling, general waste\n4. **Wash hands**: After handling bins or waste\n5. **External storage**: Keep bins away from the building\n6. **Clean bins**: Wash and disinfect regularly\n\n### Common Mistakes:\n- Leaving bin lids open\n- Overfilling bins\n- Storing bins near food prep areas\n- Not washing hands after emptying bins\n\n**Remember**: Full bins = pest paradise!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m2-l3-s1",
+              "type": "scenario-decision",
+              "title": "Scenario 1: Fridge Storage",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You notice a tray of raw burgers stored on the top shelf of the fridge, above a strawberry cheesecake. What is the risk?",
+                    "options": [
+                      { "label": "No risk, the fridge is cold.", "nextNodeId": "wrong-cold" },
+                      {
+                        "label": "Cross-contamination from meat juices dripping onto the cake.",
+                        "nextNodeId": "correct-drip"
+                      },
+                      { "label": "The burgers will dry out.", "nextNodeId": "wrong-dry" }
+                    ]
+                  },
+                  "wrong-cold": {
+                    "text": "❌ **Incorrect.** Cold prevents growth but not cross-contamination. Raw meat juices can drip.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-dry": {
+                    "text": "❌ **Incorrect.** The safety risk is cross-contamination, which can cause serious illness.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-drip": {
+                    "text": "✅ **Correct.** Raw meat must ALWAYS be stored on the bottom shelf to prevent juices dripping onto ready-to-eat foods.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-l3-s2",
+              "type": "scenario-decision",
+              "title": "Scenario 2: Waste Disposal",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The main kitchen bin is overflowing and the lid won't close. It's mid-service. What do you do?",
+                    "options": [
+                      {
+                        "label": "Push the rubbish down with your hands.",
+                        "nextNodeId": "wrong-hands"
+                      },
+                      { "label": "Leave it until the end of service.", "nextNodeId": "wrong-wait" },
+                      {
+                        "label": "Empty it immediately and wash your hands.",
+                        "nextNodeId": "correct-empty"
+                      }
+                    ]
+                  },
+                  "wrong-hands": {
+                    "text": "❌ **Incorrect.** Never put your hands in the bin. You could cut yourself or contaminate your hands.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-wait": {
+                    "text": "❌ **Incorrect.** Open bins attract pests and bad smells. It must be managed.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-empty": {
+                    "text": "✅ **Correct.** Waste must be removed regularly to prevent pest infestation and smells.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-l3-s3",
+              "type": "scenario-decision",
+              "title": "Scenario 3: Pest Sighting",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A bluebottle fly lands on a slice of gateau you are about to serve. What do you do?",
+                    "options": [
+                      { "label": "Wave it away and serve it.", "nextNodeId": "wrong-wave" },
+                      { "label": "Cut off the bit it touched.", "nextNodeId": "wrong-cut" },
+                      { "label": "Discard the slice immediately.", "nextNodeId": "correct-discard" }
+                    ]
+                  },
+                  "wrong-wave": {
+                    "text": "❌ **Incorrect.** Flies vomit on food to digest it. They carry harmful bacteria on their legs.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-cut": {
+                    "text": "❌ **Incorrect.** You cannot see where the bacteria has spread. It is not worth the risk.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-discard": {
+                    "text": "✅ **Correct.** Flies are a major source of food contamination. The food is no longer safe.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-l3-s4",
+              "type": "scenario-decision",
+              "title": "Scenario 4: Chemical Storage",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You find a bottle of bleach left on a food preparation table. What do you do?",
+                    "options": [
+                      { "label": "Put it under the sink.", "nextNodeId": "wrong-sink" },
+                      {
+                        "label": "Move it to the locked chemical store.",
+                        "nextNodeId": "correct-store"
+                      },
+                      { "label": "Leave it for the cleaner.", "nextNodeId": "wrong-leave" }
+                    ]
+                  },
+                  "wrong-sink": {
+                    "text": "❌ **Incorrect.** Chemicals should be stored in a designated, lockable area away from food, not just under a sink.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-leave": {
+                    "text": "❌ **Incorrect.** It poses an immediate risk of chemical contamination to food being prepared.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-store": {
+                    "text": "✅ **Correct.** Chemicals must always be stored in a designated, separate area to prevent accidental poisoning.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-l3-s5",
+              "type": "scenario-decision",
+              "title": "Scenario 5: Allergen Request",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer says they have a nut allergy. You realise you've garnished their dessert with chopped nuts. What do you do?",
+                    "options": [
+                      { "label": "Pick the nuts off carefully.", "nextNodeId": "wrong-pick" },
+                      { "label": "Scrape the top layer off.", "nextNodeId": "wrong-scrape" },
+                      { "label": "Discard it and make a fresh one.", "nextNodeId": "correct-fresh" }
+                    ]
+                  },
+                  "wrong-pick": {
+                    "text": "❌ **Incorrect.** Allergen traces (proteins) will remain. This could cause anaphylactic shock.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-scrape": {
+                    "text": "❌ **Incorrect.** It is impossible to remove all traces. You are gambling with a customer's life.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-fresh": {
+                    "text": "✅ **Correct.** You must start again with clean equipment and fresh ingredients to ensure safety.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Temperature Control",
+      "description": "Learn about safe food temperatures and the danger zone.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "The Danger Zone",
+          "slides": [
+            {
+              "id": "m3-l1-s1",
+              "type": "text-graphic-split",
+              "title": "Understanding the Danger Zone",
+              "content": "## The Temperature Danger Zone\n\nBacteria multiply rapidly between **8°C and 63°C**. This is called the **Danger Zone**.\n\n### Key Temperatures:\n- **Below 8°C**: Cold storage (fridge)\n- **8°C - 63°C**: DANGER ZONE (bacteria multiply)\n- **Above 63°C**: Hot holding (keeps food safe)\n- **75°C**: Minimum core cooking temperature\n\n### The 2-Hour Rule:\nFood should not be in the Danger Zone for more than 2 hours total.\n\n### Why This Matters:\nIn ideal conditions, bacteria can **double every 10-20 minutes** in the Danger Zone. One bacterium can become over 1 million in just 4 hours!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m3-l1-s2",
+              "type": "text-graphic-split",
+              "title": "Cold Storage Temperatures",
+              "content": "## Fridge & Freezer Temperatures\n\n### Fridge Storage:\n- **Legal maximum**: 8°C\n- **Best practice**: 1°C to 4°C\n- **Check**: At least twice daily\n- **Record**: Keep written temperature logs\n\n### Freezer Storage:\n- **Required**: -18°C or colder\n- **Delivery acceptance**: -15°C minimum\n- **Defrosting**: Never refreeze thawed food\n\n### Common Mistakes:\n- Overfilling fridges (blocks airflow)\n- Leaving doors open\n- Not checking temperatures regularly\n- Storing raw meat above ready-to-eat food",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m3-l1-s3",
+              "type": "text-graphic-split",
+              "title": "Hot Holding & Cooking",
+              "content": "## Safe Hot Temperatures\n\n### Cooking Temperatures:\n- **Minimum core temp**: 75°C for 30 seconds\n- **Poultry**: 75°C (no pink meat, clear juices)\n- **Burgers/sausages**: 75°C throughout\n- **Fish**: 63°C (flesh flakes easily)\n\n### Hot Holding:\n- **Minimum**: 63°C or above\n- **Check regularly**: Every 2 hours\n- **Never**: Use hot holding to cook food\n\n### Reheating:\n- **Minimum**: 75°C throughout\n- **Only once**: Never reheat more than once\n- **Piping hot**: Steam should be visible",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Cooling & Defrosting",
+          "slides": [
+            {
+              "id": "m3-l2-s1",
+              "type": "text-graphic-split",
+              "title": "Safe Cooling Procedures",
+              "content": "## The 90-Minute Rule\n\nCooked food must cool from **75°C to 8°C within 90 minutes**.\n\n### Why?\nThe longer food spends in the Danger Zone, the more bacteria multiply.\n\n### How to Cool Safely:\n1. **Divide into smaller portions**: Speeds up cooling\n2. **Use shallow containers**: Maximum 5cm deep\n3. **Ice baths**: Place container in ice water\n4. **Blast chillers**: Professional rapid cooling\n5. **Never**: Put hot food directly in the fridge (raises fridge temp)\n\n### Common Mistakes:\n- Leaving food to cool at room temperature\n- Cooling in large, deep containers\n- Covering food while still hot (traps heat)",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m3-l2-s2",
+              "type": "text-graphic-split",
+              "title": "Defrosting Safely",
+              "content": "## Safe Defrosting Methods\n\n### The Right Way:\n1. **In the fridge**: Safest method (plan ahead)\n2. **Microwave**: Only if cooking immediately after\n3. **Cold running water**: In sealed packaging\n\n### NEVER:\n- ❌ Defrost at room temperature\n- ❌ Use hot water\n- ❌ Refreeze thawed food\n- ❌ Cook from frozen (unless label says so)\n\n### Defrosting Times (in fridge):\n- **Small chicken**: 24 hours\n- **Large turkey**: 2-3 days\n- **Meat joints**: 24 hours per kg\n\n**Tip**: Always defrost on the bottom shelf to prevent drips.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m3-l2-s3",
+              "type": "drag-sort",
+              "title": "Temperature Sorting Challenge",
+              "content": "Sort these foods into the correct temperature zones.",
+              "dragSortData": {
+                "categories": [
+                  { "id": "cold", "label": "Cold Storage (<8°C)" },
+                  { "id": "danger", "label": "Danger Zone (8-63°C)" },
+                  { "id": "hot", "label": "Hot Holding (>63°C)" }
+                ],
+                "items": [
+                  { "id": "milk", "label": "Fresh Milk", "categoryId": "cold" },
+                  { "id": "soup", "label": "Soup on Display", "categoryId": "hot" },
+                  { "id": "cooling", "label": "Cooling Lasagne", "categoryId": "danger" },
+                  { "id": "chicken", "label": "Raw Chicken", "categoryId": "cold" },
+                  { "id": "curry", "label": "Hot Curry Buffet", "categoryId": "hot" },
+                  { "id": "defrost", "label": "Defrosting Meat", "categoryId": "danger" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "m3-l3",
+          "title": "Temperature Scenarios",
+          "slides": [
+            {
+              "id": "m3-l3-s1",
+              "type": "scenario-decision",
+              "title": "Scenario 1: Delivery Check",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A delivery of frozen burgers arrives. You check the temperature and it reads -5°C. The packaging feels soft. What do you do?",
+                    "options": [
+                      {
+                        "label": "Accept it but put it in the freezer immediately.",
+                        "nextNodeId": "wrong-accept"
+                      },
+                      { "label": "Reject the delivery.", "nextNodeId": "correct-reject" },
+                      { "label": "Cook them all today.", "nextNodeId": "wrong-cook" }
+                    ]
+                  },
+                  "wrong-accept": {
+                    "text": "❌ **Incorrect.** Frozen food must be received at -18°C (or at least -15°C). -5°C means it has thawed and is unsafe.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-cook": {
+                    "text": "❌ **Incorrect.** You cannot verify how long they have been thawed. It is too risky.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-reject": {
+                    "text": "✅ **Correct.** The cold chain has been broken. Reject the goods to protect your business.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-l3-s2",
+              "type": "scenario-decision",
+              "title": "Scenario 2: Fridge Temperature",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You check the main fridge and it is reading 12°C. It feels warm. What is the first thing you do?",
+                    "options": [
+                      { "label": "Turn the dial down and wait.", "nextNodeId": "wrong-dial" },
+                      {
+                        "label": "Move the high-risk food to another fridge.",
+                        "nextNodeId": "correct-move"
+                      },
+                      {
+                        "label": "Record the temperature and carry on.",
+                        "nextNodeId": "wrong-record"
+                      }
+                    ]
+                  },
+                  "wrong-dial": {
+                    "text": "❌ **Incorrect.** The food is currently in the Danger Zone. You need to protect the food first.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-record": {
+                    "text": "❌ **Incorrect.** Recording a problem without fixing it is negligence. The food could spoil.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-move": {
+                    "text": "✅ **Correct.** Save the food first by moving it to a safe unit (<8°C), then investigate the fault.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-l3-s3",
+              "type": "scenario-decision",
+              "title": "Scenario 3: Reheating Rice",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer asks you to reheat yesterday's leftover rice. You already reheated it once this morning. What do you do?",
+                    "options": [
+                      {
+                        "label": "Reheat it again, the customer is always right.",
+                        "nextNodeId": "wrong-reheat"
+                      },
+                      {
+                        "label": "Refuse politely and explain the food safety risk.",
+                        "nextNodeId": "correct-refuse"
+                      },
+                      {
+                        "label": "Microwave it on high for 5 minutes.",
+                        "nextNodeId": "wrong-microwave"
+                      }
+                    ]
+                  },
+                  "wrong-reheat": {
+                    "text": "❌ **Incorrect.** Rice can only be reheated once. Multiple reheating increases the risk of Bacillus cereus poisoning.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-microwave": {
+                    "text": "❌ **Incorrect.** The issue isn't the method, it's that the rice has already been reheated once. It's now unsafe.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-refuse": {
+                    "text": "✅ **Correct.** Food should only be reheated once. Explain this is a food safety law, not a choice.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-l3-s4",
+              "type": "scenario-decision",
+              "title": "Scenario 4: Cooling Soup",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You've just made a large pot of soup (10 litres). It's 2pm and you need it cold for tomorrow. What's the best method?",
+                    "options": [
+                      {
+                        "label": "Leave it on the counter overnight with the lid on.",
+                        "nextNodeId": "wrong-counter"
+                      },
+                      { "label": "Put the whole pot in the fridge.", "nextNodeId": "wrong-pot" },
+                      {
+                        "label": "Divide into shallow trays and use an ice bath.",
+                        "nextNodeId": "correct-divide"
+                      }
+                    ]
+                  },
+                  "wrong-counter": {
+                    "text": "❌ **Incorrect.** This will spend hours in the Danger Zone. Bacteria will multiply to dangerous levels.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-pot": {
+                    "text": "❌ **Incorrect.** A large pot will take too long to cool and will raise the fridge temperature, endangering other food.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-divide": {
+                    "text": "✅ **Correct.** Dividing into shallow portions speeds cooling. Ice baths help it reach 8°C within 90 minutes.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-l3-s5",
+              "type": "scenario-decision",
+              "title": "Scenario 5: Probe Thermometer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You're about to check if a chicken is cooked. Where should you insert the probe thermometer?",
+                    "options": [
+                      {
+                        "label": "Into the thickest part of the breast.",
+                        "nextNodeId": "wrong-breast"
+                      },
+                      {
+                        "label": "Between the leg and the body (thickest part).",
+                        "nextNodeId": "correct-thigh"
+                      },
+                      { "label": "Just under the skin.", "nextNodeId": "wrong-skin" }
+                    ]
+                  },
+                  "wrong-breast": {
+                    "text": "❌ **Incorrect.** The breast cooks faster. The thickest part is between the leg and body.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-skin": {
+                    "text": "❌ **Incorrect.** The skin is the hottest part. You need to check the core temperature of the meat.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-thigh": {
+                    "text": "✅ **Correct.** The thickest part (between leg and body) takes longest to cook. It must reach 75°C.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Personal Hygiene",
+      "description": "Learn about personal hygiene practices to prevent food contamination.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Handwashing & Protective Clothing",
+          "slides": [
+            {
+              "id": "m4-l1-s1",
+              "type": "text-graphic-split",
+              "title": "The Importance of Handwashing",
+              "content": "## Why Handwashing is Critical\n\nYour hands are the **number one** source of contamination in food preparation.\n\n### When to Wash Your Hands:\n- **Before**: Starting work, handling food, putting on gloves\n- **After**: Using the toilet, touching hair/face, handling raw food\n- **After**: Touching bins, cleaning, smoking, eating\n- **After**: Coughing, sneezing, or blowing your nose\n\n### The 20-Second Rule:\n1. Wet hands with warm water\n2. Apply soap and lather well\n3. Scrub for **20 seconds** (including between fingers, thumbs, under nails)\n4. Rinse thoroughly\n5. Dry with a clean towel or air dryer\n\n**Remember**: Hand sanitizer is NOT a substitute for washing!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m4-l1-s2",
+              "type": "text-graphic-split",
+              "title": "Protective Clothing",
+              "content": "## What to Wear in a Food Environment\n\n### Required Protective Clothing:\n- **Clean uniform**: Changed daily, washed at 60°C+\n- **Apron**: Clean, changed when dirty\n- **Hair covering**: Hat, hairnet, or cap (covers all hair)\n- **Closed-toe shoes**: Non-slip, washable\n\n### What NOT to Wear:\n- ❌ Jewellery (except plain wedding band)\n- ❌ Watches\n- ❌ False nails or nail polish\n- ❌ Strong perfume/aftershave\n- ❌ Outdoor clothing in food areas\n\n### Why?\n- Jewellery harbours bacteria and can fall into food\n- Nail polish can chip into food\n- Perfume can taint food flavours\n- Outdoor clothes carry dirt and bacteria",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m4-l1-s3",
+              "type": "text-graphic-split",
+              "title": "Cuts, Wounds & Illness",
+              "content": "## Managing Cuts and Illness\n\n### Cuts and Wounds:\n- **Cover immediately**: Use a **blue waterproof plaster**\n- **Why blue?**: Easy to spot if it falls off\n- **Gloves**: Wear over plasters for extra protection\n- **Report**: Tell your supervisor about any cuts\n\n### When You MUST Stay Home:\n- **Vomiting or diarrhoea**: Stay off for 48 hours AFTER symptoms stop\n- **Skin infections**: Boils, infected cuts, impetigo\n- **Eye/ear/nose discharge**: Conjunctivitis, infected piercings\n- **Jaundice**: Hepatitis A or E\n\n### Reporting Illness:\nYou have a **legal duty** to report illness to your manager. It's not optional.\n\n**Remember**: Coming to work sick puts customers at serious risk!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m4-l1-s3b",
+              "type": "text-graphic-split",
+              "title": "Reporting Sickness",
+              "content": "## Your Legal Duty to Report Illness\n\nYou **must** report any illness or symptoms to your manager immediately. This is a legal requirement, not optional.\n\n### Reportable Symptoms:\n- **Vomiting and/or diarrhoea**\n- **Fever with diarrhoea or vomiting**\n- **Sore throat with fever**\n- **Jaundice (yellowing of skin/eyes)**\n- **Infected wounds or skin infections**\n- **Discharge from eyes, ears, or nose**\n\n### Specific Diseases to Report:\n- **E. coli O157**\n- **Salmonella**\n- **Typhoid**\n- **Hepatitis A or E**\n- **Norovirus**\n- **Shigella (dysentery)**\n\n### The 48-Hour Rule:\nIf you have vomiting or diarrhoea, you **must stay off work for 48 hours AFTER your symptoms have completely stopped**.\n\n### Why This Matters:\n- You can spread infection even if you feel better\n- One sick food handler can cause a major outbreak\n- It's a **legal requirement** under the Food Safety Act\n\n**Remember**: Your employer cannot force you to work while infectious. If they do, report it to the local Environmental Health Officer.",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m4-l1-s4",
+              "type": "drag-sort",
+              "title": "Personal Hygiene Sorting",
+              "content": "Sort these items into acceptable or unacceptable for food handlers.",
+              "dragSortData": {
+                "categories": [
+                  { "id": "acceptable", "label": "Acceptable" },
+                  { "id": "unacceptable", "label": "Unacceptable" }
+                ],
+                "items": [
+                  { "id": "hairnet", "label": "Hairnet", "categoryId": "acceptable" },
+                  { "id": "rings", "label": "Multiple Rings", "categoryId": "unacceptable" },
+                  {
+                    "id": "blueplaster",
+                    "label": "Blue Waterproof Plaster",
+                    "categoryId": "acceptable"
+                  },
+                  { "id": "nailpolish", "label": "Nail Polish", "categoryId": "unacceptable" },
+                  { "id": "apron", "label": "Clean Apron", "categoryId": "acceptable" },
+                  { "id": "watch", "label": "Wristwatch", "categoryId": "unacceptable" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Bad Habits & Contamination",
+          "slides": [
+            {
+              "id": "m4-l2-s1",
+              "type": "text-graphic-split",
+              "title": "Common Bad Habits",
+              "content": "## Habits That Contaminate Food\n\nEven experienced food handlers can develop bad habits. Here are the most common:\n\n### Physical Contact:\n- **Touching your face/hair**: Transfers bacteria and hair\n- **Scratching**: Spreads skin bacteria\n- **Licking fingers**: Introduces saliva bacteria\n- **Tasting with fingers**: Cross-contamination risk\n\n### Poor Practices:\n- **Not washing hands**: After touching anything non-food\n- **Wearing gloves too long**: Gloves get dirty too!\n- **Coughing/sneezing**: Turn away and wash hands\n- **Smoking**: Must wash hands before returning\n- **Eating in food areas**: Crumbs and bacteria\n\n### The Solution:\n**Awareness** - Catch yourself doing these things and stop immediately!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m4-l2-s2",
+              "type": "text-graphic-split",
+              "title": "Glove Usage",
+              "content": "## When and How to Use Gloves\n\n### When to Wear Gloves:\n- Handling ready-to-eat food\n- After treating a cut or wound\n- When required by your workplace policy\n\n### Important Rules:\n1. **Wash hands BEFORE** putting gloves on\n2. **Change gloves** when switching tasks\n3. **Never wash gloves** - they're single-use\n4. **Change if torn** or contaminated\n5. **Wash hands AFTER** removing gloves\n\n### Common Mistakes:\n- Thinking gloves = clean hands (they don't!)\n- Wearing the same gloves for hours\n- Touching face/phone while wearing gloves\n- Not washing hands before putting gloves on\n\n**Remember**: Gloves are a barrier, not a replacement for handwashing!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            }
+          ]
+        },
+        {
+          "id": "m4-l3",
+          "title": "Personal Hygiene Scenarios",
+          "slides": [
+            {
+              "id": "m4-l3-s1",
+              "type": "scenario-decision",
+              "title": "Scenario 1: The Dropped Plaster",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You notice your blue plaster is missing while preparing sandwiches. You can't see it anywhere. What do you do?",
+                    "options": [
+                      {
+                        "label": "Keep looking for it after you finish the sandwiches.",
+                        "nextNodeId": "wrong-later"
+                      },
+                      {
+                        "label": "Stop immediately, find the plaster, and discard any food it may have touched.",
+                        "nextNodeId": "correct-stop"
+                      },
+                      {
+                        "label": "It probably fell on the floor, just carry on.",
+                        "nextNodeId": "wrong-floor"
+                      }
+                    ]
+                  },
+                  "wrong-later": {
+                    "text": "❌ **Incorrect.** The plaster could be in the food. You must stop immediately and locate it.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-floor": {
+                    "text": "❌ **Incorrect.** You cannot assume where it is. It could be in the food, which is a choking hazard.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-stop": {
+                    "text": "✅ **Correct.** Stop work immediately. Find the plaster and discard any food prepared since you last saw it.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-l3-s2",
+              "type": "scenario-decision",
+              "title": "Scenario 2: The Sneezing Colleague",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your colleague sneezes into their hands while preparing salads. They reach for a towel to wipe their hands. What should they do?",
+                    "options": [
+                      {
+                        "label": "Wipe hands on the towel and carry on.",
+                        "nextNodeId": "wrong-towel"
+                      },
+                      {
+                        "label": "Wash hands thoroughly with soap and water.",
+                        "nextNodeId": "correct-wash"
+                      },
+                      { "label": "Use hand sanitizer.", "nextNodeId": "wrong-sanitizer" }
+                    ]
+                  },
+                  "wrong-towel": {
+                    "text": "❌ **Incorrect.** Wiping doesn't remove bacteria. They must wash their hands with soap and water.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-sanitizer": {
+                    "text": "❌ **Incorrect.** Hand sanitizer is not a substitute for washing. Soap and water are required.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-wash": {
+                    "text": "✅ **Correct.** After sneezing, coughing, or touching your face, you must wash your hands with soap and water.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-l3-s3",
+              "type": "scenario-decision",
+              "title": "Scenario 3: Jewellery at Work",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A new employee arrives wearing a watch, rings, and a bracelet. What do you tell them?",
+                    "options": [
+                      {
+                        "label": "It's fine as long as they wash their hands regularly.",
+                        "nextNodeId": "wrong-fine"
+                      },
+                      {
+                        "label": "They can keep a plain wedding band but must remove everything else.",
+                        "nextNodeId": "correct-band"
+                      },
+                      {
+                        "label": "They must remove all jewellery including wedding rings.",
+                        "nextNodeId": "wrong-all"
+                      }
+                    ]
+                  },
+                  "wrong-fine": {
+                    "text": "❌ **Incorrect.** Jewellery harbours bacteria and can fall into food. It must be removed.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-all": {
+                    "text": "❌ **Incorrect.** A plain wedding band is usually acceptable. All other jewellery must be removed.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-band": {
+                    "text": "✅ **Correct.** Only a plain wedding band is acceptable. Watches, rings, bracelets must all be removed.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-l3-s4",
+              "type": "scenario-decision",
+              "title": "Scenario 4: Glove Confusion",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You're wearing gloves while handling raw chicken. You need to answer the phone. What do you do?",
+                    "options": [
+                      {
+                        "label": "Answer the phone with your gloves on.",
+                        "nextNodeId": "wrong-gloves"
+                      },
+                      {
+                        "label": "Remove gloves, answer phone, put same gloves back on.",
+                        "nextNodeId": "wrong-same"
+                      },
+                      {
+                        "label": "Remove gloves, wash hands, answer phone, wash hands, new gloves.",
+                        "nextNodeId": "correct-new"
+                      }
+                    ]
+                  },
+                  "wrong-gloves": {
+                    "text": "❌ **Incorrect.** You'll contaminate the phone with raw chicken bacteria, then spread it to other surfaces.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-same": {
+                    "text": "❌ **Incorrect.** The gloves are contaminated with raw chicken. You need fresh gloves after washing hands.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-new": {
+                    "text": "✅ **Correct.** Remove contaminated gloves, wash hands, handle phone, wash hands again, then use fresh gloves.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-l3-s5",
+              "type": "scenario-decision",
+              "title": "Scenario 5: The 48-Hour Rule",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You had diarrhoea on Monday. It stopped Tuesday morning. When can you return to work?",
+                    "options": [
+                      {
+                        "label": "Tuesday afternoon (symptoms have stopped).",
+                        "nextNodeId": "wrong-tuesday"
+                      },
+                      {
+                        "label": "Wednesday (24 hours after symptoms stopped).",
+                        "nextNodeId": "wrong-wednesday"
+                      },
+                      {
+                        "label": "Thursday (48 hours after symptoms stopped).",
+                        "nextNodeId": "correct-thursday"
+                      }
+                    ]
+                  },
+                  "wrong-tuesday": {
+                    "text": "❌ **Incorrect.** You must wait 48 hours AFTER symptoms stop. You're still infectious.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-wednesday": {
+                    "text": "❌ **Incorrect.** The rule is 48 hours, not 24 hours. You could still spread the infection.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-thursday": {
+                    "text": "✅ **Correct.** You must stay off work for 48 hours AFTER symptoms have completely stopped.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Cleaning & Food Premises",
+      "description": "Learn about effective cleaning, chemical safety, and pest control in food environments.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Cleaning Procedures",
+          "slides": [
+            {
+              "id": "m5-l1-s1",
+              "type": "text-graphic-split",
+              "title": "The Importance of Cleaning",
+              "content": "## Why Cleaning is Critical\n\nCleaning removes dirt, grease, and food debris that bacteria need to survive.\n\n### Cleaning vs. Disinfecting:\n- **Cleaning**: Removes visible dirt and grease\n- **Disinfecting**: Kills bacteria (requires a clean surface first)\n\n### The 6-Step Cleaning Method:\n1. **Remove** loose dirt and debris\n2. **Wash** with hot water and detergent\n3. **Rinse** with clean hot water\n4. **Disinfect** with sanitizer\n5. **Final rinse** (if required by product)\n6. **Air dry** (never use a tea towel!)\n\n**Remember**: You cannot disinfect a dirty surface!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l1-s2",
+              "type": "text-graphic-split",
+              "title": "Cleaning Schedules",
+              "content": "## When and What to Clean\n\n### Clean As You Go:\n- Wipe spills immediately\n- Clean equipment between tasks\n- Keep work surfaces clear\n\n### Daily Cleaning:\n- All food contact surfaces\n- Floors and walls (splash zones)\n- Sinks and taps\n- Bins (empty and clean)\n\n### Weekly Cleaning:\n- Deep clean equipment\n- Behind and under equipment\n- High shelves and light fittings\n- Drains\n\n### Monthly/Periodic:\n- Deep clean extraction systems\n- Defrost and clean freezers\n- Full kitchen deep clean\n\n**Tip**: Use a cleaning schedule checklist to ensure nothing is missed!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l1-s3",
+              "type": "text-graphic-split",
+              "title": "Cleaning Equipment",
+              "content": "## Using the Right Tools\n\n### Color-Coded System:\nUse different colored equipment for different areas:\n- **Red**: Raw meat areas\n- **Blue**: Raw fish areas\n- **Yellow**: Cooked food areas\n- **Green**: Salad and fruit areas\n- **White**: Bakery and dairy\n\n### Essential Equipment:\n- **Cloths**: Disposable or laundered daily at 60°C+\n- **Mops**: Separate for kitchen and toilets\n- **Brushes**: For scrubbing (not for food contact surfaces)\n- **Buckets**: Color-coded, cleaned after use\n\n### Common Mistakes:\n- Using the same cloth all day\n- Not changing mop water\n- Storing dirty equipment\n- Using worn-out equipment\n\n**Remember**: Dirty cleaning equipment spreads bacteria!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            }
+          ]
+        },
+        {
+          "id": "m5-l2",
+          "title": "Chemical Safety",
+          "slides": [
+            {
+              "id": "m5-l2-s1",
+              "type": "text-graphic-split",
+              "title": "Safe Chemical Use",
+              "content": "## Handling Cleaning Chemicals Safely\n\n### Storage Rules:\n1. **Separate**: Store away from food and food equipment\n2. **Locked**: Keep in a designated, lockable cupboard\n3. **Original containers**: Never decant into unmarked bottles\n4. **Labels**: Keep all labels intact and readable\n5. **COSHH data**: Keep safety data sheets accessible\n\n### Using Chemicals Safely:\n- **Read instructions**: Follow manufacturer's dilution rates\n- **PPE**: Wear gloves and eye protection if required\n- **Ventilation**: Ensure good airflow\n- **Never mix**: Different chemicals can create toxic fumes\n- **Rinse thoroughly**: Remove all chemical residue from food surfaces\n\n**Warning**: Bleach + acid cleaners = toxic chlorine gas!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l2-s2",
+              "type": "text-graphic-split",
+              "title": "COSHH Regulations",
+              "content": "## Control of Substances Hazardous to Health\n\n### What is COSHH?\nCOSHH requires employers to control substances that can harm workers' health.\n\n### Hazard Symbols You Must Know:\n- **Corrosive** (Test tube pouring on hand/surface): Causes severe skin burns and eye damage\n- **Harmful/Irritant** (Exclamation mark): May cause skin irritation or respiratory issues\n- **Toxic** (Skull and crossbones): Can cause serious poisoning or death\n- **Environmental Hazard** (Dead tree/fish): Harmful to aquatic life and environment\n- **Flammable** (Flame): Catches fire easily\n\n### Your Responsibilities:\n1. **Know the risks**: Read safety data sheets and recognize symbols\n2. **Follow procedures**: Use chemicals as trained\n3. **Use PPE**: Wear provided protective equipment\n4. **Report issues**: Tell your manager about damaged containers or spills\n\n### Common Hazards:\n- **Skin irritation**: From detergents and sanitizers\n- **Burns**: From concentrated chemicals (corrosive)\n- **Respiratory issues**: From fumes and sprays\n- **Eye damage**: From splashes\n\n### First Aid:\n- **Skin contact**: Rinse with water for 15 minutes\n- **Eye contact**: Rinse with water for 15 minutes, seek medical help\n- **Ingestion**: Do NOT induce vomiting, seek immediate medical help\n\n**Remember**: Prevention is better than cure - use chemicals carefully!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l2-s3",
+              "type": "scenario-decision",
+              "title": "Scenario: Chemical Spill",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You've spilled concentrated sanitizer on the floor near the food prep area. What's your first action?",
+                    "options": [
+                      { "label": "Quickly mop it up and carry on.", "nextNodeId": "wrong-mop" },
+                      {
+                        "label": "Cordon off the area, ventilate, then clean following COSHH procedures.",
+                        "nextNodeId": "correct-cordon"
+                      },
+                      { "label": "Pour water on it to dilute it.", "nextNodeId": "wrong-water" }
+                    ]
+                  },
+                  "wrong-mop": {
+                    "text": "❌ **Incorrect.** You need to protect others first, ventilate the area, and follow proper spill procedures.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-water": {
+                    "text": "❌ **Incorrect.** This could spread the chemical further and create more hazards. Follow COSHH spill procedures.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-cordon": {
+                    "text": "✅ **Correct.** Protect others, ventilate, wear PPE, then clean according to the safety data sheet instructions.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "m5-l3",
+          "title": "Pest Control",
+          "slides": [
+            {
+              "id": "m5-l3-s1",
+              "type": "text-graphic-split",
+              "title": "Preventing Pest Infestations",
+              "content": "## The Three Pillars of Pest Prevention\n\n### 1. Deny Entry (Proofing):\n- **Seal gaps**: Fill holes and cracks (mice can fit through 6mm gaps!)\n- **Install screens**: Fly screens on windows and doors\n- **Door seals**: Self-closing doors with brush strips\n- **Drain covers**: Prevent entry through drains\n- **Delivery checks**: Inspect all incoming goods\n\n### 2. Deny Food:\n- **Store properly**: All food in sealed, pest-proof containers\n- **Clean thoroughly**: Remove crumbs and spills immediately\n- **Waste management**: Lidded bins, emptied regularly\n- **No feeding**: Never leave pet food out\n\n### 3. Deny Shelter:\n- **Declutter**: Remove cardboard boxes and packaging\n- **Clean behind equipment**: Regular deep cleaning\n- **Maintain grounds**: Keep outdoor areas tidy\n- **Fix leaks**: Eliminate water sources\n\n**Remember**: Prevention is cheaper and easier than treatment!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l3-s2",
+              "type": "text-graphic-split",
+              "title": "Professional Pest Control",
+              "content": "## Working with Pest Control Contractors\n\n### Why Use Professionals?\n- **Expertise**: Trained to identify and treat infestations\n- **Safe chemicals**: Access to professional-grade products\n- **Legal compliance**: Ensures you meet regulations\n- **Documentation**: Provides treatment records for EHO inspections\n\n### Your Role:\n1. **Report signs immediately**: Don't wait for the next scheduled visit\n2. **Cooperate**: Follow contractor instructions\n3. **Prepare areas**: Move equipment if requested\n4. **Maintain prevention**: Keep up proofing and hygiene between visits\n\n### Regular Visits:\n- **Frequency**: Usually monthly or quarterly\n- **Monitoring**: Check bait stations and traps\n- **Documentation**: Keep all pest control reports\n\n### Never DIY:\n- ❌ Don't set your own traps or poison\n- ❌ Don't attempt to remove nests\n- ❌ Don't use household pest products in food areas\n\n**Remember**: Improper pest control can contaminate food and harm customers!",
+              "mediaUrl": "/images/course/food-safety-intro.png"
+            },
+            {
+              "id": "m5-l3-s3",
+              "type": "scenario-decision",
+              "title": "Scenario: Pest Control Visit",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The pest control contractor finds evidence of mice in the dry store. They want to place bait stations. What should you do?",
+                    "options": [
+                      {
+                        "label": "Tell them to come back when you're less busy.",
+                        "nextNodeId": "wrong-busy"
+                      },
+                      {
+                        "label": "Cooperate fully and ask for a copy of their report.",
+                        "nextNodeId": "correct-cooperate"
+                      },
+                      {
+                        "label": "Say you'll handle it yourself to save money.",
+                        "nextNodeId": "wrong-diy"
+                      }
+                    ]
+                  },
+                  "wrong-busy": {
+                    "text": "❌ **Incorrect.** Pest infestations are urgent. Delaying treatment allows the problem to worsen.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-diy": {
+                    "text": "❌ **Incorrect.** DIY pest control in food premises is dangerous and often illegal. Use professionals only.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-cooperate": {
+                    "text": "✅ **Correct.** Work with the contractor, get documentation, and implement their recommendations immediately.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "m5-l4",
+          "title": "Premises & Equipment",
+          "slides": [
+            {
+              "id": "m5-l4-s1",
+              "type": "scenario-decision",
+              "title": "Scenario 1: Broken Equipment",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You notice a crack in a plastic chopping board. What do you do?",
+                    "options": [
+                      {
+                        "label": "Keep using it, it's only a small crack.",
+                        "nextNodeId": "wrong-keep"
+                      },
+                      {
+                        "label": "Remove it from use and report it to your manager.",
+                        "nextNodeId": "correct-remove"
+                      },
+                      {
+                        "label": "Turn it over and use the other side.",
+                        "nextNodeId": "wrong-flip"
+                      }
+                    ]
+                  },
+                  "wrong-keep": {
+                    "text": "❌ **Incorrect.** Cracks harbor bacteria and can't be cleaned properly. It's a contamination risk.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-flip": {
+                    "text": "❌ **Incorrect.** The board is damaged and should be replaced. Both sides are now compromised.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-remove": {
+                    "text": "✅ **Correct.** Damaged equipment must be removed immediately and replaced to prevent contamination.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-l4-s2",
+              "type": "scenario-decision",
+              "title": "Scenario 2: Cleaning Schedule",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's the end of a busy shift. The cleaning schedule says to deep clean the grill, but you're exhausted. What do you do?",
+                    "options": [
+                      { "label": "Skip it tonight, do it tomorrow.", "nextNodeId": "wrong-skip" },
+                      { "label": "Do a quick wipe and sign it off.", "nextNodeId": "wrong-fake" },
+                      {
+                        "label": "Complete the deep clean as scheduled.",
+                        "nextNodeId": "correct-clean"
+                      }
+                    ]
+                  },
+                  "wrong-skip": {
+                    "text": "❌ **Incorrect.** Cleaning schedules exist for food safety. Skipping tasks allows bacteria to build up.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-fake": {
+                    "text": "❌ **Incorrect.** Falsifying cleaning records is fraud and puts customers at risk. Always be honest.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-clean": {
+                    "text": "✅ **Correct.** Cleaning schedules must be followed. If you're consistently too busy, speak to management about staffing.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Complete the final test to earn your Level 2 Food Safety certificate. You need 80% to pass.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Test",
+          "slides": [
+            {
+              "id": "m6-l1-s1",
+              "type": "quiz",
+              "title": "Level 2 Food Safety Final Assessment",
+              "quizData": {
+                "questionCount": 30,
+                "passPercentage": 80,
+                "randomize": true,
+                "questionBankId": "level2-food-safety"
+              }
+            },
+            {
+              "id": "m6-l1-s2",
+              "type": "certificate-download",
+              "title": "Your Certificate"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

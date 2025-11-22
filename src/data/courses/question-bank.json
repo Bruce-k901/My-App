@@ -1,0 +1,514 @@
+{
+  "level2-food-safety": [
+    {
+      "id": "q001",
+      "question": "What is the legal maximum temperature for storing chilled food?",
+      "options": ["5°C", "8°C", "10°C", "12°C"],
+      "correctAnswer": 1,
+      "explanation": "The legal maximum temperature for chilled food storage is 8°C, though best practice is 1-4°C.",
+      "module": "m3"
+    },
+    {
+      "id": "q002",
+      "question": "How long must you stay off work after vomiting or diarrhoea stops?",
+      "options": ["24 hours", "48 hours", "72 hours", "Until you feel better"],
+      "correctAnswer": 1,
+      "explanation": "You must stay off work for 48 hours AFTER symptoms have completely stopped.",
+      "module": "m4"
+    },
+    {
+      "id": "q003",
+      "question": "What is the minimum core cooking temperature for poultry?",
+      "options": ["63°C", "70°C", "75°C", "80°C"],
+      "correctAnswer": 2,
+      "explanation": "Poultry must reach a minimum core temperature of 75°C for 30 seconds.",
+      "module": "m3"
+    },
+    {
+      "id": "q004",
+      "question": "Which of these is NOT one of the 14 major allergens?",
+      "options": ["Celery", "Garlic", "Mustard", "Sesame"],
+      "correctAnswer": 1,
+      "explanation": "Garlic is not one of the 14 major allergens. Celery, mustard, and sesame are all major allergens.",
+      "module": "m2"
+    },
+    {
+      "id": "q005",
+      "question": "What does 'due diligence' mean in food safety law?",
+      "options": [
+        "Keeping detailed records",
+        "Taking all reasonable precautions to prevent an offence",
+        "Having insurance",
+        "Attending training courses"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Due diligence means you took all reasonable precautions and exercised all due diligence to prevent the offence.",
+      "module": "m1"
+    },
+    {
+      "id": "q006",
+      "question": "What color plaster should food handlers use?",
+      "options": ["White", "Pink", "Blue", "Green"],
+      "correctAnswer": 2,
+      "explanation": "Blue waterproof plasters should be used as they are easily visible if they fall into food.",
+      "module": "m4"
+    },
+    {
+      "id": "q007",
+      "question": "How long do you have to register a new food business with the local authority?",
+      "options": [
+        "7 days before opening",
+        "14 days before opening",
+        "28 days before opening",
+        "On the day of opening"
+      ],
+      "correctAnswer": 2,
+      "explanation": "You must register at least 28 days before opening your food business.",
+      "module": "m1"
+    },
+    {
+      "id": "q008",
+      "question": "What is the danger zone for bacterial growth?",
+      "options": ["0°C to 5°C", "5°C to 60°C", "8°C to 63°C", "10°C to 70°C"],
+      "correctAnswer": 2,
+      "explanation": "The danger zone is 8°C to 63°C, where bacteria multiply rapidly.",
+      "module": "m3"
+    },
+    {
+      "id": "q009",
+      "question": "Which bacteria is commonly associated with rice?",
+      "options": ["Salmonella", "E. coli", "Bacillus cereus", "Listeria"],
+      "correctAnswer": 2,
+      "explanation": "Bacillus cereus is commonly found in rice and can survive cooking if rice is not cooled properly.",
+      "module": "m2"
+    },
+    {
+      "id": "q010",
+      "question": "How many times can you safely reheat food?",
+      "options": ["Once", "Twice", "Three times", "As many times as needed"],
+      "correctAnswer": 0,
+      "explanation": "Food should only be reheated once. Multiple reheating increases food safety risks.",
+      "module": "m3"
+    },
+    {
+      "id": "q011",
+      "question": "What does COSHH stand for?",
+      "options": [
+        "Control of Substances Harmful to Health",
+        "Control of Substances Hazardous to Health",
+        "Care of Substances Harmful to Humans",
+        "Chemical and Other Substance Handling"
+      ],
+      "correctAnswer": 1,
+      "explanation": "COSHH stands for Control of Substances Hazardous to Health.",
+      "module": "m5"
+    },
+    {
+      "id": "q012",
+      "question": "What is the correct order for the 6-step cleaning method?",
+      "options": [
+        "Remove, wash, rinse, disinfect, rinse, dry",
+        "Wash, rinse, disinfect, dry",
+        "Remove, disinfect, wash, rinse, dry",
+        "Wash, disinfect, rinse, dry"
+      ],
+      "correctAnswer": 0,
+      "explanation": "The correct order is: Remove debris, wash, rinse, disinfect, final rinse (if needed), air dry.",
+      "module": "m5"
+    },
+    {
+      "id": "q013",
+      "question": "Which of these is a high-risk food?",
+      "options": ["Dried pasta", "Cooked rice", "Flour", "Sugar"],
+      "correctAnswer": 1,
+      "explanation": "Cooked rice is a high-risk food. Dried foods like pasta, flour, and sugar are low-risk.",
+      "module": "m1"
+    },
+    {
+      "id": "q014",
+      "question": "What does YOPI stand for in vulnerable groups?",
+      "options": [
+        "Young, Old, Pregnant, Ill",
+        "Young, Old, Pregnant, Immunocompromised",
+        "Youth, Older, Pregnant, Infirm",
+        "Young, Obese, Pregnant, Ill"
+      ],
+      "correctAnswer": 1,
+      "explanation": "YOPI stands for Young, Old, Pregnant, and Immunocompromised - the groups most at risk from food poisoning.",
+      "module": "m1"
+    },
+    {
+      "id": "q015",
+      "question": "How long should you wash your hands for?",
+      "options": ["10 seconds", "20 seconds", "30 seconds", "1 minute"],
+      "correctAnswer": 1,
+      "explanation": "Hands should be washed for at least 20 seconds with soap and warm water.",
+      "module": "m4"
+    },
+    {
+      "id": "q016",
+      "question": "At what temperature should frozen food be stored?",
+      "options": ["-10°C or colder", "-15°C or colder", "-18°C or colder", "-20°C or colder"],
+      "correctAnswer": 2,
+      "explanation": "Frozen food must be stored at -18°C or colder.",
+      "module": "m3"
+    },
+    {
+      "id": "q017",
+      "question": "Which color chopping board is used for raw meat?",
+      "options": ["Blue", "Red", "Yellow", "Green"],
+      "correctAnswer": 1,
+      "explanation": "Red chopping boards are used for raw meat in the color-coded system.",
+      "module": "m5"
+    },
+    {
+      "id": "q018",
+      "question": "What is cross-contamination?",
+      "options": [
+        "Food going out of date",
+        "Transfer of bacteria from one food to another",
+        "Mixing different types of food",
+        "Storing food at wrong temperatures"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Cross-contamination is the transfer of harmful bacteria from one food to another, often from raw to ready-to-eat food.",
+      "module": "m2"
+    },
+    {
+      "id": "q019",
+      "question": "How quickly should cooked food cool from 75°C to 8°C?",
+      "options": ["30 minutes", "60 minutes", "90 minutes", "2 hours"],
+      "correctAnswer": 2,
+      "explanation": "Cooked food must cool from 75°C to 8°C within 90 minutes to minimize time in the danger zone.",
+      "module": "m3"
+    },
+    {
+      "id": "q020",
+      "question": "What is the main purpose of the Food Safety Act 1990?",
+      "options": [
+        "To set food prices",
+        "To ensure food is safe and what it claims to be",
+        "To regulate restaurants",
+        "To control imports"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The Food Safety Act 1990 ensures food is safe, of expected quality, and not misleadingly labeled.",
+      "module": "m1"
+    },
+    {
+      "id": "q021",
+      "question": "Which of these is a physical hazard?",
+      "options": ["Salmonella", "Bleach", "Glass", "Peanuts"],
+      "correctAnswer": 2,
+      "explanation": "Glass is a physical hazard. Salmonella is biological, bleach is chemical, and peanuts are an allergen.",
+      "module": "m2"
+    },
+    {
+      "id": "q022",
+      "question": "What is the minimum hot holding temperature?",
+      "options": ["55°C", "60°C", "63°C", "70°C"],
+      "correctAnswer": 2,
+      "explanation": "Food must be held at 63°C or above for hot holding.",
+      "module": "m3"
+    },
+    {
+      "id": "q023",
+      "question": "Can you wear a watch while handling food?",
+      "options": [
+        "Yes, if it's waterproof",
+        "Yes, if you wash your hands regularly",
+        "No, watches must be removed",
+        "Only digital watches are allowed"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Watches must be removed as they harbor bacteria and can fall into food.",
+      "module": "m4"
+    },
+    {
+      "id": "q024",
+      "question": "What should you do if you find mouse droppings in the dry store?",
+      "options": [
+        "Clean them up yourself",
+        "Set a trap",
+        "Report it to your manager immediately",
+        "Ignore it if there's only a few"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Any signs of pests must be reported to management immediately so professional pest control can be contacted.",
+      "module": "m5"
+    },
+    {
+      "id": "q025",
+      "question": "Which bacteria is commonly found in raw chicken?",
+      "options": ["Listeria", "Campylobacter", "E. coli", "Bacillus cereus"],
+      "correctAnswer": 1,
+      "explanation": "Campylobacter is the most common bacteria found in raw chicken.",
+      "module": "m2"
+    },
+    {
+      "id": "q026",
+      "question": "What does an EHO have the power to do?",
+      "options": [
+        "Only give advice",
+        "Inspect and close businesses if necessary",
+        "Only issue warnings",
+        "Nothing without a warrant"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Environmental Health Officers can inspect premises, seize food, and close businesses if there's an imminent health risk.",
+      "module": "m1"
+    },
+    {
+      "id": "q027",
+      "question": "How should you defrost frozen meat safely?",
+      "options": [
+        "At room temperature",
+        "In hot water",
+        "In the fridge",
+        "In the microwave then refreeze"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Frozen meat should be defrosted in the fridge to keep it out of the danger zone.",
+      "module": "m3"
+    },
+    {
+      "id": "q028",
+      "question": "What should you do if your plaster falls off while preparing food?",
+      "options": [
+        "Continue working and replace it later",
+        "Stop immediately and find it",
+        "Just put on a new one",
+        "Wash your hands and continue"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Stop work immediately, find the plaster, and discard any food it may have touched.",
+      "module": "m4"
+    },
+    {
+      "id": "q029",
+      "question": "What is the three pillars approach to pest control?",
+      "options": [
+        "Clean, trap, poison",
+        "Deny entry, deny food, deny shelter",
+        "Inspect, report, treat",
+        "Proof, monitor, eliminate"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The three pillars are: deny entry (proofing), deny food, and deny shelter.",
+      "module": "m5"
+    },
+    {
+      "id": "q030",
+      "question": "Can you use hand sanitizer instead of washing hands?",
+      "options": [
+        "Yes, it's just as effective",
+        "Yes, if it's alcohol-based",
+        "No, it's not a substitute for handwashing",
+        "Only in emergencies"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Hand sanitizer is NOT a substitute for proper handwashing with soap and water.",
+      "module": "m4"
+    },
+    {
+      "id": "q031",
+      "question": "What is anaphylaxis?",
+      "options": [
+        "Food poisoning",
+        "A severe allergic reaction",
+        "A type of bacteria",
+        "Temperature abuse"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Anaphylaxis is a severe, potentially life-threatening allergic reaction.",
+      "module": "m2"
+    },
+    {
+      "id": "q032",
+      "question": "Where should raw meat be stored in the fridge?",
+      "options": ["Top shelf", "Middle shelf", "Bottom shelf", "In the door"],
+      "correctAnswer": 2,
+      "explanation": "Raw meat should be stored on the bottom shelf to prevent drips contaminating other food.",
+      "module": "m3"
+    },
+    {
+      "id": "q033",
+      "question": "What does a skull and crossbones symbol on a chemical mean?",
+      "options": ["Flammable", "Corrosive", "Toxic", "Irritant"],
+      "correctAnswer": 2,
+      "explanation": "The skull and crossbones symbol indicates a toxic substance that can cause serious poisoning or death.",
+      "module": "m5"
+    },
+    {
+      "id": "q034",
+      "question": "How often should fridge temperatures be checked?",
+      "options": ["Once a week", "Once a day", "Twice a day", "Only when it seems warm"],
+      "correctAnswer": 2,
+      "explanation": "Fridge temperatures should be checked at least twice daily and recorded.",
+      "module": "m3"
+    },
+    {
+      "id": "q035",
+      "question": "What is the only acceptable jewelry for food handlers?",
+      "options": ["Earrings", "A plain wedding band", "A medical bracelet", "No jewelry at all"],
+      "correctAnswer": 1,
+      "explanation": "Only a plain wedding band is acceptable. All other jewelry must be removed.",
+      "module": "m4"
+    },
+    {
+      "id": "q036",
+      "question": "Which of these must be reported to your manager?",
+      "options": ["A headache", "A cold", "Diarrhoea", "A cough"],
+      "correctAnswer": 2,
+      "explanation": "Diarrhoea must be reported immediately as it's a symptom of food poisoning.",
+      "module": "m4"
+    },
+    {
+      "id": "q037",
+      "question": "What should cleaning cloths be?",
+      "options": [
+        "Reused for a week",
+        "Disposable or laundered daily at 60°C+",
+        "Rinsed and air-dried",
+        "Shared between tasks"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Cleaning cloths should be disposable or laundered daily at 60°C or higher.",
+      "module": "m5"
+    },
+    {
+      "id": "q038",
+      "question": "What is Listeria particularly dangerous for?",
+      "options": ["Children", "Pregnant women", "Elderly people", "Athletes"],
+      "correctAnswer": 1,
+      "explanation": "Listeria is particularly dangerous for pregnant women and their unborn babies.",
+      "module": "m2"
+    },
+    {
+      "id": "q039",
+      "question": "At what temperature should a delivery of frozen food be accepted?",
+      "options": ["-5°C or colder", "-10°C or colder", "-15°C or colder", "-20°C or colder"],
+      "correctAnswer": 2,
+      "explanation": "Frozen food deliveries should be at -15°C or colder (ideally -18°C).",
+      "module": "m3"
+    },
+    {
+      "id": "q040",
+      "question": "What is the best way to dry hands after washing?",
+      "options": [
+        "On your apron",
+        "A shared towel",
+        "Paper towel or air dryer",
+        "Leave them to air dry"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Hands should be dried with a disposable paper towel or air dryer.",
+      "module": "m4"
+    },
+    {
+      "id": "q041",
+      "question": "What should you never mix when cleaning?",
+      "options": [
+        "Hot and cold water",
+        "Different brands",
+        "Bleach and acid cleaners",
+        "Detergent and water"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Never mix bleach and acid cleaners as this creates toxic chlorine gas.",
+      "module": "m5"
+    },
+    {
+      "id": "q042",
+      "question": "What is the main cause of food poisoning?",
+      "options": ["Viruses", "Bacteria", "Chemicals", "Allergens"],
+      "correctAnswer": 1,
+      "explanation": "Bacteria are the main cause of food poisoning.",
+      "module": "m2"
+    },
+    {
+      "id": "q043",
+      "question": "How long can bacteria double in ideal conditions?",
+      "options": ["Every 5 minutes", "Every 10-20 minutes", "Every hour", "Every 2 hours"],
+      "correctAnswer": 1,
+      "explanation": "In ideal conditions, bacteria can double every 10-20 minutes.",
+      "module": "m2"
+    },
+    {
+      "id": "q044",
+      "question": "What must you do before putting on disposable gloves?",
+      "options": ["Nothing", "Wash your hands", "Use hand sanitizer", "Dry your hands only"],
+      "correctAnswer": 1,
+      "explanation": "You must wash your hands before putting on gloves. Gloves are not a substitute for handwashing.",
+      "module": "m4"
+    },
+    {
+      "id": "q045",
+      "question": "Where should cleaning chemicals be stored?",
+      "options": [
+        "Under the sink",
+        "Next to food",
+        "In a locked cupboard away from food",
+        "Anywhere convenient"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Chemicals must be stored in a designated, lockable cupboard away from food.",
+      "module": "m5"
+    },
+    {
+      "id": "q046",
+      "question": "What is the purpose of a food safety management system?",
+      "options": [
+        "To keep records",
+        "To identify and control hazards",
+        "To train staff",
+        "To pass inspections"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A food safety management system identifies and controls food safety hazards.",
+      "module": "m1"
+    },
+    {
+      "id": "q047",
+      "question": "What color chopping board is used for cooked food?",
+      "options": ["Red", "Blue", "Yellow", "Green"],
+      "correctAnswer": 2,
+      "explanation": "Yellow chopping boards are used for cooked food in the color-coded system.",
+      "module": "m5"
+    },
+    {
+      "id": "q048",
+      "question": "What should you do if a customer has an allergic reaction?",
+      "options": [
+        "Give them water",
+        "Call 999 immediately",
+        "Wait to see if it gets worse",
+        "Give them antihistamines"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Call 999 immediately if someone is having an allergic reaction, especially if they have difficulty breathing.",
+      "module": "m2"
+    },
+    {
+      "id": "q049",
+      "question": "Can you refreeze food that has been defrosted?",
+      "options": [
+        "Yes, always",
+        "Yes, if it was defrosted in the fridge",
+        "No, never",
+        "Only if cooked first"
+      ],
+      "correctAnswer": 3,
+      "explanation": "You can only refreeze defrosted food if it has been cooked first.",
+      "module": "m3"
+    },
+    {
+      "id": "q050",
+      "question": "What is the maximum time food should spend in the danger zone?",
+      "options": ["1 hour", "2 hours", "4 hours", "6 hours"],
+      "correctAnswer": 1,
+      "explanation": "Food should not be in the danger zone (8-63°C) for more than 2 hours total.",
+      "module": "m3"
+    }
+  ]
+}

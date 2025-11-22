@@ -73,6 +73,7 @@ export function TaskFromTemplateModal({
       disposables: [] as string[],
     },
     selectedAssets: [] as string[],
+    monitorCallouts: [] as Array<any>,
   });
   
   // Loading states for uploads
@@ -1070,11 +1071,22 @@ export function TaskFromTemplateModal({
     // Store monitor/callout data - this will be saved in task_data when task is created/updated
     console.log('Monitor/Callout triggered:', { monitor, callout, notes, assetId, temp });
     
-    // You can extend this to:
-    // - Create contractor callout records
-    // - Store monitoring flags
-    // - Send notifications
-    // For now, this data can be stored in task_data.monitorCallout array
+    // Create the callout record
+    const calloutRecord = {
+      monitor,
+      callout,
+      notes,
+      assetId,
+      temp,
+      timestamp: new Date().toISOString(),
+      contractorType: template?.contractor_type
+    };
+
+    // Update formData to include this callout
+    setFormData(prev => ({
+      ...prev,
+      monitorCallouts: [...(prev.monitorCallouts || []), calloutRecord]
+    }));
     
     if (callout && template?.contractor_type) {
       toast.success(`Contractor callout requested: ${template.contractor_type.replace('_', ' ')}`);
@@ -1205,6 +1217,11 @@ export function TaskFromTemplateModal({
         // Store pass/fail status if it exists
         if (formData.passFailStatus) {
           taskData.passFailStatus = formData.passFailStatus;
+        }
+        
+        // Store monitor/callout records if they exist
+        if (formData.monitorCallouts && formData.monitorCallouts.length > 0) {
+          taskData.monitorCallouts = formData.monitorCallouts;
         }
         
         // Store uploaded files
