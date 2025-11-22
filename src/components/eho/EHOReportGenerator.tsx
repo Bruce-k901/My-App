@@ -243,7 +243,24 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error(errorData.error || 'Failed to generate report')
+        
+        // Build detailed error message
+        let errorMessage = errorData.error || 'Failed to generate report'
+        if (errorData.details) {
+          errorMessage += `\n\nDetails: ${errorData.details}`
+        }
+        if (errorData.hint) {
+          errorMessage += `\n\nHint: ${errorData.hint}`
+        }
+        if (errorData.troubleshooting) {
+          const troubleshootingTips = Object.entries(errorData.troubleshooting)
+            .map(([key, value]) => `- ${key}: ${value}`)
+            .join('\n')
+          errorMessage += `\n\nTroubleshooting:\n${troubleshootingTips}`
+        }
+        
+        console.error('EHO export error response:', errorData)
+        throw new Error(errorMessage)
       }
 
       // Handle file download based on format

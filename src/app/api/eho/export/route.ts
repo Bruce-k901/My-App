@@ -100,7 +100,32 @@ export async function POST(request: NextRequest) {
     }
 
     // PDF generation logic moved from Edge Function to here
-    const supabase = await getSupabaseClient();
+    let supabase;
+    try {
+      supabase = await getSupabaseClient();
+    } catch (clientError: any) {
+      console.error("❌ Failed to initialize Supabase client for EHO export:", {
+        error: clientError,
+        message: clientError?.message,
+        hasUrl: !!(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL),
+        hasKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE),
+        keyPrefix: (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE)?.substring(0, 15) || 'MISSING',
+      });
+      
+      return NextResponse.json(
+        {
+          error: "Database configuration error",
+          details: clientError?.message || "Failed to initialize Supabase client",
+          hint: "Check that SUPABASE_SERVICE_ROLE_KEY is set in Vercel environment variables",
+          troubleshooting: {
+            checkServiceRole: "Verify SUPABASE_SERVICE_ROLE_KEY is set in Vercel",
+            checkKeyType: "Ensure it's the service_role key (starts with eyJ...), not publishable key",
+          },
+        },
+        { status: 500 },
+      );
+    }
+    
     const siteId = searchParams.get("site_id");
     const startDate = searchParams.get("start_date");
     const endDate = searchParams.get("end_date");
@@ -109,7 +134,15 @@ export async function POST(request: NextRequest) {
 
     if (!siteId || !startDate || !endDate) {
       return NextResponse.json(
-        { error: "Missing required parameters" },
+        { 
+          error: "Missing required parameters",
+          received: {
+            siteId: siteId || null,
+            startDate: startDate || null,
+            endDate: endDate || null,
+          },
+          required: ["site_id", "start_date", "end_date"],
+        },
         { status: 400 },
       );
     }
