@@ -6,18 +6,42 @@
 import { supabase } from "@/lib/supabase";
 
 // Read at module load time - this is embedded at BUILD TIME
+// IMPORTANT: This must be available at build time, not runtime
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 
 // Log immediately to help debug build-time embedding
 if (typeof window !== "undefined") {
+  const allNextPublic = Object.keys(process.env).filter((k) =>
+    k.startsWith("NEXT_PUBLIC_")
+  );
+  
   console.log("🔍 VAPID Key Debug (client-side):", {
     exists: !!VAPID_PUBLIC_KEY,
     length: VAPID_PUBLIC_KEY.length,
     prefix: VAPID_PUBLIC_KEY.substring(0, 20) || "EMPTY",
     fullKey: VAPID_PUBLIC_KEY || "NOT SET",
     envVar: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "NOT IN PROCESS.ENV",
-    allNextPublicVars: Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")),
+    allNextPublicVars: allNextPublic,
+    allNextPublicValues: allNextPublic.reduce((acc, key) => {
+      // @ts-ignore - accessing process.env dynamically
+      acc[key] = (process.env[key] || "").substring(0, 20) + "...";
+      return acc;
+    }, {} as Record<string, string>),
+    buildTime: "This variable must be available at BUILD TIME, not runtime",
+    checkVercel: "If empty, check Vercel env vars and redeploy",
   });
+  
+  // If key is missing, provide detailed help
+  if (!VAPID_PUBLIC_KEY) {
+    console.error("❌ VAPID Key Missing - Troubleshooting Steps:");
+    console.error("1. Go to Vercel → Settings → Environment Variables");
+    console.error("2. Verify variable name: NEXT_PUBLIC_VAPID_PUBLIC_KEY");
+    console.error("3. Check ALL environments are selected (Production, Preview, Development)");
+    console.error("4. Value should be: BDrNyYQVW6601ShCx9AgL96dx5dtwl_s6rmivg_7xJBWG7s0oI6sgIREmU9PypeKHufuuHp0yhhmfZTjX1J4skk");
+    console.error("5. After adding/updating, you MUST redeploy");
+    console.error("6. Check Vercel build logs for env var warnings");
+    console.error("7. Visit /api/debug/env to see server-side env vars");
+  }
 }
 
 /**
