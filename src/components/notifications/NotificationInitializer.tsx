@@ -17,6 +17,10 @@ export function NotificationInitializer() {
 
     const initializeNotifications = async () => {
       try {
+        // Debug: Check VAPID key status
+        const keyStatus = pushNotifications.getVAPIDKeyStatus();
+        console.log("🔍 NotificationInitializer - VAPID Key Status:", keyStatus);
+        
         // Check if push notifications are supported
         if (!pushNotifications.isPushNotificationSupported()) {
           console.log('Push notifications not supported')

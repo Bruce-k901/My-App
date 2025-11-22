@@ -5,7 +5,20 @@
 
 import { supabase } from "@/lib/supabase";
 
+// Read at module load time - this is embedded at BUILD TIME
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+
+// Log immediately to help debug build-time embedding
+if (typeof window !== "undefined") {
+  console.log("🔍 VAPID Key Debug (client-side):", {
+    exists: !!VAPID_PUBLIC_KEY,
+    length: VAPID_PUBLIC_KEY.length,
+    prefix: VAPID_PUBLIC_KEY.substring(0, 20) || "EMPTY",
+    fullKey: VAPID_PUBLIC_KEY || "NOT SET",
+    envVar: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "NOT IN PROCESS.ENV",
+    allNextPublicVars: Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")),
+  });
+}
 
 /**
  * Get VAPID key status for debugging
@@ -18,6 +31,8 @@ export function getVAPIDKeyStatus() {
     prefix: key?.substring(0, 10) || "N/A",
     expectedLength: 87, // VAPID keys are typically 87 characters
     isCorrectFormat: key ? /^[A-Za-z0-9_-]{87}$/.test(key) : false,
+    actualValue: key || "NOT SET",
+    allEnvVars: typeof window !== "undefined" ? Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")) : [],
   };
 }
 
