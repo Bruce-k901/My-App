@@ -128,12 +128,12 @@ CREATE POLICY "incidents_delete_company"
     -- Service role bypass
     public.is_service_role()
     OR
-    -- User has access via company_id and is admin/manager
+    -- User has access via company_id and is admin/manager/owner
     EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE (p.id = auth.uid() OR p.auth_user_id = auth.uid())
         AND p.company_id = incidents.company_id
-        AND LOWER(COALESCE(p.app_role, 'staff')) IN ('owner', 'admin', 'manager')
+        AND COALESCE(p.app_role, 'Staff') IN ('Owner', 'Admin', 'Manager')
     )
   );
 
