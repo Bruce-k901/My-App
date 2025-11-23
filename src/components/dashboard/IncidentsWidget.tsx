@@ -110,6 +110,7 @@ export function IncidentsWidget({ limit = 6, showLink = true, title = 'Incidents
       }
       
       // Fetch incidents with profile relationship for reported_by
+      // Include all incident types (not filtering by type in widget)
       let incidentsQuery = supabase
         .from('incidents')
         .select(`

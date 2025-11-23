@@ -69,14 +69,26 @@ export default function IncidentLog() {
       // Apply incident type filter if not "all"
       if (activeTab !== "all") {
         // Map tab keys to incident_type values
-        const incidentTypeMap: Record<string, string> = {
-          food_poisoning: "food_poisoning",
-          accident: "accident",
-          complaint: "customer_complaint"
-        };
-        const incidentType = incidentTypeMap[activeTab];
-        if (incidentType) {
-          query = query.eq("incident_type", incidentType);
+        // For "accident" tab, include all accident-related incident types
+        if (activeTab === "accident") {
+          // All accident-related incident types from EmergencyIncidentModal
+          const accidentTypes = [
+            'slip_trip',
+            'cut',
+            'burn',
+            'fall_from_height',
+            'struck_by',
+            'electrical',
+            'fire',
+            'chemical',
+            'manual_handling',
+            'other'
+          ];
+          query = query.in("incident_type", accidentTypes);
+        } else if (activeTab === "food_poisoning") {
+          query = query.eq("incident_type", "food_poisoning");
+        } else if (activeTab === "complaint") {
+          query = query.eq("incident_type", "customer_complaint");
         }
       }
       
