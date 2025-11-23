@@ -1,0 +1,57 @@
+[
+  {
+    "id": "m1_p1",
+    "type": "content",
+    "title": "Why Health and Safety Matters",
+    "body": "Health and safety is about stopping you and others from getting hurt or ill through work. \n\nIn a kitchen environment, hazards are everywhere—hot surfaces, sharp knives, slippery floors, and heavy loads. Ignoring these risks can lead to life-changing injuries.\n\nIt's not just about rules; it's about ensuring everyone goes home safe at the end of their shift.",
+    "media": "/courses/uk-l2-health-and-safety/m1/intro.png"
+  },
+  {
+    "id": "m1_p2",
+    "type": "content",
+    "title": "The Legal Framework",
+    "body": "The Health and Safety at Work etc. Act 1974 is the primary piece of legislation in the UK. It places a 'duty of care' on everyone.\n\n**Employers must:**\n- Provide a safe workplace and equipment.\n- Provide training and supervision.\n- Conduct risk assessments.\n\n**Employees must:**\n- Take care of their own safety and others.\n- Cooperate with the employer on safety matters.\n- Not misuse equipment.",
+    "media": "/courses/uk-l2-health-and-safety/m1/legal.png"
+  },
+  {
+    "id": "m1_p3",
+    "type": "content",
+    "title": "Consequences of Poor Safety",
+    "body": "When health and safety fails, the consequences can be severe:\n\n- **Human cost:** Pain, suffering, disability, or death.\n- **Legal cost:** Fines, imprisonment, and criminal records.\n- **Business cost:** Lost reputation, closure, and increased insurance premiums.\n\nMost accidents are preventable. It's rarely 'bad luck'—usually, it's a failure to follow safe systems of work.",
+    "media": "/courses/uk-l2-health-and-safety/m1/consequences.png"
+  },
+  {
+    "id": "m1_interact_1",
+    "type": "drag_drop",
+    "prompt": "Match the responsibility to the correct person.",
+    "pairs": [
+      ["Provide safety training", "Employer"],
+      ["Follow safety training", "Employee"],
+      ["Report broken equipment", "Employee"],
+      ["Maintain equipment", "Employer"]
+    ]
+  },
+  {
+    "id": "m1_recap",
+    "type": "recap",
+    "bullets": [
+      "Health and safety protects everyone from harm.",
+      "The Health and Safety at Work Act 1974 applies to everyone.",
+      "Employers must provide a safe environment; employees must follow rules.",
+      "Accidents have human, legal, and business costs."
+    ]
+  },
+  {
+    "id": "m1_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m1",
+    "count": 3
+  },
+  {
+    "id": "m1_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You've completed the introduction. You now understand why health and safety is critical and who is responsible for what. Next, we'll look at how to identify and control risks.",
+    "media": "/courses/uk-l2-health-and-safety/m1/complete.svg"
+  }
+]

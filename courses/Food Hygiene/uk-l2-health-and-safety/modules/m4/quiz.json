@@ -1,0 +1,39 @@
+{
+  "pool_id": "m4",
+  "items": [
+    {
+      "id": "m4_q1",
+      "type": "single_choice",
+      "stem": "What does TILE stand for?",
+      "options": [
+        "Time, Individual, Load, Environment",
+        "Task, Individual, Load, Environment",
+        "Task, Injury, Lift, Equipment",
+        "Time, Injury, Load, Equipment"
+      ],
+      "answer": 1,
+      "rationale": "TILE is the acronym for assessing manual handling risks: Task, Individual, Load, Environment."
+    },
+    {
+      "id": "m4_q2",
+      "type": "single_choice",
+      "stem": "Where should you keep the load when lifting?",
+      "options": ["At arm's length", "Above your head", "Close to your waist", "On one shoulder"],
+      "answer": 2,
+      "rationale": "Keeping the load close to your body reduces the strain on your back."
+    },
+    {
+      "id": "m4_q3",
+      "type": "single_choice",
+      "stem": "What should you do if a load is too heavy?",
+      "options": [
+        "Lift it quickly",
+        "Drag it",
+        "Ask for help or use a trolley",
+        "Leave it there forever"
+      ],
+      "answer": 2,
+      "rationale": "Never attempt to lift something beyond your capability. Use mechanical aids or team lifting."
+    }
+  ]
+}

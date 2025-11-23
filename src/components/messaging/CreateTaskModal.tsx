@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 import type { Message } from '@/types/messaging';
-import TimePicker from '@/components/ui/TimePicker';
 
 interface CreateTaskModalProps {
   message: Message;
@@ -265,10 +264,11 @@ export default function CreateTaskModal({
                 <Clock className="w-4 h-4 inline mr-1" />
                 Due Time
               </label>
-              <TimePicker
+              <input
+                type="time"
                 value={taskData.due_time}
-                onChange={(value) => setTaskData({ ...taskData, due_time: value })}
-                className="w-full"
+                onChange={(e) => setTaskData({ ...taskData, due_time: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
               />
             </div>
           </div>

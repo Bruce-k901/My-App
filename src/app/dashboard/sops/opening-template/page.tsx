@@ -8,7 +8,6 @@ import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
 import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
-import TimePicker from '@/components/ui/TimePicker';
 
 export default function OpeningProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -410,10 +409,11 @@ export default function OpeningProcedureTemplatePage() {
           {timeSlots.map((slot) => (
             <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
               <div className="flex items-center gap-3 mb-3">
-                <TimePicker
+                <input
+                  type="time"
                   value={slot.time}
-                  onChange={(value) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: value } : ts))}
-                  className="flex-shrink-0"
+                  onChange={(e) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: e.target.value } : ts))}
+                  className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
                 />
                 <button
                   onClick={() => removeTimeSlot(slot.id)}

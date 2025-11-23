@@ -3,10 +3,9 @@
 import { useAppContext } from "@/context/AppContext";
 import StaffTaskList from "@/components/tasks/StaffTaskList";
 import { MessagingWidget } from "./MessagingWidget";
-import { IncidentsWidget } from "./IncidentsWidget";
 
 export default function StaffDashboard() {
-  const { loading, tasks, temperatureLogs, siteId } = useAppContext();
+  const { loading, tasks, temperatureLogs, incidents, siteId } = useAppContext();
   if (loading) return <Loading />;
 
   return (
@@ -33,7 +32,20 @@ export default function StaffDashboard() {
         )}
       </Widget>
 
-      <IncidentsWidget title="Alerts" limit={6} />
+      <Widget title="Alerts">
+        {incidents.length === 0 ? (
+          <Empty text="No open incidents." />
+        ) : (
+          <ul className="text-sm text-slate-300 space-y-2">
+            {incidents.slice(0, 6).map((i: any) => (
+              <li key={i.id} className="flex justify-between">
+                <span>{i.type ?? `Incident #${i.id}`}</span>
+                <span className="text-slate-500">{i.status ?? "open"}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Widget>
     </section>
   );
 }

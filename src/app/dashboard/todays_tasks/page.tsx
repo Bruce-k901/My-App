@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import ChecklistsHeader from '@/components/checklists/ChecklistsHeader'
@@ -1054,6 +1054,50 @@ export default function DailyChecklistPage() {
     return colors[category] || 'bg-gray-500/10 text-gray-400'
   }
 
+  // Pull-to-refresh handler
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+    let pulling = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        pulling = true;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!pulling) return;
+      currentY = e.touches[0].clientY;
+      const distance = currentY - startY;
+      if (distance > 80) {
+        document.body.style.transform = `translateY(${Math.min(distance - 80, 50)}px)`;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (!pulling) return;
+      const distance = currentY - startY;
+      if (distance > 120) {
+        fetchTodaysTasks();
+        fetchUpcomingTasks();
+      }
+      document.body.style.transform = '';
+      pulling = false;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [fetchTodaysTasks, fetchUpcomingTasks]);
+
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4 sm:px-6">
       {/* Simple Header */}
@@ -1073,13 +1117,16 @@ export default function DailyChecklistPage() {
         </div>
         <button
           onClick={() => {
-            console.log('🔄 Manual refresh clicked')
             fetchTodaysTasks()
             fetchUpcomingTasks()
           }}
-          className="px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/50 text-magenta-400 rounded-lg transition-colors text-sm"
+          className="min-h-[44px] min-w-[44px] px-4 py-3 bg-magenta-500/20 active:bg-magenta-500/40 border border-magenta-500/50 text-magenta-400 rounded-lg transition-colors text-base touch-manipulation"
+          aria-label="Refresh tasks"
         >
-          🔄 Refresh Tasks
+          <span className="flex items-center gap-2">
+            <RefreshCw className="w-5 h-5" />
+            <span className="hidden sm:inline">Refresh</span>
+          </span>
         </button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {upcomingTasks.length > 0 && (
@@ -1090,15 +1137,15 @@ export default function DailyChecklistPage() {
                   fetchUpcomingTasks()
                 }
               }}
-              className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
+              className={`min-h-[44px] px-4 py-3 rounded-lg border transition-all text-base font-medium flex items-center gap-2 touch-manipulation active:scale-[0.98] ${
                 showUpcoming
                   ? 'bg-orange-500/10 border-orange-500/50 text-orange-400'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                  : 'bg-white/[0.03] border-white/[0.06] text-white/70 active:bg-white/[0.06] active:border-white/[0.12]'
               }`}
             >
-              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-400' : 'text-white/60'}`} />
+              <Calendar className={`h-5 w-5 ${showUpcoming ? 'text-orange-400' : 'text-white/60'}`} />
               {showUpcoming ? 'Hide' : 'Show'} Upcoming
-              <span className={`px-2 py-0.5 rounded-full text-xs ${
+              <span className={`px-2 py-1 rounded-full text-sm ${
                 showUpcoming 
                   ? 'bg-orange-500/20 text-orange-300' 
                   : 'bg-white/10 text-white/80'
@@ -1109,17 +1156,17 @@ export default function DailyChecklistPage() {
           )}
           <button
             onClick={() => setShowCompleted(!showCompleted)}
-            className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
+            className={`min-h-[44px] px-4 py-3 rounded-lg border transition-all text-base font-medium flex items-center gap-2 touch-manipulation active:scale-[0.98] ${
               showCompleted
                 ? 'bg-green-500/10 border-green-500/50 text-green-400'
-                : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                : 'bg-white/[0.03] border-white/[0.06] text-white/70 active:bg-white/[0.06] active:border-white/[0.12]'
             } ${completedTasks.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={completedTasks.length === 0}
           >
-            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-400' : 'text-white/60'}`} />
+            <CheckCircle2 className={`h-5 w-5 ${showCompleted ? 'text-green-400' : 'text-white/60'}`} />
             {showCompleted ? 'Hide' : 'Show'} Completed
             {completedTasks.length > 0 && (
-              <span className={`px-2 py-0.5 rounded-full text-xs ${
+              <span className={`px-2 py-1 rounded-full text-sm ${
                 showCompleted 
                   ? 'bg-green-500/20 text-green-300' 
                   : 'bg-white/10 text-white/80'
@@ -1242,35 +1289,35 @@ export default function DailyChecklistPage() {
       {/* Temperature Breach Follow-up Section */}
       {breachActions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Temperature Breach Follow-ups</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">Temperature Breach Follow-ups</h2>
           <div className="space-y-3">
             {breachActions.map((action) => {
               const log = action.temperature_log
               const evaluation = log?.meta?.evaluation
               return (
-                <div key={action.id} className="border border-white/10 rounded-lg p-3 text-sm text-white/70">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="font-semibold text-white">
+                <div key={action.id} className="border border-white/10 rounded-lg p-4 text-sm sm:text-base text-white/70">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="font-semibold text-white text-base">
                       {action.action_type === 'monitor' ? 'Monitor temperature' : 'Callout contractor'}
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-sm text-white/50">
                       Created {new Date(action.created_at).toLocaleString()}
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-white/60 space-x-3">
-                    <span>Status: <span className="text-white/80">{action.status}</span></span>
+                  <div className="mt-2 text-sm text-white/60 space-y-1 sm:space-y-0 sm:space-x-3">
+                    <span className="block sm:inline">Status: <span className="text-white/80">{action.status}</span></span>
                     {action.due_at && (
-                      <span>Due: <span className="text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
+                      <span className="block sm:inline">Due: <span className="text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
                     )}
                     {log?.recorded_at && (
-                      <span>Reading taken: <span className="text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
+                      <span className="block sm:inline">Reading taken: <span className="text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
                     )}
                   </div>
                   {evaluation?.reason && (
-                    <p className="mt-2 text-xs text-white/60">Reason: {evaluation.reason}</p>
+                    <p className="mt-2 text-sm text-white/60">Reason: {evaluation.reason}</p>
                   )}
                   {action.notes && (
-                    <p className="mt-2 text-xs text-white/60">Notes: {action.notes}</p>
+                    <p className="mt-2 text-sm text-white/60">Notes: {action.notes}</p>
                   )}
                 </div>
               )

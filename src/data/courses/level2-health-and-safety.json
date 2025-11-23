@@ -1,0 +1,1264 @@
+{
+  "id": "uk-l2-health-and-safety",
+  "title": "Level 2 Health and Safety in the Workplace",
+  "description": "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
+  "version": "1.1.0",
+  "refresherYears": 3,
+  "certificateTemplateId": "cert-l2-health-safety",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction to Health and Safety",
+      "description": "Understand the importance of health and safety and legal responsibilities.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Why Health and Safety Matters",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Course Introduction",
+              "content": "## Welcome\n\nHealth and safety is about stopping you getting hurt at work or ill through work. Your employer is responsible for health and safety, but you must help.\n\n### Why is it important?\n- **Prevent Accidents**: Slips, cuts, burns, and falls.\n- **Legal Duty**: It is against the law to ignore safety rules.\n- **Efficiency**: Safe kitchens are efficient kitchens.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m1/intro.png"
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "Legal Responsibilities",
+              "content": "## The Health and Safety at Work Act 1974\n\nThis is the primary legislation covering occupational health and safety in Great Britain.\n\n### Employer Duties (The 'Duty of Care'):\n- **Safe Place**: Maintain a safe workplace and equipment.\n- **Safe Systems**: Ensure safe handling, storage, and transport of goods.\n- **Information**: Provide instruction, training, and supervision.\n- **Welfare**: Provide adequate facilities (toilets, water, rest areas).\n\n### Employee Duties:\n- **Take Care**: Reasonable care for your own safety and others affected by your acts.\n- **Cooperate**: Follow safety rules and attend training.\n- **Don't Interfere**: Do not misuse or damage safety equipment (e.g., fire extinguishers).",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m1/intro.png"
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Broken Tile",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You notice a cracked floor tile in the prep area that is lifting up slightly.",
+                    "options": [
+                      { "label": "Ignore it, it's small.", "nextNodeId": "wrong" },
+                      { "label": "Report it to your manager.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Small trips can cause big injuries.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Reporting hazards prevents accidents.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: PPE",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your manager tells you to wear safety goggles for cleaning, but they are uncomfortable.",
+                    "options": [
+                      { "label": "Don't wear them.", "nextNodeId": "wrong" },
+                      { "label": "Wear them anyway.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You have a legal duty to cooperate and use safety equipment.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Safety comes before comfort.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Training",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are asked to use a new meat slicer but haven't been trained on it yet.",
+                    "options": [
+                      { "label": "Figure it out yourself.", "nextNodeId": "wrong" },
+                      { "label": "Refuse until trained.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Never use equipment without training.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Your employer must provide training.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Prohibition",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "An EHO issues a Prohibition Notice on the deep fat fryer. The head chef asks you to use it.",
+                    "options": [
+                      { "label": "Use it carefully.", "nextNodeId": "wrong" },
+                      { "label": "Refuse to use it.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Using it is a criminal offence.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** A Prohibition Notice means 'Stop Immediately'.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Risk Assessment",
+      "description": "Learn how to identify hazards and control risks.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Hazards vs Risks",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "What is a Risk Assessment?",
+              "content": "## Definitions\n\n- **Hazard**: Anything that has the potential to cause harm.\n- **Risk**: The likelihood that the harm will occur and how severe it would be.\n\n### The 5 Steps:\n1. Identify the hazards.\n2. Decide who might be harmed and how.\n3. Evaluate the risks and decide on precautions.\n4. Record your findings.\n5. Review the assessment.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Hierarchy of Control",
+              "content": "## Controlling Risks\n\nWhen reducing risks, follow this order (ERIC PD):\n\n1. **Eliminate**: Remove the hazard completely (e.g., buy pre-chopped veg).\n2. **Reduce**: Use a safer alternative (e.g., lower voltage tools).\n3. **Isolate**: Separate people from the hazard (e.g., guards on machines).\n4. **Control**: Safe systems of work (e.g., training, rotation).\n5. **PPE**: Personal Protective Equipment (Last resort!).",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Who is at Risk?",
+              "content": "## Vulnerable Groups\n\nDon't just think about yourself. Consider:\n\n- **Young workers**: Lack experience.\n- **New and expectant mothers**: Lifting risks, chemical risks.\n- **Disability**: Mobility or sensory impairments.\n- **Contractors/Visitors**: Unfamiliar with the site.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Spotting Hazards",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You see a box of heavy tins left in the middle of a walkway. What is the hazard?",
+                    "options": [
+                      { "label": "The box itself.", "nextNodeId": "wrong-box" },
+                      { "label": "Tripping over the box.", "nextNodeId": "correct-trip" },
+                      { "label": "The tins inside.", "nextNodeId": "wrong-tins" }
+                    ]
+                  },
+                  "wrong-box": {
+                    "text": "❌ **Incorrect.** The box is the object, but the *hazard* is the potential for harm.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "wrong-tins": {
+                    "text": "❌ **Incorrect.** The tins are contained. The immediate danger is the obstruction.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct-trip": {
+                    "text": "✅ **Correct.** The hazard is the obstruction causing a trip.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Prioritizing",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Which is the higher risk?",
+                    "options": [
+                      { "label": "A wet floor in a busy corridor.", "nextNodeId": "correct" },
+                      { "label": "A wet floor in a locked cupboard.", "nextNodeId": "wrong" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Likelihood of someone slipping is low.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** High footfall = High likelihood of injury.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Controls",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The dishwasher is too loud. What is the best control?",
+                    "options": [
+                      { "label": "Wear earplugs (PPE).", "nextNodeId": "wrong" },
+                      {
+                        "label": "Buy a quieter machine (Eliminate/Reduce).",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** PPE is the last resort.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Removing the noise at source is better.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Review",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You buy a new type of chemical for cleaning. Do you need to update the risk assessment?",
+                    "options": [
+                      { "label": "No, it's just cleaning.", "nextNodeId": "wrong" },
+                      { "label": "Yes, hazards may have changed.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** New substances introduce new risks.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Significant changes require a review.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Slips, Trips, and Falls",
+      "description": "Preventing the most common workplace accidents.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Preventing Falls",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Slips, Trips, and Falls",
+              "content": "## The #1 Cause of Injury\n\nSlips and trips are the most common cause of major injury in UK workplaces.\n\n### Key Risk Factors:\n- **Contamination**: Water, oil, flour, or food debris on the floor.\n- **Obstacles**: Trailing cables, boxes, or bags in walkways.\n- **Footwear**: Wearing unsuitable shoes (e.g., open toes, smooth soles).\n- **Environment**: Poor lighting, uneven surfaces, or steps.\n\n### Prevention 'Clean as you Go':\n- Clean up spills **immediately**.\n- Use 'Wet Floor' signs (but remove them when dry!).\n- Keep walkways clear at all times.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m3/slips_trips.png"
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Spill",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You spill oil during service. What do you do?",
+                    "options": [
+                      { "label": "Leave it for the cleaner.", "nextNodeId": "wrong" },
+                      { "label": "Clean it immediately.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Someone will slip.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Clean as you go.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Uneven Floor",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A floor mat has curled up at the corner.",
+                    "options": [
+                      { "label": "Flatten it or report it.", "nextNodeId": "correct" },
+                      { "label": "Step over it.", "nextNodeId": "wrong" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** The next person might trip.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Remove the trip hazard.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m3-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Carrying",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are carrying a stack of boxes that blocks your view.",
+                    "options": [
+                      { "label": "Carry fewer boxes.", "nextNodeId": "correct" },
+                      { "label": "Walk slowly.", "nextNodeId": "wrong" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You can't see hazards on the floor.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Always ensure you can see where you are going.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Footwear",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Which shoes are best for the kitchen?",
+                    "options": [
+                      { "label": "Canvas trainers.", "nextNodeId": "wrong" },
+                      { "label": "Non-slip safety shoes.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** They offer no protection or grip.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Essential for preventing slips.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Manual Handling",
+      "description": "Lifting and carrying safely.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Safe Lifting",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Safe Manual Handling",
+              "content": "## The TILE Assessment\nBefore lifting anything, stop and think:\n\n1. **Task**: Do you need to twist? Is it repetitive? Can you use a trolley?\n2. **Individual**: Are you strong enough? Are you pregnant or injured?\n3. **Load**: Is it heavy, hot, sharp, or unstable?\n4. **Environment**: Is the floor wet? Is it dark? Is there space?\n\n### Safe Lifting Technique:\n1. **Feet**: Apart, one leg forward.\n2. **Knees**: Bend them (not your back!).\n3. **Back**: Keep it straight.\n4. **Grip**: Hug the load close to your body.\n5. **Head**: Look forward.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m4/manual_handling.png"
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Heavy Box",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A delivery of oil is too heavy for you to lift alone.",
+                    "options": [
+                      { "label": "Drag it.", "nextNodeId": "wrong" },
+                      { "label": "Ask for help.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Dragging can still cause injury.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Team lifting reduces the load.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Technique",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "When lifting a crate from the floor:",
+                    "options": [
+                      { "label": "Bend your back.", "nextNodeId": "wrong" },
+                      { "label": "Bend your knees.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** This strains your spine.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Use your leg muscles.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m4-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Twisting",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to move a box to a table behind you.",
+                    "options": [
+                      { "label": "Twist your upper body.", "nextNodeId": "wrong" },
+                      { "label": "Turn your feet.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Twisting while lifting damages the back.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Move your feet to turn your whole body.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Route",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Before carrying a hot pot across the kitchen:",
+                    "options": [
+                      { "label": "Check the route is clear.", "nextNodeId": "correct" },
+                      { "label": "Just go quickly.", "nextNodeId": "wrong" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You might trip.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Plan your route first.", "options": [] }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Knife Safety",
+      "description": "Safe handling of knives.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Using Knives Safely",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Knife Safety Rules",
+              "content": "## Sharp is Safe\nA sharp knife requires less pressure, reducing the chance of slipping.\n\n### Safe Handling:\n- **Carrying**: Hold by the handle, blade pointing down, by your side.\n- **Falling**: NEVER try to catch a falling knife. Step back and let it fall.\n- **Storage**: Use a magnetic rack, knife block, or sheath. Never leave loose in drawers.\n- **Cleaning**: Wash individually. NEVER leave in a sink full of soapy water.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m5/knife_safety.png"
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Walking",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to walk to the sink with a knife.",
+                    "options": [
+                      { "label": "Hold it pointing forward.", "nextNodeId": "wrong" },
+                      { "label": "Hold it by your side, pointing down.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You could stab someone coming round a corner.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** This is the safest position.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Washing Up",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You finish with a knife.",
+                    "options": [
+                      { "label": "Drop it in the soapy water.", "nextNodeId": "wrong" },
+                      {
+                        "label": "Wash it immediately or place on drainer.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** The next person won't see it and will cut themselves.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Never leave knives hidden in water.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Falling Knife",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You knock a knife off the bench.",
+                    "options": [
+                      { "label": "Try to catch it.", "nextNodeId": "wrong" },
+                      { "label": "Step back and let it fall.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** A falling knife has no handle.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Protect your feet.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m5-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Blunt Knife",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your knife is blunt.",
+                    "options": [
+                      { "label": "Press harder.", "nextNodeId": "wrong" },
+                      { "label": "Sharpen it.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Pressing harder leads to slips.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Sharp knives are safer.", "options": [] }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Kitchen Equipment",
+      "description": "Safe use of machinery.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Machinery Safety",
+          "slides": [
+            {
+              "id": "m6-s1",
+              "type": "text-graphic-split",
+              "title": "Machinery & Guards",
+              "content": "## Respect the Machine\nKitchen machinery (slicers, mixers, mincers) can cause severe injury.\n\n### Safety Rules:\n- **Guards**: Never use a machine if the guard is missing or broken. It is there to protect you.\n- **Cleaning (LOTO)**: 'Lock Out, Tag Out'. Switch off at the wall and unplug before cleaning or clearing a blockage.\n- **Training**: Never use a machine unless you have been trained and authorized.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m6/equipment.png"
+            },
+            {
+              "id": "m6-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Cleaning Slicer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to clean the meat slicer blade.",
+                    "options": [
+                      { "label": "Leave it plugged in.", "nextNodeId": "wrong" },
+                      { "label": "Switch off and unplug.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** It could turn on accidentally.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Isolate the power.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m6-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Broken Guard",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The guard on the mixer is cracked.",
+                    "options": [
+                      { "label": "Use it carefully.", "nextNodeId": "wrong" },
+                      { "label": "Report it and don't use.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Guards are there for a reason.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Defective equipment must not be used.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m6-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Mixer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to add flour while the mixer is running.",
+                    "options": [
+                      { "label": "Put your hand in.", "nextNodeId": "wrong" },
+                      { "label": "Use the chute/guard.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You could lose a finger.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Keep hands away from moving parts.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m6-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Electrical Fault",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You see a frayed wire on the toaster.",
+                    "options": [
+                      { "label": "Wrap tape around it.", "nextNodeId": "wrong" },
+                      { "label": "Take it out of use.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Makeshift repairs are dangerous.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Report it for repair by an electrician.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m7",
+      "title": "Fire Safety",
+      "description": "Fire prevention and evacuation.",
+      "lessons": [
+        {
+          "id": "m7-l1",
+          "title": "Fire Prevention",
+          "slides": [
+            {
+              "id": "m7-s1",
+              "type": "text-graphic-split",
+              "title": "The Fire Triangle",
+              "content": "## Understanding Fire\n\nFire is a chemical reaction that needs three elements to exist. If you remove **one** of these, the fire will go out.\n\n### 1. Fuel\nSomething to burn. In a kitchen, this could be:\n- Cooking oil or fat.\n- Cardboard boxes or packaging.\n- Gas supply.\n\n### 2. Oxygen\nFire needs air to breathe. Sources include:\n- Natural airflow (windows/doors).\n- Ventilation systems.\n\n### 3. Heat\nSomething to start the fire. Sources include:\n- Deep fat fryers.\n- Ovens and hobs.\n- Faulty electrical equipment.\n\n### How to Stop Fire\n- **Starvation**: Remove the **Fuel** (e.g., turn off the gas).\n- **Smothering**: Remove the **Oxygen** (e.g., use a fire blanket on a pan).\n- **Cooling**: Remove the **Heat** (e.g., use water on a paper fire - NEVER on oil!).",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+            },
+            {
+              "id": "m7-s2",
+              "type": "text-graphic-split",
+              "title": "Fire Extinguishers",
+              "content": "## Know Your Extinguishers\n\nUsing the wrong extinguisher can be fatal.\n\n### 1. Water (Red Label)\n- **Use on:** Wood, paper, textiles (Class A).\n- **DANGER:** NEVER use on electrical or oil fires. Water conducts electricity and spreads oil fires explosively.\n\n### 2. CO2 (Black Label)\n- **Use on:** Electrical fires.\n- **Note:** Safe on live equipment. Does not leave a residue.\n\n### 3. Foam (Cream Label)\n- **Use on:** Wood, paper, and flammable liquids (petrol, paint).\n- **Note:** Not suitable for deep fat fryers.\n\n### 4. Wet Chemical (Yellow Label)\n- **Use on:** Cooking oil and fat fires (Class F).\n- **Note:** ESSENTIAL for kitchens. It cools and seals the oil.\n\n### 5. Dry Powder (Blue Label)\n- **Use on:** Flammable liquids, gas, electrical.\n- **Note:** Messy and can cause breathing problems in confined spaces.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+            },
+
+            {
+              "id": "m7-s3",
+              "type": "text-graphic-split",
+              "title": "Fire Blankets & Suppression",
+              "content": "## Fire Blankets\nUsed for smothering small fires (removing Oxygen).\n- **Pan Fires**: Turn off heat if safe. Hold blanket by tapes to shield hands. Place gently over the pan. Leave until cool.\n- **Person on Fire**: Wrap them in the blanket to smother flames. Stop, Drop, and Roll.\n\n## ANSUL Systems (Suppression)\nAutomatic fire suppression for commercial kitchens.\n- **What is it?**: Nozzles in the extraction hood discharge wet chemical.\n- **Trigger**: Automatic (heat detection) or Manual Pull Station.\n- **Action**: If it activates, evacuate immediately. Do not re-enter until declared safe.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+            },
+            {
+              "id": "m7-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Discovery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You discover a fire in the storeroom.",
+                    "options": [
+                      { "label": "Run away.", "nextNodeId": "wrong" },
+                      { "label": "Raise the alarm.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You must warn others.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Shout 'Fire' and hit the call point.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m7-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Fat Fire",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A pan of oil catches fire.",
+                    "options": [
+                      { "label": "Throw water on it.", "nextNodeId": "wrong" },
+                      { "label": "Use a fire blanket.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Water causes an explosion.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Smother the fire to remove oxygen.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m7-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Electrical Fire",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The microwave is on fire.",
+                    "options": [
+                      { "label": "Use a Water extinguisher.", "nextNodeId": "wrong" },
+                      { "label": "Use a CO2 extinguisher.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Water conducts electricity.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** CO2 is safe for electrical fires.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m7-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Evacuation",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The fire alarm sounds.",
+                    "options": [
+                      { "label": "Finish cooking.", "nextNodeId": "wrong" },
+                      { "label": "Leave immediately via nearest exit.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Get out.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Go to the assembly point.", "options": [] }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m8",
+      "title": "COSHH",
+      "description": "Chemical Safety.",
+      "lessons": [
+        {
+          "id": "m8-l1",
+          "title": "Chemical Safety",
+          "slides": [
+            {
+              "id": "m8-s1",
+              "type": "text-graphic-split",
+              "title": "What is COSHH?",
+              "content": "## Control of Substances Hazardous to Health\n\nCOSHH is the law that requires employers to control substances that are hazardous to health.\n\n### Hazardous Substances in Kitchens:\n- **Cleaning Chemicals**: Bleach, oven cleaner, degreaser.\n- **Biological Agents**: Bacteria, viruses, fungi.\n- **Fumes/Dust**: Flour dust, cooking fumes.\n\n### Your Responsibilities:\n- Follow training and instructions.\n- Use control measures (e.g., ventilation, PPE).\n- Report defects or accidents immediately.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+            },
+            {
+              "id": "m8-s2",
+              "type": "text-graphic-split",
+              "title": "Hazard Symbols",
+              "content": "## Know the Signs (GHS)\n\nChemicals have diamond-shaped symbols with a red border.\n\n- **Skull & Crossbones**: Acute Toxicity (Fatal or toxic).\n- **Corrosive (Hand/Metal)**: Causes severe skin burns and eye damage.\n- **Exclamation Mark**: Health Hazard (Irritant, harmful).\n- **Flame**: Flammable.\n- **Health Hazard (Person)**: Serious long-term health effects (e.g., carcinogen).\n- **Environment (Tree/Fish)**: Toxic to aquatic life.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+            },
+            {
+              "id": "m8-s3",
+              "type": "text-graphic-split",
+              "title": "Safe Storage & Handling",
+              "content": "## Golden Rules\n\n1. **Read the Label**: Never use a chemical if you don't know what it is.\n2. **Never Mix Chemicals**: Mixing bleach and acid creates deadly chlorine gas.\n3. **Store Safely**: Keep chemicals in a locked cupboard, low down (to prevent spills on faces).\n4. **Original Containers**: Never decant chemicals into unmarked bottles or food containers.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+            },
+            {
+              "id": "m8-s4",
+              "type": "text-graphic-split",
+              "title": "Routes of Entry",
+              "content": "## How Chemicals Enter the Body\n\n1. **Inhalation**: Breathing in fumes, vapours, or dust (e.g., flour dust).\n2. **Ingestion**: Swallowing chemicals (e.g., via contaminated hands or food).\n3. **Absorption**: Through the skin (e.g., handling strong cleaners without gloves).\n4. **Injection**: Through cuts or puncture wounds.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+            },
+            {
+              "id": "m8-s5",
+              "type": "text-graphic-split",
+              "title": "Emergency Procedures",
+              "content": "## What to do if things go wrong\n\n- **Splash in Eye**: Irrigate with cool water for at least 15 minutes. Seek medical help.\n- **Skin Contact**: Wash immediately with plenty of water. Remove contaminated clothing.\n- **Swallowed**: Do **NOT** induce vomiting. Drink water/milk (if label says so) and call 999/111.\n- **Inhalation**: Move to fresh air immediately.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+            },
+            {
+              "id": "m8-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Unknown Bottle",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You find an unlabelled bottle of clear liquid.",
+                    "options": [
+                      { "label": "Smell it to check.", "nextNodeId": "wrong" },
+                      { "label": "Don't use it, report it.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** It could be bleach or acid.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Never use unlabelled chemicals.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m8-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Mixing",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The drain is blocked.",
+                    "options": [
+                      { "label": "Mix bleach and drain cleaner.", "nextNodeId": "wrong" },
+                      { "label": "Use one product as instructed.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Mixing chemicals can create toxic gas.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Follow the instructions.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m8-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Splash",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You splash oven cleaner in your eye.",
+                    "options": [
+                      { "label": "Rub it.", "nextNodeId": "wrong" },
+                      { "label": "Wash with water immediately.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** This will spread the chemical.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Irrigate for at least 15 minutes.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m8-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Storage",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Where should bleach be stored?",
+                    "options": [
+                      { "label": "On a high shelf.", "nextNodeId": "wrong" },
+                      { "label": "In a locked low cupboard.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** It could fall and spill on you.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Secure and safe from spills.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m9",
+      "title": "Working at Height",
+      "description": "Ladders and steps.",
+      "lessons": [
+        {
+          "id": "m9-l1",
+          "title": "Ladder Safety",
+          "slides": [
+            {
+              "id": "m9-s1",
+              "type": "text-graphic-split",
+              "title": "Using Ladders Safely",
+              "content": "## Working at Height\nFalls from height are a major cause of fatalities.\n\n### Pre-Use Checks:\n- **Feet**: Are the rubber feet attached and in good condition?\n- **Rungs**: Are they clean and not bent?\n- **Rails**: No cracks or splinters.\n\n### Safe Use:\n- **3 Points of Contact**: Keep two feet and one hand (or two hands and one foot) on the ladder.\n- **Duration**: Short duration work only (max 30 mins).\n- **Position**: Place on firm, level ground.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m9/height.png"
+            },
+            {
+              "id": "m9-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Lightbulb",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to change a bulb.",
+                    "options": [
+                      { "label": "Stand on a crate.", "nextNodeId": "wrong" },
+                      { "label": "Use a stepladder.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Crates are unstable.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Use the right equipment.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m9-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Leaning Ladder",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Using a leaning ladder.",
+                    "options": [
+                      { "label": "Place it on a box for height.", "nextNodeId": "wrong" },
+                      { "label": "Secure it at the top/bottom.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Unstable base.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Prevent slipping.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m9-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Overreaching",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You can't quite reach the shelf.",
+                    "options": [
+                      { "label": "Lean over.", "nextNodeId": "wrong" },
+                      { "label": "Move the ladder.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You will lose balance.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Keep your belt buckle inside the ladder rails.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m9-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Damaged Ladder",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The ladder has a missing foot.",
+                    "options": [
+                      { "label": "Wedge it with cardboard.", "nextNodeId": "wrong" },
+                      { "label": "Don't use it.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Dangerous.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Report it.", "options": [] }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m10",
+      "title": "Burns & First Aid",
+      "description": "Treating injuries.",
+      "lessons": [
+        {
+          "id": "m10-l1",
+          "title": "First Aid Basics",
+          "slides": [
+            {
+              "id": "m10-s1",
+              "type": "text-graphic-split",
+              "title": "First Aid & Reporting",
+              "content": "## Treating Injuries\n- **Burns**: Cool with running water for at least **20 minutes**. Do not use ice or butter. Cover with cling film.\n- **Cuts**: Clean, dry, and cover with a **blue** detectable plaster.\n\n### Reporting Accidents (RIDDOR)\nCertain serious accidents must be reported to the HSE under RIDDOR law:\n- Fractures (except fingers/toes).\n- Amputations.\n- Injuries keeping you off work for >7 days.\n- Occupational diseases.",
+              "mediaUrl": "/courses/uk-l2-health-and-safety/m10/burns.png"
+            },
+            {
+              "id": "m10-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Burn",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You burn your hand on a hot pan.",
+                    "options": [
+                      { "label": "Put butter on it.", "nextNodeId": "wrong" },
+                      { "label": "Run under cool water.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Butter traps heat.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Cool for 20 minutes.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m10-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Deep Cut",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A cut is bleeding heavily.",
+                    "options": [
+                      { "label": "Run it under water.", "nextNodeId": "wrong" },
+                      { "label": "Apply pressure and elevate.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** This washes away clots.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** Stop the bleeding.", "options": [] }
+                }
+              }
+            },
+            {
+              "id": "m10-sc3",
+              "type": "scenario-decision",
+              "title": "Scenario: Plasters",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You have a small cut on your finger.",
+                    "options": [
+                      { "label": "Use a pink plaster.", "nextNodeId": "wrong" },
+                      { "label": "Use a blue plaster.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Pink plasters are hard to see in food.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Blue is visually detectable.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m10-sc4",
+              "type": "scenario-decision",
+              "title": "Scenario: Reporting",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You cut your finger, but it's small.",
+                    "options": [
+                      { "label": "Ignore it.", "nextNodeId": "wrong" },
+                      { "label": "Record it in the Accident Book.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** All accidents must be recorded.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": { "text": "✅ **Correct.** It's a legal requirement.", "options": [] }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "final",
+      "title": "Final Assessment",
+      "description": "Complete the assessment to pass.",
+      "lessons": [
+        {
+          "id": "final-l1",
+          "title": "Assessment",
+          "slides": [
+            {
+              "id": "final-quiz",
+              "type": "quiz",
+              "title": "Final Assessment",
+              "quizData": {
+                "questionCount": 30,
+                "passPercentage": 80,
+                "randomize": true,
+                "questionBankId": "final"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

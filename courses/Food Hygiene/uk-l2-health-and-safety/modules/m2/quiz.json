@@ -1,0 +1,44 @@
+{
+  "pool_id": "m2",
+  "items": [
+    {
+      "id": "m2_q1",
+      "type": "single_choice",
+      "stem": "What is a hazard?",
+      "options": [
+        "The chance of someone being harmed",
+        "Anything with the potential to cause harm",
+        "A type of safety equipment",
+        "An accident report form"
+      ],
+      "answer": 1,
+      "rationale": "A hazard is the thing that can cause harm (e.g., electricity, chemicals)."
+    },
+    {
+      "id": "m2_q2",
+      "type": "single_choice",
+      "stem": "What is the first step of a risk assessment?",
+      "options": [
+        "Record your findings",
+        "Review the assessment",
+        "Identify the hazards",
+        "Evaluate the risks"
+      ],
+      "answer": 2,
+      "rationale": "You must identify what could cause harm before you can assess the risk."
+    },
+    {
+      "id": "m2_q3",
+      "type": "single_choice",
+      "stem": "What is a dynamic risk assessment?",
+      "options": [
+        "A written document updated annually",
+        "A risk assessment for vehicles",
+        "Assessing risks on the spot as situations change",
+        "A risk assessment done by a computer"
+      ],
+      "answer": 2,
+      "rationale": "Dynamic risk assessment happens in real-time as you work."
+    }
+  ]
+}

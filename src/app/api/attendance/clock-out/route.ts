@@ -66,19 +66,13 @@ export async function POST(request: NextRequest) {
 
     // Update shift with clock-out time
     const clockOutTime = new Date().toISOString();
-    
-    // Calculate total_hours manually as backup (trigger should also do this)
-    const clockInTime = new Date(activeShift.clock_in_time);
-    const clockOutTimeDate = new Date(clockOutTime);
-    const totalHours = (clockOutTimeDate.getTime() - clockInTime.getTime()) / (1000 * 60 * 60);
-    
     const { data: updatedAttendance, error: updateError } = await supabase
       .from('staff_attendance')
       .update({
         clock_out_time: clockOutTime,
         shift_status: 'off_shift',
         shift_notes: shiftNotes || null,
-        total_hours: totalHours, // Set explicitly as backup (trigger should also calculate)
+        // total_hours will be auto-calculated by trigger
       })
       .eq('id', activeShift.id)
       .select()

@@ -17,7 +17,6 @@ import {
   AssetSelectionFeature,
   DocumentUploadFeature
 } from './features';
-import TimePicker from '@/components/ui/TimePicker';
 
 interface TaskFromTemplateModalProps {
   isOpen: boolean;
@@ -1677,18 +1676,20 @@ export function TaskFromTemplateModal({
                                 {isSelected && (
                                   <div className="flex items-center gap-2">
                                     <label className="text-xs text-white/60">Time:</label>
-                                    <TimePicker
+                                    <input
+                                      type="time"
                                       value={daypartEntry?.due_time || ''}
-                                      onChange={(value) => {
+                                      onChange={(e) => {
                                         // Find and update the correct daypart entry
                                         const newDayparts = formData.dayparts.map((dp) => 
                                           dp.daypart === daypart 
-                                            ? { ...dp, due_time: value }
+                                            ? { ...dp, due_time: e.target.value }
                                             : dp
                                         );
                                         setFormData({ ...formData, dayparts: newDayparts });
                                       }}
-                                      className="flex-shrink-0"
+                                      className="px-3 py-1.5 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark] text-sm"
+                                      placeholder="HH:MM"
                                     />
                                   </div>
                                 )}
@@ -1712,10 +1713,11 @@ export function TaskFromTemplateModal({
                   /* Single Due Time for non-daily tasks */
                   <div>
                     <label className="block text-sm font-medium text-white mb-2">Due Time</label>
-                    <TimePicker
+                    <input
+                      type="time"
                       value={formData.due_time}
-                      onChange={(value) => setFormData({ ...formData, due_time: value })}
-                      className="w-full"
+                      onChange={(e) => setFormData({ ...formData, due_time: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark]"
                     />
                   </div>
                 )}

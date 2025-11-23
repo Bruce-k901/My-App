@@ -1,0 +1,47 @@
+[
+  {
+    "id": "m10_p1",
+    "type": "content",
+    "title": "Burns and Scalds",
+    "body": "- **Burn:** Dry heat (oven, grill, hot pan).\n- **Scald:** Wet heat (steam, boiling water, hot oil).\n\n**Treatment:** Cool the burn under cool running water for at least 20 minutes. Do not apply ice, butter, or creams. Cover with cling film if severe and seek medical help.",
+    "media": "/courses/uk-l2-health-and-safety/m10/burns.png"
+  },
+  {
+    "id": "m10_p2",
+    "type": "content",
+    "title": "Cuts and Bleeding",
+    "body": "- **Minor cuts:** Clean, dry, and apply a blue plaster.\n- **Severe bleeding:** Apply direct pressure with a clean cloth/dressing. Raise the injured limb above heart level if possible. Call 999 if bleeding won't stop.",
+    "media": "/courses/uk-l2-health-and-safety/m10/cuts.png"
+  },
+  {
+    "id": "m10_p3",
+    "type": "content",
+    "title": "First Aid Arrangements",
+    "body": "Your workplace must have:\n- A stocked First Aid kit (green box).\n- An Appointed Person (someone in charge of the kit).\n- Information on who the First Aiders are.\n\nAll accidents must be recorded in the Accident Book.",
+    "media": "/courses/uk-l2-health-and-safety/m10/first_aid.png"
+  },
+  {
+    "id": "m10_interact_1",
+    "type": "drag_drop",
+    "prompt": "Order the steps for treating a burn.",
+    "pairs": [
+      ["1", "Remove heat source"],
+      ["2", "Cool with water (20 mins)"],
+      ["3", "Remove jewellery (if possible)"],
+      ["4", "Cover with cling film"]
+    ]
+  },
+  {
+    "id": "m10_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m10",
+    "count": 3
+  },
+  {
+    "id": "m10_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You now know basic first aid response. Remember: Cool burns, pressure on cuts, and report every accident.",
+    "media": "/courses/uk-l2-health-and-safety/m10/complete.svg"
+  }
+]

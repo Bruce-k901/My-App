@@ -1,0 +1,53 @@
+[
+  {
+    "id": "m7_p1",
+    "type": "content",
+    "title": "The Fire Triangle",
+    "body": "For a fire to start, it needs three things:\n\n1. **Fuel:** Something to burn (oil, paper, gas).\n2. **Oxygen:** From the air.\n3. **Heat:** Ignition source (stove, electrical spark).\n\nRemove any one of these, and the fire goes out.",
+    "media": "/courses/uk-l2-health-and-safety/m7/fire_triangle.png"
+  },
+  {
+    "id": "m7_p2",
+    "type": "content",
+    "title": "Classes of Fire",
+    "body": "- **Class A:** Solids (wood, paper).\n- **Class B:** Flammable liquids (petrol, paint).\n- **Class F:** Cooking oils and fats (Deep fat fryers).\n- **Electrical:** Not a class, but requires special handling (CO2 or Dry Powder).\n\n**NEVER use water on an oil or electrical fire.**",
+    "media": "/courses/uk-l2-health-and-safety/m7/fire_classes.png"
+  },
+  {
+    "id": "m7_p3",
+    "type": "content",
+    "title": "Extinguishers",
+    "body": "- **Water (Red):** Class A only.\n- **Foam (Cream):** Class A & B.\n- **CO2 (Black):** Electrical & Class B.\n- **Wet Chemical (Yellow):** Class F (Cooking Oil).\n- **Fire Blanket:** Small pan fires and clothing fires.",
+    "media": "/courses/uk-l2-health-and-safety/m7/extinguishers.png"
+  },
+  {
+    "id": "m7_interact_1",
+    "type": "drag_drop",
+    "prompt": "Match the extinguisher to the fire type.",
+    "pairs": [
+      ["Deep Fat Fryer", "Wet Chemical"],
+      ["Paper Bin", "Water"],
+      ["Electrical Panel", "CO2"]
+    ]
+  },
+  {
+    "id": "m7_p4",
+    "type": "content",
+    "title": "In Case of Fire",
+    "body": "1. **Raise the alarm.** Break the glass.\n2. **Evacuate.** Leave by the nearest exit. Do not run.\n3. **Go to the assembly point.**\n4. **Do not re-enter** until told it is safe.\n\nOnly fight a fire if it is small, you are trained, and your exit is clear.",
+    "media": "/courses/uk-l2-health-and-safety/m7/evacuation.png"
+  },
+  {
+    "id": "m7_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m7",
+    "count": 3
+  },
+  {
+    "id": "m7_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "Fire safety saves lives. Know your extinguishers and your escape route.",
+    "media": "/courses/uk-l2-health-and-safety/m7/complete.svg"
+  }
+]

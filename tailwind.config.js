@@ -50,7 +50,25 @@ module.exports = {
       fontVariantNumeric: {
         tabular: 'tabular-nums',
       },
+      minHeight: {
+        'touch': '44px', // Apple's recommended minimum
+      },
+      minWidth: {
+        'touch': '44px',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.touch-target': {
+          minHeight: '44px',
+          minWidth: '44px',
+        },
+        '.touch-manipulation': {
+          touchAction: 'manipulation', // Disable double-tap zoom
+        },
+      });
+    },
+  ],
 };

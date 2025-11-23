@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const courseManifestSchema = z.object({
-  course_id: z.literal("uk-l2-food-hygiene"),
+  course_id: z.string().min(1),
   title: z.string().min(1),
   version: z.string().min(1),
   modules: z
@@ -9,7 +9,7 @@ export const courseManifestSchema = z.object({
       z.object({
         id: z.string().min(1),
         title: z.string().min(1),
-      })
+      }),
     )
     .min(1),
   certificate_module: z.string().min(1).optional(),

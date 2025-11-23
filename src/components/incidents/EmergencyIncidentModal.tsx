@@ -353,38 +353,14 @@ export function EmergencyIncidentModal({
       if (formData.followUpTasks.length === 0) return [];
 
       // Get the incident template (for creating follow-up tasks)
-      // Try to find global template (company_id IS NULL) first, then company-specific
-      let template = null;
-      
-      try {
-        // First try global template
-        const { data: globalTemplate } = await supabase
-          .from('task_templates')
-          .select('id')
-          .eq('slug', 'emergency_incident_reporting')
-          .is('company_id', null)
-          .maybeSingle();
-        
-        template = globalTemplate;
-        
-        // If not found and we have a companyId, try company-specific
-        if (!template && companyId) {
-          const { data: companyTemplate } = await supabase
-            .from('task_templates')
-            .select('id')
-            .eq('slug', 'emergency_incident_reporting')
-            .eq('company_id', companyId)
-            .maybeSingle();
-          
-          template = companyTemplate;
-        }
-      } catch (error) {
-        console.warn('Error fetching emergency incident template:', error);
-      }
+      const { data: template } = await supabase
+        .from('task_templates')
+        .select('id')
+        .eq('slug', 'emergency_incident_reporting')
+        .single();
 
       if (!template) {
-        console.warn('Emergency incident template not found - follow-up tasks will not be created');
-        // Don't throw error, just return empty array - incident was still created successfully
+        console.error('Emergency incident template not found');
         return [];
       }
 
@@ -455,44 +431,9 @@ export function EmergencyIncidentModal({
       return;
     }
 
-    // Validate required fields with specific error messages
-    const missingFields: string[] = [];
-    
-    // Debug: Log formData to see what values we have
-    console.log('Form validation check:', {
-      incident_type: formData.incident_type,
-      severity: formData.severity,
-      severity_type: typeof formData.severity,
-      severity_length: formData.severity?.length,
-      location: formData.location,
-      incident_description: formData.incident_description,
-      fullFormData: formData
-    });
-    
-    if (!formData.incident_type || formData.incident_type.trim() === '') {
-      missingFields.push('Incident Type');
-    }
-    // Check severity - it should be a non-empty string
-    if (!formData.severity || (typeof formData.severity === 'string' && formData.severity.trim() === '')) {
-      missingFields.push('Severity');
-      console.error('Severity validation failed:', { 
-        value: formData.severity, 
-        type: typeof formData.severity,
-        isFalsy: !formData.severity,
-        isEmptyString: formData.severity === '',
-        isWhitespace: formData.severity?.trim() === ''
-      });
-    }
-    if (!formData.location || formData.location.trim() === '') {
-      missingFields.push('Location');
-    }
-    if (!formData.incident_description || formData.incident_description.trim() === '') {
-      missingFields.push('Incident Description');
-    }
-    
-    if (missingFields.length > 0) {
-      toast.error(`Please fill in the following required fields: ${missingFields.join(', ')}`);
-      console.error('Missing fields:', missingFields);
+    // Validate required fields
+    if (!formData.incident_type || !formData.severity || !formData.location || !formData.incident_description) {
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -534,7 +475,7 @@ export function EmergencyIncidentModal({
           immediate_actions_taken: formData.immediate_actions,
           photos: formData.photos.map(p => p.url),
           documents: [],
-          riddor_reportable: riddorReportable,
+          riddor_reportable,
           riddor_reported: riddorReported,
           riddor_reported_date: riddorReportedAtIso,
           riddor_reference: riddorReference || null,
@@ -735,12 +676,7 @@ export function EmergencyIncidentModal({
                 <Select
                   label="Severity *"
                   value={formData.severity}
-                  onValueChange={(value) => {
-                    console.log('Severity changed to:', value);
-                    if (value) {
-                      setFormData(prev => ({ ...prev, severity: value }));
-                    }
-                  }}
+                  onValueChange={(value) => setFormData({ ...formData, severity: value })}
                   placeholder="Select severity..."
                   options={[
                     { label: 'Near Miss (No injury)', value: 'near_miss' },
@@ -751,12 +687,6 @@ export function EmergencyIncidentModal({
                     { label: 'Fatality', value: 'fatality' },
                   ]}
                 />
-                {/* Debug: Show current severity value */}
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="text-xs text-white/40 mt-1">
-                    Current value: {formData.severity || '(empty)'}
-                  </div>
-                )}
               </div>
 
               <div>

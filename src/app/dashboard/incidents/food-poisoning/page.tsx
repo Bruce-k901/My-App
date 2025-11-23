@@ -46,13 +46,10 @@ export default function FoodPoisoningPage() {
         return;
       }
       
-      // Fetch incidents with profile relationship for reported_by
+      // Fetch incidents
       let query = supabase
         .from('incidents')
-        .select(`
-          *,
-          reported_by_profile:profiles!reported_by(full_name, email)
-        `)
+        .select('*')
         .eq('company_id', companyId)
         .eq('incident_type', 'food_poisoning')
         .order('reported_date', { ascending: false });
@@ -85,19 +82,16 @@ export default function FoodPoisoningPage() {
         }
       }
 
-      // Transform data to include site name and reported_by name
+      // Transform data to include site name
       const incidentsWithSites = (incidentsData || []).map((incident: any) => {
         const site = incident.site_id ? sitesMap.get(incident.site_id) : null;
-        const reportedByName = incident.reported_by_profile?.full_name || 
-                              incident.reported_by_profile?.email || 
-                              'Unknown';
         
         return {
           ...incident,
           site_name: site?.name || 'No site assigned',
           severity: incident.severity || 'near_miss',
           status: incident.status || 'open',
-          reported_by: reportedByName
+          reported_by: incident.reported_by || 'Unknown'
         };
       });
 

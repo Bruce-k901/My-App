@@ -570,6 +570,44 @@ input[type="number"] {
 }
 
 /* ----------------------------- */
+/* Mobile Typography & Touch     */
+/* ----------------------------- */
+@media (max-width: 640px) {
+  html {
+    font-size: 16px; /* Prevent zoom on input focus */
+  }
+
+  /* Increase minimum font sizes */
+  .text-xs {
+    font-size: 0.8125rem;
+  } /* 13px min */
+  .text-sm {
+    font-size: 0.875rem;
+  } /* 14px min */
+  .text-base {
+    font-size: 1rem;
+  } /* 16px */
+
+  /* Make headings more legible */
+  h1 {
+    font-size: 1.75rem;
+  } /* Down from 3xl */
+  h2 {
+    font-size: 1.5rem;
+  } /* Down from 2xl */
+  h3 {
+    font-size: 1.25rem;
+  } /* Down from xl */
+}
+
+/* Safe area insets for notched phones */
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ----------------------------- */
 /* SOP Block Animations          */
 /* ----------------------------- */
 

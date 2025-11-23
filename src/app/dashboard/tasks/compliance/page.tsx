@@ -238,11 +238,16 @@ export default function CompliancePage() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4" />
           <input
-            type="text"
+            type="search"
+            inputMode="search"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            enterKeyHint="search"
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+            className="w-full pl-10 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/40 text-base"
           />
         </div>
         
@@ -339,9 +344,13 @@ export default function CompliancePage() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Add vibration for tactile feedback
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(10); // Short vibration
+                    }
                     handleUseTemplate(template.id);
                   }}
-                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-pink-500/20 border border-pink-500/40 rounded-lg text-pink-400 hover:bg-pink-500/30 transition-colors group-hover:border-pink-500/60"
+                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-pink-500/20 border border-pink-500/40 rounded-lg text-pink-400 active:bg-pink-500/40 active:scale-[0.98] transition-all touch-manipulation min-h-[44px]"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">Use Template</span>

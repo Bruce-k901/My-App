@@ -5,10 +5,9 @@ import { useAppContext } from "@/context/AppContext";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { MessagingWidget } from "./MessagingWidget";
-import { IncidentsWidget } from "./IncidentsWidget";
 
 export default function ManagerDashboard() {
-  const { loading, tasks, assets, siteId } = useAppContext();
+  const { loading, tasks, assets, incidents, siteId } = useAppContext();
   const [summary, setSummary] = useState<{ site_id: string; completed: number; total: number }[]>([]);
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   useEffect(() => {
@@ -97,7 +96,20 @@ export default function ManagerDashboard() {
         )}
       </Widget>
 
-      <IncidentsWidget title="Incidents" limit={6} />
+      <Widget title="Incidents">
+        {incidents.length === 0 ? (
+          <Empty text="No open incidents." />
+        ) : (
+          <ul className="text-sm text-slate-300 space-y-2">
+            {incidents.slice(0, 6).map((i: any) => (
+              <li key={i.id} className="flex justify-between">
+                <span>{i.type ?? `Incident #${i.id}`}</span>
+                <span className="text-slate-500">{i.status ?? "open"}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Widget>
     </section>
   );
 }

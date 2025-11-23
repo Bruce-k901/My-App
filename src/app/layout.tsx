@@ -44,8 +44,9 @@ export function generateViewport() {
   return {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 5,
-    themeColor: "#10B981",
+    maximumScale: 5, // Allow zoom for accessibility
+    userScalable: true,
+    themeColor: "#EC4899",
   };
 }
 

@@ -5,7 +5,6 @@ import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X,
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
-import TimePicker from "@/components/ui/TimePicker";
 
 interface TaskItem {
   id: string;
@@ -899,10 +898,11 @@ export default function ManagerCalendarPage() {
                       onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
                       className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
-                    <TimePicker
+                    <input
+                      type="time"
                       value={newTask.dueTime}
-                      onChange={(value) => setNewTask({ ...newTask, dueTime: value })}
-                      className="w-full"
+                      onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
                   </div>
                   <select
@@ -1017,10 +1017,11 @@ export default function ManagerCalendarPage() {
                       onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
                       className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
-                    <TimePicker
+                    <input
+                      type="time"
                       value={newReminder.time}
-                      onChange={(value) => setNewReminder({ ...newReminder, time: value })}
-                      className="w-full"
+                      onChange={(e) => setNewReminder({ ...newReminder, time: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
                   </div>
                   <select

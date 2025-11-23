@@ -1,0 +1,49 @@
+[
+  {
+    "id": "m8_p1",
+    "type": "content",
+    "title": "What is COSHH?",
+    "body": "COSHH stands for **Control of Substances Hazardous to Health**.\n\nIn a kitchen, this mainly applies to cleaning chemicals like bleach, oven cleaner, and degreaser. These can cause skin burns, eye damage, or breathing problems if misused.",
+    "media": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+  },
+  {
+    "id": "m8_p2",
+    "type": "content",
+    "title": "Hazard Symbols",
+    "body": "Chemicals have symbols on the bottle to warn you:\n\n- **Corrosive:** Can burn skin and eyes.\n- **Irritant:** Can cause redness or inflammation.\n- **Toxic:** Poisonous if swallowed or inhaled.\n- **Flammable:** Catch fire easily.",
+    "media": "/courses/uk-l2-health-and-safety/m8/symbols.png"
+  },
+  {
+    "id": "m8_p3",
+    "type": "content",
+    "title": "Safe Use Rules",
+    "body": "1. **Read the label.** Follow the instructions.\n2. **Wear PPE.** Gloves, goggles, and aprons as required.\n3. **Never mix chemicals.** Bleach + Acid = Toxic Gas.\n4. **Store correctly.** In original bottles, locked away, low down.\n5. **First Aid.** Wash splashes immediately with water.",
+    "media": "/courses/uk-l2-health-and-safety/m8/safe_use.png"
+  },
+  {
+    "id": "m8_interact_1",
+    "type": "multi_choice",
+    "stem": "Why must you never mix bleach with other cleaners?",
+    "options": [
+      "It makes them less effective",
+      "It creates dangerous toxic gas",
+      "It is expensive",
+      "It smells bad"
+    ],
+    "answers": [1],
+    "rationale": "Mixing chemicals can create deadly chlorine gas."
+  },
+  {
+    "id": "m8_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m8",
+    "count": 3
+  },
+  {
+    "id": "m8_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "Chemicals are powerful tools but dangerous enemies. Always respect COSHH rules.",
+    "media": "/courses/uk-l2-health-and-safety/m8/complete.svg"
+  }
+]

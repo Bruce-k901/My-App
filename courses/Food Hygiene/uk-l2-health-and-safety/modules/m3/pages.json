@@ -1,0 +1,49 @@
+[
+  {
+    "id": "m3_p1",
+    "type": "content",
+    "title": "The Most Common Workplace Injury",
+    "body": "Slips, trips, and falls are the most common cause of major injury in UK workplaces. In a kitchen, the risks are higher due to water, oil, food scraps, and busy movement.\n\nMost of these accidents are preventable with good housekeeping and awareness.",
+    "media": "/courses/uk-l2-health-and-safety/m3/slips_trips.png"
+  },
+  {
+    "id": "m3_p2",
+    "type": "content",
+    "title": "Preventing Slips",
+    "body": "**Slips** happen when there is too little friction between footwear and the floor.\n\n**Causes:** Wet floors, oil spills, flour/dust, wrong footwear.\n\n**Prevention:**\n- Clean up spills immediately.\n- Use 'Wet Floor' signs (but remove them when dry).\n- Wear slip-resistant shoes.\n- Keep floors degreased.",
+    "media": "/courses/uk-l2-health-and-safety/m3/preventing_slips.png"
+  },
+  {
+    "id": "m3_p3",
+    "type": "content",
+    "title": "Preventing Trips",
+    "body": "**Trips** happen when your foot hits an object or the surface is uneven.\n\n**Causes:** Trailing cables, boxes in walkways, damaged floor tiles, poor lighting.\n\n**Prevention:**\n- Keep walkways clear.\n- Manage cables (use covers or route them safely).\n- Report damaged flooring.\n- Ensure good lighting.",
+    "media": "/courses/uk-l2-health-and-safety/m3/preventing_trips.png"
+  },
+  {
+    "id": "m3_interact_1",
+    "type": "multi_choice",
+    "stem": "You spill some oil on the floor during service. What should you do?",
+    "options": [
+      "Leave it until the end of service",
+      "Throw a cardboard box over it",
+      "Clean it up immediately and use a wet floor sign",
+      "Tell someone else to do it later"
+    ],
+    "answers": [2],
+    "rationale": "Oil is extremely slippery. It must be cleaned immediately to prevent an accident."
+  },
+  {
+    "id": "m3_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m3",
+    "count": 3
+  },
+  {
+    "id": "m3_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You've learned how to prevent slips and trips. Keep floors clean, dry, and clear of obstacles to keep yourself and your team safe.",
+    "media": "/courses/uk-l2-health-and-safety/m3/complete.svg"
+  }
+]

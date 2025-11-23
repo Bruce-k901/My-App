@@ -31,12 +31,6 @@ interface StaffSicknessRecord {
   created_at: string;
 }
 
-interface StaffMember {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-}
-
 export default function StaffSicknessPage() {
   const { companyId, siteId, profile } = useAppContext();
   const [records, setRecords] = useState<StaffSicknessRecord[]>([]);
@@ -45,8 +39,6 @@ export default function StaffSicknessPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<StaffSicknessRecord | null>(null);
-  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
-  const [loadingStaff, setLoadingStaff] = useState(false);
   const [formData, setFormData] = useState<Partial<StaffSicknessRecord>>({
     staff_member_name: '',
     staff_member_id: null,
@@ -70,56 +62,6 @@ export default function StaffSicknessPage() {
       fetchRecords();
     }
   }, [companyId, siteId]);
-
-  // Fetch staff members for the current site when modal opens or siteId changes
-  useEffect(() => {
-    if (isModalOpen && companyId && siteId) {
-      fetchStaffMembers();
-    }
-  }, [isModalOpen, companyId, siteId]);
-
-  async function fetchStaffMembers() {
-    if (!companyId || !siteId) {
-      setStaffMembers([]);
-      return;
-    }
-
-    try {
-      setLoadingStaff(true);
-      
-      // Fetch staff members where home_site or site_id matches the manager's site
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .eq('company_id', companyId)
-        .or(`home_site.eq.${siteId},site_id.eq.${siteId}`)
-        .order('full_name');
-
-      if (error) {
-        console.error('Error fetching staff members:', error);
-        toast.error('Failed to load staff members');
-        setStaffMembers([]);
-        return;
-      }
-
-      // Filter out null names and format
-      const formattedStaff = (data || [])
-        .filter(p => p.full_name) // Only include staff with names
-        .map(p => ({
-          id: p.id,
-          full_name: p.full_name,
-          email: p.email
-        }));
-
-      setStaffMembers(formattedStaff);
-    } catch (err: any) {
-      console.error('Error fetching staff members:', err);
-      toast.error('Failed to load staff members');
-      setStaffMembers([]);
-    } finally {
-      setLoadingStaff(false);
-    }
-  }
 
   async function fetchRecords() {
     try {
@@ -168,29 +110,12 @@ export default function StaffSicknessPage() {
     }
 
     try {
-      // Prepare data with proper null handling for optional fields
-      // Convert empty strings to null for TIME and optional DATE fields
-      const cleanData = {
-        ...formData,
-        // Convert empty string to null for time field (TIME type doesn't accept empty strings)
-        illness_onset_time: formData.illness_onset_time && formData.illness_onset_time.trim() !== '' 
-          ? formData.illness_onset_time 
-          : null,
-        // Ensure optional date fields are null if empty
-        exclusion_period_end: formData.exclusion_period_end && formData.exclusion_period_end.trim() !== '' 
-          ? formData.exclusion_period_end 
-          : null,
-        return_to_work_date: formData.return_to_work_date && formData.return_to_work_date.trim() !== '' 
-          ? formData.return_to_work_date 
-          : null,
-      };
-
       if (selectedRecord) {
         // Update existing
         const { error } = await supabase
           .from('staff_sickness_records')
           .update({
-            ...cleanData,
+            ...formData,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedRecord.id);
@@ -199,21 +124,16 @@ export default function StaffSicknessPage() {
         toast.success('Staff sickness record updated successfully');
       } else {
         // Create new
-        // Ensure dates are properly formatted
-        const insertData = {
-          ...cleanData,
-          company_id: companyId,
-          site_id: siteId || null,
-          reported_by: profile?.id || '',
-          reported_date: new Date().toISOString().split('T')[0], // DATE field
-          illness_onset_date: formData.illness_onset_date || new Date().toISOString().split('T')[0],
-          exclusion_period_start: formData.exclusion_period_start || new Date().toISOString().split('T')[0],
-          created_at: new Date().toISOString()
-        };
-        
         const { error } = await supabase
           .from('staff_sickness_records')
-          .insert(insertData);
+          .insert({
+            ...formData,
+            company_id: companyId,
+            site_id: siteId || null,
+            reported_by: profile?.id || '',
+            reported_date: new Date().toISOString().split('T')[0],
+            created_at: new Date().toISOString()
+          });
 
         if (error) throw error;
         toast.success('Staff sickness record created successfully');
@@ -428,48 +348,15 @@ export default function StaffSicknessPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">Staff Member *</label>
-                  {loadingStaff ? (
-                    <div className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white/60">
-                      Loading staff members...
-                    </div>
-                  ) : staffMembers.length === 0 ? (
-                    <div className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white/60">
-                      {siteId ? 'No staff members found for this site' : 'Please select a site first'}
-                    </div>
-                  ) : (
-                    <select
-                      value={formData.staff_member_id || ''}
-                      onChange={(e) => {
-                        const selectedId = e.target.value;
-                        const selectedStaff = staffMembers.find(s => s.id === selectedId);
-                        setFormData({ 
-                          ...formData, 
-                          staff_member_id: selectedId || null,
-                          staff_member_name: selectedStaff?.full_name || ''
-                        });
-                      }}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50 focus:shadow-[0_0_12px_rgba(236,72,153,0.3)] transition-all duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22rgba(255,255,255,0.7)%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[length:1.5em] bg-[right_0.75rem_center] hover:bg-white/[0.08] hover:border-white/20"
-                      style={{
-                        colorScheme: 'dark'
-                      }}
-                      required
-                    >
-                      <option value="" className="bg-[#0B0D13] text-white">Select a staff member...</option>
-                      {staffMembers.map((staff) => (
-                        <option 
-                          key={staff.id} 
-                          value={staff.id}
-                          className="bg-[#0B0D13] text-white"
-                        >
-                          {staff.full_name} {staff.email ? `(${staff.email})` : ''}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                  {!siteId && (
-                    <p className="text-xs text-yellow-400 mt-1">⚠️ No site selected. Staff members are linked to sites.</p>
-                  )}
+                  <label className="block text-sm font-medium text-white/80 mb-2">Staff Member Name *</label>
+                  <input
+                    type="text"
+                    value={formData.staff_member_name}
+                    onChange={(e) => setFormData({ ...formData, staff_member_name: e.target.value })}
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                    placeholder="John Smith"
+                    required
+                  />
                 </div>
 
                 <div>

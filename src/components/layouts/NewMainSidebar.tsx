@@ -118,6 +118,7 @@ const sections: SidebarSection[] = [
     items: [
       { label: "All Courses", href: "/dashboard/courses" },
       { label: "Food Safety", href: "/dashboard/courses/food-safety" },
+      { label: "Health & Safety", href: "/dashboard/courses/health-and-safety" },
     ],
   },
   {

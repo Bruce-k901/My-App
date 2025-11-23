@@ -1,0 +1,44 @@
+[
+  {
+    "id": "m9_p1",
+    "type": "content",
+    "title": "What is Working at Height?",
+    "body": "Working at height means working in any place where, if there were no precautions in place, a person could fall a distance liable to cause personal injury.\n\nIn a kitchen, this usually means using a ladder or step stool to reach high shelves or change a light bulb.",
+    "media": "/courses/uk-l2-health-and-safety/m9/height.png"
+  },
+  {
+    "id": "m9_p2",
+    "type": "content",
+    "title": "Ladder Safety",
+    "body": "- **Check it:** Is the ladder damaged? Are the feet rubberized?\n- **Place it:** On firm, level ground.\n- **Use it:** Maintain three points of contact (two feet, one hand). Don't overreach.\n- **Don't:** Stand on the top step or use a chair/crate instead of a ladder.",
+    "media": "/courses/uk-l2-health-and-safety/m9/ladder_safety.png"
+  },
+  {
+    "id": "m9_p3",
+    "type": "content",
+    "title": "Falling Objects",
+    "body": "It's not just you falling—it's things falling on you.\n\n- Store heavy items on lower shelves.\n- Don't stack boxes too high.\n- Be careful when retrieving items from height.",
+    "media": "/courses/uk-l2-health-and-safety/m9/falling_objects.png"
+  },
+  {
+    "id": "m9_interact_1",
+    "type": "single_choice",
+    "stem": "You need to reach a high shelf. What should you use?",
+    "options": ["An upturned crate", "A chair", "A proper step ladder", "Climb on the counter"],
+    "answer": 2,
+    "rationale": "Only use equipment designed for the job. Crates and chairs are unstable."
+  },
+  {
+    "id": "m9_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m9",
+    "count": 3
+  },
+  {
+    "id": "m9_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "Stay grounded. If you must work at height, use the right kit and check it first.",
+    "media": "/courses/uk-l2-health-and-safety/m9/complete.svg"
+  }
+]

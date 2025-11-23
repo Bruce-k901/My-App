@@ -1,0 +1,21 @@
+{
+  "course_id": "uk-l2-health-and-safety",
+  "title": "Level 2 Health and Safety in the Workplace",
+  "version": "1.0.0",
+  "modules": [
+    { "id": "m1", "title": "Introduction to Health and Safety" },
+    { "id": "m2", "title": "Risk Assessment" },
+    { "id": "m3", "title": "Slips, Trips, and Falls" },
+    { "id": "m4", "title": "Manual Handling" },
+    { "id": "m5", "title": "Knife Safety" },
+    { "id": "m6", "title": "Kitchen Equipment & Machinery" },
+    { "id": "m7", "title": "Fire Safety" },
+    { "id": "m8", "title": "COSHH (Hazardous Substances)" },
+    { "id": "m9", "title": "Working at Height" },
+    { "id": "m10", "title": "Burns, Scalds & First Aid" },
+    { "id": "final", "title": "Final Assessment" },
+    { "id": "certification", "title": "Course Completion & Certificate" }
+  ],
+  "certificate_module": "certification",
+  "pass_mark_percent": 80
+}

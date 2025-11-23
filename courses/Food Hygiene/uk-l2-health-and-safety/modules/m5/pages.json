@@ -1,0 +1,49 @@
+[
+  {
+    "id": "m5_p1",
+    "type": "content",
+    "title": "Respect the Blade",
+    "body": "Knives are the most common tool in the kitchen and a frequent cause of accidents. Cuts can range from minor nicks to severed tendons.\n\n**Golden Rule:** A sharp knife is safer than a blunt one. Blunt knives require more force, increasing the chance of slipping.",
+    "media": "/courses/uk-l2-health-and-safety/m5/knives.png"
+  },
+  {
+    "id": "m5_p2",
+    "type": "content",
+    "title": "Safe Handling",
+    "body": "- **Carry safely:** Point the blade down and keep it close to your side. Never run with a knife.\n- **Passing:** Place the knife on a flat surface for the other person to pick up. Don't hand it over blade-first.\n- **Falling knives:** NEVER try to catch a falling knife. Step back and let it fall.",
+    "media": "/courses/uk-l2-health-and-safety/m5/handling.png"
+  },
+  {
+    "id": "m5_p3",
+    "type": "content",
+    "title": "Storage and Cleaning",
+    "body": "- **Storage:** Use a knife block, magnetic rack, or sheath. Never leave loose knives in a drawer.\n- **Cleaning:** Wash knives immediately by hand. NEVER leave a knife in a sink full of soapy water—the next person won't see it.",
+    "media": "/courses/uk-l2-health-and-safety/m5/cleaning.png"
+  },
+  {
+    "id": "m5_interact_1",
+    "type": "single_choice",
+    "stem": "You drop your knife. What do you do?",
+    "options": [
+      "Try to catch it by the handle",
+      "Try to catch it by the blade",
+      "Step back and let it fall",
+      "Kick it away"
+    ],
+    "answer": 2,
+    "rationale": "A falling knife has no handle. Stepping back protects your feet and hands."
+  },
+  {
+    "id": "m5_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m5",
+    "count": 3
+  },
+  {
+    "id": "m5_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You've sharpened your knowledge on knife safety. Keep them sharp, store them right, and respect the blade.",
+    "media": "/courses/uk-l2-health-and-safety/m5/complete.svg"
+  }
+]

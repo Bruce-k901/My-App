@@ -140,25 +140,20 @@ export function FoodPoisoningIncidentModal({
       const finalSiteId = formData.site_id || defaultSiteId || null;
       
       // Create incident record
-      // Convert incident_date from date string to TIMESTAMPTZ
-      const incidentDateTime = formData.incident_date 
-        ? new Date(`${formData.incident_date}T12:00:00Z`).toISOString()
-        : new Date().toISOString();
-      
       const { data: incident, error: incidentError } = await supabase
         .from('incidents')
         .insert({
           company_id: companyId,
           site_id: finalSiteId,
           title: `Food Poisoning Report - ${formData.reported_by_customer}`,
-          description: (formData.additional_notes || `Food poisoning incident reported by ${formData.reported_by_customer}`) + (profile?.full_name ? ` (Logged by: ${profile.full_name})` : ''),
+          description: formData.additional_notes || `Food poisoning incident reported by ${formData.reported_by_customer}`,
           incident_type: 'food_poisoning',
           severity: formData.severity || 'minor',
           location: 'Food poisoning incident',
-          incident_date: incidentDateTime,
+          incident_date: formData.incident_date,
           reported_by: profile?.id || null,
           reported_date: new Date().toISOString(),
-          photos: formData.photos.length > 0 ? formData.photos.map(p => p.url) : [],
+          photos: formData.photos.map(p => p.url),
           status: 'open'
         })
         .select()
@@ -170,34 +165,11 @@ export function FoodPoisoningIncidentModal({
       }
 
       // Create food poisoning investigation task from template
-      // Try to find global template (company_id IS NULL) first, then company-specific
-      let foodPoisoningTemplate = null;
-      
-      try {
-        // First try global template
-        const { data: globalTemplate } = await supabase
-          .from('task_templates')
-          .select('id')
-          .eq('slug', 'food_poisoning_investigation')
-          .is('company_id', null)
-          .maybeSingle();
-        
-        foodPoisoningTemplate = globalTemplate;
-        
-        // If not found and we have a companyId, try company-specific
-        if (!foodPoisoningTemplate && companyId) {
-          const { data: companyTemplate } = await supabase
-            .from('task_templates')
-            .select('id')
-            .eq('slug', 'food_poisoning_investigation')
-            .eq('company_id', companyId)
-            .maybeSingle();
-          
-          foodPoisoningTemplate = companyTemplate;
-        }
-      } catch (error) {
-        console.warn('Error fetching food poisoning investigation template:', error);
-      }
+      const { data: foodPoisoningTemplate } = await supabase
+        .from('task_templates')
+        .select('id')
+        .eq('slug', 'food_poisoning_investigation')
+        .single();
 
       if (foodPoisoningTemplate) {
         // Determine priority based on severity and hospital treatment

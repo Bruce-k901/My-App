@@ -1,0 +1,47 @@
+[
+  {
+    "id": "m4_p1",
+    "type": "content",
+    "title": "What is Manual Handling?",
+    "body": "Manual handling covers lifting, lowering, pushing, pulling, and carrying. \n\nIncorrect handling is one of the most common causes of injury at work, leading to back pain and musculoskeletal disorders.",
+    "media": "/courses/uk-l2-health-and-safety/m4/manual_handling.png"
+  },
+  {
+    "id": "m4_p2",
+    "type": "content",
+    "title": "TILE: Assessing the Lift",
+    "body": "Before you lift, remember **TILE**:\n\n- **Task:** Is it repetitive? Do you need to twist?\n- **Individual:** Are you strong enough? Do you have a health condition?\n- **Load:** Is it heavy, bulky, or hot?\n- **Environment:** Is the floor slippery? Is there enough space?",
+    "media": "/courses/uk-l2-health-and-safety/m4/tile.png"
+  },
+  {
+    "id": "m4_p3",
+    "type": "content",
+    "title": "Safe Lifting Technique",
+    "body": "1. **Plan the lift.** Clear the path.\n2. **Position your feet.** Shoulder-width apart.\n3. **Bend your knees.** Keep your back straight.\n4. **Get a firm grip.** Keep the load close to your waist.\n5. **Lift smoothly.** Don't jerk.\n6. **Move your feet.** Don't twist your back.",
+    "media": "/courses/uk-l2-health-and-safety/m4/lifting_technique.png"
+  },
+  {
+    "id": "m4_interact_1",
+    "type": "drag_drop",
+    "prompt": "Order the steps for a safe lift.",
+    "pairs": [
+      ["1", "Stop and think"],
+      ["2", "Position feet"],
+      ["3", "Bend knees"],
+      ["4", "Lift smoothly"]
+    ]
+  },
+  {
+    "id": "m4_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m4",
+    "count": 3
+  },
+  {
+    "id": "m4_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You've learned the basics of safe manual handling. Always assess the load before you lift, and ask for help if it's too heavy.",
+    "media": "/courses/uk-l2-health-and-safety/m4/complete.svg"
+  }
+]

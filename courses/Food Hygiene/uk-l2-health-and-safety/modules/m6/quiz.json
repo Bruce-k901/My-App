@@ -1,0 +1,44 @@
+{
+  "pool_id": "m6",
+  "items": [
+    {
+      "id": "m6_q1",
+      "type": "single_choice",
+      "stem": "What should you do if a machine's safety guard is broken?",
+      "options": [
+        "Use it carefully",
+        "Use it quickly",
+        "Do not use it and report it",
+        "Fix it with tape"
+      ],
+      "answer": 2,
+      "rationale": "Never use a machine without a working guard. It is illegal and dangerous."
+    },
+    {
+      "id": "m6_q2",
+      "type": "single_choice",
+      "stem": "What must you do before cleaning a mixer?",
+      "options": [
+        "Turn it to 'slow'",
+        "Switch it off and unplug it",
+        "Ask a friend to watch",
+        "Wear gloves"
+      ],
+      "answer": 1,
+      "rationale": "Unplugging ensures the machine cannot accidentally start while you are cleaning it."
+    },
+    {
+      "id": "m6_q3",
+      "type": "single_choice",
+      "stem": "What is a sign of a dangerous electrical appliance?",
+      "options": [
+        "It has a PAT test sticker",
+        "The cable is frayed or cut",
+        "It is clean",
+        "It is new"
+      ],
+      "answer": 1,
+      "rationale": "Damaged cables expose live wires and are a serious shock and fire hazard."
+    }
+  ]
+}

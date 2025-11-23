@@ -243,7 +243,7 @@ export default function MyTasksPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-6">
         {[
           { key: 'all', label: 'All Tasks', count: tasks.length },
           { key: 'pending', label: 'Pending', count: tasks.filter(t => t.status === 'pending').length },
@@ -253,10 +253,10 @@ export default function MyTasksPage() {
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`min-h-[44px] px-4 py-2 rounded-lg text-base font-medium transition-colors touch-manipulation active:scale-[0.98] ${
               filter === key
                 ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30'
-                : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12] hover:text-white'
+                : 'bg-white/[0.06] text-white/60 active:bg-white/[0.12] active:text-white'
             }`}
           >
             {label} ({count})
@@ -325,8 +325,8 @@ export default function MyTasksPage() {
               </div>
               
               {/* Action Buttons */}
-              <div className="flex items-center gap-2 pt-4 border-t border-white/[0.06]">
-                {/* Edit Task button - always visible */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/[0.06]">
+                {/* Edit Task button - full width on mobile */}
                 {task.template_id && (
                   <button
                     onClick={async () => {
@@ -365,20 +365,20 @@ export default function MyTasksPage() {
                         });
                       }
                     }}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-pink-500/20 border border-pink-500/30 text-pink-400 hover:bg-pink-500/30 transition-colors text-sm"
+                    className="flex-1 min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-pink-500/20 border border-pink-500/30 text-pink-400 active:bg-pink-500/30 transition-colors text-base touch-manipulation"
                   >
-                    <Edit2 className="w-3 h-3" />
-                    Edit Task
+                    <Edit2 className="w-4 h-4" />
+                    <span>Edit Task</span>
                   </button>
                 )}
 
-                {/* Delete button - always visible for all tasks */}
+                {/* Delete button - separated on mobile */}
                 <button
                   onClick={() => handleDeleteTask(task.id)}
-                  className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors text-sm"
+                  className="flex-1 min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 active:bg-red-500/30 transition-colors text-base touch-manipulation"
                 >
-                  <Trash2 className="w-3 h-3" />
-                  Delete
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete</span>
                 </button>
               </div>
             </div>
@@ -388,21 +388,22 @@ export default function MyTasksPage() {
 
       {/* Template Editor Modal */}
       {editingTemplate && editingTemplateId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#141823] border border-white/[0.1] rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-[#141823] border-b border-white/[0.1] p-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Edit Task</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4">
+          <div className="bg-[#141823] border border-white/[0.1] rounded-none sm:rounded-xl max-w-4xl w-full h-full sm:h-auto max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="sticky top-0 bg-[#141823] border-b border-white/[0.1] p-4 flex items-center justify-between z-10">
+              <h2 className="text-lg sm:text-xl font-semibold text-white">Edit Task</h2>
               <button
                 onClick={() => {
                   setEditingTemplate(null);
                   setEditingTemplateId(null);
                 }}
-                className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                className="min-h-[44px] min-w-[44px] p-2 rounded-lg active:bg-white/10 text-white/60 active:text-white transition-colors touch-manipulation"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
               {(() => {
                 // Determine template type - check multiple indicators
                 const templateName = (editingTemplate.name || '').toLowerCase();

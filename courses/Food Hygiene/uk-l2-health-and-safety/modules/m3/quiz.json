@@ -1,0 +1,34 @@
+{
+  "pool_id": "m3",
+  "items": [
+    {
+      "id": "m3_q1",
+      "type": "single_choice",
+      "stem": "What is the most common cause of major injuries in the workplace?",
+      "options": ["Machinery accidents", "Slips, trips, and falls", "Burns", "Chemical spills"],
+      "answer": 1,
+      "rationale": "Slips, trips, and falls consistently account for the majority of workplace injuries."
+    },
+    {
+      "id": "m3_q2",
+      "type": "multi_choice",
+      "stem": "Which of the following can cause a slip? (Select two)",
+      "options": ["Trailing cables", "Wet floors", "Oil spills", "Boxes in the walkway"],
+      "answers": [1, 2],
+      "rationale": "Wet floors and oil spills reduce friction, causing slips. Cables and boxes cause trips."
+    },
+    {
+      "id": "m3_q3",
+      "type": "single_choice",
+      "stem": "When should you remove a 'Wet Floor' sign?",
+      "options": [
+        "Never",
+        "After 10 minutes",
+        "When the floor is completely dry",
+        "When you go home"
+      ],
+      "answer": 2,
+      "rationale": "Leaving signs out when the floor is dry causes people to ignore them (sign blindness)."
+    }
+  ]
+}

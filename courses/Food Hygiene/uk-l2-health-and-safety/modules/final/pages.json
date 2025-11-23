@@ -1,0 +1,22 @@
+[
+  {
+    "id": "final_intro",
+    "type": "content",
+    "title": "Final Assessment",
+    "body": "You have reached the end of the learning modules. \n\nYou must now pass the final assessment to complete the course and receive your certificate.\n\n- **Pass mark:** 80%\n- **Questions:** 30\n- **Time limit:** None\n\nGood luck!",
+    "media": "/courses/uk-l2-health-and-safety/final/intro.png"
+  },
+  {
+    "id": "final_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "final",
+    "count": 30
+  },
+  {
+    "id": "final_complete",
+    "type": "content",
+    "title": "Assessment Complete",
+    "body": "Congratulations! You have completed the assessment. Click 'Finish' to see your results.",
+    "media": "/courses/uk-l2-health-and-safety/final/complete.svg"
+  }
+]

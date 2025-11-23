@@ -1,0 +1,39 @@
+{
+  "pool_id": "m7",
+  "items": [
+    {
+      "id": "m7_q1",
+      "type": "single_choice",
+      "stem": "What three things does a fire need to burn?",
+      "options": [
+        "Fuel, Oxygen, Heat",
+        "Fuel, CO2, Heat",
+        "Wood, Paper, Oil",
+        "Heat, Light, Sound"
+      ],
+      "answer": 0,
+      "rationale": "This is known as the Fire Triangle."
+    },
+    {
+      "id": "m7_q2",
+      "type": "single_choice",
+      "stem": "Which extinguisher should you use on a deep fat fryer fire?",
+      "options": ["Water", "CO2", "Wet Chemical", "Powder"],
+      "answer": 2,
+      "rationale": "Wet Chemical extinguishers are specifically designed for Class F (cooking oil) fires. Water causes an explosion."
+    },
+    {
+      "id": "m7_q3",
+      "type": "single_choice",
+      "stem": "What should you do if you hear the fire alarm?",
+      "options": [
+        "Finish what you are doing",
+        "Collect your belongings",
+        "Evacuate immediately to the assembly point",
+        "Wait for instructions"
+      ],
+      "answer": 2,
+      "rationale": "Immediate evacuation saves lives. Do not delay."
+    }
+  ]
+}

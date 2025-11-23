@@ -440,23 +440,26 @@ export default function ActiveTasksPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditTask(task)}
-                      className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+                      className="min-h-[44px] min-w-[44px] p-2 rounded-lg active:bg-white/10 text-white/60 touch-manipulation"
                       title="Edit Task"
+                      aria-label="Edit Task"
                     >
-                      <Edit2 className="h-4 w-4" />
+                      <Edit2 className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      className="p-2 rounded-lg hover:bg-red-500/10 text-red-400"
+                      className="min-h-[44px] min-w-[44px] p-2 rounded-lg active:bg-red-500/10 text-red-400 touch-manipulation"
                       title="Delete Task"
+                      aria-label="Delete Task"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-5 w-5" />
                     </button>
                     <button
-                      className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+                      className="min-h-[44px] min-w-[44px] p-2 rounded-lg active:bg-white/10 text-white/60 touch-manipulation"
                       title="Complete Task"
+                      aria-label="Complete Task"
                     >
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="h-5 w-5" />
                     </button>
                   </div>
                 </div>

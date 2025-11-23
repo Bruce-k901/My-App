@@ -1,0 +1,39 @@
+{
+  "pool_id": "m8",
+  "items": [
+    {
+      "id": "m8_q1",
+      "type": "single_choice",
+      "stem": "What does COSHH stand for?",
+      "options": [
+        "Control of Substances Hazardous to Health",
+        "Care of Staff Health and Hygiene",
+        "Control of Safety Hazards in Hospital",
+        "Chemicals of Safety Health and Hygiene"
+      ],
+      "answer": 0,
+      "rationale": "COSHH is the regulation covering hazardous substances."
+    },
+    {
+      "id": "m8_q2",
+      "type": "single_choice",
+      "stem": "What should you wear when using oven cleaner?",
+      "options": ["Just your uniform", "Gloves and goggles (PPE)", "A hat", "Nothing special"],
+      "answer": 1,
+      "rationale": "Oven cleaner is corrosive. PPE protects your skin and eyes."
+    },
+    {
+      "id": "m8_q3",
+      "type": "single_choice",
+      "stem": "Where should cleaning chemicals be stored?",
+      "options": [
+        "On the prep counter",
+        "In an unmarked bottle",
+        "In their original container, locked away",
+        "Next to the food"
+      ],
+      "answer": 2,
+      "rationale": "Secure storage prevents contamination and accidental misuse."
+    }
+  ]
+}

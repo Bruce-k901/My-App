@@ -1,0 +1,9 @@
+[
+  {
+    "id": "cert_page",
+    "type": "certificate",
+    "title": "Course Complete",
+    "body": "Congratulations! You have successfully completed the Level 2 Health and Safety course.",
+    "media": "/courses/uk-l2-health-and-safety/certification/certificate.png"
+  }
+]

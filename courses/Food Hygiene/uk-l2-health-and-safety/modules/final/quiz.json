@@ -1,0 +1,280 @@
+{
+  "pool_id": "final",
+  "items": [
+    {
+      "id": "final_q1",
+      "type": "single_choice",
+      "stem": "Who has a duty of care under the Health and Safety at Work Act?",
+      "options": ["Employers only", "Employees only", "Everyone", "Customers"],
+      "answer": 2,
+      "rationale": "Everyone is responsible for health and safety."
+    },
+    {
+      "id": "final_q2",
+      "type": "single_choice",
+      "stem": "What is a hazard?",
+      "options": [
+        "The chance of harm",
+        "Something with potential to cause harm",
+        "An accident",
+        "A safety rule"
+      ],
+      "answer": 1,
+      "rationale": "A hazard is the source of potential harm."
+    },
+    {
+      "id": "final_q3",
+      "type": "single_choice",
+      "stem": "What is the first step of a risk assessment?",
+      "options": ["Evaluate risk", "Identify hazards", "Record findings", "Review"],
+      "answer": 1,
+      "rationale": "You must identify hazards first."
+    },
+    {
+      "id": "final_q4",
+      "type": "single_choice",
+      "stem": "What is the most common cause of workplace injury?",
+      "options": ["Fire", "Machinery", "Slips, trips, and falls", "Chemicals"],
+      "answer": 2,
+      "rationale": "Slips, trips, and falls are the most common."
+    },
+    {
+      "id": "final_q5",
+      "type": "single_choice",
+      "stem": "What does TILE stand for?",
+      "options": [
+        "Task, Individual, Load, Environment",
+        "Time, Injury, Lift, Equipment",
+        "Task, Injury, Load, Environment",
+        "Time, Individual, Lift, Equipment"
+      ],
+      "answer": 0,
+      "rationale": "TILE is for manual handling assessment."
+    },
+    {
+      "id": "final_q6",
+      "type": "single_choice",
+      "stem": "Why are sharp knives safer than blunt ones?",
+      "options": [
+        "They look better",
+        "They require less force",
+        "They are lighter",
+        "They are cheaper"
+      ],
+      "answer": 1,
+      "rationale": "Less force means less chance of slipping."
+    },
+    {
+      "id": "final_q7",
+      "type": "single_choice",
+      "stem": "What class of fire involves cooking oil?",
+      "options": ["Class A", "Class B", "Class F", "Electrical"],
+      "answer": 2,
+      "rationale": "Class F is for cooking oils and fats."
+    },
+    {
+      "id": "final_q8",
+      "type": "single_choice",
+      "stem": "Which extinguisher is for Class F fires?",
+      "options": ["Water", "CO2", "Wet Chemical", "Powder"],
+      "answer": 2,
+      "rationale": "Wet Chemical is for deep fat fryers."
+    },
+    {
+      "id": "final_q9",
+      "type": "single_choice",
+      "stem": "What does COSHH stand for?",
+      "options": [
+        "Control of Substances Hazardous to Health",
+        "Care of Staff Health",
+        "Control of Safety Hazards",
+        "Chemical Safety Health"
+      ],
+      "answer": 0,
+      "rationale": "Control of Substances Hazardous to Health."
+    },
+    {
+      "id": "final_q10",
+      "type": "single_choice",
+      "stem": "How long should you cool a burn?",
+      "options": ["5 mins", "10 mins", "20 mins", "1 hour"],
+      "answer": 2,
+      "rationale": "20 minutes is the recommended time."
+    },
+    {
+      "id": "final_q11",
+      "type": "single_choice",
+      "stem": "What colour plaster is used in kitchens?",
+      "options": ["Pink", "Blue", "Clear", "White"],
+      "answer": 1,
+      "rationale": "Blue is visually detectable."
+    },
+    {
+      "id": "final_q12",
+      "type": "single_choice",
+      "stem": "What should you do if a machine guard is broken?",
+      "options": ["Use it carefully", "Report it and do not use", "Fix it yourself", "Ignore it"],
+      "answer": 1,
+      "rationale": "Never use unguarded machinery."
+    },
+    {
+      "id": "final_q13",
+      "type": "single_choice",
+      "stem": "What is the 'three points of contact' rule for?",
+      "options": ["Lifting", "Ladders", "Knives", "Chemicals"],
+      "answer": 1,
+      "rationale": "It applies to ladder safety."
+    },
+    {
+      "id": "final_q14",
+      "type": "single_choice",
+      "stem": "What should you do if you spill oil?",
+      "options": ["Leave it", "Clean it immediately", "Cover it", "Wait for cleaner"],
+      "answer": 1,
+      "rationale": "Prevent slips by cleaning immediately."
+    },
+    {
+      "id": "final_q15",
+      "type": "single_choice",
+      "stem": "Where should heavy items be stored?",
+      "options": ["Top shelf", "Middle/Lower shelf", "Floor", "Anywhere"],
+      "answer": 1,
+      "rationale": "Prevents injury from lifting or falling objects."
+    },
+    {
+      "id": "final_q16",
+      "type": "single_choice",
+      "stem": "What must employers provide?",
+      "options": ["Lunch", "Safe workplace", "Transport", "Uniform only"],
+      "answer": 1,
+      "rationale": "Employers must provide a safe workplace."
+    },
+    {
+      "id": "final_q17",
+      "type": "single_choice",
+      "stem": "What is a dynamic risk assessment?",
+      "options": ["Written report", "Assessing on the spot", "Annual review", "External audit"],
+      "answer": 1,
+      "rationale": "It is continuous assessment during work."
+    },
+    {
+      "id": "final_q18",
+      "type": "single_choice",
+      "stem": "Why must you not mix bleach and acid?",
+      "options": ["It explodes", "Toxic gas", "It stains", "It costs more"],
+      "answer": 1,
+      "rationale": "It creates chlorine gas."
+    },
+    {
+      "id": "final_q19",
+      "type": "single_choice",
+      "stem": "What should you do if the fire alarm sounds?",
+      "options": ["Evacuate", "Hide", "Finish work", "Call home"],
+      "answer": 0,
+      "rationale": "Evacuate immediately."
+    },
+    {
+      "id": "final_q20",
+      "type": "single_choice",
+      "stem": "What is the best way to pass a knife?",
+      "options": ["Handle first", "Blade first", "Place on surface", "Throw it"],
+      "answer": 2,
+      "rationale": "Placing it down is safest."
+    },
+    {
+      "id": "final_q21",
+      "type": "single_choice",
+      "stem": "What does a blue circle sign mean?",
+      "options": ["Warning", "Mandatory (Must do)", "Prohibited", "Safe condition"],
+      "answer": 1,
+      "rationale": "Blue signs are mandatory instructions."
+    },
+    {
+      "id": "final_q22",
+      "type": "single_choice",
+      "stem": "What does a red circle with a line through it mean?",
+      "options": ["Warning", "Mandatory", "Prohibited (Do not do)", "Safe condition"],
+      "answer": 2,
+      "rationale": "Red circle with line is prohibited."
+    },
+    {
+      "id": "final_q23",
+      "type": "single_choice",
+      "stem": "What does a yellow triangle sign mean?",
+      "options": ["Warning", "Mandatory", "Prohibited", "Safe condition"],
+      "answer": 0,
+      "rationale": "Yellow triangle is a warning."
+    },
+    {
+      "id": "final_q24",
+      "type": "single_choice",
+      "stem": "What does a green square sign mean?",
+      "options": ["Warning", "Mandatory", "Prohibited", "Safe condition (First Aid/Exit)"],
+      "answer": 3,
+      "rationale": "Green is for safe conditions like exits and first aid."
+    },
+    {
+      "id": "final_q25",
+      "type": "single_choice",
+      "stem": "Who is responsible for reporting accidents?",
+      "options": ["The injured person (or witness)", "Only the manager", "The doctor", "No one"],
+      "answer": 0,
+      "rationale": "Accidents must be reported by the person involved or a witness."
+    },
+    {
+      "id": "final_q26",
+      "type": "single_choice",
+      "stem": "What should you do before using a ladder?",
+      "options": ["Paint it", "Check for damage", "Wash it", "Nothing"],
+      "answer": 1,
+      "rationale": "Always check equipment before use."
+    },
+    {
+      "id": "final_q27",
+      "type": "single_choice",
+      "stem": "What is the correct way to lift a heavy box?",
+      "options": [
+        "Bend back",
+        "Bend knees, keep back straight",
+        "Twist while lifting",
+        "Lift with one hand"
+      ],
+      "answer": 1,
+      "rationale": "Use your legs, not your back."
+    },
+    {
+      "id": "final_q28",
+      "type": "single_choice",
+      "stem": "Can you use a water extinguisher on an electrical fire?",
+      "options": ["Yes", "No, never", "Sometimes", "If the fire is small"],
+      "answer": 1,
+      "rationale": "Water conducts electricity and can electrocute you."
+    },
+    {
+      "id": "final_q29",
+      "type": "single_choice",
+      "stem": "What should you do if you cut your finger?",
+      "options": [
+        "Suck it",
+        "Wash, dry, and cover with blue plaster",
+        "Ignore it",
+        "Put it in oil"
+      ],
+      "answer": 1,
+      "rationale": "Clean the wound and prevent contamination."
+    },
+    {
+      "id": "final_q30",
+      "type": "single_choice",
+      "stem": "Why is personal hygiene important in health and safety?",
+      "options": [
+        "To smell nice",
+        "To prevent spread of infection/contamination",
+        "To look good",
+        "It isn't important"
+      ],
+      "answer": 1,
+      "rationale": "Good hygiene prevents cross-contamination and illness."
+    }
+  ]
+}

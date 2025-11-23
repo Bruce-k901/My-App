@@ -241,18 +241,20 @@ export default function TemplatesPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => handleEditTemplate(template, e)}
-                    className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                    className="min-h-[44px] min-w-[44px] p-2 rounded active:bg-white/10 text-white/60 active:text-white transition-colors touch-manipulation"
                     title="Edit Template"
+                    aria-label="Edit Template"
                   >
-                    <Edit2 className="h-4 w-4" />
+                    <Edit2 className="h-5 w-5" />
                   </button>
                   <button
                     onClick={(e) => handleDeleteTemplate(template.id, e)}
                     disabled={deletingTemplateId === template.id}
-                    className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-red-400 transition-colors disabled:opacity-50"
+                    className="min-h-[44px] min-w-[44px] p-2 rounded active:bg-white/10 text-white/60 active:text-red-400 transition-colors disabled:opacity-50 touch-manipulation"
                     title="Delete Template"
+                    aria-label="Delete Template"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
               </div>

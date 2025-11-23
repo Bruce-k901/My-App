@@ -191,7 +191,7 @@ export default function TaskDetailPage() {
           {!isCompleted && (
             <button
               onClick={() => setShowCompletionModal(true)}
-              className="px-6 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
+              className="hidden lg:flex px-6 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-semibold rounded-lg transition-all duration-200 items-center gap-2 min-h-[44px] touch-manipulation"
             >
               <CheckCircle2 className="w-5 h-5" />
               Complete Task
@@ -236,20 +236,33 @@ export default function TaskDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-6">
+          {/* Sticky action button on mobile */}
+          {!isCompleted && (
+            <div className="sticky top-0 z-10 bg-[#0f1220] pb-4 lg:relative lg:pb-0 lg:hidden">
+              <button
+                onClick={() => setShowCompletionModal(true)}
+                className="w-full min-h-[56px] px-6 py-4 bg-transparent border-2 border-[#EC4899] text-[#EC4899] active:shadow-[0_0_20px_rgba(236,72,153,0.9)] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-3 touch-manipulation text-lg"
+              >
+                <CheckCircle2 className="w-6 h-6" />
+                Complete Task
+              </button>
+            </div>
+          )}
+
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Task Details */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
               <button
                 onClick={() => toggleSection('details')}
-                className="w-full flex items-center justify-between mb-4"
+                className="w-full flex items-center justify-between mb-4 min-h-[44px] touch-manipulation"
               >
                 <h2 className="text-xl font-semibold text-white">Task Details</h2>
                 {expandedSections.has('details') ? (
-                  <ChevronUp className="w-5 h-5 text-white/60" />
+                  <ChevronUp className="w-6 h-6 text-white/60" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-white/60" />
+                  <ChevronDown className="w-6 h-6 text-white/60" />
                 )}
               </button>
 
@@ -321,15 +334,15 @@ export default function TaskDetailPage() {
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
                 <button
                   onClick={() => toggleSection('history')}
-                  className="w-full flex items-center justify-between mb-4"
+                  className="w-full flex items-center justify-between mb-4 min-h-[44px] touch-manipulation"
                 >
                   <h2 className="text-xl font-semibold text-white">
                     Completion History ({completionRecords.length})
                   </h2>
                   {expandedSections.has('history') ? (
-                    <ChevronUp className="w-5 h-5 text-white/60" />
+                    <ChevronUp className="w-6 h-6 text-white/60" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-white/60" />
+                    <ChevronDown className="w-6 h-6 text-white/60" />
                   )}
                 </button>
 
@@ -352,8 +365,8 @@ export default function TaskDetailPage() {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar - appears after main content on mobile */}
+          <div className="space-y-6 lg:col-span-1">
             {/* Quick Info */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Quick Info</h3>
@@ -434,13 +447,17 @@ export default function TaskDetailPage() {
       {/* Image Viewer Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-4xl max-h-full">
+          <div className="relative max-w-4xl max-h-full w-full flex flex-col">
             <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white z-10"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="absolute top-4 right-4 min-h-[44px] min-w-[44px] p-2 bg-white/20 active:bg-white/30 rounded-lg text-white z-10 touch-manipulation"
+              aria-label="Close"
             >
               <X className="w-6 h-6" />
             </button>
@@ -496,12 +513,13 @@ function CompletionRecordCard({
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="p-1 hover:bg-white/10 rounded"
+          className="min-h-[44px] min-w-[44px] p-2 active:bg-white/10 rounded touch-manipulation"
+          aria-label={expanded ? "Collapse" : "Expand"}
         >
           {expanded ? (
-            <ChevronUp className="w-5 h-5 text-white/60" />
+            <ChevronUp className="w-6 h-6 text-white/60" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-white/60" />
+            <ChevronDown className="w-6 h-6 text-white/60" />
           )}
         </button>
       </div>
@@ -630,16 +648,16 @@ function CompletionDetails({
             {record.evidence_attachments.map((url, idx) => (
               <div
                 key={idx}
-                className="relative aspect-square bg-white/[0.05] rounded-lg overflow-hidden cursor-pointer group"
+                className="relative aspect-square bg-white/[0.05] rounded-lg overflow-hidden cursor-pointer group touch-manipulation"
                 onClick={() => setSelectedImage(url)}
               >
                 <img
                   src={url}
                   alt={`Evidence ${idx + 1}`}
-                  className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                  className="w-full h-full object-cover group-active:opacity-80 transition-opacity"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <ExternalLink className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-black/0 group-active:bg-black/20 transition-colors flex items-center justify-center">
+                  <ExternalLink className="w-6 h-6 text-white opacity-0 group-active:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
@@ -650,13 +668,17 @@ function CompletionDetails({
       {/* Image Viewer Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-4xl max-h-full">
+          <div className="relative max-w-4xl max-h-full w-full flex flex-col">
             <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white z-10"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="absolute top-4 right-4 min-h-[44px] min-w-[44px] p-2 bg-white/20 active:bg-white/30 rounded-lg text-white z-10 touch-manipulation"
+              aria-label="Close"
             >
               <X className="w-6 h-6" />
             </button>

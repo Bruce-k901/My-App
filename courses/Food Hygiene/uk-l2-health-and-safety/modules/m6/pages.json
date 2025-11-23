@@ -1,0 +1,49 @@
+[
+  {
+    "id": "m6_p1",
+    "type": "content",
+    "title": "Dangerous Machinery",
+    "body": "Kitchens are full of powerful machines: slicers, mixers, mincers, and blenders. These can cause amputations or severe lacerations if misused.\n\n**Safety Guards:** Never operate a machine without its safety guard in place. If a guard is broken, report it and do not use the machine.",
+    "media": "/courses/uk-l2-health-and-safety/m6/machinery.png"
+  },
+  {
+    "id": "m6_p2",
+    "type": "content",
+    "title": "Cleaning and Maintenance",
+    "body": "Most accidents happen during cleaning.\n\n**Lock Out / Tag Out:** Before cleaning or unblocking a machine, switch it off and unplug it. This prevents it from accidentally starting while your hands are inside.",
+    "media": "/courses/uk-l2-health-and-safety/m6/cleaning_machines.png"
+  },
+  {
+    "id": "m6_p3",
+    "type": "content",
+    "title": "Electrical Safety",
+    "body": "Electricity and water don't mix.\n\n- Check cables for damage (cuts or fraying) before use.\n- Don't overload sockets.\n- Keep electrical appliances away from water sources.\n- If a plug gets hot, stop using it immediately.",
+    "media": "/courses/uk-l2-health-and-safety/m6/electrical.png"
+  },
+  {
+    "id": "m6_interact_1",
+    "type": "multi_choice",
+    "stem": "What must you check before using a meat slicer? (Select two)",
+    "options": [
+      "That the guard is in place",
+      "That it is plugged in",
+      "That you have been trained to use it",
+      "That it is brand new"
+    ],
+    "answers": [0, 2],
+    "rationale": "You must be trained and the safety guards must be functional. Never use machinery you don't understand."
+  },
+  {
+    "id": "m6_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m6",
+    "count": 3
+  },
+  {
+    "id": "m6_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You now know how to work safely with kitchen equipment. Respect the machines, use the guards, and always unplug before cleaning.",
+    "media": "/courses/uk-l2-health-and-safety/m6/complete.svg"
+  }
+]

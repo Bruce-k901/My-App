@@ -1,0 +1,44 @@
+{
+  "pool_id": "m9",
+  "items": [
+    {
+      "id": "m9_q1",
+      "type": "single_choice",
+      "stem": "What is the 'three points of contact' rule?",
+      "options": [
+        "Call three people for help",
+        "Keep two feet and one hand (or two hands and one foot) on the ladder",
+        "Touch the wall, the floor, and the ceiling",
+        "Use a tripod"
+      ],
+      "answer": 1,
+      "rationale": "This ensures stability while climbing or working on a ladder."
+    },
+    {
+      "id": "m9_q2",
+      "type": "single_choice",
+      "stem": "Can you stand on the very top step of a stepladder?",
+      "options": [
+        "Yes, if you are careful",
+        "No, never",
+        "Only if you hold onto something",
+        "Yes, if you are tall"
+      ],
+      "answer": 1,
+      "rationale": "The top step is not designed for standing; you lose your handhold and stability."
+    },
+    {
+      "id": "m9_q3",
+      "type": "single_choice",
+      "stem": "Where should heavy items be stored?",
+      "options": [
+        "On the top shelf",
+        "On the floor",
+        "On middle or lower shelves",
+        "On top of the fridge"
+      ],
+      "answer": 2,
+      "rationale": "Middle/lower shelves reduce the need to lift heavy items above head height or bend too low."
+    }
+  ]
+}

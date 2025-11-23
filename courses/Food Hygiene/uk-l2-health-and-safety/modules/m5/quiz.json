@@ -1,0 +1,44 @@
+{
+  "pool_id": "m5",
+  "items": [
+    {
+      "id": "m5_q1",
+      "type": "single_choice",
+      "stem": "Why is a sharp knife safer than a blunt one?",
+      "options": [
+        "It looks better",
+        "It requires less force to cut, reducing slips",
+        "It is lighter",
+        "It cuts slower"
+      ],
+      "answer": 1,
+      "rationale": "Blunt knives force you to push harder, which often leads to the knife slipping and cutting you."
+    },
+    {
+      "id": "m5_q2",
+      "type": "single_choice",
+      "stem": "Where should you NEVER put a knife?",
+      "options": [
+        "On a magnetic rack",
+        "In a knife block",
+        "In a sink full of soapy water",
+        "On a cutting board"
+      ],
+      "answer": 2,
+      "rationale": "Knives in soapy water are invisible hazards. Someone reaching in could be seriously cut."
+    },
+    {
+      "id": "m5_q3",
+      "type": "single_choice",
+      "stem": "How should you pass a knife to a colleague?",
+      "options": [
+        "Throw it",
+        "Blade first",
+        "Handle first",
+        "Place it on a flat surface for them to pick up"
+      ],
+      "answer": 3,
+      "rationale": "Placing it down is the safest method, ensuring no accidental contact during the transfer."
+    }
+  ]
+}

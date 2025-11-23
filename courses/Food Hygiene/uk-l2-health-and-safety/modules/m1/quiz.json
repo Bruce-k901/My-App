@@ -1,0 +1,44 @@
+{
+  "pool_id": "m1",
+  "items": [
+    {
+      "id": "m1_q1",
+      "type": "single_choice",
+      "stem": "Who is responsible for health and safety in the workplace?",
+      "options": [
+        "Only the business owner",
+        "Only the manager",
+        "Everyone, including employers and employees",
+        "The Health and Safety Executive"
+      ],
+      "answer": 2,
+      "rationale": "Under the Health and Safety at Work Act 1974, everyone has a duty of care."
+    },
+    {
+      "id": "m1_q2",
+      "type": "single_choice",
+      "stem": "What is the main purpose of the Health and Safety at Work Act?",
+      "options": [
+        "To punish businesses",
+        "To protect people from work-related harm",
+        "To increase paperwork",
+        "To stop people from working"
+      ],
+      "answer": 1,
+      "rationale": "The Act exists to ensure the health, safety, and welfare of people at work."
+    },
+    {
+      "id": "m1_q3",
+      "type": "multi_choice",
+      "stem": "Which of the following are duties of an employee? (Select two)",
+      "options": [
+        "Provide safety training",
+        "Take reasonable care of their own safety",
+        "Cooperate with the employer on safety matters",
+        "Purchase safety equipment"
+      ],
+      "answers": [1, 2],
+      "rationale": "Employees must look after themselves and cooperate; employers provide training and equipment."
+    }
+  ]
+}

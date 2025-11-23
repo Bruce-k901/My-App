@@ -1,0 +1,54 @@
+[
+  {
+    "id": "m2_p1",
+    "type": "content",
+    "title": "What is a Risk Assessment?",
+    "body": "A risk assessment is a careful examination of what, in your work, could cause harm to people.\n\nIt allows you to weigh up whether you have taken enough precautions or should do more to prevent harm. It is a legal requirement for all employers.",
+    "media": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+  },
+  {
+    "id": "m2_p2",
+    "type": "content",
+    "title": "Hazard vs. Risk",
+    "body": "It is important to understand the difference:\n\n- **Hazard:** Anything that has the potential to cause harm (e.g., a wet floor, a sharp knife, hot oil).\n- **Risk:** The chance, high or low, that somebody could be harmed by these and other hazards, together with an indication of how serious the harm could be.",
+    "media": "/courses/uk-l2-health-and-safety/m2/hazard_vs_risk.png"
+  },
+  {
+    "id": "m2_p3",
+    "type": "content",
+    "title": "The 5 Steps of Risk Assessment",
+    "body": "1. **Identify the hazards.**\n2. **Decide who might be harmed and how.**\n3. **Evaluate the risks and decide on precautions.**\n4. **Record your findings and implement them.**\n5. **Review your assessment and update if necessary.**",
+    "media": "/courses/uk-l2-health-and-safety/m2/5_steps.png"
+  },
+  {
+    "id": "m2_interact_1",
+    "type": "drag_drop",
+    "prompt": "Classify the following as a Hazard or a Risk.",
+    "pairs": [
+      ["A trailing cable", "Hazard"],
+      ["Tripping over a cable", "Risk"],
+      ["Bleach", "Hazard"],
+      ["Chemical burn from bleach", "Risk"]
+    ]
+  },
+  {
+    "id": "m2_p4",
+    "type": "content",
+    "title": "Dynamic Risk Assessment",
+    "body": "Not all risks are written down. A 'dynamic risk assessment' is the continuous process of identifying hazards and assessing risk as they arise during work.\n\nFor example, if you see a spill, you assess the risk (someone slipping) and take action (clean it up or put out a sign) immediately.",
+    "media": "/courses/uk-l2-health-and-safety/m2/dynamic.png"
+  },
+  {
+    "id": "m2_quiz_ref",
+    "type": "quiz_ref",
+    "pool": "m2",
+    "count": 3
+  },
+  {
+    "id": "m2_complete",
+    "type": "content",
+    "title": "Module Complete",
+    "body": "You now understand the principles of risk assessment. Remember: Hazard is the potential for harm; Risk is the likelihood of it happening.",
+    "media": "/courses/uk-l2-health-and-safety/m2/complete.svg"
+  }
+]

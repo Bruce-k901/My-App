@@ -2,10 +2,10 @@
   "name": "Checkly - Compliance Management",
   "short_name": "Checkly",
   "description": "Health & safety, food safety, and operational compliance for hospitality venues",
-  "start_url": "/",
+  "start_url": "/dashboard/todays_tasks",
   "display": "standalone",
-  "background_color": "#0B0D13",
-  "theme_color": "#10B981",
+  "background_color": "#0f1220",
+  "theme_color": "#EC4899",
   "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
@@ -31,24 +31,17 @@
   "categories": ["business", "productivity"],
   "shortcuts": [
     {
-      "name": "New Task",
-      "short_name": "Task",
-      "description": "Create a new task",
-      "url": "/dashboard/tasks/new",
+      "name": "Today's Tasks",
+      "short_name": "Today",
+      "description": "View today's pending tasks",
+      "url": "/dashboard/todays_tasks",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
-      "name": "New Incident",
-      "short_name": "Incident",
-      "description": "Report an incident",
-      "url": "/dashboard/incidents/new",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Notifications",
-      "short_name": "Alerts",
-      "description": "View notifications",
-      "url": "/notifications",
+      "name": "Complete Task",
+      "short_name": "Complete",
+      "description": "Quickly complete a task",
+      "url": "/dashboard/todays_tasks?quick_complete=true",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ],

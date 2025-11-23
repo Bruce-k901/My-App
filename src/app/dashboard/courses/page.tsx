@@ -11,6 +11,15 @@ const COURSES = [
     level: "Level 2 • Self-study",
     badge: "Updated"
   },
+  {
+    slug: "health-and-safety",
+    title: "Health and Safety Level 2 (UK)",
+    description:
+      "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
+    duration: "Approx. 4 hours",
+    level: "Level 2 • Self-study",
+    badge: "New"
+  },
 ];
 
 export default function CoursesPage() {
@@ -24,7 +33,13 @@ export default function CoursesPage() {
         {COURSES.map((course) => (
           <Link
             key={course.slug}
-            href={course.slug === 'food-safety' ? '/learn/uk-l2-food-safety-v3' : `/dashboard/courses/${course.slug}`}
+            href={
+              course.slug === 'food-safety' 
+                ? '/learn/uk-l2-food-safety-v3' 
+                : course.slug === 'health-and-safety'
+                ? '/learn/uk-l2-health-and-safety'
+                : `/dashboard/courses/${course.slug}`
+            }
             className="group flex h-full flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-magenta-500/40 hover:shadow-[0_0_26px_rgba(236,72,153,0.2)]"
           >
             <div className="space-y-3">

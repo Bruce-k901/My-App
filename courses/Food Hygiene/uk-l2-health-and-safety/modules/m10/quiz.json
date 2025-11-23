@@ -1,0 +1,34 @@
+{
+  "pool_id": "m10",
+  "items": [
+    {
+      "id": "m10_q1",
+      "type": "single_choice",
+      "stem": "How long should you cool a burn under running water?",
+      "options": ["1 minute", "5 minutes", "At least 20 minutes", "Until it stops hurting"],
+      "answer": 2,
+      "rationale": "20 minutes is required to remove heat from the deep tissue and stop the burning process."
+    },
+    {
+      "id": "m10_q2",
+      "type": "single_choice",
+      "stem": "What colour plaster must be used in a kitchen?",
+      "options": ["Pink", "Blue", "Clear", "Any colour"],
+      "answer": 1,
+      "rationale": "Blue plasters are visually detectable if they fall into food."
+    },
+    {
+      "id": "m10_q3",
+      "type": "single_choice",
+      "stem": "Where should you record an accident?",
+      "options": [
+        "On a scrap of paper",
+        "In the Accident Book",
+        "Tell the manager only",
+        "Don't record it"
+      ],
+      "answer": 1,
+      "rationale": "It is a legal requirement to keep a record of accidents in the Accident Book."
+    }
+  ]
+}
