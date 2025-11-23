@@ -5,9 +5,10 @@ import { useAppContext } from "@/context/AppContext";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { MessagingWidget } from "./MessagingWidget";
+import { IncidentsWidget } from "./IncidentsWidget";
 
 export default function AdminDashboard() {
-  const { loading, tasks, incidents, assets, companyId } = useAppContext();
+  const { loading, tasks, assets, companyId } = useAppContext();
   const [summary, setSummary] = useState<{ site_id: string; completed: number; total: number }[]>([]);
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   useEffect(() => {
@@ -52,7 +53,6 @@ export default function AdminDashboard() {
         <p className="text-slate-300 text-sm">Summary of sites and active issues.</p>
         <ul className="text-sm text-slate-300 space-y-2 mt-2">
           <li className="flex justify-between"><span>Sites</span><span className="text-slate-500">—</span></li>
-          <li className="flex justify-between"><span>Open incidents</span><span className="text-slate-500">{incidents.length}</span></li>
           <li className="flex justify-between"><span>Registered assets</span><span className="text-slate-500">{assets.length}</span></li>
         </ul>
       </Widget>
@@ -75,20 +75,7 @@ export default function AdminDashboard() {
         )}
       </Widget>
 
-      <Widget title="Cross-Site Alerts">
-        {incidents.length === 0 ? (
-          <Empty text="No open incidents across sites." />
-        ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
-            {incidents.slice(0, 6).map((i: any) => (
-              <li key={i.id} className="flex justify-between">
-                <span>{i.type ?? `Incident #${i.id}`}</span>
-                <span className="text-slate-500">{i.status ?? "open"}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Widget>
+      <IncidentsWidget title="Cross-Site Alerts" limit={6} />
 
       <Widget title="Downtime Report">
         <p className="text-slate-300 text-sm">Recent downtime events.</p>
