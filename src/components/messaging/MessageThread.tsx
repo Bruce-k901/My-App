@@ -285,7 +285,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4 min-h-0"
+        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0"
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -321,29 +321,29 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
               <div
                 key={message.id}
                 data-message-id={message.id}
-                className={`flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+                className={`flex gap-1.5 sm:gap-2 md:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-400">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-400">
                     {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
-                {showAvatar && isOwn && <div className="flex-shrink-0 w-8" />}
+                {showAvatar && isOwn && <div className="flex-shrink-0 w-7 sm:w-8" />}
 
                 <div
-                  className={`flex flex-col max-w-[85%] sm:max-w-[75%] md:max-w-[70%] ${
+                  className={`flex flex-col max-w-[90%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%] ${
                     isOwn ? 'items-end' : 'items-start'
                   }`}
                 >
                   {showAvatar && message.sender && (message.sender.full_name || message.sender.email) && (
-                    <div className="text-xs text-white/40 mb-1 px-2">
+                    <div className="text-xs text-white/40 mb-0.5 sm:mb-1 px-1.5 sm:px-2">
                       {message.sender.full_name || message.sender.email?.split('@')[0]}
                     </div>
                   )}
 
                   {message.reply_to && message.reply_to.id && (
                     <div
-                      className={`mb-2 px-3 py-2 bg-white/[0.08] border-l-3 border-pink-500/70 rounded text-xs ${
+                      className={`mb-1.5 sm:mb-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/[0.08] border-l-2 sm:border-l-3 border-pink-500/70 rounded text-[10px] sm:text-xs ${
                         isOwn ? 'ml-auto' : ''
                       }`}
                       onClick={(e) => {
@@ -361,13 +361,13 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       }}
                       style={{ cursor: 'pointer' }}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Reply className="w-3 h-3 text-pink-400 flex-shrink-0" />
-                        <div className="text-xs text-white/50 font-medium">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                        <Reply className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-pink-400 flex-shrink-0" />
+                        <div className="text-[10px] sm:text-xs text-white/50 font-medium">
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-white/70 truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
+                      <div className="text-white/70 truncate max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[250px] break-words">
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (
@@ -380,18 +380,18 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   )}
 
                   <div
-                    className={`group relative px-3 sm:px-4 py-2 rounded-lg ${
+                    className={`group relative px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg ${
                       isOwn
                         ? 'bg-pink-500/20 text-white'
                         : 'bg-white/[0.05] text-white/90'
                     }`}
                   >
                     {message.message_type === 'image' && message.file_url ? (
-                      <div className="max-w-xs md:max-w-sm mb-2">
+                      <div className="max-w-full sm:max-w-xs md:max-w-sm mb-1.5 sm:mb-2">
                         <img
                           src={message.file_url}
                           alt={message.file_name || 'Image'}
-                          className="rounded-lg cursor-pointer hover:opacity-90 transition w-full h-auto max-h-64 object-contain"
+                          className="rounded-lg cursor-pointer hover:opacity-90 transition w-full h-auto max-h-48 sm:max-h-64 object-contain"
                           onClick={() => window.open(message.file_url || '', '_blank')}
                         />
                       </div>
@@ -405,30 +405,30 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         }}
                       />
                     ) : (
-                      <p className="text-sm whitespace-pre-wrap break-words">
+                      <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">
                         {message.content}
                       </p>
                     )}
 
                     {message.edited_at && (
-                      <span className="text-xs text-white/30 italic ml-2">
+                      <span className="text-[10px] sm:text-xs text-white/30 italic ml-1.5 sm:ml-2">
                         (edited)
                       </span>
                     )}
 
                     {/* Topic badge */}
                     {message.topic && (
-                      <div className="flex items-center gap-1 text-xs mt-2">
-                        <Tag className="w-3 h-3" />
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs mt-1.5 sm:mt-2">
+                        <Tag className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         <span className={getTopicColor(message.topic)}>
                           {getTopicLabel(message.topic)}
                         </span>
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between mt-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-white/40">
+                    <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <span className="text-[10px] sm:text-xs text-white/40">
                           {formatMessageTime(message.created_at)}
                         </span>
                         {isOwn && (
@@ -451,16 +451,16 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       </div>
 
                       {/* Message Actions Menu */}
-                      <div className="relative opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="relative opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setActiveMenuId(activeMenuId === message.id ? null : message.id);
                           }}
-                          className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                          className="min-h-[32px] min-w-[32px] p-1 sm:p-1.5 rounded hover:bg-white/10 active:bg-white/15 text-white/60 hover:text-white transition-colors touch-manipulation"
                           title="Message actions"
                         >
-                          <MoreVertical className="w-4 h-4" />
+                          <MoreVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
 
                         {activeMenuId === message.id && (
@@ -576,7 +576,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   const actionCheck = shouldShowActionPrompt(message);
                   if (actionCheck.show && actionCheck.type) {
                     return (
-                      <div className={`mt-2 ${isOwn ? 'ml-auto max-w-[85%] sm:max-w-[75%] md:max-w-[70%]' : ''}`}>
+                      <div className={`mt-1.5 sm:mt-2 ${isOwn ? 'ml-auto max-w-[90%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%]' : ''}`}>
                         <ActionPrompt
                           message={message}
                           suggestionType={actionCheck.type}
@@ -596,11 +596,11 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
-          <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
+          <div className="flex gap-2 sm:gap-3">
+            <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
               <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
             </div>
-            <div className="px-4 py-2 bg-white/[0.05] rounded-lg">
+            <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/[0.05] rounded-lg">
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" />
                 <div

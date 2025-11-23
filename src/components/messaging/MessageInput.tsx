@@ -116,34 +116,34 @@ export function MessageInput({
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-4">
+    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-2 sm:p-3 md:p-4">
       {/* Reply Preview - Fixed height to prevent layout shift */}
-      <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
+      <div className={`mb-2 sm:mb-3 transition-all duration-200 ${replyTo ? 'h-[50px] sm:h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
-          <div className="px-3 py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between h-full">
+          <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between h-full">
             <div className="flex-1 min-w-0 overflow-hidden">
-              <div className="text-xs text-white/60 mb-1 truncate">Replying to {replyTo.senderName}</div>
-              <div className="text-sm text-white/80 truncate break-words">{replyTo.content}</div>
+              <div className="text-[10px] sm:text-xs text-white/60 mb-0.5 sm:mb-1 truncate">Replying to {replyTo.senderName}</div>
+              <div className="text-xs sm:text-sm text-white/80 truncate break-words">{replyTo.content}</div>
             </div>
             <button
               onClick={onCancelReply}
-              className="flex-shrink-0 ml-2 p-1 hover:bg-white/10 rounded transition-colors"
+              className="flex-shrink-0 ml-2 min-h-[32px] min-w-[32px] p-1 hover:bg-white/10 active:bg-white/15 rounded transition-colors touch-manipulation"
             >
-              <X className="w-4 h-4 text-white/60" />
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60" />
             </button>
           </div>
         )}
       </div>
 
       {/* Input Area - Fixed height */}
-      <div className="flex items-center gap-2 h-[44px]">
+      <div className="flex items-center gap-1.5 sm:gap-2 h-[44px]">
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="flex-shrink-0 p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+          className="flex-shrink-0 min-h-[44px] min-w-[44px] p-2 text-white/60 hover:text-white active:text-white/80 hover:bg-white/10 active:bg-white/15 rounded-lg transition-colors disabled:opacity-50 touch-manipulation"
           title="Attach file"
         >
-          <Paperclip className="w-5 h-5" />
+          <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         <input
@@ -162,7 +162,7 @@ export function MessageInput({
             onBlur={() => setTyping(false)}
             placeholder="Type a message..."
             rows={1}
-            className="w-full h-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm leading-tight"
+            className="w-full h-full px-3 sm:px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-xs sm:text-sm leading-tight touch-manipulation"
             style={{
               minHeight: '44px',
               maxHeight: '44px',
@@ -173,17 +173,17 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 min-h-[44px] min-w-[44px] w-[44px] h-[44px] flex items-center justify-center bg-pink-500/20 hover:bg-pink-500/30 active:bg-pink-500/40 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
           title="Send message"
         >
-          <Send className="w-5 h-5" />
+          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       {/* Upload status - Fixed height to prevent layout shift */}
-      <div className={`h-[20px] transition-all duration-200 ${uploading ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
+      <div className={`h-[18px] sm:h-[20px] transition-all duration-200 ${uploading ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
         {uploading && (
-          <div className="text-xs text-white/60">Uploading file...</div>
+          <div className="text-[10px] sm:text-xs text-white/60">Uploading file...</div>
         )}
       </div>
     </div>

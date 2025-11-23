@@ -254,7 +254,12 @@ export default function RiskAssessmentsPage() {
                 <div
                   key={assessment.id}
                   className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 sm:p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:bg-neutral-800/70 transition-colors cursor-pointer"
-                  onClick={() => router.push(`/dashboard/risk-assessments/view/${assessment.id}`)}
+                  onClick={() => {
+                    const templatePath = assessment.template_type === 'coshh' 
+                      ? '/dashboard/risk-assessments/coshh-template'
+                      : '/dashboard/risk-assessments/general-template';
+                    router.push(`${templatePath}?edit=${assessment.id}`);
+                  }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex-1 min-w-0">

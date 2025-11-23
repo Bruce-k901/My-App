@@ -98,7 +98,7 @@ export function Messaging() {
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] rounded-lg text-white transition-colors"
+          className="md:hidden fixed top-3 sm:top-4 left-3 sm:left-4 z-50 min-h-[44px] min-w-[44px] p-2 bg-white/[0.1] hover:bg-white/[0.15] active:bg-white/[0.2] rounded-lg text-white transition-colors touch-manipulation"
           aria-label="Back to conversations overview"
         >
           <Menu className="w-5 h-5" />

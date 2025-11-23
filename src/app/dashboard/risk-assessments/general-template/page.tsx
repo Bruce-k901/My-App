@@ -89,7 +89,7 @@ function GeneralRiskAssessmentTemplateContent() {
     if (!assessmentDate && typeof window !== 'undefined') {
       setAssessmentDate(new Date().toISOString().split('T')[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
   const [reviewDate, setReviewDate] = useState("");
   const [status, setStatus] = useState("Draft");
@@ -383,47 +383,47 @@ function GeneralRiskAssessmentTemplateContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-6xl mx-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6 bg-neutral-900 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-2xl p-6 border border-red-500/30">
-        <h1 className="text-2xl font-semibold mb-2">General Risk Assessment</h1>
-        <p className="text-neutral-300 text-sm">UK Health & Safety risk assessment</p>
+      <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-red-500/20 sm:border-red-500/30">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-semibold mb-1 sm:mb-2">General Risk Assessment</h1>
+        <p className="text-neutral-300 text-xs sm:text-sm">UK Health & Safety risk assessment</p>
       </div>
 
       {/* Assessment Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Assessment Details</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Activity/Task Name *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+      <section className="bg-neutral-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-neutral-700/50 sm:border-neutral-700">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-magenta-400 mb-2 sm:mb-3 md:mb-4">Assessment Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+          <div className="col-span-1 sm:col-span-2">
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Activity/Task Name *</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
-            <input value={refCode} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400" />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <input value={refCode} readOnly className="w-full min-h-[44px] bg-neutral-900/50 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-neutral-400 text-xs sm:text-sm touch-manipulation" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Site/Location</label>
-            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Site/Location</label>
+            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation">
               <option value="">Select site...</option>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Assessor Name *</label>
-            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Assessor Name *</label>
+            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Assessment Date *</label>
-            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Assessment Date *</label>
+            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Review Date (Auto)</label>
-            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Review Date (Auto)</label>
+            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Status *</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-3 py-2 text-white text-sm sm:text-base touch-manipulation">
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Under Review">Under Review</option>
@@ -434,9 +434,9 @@ function GeneralRiskAssessmentTemplateContent() {
       </section>
 
       {/* Hazards Section */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Hazards</h2>
-        <div className="space-y-4">
+      <section className="bg-neutral-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-neutral-700/50 sm:border-neutral-700">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-magenta-400 mb-2 sm:mb-3 md:mb-4">Hazards</h2>
+        <div className="space-y-2 sm:space-y-3 md:space-y-4">
           {hazards.map((hazard, index) => {
             const scoreBefore = hazard.likelihoodBefore * hazard.severityBefore;
             const scoreAfter = hazard.likelihoodAfter * hazard.severityAfter;
@@ -445,40 +445,40 @@ function GeneralRiskAssessmentTemplateContent() {
             const improved = scoreAfter < scoreBefore;
             
             return (
-              <div key={hazard.id} className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-600">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-magenta-400">Hazard {index + 1}</span>
-                  <button onClick={() => setHazards(hazards.filter(h => h.id !== hazard.id))} disabled={hazards.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
-                    <Trash2 size={16} />
+              <div key={hazard.id} className="p-2.5 sm:p-3 md:p-4 bg-neutral-900/50 rounded-lg border border-neutral-600/50 sm:border-neutral-600">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <span className="text-xs sm:text-sm font-semibold text-magenta-400">Hazard {index + 1}</span>
+                  <button onClick={() => setHazards(hazards.filter(h => h.id !== hazard.id))} disabled={hazards.length === 1} className="min-h-[32px] min-w-[32px] p-1 text-red-400 hover:text-red-300 active:text-red-200 disabled:opacity-30 touch-manipulation">
+                    <Trash2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-2.5 md:space-y-3">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Hazard Description</label>
-                    <textarea value={hazard.description} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, description: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+                    <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Hazard Description</label>
+                    <textarea value={hazard.description} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, description: e.target.value } : h))} className="w-full min-h-[60px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" rows={2} />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Category</label>
-                      <select value={hazard.category} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, category: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
+                      <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Category</label>
+                      <select value={hazard.category} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, category: e.target.value } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation">
                         <option value="">Select...</option>
                         {HAZARD_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Who's at Risk?</label>
-                      <div className="flex flex-wrap gap-2">
+                      <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Who's at Risk?</label>
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {PEOPLE_AT_RISK.map(person => (
-                          <label key={person} className="flex items-center gap-1 text-xs text-neutral-300">
+                          <label key={person} className="flex items-center gap-1 text-[10px] sm:text-xs text-neutral-300 touch-manipulation">
                             <input type="checkbox" checked={hazard.peopleAtRisk.includes(person)} onChange={(e) => {
                               if (e.target.checked) {
                                 setHazards(hazards.map(h => h.id === hazard.id ? { ...h, peopleAtRisk: [...h.peopleAtRisk, person] } : h));
                               } else {
                                 setHazards(hazards.map(h => h.id === hazard.id ? { ...h, peopleAtRisk: h.peopleAtRisk.filter(p => p !== person) } : h));
                               }
-                            }} className="rounded" />
+                            }} className="rounded w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             {person}
                           </label>
                         ))}
@@ -487,29 +487,29 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Existing Controls</label>
-                    <textarea value={hazard.existingControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, existingControls: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+                    <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Existing Controls</label>
+                    <textarea value={hazard.existingControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, existingControls: e.target.value } : h))} className="w-full min-h-[60px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" rows={2} />
                   </div>
 
                   {/* Risk Before Controls */}
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded">
-                    <h4 className="text-sm font-semibold text-red-400 mb-2">Risk Rating BEFORE Controls</h4>
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="p-2 sm:p-2.5 md:p-3 bg-red-500/10 border border-red-500/20 sm:border-red-500/30 rounded">
+                    <h4 className="text-xs sm:text-sm font-semibold text-red-400 mb-1.5 sm:mb-2">Risk Rating BEFORE Controls</h4>
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Likelihood</label>
-                        <select value={hazard.likelihoodBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodBefore: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Likelihood</label>
+                        <select value={hazard.likelihoodBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodBefore: parseInt(e.target.value) } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation">
                           {LIKELIHOOD_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Severity</label>
-                        <select value={hazard.severityBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityBefore: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Severity</label>
+                        <select value={hazard.severityBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityBefore: parseInt(e.target.value) } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation">
                           {SEVERITY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Risk Score</label>
-                        <div className={`w-full px-2 py-1 rounded border ${riskBefore.color} text-center text-sm font-semibold`}>
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Risk Score</label>
+                        <div className={`w-full px-1.5 sm:px-2 py-1 rounded border ${riskBefore.color} text-center text-xs sm:text-sm font-semibold`}>
                           {scoreBefore} - {riskBefore.level}
                         </div>
                       </div>
@@ -517,50 +517,50 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Additional Controls Needed</label>
-                    <textarea value={hazard.additionalControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, additionalControls: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+                    <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Additional Controls Needed</label>
+                    <textarea value={hazard.additionalControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, additionalControls: e.target.value } : h))} className="w-full min-h-[60px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" rows={2} />
                   </div>
 
                   {/* Risk After Controls */}
-                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-semibold text-green-400">Risk Rating AFTER Additional Controls</h4>
-                      {improved && <ArrowDown size={16} className="text-green-400" />}
+                  <div className="p-2 sm:p-2.5 md:p-3 bg-green-500/10 border border-green-500/20 sm:border-green-500/30 rounded">
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                      <h4 className="text-xs sm:text-sm font-semibold text-green-400">Risk Rating AFTER Additional Controls</h4>
+                      {improved && <ArrowDown size={14} className="sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Likelihood</label>
-                        <select value={hazard.likelihoodAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodAfter: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Likelihood</label>
+                        <select value={hazard.likelihoodAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodAfter: parseInt(e.target.value) } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation">
                           {LIKELIHOOD_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Severity</label>
-                        <select value={hazard.severityAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityAfter: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Severity</label>
+                        <select value={hazard.severityAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityAfter: parseInt(e.target.value) } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation">
                           {SEVERITY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Risk Score</label>
-                        <div className={`w-full px-2 py-1 rounded border ${riskAfter.color} text-center text-sm font-semibold`}>
+                        <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Risk Score</label>
+                        <div className={`w-full px-1.5 sm:px-2 py-1 rounded border ${riskAfter.color} text-center text-xs sm:text-sm font-semibold`}>
                           {scoreAfter} - {riskAfter.level}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Responsible Person</label>
-                      <input value={hazard.responsiblePerson} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, responsiblePerson: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm" />
+                      <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Responsible Person</label>
+                      <input value={hazard.responsiblePerson} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, responsiblePerson: e.target.value } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation" />
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Target Date</label>
-                      <input type="date" value={hazard.targetDate} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, targetDate: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm" />
+                      <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Target Date</label>
+                      <input type="date" value={hazard.targetDate} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, targetDate: e.target.value } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation" />
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Status</label>
-                      <select value={hazard.status} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, status: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+                      <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Status</label>
+                      <select value={hazard.status} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, status: e.target.value } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2 py-1 text-white text-xs sm:text-sm touch-manipulation">
                         <option value="Not Started">Not Started</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Complete">Complete</option>
@@ -569,8 +569,8 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Link to Related SOP (Optional)</label>
-                    <select value={hazard.linkedSOP} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, linkedSOP: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
+                    <label className="block text-[10px] sm:text-xs text-neutral-400 mb-0.5 sm:mb-1">Link to Related SOP (Optional)</label>
+                    <select value={hazard.linkedSOP} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, linkedSOP: e.target.value } : h))} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation">
                       <option value="">Select SOP...</option>
                       {sops.map(sop => <option key={sop.id} value={sop.id}>{sop.ref_code} - {sop.title}</option>)}
                     </select>
@@ -580,49 +580,49 @@ function GeneralRiskAssessmentTemplateContent() {
             );
           })}
         </div>
-        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 text-sm">
-          <Plus size={16} /> Add Hazard
+        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-2 sm:mt-3 flex items-center justify-center gap-2 min-h-[44px] px-3 sm:px-4 py-2 sm:py-2.5 bg-magenta-500/20 hover:bg-magenta-500/30 active:bg-magenta-500/40 border border-magenta-500/40 rounded-lg text-magenta-400 text-xs sm:text-sm touch-manipulation">
+          <Plus size={14} className="sm:w-4 sm:h-4" /> Add Hazard
         </button>
       </section>
 
       {/* PPE Requirements */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">PPE Requirements</h2>
-        <div className="flex flex-wrap gap-2 mb-3">
+      <section className="bg-neutral-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-neutral-700/50 sm:border-neutral-700">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-magenta-400 mb-2 sm:mb-3 md:mb-4">PPE Requirements</h2>
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
           {selectedPPE.map(ppeId => {
             const ppe = ppeLibrary.find(p => p.id === ppeId);
             return (
-              <div key={ppeId} className="px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-full text-sm text-blue-400 flex items-center gap-2">
+              <div key={ppeId} className="px-2 sm:px-3 py-1 bg-blue-500/20 border border-blue-500/30 sm:border-blue-500/40 rounded-full text-xs sm:text-sm text-blue-400 flex items-center gap-1.5 sm:gap-2">
                 {ppe?.item_name}
-                <button onClick={() => setSelectedPPE(selectedPPE.filter(id => id !== ppeId))} className="text-blue-300 hover:text-blue-200">
-                  <XCircle size={14} />
+                <button onClick={() => setSelectedPPE(selectedPPE.filter(id => id !== ppeId))} className="min-h-[24px] min-w-[24px] p-0.5 text-blue-300 hover:text-blue-200 active:text-blue-100 touch-manipulation">
+                  <XCircle size={12} className="sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
             );
           })}
         </div>
-        <select onChange={(e) => { if (e.target.value) setSelectedPPE([...selectedPPE, e.target.value]); e.target.value = ""; }} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+        <select onChange={(e) => { if (e.target.value) setSelectedPPE([...selectedPPE, e.target.value]); e.target.value = ""; }} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation">
           <option value="">Select PPE...</option>
           {ppeLibrary.filter(p => !selectedPPE.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.item_name}</option>)}
         </select>
       </section>
 
       {/* Training Requirements */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Training Requirements</h2>
-        <div className="space-y-3">
+      <section className="bg-neutral-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-neutral-700/50 sm:border-neutral-700">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-magenta-400 mb-2 sm:mb-3 md:mb-4">Training Requirements</h2>
+        <div className="space-y-2 sm:space-y-3">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Training Needed</label>
-            <textarea value={trainingNeeded} onChange={(e) => setTrainingNeeded(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" rows={3} />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Training Needed</label>
+            <textarea value={trainingNeeded} onChange={(e) => setTrainingNeeded(e.target.value)} className="w-full min-h-[80px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" rows={3} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Training Provider</label>
-              <input value={trainingProvider} onChange={(e) => setTrainingProvider(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Training Provider</label>
+              <input value={trainingProvider} onChange={(e) => setTrainingProvider(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Frequency</label>
-              <select value={trainingFrequency} onChange={(e) => setTrainingFrequency(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Frequency</label>
+              <select value={trainingFrequency} onChange={(e) => setTrainingFrequency(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation">
                 <option value="Once">Once</option>
                 <option value="Annually">Annually</option>
                 <option value="Bi-annually">Bi-annually</option>
@@ -632,19 +632,19 @@ function GeneralRiskAssessmentTemplateContent() {
             </div>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Last Completed Date</label>
-            <input type="date" value={lastTrainingDate} onChange={(e) => setLastTrainingDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Last Completed Date</label>
+            <input type="date" value={lastTrainingDate} onChange={(e) => setLastTrainingDate(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" />
           </div>
         </div>
       </section>
 
       {/* Review & Approval */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Review & Approval</h2>
-        <div className="space-y-3">
+      <section className="bg-neutral-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-neutral-700/50 sm:border-neutral-700">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-magenta-400 mb-2 sm:mb-3 md:mb-4">Review & Approval</h2>
+        <div className="space-y-2 sm:space-y-3">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Review Frequency</label>
-            <select value={reviewFrequency} onChange={(e) => setReviewFrequency(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Review Frequency</label>
+            <select value={reviewFrequency} onChange={(e) => setReviewFrequency(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation">
               <option value="Monthly">Monthly</option>
               <option value="Quarterly">Quarterly</option>
               <option value="Bi-annually">Bi-annually</option>
@@ -653,33 +653,33 @@ function GeneralRiskAssessmentTemplateContent() {
               <option value="3 Years">3 Years</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Assessor Signature</label>
-              <input value={assessorSignature} onChange={(e) => setAssessorSignature(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Assessor Signature</label>
+              <input value={assessorSignature} onChange={(e) => setAssessorSignature(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Date</label>
-              <input type="date" value={assessmentDate} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400" />
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Date</label>
+              <input type="date" value={assessmentDate} readOnly className="w-full min-h-[44px] bg-neutral-900/50 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-neutral-400 text-xs sm:text-sm touch-manipulation" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Manager Approval</label>
-              <input value={managerApproval} onChange={(e) => setManagerApproval(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Manager Approval</label>
+              <input value={managerApproval} onChange={(e) => setManagerApproval(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Approval Date</label>
-              <input type="date" value={managerApprovalDate} onChange={(e) => setManagerApprovalDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-xs sm:text-sm text-neutral-300 mb-1">Approval Date</label>
+              <input type="date" value={managerApprovalDate} onChange={(e) => setManagerApprovalDate(e.target.value)} className="w-full min-h-[44px] bg-neutral-900 border border-neutral-600/50 sm:border-neutral-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm touch-manipulation" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Save Button */}
-      <div className="flex gap-4 sticky bottom-6">
-        <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-magenta-600 hover:bg-magenta-500 rounded-lg text-white font-medium transition-colors shadow-lg disabled:opacity-50">
-          <Save size={20} />
+      <div className="flex gap-2 sm:gap-4 sticky bottom-3 sm:bottom-6 pb-3 sm:pb-0">
+        <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-2 min-h-[44px] px-4 sm:px-6 py-2.5 sm:py-3 bg-magenta-600 hover:bg-magenta-500 active:bg-magenta-700 rounded-lg text-white text-sm sm:text-base font-medium transition-colors shadow-lg disabled:opacity-50 touch-manipulation">
+          <Save size={18} className="sm:w-5 sm:h-5" />
           {saving ? 'Saving...' : 'Save Risk Assessment'}
         </button>
       </div>
