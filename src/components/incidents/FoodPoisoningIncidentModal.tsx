@@ -151,7 +151,7 @@ export function FoodPoisoningIncidentModal({
           company_id: companyId,
           site_id: finalSiteId,
           title: `Food Poisoning Report - ${formData.reported_by_customer}`,
-          description: formData.additional_notes || `Food poisoning incident reported by ${formData.reported_by_customer}`,
+          description: (formData.additional_notes || `Food poisoning incident reported by ${formData.reported_by_customer}`) + (profile?.full_name ? ` (Logged by: ${profile.full_name})` : ''),
           incident_type: 'food_poisoning',
           severity: formData.severity || 'minor',
           location: 'Food poisoning incident',

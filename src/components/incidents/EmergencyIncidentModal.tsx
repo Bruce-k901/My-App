@@ -475,7 +475,7 @@ export function EmergencyIncidentModal({
           immediate_actions_taken: formData.immediate_actions,
           photos: formData.photos.map(p => p.url),
           documents: [],
-          riddor_reportable,
+          riddor_reportable: riddorReportable,
           riddor_reported: riddorReported,
           riddor_reported_date: riddorReportedAtIso,
           riddor_reference: riddorReference || null,
