@@ -97,9 +97,13 @@ export function useMessages({
       const { data: { user: currentUser } } = await supabase.auth.getUser();
 
       // Fetch parent messages (reply_to) separately
-      const parentMessageIds = [...new Set(data.map((msg: any) => msg.parent_message_id).filter(Boolean))];
+      const parentMessageIds = [
+        ...new Set(
+          data.map((msg: any) => msg.parent_message_id).filter(Boolean),
+        ),
+      ];
       let parentMessagesMap = new Map();
-      
+
       if (parentMessageIds.length > 0) {
         try {
           const parentQuery = supabase
@@ -113,13 +117,15 @@ export function useMessages({
               file_name,
               metadata
             `);
-          
+
           const { data: parentMessages } = parentMessageIds.length === 1
             ? await parentQuery.eq("id", parentMessageIds[0])
             : await parentQuery.in("id", parentMessageIds);
-          
+
           if (parentMessages) {
-            parentMessagesMap = new Map(parentMessages.map((msg: any) => [msg.id, msg]));
+            parentMessagesMap = new Map(
+              parentMessages.map((msg: any) => [msg.id, msg]),
+            );
           }
         } catch (err) {
           console.warn("Error fetching parent messages:", err);
@@ -252,7 +258,7 @@ export function useMessages({
           if (parentMessage) {
             // Get sender info for parent message
             let replySender = null;
-            
+
             // Try metadata first (stored at creation time)
             if (parentMessage.metadata?.sender_name) {
               replySender = {
@@ -260,13 +266,13 @@ export function useMessages({
                 full_name: parentMessage.metadata.sender_name,
                 email: parentMessage.metadata.sender_email || null,
               };
-            }
-            // Try profilesMap (if we loaded profiles)
+            } // Try profilesMap (if we loaded profiles)
             else if (profilesMap.has(parentMessage.sender_id)) {
               replySender = profilesMap.get(parentMessage.sender_id);
-            }
-            // If it's current user, use auth info
-            else if (currentUser && parentMessage.sender_id === currentUser.id) {
+            } // If it's current user, use auth info
+            else if (
+              currentUser && parentMessage.sender_id === currentUser.id
+            ) {
               replySender = {
                 id: currentUser.id,
                 full_name: currentUser.user_metadata?.full_name ||
@@ -424,7 +430,7 @@ export function useMessages({
 
       // First, insert the message without selecting anything back
       // We'll use the optimistic message data we already have
-      const { data: insertResult, error: insertError } = await supabase
+      let { data: insertResult, error: insertError } = await supabase
         .from("messaging_messages")
         .insert({
           channel_id: conversationId,
@@ -439,6 +445,34 @@ export function useMessages({
         })
         .select("id")
         .single();
+
+      // Fallback: If insert failed (likely due to metadata column missing), try without metadata
+      if (insertError) {
+        console.warn(
+          "⚠️ Initial insert failed, retrying without metadata...",
+          insertError.message,
+        );
+        const { data: fallbackResult, error: fallbackError } = await supabase
+          .from("messaging_messages")
+          .insert({
+            channel_id: conversationId,
+            sender_id: user.id,
+            content: content.trim(),
+            parent_message_id: replyToId || null,
+            message_type: "text",
+          })
+          .select("id")
+          .single();
+
+        if (fallbackError) {
+          throw fallbackError; // Throw the real error if fallback also fails
+        }
+
+        // Use fallback result
+        insertResult = fallbackResult;
+        // Clear the initial error since we recovered
+        insertError = null;
+      }
 
       // If insert succeeded, use the returned ID with our optimistic data
       const message = insertResult
@@ -672,7 +706,6 @@ export function useMessages({
     } else {
       setLoading(false);
     }
-     
   }, [conversationId, autoLoad]); // Reload whenever conversationId changes
 
   // Real-time subscription
@@ -789,11 +822,13 @@ export function useMessages({
                   "🔄 Updating existing message in real-time:",
                   messageId,
                 );
-                
+
                 // Handle reply_to for existing message update
                 let replyToMessage: Message | null = null;
                 if (messageData.parent_message_id) {
-                  const parentMsg = prev.find((m: Message) => m.id === messageData.parent_message_id);
+                  const parentMsg = prev.find((m: Message) =>
+                    m.id === messageData.parent_message_id
+                  );
                   if (parentMsg) {
                     replyToMessage = {
                       id: parentMsg.id,
@@ -807,7 +842,7 @@ export function useMessages({
                     };
                   }
                 }
-                
+
                 return prev.map((msg) =>
                   msg.id === messageId
                     ? {

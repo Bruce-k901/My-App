@@ -20,6 +20,15 @@ const COURSES = [
     level: "Level 2 • Self-study",
     badge: "New"
   },
+  {
+    slug: "allergens",
+    title: "Allergen Awareness Level 2 (UK)",
+    description:
+      "Essential training on the 14 major allergens, legal responsibilities (Natasha's Law), and preventing cross-contamination.",
+    duration: "Approx. 3 hours",
+    level: "Level 2 • Self-study",
+    badge: "New"
+  },
 ];
 
 export default function CoursesPage() {
@@ -38,6 +47,8 @@ export default function CoursesPage() {
                 ? '/learn/uk-l2-food-safety-v3' 
                 : course.slug === 'health-and-safety'
                 ? '/learn/uk-l2-health-and-safety'
+                : course.slug === 'allergens'
+                ? '/learn/uk-l2-allergens'
                 : `/dashboard/courses/${course.slug}`
             }
             className="group flex h-full flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-magenta-500/40 hover:shadow-[0_0_26px_rgba(236,72,153,0.2)]"

@@ -20,14 +20,14 @@
               "type": "text-graphic-split",
               "title": "Course Introduction",
               "content": "## Welcome\n\nHealth and safety is about stopping you getting hurt at work or ill through work. Your employer is responsible for health and safety, but you must help.\n\n### Why is it important?\n- **Prevent Accidents**: Slips, cuts, burns, and falls.\n- **Legal Duty**: It is against the law to ignore safety rules.\n- **Efficiency**: Safe kitchens are efficient kitchens.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m1/intro.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/intro.png"
             },
             {
               "id": "m1-s2",
               "type": "text-graphic-split",
               "title": "Legal Responsibilities",
               "content": "## The Health and Safety at Work Act 1974\n\nThis is the primary legislation covering occupational health and safety in Great Britain.\n\n### Employer Duties (The 'Duty of Care'):\n- **Safe Place**: Maintain a safe workplace and equipment.\n- **Safe Systems**: Ensure safe handling, storage, and transport of goods.\n- **Information**: Provide instruction, training, and supervision.\n- **Welfare**: Provide adequate facilities (toilets, water, rest areas).\n\n### Employee Duties:\n- **Take Care**: Reasonable care for your own safety and others affected by your acts.\n- **Cooperate**: Follow safety rules and attend training.\n- **Don't Interfere**: Do not misuse or damage safety equipment (e.g., fire extinguishers).",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m1/intro.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/legal.png"
             },
             {
               "id": "m1-sc1",
@@ -147,21 +147,21 @@
               "type": "text-graphic-split",
               "title": "What is a Risk Assessment?",
               "content": "## Definitions\n\n- **Hazard**: Anything that has the potential to cause harm.\n- **Risk**: The likelihood that the harm will occur and how severe it would be.\n\n### The 5 Steps:\n1. Identify the hazards.\n2. Decide who might be harmed and how.\n3. Evaluate the risks and decide on precautions.\n4. Record your findings.\n5. Review the assessment.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Risk_Assessments.png"
             },
             {
               "id": "m2-s2",
               "type": "text-graphic-split",
               "title": "Hierarchy of Control",
               "content": "## Controlling Risks\n\nWhen reducing risks, follow this order (ERIC PD):\n\n1. **Eliminate**: Remove the hazard completely (e.g., buy pre-chopped veg).\n2. **Reduce**: Use a safer alternative (e.g., lower voltage tools).\n3. **Isolate**: Separate people from the hazard (e.g., guards on machines).\n4. **Control**: Safe systems of work (e.g., training, rotation).\n5. **PPE**: Personal Protective Equipment (Last resort!).",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/controlling_risks.png"
             },
             {
               "id": "m2-s3",
               "type": "text-graphic-split",
               "title": "Who is at Risk?",
               "content": "## Vulnerable Groups\n\nDon't just think about yourself. Consider:\n\n- **Young workers**: Lack experience.\n- **New and expectant mothers**: Lifting risks, chemical risks.\n- **Disability**: Mobility or sensory impairments.\n- **Contractors/Visitors**: Unfamiliar with the site.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m2/risk_assessment.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/vulnerable_groups.png"
             },
             {
               "id": "m2-sc1",
@@ -289,7 +289,7 @@
               "type": "text-graphic-split",
               "title": "Slips, Trips, and Falls",
               "content": "## The #1 Cause of Injury\n\nSlips and trips are the most common cause of major injury in UK workplaces.\n\n### Key Risk Factors:\n- **Contamination**: Water, oil, flour, or food debris on the floor.\n- **Obstacles**: Trailing cables, boxes, or bags in walkways.\n- **Footwear**: Wearing unsuitable shoes (e.g., open toes, smooth soles).\n- **Environment**: Poor lighting, uneven surfaces, or steps.\n\n### Prevention 'Clean as you Go':\n- Clean up spills **immediately**.\n- Use 'Wet Floor' signs (but remove them when dry!).\n- Keep walkways clear at all times.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m3/slips_trips.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/slips_and_trips.png"
             },
             {
               "id": "m3-sc1",
@@ -403,7 +403,7 @@
               "type": "text-graphic-split",
               "title": "Safe Manual Handling",
               "content": "## The TILE Assessment\nBefore lifting anything, stop and think:\n\n1. **Task**: Do you need to twist? Is it repetitive? Can you use a trolley?\n2. **Individual**: Are you strong enough? Are you pregnant or injured?\n3. **Load**: Is it heavy, hot, sharp, or unstable?\n4. **Environment**: Is the floor wet? Is it dark? Is there space?\n\n### Safe Lifting Technique:\n1. **Feet**: Apart, one leg forward.\n2. **Knees**: Bend them (not your back!).\n3. **Back**: Keep it straight.\n4. **Grip**: Hug the load close to your body.\n5. **Head**: Look forward.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m4/manual_handling.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Manual_handling.png"
             },
             {
               "id": "m4-sc1",
@@ -517,7 +517,7 @@
               "type": "text-graphic-split",
               "title": "Knife Safety Rules",
               "content": "## Sharp is Safe\nA sharp knife requires less pressure, reducing the chance of slipping.\n\n### Safe Handling:\n- **Carrying**: Hold by the handle, blade pointing down, by your side.\n- **Falling**: NEVER try to catch a falling knife. Step back and let it fall.\n- **Storage**: Use a magnetic rack, knife block, or sheath. Never leave loose in drawers.\n- **Cleaning**: Wash individually. NEVER leave in a sink full of soapy water.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m5/knife_safety.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Knife_Safety.png"
             },
             {
               "id": "m5-sc1",
@@ -634,7 +634,7 @@
               "type": "text-graphic-split",
               "title": "Machinery & Guards",
               "content": "## Respect the Machine\nKitchen machinery (slicers, mixers, mincers) can cause severe injury.\n\n### Safety Rules:\n- **Guards**: Never use a machine if the guard is missing or broken. It is there to protect you.\n- **Cleaning (LOTO)**: 'Lock Out, Tag Out'. Switch off at the wall and unplug before cleaning or clearing a blockage.\n- **Training**: Never use a machine unless you have been trained and authorized.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m6/equipment.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Machine_Safety_Guards.png"
             },
             {
               "id": "m6-sc1",
@@ -751,14 +751,14 @@
               "type": "text-graphic-split",
               "title": "The Fire Triangle",
               "content": "## Understanding Fire\n\nFire is a chemical reaction that needs three elements to exist. If you remove **one** of these, the fire will go out.\n\n### 1. Fuel\nSomething to burn. In a kitchen, this could be:\n- Cooking oil or fat.\n- Cardboard boxes or packaging.\n- Gas supply.\n\n### 2. Oxygen\nFire needs air to breathe. Sources include:\n- Natural airflow (windows/doors).\n- Ventilation systems.\n\n### 3. Heat\nSomething to start the fire. Sources include:\n- Deep fat fryers.\n- Ovens and hobs.\n- Faulty electrical equipment.\n\n### How to Stop Fire\n- **Starvation**: Remove the **Fuel** (e.g., turn off the gas).\n- **Smothering**: Remove the **Oxygen** (e.g., use a fire blanket on a pan).\n- **Cooling**: Remove the **Heat** (e.g., use water on a paper fire - NEVER on oil!).",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Fire_Triangle.png"
             },
             {
               "id": "m7-s2",
               "type": "text-graphic-split",
               "title": "Fire Extinguishers",
               "content": "## Know Your Extinguishers\n\nUsing the wrong extinguisher can be fatal.\n\n### 1. Water (Red Label)\n- **Use on:** Wood, paper, textiles (Class A).\n- **DANGER:** NEVER use on electrical or oil fires. Water conducts electricity and spreads oil fires explosively.\n\n### 2. CO2 (Black Label)\n- **Use on:** Electrical fires.\n- **Note:** Safe on live equipment. Does not leave a residue.\n\n### 3. Foam (Cream Label)\n- **Use on:** Wood, paper, and flammable liquids (petrol, paint).\n- **Note:** Not suitable for deep fat fryers.\n\n### 4. Wet Chemical (Yellow Label)\n- **Use on:** Cooking oil and fat fires (Class F).\n- **Note:** ESSENTIAL for kitchens. It cools and seals the oil.\n\n### 5. Dry Powder (Blue Label)\n- **Use on:** Flammable liquids, gas, electrical.\n- **Note:** Messy and can cause breathing problems in confined spaces.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Fire_Extinguishers.png"
             },
 
             {
@@ -766,7 +766,7 @@
               "type": "text-graphic-split",
               "title": "Fire Blankets & Suppression",
               "content": "## Fire Blankets\nUsed for smothering small fires (removing Oxygen).\n- **Pan Fires**: Turn off heat if safe. Hold blanket by tapes to shield hands. Place gently over the pan. Leave until cool.\n- **Person on Fire**: Wrap them in the blanket to smother flames. Stop, Drop, and Roll.\n\n## ANSUL Systems (Suppression)\nAutomatic fire suppression for commercial kitchens.\n- **What is it?**: Nozzles in the extraction hood discharge wet chemical.\n- **Trigger**: Automatic (heat detection) or Manual Pull Station.\n- **Action**: If it activates, evacuate immediately. Do not re-enter until declared safe.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m7/fire_safety.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/Fire_Extinguishers.png"
             },
             {
               "id": "m7-sc1",
@@ -883,35 +883,35 @@
               "type": "text-graphic-split",
               "title": "What is COSHH?",
               "content": "## Control of Substances Hazardous to Health\n\nCOSHH is the law that requires employers to control substances that are hazardous to health.\n\n### Hazardous Substances in Kitchens:\n- **Cleaning Chemicals**: Bleach, oven cleaner, degreaser.\n- **Biological Agents**: Bacteria, viruses, fungi.\n- **Fumes/Dust**: Flour dust, cooking fumes.\n\n### Your Responsibilities:\n- Follow training and instructions.\n- Use control measures (e.g., ventilation, PPE).\n- Report defects or accidents immediately.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/what_is_coshh.png"
             },
             {
               "id": "m8-s2",
               "type": "text-graphic-split",
               "title": "Hazard Symbols",
               "content": "## Know the Signs (GHS)\n\nChemicals have diamond-shaped symbols with a red border.\n\n- **Skull & Crossbones**: Acute Toxicity (Fatal or toxic).\n- **Corrosive (Hand/Metal)**: Causes severe skin burns and eye damage.\n- **Exclamation Mark**: Health Hazard (Irritant, harmful).\n- **Flame**: Flammable.\n- **Health Hazard (Person)**: Serious long-term health effects (e.g., carcinogen).\n- **Environment (Tree/Fish)**: Toxic to aquatic life.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/hazard_symbols.png"
             },
             {
               "id": "m8-s3",
               "type": "text-graphic-split",
               "title": "Safe Storage & Handling",
               "content": "## Golden Rules\n\n1. **Read the Label**: Never use a chemical if you don't know what it is.\n2. **Never Mix Chemicals**: Mixing bleach and acid creates deadly chlorine gas.\n3. **Store Safely**: Keep chemicals in a locked cupboard, low down (to prevent spills on faces).\n4. **Original Containers**: Never decant chemicals into unmarked bottles or food containers.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/chemical_storage_and_handling.png"
             },
             {
               "id": "m8-s4",
               "type": "text-graphic-split",
               "title": "Routes of Entry",
               "content": "## How Chemicals Enter the Body\n\n1. **Inhalation**: Breathing in fumes, vapours, or dust (e.g., flour dust).\n2. **Ingestion**: Swallowing chemicals (e.g., via contaminated hands or food).\n3. **Absorption**: Through the skin (e.g., handling strong cleaners without gloves).\n4. **Injection**: Through cuts or puncture wounds.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/chemicals_entering_body.png"
             },
             {
               "id": "m8-s5",
               "type": "text-graphic-split",
               "title": "Emergency Procedures",
               "content": "## What to do if things go wrong\n\n- **Splash in Eye**: Irrigate with cool water for at least 15 minutes. Seek medical help.\n- **Skin Contact**: Wash immediately with plenty of water. Remove contaminated clothing.\n- **Swallowed**: Do **NOT** induce vomiting. Drink water/milk (if label says so) and call 999/111.\n- **Inhalation**: Move to fresh air immediately.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m8/coshh.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/chemicals_emergency_procedures.png"
             },
             {
               "id": "m8-sc1",
@@ -1028,7 +1028,7 @@
               "type": "text-graphic-split",
               "title": "Using Ladders Safely",
               "content": "## Working at Height\nFalls from height are a major cause of fatalities.\n\n### Pre-Use Checks:\n- **Feet**: Are the rubber feet attached and in good condition?\n- **Rungs**: Are they clean and not bent?\n- **Rails**: No cracks or splinters.\n\n### Safe Use:\n- **3 Points of Contact**: Keep two feet and one hand (or two hands and one foot) on the ladder.\n- **Duration**: Short duration work only (max 30 mins).\n- **Position**: Place on firm, level ground.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m9/height.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/using_ladders_safely.png"
             },
             {
               "id": "m9-sc1",
@@ -1139,7 +1139,7 @@
               "type": "text-graphic-split",
               "title": "First Aid & Reporting",
               "content": "## Treating Injuries\n- **Burns**: Cool with running water for at least **20 minutes**. Do not use ice or butter. Cover with cling film.\n- **Cuts**: Clean, dry, and cover with a **blue** detectable plaster.\n\n### Reporting Accidents (RIDDOR)\nCertain serious accidents must be reported to the HSE under RIDDOR law:\n- Fractures (except fingers/toes).\n- Amputations.\n- Injuries keeping you off work for >7 days.\n- Occupational diseases.",
-              "mediaUrl": "/courses/uk-l2-health-and-safety/m10/burns.png"
+              "mediaUrl": "/courses/uk-l2-health-and-safety/images/First_Aid.png"
             },
             {
               "id": "m10-sc1",

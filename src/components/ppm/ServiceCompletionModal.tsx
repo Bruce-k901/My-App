@@ -32,8 +32,8 @@ export default function ServiceCompletionModal({ ppm, asset, user, onClose }: {
         user_id: user.id
       })
 
-      // Update ppm schedule
-      await updatePPMSchedule(ppm.id, form.service_date)
+      // Update ppm schedule and asset
+      await updatePPMSchedule(ppm.id, asset.id, form.service_date)
 
       onClose(true)
     } catch (err: any) {

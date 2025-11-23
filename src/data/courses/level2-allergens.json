@@ -1,0 +1,601 @@
+{
+  "id": "uk-l2-allergens",
+  "title": "Level 2 Allergen Awareness",
+  "description": "Essential training on the 14 major allergens, legal responsibilities (Natasha's Law), and preventing cross-contamination.",
+  "version": "1.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-allergens",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction & The Law",
+      "description": "Understanding allergies, intolerances, and legal duties.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Allergens",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Why it Matters",
+              "content": "## A Growing Issue\n\n- **2 Million**: The number of people in the UK with a diagnosed food allergy.\n- **Fatalities**: On average, 10 people die from food-induced anaphylaxis in the UK every year.\n- **Your Role**: As a food handler, you are the last line of defence. Your actions can literally save a life.\n\n### The Impact\nFor allergy sufferers, eating out is a matter of trust. If you break that trust, the consequences can be devastating.",
+              "mediaUrl": "/images/placeholder-allergy.png"
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "What is a Food Allergy?",
+              "content": "## The Immune System\n\nA food allergy is when the body's immune system mistakenly attacks a food protein, believing it to be harmful.\n\n### Key Facts:\n- **Speed**: Reactions can happen within seconds or minutes.\n- **Amount**: Even a microscopic trace (e.g., from a knife) can trigger a reaction.\n- **Anaphylaxis**: The most severe reaction, which can cause breathing difficulties and death.",
+              "mediaUrl": "/images/placeholder-immune.png"
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Allergy vs Intolerance vs Coeliac",
+              "content": "## Know the Difference\n\n### Food Allergy\n- **System**: Immune System.\n- **Risk**: Life-threatening.\n- **Example**: Nut allergy.\n\n### Food Intolerance\n- **System**: Digestive System.\n- **Risk**: Unpleasant (bloating, pain) but not usually life-threatening.\n- **Example**: Lactose intolerance.\n\n### Coeliac Disease\n- **System**: Autoimmune.\n- **Risk**: Long-term health damage.\n- **Action**: Must strictly avoid Gluten.",
+              "mediaUrl": "/images/placeholder-definitions.png"
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "The Law",
+          "slides": [
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Food Information Regulations 2014",
+              "content": "## The 14 Allergens\n\nBy law, you must provide accurate allergen information for the **14 Major Allergens**.\n\n### Non-Pre-Packed Food (e.g., Restaurants)\n- Information can be written (menu, chalkboard) or verbal.\n- If verbal, there must be a sign inviting customers to ask staff.\n- You must have a way to check (e.g., an Allergen Matrix or Chef). **Guessing is illegal.**",
+              "mediaUrl": "/images/placeholder-law.png"
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "Natasha's Law (PPDS)",
+              "content": "## Pre-Packed for Direct Sale\n\nIntroduced in 2021 following the death of Natasha Ednan-Laperouse.\n\n### What is PPDS?\nFood that is packaged **at the same place** it is sold, **before** the customer orders it (e.g., a sandwich made in the morning and put in a display fridge).\n\n### The Requirement\nPPDS food must have a label showing:\n1.  **Name of the food**.\n2.  **Full ingredients list**.\n3.  **Allergens emphasised** (e.g., in **bold**, *italics*, or COLOUR).",
+              "mediaUrl": "/images/placeholder-natasha.png"
+            },
+            {
+              "id": "m1-s6",
+              "type": "text-graphic-split",
+              "title": "Consequences",
+              "content": "## If You Get It Wrong\n\n### Legal\n- **Unlimited Fines**: For the business and individuals.\n- **Prison**: Up to 2 years for serious breaches.\n\n### Business\n- **Closure**: EHOs can close unsafe businesses.\n- **Reputation**: Ruined trust and loss of customers.\n\n### Moral\n- **Guilt**: Living with the knowledge that you caused serious harm or death.",
+              "mediaUrl": "/images/placeholder-court.png"
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: 'Just a little bit'",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer says they are 'a little bit allergic' to nuts. They ask if they can have the satay sauce if you scrape most of it off.",
+                    "options": [
+                      { "label": "Yes, if you scrape it well.", "nextNodeId": "wrong" },
+                      { "label": "No, absolutely not.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Even a microscopic trace can trigger anaphylaxis. You cannot 'scrape off' an allergen.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** There is no such thing as 'a little bit allergic'. Never serve a known allergen to an allergic customer.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "The 14 Major Allergens",
+      "description": "Detailed breakdown of the 14 allergens you must declare by law.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "The Big 14",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Celery & Cereals",
+              "content": "## 1. Celery\n- **Found in**: Stocks, soups, salads, spice mixes, Marmite.\n- **Includes**: Stalks, leaves, seeds, and celeriac.\n\n## 2. Cereals containing Gluten\n- **Wheat**: Bread, pasta, cakes, soy sauce, batter.\n- **Rye**: Bread, crackers.\n- **Barley**: Beer, malt vinegar, soups.\n- **Oats**: Often contaminated with gluten (unless certified GF).\n- **Note**: Rice, corn, and potatoes are naturally gluten-free.",
+              "mediaUrl": "/images/placeholder-celery.png"
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Crustaceans & Eggs",
+              "content": "## 3. Crustaceans\n- **Examples**: Prawns, crabs, lobster, crayfish, shrimp, scampi.\n- **Found in**: Thai curry pastes, fish soups, paella.\n\n## 4. Eggs\n- **Found in**: Cakes, mayonnaise, mousses, pasta, quiche, glazed buns.\n- **Note**: Watch out for dried egg powder in mixes.",
+              "mediaUrl": "/images/placeholder-crustaceans.png"
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Fish & Lupin",
+              "content": "## 5. Fish\n- **Found in**: Fish sauce (Thai/Vietnamese), Worcestershire sauce, Caesar dressing, stock cubes.\n\n## 6. Lupin\n- **What is it?**: A flower/legume. Seeds are crushed to make flour.\n- **Found in**: Some breads, pastries, and pasta (often used as a soya alternative).",
+              "mediaUrl": "/images/placeholder-fish.png"
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Milk & Molluscs",
+              "content": "## 7. Milk\n- **Found in**: Butter, cheese, cream, yogurt, chocolate, glazed buns, powdered soups.\n- **Note**: Lactose-free milk still contains milk protein (casein), so it is **NOT** safe for milk allergy sufferers.\n\n## 8. Molluscs\n- **Examples**: Mussels, clams, oysters, scallops, snails, squid, octopus.\n- **Found in**: Oyster sauce, fish stews.",
+              "mediaUrl": "/images/placeholder-milk.png"
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Mustard & Nuts",
+              "content": "## 9. Mustard\n- **Forms**: Liquid, powder, and seeds.\n- **Found in**: Curries, marinades, salad dressings, sauces, soups.\n\n## 10. Nuts (Tree Nuts)\n- **Examples**: Almonds, hazelnuts, walnuts, cashews, pecans, brazils, pistachios, macadamia.\n- **Found in**: Pesto, marzipan, cakes, Asian dishes, ice cream.\n- **Note**: Peanuts are **NOT** tree nuts.",
+              "mediaUrl": "/images/placeholder-nuts.png"
+            },
+            {
+              "id": "m2-s6",
+              "type": "text-graphic-split",
+              "title": "Peanuts & Sesame",
+              "content": "## 11. Peanuts\n- **Type**: A legume (grown underground).\n- **Found in**: Satay sauce, cakes, biscuits, groundnut oil, curry pastes.\n- **Note**: Refined peanut oil *may* be safe, but unrefined is not. Always check.\n\n## 12. Sesame Seeds\n- **Found in**: Hummus (tahini), bread rolls, stir-fries, gomashio.",
+              "mediaUrl": "/images/placeholder-peanuts.png"
+            },
+            {
+              "id": "m2-s7",
+              "type": "text-graphic-split",
+              "title": "Soya & Sulphites",
+              "content": "## 13. Soya\n- **Found in**: Tofu, edamame, soy sauce, miso, textured vegetable protein (vegetarian mince), bean curd.\n\n## 14. Sulphur Dioxide (Sulphites)\n- **Use**: A preservative.\n- **Found in**: Dried fruit (apricots, raisins), wine, beer, soft drinks, sausages, burgers.\n- **Limit**: Must be declared if >10mg/kg.",
+              "mediaUrl": "/images/placeholder-soya.png"
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Pesto",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with a nut allergy asks if the pasta with pesto is safe.",
+                    "options": [
+                      { "label": "Assume it's fine.", "nextNodeId": "wrong" },
+                      { "label": "Check the ingredients.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Traditional pesto contains pine nuts or cashews/walnuts.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Pesto usually contains nuts (Tree Nuts) and cheese (Milk).",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Cross-Contamination",
+      "description": "Preventing allergens from spreading.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Controlling the Risk",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "How it Spreads",
+              "content": "## Direct vs Indirect\n\n- **Direct**: Removing nuts from a salad but serving the salad (traces remain).\n- **Indirect**: Using a knife to cut peanut butter toast, then wiping it and using it for a cheese sandwich.\n- **Fryers**: Cooking chips in the same oil as battered fish (Gluten/Fish contamination).\n- **Steam**: Frothing milk for a cappuccino on a wand used for soy milk.",
+              "mediaUrl": "/images/placeholder-cross-contamination.png"
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Control Measures",
+              "content": "## The Purple Rule\nPurple is the standard colour for 'Allergen Free' equipment in kitchens.\n\n### Best Practices:\n- **Storage**: Store allergens in sealed containers, ideally below non-allergens (to prevent spills).\n- **Hand Washing**: Wash hands thoroughly before preparing an allergen-free meal.\n- **Equipment**: Use separate chopping boards, knives, and pans.\n- **Cleaning**: A 'quick wipe' is not enough. Use a two-stage clean (clean then sanitise) with a fresh cloth.",
+              "mediaUrl": "/images/placeholder-purple.png"
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Fryer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer needs Gluten Free chips. You have one fryer used for everything.",
+                    "options": [
+                      { "label": "Cook them in the fryer.", "nextNodeId": "wrong" },
+                      { "label": "Cook them in a separate pot/oven.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** The oil is contaminated with batter (flour/gluten) from other items.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** You must use a dedicated gluten-free cooking method.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Communication",
+      "description": "Taking orders and checking ingredients.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Service Protocol",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Taking the Order",
+              "content": "## Never Guess\n\nIf a customer mentions an allergy:\n1.  **Listen**: Take it seriously.\n2.  **Check**: Consult the Allergen Matrix or Chef. Do not rely on memory.\n3.  **Confirm**: Tell the kitchen clearly (\"Table 4, Severe Nut Allergy\").\n4.  **Deliver**: Ensure the meal goes to the right person.\n\n### \"May Contain\"\nManufacturers use this to warn of cross-contamination risks in their factories (e.g., \"May contain traces of nuts\"). You must pass this information to the customer so they can decide.",
+              "mediaUrl": "/images/placeholder-order.png"
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Changed Recipe",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The chef changes the brand of mayonnaise. What should you do?",
+                    "options": [
+                      { "label": "Nothing, mayo is mayo.", "nextNodeId": "wrong" },
+                      { "label": "Check the label for allergens.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** The new brand might use mustard flour or different oil.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Always check labels. Ingredients change.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Emergency Procedures",
+      "description": "Recognising and treating anaphylaxis.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Anaphylaxis",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Signs & Symptoms",
+              "content": "## Anaphylactic Shock\nA severe, life-threatening reaction.\n\n### Symptoms:\n- **Airway**: Swollen tongue, difficulty swallowing, throat tightness.\n- **Breathing**: Wheezing, difficulty breathing, noisy breathing.\n- **Circulation**: Pale/clammy skin, faintness, collapse.\n- **Skin**: Hives (nettle rash), flushing, swelling (angioedema).\n- **Other**: Sense of impending doom.",
+              "mediaUrl": "/images/placeholder-anaphylaxis.png"
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Action Plan",
+              "content": "## What to Do\n\n1.  **Call 999**: Ask for an ambulance and say \"Anaphylaxis\".\n2.  **EpiPen**: If the patient has an Adrenaline Auto-Injector (AAI), help them use it. Usually injected into the outer thigh.\n3.  **Position**: Lie the patient flat with legs raised. **Do not stand them up** (this can stop the heart).\n4.  **Repeat**: If no improvement after 5 minutes, use a second AAI if available.",
+              "mediaUrl": "/images/placeholder-epipen.png"
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Collapse",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer collapses and struggles to breathe after eating prawns.",
+                    "options": [
+                      { "label": "Offer them water.", "nextNodeId": "wrong" },
+                      { "label": "Call 999 immediately.", "nextNodeId": "correct" }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** They are having an anaphylactic shock. Water won't help.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Time is critical. Call 999.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "Which of these is NOT one of the 14 major allergens?",
+        "options": ["Celery", "Tomato", "Mustard", "Lupin"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "What is the primary law covering PPDS food labelling?",
+        "options": [
+          "Health & Safety at Work Act",
+          "Natasha's Law",
+          "Data Protection Act",
+          "Food Hygiene Regulations"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "Which colour chopping board is best for allergen-free prep?",
+        "options": ["Red", "Blue", "Purple", "Green"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q4",
+        "text": "What should you do if a customer asks about allergens?",
+        "options": [
+          "Guess based on what you know",
+          "Check the allergen matrix/chef",
+          "Say you don't know and walk away",
+          "Tell them everything is safe"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "Which of these contains Gluten?",
+        "options": ["Rice", "Potatoes", "Barley", "Corn"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q6",
+        "text": "Where are peanuts found?",
+        "options": ["Satay sauce", "Pesto (usually)", "Hummus", "Mustard"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q7",
+        "text": "What is Anaphylaxis?",
+        "options": [
+          "A mild stomach ache",
+          "A severe, life-threatening allergic reaction",
+          "A type of food poisoning",
+          "A fear of spiders"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "How should you position someone having an anaphylactic shock?",
+        "options": [
+          "Stand them up",
+          "Sit them in a chair",
+          "Lie them flat with legs raised",
+          "Walk them around"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q9",
+        "text": "Which ingredient is a Mollusc?",
+        "options": ["Prawn", "Crab", "Squid", "Salmon"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q10",
+        "text": "Can you remove an allergen by picking it off the plate?",
+        "options": [
+          "Yes, if you are careful",
+          "No, traces remain",
+          "Yes, if you wipe it with a napkin",
+          "Only if it's a nut"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "What is Coeliac disease?",
+        "options": [
+          "An allergy to milk",
+          "An intolerance to nuts",
+          "An autoimmune disease triggered by gluten",
+          "A dislike of bread"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q12",
+        "text": "What does PPDS stand for?",
+        "options": [
+          "Pre-Packed for Direct Sale",
+          "Prepared Properly Does Safety",
+          "Personal Protective Dietary Standards",
+          "Pre-Packed Delivery Service"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q13",
+        "text": "Which of these is a Tree Nut?",
+        "options": ["Peanut", "Cashew", "Sesame Seed", "Sunflower Seed"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "Where is Sulphur Dioxide often found?",
+        "options": ["Fresh fruit", "Dried fruit and wine", "Milk", "Eggs"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "What is the first thing you should do for anaphylaxis?",
+        "options": ["Give them water", "Call 999", "Check their pulse", "Find a manager"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "Is a 'quick wipe' enough to clean allergens?",
+        "options": [
+          "Yes, if the cloth is clean",
+          "No, you need a two-stage clean",
+          "Yes, if you use hot water",
+          "Yes, for dry ingredients"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Which sauce often contains Fish?",
+        "options": ["Ketchup", "Worcestershire Sauce", "Mayonnaise", "Mustard"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "What is Lupin?",
+        "options": [
+          "A type of fish",
+          "A flower/legume used in flour",
+          "A type of nut",
+          "A dairy product"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "Can heat kill an allergen?",
+        "options": [
+          "Yes, cooking destroys allergens",
+          "No, allergens are heat stable",
+          "Only in the microwave",
+          "Yes, if boiled"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "What does 'May contain nuts' mean?",
+        "options": [
+          "It definitely contains nuts",
+          "It is safe for nut allergy sufferers",
+          "There is a risk of cross-contamination",
+          "It is a healthy option"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q21",
+        "text": "Which of these is a Crustacean?",
+        "options": ["Mussel", "Prawn", "Oyster", "Snail"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "Where is Sesame often found?",
+        "options": ["Hummus", "Ketchup", "Milk", "Cheese"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q23",
+        "text": "What is the risk of using the same oil for chips and battered fish?",
+        "options": [
+          "None",
+          "Cross-contamination of Gluten and Fish",
+          "The chips will taste fishy",
+          "The oil will spoil faster"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "If a customer has a dairy allergy, what must they avoid?",
+        "options": ["Eggs", "Milk and Milk products", "Soya", "Mayonnaise"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "What is the main symptom of lactose intolerance?",
+        "options": [
+          "Anaphylaxis",
+          "Digestive discomfort (bloating/diarrhoea)",
+          "Swollen lips",
+          "Hives"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "Which of these is NOT a cereal containing gluten?",
+        "options": ["Wheat", "Rye", "Rice", "Barley"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q27",
+        "text": "Why should you store allergens on the bottom shelf?",
+        "options": [
+          "They are heavier",
+          "To prevent them spilling onto other foods",
+          "It is colder there",
+          "To hide them"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "What is the correct action if you spill flour?",
+        "options": [
+          "Blow it away",
+          "Clean it up immediately with a damp cloth/vacuum",
+          "Leave it for the cleaner",
+          "Sweep it into the air"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "Who is responsible for allergen safety?",
+        "options": [
+          "Only the head chef",
+          "Only the manager",
+          "Everyone in the food business",
+          "The customer only"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q30",
+        "text": "Can you use the same knife for gluten-free bread if you wipe it?",
+        "options": [
+          "Yes",
+          "No, you must use a clean/dedicated knife",
+          "Yes, if you wipe it twice",
+          "Yes, if the bread is toasted"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

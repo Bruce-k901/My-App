@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Paperclip, Smile, X } from 'lucide-react';
+import { Send, Paperclip } from 'lucide-react';
+import { Smile, X } from 'lucide-react';
+import { VoiceInput } from '@/components/ui/VoiceInput';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { supabase } from '@/lib/supabase';
 import { compressImage } from '@/lib/messaging/utils';
@@ -152,6 +154,11 @@ export function MessageInput({
           className="hidden"
           onChange={handleFileUpload}
           accept="image/*,.pdf,.doc,.docx,.txt"
+        />
+
+        <VoiceInput 
+          onTranscript={(text) => handleInputChange(content ? `${content} ${text}` : text)}
+          className="flex-shrink-0 min-h-[44px] min-w-[44px]"
         />
 
         <div className="flex-1 relative h-full">

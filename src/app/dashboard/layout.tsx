@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import NewMainSidebar from "@/components/layouts/NewMainSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
 import { useAppContext } from "@/context/AppContext";
@@ -10,7 +11,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { role: actualRole, loading } = useAppContext();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const pathname = usePathname();
   const isDevMode = false;
+
+  // Check if we are on the messaging page
+  const isMessagingPage = pathname?.startsWith('/dashboard/messaging');
 
   useEffect(() => {
     setIsMounted(true);
@@ -36,7 +41,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
         </div>
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative">
+        <main className={`
+          flex-1 relative
+          ${isMessagingPage 
+            ? 'overflow-hidden p-0' // Messaging: No scroll, no padding (app-like)
+            : 'overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16' // Standard: Scrollable with padding
+          }
+        `}>
           {/* Always render children - never conditionally render different structures */}
           {children}
           {/* Loading overlay only appears after client-side mount (isMounted=true) */}

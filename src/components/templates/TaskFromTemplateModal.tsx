@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from 'lucide-react';
+import { VoiceInput } from '@/components/ui/VoiceInput';
+import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, AlertCircle, X, Plus, Trash2, Camera, Upload, FileText, AlertTriangle, Thermometer, Clock, Info } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -1419,6 +1420,13 @@ export function TaskFromTemplateModal({
     }
   };
 
+  // Hydration fix: Ensure component only renders on client
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   if (!isOpen) return null;
 
   if (loading) {
@@ -1464,6 +1472,7 @@ export function TaskFromTemplateModal({
     .filter((dp) => !templateDayparts.includes(dp));
 
   const dayparts = [...new Set([...templateDayparts, ...userAddedDayparts])]; // Combine and deduplicate
+  const tempThresholds = getTemperatureThresholds();
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -1924,21 +1933,18 @@ export function TaskFromTemplateModal({
               />
             )}
 
-            {enabledFeatures.tempLogs && (() => {
-              const thresholds = getTemperatureThresholds();
-              return (
-                <TemperatureLoggingFeature
-                  temperatures={formData.temperatures}
-                  selectedAssets={formData.selectedAssets}
-                  assets={assets}
-                  onChange={(temps) => setFormData({ ...formData, temperatures: temps })}
-                  onMonitorCallout={handleMonitorCallout}
-                  contractorType={template?.contractor_type}
-                  warnThreshold={thresholds.warnThreshold}
-                  failThreshold={thresholds.failThreshold}
-                />
-              );
-            })()}
+            {enabledFeatures.tempLogs && (
+              <TemperatureLoggingFeature
+                temperatures={formData.temperatures}
+                selectedAssets={formData.selectedAssets}
+                assets={assets}
+                onChange={(temps) => setFormData({ ...formData, temperatures: temps })}
+                onMonitorCallout={handleMonitorCallout}
+                contractorType={template?.contractor_type}
+                warnThreshold={tempThresholds.warnThreshold}
+                failThreshold={tempThresholds.failThreshold}
+              />
+            )}
 
             {enabledFeatures.passFail && (
               <PassFailFeature
@@ -2513,7 +2519,15 @@ export function TaskFromTemplateModal({
 
             {/* General Notes */}
             <div className="border-t border-white/10 pt-6">
-              <label className="block text-sm font-medium text-white mb-2">Additional Notes</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-white">Additional Notes</label>
+                <VoiceInput 
+                  onTranscript={(text) => setFormData(prev => ({ 
+                    ...prev, 
+                    notes: prev.notes ? `${prev.notes} ${text}` : text 
+                  }))}
+                />
+              </div>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
