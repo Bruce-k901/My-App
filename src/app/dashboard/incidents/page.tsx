@@ -20,6 +20,7 @@ interface Incident {
   reported_at?: string; // Legacy field name support
   site_id?: string;
   site_name?: string;
+  incident_type?: 'incident' | 'staff_sickness'; // Add type to distinguish
 }
 
 export default function IncidentsPage() {
@@ -47,7 +48,7 @@ export default function IncidentsPage() {
       }
       
       // Fetch incidents with profile relationship for reported_by
-      let query = supabase
+      let incidentsQuery = supabase
         .from('incidents')
         .select(`
           *,
@@ -57,10 +58,38 @@ export default function IncidentsPage() {
         .order('reported_date', { ascending: false });
 
       if (siteId) {
-        query = query.eq('site_id', siteId);
+        incidentsQuery = incidentsQuery.eq('site_id', siteId);
       }
 
-      const { data, error } = await query;
+      const { data: incidentsData, error: incidentsError } = await incidentsQuery;
+
+      // Fetch staff sickness records
+      let sicknessQuery = supabase
+        .from('staff_sickness_records')
+        .select(`
+          *,
+          reported_by_profile:profiles!reported_by(full_name, email),
+          staff_member_profile:profiles!staff_member_id(full_name, email)
+        `)
+        .eq('company_id', companyId)
+        .order('reported_date', { ascending: false });
+
+      if (siteId) {
+        sicknessQuery = sicknessQuery.eq('site_id', siteId);
+      }
+
+      const { data: sicknessData, error: sicknessError } = await sicknessQuery;
+
+      // Handle errors
+      if (incidentsError) {
+        console.error('Error fetching incidents:', incidentsError);
+        throw incidentsError;
+      }
+
+      if (sicknessError) {
+        console.error('Error fetching staff sickness records:', sicknessError);
+        // Don't throw - continue with incidents only
+      }
 
       if (error) {
         // Try to get more details about the error
@@ -89,8 +118,14 @@ export default function IncidentsPage() {
         throw error;
       }
 
-      // Get unique site IDs from incidents
-      const siteIds = [...new Set((data || []).map((incident: any) => incident.site_id).filter(Boolean))];
+      // Combine incidents and staff sickness records
+      const allRecords = [
+        ...(incidentsData || []).map((inc: any) => ({ ...inc, record_type: 'incident' })),
+        ...(sicknessData || []).map((sick: any) => ({ ...sick, record_type: 'staff_sickness' }))
+      ];
+
+      // Get unique site IDs from all records
+      const siteIds = [...new Set(allRecords.map((record: any) => record.site_id).filter(Boolean))];
       
       // Fetch sites separately if we have site IDs
       let sitesMap: Record<string, { id: string; name: string }> = {};
@@ -109,26 +144,80 @@ export default function IncidentsPage() {
         }
       }
       
-      // Transform data to include site name
-      const incidentsWithSites = (data || []).map((incident: any) => {
+      // Transform data to include site name and normalize format
+      const transformedRecords = allRecords.map((record: any) => {
         // Get site name from the map
-        const site = incident.site_id ? sitesMap[incident.site_id] : null;
+        const site = record.site_id ? sitesMap[record.site_id] : null;
         
-        // Also try to get reported_by name if available
-        const reportedByName = incident.reported_by_profile?.full_name || 
-                              incident.reported_by_profile?.email || 
-                              'Unknown';
-        
-        return {
-          ...incident,
-          site_name: site?.name || 'No site assigned',
-          severity: incident.severity || 'near_miss',
-          status: incident.status || 'open',
-          reported_by: reportedByName
-        };
+        if (record.record_type === 'staff_sickness') {
+          // Transform staff sickness record to incident format
+          const reportedByName = record.reported_by_profile?.full_name || 
+                                record.reported_by_profile?.email || 
+                                'Unknown';
+          
+          const staffMemberName = record.staff_member_profile?.full_name || 
+                                 record.staff_member_name || 
+                                 'Unknown Staff Member';
+          
+          // Determine severity based on symptoms and status
+          let severity: string = 'minor';
+          if (record.symptomatic_in_food_areas) {
+            severity = 'critical';
+          } else if (record.medical_clearance_required) {
+            severity = 'major';
+          } else if (record.food_handling_restricted) {
+            severity = 'moderate';
+          }
+          
+          // Map status
+          let status: string = 'open';
+          if (record.status === 'cleared') {
+            status = 'resolved';
+          } else if (record.status === 'closed') {
+            status = 'closed';
+          } else if (record.medical_clearance_received) {
+            status = 'investigating';
+          }
+          
+          return {
+            id: record.id,
+            title: `Staff Sickness: ${staffMemberName}`,
+            description: `Symptoms: ${record.symptoms}${record.notes ? ` | Notes: ${record.notes}` : ''}`,
+            severity: severity as any,
+            status: status as any,
+            reported_by: reportedByName,
+            reported_date: record.reported_date || record.created_at,
+            site_id: record.site_id,
+            site_name: site?.name || 'No site assigned',
+            incident_type: 'staff_sickness' as const,
+            // Include original data for reference
+            original_data: record
+          };
+        } else {
+          // Regular incident - transform as before
+          const reportedByName = record.reported_by_profile?.full_name || 
+                                record.reported_by_profile?.email || 
+                                'Unknown';
+          
+          return {
+            ...record,
+            site_name: site?.name || 'No site assigned',
+            severity: record.severity || 'near_miss',
+            status: record.status || 'open',
+            reported_by: reportedByName,
+            incident_type: 'incident' as const
+          };
+        }
       });
 
-      setIncidents(incidentsWithSites);
+      // Sort by reported_date (most recent first)
+      transformedRecords.sort((a, b) => {
+        const dateA = new Date(a.reported_date || a.reported_at || 0).getTime();
+        const dateB = new Date(b.reported_date || b.reported_at || 0).getTime();
+        return dateB - dateA;
+      });
+
+      setIncidents(transformedRecords);
     } catch (error: any) {
       // Enhanced error logging
       const errorDetails: any = {
@@ -310,7 +399,14 @@ export default function IncidentsPage() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-2">{incident.title}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-lg font-semibold text-white">{incident.title}</h3>
+                      {incident.incident_type === 'staff_sickness' && (
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/40">
+                          STAFF SICKNESS
+                        </span>
+                      )}
+                    </div>
                     <p className="text-white/70 text-sm mb-3">{incident.description}</p>
                     <div className="flex items-center gap-4 text-sm text-white/50">
                       <span>Reported by: {incident.reported_by}</span>
