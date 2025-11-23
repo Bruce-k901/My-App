@@ -170,11 +170,34 @@ export function FoodPoisoningIncidentModal({
       }
 
       // Create food poisoning investigation task from template
-      const { data: foodPoisoningTemplate } = await supabase
-        .from('task_templates')
-        .select('id')
-        .eq('slug', 'food_poisoning_investigation')
-        .single();
+      // Try to find global template (company_id IS NULL) first, then company-specific
+      let foodPoisoningTemplate = null;
+      
+      try {
+        // First try global template
+        const { data: globalTemplate } = await supabase
+          .from('task_templates')
+          .select('id')
+          .eq('slug', 'food_poisoning_investigation')
+          .is('company_id', null)
+          .maybeSingle();
+        
+        foodPoisoningTemplate = globalTemplate;
+        
+        // If not found and we have a companyId, try company-specific
+        if (!foodPoisoningTemplate && companyId) {
+          const { data: companyTemplate } = await supabase
+            .from('task_templates')
+            .select('id')
+            .eq('slug', 'food_poisoning_investigation')
+            .eq('company_id', companyId)
+            .maybeSingle();
+          
+          foodPoisoningTemplate = companyTemplate;
+        }
+      } catch (error) {
+        console.warn('Error fetching food poisoning investigation template:', error);
+      }
 
       if (foodPoisoningTemplate) {
         // Determine priority based on severity and hospital treatment
