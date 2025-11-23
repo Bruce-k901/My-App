@@ -124,16 +124,21 @@ export default function StaffSicknessPage() {
         toast.success('Staff sickness record updated successfully');
       } else {
         // Create new
+        // Ensure dates are properly formatted
+        const insertData = {
+          ...formData,
+          company_id: companyId,
+          site_id: siteId || null,
+          reported_by: profile?.id || '',
+          reported_date: new Date().toISOString().split('T')[0], // DATE field
+          illness_onset_date: formData.illness_onset_date || new Date().toISOString().split('T')[0],
+          exclusion_period_start: formData.exclusion_period_start || new Date().toISOString().split('T')[0],
+          created_at: new Date().toISOString()
+        };
+        
         const { error } = await supabase
           .from('staff_sickness_records')
-          .insert({
-            ...formData,
-            company_id: companyId,
-            site_id: siteId || null,
-            reported_by: profile?.id || '',
-            reported_date: new Date().toISOString().split('T')[0],
-            created_at: new Date().toISOString()
-          });
+          .insert(insertData);
 
         if (error) throw error;
         toast.success('Staff sickness record created successfully');

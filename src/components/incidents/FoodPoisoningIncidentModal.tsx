@@ -140,6 +140,11 @@ export function FoodPoisoningIncidentModal({
       const finalSiteId = formData.site_id || defaultSiteId || null;
       
       // Create incident record
+      // Convert incident_date from date string to TIMESTAMPTZ
+      const incidentDateTime = formData.incident_date 
+        ? new Date(`${formData.incident_date}T12:00:00Z`).toISOString()
+        : new Date().toISOString();
+      
       const { data: incident, error: incidentError } = await supabase
         .from('incidents')
         .insert({
@@ -150,10 +155,10 @@ export function FoodPoisoningIncidentModal({
           incident_type: 'food_poisoning',
           severity: formData.severity || 'minor',
           location: 'Food poisoning incident',
-          incident_date: formData.incident_date,
+          incident_date: incidentDateTime,
           reported_by: profile?.id || null,
           reported_date: new Date().toISOString(),
-          photos: formData.photos.map(p => p.url),
+          photos: formData.photos.length > 0 ? formData.photos.map(p => p.url) : [],
           status: 'open'
         })
         .select()
