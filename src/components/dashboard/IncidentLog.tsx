@@ -204,17 +204,12 @@ export default function IncidentLog() {
   return (
     <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white fade-in-soft">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <ClipboardList className="w-5 h-5 text-magenta-400" />
-          <h2 className="text-lg font-semibold">Incident Log</h2>
-          {incidents.some((i) => i.status === "open" || i.status === "investigating") && (
-            <span className="blink-dot" aria-label="Active incidents" />
-          )}
-        </div>
-        <button className="px-3 py-1.5 rounded-md bg-white/[0.08] border border-white/[0.1] text-white/80 hover:bg-white/[0.15] transition-all text-sm">
-          Log New Incident
-        </button>
+      <div className="flex items-center gap-3 mb-4">
+        <ClipboardList className="w-5 h-5 text-magenta-400" />
+        <h2 className="text-lg font-semibold">Incident Log</h2>
+        {incidents.some((i) => i.status === "open" || i.status === "investigating") && (
+          <span className="blink-dot" aria-label="Active incidents" />
+        )}
       </div>
 
       {/* Tabs */}
