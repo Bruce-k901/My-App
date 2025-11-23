@@ -385,11 +385,11 @@ export default function BillingPage() {
   const needsPlanSelection = !subscription || isTrialExpired || subscription.status === 'expired';
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Billing & Subscription</h1>
-        <p className="text-white/60">Manage your subscription, plans, add-ons, invoices, and data exports</p>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Billing & Subscription</h1>
+        <p className="text-sm sm:text-base text-white/60">Manage your subscription, plans, add-ons, invoices, and data exports</p>
       </div>
 
       {error && (
@@ -413,12 +413,12 @@ export default function BillingPage() {
                   : 'Please select a subscription plan to continue. You can upgrade or modify your plan at any time.'}
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button
-                  onClick={() => setActiveTab('plans')}
-                  className="bg-[#EC4899] text-white hover:bg-[#EC4899]/90"
-                >
-                  Choose Your Plan
-                </Button>
+          <Button
+            onClick={() => setActiveTab('plans')}
+            className="min-h-[44px] bg-[#EC4899] text-white hover:bg-[#EC4899]/90 active:bg-[#EC4899]/80 touch-manipulation w-full sm:w-auto"
+          >
+            Choose Your Plan
+          </Button>
                 {subscription && (
                   <span className="text-sm text-white/60 self-center">
                     Your current setup: {siteCount} {siteCount === 1 ? 'site' : 'sites'}
@@ -435,10 +435,10 @@ export default function BillingPage() {
       <div className="flex flex-wrap gap-2 border-b border-white/10 pb-4">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+          className={`min-h-[44px] px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 touch-manipulation ${
             activeTab === 'overview'
               ? 'bg-[#EC4899] text-white'
-              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
+              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] active:bg-white/[0.15] border border-white/[0.1]'
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -446,10 +446,10 @@ export default function BillingPage() {
         </button>
         <button
           onClick={() => setActiveTab('plans')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+          className={`min-h-[44px] px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 touch-manipulation ${
             activeTab === 'plans'
               ? 'bg-[#EC4899] text-white'
-              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
+              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] active:bg-white/[0.15] border border-white/[0.1]'
           }`}
         >
           <Package className="w-4 h-4" />
@@ -457,14 +457,15 @@ export default function BillingPage() {
         </button>
         <button
           onClick={() => setActiveTab('addons')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+          className={`min-h-[44px] px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 touch-manipulation ${
             activeTab === 'addons'
               ? 'bg-[#EC4899] text-white'
-              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
+              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] active:bg-white/[0.15] border border-white/[0.1]'
           }`}
         >
           <Package className="w-4 h-4" />
-          Add-ons & Offers
+          <span className="hidden sm:inline">Add-ons & Offers</span>
+          <span className="sm:hidden">Add-ons</span>
         </button>
       </div>
 
@@ -495,10 +496,10 @@ export default function BillingPage() {
       {activeTab === 'overview' && (
         <>
           {/* Subscription Status Card */}
-          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-8 shadow-lg">
-        <div className="flex items-start justify-between mb-8">
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-white mb-3">Current Subscription</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3">Current Subscription</h2>
             {subscription ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -541,7 +542,7 @@ export default function BillingPage() {
 
         {/* Subscription Details */}
         {subscription && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-4 sm:mt-6">
             <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.04] border border-white/15 rounded-xl p-6 shadow-md">
               <p className="text-sm font-medium text-white/70 uppercase tracking-wide mb-2">Sites</p>
               <p className="text-4xl font-bold text-white">{siteCount || subscription.site_count || 0}</p>
@@ -810,7 +811,7 @@ export default function BillingPage() {
             onClick={() => requestDataExport('full')}
             disabled={exportLoading}
             variant="outline"
-            className="w-full md:w-auto"
+            className="min-h-[44px] w-full md:w-auto touch-manipulation"
           >
             {exportLoading ? (
               <>

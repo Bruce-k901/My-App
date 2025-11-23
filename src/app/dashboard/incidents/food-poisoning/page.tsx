@@ -179,13 +179,16 @@ export default function FoodPoisoningPage() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
               <input
-                type="text"
+                type="search"
+                inputMode="search"
+                autoComplete="off"
+                enterKeyHint="search"
                 placeholder="Search incidents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
               />
             </div>
 
@@ -261,28 +264,28 @@ export default function FoodPoisoningPage() {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-white mb-2">{incident.title}</h3>
                     <p className="text-white/70 text-sm mb-3">{incident.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-white/50">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-white/50">
                       <span>Reported by: {incident.reported_by}</span>
-                      <span>•</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(incident.reported_date || incident.reported_at).toLocaleDateString()}</span>
                       {incident.site_name && (
                         <>
-                          <span>•</span>
+                          <span className="hidden sm:inline">•</span>
                           <span>{incident.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(incident.severity)}`}>
+                  <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0 sm:ml-4">
+                    <span className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium border ${getSeverityColor(incident.severity)}`}>
                       {incident.severity.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(incident.status)}`}>
+                    <span className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium border ${getStatusColor(incident.status)}`}>
                       {incident.status.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
                   <Button
                     onClick={() => {
                       setSelectedIncident(incident);
@@ -290,6 +293,7 @@ export default function FoodPoisoningPage() {
                     }}
                     variant="outline"
                     size="sm"
+                    className="flex-1 min-h-[44px] touch-manipulation"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     View Report
@@ -300,6 +304,7 @@ export default function FoodPoisoningPage() {
                     }}
                     variant="outline"
                     size="sm"
+                    className="flex-1 min-h-[44px] touch-manipulation"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download

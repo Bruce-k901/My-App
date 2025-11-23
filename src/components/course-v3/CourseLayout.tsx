@@ -37,8 +37,11 @@ export const CourseLayout: React.FC<CourseLayoutProps> = ({ course }) => {
   const currentSlide = currentLesson?.slides.find((s) => s.id === currentSlideId);
 
   // Calculate progress
-  const totalSlides = activeCourse.modules.flatMap(m => m.lessons.flatMap(l => l.slides)).length;
-  const progressPercent = Math.round((completedSlideIds.length / totalSlides) * 100);
+  // Calculate progress
+  const allSlideIds = activeCourse.modules.flatMap(m => m.lessons.flatMap(l => l.slides.map(s => s.id)));
+  const totalSlides = allSlideIds.length;
+  const validCompletedSlides = completedSlideIds.filter(id => allSlideIds.includes(id));
+  const progressPercent = totalSlides > 0 ? Math.round((validCompletedSlides.length / totalSlides) * 100) : 0;
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-slate-900">

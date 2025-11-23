@@ -275,18 +275,18 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
   return (
     <Dialog open={open}>
       <DialogContent 
-        className="max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-        style={{ backgroundColor: '#171717', border: '1px solid #404040', minWidth: '900px' }}
+        className="max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col p-0 sm:p-0"
+        style={{ backgroundColor: '#171717', border: '1px solid #404040' }}
       >
         {/* Sticky Header */}
-        <div className="flex items-center justify-between sticky top-0 bg-black/60 backdrop-blur-lg z-10 px-4 py-3 rounded-t-2xl">
-          <h2 className="text-lg font-semibold text-white">
+        <div className="flex items-center justify-between sticky top-0 bg-black/60 backdrop-blur-lg z-10 px-3 sm:px-4 py-3 rounded-t-2xl">
+          <h2 className="text-base sm:text-lg font-semibold text-white">
             {asset?.id ? 'Edit Asset' : 'Add New Asset'}
           </h2>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             {asset?.id && (
               <Button
-                className="p-2 rounded-xl border border-[#00E0FF] text-[#00E0FF] bg-black/30 hover:shadow-[0_0_10px_#00E0FF]"
+                className="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#00E0FF] text-[#00E0FF] bg-black/30 hover:shadow-[0_0_10px_#00E0FF] active:bg-black/50 touch-manipulation"
                 onClick={() => openAssetLog(asset.id)}
                 title="View Logs"
               >
@@ -297,8 +297,8 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
         </div>
 
         {/* Scrollable Form Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             {/* Assignment Section */}
             <div className="space-y-4">
@@ -312,7 +312,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
                     required
                     value={form.site_id}
                     onChange={(e) => handleInputChange('site_id', e.target.value)}
-                    className="w-full rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2"
+                    className="w-full min-h-[44px] rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2.5 touch-manipulation"
                   >
                     <option value="">Select a site</option>
                     {sites.map((site) => (
@@ -328,7 +328,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
                     required
                     value={form.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
-                    className="w-full rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2"
+                    className="w-full min-h-[44px] rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2.5 touch-manipulation"
                   >
                     <option value="">Select a category</option>
                     <option value="refrigeration">Refrigeration</option>
@@ -355,7 +355,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
                     type="text"
                     value={form.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2"
+                    className="w-full min-h-[44px] rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2.5 touch-manipulation"
                     placeholder="e.g. Kitchen Fridge 1"
                   />
                 </div>
@@ -541,9 +541,9 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
         </div>
 
         {/* Bottom Action Bar */}
-        <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-black/60 backdrop-blur-lg z-10 px-4 py-3 rounded-b-2xl border-t border-neutral-700">
+        <div className="flex items-center justify-end gap-2 sm:gap-3 sticky bottom-0 bg-black/60 backdrop-blur-lg z-10 px-3 sm:px-4 py-3 rounded-b-2xl border-t border-neutral-700">
           <Button
-            className="p-2 rounded-xl border border-[#E0E0E0] text-[#E0E0E0] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#E0E0E0]"
+            className="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#E0E0E0] text-[#E0E0E0] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#E0E0E0] active:bg-black/50 touch-manipulation"
             onClick={onClose}
             title="Cancel edit"
           >
@@ -551,7 +551,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
           </Button>
           
           <Button
-            className="p-2 rounded-xl border border-[#FF00CC] text-[#FF00CC] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#FF00CC]"
+            className="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#FF00CC] text-[#FF00CC] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#FF00CC] active:bg-black/50 touch-manipulation"
             onClick={handleSave}
             disabled={loading}
             title="Save changes"
@@ -561,7 +561,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
           
           {asset?.id && (
             <Button
-              className="p-2 rounded-xl border border-[#FF7A00] text-[#FF7A00] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#FF7A00]"
+              className="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#FF7A00] text-[#FF7A00] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#FF7A00] active:bg-black/50 touch-manipulation"
               onClick={handleArchive}
               disabled={loading}
               title="Archive asset"

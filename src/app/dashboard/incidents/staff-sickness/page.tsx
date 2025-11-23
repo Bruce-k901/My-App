@@ -226,21 +226,24 @@ export default function StaffSicknessPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
           <input
-            type="text"
+            type="search"
+            inputMode="search"
+            autoComplete="off"
+            enterKeyHint="search"
             placeholder="Search by staff name or symptoms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+            className="w-full pl-10 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50 text-base"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+          className="min-h-[44px] px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50 text-base touch-manipulation"
         >
           <option value="all">All Status</option>
           <option value="active">Active Exclusions</option>
@@ -289,24 +292,24 @@ export default function StaffSicknessPage() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-4 text-sm">
                     <div>
-                      <span className="text-white/60">Illness Onset:</span>
+                      <span className="text-white/60 block mb-1">Illness Onset:</span>
                       <p className="text-white">{new Date(record.illness_onset_date).toLocaleDateString()}</p>
                     </div>
                     <div>
-                      <span className="text-white/60">Exclusion Start:</span>
+                      <span className="text-white/60 block mb-1">Exclusion Start:</span>
                       <p className="text-white">{new Date(record.exclusion_period_start).toLocaleDateString()}</p>
                     </div>
                     {record.exclusion_period_end && (
                       <div>
-                        <span className="text-white/60">Exclusion End:</span>
+                        <span className="text-white/60 block mb-1">Exclusion End:</span>
                         <p className="text-white">{new Date(record.exclusion_period_end).toLocaleDateString()}</p>
                       </div>
                     )}
                     {record.return_to_work_date && (
                       <div>
-                        <span className="text-white/60">Return to Work:</span>
+                        <span className="text-white/60 block mb-1">Return to Work:</span>
                         <p className="text-green-400">{new Date(record.return_to_work_date).toLocaleDateString()}</p>
                       </div>
                     )}
@@ -326,10 +329,11 @@ export default function StaffSicknessPage() {
 
                 <button
                   onClick={() => handleEdit(record)}
-                  className="p-2 hover:bg-white/[0.1] rounded-lg transition-colors"
+                  className="min-h-[44px] min-w-[44px] p-2 active:bg-white/[0.1] rounded-lg transition-colors touch-manipulation"
                   title="Edit record"
+                  aria-label="Edit record"
                 >
-                  <Eye className="w-4 h-4 text-white/60" />
+                  <Eye className="w-5 h-5 text-white/60" />
                 </button>
               </div>
             </div>
@@ -339,21 +343,21 @@ export default function StaffSicknessPage() {
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0B0D13] border border-white/[0.1] rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-white mb-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-[#0B0D13] border border-white/[0.1] rounded-none sm:rounded-lg p-4 sm:p-6 max-w-2xl w-full h-full sm:h-auto max-h-[90vh] overflow-y-auto flex flex-col">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
               {selectedRecord ? 'Edit Staff Sickness Record' : 'Log Staff Sickness'}
             </h2>
             
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4 flex-1 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">Staff Member Name *</label>
                   <input
                     type="text"
                     value={formData.staff_member_name}
                     onChange={(e) => setFormData({ ...formData, staff_member_name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50 text-base"
                     placeholder="John Smith"
                     required
                   />
@@ -365,7 +369,7 @@ export default function StaffSicknessPage() {
                     type="date"
                     value={formData.illness_onset_date}
                     onChange={(e) => setFormData({ ...formData, illness_onset_date: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50 text-base"
                     required
                   />
                 </div>
@@ -376,21 +380,21 @@ export default function StaffSicknessPage() {
                 <textarea
                   value={formData.symptoms}
                   onChange={(e) => setFormData({ ...formData, symptoms: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50 text-base"
                   placeholder="e.g., Vomiting, diarrhoea, fever, nausea"
                   rows={3}
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">Exclusion Period Start *</label>
                   <input
                     type="date"
                     value={formData.exclusion_period_start}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_start: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50 text-base"
                     required
                   />
                 </div>
@@ -401,19 +405,19 @@ export default function StaffSicknessPage() {
                     type="date"
                     value={formData.exclusion_period_end || ''}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_end: e.target.value || null })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50 text-base"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-white/80 mb-2">Return to Work Date</label>
-                <input
-                  type="date"
-                  value={formData.return_to_work_date || ''}
-                  onChange={(e) => setFormData({ ...formData, return_to_work_date: e.target.value || null })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
-                />
+                  <input
+                    type="date"
+                    value={formData.return_to_work_date || ''}
+                    onChange={(e) => setFormData({ ...formData, return_to_work_date: e.target.value || null })}
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50 text-base"
+                  />
               </div>
 
               <div className="space-y-2">
@@ -423,9 +427,9 @@ export default function StaffSicknessPage() {
                     id="medical_clearance_required"
                     checked={formData.medical_clearance_required}
                     onChange={(e) => setFormData({ ...formData, medical_clearance_required: e.target.checked })}
-                    className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
+                    className="w-5 h-5 rounded border-white/[0.2] bg-white/[0.06] touch-manipulation"
                   />
-                  <label htmlFor="medical_clearance_required" className="text-sm text-white/80">Medical Clearance Required</label>
+                  <label htmlFor="medical_clearance_required" className="text-base text-white/80 cursor-pointer">Medical Clearance Required</label>
                 </div>
 
                 {formData.medical_clearance_required && (
@@ -435,9 +439,9 @@ export default function StaffSicknessPage() {
                       id="medical_clearance_received"
                       checked={formData.medical_clearance_received}
                       onChange={(e) => setFormData({ ...formData, medical_clearance_received: e.target.checked })}
-                      className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
+                      className="w-5 h-5 rounded border-white/[0.2] bg-white/[0.06] touch-manipulation"
                     />
-                    <label htmlFor="medical_clearance_received" className="text-sm text-white/80">Medical Clearance Received</label>
+                    <label htmlFor="medical_clearance_received" className="text-base text-white/80 cursor-pointer">Medical Clearance Received</label>
                   </div>
                 )}
 
@@ -447,9 +451,9 @@ export default function StaffSicknessPage() {
                     id="manager_notified"
                     checked={formData.manager_notified}
                     onChange={(e) => setFormData({ ...formData, manager_notified: e.target.checked })}
-                    className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
+                    className="w-5 h-5 rounded border-white/[0.2] bg-white/[0.06] touch-manipulation"
                   />
-                  <label htmlFor="manager_notified" className="text-sm text-white/80">Manager Notified Immediately</label>
+                  <label htmlFor="manager_notified" className="text-base text-white/80 cursor-pointer">Manager Notified Immediately</label>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -458,9 +462,9 @@ export default function StaffSicknessPage() {
                     id="food_handling_restricted"
                     checked={formData.food_handling_restricted}
                     onChange={(e) => setFormData({ ...formData, food_handling_restricted: e.target.checked })}
-                    className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
+                    className="w-5 h-5 rounded border-white/[0.2] bg-white/[0.06] touch-manipulation"
                   />
-                  <label htmlFor="food_handling_restricted" className="text-sm text-white/80">Food Handling Restrictions Applied</label>
+                  <label htmlFor="food_handling_restricted" className="text-base text-white/80 cursor-pointer">Food Handling Restrictions Applied</label>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -469,9 +473,9 @@ export default function StaffSicknessPage() {
                     id="symptomatic_in_food_areas"
                     checked={formData.symptomatic_in_food_areas}
                     onChange={(e) => setFormData({ ...formData, symptomatic_in_food_areas: e.target.checked })}
-                    className="w-4 h-4 rounded border-red-500/50 bg-red-500/10"
+                    className="w-5 h-5 rounded border-red-500/50 bg-red-500/10 touch-manipulation"
                   />
-                  <label htmlFor="symptomatic_in_food_areas" className="text-sm text-red-400 font-semibold">CRITICAL: Staff was symptomatic in food areas</label>
+                  <label htmlFor="symptomatic_in_food_areas" className="text-base text-red-400 font-semibold cursor-pointer">CRITICAL: Staff was symptomatic in food areas</label>
                 </div>
               </div>
 
@@ -480,17 +484,17 @@ export default function StaffSicknessPage() {
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50 text-base"
                   placeholder="Additional information, actions taken, etc."
                   rows={3}
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-4 border-t border-white/[0.1]">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+                className="flex-1 min-h-[44px] px-4 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] active:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 touch-manipulation text-base font-medium"
               >
                 {selectedRecord ? 'Update' : 'Log'} Record
               </button>
@@ -499,7 +503,7 @@ export default function StaffSicknessPage() {
                   setIsModalOpen(false);
                   setSelectedRecord(null);
                 }}
-                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="min-h-[44px] px-4 py-3 bg-white/[0.06] active:bg-white/[0.1] text-white rounded-lg transition-colors touch-manipulation text-base"
               >
                 Cancel
               </button>

@@ -1260,5 +1260,512 @@
         }
       ]
     }
-  ]
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What is the primary health and safety legislation in the UK?",
+        "options": [
+          { "label": "The Health and Safety at Work Act 1974", "isCorrect": true },
+          { "label": "The Food Safety Act 1990", "isCorrect": false },
+          { "label": "The Employment Rights Act 1996", "isCorrect": false },
+          { "label": "The Factories Act 1961", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Who is responsible for health and safety in the workplace?",
+        "options": [
+          { "label": "The employer only", "isCorrect": false },
+          { "label": "The employee only", "isCorrect": false },
+          { "label": "Both the employer and the employee", "isCorrect": true },
+          { "label": "The Health and Safety Executive only", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q3",
+        "text": "What is a 'hazard'?",
+        "options": [
+          { "label": "The chance of harm occurring", "isCorrect": false },
+          { "label": "Anything with the potential to cause harm", "isCorrect": true },
+          { "label": "An accident that has already happened", "isCorrect": false },
+          { "label": "A safety rule", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q4",
+        "text": "What is a 'risk'?",
+        "options": [
+          { "label": "Something that causes harm", "isCorrect": false },
+          { "label": "The likelihood of harm occurring and its severity", "isCorrect": true },
+          { "label": "A type of machinery", "isCorrect": false },
+          { "label": "A warning sign", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q5",
+        "text": "What is the first step of a risk assessment?",
+        "options": [
+          { "label": "Record your findings", "isCorrect": false },
+          { "label": "Identify the hazards", "isCorrect": true },
+          { "label": "Review the assessment", "isCorrect": false },
+          { "label": "Decide who might be harmed", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q6",
+        "text": "In the Hierarchy of Control, what is the most effective measure?",
+        "options": [
+          { "label": "PPE", "isCorrect": false },
+          { "label": "Elimination", "isCorrect": true },
+          { "label": "Reduction", "isCorrect": false },
+          { "label": "Isolation", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q7",
+        "text": "What does PPE stand for?",
+        "options": [
+          { "label": "Personal Protective Equipment", "isCorrect": true },
+          { "label": "Public Protection Equipment", "isCorrect": false },
+          { "label": "Personal Prevention Equipment", "isCorrect": false },
+          { "label": "Possible Protective Equipment", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q8",
+        "text": "Which of these is a common cause of slips in a kitchen?",
+        "options": [
+          { "label": "Dry floors", "isCorrect": false },
+          { "label": "Oil spills", "isCorrect": true },
+          { "label": "Non-slip shoes", "isCorrect": false },
+          { "label": "Good lighting", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q9",
+        "text": "What should you do if you spill water on the floor?",
+        "options": [
+          { "label": "Leave it to dry naturally", "isCorrect": false },
+          { "label": "Put a cardboard box over it", "isCorrect": false },
+          { "label": "Clean it up immediately and use a wet floor sign", "isCorrect": true },
+          { "label": "Ignore it", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q10",
+        "text": "Why should you remove a 'Wet Floor' sign when the floor is dry?",
+        "options": [
+          { "label": "It looks untidy", "isCorrect": false },
+          { "label": "People will ignore signs if they are always up", "isCorrect": true },
+          { "label": "It is a trip hazard", "isCorrect": false },
+          { "label": "To save space", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q11",
+        "text": "What does TILE stand for in manual handling?",
+        "options": [
+          { "label": "Task, Individual, Load, Environment", "isCorrect": true },
+          { "label": "Time, Injury, Lift, Equipment", "isCorrect": false },
+          { "label": "Task, Injury, Load, Equipment", "isCorrect": false },
+          { "label": "Time, Individual, Lift, Environment", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q12",
+        "text": "When lifting a heavy box from the floor, you should:",
+        "options": [
+          { "label": "Keep your legs straight and bend your back", "isCorrect": false },
+          { "label": "Bend your knees and keep your back straight", "isCorrect": true },
+          { "label": "Twist your body to lift it", "isCorrect": false },
+          { "label": "Lift it as quickly as possible", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q13",
+        "text": "If a load is too heavy for you to lift alone, what should you do?",
+        "options": [
+          { "label": "Drag it", "isCorrect": false },
+          { "label": "Lift it anyway", "isCorrect": false },
+          { "label": "Ask for help or use a trolley", "isCorrect": true },
+          { "label": "Leave it there", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q14",
+        "text": "How should you carry a knife in the kitchen?",
+        "options": [
+          { "label": "Pointing forwards", "isCorrect": false },
+          { "label": "By your side, pointing downwards", "isCorrect": true },
+          { "label": "In your pocket", "isCorrect": false },
+          { "label": "Pointing upwards", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q15",
+        "text": "What should you do if a knife falls?",
+        "options": [
+          { "label": "Try to catch it", "isCorrect": false },
+          { "label": "Step back and let it fall", "isCorrect": true },
+          { "label": "Kick it away", "isCorrect": false },
+          { "label": "Scream", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q16",
+        "text": "Why should you not leave knives in a sink full of soapy water?",
+        "options": [
+          { "label": "They will rust", "isCorrect": false },
+          { "label": "Someone could reach in and cut themselves", "isCorrect": true },
+          { "label": "It makes the water dirty", "isCorrect": false },
+          { "label": "It blunts the knife", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q17",
+        "text": "What is the purpose of a guard on a machine?",
+        "options": [
+          { "label": "To make it look nice", "isCorrect": false },
+          { "label": "To protect you from moving parts", "isCorrect": true },
+          { "label": "To keep the food inside", "isCorrect": false },
+          { "label": "To make the machine quieter", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q18",
+        "text": "What must you do before cleaning a meat slicer?",
+        "options": [
+          { "label": "Turn it off at the wall and unplug it", "isCorrect": true },
+          { "label": "Just turn it off at the switch", "isCorrect": false },
+          { "label": "Leave it running", "isCorrect": false },
+          { "label": "Wear gloves only", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q19",
+        "text": "What does LOTO stand for?",
+        "options": [
+          { "label": "Lock Out, Tag Out", "isCorrect": true },
+          { "label": "Lights On, Time Out", "isCorrect": false },
+          { "label": "Look Out, Take Out", "isCorrect": false },
+          { "label": "Leave Open, Take Off", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q20",
+        "text": "Which three elements make up the Fire Triangle?",
+        "options": [
+          { "label": "Heat, Fuel, Oxygen", "isCorrect": true },
+          { "label": "Heat, Wood, Air", "isCorrect": false },
+          { "label": "Fire, Smoke, Ash", "isCorrect": false },
+          { "label": "Gas, Oil, Electricity", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q21",
+        "text": "Which extinguisher should be used on a deep fat fryer fire?",
+        "options": [
+          { "label": "Water (Red)", "isCorrect": false },
+          { "label": "CO2 (Black)", "isCorrect": false },
+          { "label": "Wet Chemical (Yellow)", "isCorrect": true },
+          { "label": "Foam (Cream)", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q22",
+        "text": "Why must you NEVER use water on an oil fire?",
+        "options": [
+          { "label": "It will make the floor wet", "isCorrect": false },
+          { "label": "It will cause an explosive reaction", "isCorrect": true },
+          { "label": "It won't work", "isCorrect": false },
+          { "label": "It is too expensive", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q23",
+        "text": "Which extinguisher is safe for electrical fires?",
+        "options": [
+          { "label": "Water", "isCorrect": false },
+          { "label": "Foam", "isCorrect": false },
+          { "label": "CO2", "isCorrect": true },
+          { "label": "Wet Chemical", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q24",
+        "text": "What is a fire blanket used for?",
+        "options": [
+          { "label": "Keeping warm", "isCorrect": false },
+          { "label": "Smothering small pan fires or people on fire", "isCorrect": true },
+          { "label": "Cleaning up spills", "isCorrect": false },
+          { "label": "Covering food", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q25",
+        "text": "What does COSHH stand for?",
+        "options": [
+          { "label": "Control of Substances Hazardous to Health", "isCorrect": true },
+          { "label": "Care of Substances Harmful to Health", "isCorrect": false },
+          { "label": "Control of Safety Hazards in Homes", "isCorrect": false },
+          { "label": "Chemicals of Safety and Health Hazards", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q26",
+        "text": "What does the 'Skull and Crossbones' symbol mean?",
+        "options": [
+          { "label": "Flammable", "isCorrect": false },
+          { "label": "Acute Toxicity (Fatal or Toxic)", "isCorrect": true },
+          { "label": "Corrosive", "isCorrect": false },
+          { "label": "Irritant", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q27",
+        "text": "What does the 'Corrosive' symbol look like?",
+        "options": [
+          { "label": "A flame", "isCorrect": false },
+          { "label": "Liquid pouring onto a hand and metal", "isCorrect": true },
+          { "label": "An exclamation mark", "isCorrect": false },
+          { "label": "A dead fish", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q28",
+        "text": "Why should you never mix bleach and acid?",
+        "options": [
+          { "label": "It smells bad", "isCorrect": false },
+          { "label": "It creates deadly chlorine gas", "isCorrect": true },
+          { "label": "It makes them less effective", "isCorrect": false },
+          { "label": "It changes the colour", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q29",
+        "text": "Where should cleaning chemicals be stored?",
+        "options": [
+          { "label": "On a high shelf above food", "isCorrect": false },
+          { "label": "In a locked cupboard, low down", "isCorrect": true },
+          { "label": "Next to the oven", "isCorrect": false },
+          { "label": "In unmarked bottles", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q30",
+        "text": "What are the four routes of entry for chemicals into the body?",
+        "options": [
+          { "label": "Inhalation, Ingestion, Absorption, Injection", "isCorrect": true },
+          { "label": "Breathing, Eating, Drinking, Sleeping", "isCorrect": false },
+          { "label": "Eyes, Ears, Nose, Mouth", "isCorrect": false },
+          { "label": "Hands, Feet, Face, Body", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q31",
+        "text": "What should you check before using a ladder?",
+        "options": [
+          { "label": "The colour", "isCorrect": false },
+          { "label": "Feet, rungs, and rails for damage", "isCorrect": true },
+          { "label": "The brand", "isCorrect": false },
+          { "label": "If it's heavy", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q32",
+        "text": "What is the '3 Points of Contact' rule for ladders?",
+        "options": [
+          { "label": "Two hands and two feet", "isCorrect": false },
+          { "label": "Two feet and one hand (or two hands and one foot)", "isCorrect": true },
+          { "label": "One hand and one foot", "isCorrect": false },
+          { "label": "Just hold on tight", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q33",
+        "text": "How long should you use a ladder for?",
+        "options": [
+          { "label": "All day", "isCorrect": false },
+          { "label": "Short duration only (max 30 mins)", "isCorrect": true },
+          { "label": "As long as you like", "isCorrect": false },
+          { "label": "Over 2 hours", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q34",
+        "text": "What is the first aid treatment for a burn?",
+        "options": [
+          { "label": "Apply butter", "isCorrect": false },
+          { "label": "Cool with running water for at least 20 minutes", "isCorrect": true },
+          { "label": "Put ice directly on it", "isCorrect": false },
+          { "label": "Cover with a dry cloth immediately", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q35",
+        "text": "What type of plaster should be used in a kitchen?",
+        "options": [
+          { "label": "Pink", "isCorrect": false },
+          { "label": "Blue (visually detectable)", "isCorrect": true },
+          { "label": "Clear", "isCorrect": false },
+          { "label": "Fabric", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q36",
+        "text": "What does RIDDOR require you to report?",
+        "options": [
+          { "label": "Minor cuts", "isCorrect": false },
+          { "label": "Serious accidents, diseases, and dangerous occurrences", "isCorrect": true },
+          { "label": "Staff sickness", "isCorrect": false },
+          { "label": "Late arrivals", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q37",
+        "text": "If you cut your finger, what should you do?",
+        "options": [
+          { "label": "Suck it", "isCorrect": false },
+          { "label": "Clean, dry, and cover with a blue plaster", "isCorrect": true },
+          { "label": "Wrap it in tissue", "isCorrect": false },
+          { "label": "Ignore it", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q38",
+        "text": "What is the main cause of workplace fatalities?",
+        "options": [
+          { "label": "Falls from height", "isCorrect": true },
+          { "label": "Electric shock", "isCorrect": false },
+          { "label": "Cuts", "isCorrect": false },
+          { "label": "Burns", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q39",
+        "text": "Who must be trained to use dangerous machinery?",
+        "options": [
+          { "label": "Anyone", "isCorrect": false },
+          { "label": "Only the manager", "isCorrect": false },
+          { "label": "Anyone authorized and trained", "isCorrect": true },
+          { "label": "The cleaner", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q40",
+        "text": "What should you do if you discover a fire?",
+        "options": [
+          { "label": "Run away", "isCorrect": false },
+          { "label": "Raise the alarm immediately", "isCorrect": true },
+          { "label": "Try to fight it alone", "isCorrect": false },
+          { "label": "Ignore it", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q41",
+        "text": "What is the correct angle for a leaning ladder?",
+        "options": [
+          { "label": "1 in 4 (75 degrees)", "isCorrect": true },
+          { "label": "1 in 1 (45 degrees)", "isCorrect": false },
+          { "label": "Vertical", "isCorrect": false },
+          { "label": "Horizontal", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q42",
+        "text": "Can you use a ladder with a missing foot?",
+        "options": [
+          { "label": "Yes, if you wedge it", "isCorrect": false },
+          { "label": "No, never", "isCorrect": true },
+          { "label": "Yes, if someone holds it", "isCorrect": false },
+          { "label": "Yes, for a quick job", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q43",
+        "text": "What should you do if you splash chemicals in your eye?",
+        "options": [
+          { "label": "Rub it", "isCorrect": false },
+          { "label": "Irrigate with water for 15 mins and seek medical help", "isCorrect": true },
+          { "label": "Blink rapidly", "isCorrect": false },
+          { "label": "Put a plaster on it", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q44",
+        "text": "What is the 'Exclamation Mark' hazard symbol?",
+        "options": [
+          { "label": "Health Hazard / Irritant", "isCorrect": true },
+          { "label": "Explosive", "isCorrect": false },
+          { "label": "Gas under pressure", "isCorrect": false },
+          { "label": "Oxidising", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q45",
+        "text": "Why is 'Clean as you Go' important?",
+        "options": [
+          { "label": "It saves time at the end of the shift", "isCorrect": false },
+          { "label": "It prevents slips and trips", "isCorrect": true },
+          { "label": "The manager likes it", "isCorrect": false },
+          { "label": "It uses less chemical", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q46",
+        "text": "What is a 'near miss'?",
+        "options": [
+          { "label": "An accident that caused injury", "isCorrect": false },
+          { "label": "An event that could have caused injury but didn't", "isCorrect": true },
+          { "label": "A mistake", "isCorrect": false },
+          { "label": "A hazard", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q47",
+        "text": "Should you report a near miss?",
+        "options": [
+          { "label": "No, no one was hurt", "isCorrect": false },
+          { "label": "Yes, to prevent future accidents", "isCorrect": true },
+          { "label": "Only if you want to", "isCorrect": false },
+          { "label": "Only if it was serious", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q48",
+        "text": "What is the maximum weight one person can lift?",
+        "options": [
+          { "label": "25kg", "isCorrect": false },
+          { "label": "There is no fixed limit, it depends on the individual", "isCorrect": true },
+          { "label": "50kg", "isCorrect": false },
+          { "label": "10kg", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q49",
+        "text": "What should you do if you are pregnant?",
+        "options": [
+          { "label": "Nothing changes", "isCorrect": false },
+          {
+            "label": "Inform your employer so a specific risk assessment can be done",
+            "isCorrect": true
+          },
+          { "label": "Stop working immediately", "isCorrect": false },
+          { "label": "Work harder", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q50",
+        "text": "Who is responsible for reporting defects in equipment?",
+        "options": [
+          { "label": "The user of the equipment", "isCorrect": true },
+          { "label": "The manufacturer", "isCorrect": false },
+          { "label": "The customer", "isCorrect": false },
+          { "label": "No one", "isCorrect": false }
+        ]
+      }
+    ]
+  }
 }

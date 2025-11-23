@@ -630,7 +630,7 @@ export default function ReportsPage() {
           <p className="text-sm sm:text-base text-white/60">Drill down into compliance, assets, and operational performance</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.1] rounded-lg text-white text-xs sm:text-sm transition-colors flex items-center gap-2">
+          <button className="min-h-[44px] px-3 sm:px-4 py-2 sm:py-2.5 bg-white/[0.05] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/[0.1] rounded-lg text-white text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 touch-manipulation">
             <Download className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Export Report</span>
             <span className="sm:hidden">Export</span>
@@ -639,31 +639,33 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-4">
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-white/60" />
-          <span className="text-sm text-white/60">Date Range:</span>
+          <Calendar className="w-4 h-4 text-white/60 flex-shrink-0" />
+          <span className="text-xs sm:text-sm text-white/60">Date Range:</span>
         </div>
-        <input
-          type="date"
-          value={dateRange.start}
-          onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-          className="px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
-        />
-        <span className="text-white/60">to</span>
-        <input
-          type="date"
-          value={dateRange.end}
-          onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-          className="px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
-        />
-        <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm text-white/60">Site:</span>
+        <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+          <input
+            type="date"
+            value={dateRange.start}
+            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+            className="flex-1 sm:flex-initial min-h-[44px] px-3 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 touch-manipulation"
+          />
+          <span className="text-white/60 text-xs sm:text-sm">to</span>
+          <input
+            type="date"
+            value={dateRange.end}
+            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+            className="flex-1 sm:flex-initial min-h-[44px] px-3 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 touch-manipulation"
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+          <span className="text-xs sm:text-sm text-white/60">Site:</span>
           <SiteSelector
             value={selectedSiteId || ""}
             onChange={(id) => setSelectedSiteId(id)}
             placeholder="All Sites"
-            className="min-w-[200px]"
+            className="flex-1 sm:flex-initial min-w-[200px]"
           />
         </div>
       </div>
@@ -678,14 +680,14 @@ export default function ReportsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap
+                min-h-[44px] px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap touch-manipulation
                 ${isActive
                   ? "border-pink-500 text-pink-400"
-                  : "border-transparent text-white/60 hover:text-white/80"
+                  : "border-transparent text-white/60 hover:text-white/80 active:text-white"
                 }
               `}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4 flex-shrink-0" />
               {tab.label}
             </button>
           );

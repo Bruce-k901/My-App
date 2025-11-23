@@ -74,4 +74,14 @@ export interface Course {
     modules: Module[];
     certificateTemplateId?: string;
     refresherYears: number;
+    questionBanks?: Record<string, Question[]>;
+}
+
+export interface Question {
+    id: string;
+    text: string;
+    options: {
+        label: string;
+        isCorrect: boolean;
+    }[];
 }

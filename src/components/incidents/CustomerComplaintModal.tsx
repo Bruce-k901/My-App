@@ -357,8 +357,8 @@ export function CustomerComplaintModal({
   const canProceedToReview = formData.immediate_response;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
-      <div className="bg-[#14161c] border border-white/[0.1] rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-[#14161c] border border-white/[0.1] rounded-none sm:rounded-xl shadow-2xl w-full max-w-4xl h-full sm:h-auto max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/[0.1]">
           <div className="flex items-center gap-3">
@@ -372,7 +372,8 @@ export function CustomerComplaintModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/[0.1] rounded-lg transition-colors"
+            className="min-h-[44px] min-w-[44px] p-2 active:bg-white/[0.1] rounded-lg transition-colors touch-manipulation"
+            aria-label="Close"
           >
             <X className="w-5 h-5 text-white/60" />
           </button>
@@ -383,44 +384,46 @@ export function CustomerComplaintModal({
           <div className="flex items-center gap-4">
             <button
               onClick={() => setActiveSection('details')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-lg transition-colors touch-manipulation active:scale-[0.98] ${
                 activeSection === 'details'
                   ? 'bg-pink-500/20 text-pink-300'
-                  : 'text-white/60 hover:text-white/80'
+                  : 'text-white/60 active:text-white/80'
               }`}
             >
               <FileText className="w-4 h-4" />
               <span className="text-sm font-medium">Complaint Details</span>
             </button>
-            <div className="h-4 w-px bg-white/20" />
+            <div className="h-4 w-px bg-white/20 hidden sm:block" />
             <button
               onClick={() => canProceedToFollowUp && setActiveSection('followup')}
               disabled={!canProceedToFollowUp}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-lg transition-colors touch-manipulation active:scale-[0.98] ${
                 activeSection === 'followup'
                   ? 'bg-pink-500/20 text-pink-300'
                   : canProceedToFollowUp
-                  ? 'text-white/60 hover:text-white/80'
+                  ? 'text-white/60 active:text-white/80'
                   : 'text-white/30 cursor-not-allowed'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span className="text-sm font-medium">Follow-up Actions</span>
+              <span className="text-sm font-medium hidden sm:inline">Follow-up Actions</span>
+              <span className="text-sm font-medium sm:hidden">Follow-up</span>
             </button>
-            <div className="h-4 w-px bg-white/20" />
+            <div className="h-4 w-px bg-white/20 hidden sm:block" />
             <button
               onClick={() => canProceedToReview && setActiveSection('review')}
               disabled={!canProceedToReview}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-lg transition-colors touch-manipulation active:scale-[0.98] ${
                 activeSection === 'review'
                   ? 'bg-pink-500/20 text-pink-300'
                   : canProceedToReview
-                  ? 'text-white/60 hover:text-white/80'
+                  ? 'text-white/60 active:text-white/80'
                   : 'text-white/30 cursor-not-allowed'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
-              <span className="text-sm font-medium">Review & Save</span>
+              <span className="text-sm font-medium hidden sm:inline">Review & Save</span>
+              <span className="text-sm font-medium sm:hidden">Review</span>
             </button>
           </div>
         </div>
@@ -444,7 +447,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.customer_name}
                       onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       placeholder="Enter customer name"
                     />
                   </div>
@@ -454,9 +457,11 @@ export function CustomerComplaintModal({
                     </label>
                     <input
                       type="email"
+                      inputMode="email"
+                      autoComplete="email"
                       value={formData.customer_email}
                       onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       placeholder="customer@example.com"
                     />
                   </div>
@@ -466,9 +471,11 @@ export function CustomerComplaintModal({
                     </label>
                     <input
                       type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
                       value={formData.customer_phone}
                       onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       placeholder="+44 123 456 7890"
                     />
                   </div>
@@ -480,7 +487,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.visit_date}
                       onChange={(e) => setFormData({ ...formData, visit_date: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                     />
                   </div>
                   <div>
@@ -491,7 +498,7 @@ export function CustomerComplaintModal({
                       type="time"
                       value={formData.visit_time}
                       onChange={(e) => setFormData({ ...formData, visit_time: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                     />
                   </div>
                 </div>
@@ -540,7 +547,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.complaint_title}
                       onChange={(e) => setFormData({ ...formData, complaint_title: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       placeholder="Brief summary of the complaint"
                     />
                   </div>
@@ -552,7 +559,7 @@ export function CustomerComplaintModal({
                       value={formData.complaint_description}
                       onChange={(e) => setFormData({ ...formData, complaint_description: e.target.value })}
                       rows={5}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-base"
                       placeholder="Provide detailed description of the complaint..."
                     />
                   </div>
@@ -565,7 +572,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.location_in_venue}
                         onChange={(e) => setFormData({ ...formData, location_in_venue: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                         placeholder="e.g., Table 12, Bar area, Restroom"
                       />
                     </div>
@@ -602,7 +609,7 @@ export function CustomerComplaintModal({
                       value={formData.immediate_response}
                       onChange={(e) => setFormData({ ...formData, immediate_response: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-base"
                       placeholder="Describe what immediate action was taken when the complaint was received..."
                     />
                   </div>
@@ -615,7 +622,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.response_taken_by}
                         onChange={(e) => setFormData({ ...formData, response_taken_by: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                         placeholder="Staff member name"
                       />
                     </div>
@@ -627,7 +634,7 @@ export function CustomerComplaintModal({
                         type="date"
                         value={formData.response_date}
                         onChange={(e) => setFormData({ ...formData, response_date: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       />
                     </div>
                   </div>
@@ -660,10 +667,10 @@ export function CustomerComplaintModal({
                   {FOLLOW_UP_ACTIONS.map((action) => (
                     <div
                       key={action.id}
-                      className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                      className={`p-4 rounded-lg border cursor-pointer transition-colors touch-manipulation active:scale-[0.98] min-h-[44px] ${
                         formData.followUpActions.includes(action.id)
                           ? 'bg-pink-500/20 border-pink-500/40'
-                          : 'bg-white/[0.03] border-white/[0.1] hover:bg-white/[0.05]'
+                          : 'bg-white/[0.03] border-white/[0.1] active:bg-white/[0.05]'
                       }`}
                       onClick={() => {
                         const updated = formData.followUpActions.includes(action.id)
@@ -677,7 +684,7 @@ export function CustomerComplaintModal({
                           type="checkbox"
                           checked={formData.followUpActions.includes(action.id)}
                           onChange={() => {}}
-                          className="mt-1 w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                          className="mt-1 w-5 h-5 text-pink-500 rounded focus:ring-pink-500 touch-manipulation"
                         />
                         <div className="flex-1">
                           <h4 className="font-medium text-white">{action.label}</h4>
@@ -695,7 +702,7 @@ export function CustomerComplaintModal({
                                 });
                               }}
                               rows={2}
-                              className="w-full mt-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-sm"
+                              className="w-full mt-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-base"
                               placeholder="Add additional details or notes..."
                               onClick={(e) => e.stopPropagation()}
                             />
@@ -714,7 +721,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.follow_up_deadline}
                       onChange={(e) => setFormData({ ...formData, follow_up_deadline: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                     />
                   </div>
                   <div>
@@ -725,7 +732,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.assigned_to}
                       onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                       placeholder="Manager or staff member"
                     />
                   </div>
@@ -810,14 +817,14 @@ export function CustomerComplaintModal({
               <div className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Resolution Tracking</h3>
                 <div className="space-y-4">
-                  <label className="flex items-center gap-3 cursor-pointer">
+                  <label className="flex items-center gap-3 cursor-pointer min-h-[44px]">
                     <input
                       type="checkbox"
                       checked={formData.resolved}
                       onChange={(e) => setFormData({ ...formData, resolved: e.target.checked })}
-                      className="w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                      className="w-5 h-5 text-pink-500 rounded focus:ring-pink-500 touch-manipulation"
                     />
-                    <span className="text-white">Complaint has been resolved</span>
+                    <span className="text-white text-base">Complaint has been resolved</span>
                   </label>
                   {formData.resolved && (
                     <>
@@ -829,7 +836,7 @@ export function CustomerComplaintModal({
                           type="date"
                           value={formData.resolution_date}
                           onChange={(e) => setFormData({ ...formData, resolution_date: e.target.value })}
-                          className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
                         />
                       </div>
                       <div>
@@ -840,18 +847,18 @@ export function CustomerComplaintModal({
                           value={formData.resolution_details}
                           onChange={(e) => setFormData({ ...formData, resolution_details: e.target.value })}
                           rows={4}
-                          className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                          className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-base"
                           placeholder="Describe how the complaint was resolved..."
                         />
                       </div>
-                      <label className="flex items-center gap-3 cursor-pointer">
+                      <label className="flex items-center gap-3 cursor-pointer min-h-[44px]">
                         <input
                           type="checkbox"
                           checked={formData.customer_satisfied}
                           onChange={(e) => setFormData({ ...formData, customer_satisfied: e.target.checked })}
-                          className="w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                          className="w-5 h-5 text-pink-500 rounded focus:ring-pink-500 touch-manipulation"
                         />
-                        <span className="text-white">Customer satisfied with resolution</span>
+                        <span className="text-white text-base">Customer satisfied with resolution</span>
                       </label>
                     </>
                   )}
@@ -893,7 +900,7 @@ export function CustomerComplaintModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-white/[0.1] bg-white/[0.02]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-6 border-t border-white/[0.1] bg-white/[0.02]">
           <div className="flex gap-2">
             {activeSection !== 'details' && (
               <Button
@@ -902,13 +909,14 @@ export function CustomerComplaintModal({
                   else if (activeSection === 'followup') setActiveSection('details');
                 }}
                 variant="outline"
+                className="min-h-[44px] touch-manipulation"
               >
                 Previous
               </Button>
             )}
           </div>
-          <div className="flex gap-2">
-            <Button onClick={onClose} variant="ghost">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={onClose} variant="ghost" className="min-h-[44px] touch-manipulation">
               Cancel
             </Button>
             {activeSection !== 'review' ? (
@@ -925,6 +933,7 @@ export function CustomerComplaintModal({
                   (activeSection === 'followup' && !canProceedToReview)
                 }
                 variant="primary"
+                className="min-h-[44px] touch-manipulation"
               >
                 Next
               </Button>
@@ -934,6 +943,7 @@ export function CustomerComplaintModal({
                 disabled={saving}
                 loading={saving}
                 variant="primary"
+                className="min-h-[44px] touch-manipulation"
               >
                 Save Complaint
               </Button>

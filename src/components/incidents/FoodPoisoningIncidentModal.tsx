@@ -288,8 +288,8 @@ export function FoodPoisoningIncidentModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 overflow-hidden">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="absolute right-0 top-0 h-full w-full max-w-4xl bg-[#1a1d2e] border-l border-orange-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
-        <div className="p-4 sm:p-6">
+      <div className="absolute right-0 top-0 h-full w-full max-w-4xl bg-[#1a1d2e] border-l border-orange-500/30 shadow-2xl overflow-y-auto animate-slideInRight flex flex-col">
+        <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-orange-500/20">
             <div className="flex items-center gap-3">
@@ -303,7 +303,8 @@ export function FoodPoisoningIncidentModal({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+              className="min-h-[44px] min-w-[44px] text-gray-400 active:text-white transition-colors p-2 active:bg-white/10 rounded-lg touch-manipulation"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -337,7 +338,7 @@ export function FoodPoisoningIncidentModal({
                     type="date"
                     value={formData.incident_date}
                     onChange={(e) => setFormData({ ...formData, incident_date: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                     required
                   />
                 </div>
@@ -362,7 +363,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.reported_by_customer}
                     onChange={(e) => setFormData({ ...formData, reported_by_customer: e.target.value })}
                     placeholder="Full name of customer"
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                     required
                   />
                 </div>
@@ -390,10 +391,12 @@ export function FoodPoisoningIncidentModal({
                   </label>
                   <input
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
                     value={formData.customer_email}
                     onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
                     placeholder="customer@email.com"
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                   />
                 </div>
 
@@ -403,10 +406,12 @@ export function FoodPoisoningIncidentModal({
                   </label>
                   <input
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={formData.customer_phone}
                     onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
                     placeholder="+44 7700 900000"
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                   />
                 </div>
               </div>
@@ -434,7 +439,7 @@ export function FoodPoisoningIncidentModal({
                   {SYMPTOM_OPTIONS.map((symptom) => (
                     <div
                       key={symptom.id}
-                      className="flex items-start gap-3 p-3 bg-white/[0.03] border border-white/[0.1] rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+                      className="flex items-start gap-3 p-4 bg-white/[0.03] border border-white/[0.1] rounded-lg active:bg-white/[0.06] transition-colors cursor-pointer touch-manipulation min-h-[44px]"
                       onClick={() => handleSymptomToggle(symptom.id)}
                     >
                       <CheckboxCustom
@@ -478,7 +483,7 @@ export function FoodPoisoningIncidentModal({
                     type="datetime-local"
                     value={formData.symptom_start_datetime}
                     onChange={(e) => setFormData({ ...formData, symptom_start_datetime: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                   />
                 </div>
               </div>
@@ -490,10 +495,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, hospital_treatment: 'pass' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.hospital_treatment === 'pass'
                           ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -501,10 +506,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, hospital_treatment: 'fail' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.hospital_treatment === 'fail'
                           ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -518,10 +523,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, stool_sample_available: 'fail' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.stool_sample_available === 'fail'
                           ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -529,10 +534,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, stool_sample_available: 'pass' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.stool_sample_available === 'pass'
                           ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -558,7 +563,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, menu_items_consumed: e.target.value })}
                   placeholder="List all menu items and dishes the customer consumed. Include specific dishes, ingredients, and preparation details (e.g., 'Chicken Caesar Salad - contained raw egg in dressing, cooked chicken, fresh lettuce. Consumed at 7:30pm')."
                   rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                   required
                 />
               </div>
@@ -572,7 +577,7 @@ export function FoodPoisoningIncidentModal({
                     type="datetime-local"
                     value={formData.meal_time}
                     onChange={(e) => setFormData({ ...formData, meal_time: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                   />
                 </div>
 
@@ -582,10 +587,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, other_affected_persons: 'pass' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.other_affected_persons === 'pass'
                           ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -593,10 +598,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, other_affected_persons: 'fail' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.other_affected_persons === 'fail'
                           ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -614,7 +619,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, food_consumed_24h: e.target.value })}
                   placeholder="List any other food or drinks consumed in the 24 hours before symptoms started. This helps identify if the issue came from your establishment or elsewhere."
                   rows={2}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                 />
               </div>
 
@@ -627,7 +632,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, unaffected_comparison: e.target.value })}
                   placeholder="List people who ate similar items but did not get sick. This helps identify the specific cause (e.g., 'Table 12 had same chicken salad - no issues. Table 14 had vegetarian option - no issues.')"
                   rows={2}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                 />
               </div>
             </div>
@@ -646,10 +651,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, samples_preserved: 'fail' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.samples_preserved === 'fail'
                           ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -657,10 +662,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, samples_preserved: 'pass' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.samples_preserved === 'pass'
                           ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -674,10 +679,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, eho_notified: 'fail' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.eho_notified === 'fail'
                           ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -685,10 +690,10 @@ export function FoodPoisoningIncidentModal({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, eho_notified: 'pass' })}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+                      className={`min-h-[44px] flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors touch-manipulation active:scale-[0.98] ${
                         formData.eho_notified === 'pass'
                           ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                          : 'bg-white/[0.03] border-white/[0.06] text-white/60 active:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -704,7 +709,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, immediate_corrective_actions: e.target.value })}
                   placeholder="What immediate actions have been taken to prevent further incidents? (e.g., 'Removed suspect batch from service, increased temperature monitoring, staff retraining on specific procedure...')"
                   rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                 />
               </div>
             </div>
@@ -766,24 +771,25 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, additional_notes: e.target.value })}
                   placeholder="Any additional relevant information, context, or notes about the incident..."
                   rows={4}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base"
                 />
               </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-6 pt-4 border-t border-white/10 bg-[#1a1d2e] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-4 sm:pb-0">
             <Button
               onClick={onClose}
               variant="outline"
+              className="w-full sm:w-auto min-h-[44px] touch-manipulation"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="w-full sm:w-auto min-h-[44px] bg-orange-600 active:bg-orange-700 text-white touch-manipulation"
             >
               {saving ? 'Saving...' : 'Save & Create Investigation Task'}
             </Button>

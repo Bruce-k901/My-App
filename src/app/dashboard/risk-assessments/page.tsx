@@ -126,7 +126,7 @@ export default function RiskAssessmentsPage() {
   return (
     <div className="space-y-6">
       {/* Stats Cards - Improved Design */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 border border-white/[0.1] rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] hover:border-magenta-500/30 group">
           <div className="flex items-center justify-between mb-3">
             <div className="text-neutral-400 text-sm font-medium">Total RAs</div>
@@ -191,30 +191,35 @@ export default function RiskAssessmentsPage() {
             <div className="text-sm text-neutral-400">{filteredAssessments.length} assessment{filteredAssessments.length !== 1 ? 's' : ''}</div>
             <button
               onClick={() => router.push('/dashboard/risk-assessments/archive')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200"
+              className="min-h-[44px] flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 touch-manipulation text-sm sm:text-base"
             >
               <FileBox size={18} />
-              <span className="text-sm font-medium">Archived RAs</span>
+              <span className="font-medium">Archived RAs</span>
             </button>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
             <input
-              type="text"
+              type="search"
+              inputMode="search"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              enterKeyHint="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search risk assessments..."
-              className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+              className="w-full min-h-[44px] bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2.5 sm:py-2 text-white placeholder-neutral-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-pink-500/50 touch-manipulation"
             />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+            className="min-h-[44px] bg-neutral-800 border border-neutral-600 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-white text-sm sm:text-base touch-manipulation"
           >
             <option value="all">All Status</option>
             <option value="Draft">Draft</option>
@@ -224,7 +229,7 @@ export default function RiskAssessmentsPage() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+            className="min-h-[44px] bg-neutral-800 border border-neutral-600 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-white text-sm sm:text-base touch-manipulation"
           >
             <option value="all">All Types</option>
             <option value="general">General</option>
@@ -248,36 +253,36 @@ export default function RiskAssessmentsPage() {
               return (
                 <div
                   key={assessment.id}
-                  className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:bg-neutral-800/70 transition-colors cursor-pointer"
+                  className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 sm:p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:bg-neutral-800/70 transition-colors cursor-pointer"
                   onClick={() => router.push(`/dashboard/risk-assessments/view/${assessment.id}`)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-white">{assessment.title}</h3>
-                        <span className="px-2 py-1 bg-neutral-700 text-neutral-300 rounded text-xs">{assessment.ref_code}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-white break-words">{assessment.title}</h3>
+                        <span className="px-2 py-1 bg-neutral-700 text-neutral-300 rounded text-xs whitespace-nowrap">{assessment.ref_code}</span>
                         {assessment.template_type === 'coshh' && (
-                          <span className="px-2 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-xs">COSHH</span>
+                          <span className="px-2 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-xs whitespace-nowrap">COSHH</span>
                         )}
                         {assessment.status === 'Published' && (
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/40 rounded text-xs flex items-center gap-1">
+                          <span className="px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/40 rounded text-xs flex items-center gap-1 whitespace-nowrap">
                             <CheckCircle size={12} />
                             Published
                           </span>
                         )}
                         {overdue && (
-                          <span className="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded text-xs flex items-center gap-1">
+                          <span className="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded text-xs flex items-center gap-1 whitespace-nowrap">
                             <AlertTriangle size={12} />
                             Overdue
                           </span>
                         )}
                         {riskBadge && (
-                          <span className={`px-2 py-1 border rounded text-xs ${riskBadge.color}`}>
+                          <span className={`px-2 py-1 border rounded text-xs whitespace-nowrap ${riskBadge.color}`}>
                             {riskBadge.text}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-neutral-400">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-neutral-400">
                         <span>Assessor: {assessment.assessor_name}</span>
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
@@ -288,7 +293,7 @@ export default function RiskAssessmentsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-2 sm:ml-4 flex-shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -297,11 +302,11 @@ export default function RiskAssessmentsPage() {
                             : '/dashboard/risk-assessments/general-template';
                           router.push(`${templatePath}?edit=${assessment.id}`);
                         }}
-                        className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
+                        className="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 sm:py-2.5 bg-magenta-500/20 hover:bg-magenta-500/30 active:bg-magenta-500/40 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center justify-center gap-2 transition-colors text-sm touch-manipulation"
                         title="Edit RA"
                       >
                         <Edit size={16} />
-                        Edit
+                        <span className="hidden sm:inline">Edit</span>
                       </button>
                       <button
                         onClick={async (e) => {
@@ -373,7 +378,7 @@ export default function RiskAssessmentsPage() {
                           }
                         }}
                         disabled={archivingId === assessment.id}
-                        className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none touch-manipulation"
                         title="Archive RA"
                       >
                         {archivingId === assessment.id ? (

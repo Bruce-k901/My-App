@@ -27,15 +27,20 @@ export default function QuizSlide({ slide }: QuizSlideProps) {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const { course } = useCourseStore();
   const { questionCount = 30, passPercentage = 80, randomize = true, questionBankId } = slide.quizData || {};
 
   // Load and randomize questions
   useEffect(() => {
     async function loadQuestions() {
       try {
-        // Import the question bank directly
-        const questionBank = await import("@/data/courses/question-bank.json");
-        const bankQuestions: Question[] = questionBank[questionBankId || "level2-food-safety"] || [];
+        if (!course || !course.questionBanks || !questionBankId) {
+            console.error("Missing course, questionBanks, or questionBankId");
+            setLoading(false);
+            return;
+        }
+
+        const bankQuestions = course.questionBanks[questionBankId] || [];
 
         // Randomize and select questions
         let selectedQuestions = [...bankQuestions];
@@ -44,8 +49,21 @@ export default function QuizSlide({ slide }: QuizSlideProps) {
         }
         selectedQuestions = selectedQuestions.slice(0, questionCount);
 
-        setQuestions(selectedQuestions);
-        setSelectedAnswers(new Array(selectedQuestions.length).fill(null));
+        // Map to local Question interface if needed, or update local interface to match schema
+        // The schema Question has 'text' instead of 'question', and options don't have 'id' necessarily.
+        // Let's map it to be safe or update the component state type.
+        
+        const mappedQuestions: Question[] = selectedQuestions.map(q => ({
+            id: q.id,
+            question: q.text,
+            options: q.options.map(o => o.label),
+            correctAnswer: q.options.findIndex(o => o.isCorrect),
+            explanation: "", // Schema doesn't have explanation yet, add if needed
+            module: "general"
+        }));
+
+        setQuestions(mappedQuestions);
+        setSelectedAnswers(new Array(mappedQuestions.length).fill(null));
         setLoading(false);
       } catch (error) {
         console.error("Failed to load questions:", error);
@@ -54,7 +72,7 @@ export default function QuizSlide({ slide }: QuizSlideProps) {
     }
 
     loadQuestions();
-  }, [questionBankId, questionCount, randomize]);
+  }, [course, questionBankId, questionCount, randomize]);
 
   const handleAnswerSelect = (answerIndex: number) => {
     const newAnswers = [...selectedAnswers];
@@ -110,8 +128,13 @@ export default function QuizSlide({ slide }: QuizSlideProps) {
     // Trigger reload
     async function reloadQuestions() {
       try {
-        const questionBank = await import("@/data/courses/question-bank.json");
-        const bankQuestions: Question[] = questionBank[questionBankId || "level2-food-safety"] || [];
+        if (!course || !course.questionBanks || !questionBankId) {
+            console.error("Missing course, questionBanks, or questionBankId");
+            setLoading(false);
+            return;
+        }
+
+        const bankQuestions = course.questionBanks[questionBankId] || [];
 
         let selectedQuestions = [...bankQuestions];
         if (randomize) {
@@ -119,8 +142,17 @@ export default function QuizSlide({ slide }: QuizSlideProps) {
         }
         selectedQuestions = selectedQuestions.slice(0, questionCount);
 
-        setQuestions(selectedQuestions);
-        setSelectedAnswers(new Array(selectedQuestions.length).fill(null));
+        const mappedQuestions: Question[] = selectedQuestions.map(q => ({
+            id: q.id,
+            question: q.text,
+            options: q.options.map(o => o.label),
+            correctAnswer: q.options.findIndex(o => o.isCorrect),
+            explanation: "",
+            module: "general"
+        }));
+
+        setQuestions(mappedQuestions);
+        setSelectedAnswers(new Array(mappedQuestions.length).fill(null));
         setLoading(false);
       } catch (error) {
         console.error("Failed to reload questions:", error);

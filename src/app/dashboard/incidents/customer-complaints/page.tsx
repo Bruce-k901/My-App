@@ -213,19 +213,19 @@ export default function CustomerComplaintsPage() {
     <div className="w-full">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-yellow-400" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
               Customer Complaints
             </h1>
-            <p className="text-white/60">Track and manage customer complaints and feedback</p>
+            <p className="text-white/60 text-sm sm:text-base">Track and manage customer complaints and feedback</p>
           </div>
           <Button
             onClick={() => setIsIncidentModalOpen(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="w-full sm:w-auto min-h-[44px] bg-red-600 active:bg-red-700 text-white text-base touch-manipulation"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             Log Complaint
           </Button>
         </div>
@@ -235,13 +235,16 @@ export default function CustomerComplaintsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
               <input
-                type="text"
+                type="search"
+                inputMode="search"
+                autoComplete="off"
+                enterKeyHint="search"
                 placeholder="Search complaints..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base"
               />
             </div>
 
@@ -317,28 +320,28 @@ export default function CustomerComplaintsPage() {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-white mb-2">{complaint.title}</h3>
                     <p className="text-white/70 text-sm mb-3">{complaint.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-white/50">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-white/50">
                       <span>Reported by: {complaint.reported_by}</span>
-                      <span>•</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(complaint.reported_date || complaint.reported_at).toLocaleDateString()}</span>
                       {complaint.site_name && (
                         <>
-                          <span>•</span>
+                          <span className="hidden sm:inline">•</span>
                           <span>{complaint.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(complaint.severity)}`}>
+                  <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0 sm:ml-4">
+                    <span className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium border ${getSeverityColor(complaint.severity)}`}>
                       {complaint.severity.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
+                    <span className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium border ${getStatusColor(complaint.status)}`}>
                       {complaint.status.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
                   <Button
                     onClick={() => {
                       setSelectedComplaint(complaint);
@@ -346,6 +349,7 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
+                    className="flex-1 min-h-[44px] touch-manipulation"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     View Report
@@ -356,6 +360,7 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
+                    className="flex-1 min-h-[44px] touch-manipulation"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download

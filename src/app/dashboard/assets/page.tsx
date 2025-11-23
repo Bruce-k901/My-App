@@ -351,51 +351,59 @@ export default function AssetsPage() {
 
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className="mt-4 sm:mt-8 space-y-4 sm:space-y-6">
       {/* Header with Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold text-white">Assets</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:space-x-4">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Assets</h1>
           {/* Site Selector and Search Bar next to Assets header */}
-          <SiteSelector
-            value={selectedSite}
-            onChange={setSelectedSite}
-            placeholder="All Sites"
-            className="h-11 min-w-[120px]"
-          />
-          <input 
-            value={query} 
-            onChange={(e) => setQuery(e.target.value)} 
-            placeholder="Search assets..." 
-            className="h-11 w-64 px-4 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40" 
-          />
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1 sm:flex-initial">
+            <SiteSelector
+              value={selectedSite}
+              onChange={setSelectedSite}
+              placeholder="All Sites"
+              className="h-11 min-w-[120px]"
+            />
+            <input 
+              type="search"
+              inputMode="search"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              enterKeyHint="search"
+              value={query} 
+              onChange={(e) => setQuery(e.target.value)} 
+              placeholder="Search assets..." 
+              className="h-11 w-full sm:w-64 px-4 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40 text-sm sm:text-base touch-manipulation" 
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Action Buttons with unified height and 2mm spacing */}
           <button
             onClick={handleAdd}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] touch-manipulation"
             aria-label="Add Asset"
           >
             <Plus className="h-5 w-5" />
           </button>
           <Link
             href="/dashboard/archived-assets"
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-500/10 transition-all duration-150 ease-in-out hover:shadow-[0_0_8px_#ff9500]"
+            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] h-11 w-11 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-500/10 active:bg-orange-500/20 transition-all duration-150 ease-in-out hover:shadow-[0_0_8px_#ff9500] touch-manipulation"
             title="View archived assets"
           >
             <Archive className="h-5 w-5" />
           </Link>
           <button
             onClick={handleDownload}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] active:bg-white/[0.18] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] touch-manipulation"
             aria-label="Download Assets"
           >
             <Download className="h-5 w-5" />
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] active:bg-white/[0.18] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] touch-manipulation"
             aria-label="Upload Assets"
           >
             <Upload className="h-5 w-5" />

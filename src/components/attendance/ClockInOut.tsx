@@ -175,10 +175,10 @@ export default function ClockInOut() {
 
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-6">
+      <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4 sm:p-6">
         <div className="flex items-center gap-3 text-white/60">
           <Clock className="w-5 h-5 animate-spin" />
-          <span className="text-sm">Loading shift status...</span>
+          <span className="text-xs sm:text-sm">Loading shift status...</span>
         </div>
       </div>
     );
@@ -191,19 +191,19 @@ export default function ClockInOut() {
   // On shift - show clock out UI
   if (shiftStatus.onShift) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-6 space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
             <div>
-              <h3 className="text-white font-semibold">On Shift</h3>
-              <p className="text-white/60 text-sm">
+              <h3 className="text-white font-semibold text-base sm:text-lg">On Shift</h3>
+              <p className="text-white/60 text-xs sm:text-sm">
                 {shiftStatus.siteName || 'Unknown Site'}
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-white font-mono text-lg">
+          <div className="text-left sm:text-right">
+            <div className="text-white font-mono text-lg sm:text-xl">
               {formatHours(shiftStatus.hoursOnShift)}
             </div>
             <p className="text-white/60 text-xs">Time on shift</p>
@@ -211,21 +211,21 @@ export default function ClockInOut() {
         </div>
 
         {showNotesInput ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <textarea
               value={shiftNotes}
               onChange={(e) => setShiftNotes(e.target.value)}
               placeholder="Add handover notes (optional)..."
-              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full min-h-[100px] bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50 touch-manipulation"
               rows={3}
             />
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 onClick={handleClockOut}
                 disabled={clockingOut}
                 loading={clockingOut}
                 variant="destructive"
-                className="flex-1"
+                className="flex-1 min-h-[44px] touch-manipulation"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Clock Out
@@ -236,23 +236,25 @@ export default function ClockInOut() {
                   setShiftNotes('');
                 }}
                 variant="ghost"
+                className="min-h-[44px] touch-manipulation"
               >
                 Cancel
               </Button>
             </div>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               onClick={() => setShowNotesInput(true)}
               variant="outline"
-              className="flex-1"
+              className="flex-1 min-h-[44px] touch-manipulation"
             >
               Clock Out
             </Button>
             <Button
               onClick={() => setShowNotesInput(true)}
               variant="ghost"
+              className="min-h-[44px] touch-manipulation"
             >
               Add Notes
             </Button>
@@ -264,12 +266,12 @@ export default function ClockInOut() {
 
   // Off shift - show clock in UI
   return (
-    <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-6 space-y-4">
+    <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-3 h-3 bg-white/20 rounded-full" />
+        <div className="w-3 h-3 bg-white/20 rounded-full flex-shrink-0" />
         <div>
-          <h3 className="text-white font-semibold">Clock In</h3>
-          <p className="text-white/60 text-sm">
+          <h3 className="text-white font-semibold text-base sm:text-lg">Clock In</h3>
+          <p className="text-white/60 text-xs sm:text-sm">
             Select a site to start your shift
           </p>
         </div>
@@ -277,7 +279,7 @@ export default function ClockInOut() {
 
       <div className="space-y-3">
         <div>
-          <label className="block text-sm text-white/80 mb-2">Site</label>
+          <label className="block text-xs sm:text-sm text-white/80 mb-2">Site</label>
           <SiteSelector
             value={selectedSiteId}
             onChange={setSelectedSiteId}
@@ -291,6 +293,7 @@ export default function ClockInOut() {
           loading={clockingIn}
           variant="primary"
           fullWidth
+          className="min-h-[44px] touch-manipulation"
         >
           <LogIn className="w-4 h-4 mr-2" />
           Clock In

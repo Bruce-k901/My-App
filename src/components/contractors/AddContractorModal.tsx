@@ -205,7 +205,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4"
       onClick={(e) => {
         // Only close if clicking directly on the backdrop, not on dropdown content
         if (e.target === e.currentTarget) {
@@ -214,22 +214,27 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
       }}
     >
       <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-semibold text-white mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">
           {contractor ? "Edit Contractor" : "Add Contractor"}
         </h2>
 
         <ContractorForm form={form} setForm={setForm} isEditing={!!contractor?.id} />
 
-        <div className="flex justify-end gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
           <Button 
             variant="ghost" 
-            className="border border-white/[0.1] hover:border-white/[0.25] hover:bg-white/[0.07]" 
+            className="min-h-[44px] border border-white/[0.1] hover:border-white/[0.25] hover:bg-white/[0.07] active:bg-white/[0.12] touch-manipulation w-full sm:w-auto" 
             onClick={onClose} 
             disabled={loading}
           >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSave} disabled={loading}>
+          <Button 
+            variant="primary" 
+            onClick={handleSave} 
+            disabled={loading}
+            className="min-h-[44px] touch-manipulation w-full sm:w-auto"
+          >
             {loading ? "Saving..." : "Save Contractor"}
           </Button>
         </div>

@@ -284,23 +284,28 @@ function SOPsListContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Search and Filter */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
           <input
-            type="text"
+            type="search"
+            inputMode="search"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            enterKeyHint="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search SOPs by title or reference code..."
-            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+            placeholder="Search SOPs..."
+            className="w-full min-h-[44px] bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2.5 sm:py-2 text-white placeholder-neutral-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-pink-500/50 touch-manipulation"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+          className="min-h-[44px] bg-neutral-800 border border-neutral-600 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-white text-sm sm:text-base touch-manipulation"
         >
           <option value="all">All Status</option>
           <option value="Published">Published</option>
@@ -308,10 +313,11 @@ function SOPsListContent() {
         </select>
         <button
           onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center gap-2 transition-colors"
+          className="min-h-[44px] px-3 sm:px-4 py-2.5 sm:py-2 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 border border-neutral-600 rounded-lg text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base touch-manipulation"
         >
           <Archive size={16} />
-          Archived SOPs
+          <span className="hidden sm:inline">Archived SOPs</span>
+          <span className="sm:hidden">Archive</span>
         </button>
       </div>
 
@@ -336,18 +342,18 @@ function SOPsListContent() {
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(key)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors"
+                  className="w-full min-h-[44px] flex items-center justify-between p-3 sm:p-4 hover:bg-neutral-800/50 active:bg-neutral-800/70 transition-colors touch-manipulation"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${group.bgColor}`}>
-                      <FileText size={20} className={group.iconColor} />
+                    <div className={`p-2 rounded-lg flex-shrink-0 ${group.bgColor}`}>
+                      <FileText size={18} className={group.iconColor} />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-lg font-semibold text-white">{group.label}</h3>
-                      <p className="text-sm text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
+                      <h3 className="text-base sm:text-lg font-semibold text-white">{group.label}</h3>
+                      <p className="text-xs sm:text-sm text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
-                  <Icon size={20} className="text-neutral-400" />
+                  <Icon size={20} className="text-neutral-400 flex-shrink-0" />
                 </button>
 
                 {/* SOPs List */}
@@ -363,47 +369,50 @@ function SOPsListContent() {
                         <div
                           id={`sop-row-${sop.id}`}
                           key={sop.id}
-                          className={`rounded-lg p-4 flex items-center justify-between group transition-colors ${
+                          className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between group transition-colors ${
                             isHighlighted
                               ? 'bg-blue-500/20 border-2 border-blue-500/60 shadow-lg shadow-blue-500/20 animate-pulse'
                               : 'bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700'
                           }`}
                         >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className={`p-2 rounded-lg ${statusBadge.bg}`}>
-                              <StatusIcon size={20} className={statusBadge.text} />
+                          <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 mb-3 sm:mb-0">
+                            <div className={`p-2 rounded-lg flex-shrink-0 ${statusBadge.bg}`}>
+                              <StatusIcon size={18} className={statusBadge.text} />
                             </div>
-                            <div className="text-left flex-1">
-                              <h4 className="text-white font-medium group-hover:text-magenta-400 transition-colors">
+                            <div className="text-left flex-1 min-w-0">
+                              <h4 className="text-white font-medium text-sm sm:text-base group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-neutral-400 mt-1">
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-neutral-400 mt-1">
                                 <span>{sop.ref_code}</span>
-                                <span>•</span>
-                                <span>{sop.category}</span>
-                                <span>•</span>
+                                <span className="hidden sm:inline">•</span>
+                                <span className="break-words">{sop.category}</span>
+                                <span className="hidden sm:inline">•</span>
                                 <span className={`px-2 py-0.5 rounded-full text-xs ${statusBadge.bg} ${statusBadge.text}`}>
                                   {sop.status}
                                 </span>
                               </div>
+                              <div className="text-xs text-neutral-500 mt-1 sm:hidden">
+                                Created {new Date(sop.created_at).toLocaleDateString()} by {sop.author}
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="text-right text-sm text-neutral-400">
+                          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2">
+                            <div className="hidden sm:block text-right text-sm text-neutral-400">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
                               <div className="text-xs">by {sop.author}</div>
                             </div>
                             <button
                               onClick={() => handleEditSOP(sop)}
-                              className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
+                              className="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 sm:py-2.5 bg-magenta-500/20 hover:bg-magenta-500/30 active:bg-magenta-500/40 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center justify-center gap-2 transition-colors text-sm touch-manipulation"
                             >
                               <Edit size={16} />
-                              Edit
+                              <span className="hidden sm:inline">Edit</span>
                             </button>
                             <button
                               onClick={() => handleArchiveSOP(sop.id)}
                               disabled={archivingId === sop.id}
-                              className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none touch-manipulation"
                               title="Archive SOP"
                             >
                               {archivingId === sop.id ? (

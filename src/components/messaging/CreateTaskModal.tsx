@@ -190,22 +190,22 @@ export default function CreateTaskModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-[#0B0D13] border border-white/[0.1] rounded-lg shadow-xl max-w-md w-full p-6"
+        className="bg-[#0B0D13] border border-white/[0.1] rounded-none sm:rounded-lg shadow-xl max-w-md w-full h-full sm:h-auto max-h-[90vh] overflow-y-auto flex flex-col p-4 sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-2">
             <CheckSquare className="w-5 h-5 text-[#EC4899]" />
-            <h2 className="text-lg font-semibold text-white">Create Task</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-white">Create Task</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/[0.05] text-white/60 hover:text-white transition-colors"
+            className="min-h-[44px] min-w-[44px] p-2 rounded-lg active:bg-white/[0.05] text-white/60 active:text-white transition-colors touch-manipulation"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -213,7 +213,7 @@ export default function CreateTaskModal({
         </div>
 
         {/* Form */}
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 overflow-y-auto">
           {/* Task Title */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
@@ -223,7 +223,7 @@ export default function CreateTaskModal({
               type="text"
               value={taskData.title}
               onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
               placeholder="Enter task title"
               required
             />
@@ -238,13 +238,13 @@ export default function CreateTaskModal({
               value={taskData.description}
               onChange={(e) => setTaskData({ ...taskData, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
+              className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
               placeholder="Task details..."
             />
           </div>
 
           {/* Due Date and Time */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-white/80 mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
@@ -255,7 +255,7 @@ export default function CreateTaskModal({
                 value={taskData.due_date}
                 onChange={(e) => setTaskData({ ...taskData, due_date: e.target.value })}
                 min={today}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
                 required
               />
             </div>
@@ -268,7 +268,7 @@ export default function CreateTaskModal({
                 type="time"
                 value={taskData.due_time}
                 onChange={(e) => setTaskData({ ...taskData, due_time: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
               />
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function CreateTaskModal({
             <select
               value={taskData.assigned_to}
               onChange={(e) => setTaskData({ ...taskData, assigned_to: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0B0D13] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer"
+              className="w-full px-4 py-3 bg-[#0B0D13] border border-white/[0.1] rounded-lg text-white text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer touch-manipulation min-h-[44px]"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
@@ -306,7 +306,7 @@ export default function CreateTaskModal({
             <select
               value={taskData.priority}
               onChange={(e) => setTaskData({ ...taskData, priority: e.target.value as 'low' | 'medium' | 'high' })}
-              className="w-full px-4 py-2 bg-[#0B0D13] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer"
+              className="w-full px-4 py-3 bg-[#0B0D13] border border-white/[0.1] rounded-lg text-white text-base focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer touch-manipulation min-h-[44px]"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
@@ -322,17 +322,17 @@ export default function CreateTaskModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-4 border-t border-white/[0.1]">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-lg hover:bg-white/[0.08] transition-colors text-sm font-medium"
+            className="flex-1 min-h-[44px] px-4 py-3 bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-lg active:bg-white/[0.08] transition-colors text-base font-medium touch-manipulation"
           >
             Cancel
           </button>
           <button
             onClick={handleCreate}
             disabled={loading || !taskData.title.trim()}
-            className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 min-h-[44px] px-4 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg active:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
           >
             {loading ? 'Creating...' : 'Create Task'}
           </button>
