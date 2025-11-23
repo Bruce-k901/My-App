@@ -168,12 +168,29 @@ export default function StaffSicknessPage() {
     }
 
     try {
+      // Prepare data with proper null handling for optional fields
+      // Convert empty strings to null for TIME and optional DATE fields
+      const cleanData = {
+        ...formData,
+        // Convert empty string to null for time field (TIME type doesn't accept empty strings)
+        illness_onset_time: formData.illness_onset_time && formData.illness_onset_time.trim() !== '' 
+          ? formData.illness_onset_time 
+          : null,
+        // Ensure optional date fields are null if empty
+        exclusion_period_end: formData.exclusion_period_end && formData.exclusion_period_end.trim() !== '' 
+          ? formData.exclusion_period_end 
+          : null,
+        return_to_work_date: formData.return_to_work_date && formData.return_to_work_date.trim() !== '' 
+          ? formData.return_to_work_date 
+          : null,
+      };
+
       if (selectedRecord) {
         // Update existing
         const { error } = await supabase
           .from('staff_sickness_records')
           .update({
-            ...formData,
+            ...cleanData,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedRecord.id);
@@ -184,7 +201,7 @@ export default function StaffSicknessPage() {
         // Create new
         // Ensure dates are properly formatted
         const insertData = {
-          ...formData,
+          ...cleanData,
           company_id: companyId,
           site_id: siteId || null,
           reported_by: profile?.id || '',
