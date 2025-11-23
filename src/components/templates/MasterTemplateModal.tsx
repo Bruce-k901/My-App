@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -1043,11 +1044,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       <label className="block text-xs text-slate-400 mb-1 capitalize">
                         {dayPart.replace('_', ' ')}
                       </label>
-                      <input
-                        type="time"
+                      <TimePicker
                         value={daypartTimes[dayPart] || ''}
-                        onChange={(e) => setDaypartTime(dayPart, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent [color-scheme:dark]"
+                        onChange={(value) => setDaypartTime(dayPart, value)}
+                        className="w-full"
                       />
                     </div>
                   ))}

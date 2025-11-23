@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
 import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
+import TimePicker from '@/components/ui/TimePicker';
 
 export default function ClosingProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -153,7 +154,7 @@ export default function ClosingProcedureTemplatePage() {
         setNextDayPrep([{ id: Date.now(), prep_item: "", location: "", completed: false, notes: "" }]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
 
   // Set default author
@@ -470,11 +471,10 @@ export default function ClosingProcedureTemplatePage() {
           {timeSlots.map((slot, index) => (
             <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
               <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="time"
+                <TimePicker
                   value={slot.time}
-                  onChange={(e) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: e.target.value } : ts))}
-                  className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                  onChange={(value) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: value } : ts))}
+                  className="flex-shrink-0"
                 />
                 <button
                   onClick={() => removeTimeSlot(slot.id)}

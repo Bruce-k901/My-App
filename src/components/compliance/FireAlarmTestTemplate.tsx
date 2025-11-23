@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { AlertTriangle, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -104,7 +105,7 @@ ${validCallPoints.map(cp => {
         setInstructions(defaultInstructions);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [callPointRows, editingTemplateId]);
 
   const loadAssets = async () => {
@@ -1190,11 +1191,10 @@ ${validCallPoints.map(cp => {
                     <label className="block text-xs text-slate-400 mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "09:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}

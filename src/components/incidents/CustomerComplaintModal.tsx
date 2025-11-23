@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { PhotoEvidenceFeature } from '@/components/templates/features/PhotoEvidenceFeature';
 import Select from '@/components/ui/Select';
 import SiteSelector from '@/components/ui/SiteSelector';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface CustomerComplaintModalProps {
   isOpen: boolean;
@@ -499,11 +500,11 @@ export function CustomerComplaintModal({
                     <label className="block text-sm font-medium text-white/80 mb-2">
                       Visit Time (approx.)
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={formData.visit_time}
-                      onChange={(e) => setFormData({ ...formData, visit_time: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      onChange={(value) => setFormData({ ...formData, visit_time: value })}
+                      placeholder="Select time"
+                      className="w-full"
                     />
                   </div>
                 </div>

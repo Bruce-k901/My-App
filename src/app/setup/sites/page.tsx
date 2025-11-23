@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import SetupLayout from "@/components/setup/SetupLayout";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getTimezones } from "@/lib/timezones";
+import TimePicker from "@/components/ui/TimePicker";
 
 export default function SitesSetupPage() {
   return (
@@ -183,8 +184,14 @@ function SitesContent() {
               </datalist>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <input className="input" type="time" placeholder="Opening time" value={openTime} onChange={(e) => setOpenTime(e.target.value)} />
-              <input className="input" type="time" placeholder="Closing time" value={closeTime} onChange={(e) => setCloseTime(e.target.value)} />
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Opening time</label>
+                <TimePicker value={openTime} onChange={(value) => setOpenTime(value)} className="w-full" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Closing time</label>
+                <TimePicker value={closeTime} onChange={(value) => setCloseTime(value)} className="w-full" />
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

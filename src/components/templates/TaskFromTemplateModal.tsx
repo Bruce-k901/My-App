@@ -17,6 +17,7 @@ import {
   AssetSelectionFeature,
   DocumentUploadFeature
 } from './features';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface TaskFromTemplateModalProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export function TaskFromTemplateModal({
   const [formData, setFormData] = useState({
     custom_name: '',
     custom_instructions: '',
-    due_date: new Date().toISOString().split('T')[0],
+    due_date: '',
     due_time: '',
     daypart: '',
     dayparts: [] as Array<{ daypart: string; due_time: string }>, // Multiple dayparts with times
@@ -779,6 +780,7 @@ export function TaskFromTemplateModal({
       setFormData(prev => ({
         ...prev,
         custom_name: autoTaskName, // Auto-populate for compliance templates
+        due_date: new Date().toISOString().split('T')[0],
         custom_instructions: templateData.instructions || '',
         daypart: dayparts[0] || '', // Keep for backward compatibility
         dayparts: daypartsArray.length > 0 ? daypartsArray : [], // Ensure always an array
@@ -1675,20 +1677,18 @@ export function TaskFromTemplateModal({
                                 {isSelected && (
                                   <div className="flex items-center gap-2">
                                     <label className="text-xs text-white/60">Time:</label>
-                                    <input
-                                      type="time"
+                                    <TimePicker
                                       value={daypartEntry?.due_time || ''}
-                                      onChange={(e) => {
+                                      onChange={(value) => {
                                         // Find and update the correct daypart entry
                                         const newDayparts = formData.dayparts.map((dp) => 
                                           dp.daypart === daypart 
-                                            ? { ...dp, due_time: e.target.value }
+                                            ? { ...dp, due_time: value }
                                             : dp
                                         );
                                         setFormData({ ...formData, dayparts: newDayparts });
                                       }}
-                                      className="px-3 py-1.5 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark] text-sm"
-                                      placeholder="HH:MM"
+                                      className="flex-shrink-0"
                                     />
                                   </div>
                                 )}
@@ -1712,11 +1712,10 @@ export function TaskFromTemplateModal({
                   /* Single Due Time for non-daily tasks */
                   <div>
                     <label className="block text-sm font-medium text-white mb-2">Due Time</label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={formData.due_time}
-                      onChange={(e) => setFormData({ ...formData, due_time: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark]"
+                      onChange={(value) => setFormData({ ...formData, due_time: value })}
+                      className="w-full"
                     />
                   </div>
                 )}
