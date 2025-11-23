@@ -458,10 +458,18 @@ export function EmergencyIncidentModal({
     // Validate required fields with specific error messages
     const missingFields: string[] = [];
     
-    if (!formData.incident_type) {
+    // Debug: Log formData to see what values we have
+    console.log('Form validation check:', {
+      incident_type: formData.incident_type,
+      severity: formData.severity,
+      location: formData.location,
+      incident_description: formData.incident_description
+    });
+    
+    if (!formData.incident_type || formData.incident_type.trim() === '') {
       missingFields.push('Incident Type');
     }
-    if (!formData.severity) {
+    if (!formData.severity || formData.severity.trim() === '') {
       missingFields.push('Severity');
     }
     if (!formData.location || formData.location.trim() === '') {
@@ -473,6 +481,7 @@ export function EmergencyIncidentModal({
     
     if (missingFields.length > 0) {
       toast.error(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      console.error('Missing fields:', missingFields);
       return;
     }
 
@@ -714,8 +723,11 @@ export function EmergencyIncidentModal({
               <div>
                 <Select
                   label="Severity *"
-                  value={formData.severity}
-                  onValueChange={(value) => setFormData({ ...formData, severity: value })}
+                  value={formData.severity || ''}
+                  onValueChange={(value) => {
+                    console.log('Severity changed to:', value);
+                    setFormData({ ...formData, severity: value || '' });
+                  }}
                   placeholder="Select severity..."
                   options={[
                     { label: 'Near Miss (No injury)', value: 'near_miss' },
