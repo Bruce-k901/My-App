@@ -455,9 +455,24 @@ export function EmergencyIncidentModal({
       return;
     }
 
-    // Validate required fields
-    if (!formData.incident_type || !formData.severity || !formData.location || !formData.incident_description) {
-      toast.error('Please fill in all required fields');
+    // Validate required fields with specific error messages
+    const missingFields: string[] = [];
+    
+    if (!formData.incident_type) {
+      missingFields.push('Incident Type');
+    }
+    if (!formData.severity) {
+      missingFields.push('Severity');
+    }
+    if (!formData.location || formData.location.trim() === '') {
+      missingFields.push('Location');
+    }
+    if (!formData.incident_description || formData.incident_description.trim() === '') {
+      missingFields.push('Incident Description');
+    }
+    
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in the following required fields: ${missingFields.join(', ')}`);
       return;
     }
 
