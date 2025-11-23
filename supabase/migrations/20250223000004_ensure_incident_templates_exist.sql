@@ -122,6 +122,7 @@ ALTER TABLE public.task_templates ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "task_templates_select_company" ON public.task_templates;
 DROP POLICY IF EXISTS "Users can view task templates from their company" ON public.task_templates;
 DROP POLICY IF EXISTS "Allow authenticated users to view their company's task templates" ON public.task_templates;
+DROP POLICY IF EXISTS "task_templates_select_all" ON public.task_templates;
 
 -- Create comprehensive SELECT policy that allows:
 -- 1. Global templates (company_id IS NULL) - visible to all authenticated users
