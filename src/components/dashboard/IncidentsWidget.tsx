@@ -32,7 +32,70 @@ export function IncidentsWidget({ limit = 6, showLink = true, title = 'Incidents
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!companyId) return;
+    
     fetchIncidents();
+    
+    // Realtime subscription: reload when incidents change
+    const channel = supabase
+      .channel("incidents-widget-updates")
+      .on(
+        "postgres_changes",
+        { 
+          event: "INSERT", 
+          schema: "public", 
+          table: "incidents",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("New incident inserted, refreshing widget...");
+          fetchIncidents();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { 
+          event: "UPDATE", 
+          schema: "public", 
+          table: "incidents",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("Incident updated, refreshing widget...");
+          fetchIncidents();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { 
+          event: "INSERT", 
+          schema: "public", 
+          table: "staff_sickness_records",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("New staff sickness record inserted, refreshing widget...");
+          fetchIncidents();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { 
+          event: "UPDATE", 
+          schema: "public", 
+          table: "staff_sickness_records",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("Staff sickness record updated, refreshing widget...");
+          fetchIncidents();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [companyId, siteId]);
 
   async function fetchIncidents() {

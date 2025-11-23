@@ -26,12 +26,11 @@ const tabs = [
 
 export default function IncidentLog() {
   const [activeTab, setActiveTab] = useState("food_poisoning");
-  const [statusFilter, setStatusFilter] = useState<"all" | "open" | "under review" | "resolved">("open");
+  const [statusFilter, setStatusFilter] = useState<"all" | "open" | "investigating" | "resolved" | "closed">("open");
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Remove: const supabase = createClientComponentClient();
-  const { companyId } = useAppContext();
+  const { companyId, siteId } = useAppContext();
 
   async function loadIncidents() {
     setLoading(true);
@@ -43,22 +42,55 @@ export default function IncidentLog() {
         return;
       }
 
-      // Fetch incidents without relationship query (fetch sites separately)
+      // Map status filter to database values
+      let statusQuery: string[] | null = null;
+      if (statusFilter !== "all") {
+        // Map "under review" to "investigating" for backward compatibility
+        const dbStatus = statusFilter === "under review" ? "investigating" : statusFilter;
+        statusQuery = [dbStatus];
+      }
+
+      // Fetch incidents with proper status filtering
       let query = supabase
         .from("incidents")
         .select(`
           id,
+          title,
           description,
           investigation_notes,
           status,
           created_at,
+          reported_date,
           site_id,
           company_id
         `)
-        .eq("incident_type", activeTab)
-        .eq("company_id", companyId)
-        .order("created_at", { ascending: false })
-        .limit(10);
+        .eq("company_id", companyId);
+      
+      // Apply incident type filter if not "all"
+      if (activeTab !== "all") {
+        // Map tab keys to incident_type values
+        const incidentTypeMap: Record<string, string> = {
+          food_poisoning: "food_poisoning",
+          accident: "accident",
+          complaint: "customer_complaint"
+        };
+        const incidentType = incidentTypeMap[activeTab];
+        if (incidentType) {
+          query = query.eq("incident_type", incidentType);
+        }
+      }
+      
+      // Apply status filter
+      if (statusQuery) {
+        query = query.in("status", statusQuery);
+      }
+      
+      // Apply site filter if available
+      if (siteId) {
+        query = query.eq("site_id", siteId);
+      }
+      
+      query = query.order("reported_date", { ascending: false }).order("created_at", { ascending: false }).limit(20);
         
       const { data, error } = await query;
       if (error) throw error;
@@ -94,24 +126,68 @@ export default function IncidentLog() {
   useEffect(() => {
     if (!companyId) return;
     loadIncidents();
+    
     // Realtime subscription: reload when incidents change
     const channel = supabase
-      .channel("dashboard-incidents")
+      .channel("dashboard-incidents-log")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "incidents" },
-        () => loadIncidents()
+        { 
+          event: "INSERT", 
+          schema: "public", 
+          table: "incidents",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("New incident inserted, reloading...");
+          loadIncidents();
+        }
       )
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "incidents" },
-        () => loadIncidents()
+        { 
+          event: "UPDATE", 
+          schema: "public", 
+          table: "incidents",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("Incident updated, reloading...");
+          loadIncidents();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { 
+          event: "INSERT", 
+          schema: "public", 
+          table: "staff_sickness_records",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("New staff sickness record inserted, reloading...");
+          loadIncidents();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { 
+          event: "UPDATE", 
+          schema: "public", 
+          table: "staff_sickness_records",
+          filter: companyId ? `company_id=eq.${companyId}` : undefined
+        },
+        () => {
+          console.log("Staff sickness record updated, reloading...");
+          loadIncidents();
+        }
       )
       .subscribe();
+    
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeTab, companyId]);
+  }, [activeTab, companyId, siteId, statusFilter]);
 
   return (
     <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white fade-in-soft">
@@ -120,7 +196,7 @@ export default function IncidentLog() {
         <div className="flex items-center gap-3">
           <ClipboardList className="w-5 h-5 text-magenta-400" />
           <h2 className="text-lg font-semibold">Incident Log</h2>
-          {incidents.some((i) => i.status === "open" || i.status === "under review") && (
+          {incidents.some((i) => i.status === "open" || i.status === "investigating") && (
             <span className="blink-dot" aria-label="Active incidents" />
           )}
         </div>
@@ -153,15 +229,17 @@ export default function IncidentLog() {
 
       {/* Status Filters */}
       <div className="flex items-center gap-3 mb-4">
-        {["all", "open", "under review", "resolved"].map((s) => (
+        {(["all", "open", "investigating", "resolved", "closed"] as const).map((s) => (
           <button
             key={s}
-            onClick={() => setStatusFilter(s as any)}
-            className={`text-xs px-2 py-1 rounded-full border border-white/20 ${
-              statusFilter === s ? "text-white bg-black/20" : "text-slate-300 hover:bg-black/10"
+            onClick={() => setStatusFilter(s)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+              statusFilter === s 
+                ? "text-white bg-magenta-500/20 border-magenta-500/50 shadow-[0_0_8px_rgba(236,72,153,0.3)]" 
+                : "text-slate-300 border-white/20 hover:bg-white/5 hover:border-white/30"
             }`}
           >
-            {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+            {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, " ")}
           </button>
         ))}
       </div>
@@ -195,24 +273,38 @@ export default function IncidentLog() {
             </thead>
             <tbody>
               {incidents
-                .filter((i) => (statusFilter === "all" ? true : i.status === statusFilter))
+                .filter((i) => {
+                  if (statusFilter === "all") return true;
+                  // Map "under review" to "investigating" for display
+                  const dbStatus = i.status === "investigating" ? "investigating" : i.status;
+                  const filterStatus = statusFilter === "under review" ? "investigating" : statusFilter;
+                  return dbStatus === filterStatus;
+                })
                 .map((i) => (
                 <tr key={i.id} className="border-b border-white/[0.05] hover:bg-white/[0.05]">
-                  <td className="py-2 text-white/80">{format(new Date(i.created_at), "d MMM yyyy")}</td>
+                  <td className="py-2 text-white/80">
+                    {format(new Date((i as any).reported_date || i.created_at), "d MMM yyyy")}
+                  </td>
                   <td className="py-2 text-white/80">{i.sites?.name || "—"}</td>
-                  <td className="py-2 text-white/80">{i.description}</td>
+                  <td className="py-2 text-white/80">
+                    {(i as any).title || i.description || "—"}
+                  </td>
                   <td className="py-2 text-white/60">{i.investigation_notes || "—"}</td>
                   <td className="py-2">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${
                         i.status === "open"
                           ? "bg-red-500/20 text-red-400"
-                          : i.status === "under review"
+                          : i.status === "investigating"
                           ? "bg-amber-500/20 text-amber-400"
-                          : "bg-green-500/20 text-green-400"
+                          : i.status === "resolved"
+                          ? "bg-green-500/20 text-green-400"
+                          : i.status === "closed"
+                          ? "bg-gray-500/20 text-gray-400"
+                          : "bg-white/10 text-white/60"
                       }`}
                     >
-                      {i.status}
+                      {i.status === "investigating" ? "Under Review" : i.status.charAt(0).toUpperCase() + i.status.slice(1)}
                     </span>
                   </td>
                 </tr>
