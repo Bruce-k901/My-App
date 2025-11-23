@@ -467,42 +467,67 @@ BEGIN
     ) INTO field_exists;
 
     IF NOT field_exists THEN
-      -- Add essential fields for emergency incident reporting
-      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+      -- Add essential fields for emergency incident reporting (using separate INSERTs to avoid JSON parsing issues)
+      
+      -- Simple fields without options
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
       VALUES
         (template_id_var, 'incident_datetime', 'date', 'Incident Date & Time', TRUE, 1, 'Date and time when the incident occurred.', NULL),
-        (template_id_var, 'incident_type', 'select', 'Incident Type', TRUE, 2, 'Select the type of incident.', 
-          jsonb_build_array(
-            jsonb_build_object('value', 'slip_trip', 'label', 'Slip/Trip/Fall'),
-            jsonb_build_object('value', 'cut', 'label', 'Cut/Laceration'),
-            jsonb_build_object('value', 'burn', 'label', 'Burn/Scald'),
-            jsonb_build_object('value', 'fall_from_height', 'label', 'Fall from Height'),
-            jsonb_build_object('value', 'struck_by', 'label', 'Struck by Object'),
-            jsonb_build_object('value', 'electrical', 'label', 'Electrical Shock'),
-            jsonb_build_object('value', 'fire', 'label', 'Fire'),
-            jsonb_build_object('value', 'food_poisoning', 'label', 'Food Poisoning/Illness'),
-            jsonb_build_object('value', 'chemical', 'label', 'Chemical Exposure'),
-            jsonb_build_object('value', 'manual_handling', 'label', 'Manual Handling Injury'),
-            jsonb_build_object('value', 'other', 'label', 'Other')
-          )
-        ),
-        (template_id_var, 'severity', 'select', 'Incident Severity', TRUE, 3, 'Select the severity level.', 
-          jsonb_build_array(
-            jsonb_build_object('value', 'near_miss', 'label', 'Near Miss (No injury)'),
-            jsonb_build_object('value', 'minor', 'label', 'Minor (First aid only)'),
-            jsonb_build_object('value', 'moderate', 'label', 'Moderate (Medical attention required)'),
-            jsonb_build_object('value', 'major', 'label', 'Major (Hospital treatment)'),
-            jsonb_build_object('value', 'critical', 'label', 'Critical (Life-threatening)'),
-            jsonb_build_object('value', 'fatality', 'label', 'Fatality')
-          )
-        ),
         (template_id_var, 'location', 'text', 'Location of Incident', TRUE, 4, 'Exact location where the incident occurred.', 'e.g., Kitchen - Prep Area'),
         (template_id_var, 'incident_description', 'text', 'Detailed Description', TRUE, 5, 'Provide a detailed description of what happened.', 'Describe the incident in detail...'),
-        (template_id_var, 'emergency_services_called', 'pass_fail', 'Emergency Services Called', TRUE, 10, 'PASS if emergency services (999) were called.', NULL),
-        (template_id_var, 'first_aid_provided', 'pass_fail', 'First Aid Provided', TRUE, 11, 'PASS if first aid was provided.', NULL),
-        (template_id_var, 'scene_preserved', 'pass_fail', 'Scene Preserved', TRUE, 12, 'PASS if the scene was preserved for investigation.', NULL),
         (template_id_var, 'immediate_actions', 'text', 'Immediate Actions Taken', TRUE, 13, 'Describe any immediate actions taken.', 'e.g., Applied pressure to wound, called ambulance...'),
         (template_id_var, 'reported_by', 'text', 'Reported By (Name)', TRUE, 20, 'Name of the person completing this incident report.', NULL);
+      
+      -- Fields with pass_fail type
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+      VALUES
+        (template_id_var, 'emergency_services_called', 'pass_fail', 'Emergency Services Called', TRUE, 10, 'PASS if emergency services (999) were called.'),
+        (template_id_var, 'first_aid_provided', 'pass_fail', 'First Aid Provided', TRUE, 11, 'PASS if first aid was provided.'),
+        (template_id_var, 'scene_preserved', 'pass_fail', 'Scene Preserved', TRUE, 12, 'PASS if the scene was preserved for investigation.');
+      
+      -- Fields with select options (using separate INSERTs for JSONB)
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+      VALUES (
+        template_id_var, 
+        'incident_type', 
+        'select', 
+        'Incident Type', 
+        TRUE, 
+        2, 
+        'Select the type of incident.', 
+        jsonb_build_array(
+          jsonb_build_object('value', 'slip_trip', 'label', 'Slip/Trip/Fall'),
+          jsonb_build_object('value', 'cut', 'label', 'Cut/Laceration'),
+          jsonb_build_object('value', 'burn', 'label', 'Burn/Scald'),
+          jsonb_build_object('value', 'fall_from_height', 'label', 'Fall from Height'),
+          jsonb_build_object('value', 'struck_by', 'label', 'Struck by Object'),
+          jsonb_build_object('value', 'electrical', 'label', 'Electrical Shock'),
+          jsonb_build_object('value', 'fire', 'label', 'Fire'),
+          jsonb_build_object('value', 'food_poisoning', 'label', 'Food Poisoning/Illness'),
+          jsonb_build_object('value', 'chemical', 'label', 'Chemical Exposure'),
+          jsonb_build_object('value', 'manual_handling', 'label', 'Manual Handling Injury'),
+          jsonb_build_object('value', 'other', 'label', 'Other')
+        )
+      );
+      
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+      VALUES (
+        template_id_var, 
+        'severity', 
+        'select', 
+        'Incident Severity', 
+        TRUE, 
+        3, 
+        'Select the severity level.', 
+        jsonb_build_array(
+          jsonb_build_object('value', 'near_miss', 'label', 'Near Miss (No injury)'),
+          jsonb_build_object('value', 'minor', 'label', 'Minor (First aid only)'),
+          jsonb_build_object('value', 'moderate', 'label', 'Moderate (Medical attention required)'),
+          jsonb_build_object('value', 'major', 'label', 'Major (Hospital treatment)'),
+          jsonb_build_object('value', 'critical', 'label', 'Critical (Life-threatening)'),
+          jsonb_build_object('value', 'fatality', 'label', 'Fatality')
+        )
+      );
 
       RAISE NOTICE 'Added essential fields to emergency_incident_reporting template';
     ELSE
@@ -532,37 +557,64 @@ BEGIN
     ) INTO field_exists;
 
     IF NOT field_exists THEN
-      -- Add essential fields for food poisoning investigation
-      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options, placeholder)
+      -- Add essential fields for food poisoning investigation (using separate INSERTs to avoid JSON parsing issues)
+      
+      -- Simple fields without options
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
       VALUES
-        (template_id_var, 'incident_date', 'date', 'Incident Report Date', TRUE, 1, 'Date when the food poisoning concern was first reported.', NULL, NULL),
-        (template_id_var, 'reported_by_customer', 'text', 'Reported By (Customer Name)', TRUE, 2, 'Name of customer who reported the concern.', NULL, NULL),
-        (template_id_var, 'customer_contact', 'text', 'Customer Contact Details', TRUE, 3, 'Phone number and/or email address for follow-up.', NULL, NULL),
-        (template_id_var, 'symptom_onset', 'select', 'Symptom Onset Time After Eating', TRUE, 10, 'Time between eating and first symptoms.', 
-          jsonb_build_array(
-            jsonb_build_object('value', '1-6_hours', 'label', '1-6 hours (Possible Staphylococcus, Bacillus)'),
-            jsonb_build_object('value', '6-24_hours', 'label', '6-24 hours (Possible Clostridium, Salmonella)'),
-            jsonb_build_object('value', '24-48_hours', 'label', '24-48 hours (Possible Norovirus, E.coli)'),
-            jsonb_build_object('value', '2-5_days', 'label', '2-5 days (Possible Campylobacter, Listeria)'),
-            jsonb_build_object('value', 'unknown', 'label', 'Unknown timing')
-          ), NULL),
-        (template_id_var, 'primary_symptoms', 'select', 'Primary Symptoms Reported', TRUE, 11, 'Main symptoms experienced.', 
-          jsonb_build_array(
-            jsonb_build_object('value', 'vomiting', 'label', '🤮 Vomiting (often rapid onset)'),
-            jsonb_build_object('value', 'diarrhea', 'label', '💩 Diarrhea'),
-            jsonb_build_object('value', 'nausea', 'label', '😵 Nausea'),
-            jsonb_build_object('value', 'fever', 'label', '🌡️ Fever'),
-            jsonb_build_object('value', 'abdominal_pain', 'label', '🩺 Abdominal Pain'),
-            jsonb_build_object('value', 'other', 'label', '❓ Other Symptoms')
-          ), NULL),
-        (template_id_var, 'hospital_treatment', 'pass_fail', 'Hospital Treatment Required?', TRUE, 12, 'YES if affected person required hospital treatment.', NULL, NULL),
-        (template_id_var, 'suspected_menu_items', 'text', 'Suspected Menu Items', TRUE, 20, 'List all menu items consumed by affected person(s).', NULL, 'e.g., "Chicken Caesar Salad - contained raw egg..."'),
-        (template_id_var, 'other_affected_persons', 'pass_fail', 'Other People Affected?', TRUE, 21, 'YES if other customers or staff reported similar symptoms.', NULL, NULL),
-        (template_id_var, 'samples_preserved', 'pass_fail', 'Food Samples Preserved?', TRUE, 30, 'YES if you have isolated and preserved samples.', NULL, NULL),
-        (template_id_var, 'eho_notified', 'pass_fail', 'Environmental Health Notified?', TRUE, 31, 'YES if incident meets criteria for Environmental Health notification.', NULL, NULL),
-        (template_id_var, 'immediate_corrective_actions', 'text', 'Immediate Corrective Actions', TRUE, 32, 'What immediate actions have been taken?', NULL, 'e.g., "Removed suspect batch from service..."'),
-        (template_id_var, 'investigation_complete', 'pass_fail', 'Investigation Complete', TRUE, 60, 'PASS when all investigation phases are complete.', NULL, NULL),
-        (template_id_var, 'final_report_summary', 'text', 'Final Investigation Summary', TRUE, 61, 'Brief summary of investigation findings.', NULL, 'e.g., "Investigation concluded issue was likely..."');
+        (template_id_var, 'incident_date', 'date', 'Incident Report Date', TRUE, 1, 'Date when the food poisoning concern was first reported.', NULL),
+        (template_id_var, 'reported_by_customer', 'text', 'Reported By (Customer Name)', TRUE, 2, 'Name of customer who reported the concern.', NULL),
+        (template_id_var, 'customer_contact', 'text', 'Customer Contact Details', TRUE, 3, 'Phone number and/or email address for follow-up.', NULL),
+        (template_id_var, 'suspected_menu_items', 'text', 'Suspected Menu Items', TRUE, 20, 'List all menu items consumed by affected person(s).', 'e.g., "Chicken Caesar Salad - contained raw egg..."'),
+        (template_id_var, 'immediate_corrective_actions', 'text', 'Immediate Corrective Actions', TRUE, 32, 'What immediate actions have been taken?', 'e.g., "Removed suspect batch from service..."'),
+        (template_id_var, 'final_report_summary', 'text', 'Final Investigation Summary', TRUE, 61, 'Brief summary of investigation findings.', 'e.g., "Investigation concluded issue was likely..."');
+      
+      -- Fields with pass_fail type
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+      VALUES
+        (template_id_var, 'hospital_treatment', 'pass_fail', 'Hospital Treatment Required?', TRUE, 12, 'YES if affected person required hospital treatment.'),
+        (template_id_var, 'other_affected_persons', 'pass_fail', 'Other People Affected?', TRUE, 21, 'YES if other customers or staff reported similar symptoms.'),
+        (template_id_var, 'samples_preserved', 'pass_fail', 'Food Samples Preserved?', TRUE, 30, 'YES if you have isolated and preserved samples.'),
+        (template_id_var, 'eho_notified', 'pass_fail', 'Environmental Health Notified?', TRUE, 31, 'YES if incident meets criteria for Environmental Health notification.'),
+        (template_id_var, 'investigation_complete', 'pass_fail', 'Investigation Complete', TRUE, 60, 'PASS when all investigation phases are complete.');
+      
+      -- Fields with select options (using separate INSERTs for JSONB)
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+      VALUES (
+        template_id_var, 
+        'symptom_onset', 
+        'select', 
+        'Symptom Onset Time After Eating', 
+        TRUE, 
+        10, 
+        'Time between eating and first symptoms.', 
+        jsonb_build_array(
+          jsonb_build_object('value', '1-6_hours', 'label', '1-6 hours (Possible Staphylococcus, Bacillus)'),
+          jsonb_build_object('value', '6-24_hours', 'label', '6-24 hours (Possible Clostridium, Salmonella)'),
+          jsonb_build_object('value', '24-48_hours', 'label', '24-48 hours (Possible Norovirus, E.coli)'),
+          jsonb_build_object('value', '2-5_days', 'label', '2-5 days (Possible Campylobacter, Listeria)'),
+          jsonb_build_object('value', 'unknown', 'label', 'Unknown timing')
+        )
+      );
+      
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+      VALUES (
+        template_id_var, 
+        'primary_symptoms', 
+        'select', 
+        'Primary Symptoms Reported', 
+        TRUE, 
+        11, 
+        'Main symptoms experienced.', 
+        jsonb_build_array(
+          jsonb_build_object('value', 'vomiting', 'label', '🤮 Vomiting (often rapid onset)'),
+          jsonb_build_object('value', 'diarrhea', 'label', '💩 Diarrhea'),
+          jsonb_build_object('value', 'nausea', 'label', '😵 Nausea'),
+          jsonb_build_object('value', 'fever', 'label', '🌡️ Fever'),
+          jsonb_build_object('value', 'abdominal_pain', 'label', '🩺 Abdominal Pain'),
+          jsonb_build_object('value', 'other', 'label', '❓ Other Symptoms')
+        )
+      );
 
       RAISE NOTICE 'Added essential fields to food_poisoning_investigation template';
     ELSE
