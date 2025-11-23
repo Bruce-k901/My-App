@@ -46,11 +46,13 @@ export default function IncidentsPage() {
         return;
       }
       
-      // Fetch incidents - try with sites relationship first
-      // If relationship query fails, we'll fetch sites separately
+      // Fetch incidents with profile relationship for reported_by
       let query = supabase
         .from('incidents')
-        .select('*')
+        .select(`
+          *,
+          reported_by_profile:profiles!reported_by(full_name, email)
+        `)
         .eq('company_id', companyId)
         .order('reported_date', { ascending: false });
 

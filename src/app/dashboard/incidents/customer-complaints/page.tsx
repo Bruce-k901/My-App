@@ -46,11 +46,13 @@ export default function CustomerComplaintsPage() {
         return;
       }
       
-      // Fetch complaints - try both 'customer_complaint' and 'complaint' types
-      // Fetch sites separately to avoid relationship query issues
+      // Fetch complaints with profile relationship for reported_by
       let query = supabase
         .from('incidents')
-        .select('*')
+        .select(`
+          *,
+          reported_by_profile:profiles!reported_by(full_name, email)
+        `)
         .eq('company_id', companyId)
         .in('incident_type', ['customer_complaint', 'complaint'])
         .order('reported_date', { ascending: false });
@@ -108,13 +110,16 @@ export default function CustomerComplaintsPage() {
         // Transform data
         const complaintsWithSites = filtered.map((complaint: any) => {
           const site = complaint.site_id ? sitesMap.get(complaint.site_id) : null;
+          const reportedByName = complaint.reported_by_profile?.full_name || 
+                                complaint.reported_by_profile?.email || 
+                                'Unknown';
           
           return {
             ...complaint,
             site_name: site?.name || 'No site assigned',
             severity: complaint.severity || 'low',
             status: complaint.status || 'open',
-            reported_by: complaint.reported_by || 'Unknown'
+            reported_by: reportedByName
           };
         });
         
@@ -139,16 +144,19 @@ export default function CustomerComplaintsPage() {
         }
       }
       
-      // Transform data to include site name
+      // Transform data to include site name and reported_by name
       const complaintsWithSites = (complaintsData || []).map((complaint: any) => {
         const site = complaint.site_id ? sitesMap.get(complaint.site_id) : null;
+        const reportedByName = complaint.reported_by_profile?.full_name || 
+                              complaint.reported_by_profile?.email || 
+                              'Unknown';
         
         return {
           ...complaint,
           site_name: site?.name || 'No site assigned',
           severity: complaint.severity || 'low',
           status: complaint.status || 'open',
-          reported_by: complaint.reported_by || 'Unknown'
+          reported_by: reportedByName
         };
       });
 
