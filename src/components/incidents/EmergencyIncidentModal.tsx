@@ -462,15 +462,26 @@ export function EmergencyIncidentModal({
     console.log('Form validation check:', {
       incident_type: formData.incident_type,
       severity: formData.severity,
+      severity_type: typeof formData.severity,
+      severity_length: formData.severity?.length,
       location: formData.location,
-      incident_description: formData.incident_description
+      incident_description: formData.incident_description,
+      fullFormData: formData
     });
     
     if (!formData.incident_type || formData.incident_type.trim() === '') {
       missingFields.push('Incident Type');
     }
-    if (!formData.severity || formData.severity.trim() === '') {
+    // Check severity - it should be a non-empty string
+    if (!formData.severity || (typeof formData.severity === 'string' && formData.severity.trim() === '')) {
       missingFields.push('Severity');
+      console.error('Severity validation failed:', { 
+        value: formData.severity, 
+        type: typeof formData.severity,
+        isFalsy: !formData.severity,
+        isEmptyString: formData.severity === '',
+        isWhitespace: formData.severity?.trim() === ''
+      });
     }
     if (!formData.location || formData.location.trim() === '') {
       missingFields.push('Location');
@@ -723,10 +734,12 @@ export function EmergencyIncidentModal({
               <div>
                 <Select
                   label="Severity *"
-                  value={formData.severity || ''}
+                  value={formData.severity}
                   onValueChange={(value) => {
                     console.log('Severity changed to:', value);
-                    setFormData({ ...formData, severity: value || '' });
+                    if (value) {
+                      setFormData(prev => ({ ...prev, severity: value }));
+                    }
                   }}
                   placeholder="Select severity..."
                   options={[
@@ -738,6 +751,12 @@ export function EmergencyIncidentModal({
                     { label: 'Fatality', value: 'fatality' },
                   ]}
                 />
+                {/* Debug: Show current severity value */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="text-xs text-white/40 mt-1">
+                    Current value: {formData.severity || '(empty)'}
+                  </div>
+                )}
               </div>
 
               <div>
