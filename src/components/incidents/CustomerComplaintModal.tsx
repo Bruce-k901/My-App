@@ -182,6 +182,18 @@ export function CustomerComplaintModal({
     setSaving(true);
 
     try {
+      // Map customer complaint severity to incident severity values
+      // Customer complaint uses: 'low', 'medium', 'high', 'critical'
+      // Incidents table requires: 'near_miss', 'minor', 'moderate', 'major', 'critical', 'fatality'
+      const severityMap: Record<string, string> = {
+        'low': 'minor',
+        'medium': 'moderate',
+        'high': 'major',
+        'critical': 'critical'
+      };
+      
+      const mappedSeverity = severityMap[formData.severity] || 'minor';
+      
       // Prepare incident data
       const incidentData: any = {
         company_id: companyId,
@@ -189,7 +201,7 @@ export function CustomerComplaintModal({
         title: formData.complaint_title,
         description: formData.complaint_description,
         incident_type: 'customer_complaint',
-        severity: formData.severity,
+        severity: mappedSeverity,
         location: formData.location_in_venue,
         incident_date: formData.visit_date ? new Date(`${formData.visit_date}T${formData.visit_time || '12:00'}`).toISOString() : new Date().toISOString(),
         reported_date: new Date().toISOString(),
