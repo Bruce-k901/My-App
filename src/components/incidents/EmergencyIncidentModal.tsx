@@ -353,14 +353,38 @@ export function EmergencyIncidentModal({
       if (formData.followUpTasks.length === 0) return [];
 
       // Get the incident template (for creating follow-up tasks)
-      const { data: template } = await supabase
-        .from('task_templates')
-        .select('id')
-        .eq('slug', 'emergency_incident_reporting')
-        .single();
+      // Try to find global template (company_id IS NULL) first, then company-specific
+      let template = null;
+      
+      try {
+        // First try global template
+        const { data: globalTemplate } = await supabase
+          .from('task_templates')
+          .select('id')
+          .eq('slug', 'emergency_incident_reporting')
+          .is('company_id', null)
+          .maybeSingle();
+        
+        template = globalTemplate;
+        
+        // If not found and we have a companyId, try company-specific
+        if (!template && companyId) {
+          const { data: companyTemplate } = await supabase
+            .from('task_templates')
+            .select('id')
+            .eq('slug', 'emergency_incident_reporting')
+            .eq('company_id', companyId)
+            .maybeSingle();
+          
+          template = companyTemplate;
+        }
+      } catch (error) {
+        console.warn('Error fetching emergency incident template:', error);
+      }
 
       if (!template) {
-        console.error('Emergency incident template not found');
+        console.warn('Emergency incident template not found - follow-up tasks will not be created');
+        // Don't throw error, just return empty array - incident was still created successfully
         return [];
       }
 
