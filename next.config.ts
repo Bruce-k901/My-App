@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Trigger restart
   reactStrictMode: false, // Temporarily disabled for performance debugging
   // App Router is enabled by default in Next 15; no experimental flag needed
   // Ensure SSR build (not static export)
@@ -12,7 +13,7 @@ const nextConfig: NextConfig = {
   // outputFileTracingRoot: process.cwd(), // Disabled in dev mode
 
   // eslint configuration moved to eslint.config.mjs
-  
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -20,7 +21,7 @@ const nextConfig: NextConfig = {
   // CSS optimization disabled in dev to prevent preload warnings
   // These warnings are harmless but annoying - they occur due to HMR in development
   experimental: {
-    optimizeCss: process.env.NODE_ENV === 'production', // Only enable in production
+    optimizeCss: process.env.NODE_ENV === "production", // Only enable in production
   },
 
   // Explicitly use webpack instead of Turbopack (Next.js 16 defaults to Turbopack)
@@ -30,13 +31,13 @@ const nextConfig: NextConfig = {
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Add bundle analyzer for production builds
     if (!dev && !isServer) {
-      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
       config.plugins.push(
         new BundleAnalyzerPlugin({
-          analyzerMode: 'static',
+          analyzerMode: "static",
           openAnalyzer: false,
-          reportFilename: 'bundle-analyzer-report.html',
-        })
+          reportFilename: "bundle-analyzer-report.html",
+        }),
       );
     }
     return config;

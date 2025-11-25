@@ -2,25 +2,25 @@
  * ============================================================================
  * SUPABASE CLIENT - ATTENDANCE LOGS PROTECTION
  * ============================================================================
- * 
+ *
  * This file contains MULTIPLE LAYERS of protection to prevent attendance_logs
  * 406 errors from ever happening again:
- * 
+ *
  * LAYER 1: Fetch Interceptor (Network Level)
  *   - Intercepts ALL network requests to /rest/v1/attendance_logs
  *   - Automatically fixes: clock_in_at::date → clock_in_date
  *   - Redirects: INSERT/UPDATE/DELETE → staff_attendance
  *   - Works even with cached/old code
- * 
+ *
  * LAYER 2: Client Interceptor (Supabase Client Level)
  *   - Backup protection if fetch interceptor misses something
  *   - Can be added here if needed
- * 
+ *
  * IMPORTANT RULES:
  *   1. SELECT queries: Use attendance_logs view with clock_in_date column
  *   2. Write operations: Use staff_attendance table directly
  *   3. Never use: clock_in_at::date (PostgREST doesn't support it)
- * 
+ *
  * If you see 406 errors:
  *   1. Check browser console for interceptor messages
  *   2. Verify migration 20250221000010 has been applied
@@ -32,30 +32,47 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/supabase";
 
 // Environment variable validation
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+if (
+  !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
   const missingVars = [];
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) missingVars.push('NEXT_PUBLIC_SUPABASE_URL');
-  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
-  
-  console.error(`❌ Missing Supabase environment variables: ${missingVars.join(', ')}`);
-  console.error('📋 To fix this:');
-  console.error('1. Copy .env.template to .env.local');
-  console.error('2. Add your real Supabase credentials');
-  console.error('3. Restart the development server');
-  console.error('4. For production: Update Vercel Environment Variables');
-  
-  throw new Error(`Missing required environment variables: ${missingVars.join(', ')}. Check .env.local or Vercel config.`);
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    missingVars.push("NEXT_PUBLIC_SUPABASE_URL");
+  }
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    missingVars.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  }
+
+  console.error(
+    `❌ Missing Supabase environment variables: ${missingVars.join(", ")}`,
+  );
+  console.error("📋 To fix this:");
+  console.error("1. Copy .env.template to .env.local");
+  console.error("2. Add your real Supabase credentials");
+  console.error("3. Restart the development server");
+  console.error("4. For production: Update Vercel Environment Variables");
+
+  throw new Error(
+    `Missing required environment variables: ${
+      missingVars.join(", ")
+    }. Check .env.local or Vercel config.`,
+  );
 }
 
 // Intercept fetch requests to attendance_logs table BEFORE Supabase client is created
 // This catches queries at the network level, even from cached code
 // IMPORTANT: Only intercept attendance_logs requests, don't interfere with auth/cookies
+// Intercept fetch requests to attendance_logs table BEFORE Supabase client is created
+// This catches queries at the network level, even from cached code
+// IMPORTANT: Only intercept attendance_logs requests, don't interfere with auth/cookies
+/*
 if (typeof window !== 'undefined') {
   const originalFetch = window.fetch;
   window.fetch = function(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     try {
       let url: string;
-      
+
       // Safely extract URL from different input types
       if (typeof input === 'string') {
         url = input;
@@ -67,11 +84,11 @@ if (typeof window !== 'undefined') {
         // If we can't extract URL, just pass through
         return originalFetch.call(window, input, init);
       }
-      
+
       // CRITICAL: Only intercept attendance_logs REST API requests
       // Skip auth endpoints, storage, functions, etc. to avoid breaking cookies/auth
-      if (url && 
-          url.includes('/rest/v1/attendance_logs') && 
+      if (url &&
+          url.includes('/rest/v1/attendance_logs') &&
           !url.includes('/auth/') &&
           !url.includes('/storage/') &&
           !url.includes('/functions/') &&
@@ -79,13 +96,13 @@ if (typeof window !== 'undefined') {
         const method = init?.method || (input && typeof input === 'object' && 'method' in input ? (input as any).method : 'GET');
         let fixedUrl = url;
         let wasFixed = false;
-        
+
         // ALWAYS check for clock_in_at::date pattern FIRST (before method check)
         // This fixes the 406 error for SELECT queries
         if (url.includes('clock_in_at%3A%3Adate') || url.includes('clock_in_at::date')) {
           console.warn('🚨 INTERCEPTED: Query with clock_in_at::date detected!');
           console.warn('📋 Original URL:', url);
-          
+
           // Replace URL-encoded ::date syntax first (%3A%3A = ::)
           fixedUrl = url
             // Replace URL-encoded ::date syntax (%3A%3Adate -> clock_in_date)
@@ -95,11 +112,11 @@ if (typeof window !== 'undefined') {
             // Handle any remaining ::date patterns on clock_in_at
             .replace(/clock_in_at%3A%3A/g, 'clock_in_at')
             .replace(/clock_in_at::/g, 'clock_in_at');
-          
+
           wasFixed = true;
           console.warn('✅ Fixed URL (converted clock_in_at::date to clock_in_date):', fixedUrl);
         }
-        
+
         // CRITICAL: Views are read-only - redirect INSERT/UPDATE/DELETE to staff_attendance
         if (method === 'POST' || method === 'PATCH' || method === 'PUT' || method === 'DELETE') {
           console.error('🚨🚨🚨 CRITICAL: Write operation on attendance_logs view detected!');
@@ -107,11 +124,11 @@ if (typeof window !== 'undefined') {
           console.error('📋 Original URL:', url);
           console.error('📋 Method:', method);
           console.error('📋 This is likely caused by a database trigger that needs to be removed!');
-          
+
           // Redirect to staff_attendance table
           fixedUrl = url.replace('/rest/v1/attendance_logs', '/rest/v1/staff_attendance');
           wasFixed = true;
-          
+
           // CRITICAL: Remove 'location' field from request body if present
           // staff_attendance doesn't have a location column - it's stored in shift_notes
           let bodyModified = false;
@@ -144,17 +161,17 @@ if (typeof window !== 'undefined') {
               console.warn('⚠️ Could not parse request body to remove location field:', e);
             }
           }
-          
+
           if (bodyModified) {
             console.warn('⚠️ Removed "location" field from request body');
           }
-          
+
           console.error('✅ Redirected to staff_attendance:', fixedUrl);
           console.error('⚠️ If you see this message, there is likely a database trigger that needs to be removed!');
           console.error('⚠️ Run NUCLEAR_FIX_ATTENDANCE.sql in Supabase SQL Editor to remove all triggers.');
         }
         // Note: clock_in_at::date fix is handled above before method check
-        
+
         // Update the request safely if we made changes
         if (wasFixed) {
           // For string/URL inputs, just update the URL in init
@@ -185,16 +202,17 @@ if (typeof window !== 'undefined') {
       // If interceptor fails, log and continue with original request
       console.error('⚠️ Fetch interceptor error:', error);
     }
-    
+
     return originalFetch.call(window, input, init);
   };
 }
+*/
 
 // Create a singleton Supabase client using SSR helpers for proper session handling
 // Typed with Database from auto-generated supabase.ts
 const _supabase = createBrowserClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 // Note: attendance_logs is now a VIEW that maps to staff_attendance
