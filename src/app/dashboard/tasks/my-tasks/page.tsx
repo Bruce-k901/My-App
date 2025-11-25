@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Clock, AlertCircle, Calendar, Trash2, Edit2, X, Play, Pause, MessageSquare, Save, Archive } from 'lucide-react';
@@ -12,7 +12,7 @@ import { HotHoldingTemplate } from '@/components/compliance/HotHoldingTemplate';
 import { FireAlarmTestTemplate } from '@/components/compliance/FireAlarmTestTemplate';
 import { EmergencyLightingTemplate } from '@/components/compliance/EmergencyLightingTemplate';
 
-export default function MyTasksPage() {
+function MyTasksPageContent() {
   const { profile, companyId, loading: authLoading } = useAppContext();
   const { showToast } = useToast();
   const searchParams = useSearchParams();
@@ -1020,5 +1020,17 @@ export default function MyTasksPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MyTasksPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-8">
+        <div className="text-white">Loading tasks...</div>
+      </div>
+    }>
+      <MyTasksPageContent />
+    </Suspense>
   );
 }
