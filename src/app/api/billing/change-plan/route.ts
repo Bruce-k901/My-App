@@ -3,6 +3,10 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getStripe } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 
+// Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Service role client for admin operations
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -103,8 +107,6 @@ export async function POST(req: Request) {
       .single();
 
     const unitAmount = Math.round(plan.price_per_site_monthly * 100);
-
-    const stripe = getStripe();
     
     // Helper to create a price
     const createPrice = async () => {
