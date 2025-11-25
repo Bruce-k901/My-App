@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckSquare, Clock, AlertCircle, Calendar, Trash2, Edit2, X, Play, CheckCircle, MessageSquare, Save, Archive } from 'lucide-react';
@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 
-export default function TodoTasksPage() {
+function TodoTasksPageContent() {
   const router = useRouter();
   const { profile, companyId, loading: authLoading } = useAppContext();
   const { showToast } = useToast();
@@ -385,5 +385,17 @@ export default function TodoTasksPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function TodoTasksPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-8">
+        <div className="text-white">Loading tasks...</div>
+      </div>
+    }>
+      <TodoTasksPageContent />
+    </Suspense>
   );
 }
