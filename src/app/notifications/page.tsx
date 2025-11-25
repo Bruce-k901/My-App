@@ -15,7 +15,7 @@ type Notification = {
   message: string;
   link: string | null;
   severity: "info" | "warning" | "critical" | string;
-  seen: boolean;
+  read: boolean;
   recipient_role: "staff" | "manager" | "admin" | string;
   created_at: string;
   status?: string;
@@ -80,7 +80,7 @@ function NotificationsInner() {
         .from("notifications")
         .select("*")
         .eq("company_id", companyId)
-        .eq("status", "active")
+        // Note: Removed .eq("status", "active") as the status column doesn't exist in the database
         .order("created_at", { ascending: false })
         .limit(limit);
       // For non-admin roles, prefer site-scoped view if available
@@ -113,8 +113,8 @@ function NotificationsInner() {
   }, [companyId, siteId, role, limit, showToast]);
 
   const markSeen = async (id: string) => {
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, seen: true } : n)));
-    await supabase.from("notifications").update({ seen: true }).eq("id", id);
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    await supabase.from("notifications").update({ read: true }).eq("id", id);
   };
 
   return (
@@ -137,12 +137,12 @@ function NotificationsInner() {
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{n.title}</span>
                   <span className={`text-xs px-2 py-0.5 rounded ${severityBadge(n.severity)}`}>{n.severity}</span>
-                  {!n.seen && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-300">new</span>}
+                  {!n.read && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-300">new</span>}
                   <span className="ml-auto text-xs text-slate-500">{timeAgo(n.created_at)}</span>
                 </div>
                 <p className="text-sm text-slate-300 mt-1 whitespace-pre-line">{n.message}</p>
                 <div className="mt-2 flex items-center gap-3">
-                  {!n.seen && (
+                  {!n.read && (
                     <button onClick={() => markSeen(n.id)} className="text-xs text-slate-300 hover:text-white underline">
                       Mark as read
                     </button>

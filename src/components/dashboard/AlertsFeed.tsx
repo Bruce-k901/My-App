@@ -45,28 +45,76 @@ export default function AlertsFeed() {
         const alertRows: AlertRow[] = [];
         const todayIso = new Date().toISOString().split("T")[0];
 
-        let q = supabase
-          .from("notifications")
-          .select("id,title,message,severity,created_at,company_id,site_id")
-          .gte("created_at", since)
-          .in("severity", ["critical", "warning"])
-          .order("created_at", { ascending: false })
-          .limit(50);
-        if (companyId) q = q.eq("company_id", companyId);
-        const { data, error } = await q;
-        if (error) throw error;
-        alertRows.push(
-          ...(data || []).map((d: any) => ({
-            id: d.id,
-            title: d.title ?? undefined,
-            message: d.message ?? undefined,
-            severity: d.severity ?? undefined,
-            created_at: d.created_at,
-            type: "notification",
-            isOverdue: false,
-            isMissed: false,
-          } satisfies AlertRow))
-        );
+        // Only query notifications if companyId is available
+        if (companyId) {
+          try {
+            // First, try a simple query to test if the table is accessible
+            const testQuery = await supabase
+              .from("notifications")
+              .select("id")
+              .limit(1);
+            
+            if (testQuery.error) {
+              console.error("Test query failed - table may not exist or RLS is blocking:", testQuery.error);
+            }
+            
+            // Use select("*") like other queries in the codebase to avoid column issues
+            // Note: Removed .eq("status", "active") and .in("severity", ...) as these columns don't exist in the database
+            const { data, error } = await supabase
+              .from("notifications")
+              .select("*")
+              .eq("company_id", companyId)
+              .gte("created_at", since)
+              .order("created_at", { ascending: false })
+              .limit(50);
+            
+            if (error) {
+              // Log detailed error information - try multiple ways to capture the error
+              console.error("Error fetching notifications - raw error:", error);
+              console.error("Error fetching notifications - message:", error?.message);
+              console.error("Error fetching notifications - code:", error?.code);
+              console.error("Error fetching notifications - details:", error?.details);
+              console.error("Error fetching notifications - hint:", error?.hint);
+              console.error("Error fetching notifications - stringified:", JSON.stringify(error, null, 2));
+              
+              // Try to get error from response if available
+              if ((error as any)?.response) {
+                console.error("Error response:", (error as any).response);
+              }
+              
+              // Don't throw - continue loading other alerts
+            } else if (data) {
+              // Filter in JavaScript for severity if the column exists, otherwise show all
+              const filteredData = data.filter((d: any) => {
+                // If severity column exists, filter for critical/warning
+                if (d.severity !== undefined) {
+                  return d.severity === "critical" || d.severity === "warning";
+                }
+                // If severity doesn't exist, include all notifications
+                return true;
+              });
+              
+              alertRows.push(
+                ...filteredData.map((d: any) => ({
+                  id: d.id,
+                  title: d.title ?? undefined,
+                  message: d.message ?? undefined,
+                  severity: d.severity ?? "info", // Default to "info" if severity doesn't exist
+                  created_at: d.created_at,
+                  type: "notification",
+                  isOverdue: false,
+                  isMissed: false,
+                } satisfies AlertRow))
+              );
+            }
+          } catch (err: any) {
+            console.error("Exception fetching notifications - raw:", err);
+            console.error("Exception fetching notifications - message:", err?.message);
+            console.error("Exception fetching notifications - stack:", err?.stack);
+            console.error("Exception fetching notifications - stringified:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+            // Continue loading other alerts even if notifications fail
+          }
+        }
 
         if (companyId) {
           // Fetch overdue tasks (due date before today)
