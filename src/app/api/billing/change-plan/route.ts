@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 
 // Service role client for admin operations
@@ -72,6 +72,8 @@ export async function POST(req: Request) {
       );
     }
 
+    const stripe = getStripe();
+    
     let customerId = company.stripe_customer_id;
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -102,6 +104,8 @@ export async function POST(req: Request) {
 
     const unitAmount = Math.round(plan.price_per_site_monthly * 100);
 
+    const stripe = getStripe();
+    
     // Helper to create a price
     const createPrice = async () => {
       return await stripe.prices.create({

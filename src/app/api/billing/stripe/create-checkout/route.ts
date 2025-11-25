@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { createClient } from "@supabase/supabase-js";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 // Service role client for admin operations (like creating customers if RLS blocks it)
 const supabaseAdmin = createClient(
@@ -190,6 +190,8 @@ export async function POST(request: NextRequest) {
         // 6. Create or get Stripe customer
         const companyEmail = company.contact_email || user.email;
         // ... (rest of customer logic) ...
+        const stripe = getStripe();
+        
         let customerId = company.stripe_customer_id;
         if (!customerId) {
             const customer = await stripe.customers.create({

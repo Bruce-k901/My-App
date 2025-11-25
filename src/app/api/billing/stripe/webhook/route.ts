@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import Stripe from "stripe";
 
 const supabase = createClient(
@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
         const body = await request.text();
         const signature = request.headers.get("stripe-signature");
 
+        const stripe = getStripe();
+        
         if (!signature) {
             console.error("Missing stripe-signature header");
             return NextResponse.json(
