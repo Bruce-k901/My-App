@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -24,7 +23,13 @@ export default function SetupHeader() {
   return (
     <div className="flex items-center justify-between">
       <Link href="/setup" className="flex items-center">
-        <Image src="/assets/logo.svg" alt="Checkly" width={168} height={168} />
+        <img
+          src="/assets/logo.svg"
+          alt="Checkly"
+          width={168}
+          height={168}
+          className="h-auto w-auto"
+        />
       </Link>
       <nav className="hidden md:flex items-center gap-2">
         {steps.map((s) => {

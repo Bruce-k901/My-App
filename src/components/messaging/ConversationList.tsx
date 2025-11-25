@@ -263,24 +263,25 @@ export function ConversationList({
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white/[0.03] overflow-hidden">
-        {/* Header with Start Button - Fixed at top with exact height */}
-        <div className="flex-shrink-0 p-4 border-b border-white/[0.1] bg-white/[0.03] h-[140px] flex flex-col justify-between">
+      <div className="flex flex-col h-full bg-white/[0.03] overflow-hidden max-w-full">
+        {/* Header with Start Button - Responsive height */}
+        <div className="flex-shrink-0 p-3 sm:p-4 border-b border-white/[0.1] bg-white/[0.03] flex flex-col gap-3 sm:gap-4">
           <button
             onClick={() => setIsStartModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[40px]"
+            className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] text-xs sm:text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[36px] sm:h-[40px]"
           >
-            <Plus className="w-4 h-4" />
-            Start Conversation
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Start Conversation</span>
+            <span className="sm:hidden">New</span>
           </button>
-          <div className="relative h-[40px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+          <div className="relative h-[36px] sm:h-[40px]">
+            <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/40 pointer-events-none" />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-full pl-10 pr-4 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full h-full pl-9 sm:pl-10 pr-3 sm:pr-4 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
             />
           </div>
         </div>
@@ -289,25 +290,25 @@ export function ConversationList({
         <div className="flex-shrink-0 border-b border-white/[0.06]">
           <button
             onClick={() => setIsTopicFilterExpanded(!isTopicFilterExpanded)}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition-colors"
+            className="w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-white/[0.02] transition-colors"
           >
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium text-white/70">Filter by Topic</h3>
+              <h3 className="text-xs sm:text-sm font-medium text-white/70">Filter by Topic</h3>
               {(filters.topicCategory || filters.isPinned) && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#EC4899]/30 text-[#EC4899]">
+                <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-[#EC4899]/30 text-[#EC4899]">
                   Active
                 </span>
               )}
             </div>
             {isTopicFilterExpanded ? (
-              <ChevronUp className="w-4 h-4 text-white/60" />
+              <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-white/60" />
+              <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60" />
             )}
           </button>
           
           {isTopicFilterExpanded && (
-            <div className="px-4 pb-4">
+            <div className="px-3 sm:px-4 pb-3 sm:pb-4">
               <TopicFilter 
                 currentFilters={filters}
                 onFilterChange={setFilters}
@@ -328,7 +329,7 @@ export function ConversationList({
         </div>
       ) : (
         /* Conversations List - Scrollable */
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 max-w-full">
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-white/20 mb-4" />
@@ -337,7 +338,7 @@ export function ConversationList({
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.05]">
+          <div className="divide-y divide-white/[0.05] max-w-full">
             {filteredConversations.map((conversation) => {
               const Icon = getConversationIcon(conversation.type);
               const isSelected = conversation.id === selectedConversationId;
@@ -348,7 +349,7 @@ export function ConversationList({
                 <div
                   key={conversation.id}
                   onClick={() => onSelectConversation(conversation.id)}
-                  className={`w-full p-4 hover:bg-white/[0.05] transition-colors cursor-pointer relative ${
+                  className={`w-full p-3 sm:p-4 hover:bg-white/[0.05] transition-colors cursor-pointer relative max-w-full overflow-hidden ${
                     isSelected ? 'bg-white/[0.05]' : ''
                   }`}
                 >
@@ -356,19 +357,19 @@ export function ConversationList({
                   {isSelected && (
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500 rounded-r" />
                   )}
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 p-2 bg-pink-500/10 rounded-lg">
-                      <Icon className="w-5 h-5 text-pink-400" />
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="flex-shrink-0 p-1.5 sm:p-2 bg-pink-500/10 rounded-lg">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className={`text-sm font-semibold truncate ${
+                      <div className="flex items-center justify-between mb-1 gap-2">
+                        <h3 className={`text-xs sm:text-sm font-semibold truncate ${
                           isSelected ? 'text-pink-300' : 'text-white'
                         }`}>
                           {name}
                         </h3>
                         {(conversation.last_message_at || conversation.last_message?.created_at) && (
-                          <span className="text-xs text-white/40 flex-shrink-0 ml-2">
+                          <span className="text-[10px] sm:text-xs text-white/40 flex-shrink-0">
                             {formatConversationTime(
                               conversation.last_message_at || conversation.last_message?.created_at
                             )}
@@ -376,22 +377,22 @@ export function ConversationList({
                         )}
                       </div>
                       {conversation.last_message && (
-                        <p className="text-xs text-white/60 truncate">
+                        <p className="text-[10px] sm:text-xs text-white/60 truncate">
                           {conversation.last_message.sender?.full_name || 'You'}:{' '}
                           {conversation.last_message.content}
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                       {unreadCount > 0 && (
                         <div className="flex-shrink-0">
-                          <span className="px-2 py-0.5 bg-pink-500 text-white text-xs font-semibold rounded-full">
+                          <span className="px-1.5 sm:px-2 py-0.5 bg-pink-500 text-white text-[10px] sm:text-xs font-semibold rounded-full">
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         </div>
                       )}
                       <button
-                        className="p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                        className="p-1.5 sm:p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors touch-manipulation"
                         aria-label={conversation.is_pinned ? "Unpin conversation" : "Pin conversation"}
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -399,10 +400,10 @@ export function ConversationList({
                         }}
                         title={conversation.is_pinned ? "Unpin conversation" : "Pin conversation"}
                       >
-                        <Pin className={`w-4 h-4 ${conversation.is_pinned ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                        <Pin className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${conversation.is_pinned ? 'fill-yellow-400 text-yellow-400' : ''}`} />
                       </button>
                       <button
-                        className="p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                        className="p-1.5 sm:p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors touch-manipulation"
                         aria-label="Delete conversation"
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -416,7 +417,7 @@ export function ConversationList({
                         }}
                         title="Delete conversation"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </div>

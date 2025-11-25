@@ -281,11 +281,12 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   }
 
   return (
-    <div className="flex flex-col h-full bg-white/[0.02] overflow-hidden">
+    <div className="flex flex-col h-full bg-white/[0.02] overflow-hidden max-w-full min-h-0">
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0 max-w-full"
+        style={{ maxHeight: '100%' }}
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -321,7 +322,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
               <div
                 key={message.id}
                 data-message-id={message.id}
-                className={`flex gap-1.5 sm:gap-2 md:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+                className={`flex gap-1.5 sm:gap-2 md:gap-3 min-w-0 max-w-full ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
                   <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-400">
@@ -331,7 +332,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 {showAvatar && isOwn && <div className="flex-shrink-0 w-7 sm:w-8" />}
 
                 <div
-                  className={`flex flex-col max-w-[90%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%] ${
+                  className={`flex flex-col max-w-[90%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%] min-w-0 ${
                     isOwn ? 'items-end' : 'items-start'
                   }`}
                 >
@@ -367,32 +368,33 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-white/70 truncate max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[250px] break-words">
+                      <div className="text-white/70 max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-[250px] break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (
                           <span className="italic break-all">📎 {message.reply_to.file_name || 'File'}</span>
                         ) : (
-                          message.reply_to.content || 'Message'
+                          <span className="line-clamp-2 break-words" style={{ wordBreak: 'break-word' }}>{message.reply_to.content || 'Message'}</span>
                         )}
                       </div>
                     </div>
                   )}
 
                   <div
-                    className={`group relative px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg ${
+                    className={`group relative px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg min-w-0 max-w-full overflow-hidden ${
                       isOwn
                         ? 'bg-pink-500/20 text-white'
                         : 'bg-white/[0.05] text-white/90'
                     }`}
                   >
                     {message.message_type === 'image' && message.file_url ? (
-                      <div className="max-w-full sm:max-w-xs md:max-w-sm mb-1.5 sm:mb-2">
+                      <div className="max-w-full sm:max-w-xs md:max-w-sm mb-1.5 sm:mb-2 overflow-hidden">
                         <img
                           src={message.file_url}
                           alt={message.file_name || 'Image'}
                           className="rounded-lg cursor-pointer hover:opacity-90 transition w-full h-auto max-h-48 sm:max-h-64 object-contain"
                           onClick={() => window.open(message.file_url || '', '_blank')}
+                          style={{ maxWidth: '100%', height: 'auto' }}
                         />
                       </div>
                     ) : message.message_type === 'file' && message.file_url ? (
@@ -405,7 +407,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         }}
                       />
                     ) : (
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">
+                      <p className="text-xs sm:text-sm whitespace-pre-wrap break-words break-all max-w-full" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                         {message.content}
                       </p>
                     )}

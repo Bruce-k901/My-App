@@ -118,7 +118,7 @@ export function MessageInput({
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-2 sm:p-3 md:p-4">
+    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-2 sm:p-3 md:p-4 max-w-full overflow-hidden">
       {/* Reply Preview - Fixed height to prevent layout shift */}
       <div className={`mb-2 sm:mb-3 transition-all duration-200 ${replyTo ? 'h-[50px] sm:h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
@@ -161,7 +161,7 @@ export function MessageInput({
           className="flex-shrink-0 min-h-[44px] min-w-[44px]"
         />
 
-        <div className="flex-1 relative h-full">
+        <div className="flex-1 relative h-full min-w-0">
           <textarea
             value={content}
             onChange={(e) => handleInputChange(e.target.value)}
@@ -169,7 +169,7 @@ export function MessageInput({
             onBlur={() => setTyping(false)}
             placeholder="Type a message..."
             rows={1}
-            className="w-full h-full px-3 sm:px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-xs sm:text-sm leading-tight touch-manipulation"
+            className="w-full h-full px-3 sm:px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-xs sm:text-sm leading-tight touch-manipulation overflow-x-hidden"
             style={{
               minHeight: '44px',
               maxHeight: '44px',

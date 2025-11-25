@@ -11,6 +11,7 @@ import { getMenuItemsByRole } from "@/components/layout/navigation";
 import { format } from "date-fns";
 import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
 import { ClockInButton } from "@/components/notifications/ClockInButton";
+import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 
 // Menu items removed - now using BurgerMenu component
 
@@ -179,7 +180,10 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
+    <header 
+      className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]"
+      suppressHydrationWarning
+    >
       {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {/* Mobile Menu Button - Only visible on mobile */}
@@ -202,13 +206,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Middle: Actions - Show on all screens, compact on mobile */}
-      <div className="flex items-center gap-2 sm:gap-4 mr-2 sm:mr-0">
+      <div className="flex items-center gap-3 mr-2 sm:mr-0" suppressHydrationWarning>
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/todays_tasks"
-          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
+          className="flex items-center gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-10"
+          suppressHydrationWarning
         >
-          <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+          <ClipboardCheck className="w-5 h-5 text-pink-400 flex-shrink-0" suppressHydrationWarning />
           <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Today's Tasks</span>
         </Link>
 
@@ -223,13 +228,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
               }
               setIsIncidentsMenuOpen((open) => !open);
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10 ${
+            className={`flex items-center gap-2 px-2 sm:px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-10 ${
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
                 ? 'bg-white/[0.12] text-white border-pink-500/30'
                 : ''
             }`}
+            suppressHydrationWarning
           >
-            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+            <AlertTriangle className="w-5 h-5 text-pink-400 flex-shrink-0" suppressHydrationWarning />
             <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Incidents</span>
           </div>
 
@@ -372,17 +378,18 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Right: Messages, Clock and Menu */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-3" suppressHydrationWarning>
         {/* Messages Button - Quick access */}
         <Link
           href="/dashboard/messaging"
-          className={`relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10 ${
+          className={`relative flex items-center gap-2 px-2 sm:px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-10 ${
             pathname.startsWith('/dashboard/messaging')
               ? 'bg-white/[0.12] text-white border-pink-500/30'
               : ''
           }`}
+          suppressHydrationWarning
         >
-          <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+          <MessageSquare className="w-5 h-5 text-pink-400 flex-shrink-0" suppressHydrationWarning />
           <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Messages</span>
           {unreadMessageCount > 0 && (
             <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
@@ -396,9 +403,12 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           <ClockInButton />
         </div>
 
-        {/* Clock - Always visible */}
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10">
-          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
+        {/* Notifications */}
+        <NotificationDropdown />
+
+        {/* Clock - Hidden on mobile, visible on desktop */}
+        <div className="hidden sm:flex items-center gap-2 px-2 sm:px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] h-10" suppressHydrationWarning>
+          <Clock className="w-5 h-5 text-pink-400 flex-shrink-0" />
           <div className="font-mono text-xs sm:text-sm text-white whitespace-nowrap">
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}
           </div>

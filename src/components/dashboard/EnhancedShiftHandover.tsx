@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
-import { Calendar, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
+import { Calendar, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Archive } from "lucide-react";
 import { toast } from "sonner";
 
 interface TaskItem {
@@ -144,9 +144,59 @@ export default function EnhancedShiftHandover() {
       if (data?.value) {
         const handoverData = typeof data.value === "string" ? JSON.parse(data.value) : data.value;
         setNotes(handoverData.notes || "");
-        setTasks(handoverData.tasks || []);
+        // Don't load tasks from handover data - we'll load from tasks table instead
         setReminders(handoverData.reminders || []);
         setMessages(handoverData.messages || []);
+      }
+
+      // Load tasks from tasks table (To-Do tasks)
+      if (companyId && userProfile?.id) {
+        try {
+          const { data: tasksData, error: tasksError } = await supabase
+            .from("tasks")
+            .select("*")
+            .eq("company_id", companyId)
+            .eq("archived", false)
+            .or(`created_by.eq.${userProfile.id},assigned_to.eq.${userProfile.id}`)
+            .order("due_date", { ascending: true });
+          
+          if (tasksError) throw tasksError;
+          
+          // Convert tasks from database format to widget format
+          const formattedTasks: TaskItem[] = (tasksData || []).map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            dueDate: t.due_date,
+            dueTime: t.due_time || "",
+            assignedTo: t.assigned_to || "",
+            assignedToName: "", // Will be filled by user lookup
+            priority: t.priority || "medium",
+          }));
+          
+          // Get user names for assigned tasks
+          if (formattedTasks.length > 0) {
+            const assignedUserIds = [...new Set(formattedTasks.map(t => t.assignedTo).filter(Boolean))];
+            if (assignedUserIds.length > 0) {
+              const { data: usersData } = await supabase
+                .from("profiles")
+                .select("id, full_name, email")
+                .in("id", assignedUserIds);
+              
+              if (usersData) {
+                formattedTasks.forEach(task => {
+                  const user = usersData.find(u => u.id === task.assignedTo);
+                  if (user) {
+                    task.assignedToName = user.full_name || user.email;
+                  }
+                });
+              }
+            }
+          }
+          
+          setTasks(formattedTasks);
+        } catch (error: any) {
+          console.error("Failed to load tasks:", error);
+        }
       }
 
       // Load sent messages from notifications (look for handover messages by checking message content)
@@ -185,7 +235,7 @@ export default function EnhancedShiftHandover() {
       }
     };
     load();
-  }, [companyId]);
+  }, [companyId, userProfile?.id]);
 
   const save = async () => {
     setSaving(true);
@@ -261,25 +311,27 @@ export default function EnhancedShiftHandover() {
 
   const createTaskInSystem = async (task: TaskItem) => {
     try {
-      // Create task in checklist_tasks table
-      const { error } = await supabase.from("checklist_tasks").insert({
+      // Create task in tasks table (for To-Do page)
+      const { error } = await supabase.from("tasks").insert({
         company_id: companyId,
         site_id: siteId,
-        custom_name: task.title,
+        title: task.title,
+        description: `Created from Personal Diary on ${new Date().toLocaleDateString()}`,
         due_date: task.dueDate,
         due_time: task.dueTime || null,
         status: "pending",
         priority: task.priority,
-        assigned_to_user_id: task.assignedTo || null,
-        task_data: {
-          created_from_handover: true,
-          handover_date: new Date().toISOString().split("T")[0],
+        assigned_to: task.assignedTo || null,
+        created_by: userProfile?.id || null,
+        metadata: {
+          created_from_diary: true,
+          diary_date: new Date().toISOString().split("T")[0],
         },
       });
 
       if (error) throw error;
       
-      toast.success("Task created successfully");
+      toast.success("Task added to To-Do");
       // Remove from local tasks list
       setTasks(tasks.filter(t => t.id !== task.id));
       save();
@@ -454,11 +506,20 @@ export default function EnhancedShiftHandover() {
             <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
           </div>
           <div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white">Shift Handover & Actions</h3>
-            <p className="text-xs text-slate-400 hidden sm:block">Notes, tasks, reminders, and messages</p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-white">Personal Diary</h3>
+            <p className="text-xs text-slate-400 hidden sm:block">Quick notes, to-do items, reminders, and messages</p>
           </div>
         </div>
-        {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+        <div className="flex items-center gap-3">
+          {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+          <a
+            href="/dashboard/tasks/archived"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-colors whitespace-nowrap"
+          >
+            <Archive className="w-3 h-3" />
+            <span className="hidden sm:inline">Archived</span>
+          </a>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -568,16 +629,28 @@ export default function EnhancedShiftHandover() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
-                    onClick={() => createTaskInSystem(task)}
-                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors whitespace-nowrap"
+                    onClick={() => window.location.href = `/dashboard/tasks/todo?task=${task.id}`}
+                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 transition-colors whitespace-nowrap"
                   >
-                    Create Task
+                    View in To-Do
                   </button>
                   <button
-                    onClick={() => removeTask(task.id)}
-                    className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                    onClick={async () => {
+                      try {
+                        await supabase
+                          .from("tasks")
+                          .update({ archived: true, archived_at: new Date().toISOString() })
+                          .eq("id", task.id);
+                        toast.success("Task archived");
+                        // Reload tasks
+                        setTasks(tasks.filter(t => t.id !== task.id));
+                      } catch (error: any) {
+                        toast.error(`Failed to archive: ${error.message}`);
+                      }
+                    }}
+                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-gray-500/10 border border-gray-500/30 text-gray-400 hover:bg-gray-500/20 transition-colors whitespace-nowrap"
                   >
-                    <X className="w-4 h-4" />
+                    Archive
                   </button>
                 </div>
               </div>

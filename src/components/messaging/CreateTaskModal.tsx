@@ -99,25 +99,22 @@ export default function CreateTaskModal({
       // 1. Create the task in the tasks table
       const taskInsert: any = {
         title: taskData.title,
-        description: taskData.description + (taskData.due_time ? `\n\nDue time: ${taskData.due_time}` : ''),
+        description: taskData.description,
         due_date: dueDate,
-        status: 'todo', // Changed from 'pending' to 'todo' to match check constraint
+        due_time: taskData.due_time || null,
+        status: 'pending', // Use 'pending' to match database constraint
+        priority: taskData.priority,
         company_id: companyId,
         site_id: taskData.site_id,
         created_by: userId,
+        assigned_to: taskData.assigned_to || null,
         created_from_message_id: message.id,
+        category: taskData.category || 'follow-up',
       };
 
       // Only add optional fields if they have values
-      if (taskData.assigned_to && taskData.assigned_to.trim() !== '') {
-        // Store assignment in description if staff_id column doesn't exist
-        taskInsert.description = taskInsert.description + `\n\nAssigned to: ${users.find(u => u.id === taskData.assigned_to)?.full_name || users.find(u => u.id === taskData.assigned_to)?.email || 'User'}`;
-      }
       if (taskData.asset_id && taskData.asset_id.trim() !== '') {
         taskInsert.linked_asset_id = taskData.asset_id;
-      }
-      if (taskData.category) {
-        taskInsert.category = taskData.category;
       }
 
       console.log('Creating task with data:', taskInsert);

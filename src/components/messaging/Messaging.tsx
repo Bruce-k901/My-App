@@ -7,7 +7,7 @@ import { MessageThread } from './MessageThread';
 import { MessageInput } from './MessageInput';
 import ConversationContentTabs from './ConversationContentTabs';
 import { useMessages } from '@/hooks/useMessages';
-import { MessageSquare, Menu } from 'lucide-react';
+import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
 import type { Message } from '@/types/messaging';
 import { supabase } from '@/lib/supabase';
 
@@ -89,21 +89,7 @@ export function Messaging() {
   });
 
   return (
-    <div className="flex h-full w-full bg-[#0B0D13] overflow-hidden">
-      {/* Mobile: Burger Button - Only show when viewing a conversation, takes us back to overview */}
-      {selectedConversationId && (
-        <button
-          onClick={() => {
-            setSelectedConversationId(null);
-            setIsSidebarOpen(true);
-            router.replace(pathname, { scroll: false });
-          }}
-          className="md:hidden fixed top-3 sm:top-4 left-3 sm:left-4 z-50 min-h-[44px] min-w-[44px] p-2 bg-white/[0.1] hover:bg-white/[0.15] active:bg-white/[0.2] rounded-lg text-white transition-colors touch-manipulation"
-          aria-label="Back to conversations overview"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      )}
+    <div className="flex h-full w-full bg-[#0B0D13] overflow-hidden" suppressHydrationWarning>
 
       {/* Sidebar - Conversation List */}
       {/* Mobile: Overlay sidebar that slides in */}
@@ -118,12 +104,13 @@ export function Messaging() {
           flex flex-col
           ${
             isMobile 
-              ? `fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out ${
+              ? `fixed top-[72px] left-0 bottom-0 z-40 transition-transform duration-300 ease-in-out ${
                   isSidebarOpen || !selectedConversationId ? 'translate-x-0' : '-translate-x-full'
                 }`
               : ''
           }
         `}
+        suppressHydrationWarning
         >
         <ConversationList
           selectedConversationId={selectedConversationId}
@@ -135,39 +122,34 @@ export function Messaging() {
       {isSidebarOpen && isMobile && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          className="md:hidden fixed top-[72px] left-0 right-0 bottom-0 bg-black/50 z-30"
         />
       )}
 
       {/* Main - Message Thread - TAKES REMAINING SPACE */}
-      <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0" suppressHydrationWarning>
         {selectedConversationId ? (
           <>
-            {/* Content Tabs - Fixed at top */}
-            <div className="flex-shrink-0">
-              <ConversationContentTabs conversationId={selectedConversationId} />
-            </div>
-            {/* Message Thread - Scrollable */}
-            <div className="flex-1 min-h-0 overflow-hidden">
-              <MessageThread 
+            {/* Content Tabs - Takes available space when showing files/images/tasks */}
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+              <ConversationContentTabs 
                 conversationId={selectedConversationId}
+                onBack={() => {
+                  setSelectedConversationId(null);
+                  setIsSidebarOpen(true);
+                  router.replace(pathname, { scroll: false });
+                }}
+                isMobile={isMobile}
                 messagesHook={messagesHook}
                 onReply={handleReplyToMessage}
-              />
-            </div>
-            {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0">
-              <MessageInput
-                conversationId={selectedConversationId}
-                sendMessage={messagesHook.sendMessage}
                 replyTo={replyTo}
                 onCancelReply={() => setReplyTo(null)}
               />
             </div>
           </>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center px-4">
+          <div className="flex items-center justify-center h-full" suppressHydrationWarning>
+            <div className="text-center px-4" suppressHydrationWarning>
               <MessageSquare className="w-16 h-16 text-white/20 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-white mb-2">
                 Select a conversation
@@ -181,7 +163,7 @@ export function Messaging() {
               {isMobile && (
                 <button
                   onClick={() => setIsSidebarOpen(true)}
-                  className="mt-4 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all"
+                  className="mt-4 px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all text-sm"
                 >
                   View Conversations
                 </button>

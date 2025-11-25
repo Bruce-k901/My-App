@@ -345,7 +345,7 @@ function OverviewTab({ subscription, siteCount, sites, purchasedAddons, paymentM
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-white/60 mb-1">Payment Method</p>
-              {paymentMethods.length > 0 ? (
+              {paymentMethods && paymentMethods.length > 0 && paymentMethods[0]?.card ? (
                 <div className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-white/60" />
                   <span className="text-white font-medium">
