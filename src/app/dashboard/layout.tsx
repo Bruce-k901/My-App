@@ -36,7 +36,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
         </div>
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative">
+        <main 
+          className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative"
+          suppressHydrationWarning
+        >
           {/* Always render children - never conditionally render different structures */}
           {children}
           {/* Loading overlay only appears after client-side mount (isMounted=true) */}
