@@ -26,6 +26,7 @@ import {
   CreditCard,
   MessageSquare,
   Clock,
+  Shield,
 } from "lucide-react";
 
 // Section with hover popup
@@ -148,7 +149,7 @@ interface NewMainSidebarProps {
 
 export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
   const pathname = usePathname();
-  const { role: contextRole, signOut } = useAppContext();
+  const { role: contextRole, signOut, profile } = useAppContext();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -371,6 +372,18 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
             />
           );
         })}
+
+        {/* Admin Portal Link - Only for platform admins */}
+        {profile?.is_platform_admin && (
+          <>
+            <div className="w-12 h-px bg-white/[0.1] my-1" />
+            <SidebarDirectLink
+              item={{ label: "Admin Portal", href: "/admin", icon: Shield }}
+              isActive={pathname.startsWith("/admin")}
+              isRestricted={false}
+            />
+          </>
+        )}
       </aside>
 
       {/* Hover Popups - Desktop only */}
@@ -547,6 +560,19 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 />
               );
             })}
+
+            {/* Admin Portal Link - Only for platform admins */}
+            {profile?.is_platform_admin && (
+              <>
+                <div className="h-px bg-white/[0.1] my-4" />
+                <MobileSidebarLink
+                  item={{ label: "Admin Portal", href: "/admin", icon: Shield }}
+                  isActive={pathname.startsWith("/admin")}
+                  isRestricted={false}
+                  onClick={onMobileClose}
+                />
+              </>
+            )}
 
             <div className="h-px bg-white/[0.1] my-4" />
 

@@ -50,6 +50,27 @@
       "description": "View notifications",
       "url": "/notifications",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "description": "Platform administration portal",
+      "url": "/admin",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin Companies",
+      "short_name": "Companies",
+      "description": "Manage all companies",
+      "url": "/admin/companies",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin Users",
+      "short_name": "Users",
+      "description": "View all platform users",
+      "url": "/admin/users",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
     }
   ],
   "screenshots": [],

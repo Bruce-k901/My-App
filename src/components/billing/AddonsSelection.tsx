@@ -645,21 +645,21 @@ export default function AddonsSelection({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">Add-ons & Offers</h2>
-        <p className="text-white/70 text-base leading-relaxed max-w-3xl">
+    <div className="space-y-4 sm:space-y-5 md:space-y-6">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3">Add-ons & Offers</h2>
+        <p className="text-white/70 text-sm sm:text-base leading-relaxed max-w-3xl">
           Enhance your plan with additional features and services. Choose one tier per category (Smart Sensors and Maintenance Kits).
         </p>
       </div>
 
       {/* Category Filter - only for non-tiered addons */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 overflow-x-auto pb-2">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
               selectedCategory === category
                 ? 'bg-[#EC4899] text-white'
                 : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'

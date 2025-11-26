@@ -225,19 +225,19 @@ export default function AttendanceLogsPage() {
   const isManager = profile?.app_role && ['Manager', 'General Manager', 'Admin', 'Owner'].includes(profile.app_role);
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
             {/* <Clock className="w-8 h-8 text-pink-500" /> */}
-            <h1 className="text-3xl font-bold text-white">Attendance Register</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Attendance Register</h1>
           </div>
-          <p className="text-white/60">View clock-in and clock-out records</p>
+          <p className="text-white/60 text-sm sm:text-base">View clock-in and clock-out records</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6 space-y-4">
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 space-y-3 sm:space-y-4">
           <div className="flex flex-wrap gap-4">
             {/* Time Filter */}
             <div>

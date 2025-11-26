@@ -41,6 +41,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // It will be set to true in useEffect if needed
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [viewingAsCompanyId, setViewingAsCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
     // Mark as mounted to prevent hydration issues
@@ -71,6 +72,98 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Check for admin "View As" mode
+  useEffect(() => {
+    // Only check sessionStorage on client side after mount
+    if (!isMounted) return;
+
+    const checkViewAsMode = () => {
+      const viewingAs = sessionStorage.getItem('admin_viewing_as_company');
+      if (viewingAs) {
+        try {
+          const { id } = JSON.parse(viewingAs);
+          setViewingAsCompanyId(id);
+          console.log('👁️ Admin viewing as company:', id);
+          
+          // Fetch the company data for the viewed company
+          fetchCompanyById(id);
+        } catch (error) {
+          console.error('Error parsing admin_viewing_as_company:', error);
+          sessionStorage.removeItem('admin_viewing_as_company');
+          setViewingAsCompanyId(null);
+        }
+      } else {
+        // If sessionStorage is cleared, reset viewingAsCompanyId
+        setViewingAsCompanyId(null);
+      }
+    };
+
+    // Check on mount
+    checkViewAsMode();
+
+    // Listen for storage changes (e.g., when admin exits "View As" from another tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'admin_viewing_as_company') {
+        checkViewAsMode();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [isMounted]);
+
+  // Reload user's own company when exiting "View As" mode
+  useEffect(() => {
+    if (!viewingAsCompanyId) {
+      // View As mode is not active
+      if (profile?.company_id) {
+        // User has a company - reload it if it's different from current company
+        if (company?.id !== profile.company_id) {
+          console.log('🔄 Reloading user\'s own company after exiting View As mode');
+          fetchCompanyById(profile.company_id);
+        }
+      } else {
+        // User has no company - clear company state
+        if (company) {
+          console.log('🔄 Clearing company state (user has no company)');
+          setCompany(null);
+        }
+      }
+    }
+  }, [viewingAsCompanyId, profile?.company_id]);
+
+  async function fetchCompanyById(companyId: string) {
+    try {
+      console.log('🔄 AppContext loading company (View As):', companyId);
+      
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('*')
+        .eq('id', companyId)
+        .maybeSingle();
+      
+      if (!companyError && companyData && companyData.id) {
+        console.log('✅ AppContext company loaded (View As):', companyData.name);
+        setCompany(companyData);
+      } else {
+        console.warn('⚠️ AppContext: No company found for View As', {
+          hasError: !!companyError,
+          errorMessage: companyError?.message,
+          errorCode: companyError?.code,
+          hasData: !!companyData,
+          company_id: companyId
+        });
+        setCompany(null);
+      }
+    } catch (error) {
+      console.error('❌ AppContext fetchCompanyById error:', error);
+      setCompany(null);
+    }
+  }
 
   async function fetchProfile(userId: string) {
     try {
@@ -222,8 +315,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
       setProfile(data);
       
-      // Load company data if profile has company_id
-      if (data?.company_id) {
+      // Check if admin is viewing as another company
+      const viewingAs = sessionStorage.getItem('admin_viewing_as_company');
+      if (viewingAs) {
+        try {
+          const { id } = JSON.parse(viewingAs);
+          setViewingAsCompanyId(id);
+          console.log('👁️ Admin viewing as company (from fetchProfile):', id);
+          // Don't load user's own company - the viewingAsCompanyId useEffect will load the viewed company
+          setLoading(false);
+          return;
+        } catch (error) {
+          console.error('Error parsing admin_viewing_as_company in fetchProfile:', error);
+        }
+      }
+      
+      // Load company data if profile has company_id (only if not in View As mode)
+      if (data?.company_id && !viewingAsCompanyId) {
         console.log('🔄 AppContext loading company:', data.company_id);
         
         // Try direct ID lookup first
@@ -413,7 +521,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     profile,
-    companyId: profile?.company_id || user?.user_metadata?.company_id || null,
+    // Use viewingAsCompanyId if admin is viewing as another company, otherwise use profile's company_id
+    companyId: viewingAsCompanyId || profile?.company_id || user?.user_metadata?.company_id || null,
     company,
     siteId: profile?.site_id || user?.user_metadata?.site_id || null,
     role: profile?.app_role || user?.user_metadata?.app_role || 'Staff',

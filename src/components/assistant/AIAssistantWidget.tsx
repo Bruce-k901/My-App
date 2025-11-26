@@ -256,14 +256,14 @@ export default function AIAssistantWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-[10000] flex items-center gap-2 px-4 py-3 rounded-full 
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000] flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 rounded-full 
             bg-transparent text-[#EC4899] border border-[#EC4899] shadow-lg 
             hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] hover:scale-105 
             transition-all duration-200 ease-in-out"
           aria-label="Open AI Assistant"
         >
-          <Sparkles className="w-5 h-5" />
-          <span className="font-medium">Ask AI</span>
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="font-medium text-sm sm:text-base">Ask AI</span>
         </button>
       )}
       
@@ -279,39 +279,40 @@ export default function AIAssistantWidget() {
           
           {/* Chat Panel */}
           <div 
-            className="fixed bottom-6 right-6 z-[10000] w-[400px] h-[600px] max-h-[80vh] 
-              bg-[#0f1220] border border-white/[0.06] rounded-2xl shadow-2xl 
+            className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[10000] 
+              w-full sm:w-[400px] h-full sm:h-[600px] sm:max-h-[80vh] 
+              bg-[#0f1220] border-0 sm:border border-white/[0.06] rounded-none sm:rounded-2xl shadow-2xl 
               flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.03]">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/[0.06] rounded-lg border border-[#EC4899]/20">
-                <Bot className="w-5 h-5 text-[#EC4899]" />
+          <div className="flex items-center justify-between px-4 py-3 sm:py-3 border-b border-white/[0.06] bg-white/[0.03] flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="p-1.5 sm:p-2 bg-white/[0.06] rounded-lg border border-[#EC4899]/20 flex-shrink-0">
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899]" />
               </div>
-              <div>
-                <h3 className="font-semibold text-white">Checkly Assistant</h3>
-                <p className="text-xs text-white/60">Compliance & app support</p>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-white text-sm sm:text-base truncate">Checkly Assistant</h3>
+                <p className="text-xs text-white/60 hidden sm:block">Compliance & app support</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {/* Contact Human Button */}
               <button
                 onClick={handleContactHuman}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg 
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg 
                   bg-transparent text-[#EC4899] border border-[#EC4899] text-xs font-medium
                   hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
                   transition-all duration-200 ease-in-out"
                 aria-label="Contact Human Support"
                 title="Speak to a human"
               >
-                <Headphones className="w-4 h-4" />
+                <Headphones className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">Human</span>
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors"
+                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -323,32 +324,32 @@ export default function AIAssistantWidget() {
           <div 
             ref={messagesContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto p-4 space-y-4"
+            className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0"
           >
             {/* Welcome message if no messages */}
             {messages.length === 0 && (
-              <div className="text-center py-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/[0.03] border border-[#EC4899]/20 mb-4">
-                  <Sparkles className="w-8 h-8 text-[#EC4899]" />
+              <div className="text-center py-4 sm:py-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/[0.03] border border-[#EC4899]/20 mb-3 sm:mb-4">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-[#EC4899]" />
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-2">
+                <h4 className="text-base sm:text-lg font-semibold text-white mb-2">
                   How can I help?
                 </h4>
-                <p className="text-sm text-white/60 mb-6 max-w-xs mx-auto">
+                <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-xs mx-auto px-2">
                   Ask me about UK compliance regulations, how to use Checkly, or creating SOPs and Risk Assessments.
                 </p>
                 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {QUICK_ACTIONS.map((action, index) => (
                     <button
                       key={index}
                       onClick={() => handleQuickAction(action.query)}
-                      className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] 
+                      className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] 
                         hover:bg-white/[0.08] hover:border-white/[0.12] transition-colors text-left"
                     >
                       {action.icon}
-                      <span className="text-sm text-white/80">{action.label}</span>
+                      <span className="text-xs sm:text-sm text-white/80">{action.label}</span>
                     </button>
                   ))}
                 </div>
@@ -356,13 +357,13 @@ export default function AIAssistantWidget() {
                 {/* Contact Human Quick Action */}
                 <button
                   onClick={handleContactHuman}
-                  className="mt-4 w-full flex items-center justify-center gap-2 p-3 rounded-lg 
+                  className="mt-3 sm:mt-4 w-full flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg 
                     bg-transparent border border-[#EC4899] text-[#EC4899]
                     hover:shadow-[0_0_12px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
                     transition-all duration-200 ease-in-out"
                 >
                   <Headphones className="w-4 h-4" />
-                  <span className="text-sm font-medium">Speak to a Human</span>
+                  <span className="text-xs sm:text-sm font-medium">Speak to a Human</span>
                 </button>
               </div>
             )}
@@ -374,7 +375,7 @@ export default function AIAssistantWidget() {
                 className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 {/* Avatar */}
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center
+                <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center
                   ${message.role === 'user' 
                     ? 'bg-blue-500/20' 
                     : message.isError 
@@ -383,18 +384,18 @@ export default function AIAssistantWidget() {
                   }`}
                 >
                   {message.role === 'user' ? (
-                    <User className="w-4 h-4 text-blue-400" />
+                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
                   ) : message.isError ? (
-                    <AlertCircle className="w-4 h-4 text-red-400" />
+                    <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
                   ) : (
-                    <Bot className="w-4 h-4 text-[#EC4899]" />
+                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EC4899]" />
                   )}
                 </div>
                 
                 {/* Message Content */}
-                <div className={`flex-1 max-w-[280px] ${message.role === 'user' ? 'text-right' : ''}`}>
+                <div className={`flex-1 max-w-[85%] sm:max-w-[280px] ${message.role === 'user' ? 'text-right' : ''}`}>
                   <div
-                    className={`inline-block px-4 py-3 rounded-2xl text-sm
+                    className={`inline-block px-3 py-2 sm:px-4 sm:py-3 rounded-2xl text-xs sm:text-sm
                       ${message.role === 'user'
                         ? 'bg-blue-500/20 text-white rounded-br-md'
                         : message.isError
@@ -491,9 +492,9 @@ export default function AIAssistantWidget() {
           {showScrollButton && (
             <button
               onClick={scrollToBottom}
-              className="absolute bottom-20 left-1/2 -translate-x-1/2 p-2 rounded-full 
+              className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 p-2 rounded-full 
                 bg-transparent text-[#EC4899] border border-[#EC4899] shadow-lg 
-                hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+                hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out z-10"
             >
               <ChevronDown className="w-4 h-4" />
             </button>
@@ -502,7 +503,7 @@ export default function AIAssistantWidget() {
           {/* Input Area */}
           <form 
             onSubmit={handleSubmit}
-            className="p-4 border-t border-white/[0.06] bg-black/20"
+            className="p-3 sm:p-4 border-t border-white/[0.06] bg-black/20 flex-shrink-0"
           >
             <div className="flex items-center gap-2">
               <input
@@ -512,28 +513,28 @@ export default function AIAssistantWidget() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask about compliance, tasks, or Checkly..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.1] 
-                  text-white placeholder-white/40 text-sm
+                className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-white/[0.06] border border-white/[0.1] 
+                  text-white placeholder-white/40 text-xs sm:text-sm
                   focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40
                   disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
-                className="p-3 rounded-xl bg-transparent text-[#EC4899] border border-[#EC4899]
+                className="p-2.5 sm:p-3 rounded-xl bg-transparent text-[#EC4899] border border-[#EC4899] flex-shrink-0
                   hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
               >
                 {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </button>
             </div>
             
             {/* Disclaimer */}
-            <p className="text-xs text-white/30 text-center mt-2">
+            <p className="text-xs text-white/30 text-center mt-2 hidden sm:block">
               AI responses are guidance only. Always verify critical compliance info.
             </p>
           </form>

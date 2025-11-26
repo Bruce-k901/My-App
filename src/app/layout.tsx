@@ -120,7 +120,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     return true; // Suppress
                   }
                   if (originalOnError) {
-                    return originalOnError.apply(window, arguments);
+                    return originalOnError.call(window, msg, source, lineno, colno, error);
                   }
                   return false;
                 };

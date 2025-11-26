@@ -284,23 +284,23 @@ function SOPsListContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-4 md:space-y-6">
       {/* Search and Filter */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={18} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search SOPs by title or reference code..."
-            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+            placeholder="Search SOPs..."
+            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-white placeholder-neutral-400"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+          className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"
         >
           <option value="all">All Status</option>
           <option value="Published">Published</option>
@@ -308,10 +308,11 @@ function SOPsListContent() {
         </select>
         <button
           onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center gap-2 transition-colors"
+          className="px-3 sm:px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
         >
           <Archive size={16} />
-          Archived SOPs
+          <span className="hidden sm:inline">Archived SOPs</span>
+          <span className="sm:hidden">Archive</span>
         </button>
       </div>
 

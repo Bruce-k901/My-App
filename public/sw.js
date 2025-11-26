@@ -17,10 +17,16 @@ self.addEventListener('unhandledrejection', (event) => {
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
+  '/admin',
+  '/admin/companies',
+  '/admin/users',
+  '/admin/tasks',
   '/notifications',
   '/manifest.json',
   '/icon-192x192.png',
-  '/icon-512x512.png'
+  '/icon-512x512.png',
+  '/admin-icon-192x192.png',
+  '/admin-icon-512x512.png'
 ];
 
 // Install event - cache static assets

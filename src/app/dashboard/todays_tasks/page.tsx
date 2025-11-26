@@ -957,7 +957,10 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }, [companyId, siteId, loadBreachActions]) // Dependencies for fetchTodaysTasks
+    // Note: loadBreachActions is called at the end but doesn't need to be in dependencies
+    // since it's just a side effect, not used in the logic
+     
+  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
@@ -965,6 +968,9 @@ export default function DailyChecklistPage() {
   }, [fetchTodaysTasks])
 
   // Now define the useEffect that uses these functions
+  // CRITICAL: Don't include the callback functions in dependencies to avoid infinite loops
+  // The callbacks already have their own dependencies (companyId, siteId) which will trigger re-creation
+  // We only need to depend on the actual values that should trigger a refresh
   useEffect(() => {
     if (companyId) {
       fetchTodaysTasks()
@@ -974,7 +980,8 @@ export default function DailyChecklistPage() {
       setLoading(false)
       setTasks([])
     }
-  }, [siteId, companyId, fetchTodaysTasks, fetchUpcomingTasks, loadBreachActions])
+     
+  }, [siteId, companyId]) // Only depend on the actual values, not the callback functions
 
   // Listen for refresh events (e.g., after clock-in)
   useEffect(() => {

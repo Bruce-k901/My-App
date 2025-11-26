@@ -98,10 +98,10 @@ export function Messaging() {
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
+          className="md:hidden fixed top-[88px] left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
           aria-label="Back to conversations"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </button>
       )}
 
@@ -144,7 +144,7 @@ export function Messaging() {
         {selectedConversationId ? (
           <>
             {/* Content Tabs - Fixed at top */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 border-b border-white/[0.06]">
               <ConversationContentTabs conversationId={selectedConversationId} />
             </div>
             {/* Message Thread - Scrollable */}
@@ -156,7 +156,7 @@ export function Messaging() {
               />
             </div>
             {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 border-t border-white/[0.06]">
               <MessageInput
                 conversationId={selectedConversationId}
                 sendMessage={messagesHook.sendMessage}
