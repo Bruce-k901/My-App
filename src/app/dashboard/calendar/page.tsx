@@ -57,7 +57,7 @@ interface CalendarEvent {
 
 export default function ManagerCalendarPage() {
   const { companyId, siteId, userProfile } = useAppContext();
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -93,6 +93,16 @@ export default function ManagerCalendarPage() {
     message: "",
     urgent: false,
   });
+
+  // Initialize currentDate on client mount to avoid hydration mismatch
+  useEffect(() => {
+    if (currentDate === null) {
+      setCurrentDate(new Date());
+    }
+  }, [currentDate]);
+
+  // Helper to get current date with fallback (prevents null errors during initial render)
+  const getCurrentDate = () => currentDate || new Date();
 
   // Load users and templates
   useEffect(() => {
@@ -141,8 +151,9 @@ export default function ManagerCalendarPage() {
       
       try {
         // Load all handover data for the current month
-        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split("T")[0];
-        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split("T")[0];
+        const date = getCurrentDate();
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split("T")[0];
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split("T")[0];
         
         const { data } = await supabase
           .from("profile_settings")
@@ -526,8 +537,9 @@ export default function ManagerCalendarPage() {
 
   // Calendar functions
   const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+    const date = getCurrentDate();
+    const year = date.getFullYear();
+    const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
@@ -570,7 +582,8 @@ export default function ManagerCalendarPage() {
   };
 
   const navigateMonth = (direction: "prev" | "next") => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + (direction === "next" ? 1 : -1), 1));
+    const date = getCurrentDate();
+    setCurrentDate(new Date(date.getFullYear(), date.getMonth() + (direction === "next" ? 1 : -1), 1));
   };
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -635,7 +648,7 @@ export default function ManagerCalendarPage() {
                 <ChevronLeft className="w-5 h-5 text-slate-400" />
               </button>
               <h2 className="text-xl font-semibold text-white">
-                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                {currentDate ? `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}` : ""}
               </h2>
               <button
                 onClick={() => navigateMonth("next")}

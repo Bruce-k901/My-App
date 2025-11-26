@@ -178,7 +178,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
   return (
     <div className="bg-white/[0.02] border-b border-white/[0.06]">
       {/* Tabs */}
-      <div className="flex gap-1 p-2 border-b border-white/[0.06]">
+      <div className="flex gap-1 p-1.5 sm:p-2 border-b border-white/[0.06] overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -187,18 +187,18 @@ export default function ConversationContentTabs({ conversationId }: Conversation
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium
+                flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm font-medium flex-shrink-0
                 ${isActive
                   ? 'bg-transparent text-[#EC4899] border border-[#EC4899]'
                   : 'text-white/60 hover:text-white/80 hover:bg-white/[0.05]'
                 }
               `}
             >
-              <Icon className="h-4 w-4" />
-              <span>{tab.label}</span>
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">{tab.label}</span>
               {tab.count > 0 && (
                 <span className={`
-                  text-xs px-2 py-0.5 rounded-full
+                  text-xs px-1.5 sm:px-2 py-0.5 rounded-full
                   ${isActive
                     ? 'bg-[#EC4899]/30 text-[#EC4899]'
                     : 'bg-white/[0.1] text-white/60'

@@ -1,7 +1,25 @@
 "use client";
 
-import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
+import dynamic from "next/dynamic";
 import EnhancedShiftHandover from "@/components/dashboard/EnhancedShiftHandover";
+
+// Dynamically import WelcomeHeader with SSR disabled to prevent hydration issues
+// The loading component must match the initial render structure exactly
+const WelcomeHeader = dynamic(() => import("@/components/dashboard/WelcomeHeader"), {
+  ssr: false,
+  loading: () => (
+    <div className="text-white">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-semibold">Welcome</h1>
+          <p className="text-white/60 text-xs sm:text-sm md:text-base">
+            <span className="opacity-0 select-none pointer-events-none">Monday, 1 January 2025</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  ),
+});
 import AlertsFeed from "@/components/dashboard/AlertsFeed";
 import EmergencyBreakdowns from "@/components/dashboard/EmergencyBreakdowns";
 import IncidentLog from "@/components/dashboard/IncidentLog";

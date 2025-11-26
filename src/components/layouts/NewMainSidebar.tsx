@@ -51,6 +51,7 @@ const sections: SidebarSection[] = [
     label: "Organization",
     icon: Building2,
     items: [
+      { label: "Onboarding", href: "/dashboard/organization/onboarding" },
       { label: "Business Details", href: "/dashboard/business" },
       { label: "Sites", href: "/dashboard/sites" },
       { label: "Users", href: "/dashboard/users" },

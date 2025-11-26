@@ -53,7 +53,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Recreate trigger
+-- Recreate trigger (drop first if exists)
+DROP TRIGGER IF EXISTS calculate_monthly_amount_trigger ON public.company_subscriptions;
 CREATE TRIGGER calculate_monthly_amount_trigger
   BEFORE INSERT OR UPDATE ON public.company_subscriptions
   FOR EACH ROW
@@ -100,7 +101,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger to auto-update plan when site count changes
+-- Trigger to auto-update plan when site count changes (drop first if exists)
+DROP TRIGGER IF EXISTS auto_update_plan_by_site_count_trigger ON public.company_subscriptions;
 CREATE TRIGGER auto_update_plan_by_site_count_trigger
   BEFORE INSERT OR UPDATE ON public.company_subscriptions
   FOR EACH ROW

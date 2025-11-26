@@ -4782,14 +4782,9 @@ export default function TaskCompletionModal({
                   break
                 
                 case 'ppm_overdue':
-                  // PPM tasks use source_id (not asset_id) - this is the asset ID
-                  if (taskData.source_id || taskData.asset_id) {
-                    const assetId = taskData.source_id || taskData.asset_id
-                    link = `/dashboard/ppm?asset_id=${assetId}`
-                    label = 'View PPM Schedule'
-                    description = 'View and manage the PPM schedule for this asset'
-                  }
-                  break
+                  // PPM tasks should not show "View PPM Schedule" - user should place callout first
+                  // Return null to hide this quick navigation section
+                  return null
               }
               
               if (!link) return null

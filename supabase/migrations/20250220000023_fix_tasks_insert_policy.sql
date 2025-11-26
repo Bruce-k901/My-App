@@ -4,6 +4,9 @@
 -- Drop the blocking policy
 DROP POLICY IF EXISTS tasks_insert_service_only ON public.tasks;
 
+-- Drop existing policy if it exists (to allow recreation)
+DROP POLICY IF EXISTS tasks_insert_company ON public.tasks;
+
 -- Create a new policy that allows company members to insert tasks
 CREATE POLICY tasks_insert_company
   ON public.tasks

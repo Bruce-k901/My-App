@@ -924,15 +924,46 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         }
       };
 
-      // Skip creating follow-up task for now due to RLS policy restrictions
-      // The callout record itself provides sufficient tracking
-      // TODO: Re-enable if RLS policies are updated to allow user-created tasks
-      // or if we create an API route that uses service role
-      console.log('⚠️ [CALLOUT] Skipping follow-up task creation - callout record provides tracking');
+      // Create follow-up task for PPM callouts via API route (bypasses RLS)
+      if (calloutType === 'ppm' && asset.id) {
+        try {
+          console.log('📋 [CALLOUT] Creating PPM follow-up task via API...');
+          const response = await fetch('/api/tasks/create-ppm-followup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              calloutId: newCalloutId,
+              assetId: asset.id,
+              assetName: asset.name,
+              companyId: assetDetails.company_id,
+              siteId: assetDetails.site_id,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('❌ [CALLOUT] Failed to create PPM follow-up task:', errorData);
+            // Don't throw - callout was created successfully, just log the error
+          } else {
+            const result = await response.json();
+            console.log('✅ [CALLOUT] PPM follow-up task created:', result.taskId);
+          }
+        } catch (apiError: any) {
+          console.error('❌ [CALLOUT] Error calling PPM follow-up API:', apiError);
+          // Don't throw - callout was created successfully
+        }
+      } else {
+        // For non-PPM callouts, skip follow-up task creation (existing behavior)
+        console.log('⚠️ [CALLOUT] Skipping follow-up task creation for non-PPM callout');
+      }
 
       showToast({ 
         title: 'Callout created successfully', 
-        description: 'Callout report and follow-up task have been created',
+        description: calloutType === 'ppm' 
+          ? 'PPM callout created. Follow-up task has been added to Today\'s Tasks.'
+          : 'Callout created successfully',
         type: 'success' 
       });
 

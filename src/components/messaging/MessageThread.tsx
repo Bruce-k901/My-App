@@ -285,7 +285,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4 min-h-0"
+        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-3 sm:space-y-4 min-h-0"
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -331,7 +331,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 {showAvatar && isOwn && <div className="flex-shrink-0 w-8" />}
 
                 <div
-                  className={`flex flex-col max-w-[85%] sm:max-w-[75%] md:max-w-[70%] ${
+                  className={`flex flex-col max-w-[90%] sm:max-w-[85%] md:max-w-[75%] lg:max-w-[70%] ${
                     isOwn ? 'items-end' : 'items-start'
                   }`}
                 >
@@ -380,7 +380,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   )}
 
                   <div
-                    className={`group relative px-3 sm:px-4 py-2 rounded-lg ${
+                    className={`group relative px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
                       isOwn
                         ? 'bg-pink-500/20 text-white'
                         : 'bg-white/[0.05] text-white/90'

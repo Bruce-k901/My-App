@@ -104,6 +104,8 @@ COMMENT ON FUNCTION public.is_user_clocked_in_today(UUID, UUID, DATE) IS
 'Check if a user is clocked in today. Uses clock_in_date column from attendance_logs view.';
 
 -- Update get_active_staff_on_site
+-- Drop first if return type might have changed (CREATE OR REPLACE can't change return types)
+DROP FUNCTION IF EXISTS public.get_active_staff_on_site(UUID);
 CREATE OR REPLACE FUNCTION public.get_active_staff_on_site(p_site_id UUID)
 RETURNS TABLE (
   user_id UUID,
@@ -137,6 +139,8 @@ COMMENT ON FUNCTION public.get_active_staff_on_site(UUID) IS
 'Get active staff on site today. Uses clock_in_date column from attendance_logs view.';
 
 -- Update get_managers_on_shift
+-- Drop first if return type might have changed (CREATE OR REPLACE can't change return types)
+DROP FUNCTION IF EXISTS public.get_managers_on_shift(UUID, UUID);
 CREATE OR REPLACE FUNCTION public.get_managers_on_shift(p_site_id UUID DEFAULT NULL, p_company_id UUID DEFAULT NULL)
 RETURNS TABLE (
   user_id UUID,

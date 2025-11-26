@@ -338,11 +338,13 @@ Deno.serve(async (req) => {
     try {
       const sixMonthsAgo = new Date(today);
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      const sixMonthsAgoString = sixMonthsAgo.toISOString().split("T")[0];
 
+      // Get assets that might be overdue - we'll filter more carefully below
       const { data: overdueAssets } = await supabase
         .from("assets")
-        .select("id, site_id, company_id, name")
-        .or(`last_service_date.lt.${sixMonthsAgo.toISOString()},next_service_date.lte.${todayString}`)
+        .select("id, site_id, company_id, name, last_service_date, next_service_date")
+        .or(`last_service_date.lt.${sixMonthsAgoString},next_service_date.lte.${todayString},last_service_date.is.null,next_service_date.is.null`)
         .eq("status", "active");
 
       const { data: ppmTemplate } = await supabase
@@ -353,17 +355,55 @@ Deno.serve(async (req) => {
 
       if (ppmTemplate) {
         for (const asset of overdueAssets || []) {
+          // Skip if asset has a future next_service_date (not overdue)
+          if (asset.next_service_date && asset.next_service_date > todayString) {
+            continue;
+          }
+
+          // Skip if asset was serviced recently (within last 7 days)
+          // This prevents regenerating tasks for assets that were just completed
+          if (asset.last_service_date) {
+            const lastServiceDate = new Date(asset.last_service_date);
+            const daysSinceService = Math.floor((today.getTime() - lastServiceDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysSinceService <= 7) {
+              continue; // Asset was serviced recently, don't create new task
+            }
+          }
+
           const taskName = `PPM Required: ${asset.name}`;
 
-          const { data: existing } = await supabase
+          // Check if task already exists for today (pending or completed)
+          const { data: existingToday } = await supabase
             .from("checklist_tasks")
-            .select("id")
-            .eq("custom_name", taskName)
+            .select("id, status")
             .eq("site_id", asset.site_id)
             .eq("due_date", todayString)
+            .contains("task_data", { source_type: "ppm_overdue", source_id: asset.id })
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existingToday && existingToday.length > 0) {
+            continue; // Task already exists for today
+          }
+
+          // Check if there's a completed task for this asset in the last 7 days
+          // This prevents regenerating tasks that were just completed
+          const sevenDaysAgo = new Date(today);
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const sevenDaysAgoString = sevenDaysAgo.toISOString().split("T")[0];
+
+          const { data: recentCompleted } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("site_id", asset.site_id)
+            .eq("status", "completed")
+            .gte("due_date", sevenDaysAgoString)
+            .lte("due_date", todayString)
+            .contains("task_data", { source_type: "ppm_overdue", source_id: asset.id })
+            .limit(1);
+
+          if (recentCompleted && recentCompleted.length > 0) {
+            continue; // Task was completed recently, don't regenerate
+          }
 
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: ppmTemplate.id,

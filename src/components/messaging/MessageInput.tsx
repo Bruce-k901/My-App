@@ -116,7 +116,7 @@ export function MessageInput({
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-4">
+    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-2 sm:p-3 md:p-4">
       {/* Reply Preview - Fixed height to prevent layout shift */}
       <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (

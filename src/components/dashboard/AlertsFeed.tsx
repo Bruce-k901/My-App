@@ -48,18 +48,8 @@ export default function AlertsFeed() {
         // Only query notifications if companyId is available
         if (companyId) {
           try {
-            // First, try a simple query to test if the table is accessible
-            const testQuery = await supabase
-              .from("notifications")
-              .select("id")
-              .limit(1);
-            
-            if (testQuery.error) {
-              console.error("Test query failed - table may not exist or RLS is blocking:", testQuery.error);
-            }
-            
-            // Use select("*") like other queries in the codebase to avoid column issues
-            // Note: Removed .eq("status", "active") and .in("severity", ...) as these columns don't exist in the database
+            // Use select("*") to avoid column issues
+            // Note: This query may fail if notifications table doesn't exist or has different schema
             const { data, error } = await supabase
               .from("notifications")
               .select("*")
@@ -69,20 +59,9 @@ export default function AlertsFeed() {
               .limit(50);
             
             if (error) {
-              // Log detailed error information - try multiple ways to capture the error
-              console.error("Error fetching notifications - raw error:", error);
-              console.error("Error fetching notifications - message:", error?.message);
-              console.error("Error fetching notifications - code:", error?.code);
-              console.error("Error fetching notifications - details:", error?.details);
-              console.error("Error fetching notifications - hint:", error?.hint);
-              console.error("Error fetching notifications - stringified:", JSON.stringify(error, null, 2));
-              
-              // Try to get error from response if available
-              if ((error as any)?.response) {
-                console.error("Error response:", (error as any).response);
-              }
-              
-              // Don't throw - continue loading other alerts
+              // Silently log error - notifications table may not exist or have different schema
+              // This is expected and not critical - other alerts will still load
+              console.debug("Notifications query failed (expected if table doesn't exist):", error.message);
             } else if (data) {
               // Filter in JavaScript for severity if the column exists, otherwise show all
               const filteredData = data.filter((d: any) => {
@@ -108,11 +87,8 @@ export default function AlertsFeed() {
               );
             }
           } catch (err: any) {
-            console.error("Exception fetching notifications - raw:", err);
-            console.error("Exception fetching notifications - message:", err?.message);
-            console.error("Exception fetching notifications - stack:", err?.stack);
-            console.error("Exception fetching notifications - stringified:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-            // Continue loading other alerts even if notifications fail
+            // Silently catch exceptions - notifications are not critical
+            console.debug("Notifications fetch exception (expected if table doesn't exist):", err.message);
           }
         }
 

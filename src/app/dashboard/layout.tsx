@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import NewMainSidebar from "@/components/layouts/NewMainSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
+import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
 import { useAppContext } from "@/context/AppContext";
 import type { AppRole } from "@/lib/accessControl";
 
@@ -23,21 +24,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   
   return (
     <div 
-      className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white"
+      className="dashboard-page flex h-screen bg-[#0B0D13] text-white overflow-hidden"
       suppressHydrationWarning
     >
       <NewMainSidebar 
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
-      <div className="flex-1 lg:ml-20 flex flex-col min-h-screen">
-        {/* Sticky Header - iOS Safari compatible */}
-        <div className="sticky top-0 z-50 bg-[#0B0D13] ios-sticky-header">
+      <div className="flex-1 lg:ml-20 flex flex-col h-full min-w-0">
+        {/* Fixed Header - Always anchored to top */}
+        <div className="ios-sticky-header">
           <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
         </div>
-        {/* Scrollable Content */}
+        {/* Scrollable Content - Only this area scrolls */}
         <main 
-          className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative mt-[72px]"
           suppressHydrationWarning
         >
           {/* Always render children - never conditionally render different structures */}
@@ -55,6 +56,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
         </main>
       </div>
+      {/* AI Assistant Widget */}
+      <AIAssistantWidget />
     </div>
   );
 }

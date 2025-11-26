@@ -7,7 +7,7 @@ import { MessageThread } from './MessageThread';
 import { MessageInput } from './MessageInput';
 import ConversationContentTabs from './ConversationContentTabs';
 import { useMessages } from '@/hooks/useMessages';
-import { MessageSquare, Menu } from 'lucide-react';
+import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
 import type { Message } from '@/types/messaging';
 import { supabase } from '@/lib/supabase';
 
@@ -90,18 +90,18 @@ export function Messaging() {
 
   return (
     <div className="flex h-full w-full bg-[#0B0D13] overflow-hidden">
-      {/* Mobile: Burger Button - Only show when viewing a conversation, takes us back to overview */}
-      {selectedConversationId && (
+      {/* Mobile: Back Button - Only show when viewing a conversation */}
+      {selectedConversationId && isMobile && (
         <button
           onClick={() => {
             setSelectedConversationId(null);
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] rounded-lg text-white transition-colors"
-          aria-label="Back to conversations overview"
+          className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
+          aria-label="Back to conversations"
         >
-          <Menu className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
       )}
 

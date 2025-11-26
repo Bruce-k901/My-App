@@ -6,21 +6,41 @@ import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 
 export default function WelcomeHeader() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [formattedDate, setFormattedDate] = useState<string>("");
   const [firstName, setFirstName] = useState("");
-  const { session, companyId } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+  const { session } = useAppContext();
 
-  const tick = () => setCurrentTime(new Date());
-
+  // Set mounted state
   useEffect(() => {
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
+    setIsMounted(true);
   }, []);
 
+  // Update date only on client
   useEffect(() => {
+    if (!isMounted) return;
+    
+    const updateDate = () => {
+      try {
+        const now = new Date();
+        setFormattedDate(format(now, "EEEE, d MMMM yyyy"));
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        setFormattedDate('');
+      }
+    };
+    
+    updateDate();
+    const intervalId = setInterval(updateDate, 60000);
+    
+    return () => clearInterval(intervalId);
+  }, [isMounted]);
+
+  // Fetch user name
+  useEffect(() => {
+    if (!isMounted || !session?.user?.id) return;
+    
     const fetchUserName = async () => {
-      if (!session?.user?.id) return;
-      
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name")
@@ -33,17 +53,21 @@ export default function WelcomeHeader() {
       }
     };
     fetchUserName();
-  }, [session]);
+  }, [session, isMounted]);
 
   return (
     <div className="text-white">
-      {/* Welcome + Date */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold">
             Welcome{firstName ? `, ${firstName}` : ""}
           </h1>
-          <p className="text-white/60 text-xs sm:text-sm md:text-base">{format(currentTime, "EEEE, d MMMM yyyy")}</p>
+          <p 
+            className="text-white/60 text-xs sm:text-sm md:text-base"
+            suppressHydrationWarning
+          >
+            {isMounted && formattedDate ? formattedDate : "\u00A0"}
+          </p>
         </div>
       </div>
     </div>

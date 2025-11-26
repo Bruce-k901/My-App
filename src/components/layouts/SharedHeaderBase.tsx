@@ -48,7 +48,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
           </Link>
 
           {/* Desktop Center nav */}
-          <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[15px] font-medium tracking-tight">
+          <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[15px] font-medium tracking-tight" suppressHydrationWarning>
             {children}
           </nav>
 

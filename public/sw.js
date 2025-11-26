@@ -2,6 +2,17 @@
 const CACHE_NAME = 'checkly-v2'; // Updated to clear old favicon cache
 const RUNTIME_CACHE = 'checkly-runtime-v2';
 
+// Global error handler for unhandled promise rejections
+self.addEventListener('error', (event) => {
+  console.warn('[SW] Unhandled error (non-fatal):', event.message);
+  event.preventDefault(); // Prevent default error handling
+});
+
+self.addEventListener('unhandledrejection', (event) => {
+  console.warn('[SW] Unhandled promise rejection (non-fatal):', event.reason);
+  event.preventDefault(); // Prevent default error handling
+});
+
 // Assets to cache on install
 const STATIC_ASSETS = [
   '/',
@@ -46,6 +57,38 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - serve from cache, fallback to network
+// Rate limiting for failed fetches to prevent spam
+const failedFetches = new Map();
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 5000; // 5 seconds
+
+function shouldRetry(url) {
+  const now = Date.now();
+  const record = failedFetches.get(url);
+  
+  if (!record) return true;
+  
+  // If last failure was recent, check retry count
+  if (now - record.lastFailure < RETRY_DELAY) {
+    return record.retries < MAX_RETRIES;
+  }
+  
+  // Reset if enough time has passed
+  if (now - record.lastFailure > RETRY_DELAY * 2) {
+    failedFetches.delete(url);
+    return true;
+  }
+  
+  return record.retries < MAX_RETRIES;
+}
+
+function recordFailure(url) {
+  const record = failedFetches.get(url) || { retries: 0, lastFailure: 0 };
+  record.retries += 1;
+  record.lastFailure = Date.now();
+  failedFetches.set(url, record);
+}
+
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -57,12 +100,31 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const requestUrl = event.request.url;
+
   // Don't cache favicon - always fetch fresh (but handle errors gracefully)
-  if (event.request.url.includes('favicon') || event.request.url.includes('icon')) {
+  if (requestUrl.includes('favicon') || requestUrl.includes('icon')) {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        // If fetch fails (server down), return a valid empty response
+      fetch(event.request).catch((error) => {
+        // Silently handle favicon errors - don't spam console
         return new Response('', { status: 200, headers: { 'Content-Type': 'image/png' } });
+      })
+    );
+    return;
+  }
+
+  // Check if we should retry this URL (rate limiting)
+  if (!shouldRetry(requestUrl)) {
+    // Too many failures, serve from cache or return empty response
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Return empty response to prevent further fetch attempts
+        return new Response('', { status: 200 });
+      }).catch(() => {
+        return new Response('', { status: 200 });
       })
     );
     return;
@@ -76,9 +138,17 @@ self.addEventListener('fetch', (event) => {
           return cachedResponse;
         }
 
-        // Otherwise fetch from network
-        return fetch(event.request)
+        // Otherwise fetch from network with timeout
+        const fetchPromise = fetch(event.request);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Fetch timeout')), 10000)
+        );
+
+        return Promise.race([fetchPromise, timeoutPromise])
           .then((response) => {
+            // Reset failure count on success
+            failedFetches.delete(requestUrl);
+            
             // Don't cache non-successful responses
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
@@ -87,20 +157,38 @@ self.addEventListener('fetch', (event) => {
             // Clone the response (stream can only be consumed once)
             const responseToCache = response.clone();
 
-            // Cache the response
+            // Cache the response (don't await - fire and forget)
             caches.open(RUNTIME_CACHE)
               .then((cache) => {
-                cache.put(event.request, responseToCache);
+                cache.put(event.request, responseToCache).catch(() => {
+                  // Silently fail cache operations
+                });
+              })
+              .catch(() => {
+                // Silently fail cache operations
               });
 
             return response;
           })
           .catch((error) => {
+            // Record the failure
+            recordFailure(requestUrl);
+            
+            // Only log in development or if it's a new failure
+            const record = failedFetches.get(requestUrl);
+            if (record && record.retries <= 1) {
+              console.warn('[SW] Fetch failed (will retry):', requestUrl, error.message);
+            }
+            
             // If network fails and no cache, return offline page or empty response
-            console.error('[SW] Fetch failed:', error);
             if (event.request.destination === 'document') {
-              return caches.match('/').catch(() => {
+              return caches.match('/').then((cachedPage) => {
+                if (cachedPage) return cachedPage;
                 // If even cache fails, return a valid empty HTML response
+                return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1></body></html>', {
+                  headers: { 'Content-Type': 'text/html' }
+                });
+              }).catch(() => {
                 return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1></body></html>', {
                   headers: { 'Content-Type': 'text/html' }
                 });
@@ -112,8 +200,18 @@ self.addEventListener('fetch', (event) => {
       })
       .catch((error) => {
         // If cache match fails, try network or return empty response
-        console.error('[SW] Cache match failed:', error);
+        // Only log if it's not a network error (which we already handle above)
+        if (error.name !== 'TypeError' || !error.message.includes('fetch')) {
+          console.warn('[SW] Cache match failed:', error.message);
+        }
+        
+        // Check rate limit before attempting fetch
+        if (!shouldRetry(requestUrl)) {
+          return new Response('', { status: 200 });
+        }
+        
         return fetch(event.request).catch(() => {
+          recordFailure(requestUrl);
           return new Response('', { status: 200 });
         });
       })
