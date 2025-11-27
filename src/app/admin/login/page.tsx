@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Shield, Loader2, AlertCircle } from 'lucide-react';
+import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
+import { AdminPWAProvider } from '@/components/admin/AdminPWAProvider';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -56,7 +58,10 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
+    <>
+      <AdminFaviconSetter />
+      <AdminPWAProvider />
+      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
@@ -128,6 +133,7 @@ export default function AdminLoginPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 

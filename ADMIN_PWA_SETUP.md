@@ -1,95 +1,94 @@
-# Admin PWA Setup Guide
+# Admin PWA Setup - Separate Installation
 
-## Overview
+The admin dashboard is now a **separate PWA** from the main Checkly app. This allows you to install them independently on your phone.
 
-The admin dashboard has been configured as a Progressive Web App (PWA) with enhanced features for platform administrators.
+## How It Works
 
-## Inverted Favicon Setup
+### Separate Service Workers
 
-✅ **Setup Complete!** The admin icon files have been created from your favicon in `public/logo`.
+- **Main App**: Uses `/sw.js` (scoped to `/`)
+- **Admin Dashboard**: Uses `/admin-sw.js` (scoped to `/admin/`)
 
-### Current Setup
+### Separate Manifests
 
-The following admin icon files have been created in `/public`:
+- **Main App**: `/manifest.json`
+- **Admin Dashboard**: `/admin-manifest.json`
 
-- `admin-icon-192x192.png` (192x192 pixels)
-- `admin-icon-512x512.png` (512x512 pixels)
-- `admin-apple-touch-icon.png` (180x180 pixels)
+### Separate Icons
 
-### To Update Icons
+- **Main App**: Green favicon (`icon-*.png`)
+- **Admin Dashboard**: Magenta favicon (`admin-icon-*.png`)
 
-If you want to use a different favicon or update the icons:
+## Installing the Admin PWA
 
-1. **Place your inverted favicon in `/public/logo/`** with one of these names:
-   - `favicon.png`
-   - `icon.png`
-   - `admin-icon.png`
-   - `inverted-favicon.png`
-   - Or any image file (`.png`, `.ico`, `.svg`, `.jpg`)
+### On Android (Chrome)
 
-2. **Run the setup script:**
+1. Navigate to `/admin/login` in Chrome
+2. Tap the menu (3 dots) → **"Install app"** or **"Add to Home Screen"**
+3. The admin dashboard will install as a separate app with the magenta icon
 
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File "scripts/setup-admin-icons.ps1"
-   ```
+### On iOS (Safari)
 
-3. **For proper sizing**, install ImageMagick and the script will automatically resize icons:
-   - Download: https://imagemagick.org/script/download.php
-   - Or manually resize your icons to the correct dimensions
+1. Navigate to `/admin/login` in Safari
+2. Tap the **Share** button
+3. Select **"Add to Home Screen"**
+4. The admin dashboard will install as a separate app
 
-## PWA Features Enabled
+### On Desktop (Chrome/Edge)
 
-### 1. **Admin Shortcuts**
+1. Navigate to `/admin/login` in Chrome/Edge
+2. Click the install icon in the address bar (or go to Menu → Install)
+3. The admin dashboard will install as a separate desktop app
 
-The manifest includes quick access shortcuts for:
+## What Gets Cached
 
-- Admin Dashboard (`/admin`)
-- Admin Companies (`/admin/companies`)
-- Admin Users (`/admin/users`)
+The admin service worker (`admin-sw.js`) caches:
 
-### 2. **Service Worker Caching**
+- `/admin/login` - Login page
+- `/admin` - Dashboard
+- `/admin/companies` - Companies list
+- `/admin/users` - Users list
+- `/admin/tasks` - Task analytics
+- `/admin/settings` - Settings
+- Admin icons and manifest
 
-Admin routes are now cached for offline access:
+## Key Differences
 
-- `/admin`
-- `/admin/companies`
-- `/admin/users`
-- `/admin/tasks`
+| Feature        | Main App          | Admin Dashboard        |
+| -------------- | ----------------- | ---------------------- |
+| Start URL      | `/`               | `/admin/login`         |
+| Theme Color    | Green (`#10B981`) | Magenta (`#EC4899`)    |
+| Icon           | Green favicon     | Magenta favicon        |
+| Scope          | `/`               | `/admin/`              |
+| Service Worker | `/sw.js`          | `/admin-sw.js`         |
+| Manifest       | `/manifest.json`  | `/admin-manifest.json` |
 
-### 3. **Install Prompt**
+## Troubleshooting
 
-Users can install the admin dashboard as a standalone app on their device.
+### Both apps install but show same content
 
-## Testing the PWA
+- Clear browser cache and reinstall
+- Make sure you're installing from the correct URL (`/admin/login` for admin)
 
-1. **Chrome/Edge:**
-   - Open DevTools → Application → Manifest
-   - Check "Add to homescreen" option
-   - Test install prompt
+### Admin PWA doesn't install
 
-2. **Mobile:**
-   - Open admin dashboard in mobile browser
-   - Look for "Add to Home Screen" prompt
-   - Install and test offline functionality
+- Check that you're on `/admin/login` (not `/admin`)
+- Verify `admin-sw.js` is accessible at `/admin-sw.js`
+- Check browser console for service worker registration errors
 
-## Icon Requirements
+### Icons not showing correctly
 
-- **192x192**: Minimum size for Android
-- **512x512**: Recommended for high-DPI displays
-- **180x180**: Apple touch icon (optional but recommended)
-- **Format**: PNG with transparency
-- **Design**: Should be inverted/light version suitable for dark admin theme
+- Hard refresh the page (Ctrl+Shift+R)
+- Clear browser cache
+- Verify admin icon files exist in `/public/`:
+  - `admin-icon-192x192.png`
+  - `admin-icon-512x512.png`
+  - `admin-apple-touch-icon.png`
+  - `admin-favicon.ico`
 
-## Next Steps
+## Development Notes
 
-1. ✅ Admin icons are set up and ready
-2. Test the install prompt on different devices
-3. Verify offline functionality works correctly
-4. Customize manifest.json if needed (name, description, etc.)
-
-### Note on Icon Sizing
-
-The current icons are copies of your source file. For optimal PWA performance:
-
-- Install ImageMagick and re-run `scripts/setup-admin-icons.ps1` to auto-resize
-- Or manually resize your source favicon to 192x192, 512x512, and 180x180 pixels
+- Admin routes automatically use `AdminPWAProvider` (via `admin/layout.tsx`)
+- Main app routes use `PWAProvider` (via root `layout.tsx`)
+- The main `PWAProvider` skips registration on admin routes to avoid conflicts
+- Both service workers can coexist - they're scoped differently

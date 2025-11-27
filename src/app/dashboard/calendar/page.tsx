@@ -399,8 +399,7 @@ export default function ManagerCalendarPage() {
         type: "task",
         title: `Reminder: ${reminder.title}`,
         message: reminderMessage,
-        severity: "info",
-        recipient_role: "staff",
+        // severity: "info", // Removed as column does not exist
         status: "active",
         due_date: reminderDate, // This will be used to filter notifications by date
         priority: reminder.repeat === "daily" ? "high" : "medium", // Daily reminders get higher priority
@@ -487,8 +486,7 @@ export default function ManagerCalendarPage() {
         type: "task",
         title: message.subject,
         message: messageWithSender,
-        severity: message.urgent ? "critical" : "info",
-        recipient_role: recipientRole,
+        // severity: message.urgent ? "critical" : "info", // Removed as column does not exist
         status: "active",
         priority: message.urgent ? "urgent" : "medium",
       }).select().single();

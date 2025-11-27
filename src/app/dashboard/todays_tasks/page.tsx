@@ -73,9 +73,21 @@ export default function DailyChecklistPage() {
   const { siteId, companyId } = useAppContext()
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
+  // Fix hydration error: calculate date only on client
+  const [currentDate, setCurrentDate] = useState<string>('')
 
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
+
+  // Fix hydration error: NEVER render date on server, only on client after mount
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }))
+  }, [])
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
   const loadBreachActions = useCallback(async () => {
@@ -1069,13 +1081,8 @@ export default function DailyChecklistPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base">
-          {new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
+        <p className="text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
+          {currentDate}
         </p>
         </div>
         <button

@@ -1,0 +1,64 @@
+{
+  "name": "Checkly Admin - Platform Control",
+  "short_name": "Checkly Admin",
+  "description": "Platform administration portal for Checkly",
+  "start_url": "/admin/login",
+  "display": "standalone",
+  "background_color": "#0B0D13",
+  "theme_color": "#EC4899",
+  "orientation": "portrait-primary",
+  "scope": "/admin",
+  "icons": [
+    {
+      "src": "/admin-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/admin-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/admin-apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Dashboard",
+      "description": "Platform overview",
+      "url": "/admin",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin Companies",
+      "short_name": "Companies",
+      "description": "Manage all companies",
+      "url": "/admin/companies",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin Users",
+      "short_name": "Users",
+      "description": "View all platform users",
+      "url": "/admin/users",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Task Analytics",
+      "short_name": "Tasks",
+      "description": "Platform task analytics",
+      "url": "/admin/tasks",
+      "icons": [{ "src": "/admin-icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

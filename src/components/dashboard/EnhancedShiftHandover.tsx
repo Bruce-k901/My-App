@@ -308,8 +308,7 @@ export default function EnhancedShiftHandover() {
         type: "task", // Using existing type
         title: `Reminder: ${reminder.title}`,
         message: reminderMessage,
-        severity: "info",
-        recipient_role: "staff",
+        // severity: "info", // Removed as column does not exist
         status: "active", // Will be shown when due_date arrives
         due_date: reminder.date, // Use due_date for scheduling
         priority: "medium",
@@ -398,8 +397,7 @@ export default function EnhancedShiftHandover() {
         type: "task", // Using existing type
         title: message.subject,
         message: messageWithSender,
-        severity: message.urgent ? "critical" : "info",
-        recipient_role: recipientRole,
+        // severity: message.urgent ? "critical" : "info", // Removed as column does not exist
         status: "active",
         priority: message.urgent ? "urgent" : "medium",
       }).select().single();

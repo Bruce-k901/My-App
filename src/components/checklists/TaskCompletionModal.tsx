@@ -907,7 +907,7 @@ export default function TaskCompletionModal({
       if (taskError) throw taskError
 
       // Create notification/alert
-      await createAlert('monitor', assetName, tempValue, monitoringTask.id)
+      await createTemperatureAlert('monitor', assetName, tempValue, monitoringTask.id)
 
       showToast({ 
         title: 'Monitoring task created', 
@@ -951,7 +951,7 @@ export default function TaskCompletionModal({
     }
   }
 
-  const createAlert = async (actionType: 'monitor' | 'callout', assetName: string, tempValue: number, taskId?: string) => {
+  const createTemperatureAlert = async (actionType: 'monitor' | 'callout', assetName: string, tempValue: number, taskId?: string) => {
     if (!companyId || !siteId) {
       console.error('Missing companyId or siteId for alert creation')
       return
@@ -978,14 +978,17 @@ export default function TaskCompletionModal({
       // Create notification
       // Note: site_id is omitted due to foreign key constraint issues (references sites_redundant, not sites)
       // The notification will still work without site_id - company_id is sufficient for filtering
+      // Note: recipient_role column doesn't exist in notifications table - removed
+      
+      console.log('🔔 Creating notification (v3 - renamed function):', { title, message })
+      
       const notificationData: any = {
         company_id: companyId,
         // site_id: siteId, // Omitted - foreign key constraint references sites_redundant, not sites
         type: 'temperature',
         title,
         message,
-        severity: actionType === 'callout' ? 'critical' : 'warning',
-        recipient_role: 'manager',
+        // severity removed as column does not exist in notifications table
         status: 'active',
       }
 
@@ -1004,7 +1007,7 @@ export default function TaskCompletionModal({
           hint: notifError.hint || null,
           attemptedData: notificationData
         }
-        console.error('❌ Error creating notification:', JSON.stringify(errorInfo, null, 2))
+        console.error('❌ Error creating notification (v3):', JSON.stringify(errorInfo, null, 2))
         
         // Check if it's an RLS policy issue
         if (notifError.code === '42501' || notifError.code === 'PGRST301' || 
@@ -1327,7 +1330,7 @@ export default function TaskCompletionModal({
         
         // Update outOfRangeAssetId for backwards compatibility
         setOutOfRangeAssetId(targetAssetId)
-        await createAlert('callout', assetName, tempValue)
+        await createTemperatureAlert('callout', assetName, tempValue)
         return
       } catch (error) {
         console.error('Error loading contractor info for callout:', error)
@@ -1441,7 +1444,7 @@ export default function TaskCompletionModal({
       
       // Update outOfRangeAssetId for backwards compatibility
       setOutOfRangeAssetId(targetAssetId)
-      await createAlert('callout', assetName, tempValue)
+      await createTemperatureAlert('callout', assetName, tempValue)
       
     } catch (error) {
       console.error('Error loading asset for callout:', error)
@@ -2387,8 +2390,7 @@ export default function TaskCompletionModal({
               type: 'task',
               title: 'Task Completed Late',
               message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
-              severity: 'warning',
-              recipient_role: 'manager',
+              // severity: 'warning', // Removed as column does not exist
               status: 'active',
             })
           
@@ -5066,10 +5068,16 @@ export default function TaskCompletionModal({
             }, 300) // Small delay for smooth transition
           }}
           asset={calloutAsset}
+          initialCalloutType={(() => {
+            // PPM tasks should use 'ppm' callout type for preventative maintenance
+            const taskData = task.task_data as any
+            const isPPMTask = taskData?.source_type === 'ppm_overdue' || taskData?.source_type === 'ppm_service'
+            return isPPMTask ? 'ppm' : 'reactive'
+          })()}
           requireTroubleshoot={(() => {
             // PPM tasks should NOT require troubleshooting - they're scheduled maintenance
             const taskData = task.task_data as any
-            const isPPMTask = taskData?.source_type === 'ppm_overdue'
+            const isPPMTask = taskData?.source_type === 'ppm_overdue' || taskData?.source_type === 'ppm_service'
             
             // Only require troubleshooting for temperature tasks that are out of range
             // PPM tasks bypass troubleshooting

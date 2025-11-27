@@ -136,7 +136,7 @@ function NotificationsInner() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{n.title}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${severityBadge(n.severity)}`}>{n.severity}</span>
+                  {n.severity && <span className={`text-xs px-2 py-0.5 rounded ${severityBadge(n.severity)}`}>{n.severity}</span>}
                   {!n.read && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-300">new</span>}
                   <span className="ml-auto text-xs text-slate-500">{timeAgo(n.created_at)}</span>
                 </div>

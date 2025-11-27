@@ -70,16 +70,24 @@ interface CalloutModalProps {
   onClose: () => void;
   asset: Asset;
   requireTroubleshoot?: boolean; // Force troubleshooting before allowing callout
+  initialCalloutType?: 'reactive' | 'warranty' | 'ppm'; // Initial callout type (for PPM tasks, etc.)
 }
 
-export default function CalloutModal({ open, onClose, asset, requireTroubleshoot = false }: CalloutModalProps) {
+export default function CalloutModal({ open, onClose, asset, requireTroubleshoot = false, initialCalloutType = 'reactive' }: CalloutModalProps) {
   const [activeTab, setActiveTab] = useState<'new' | 'active' | 'history'>('new');
   const [loading, setLoading] = useState(false);
   const [callouts, setCallouts] = useState<Callout[]>([]);
   const [selectedCallout, setSelectedCallout] = useState<Callout | null>(null);
   
-  // New callout form state
-  const [calloutType, setCalloutType] = useState<'reactive' | 'warranty' | 'ppm'>('reactive');
+  // New callout form state - use initialCalloutType prop if provided
+  const [calloutType, setCalloutType] = useState<'reactive' | 'warranty' | 'ppm'>(initialCalloutType);
+  
+  // Update calloutType when initialCalloutType prop changes (e.g., when opening for PPM task)
+  useEffect(() => {
+    if (open && initialCalloutType) {
+      setCalloutType(initialCalloutType);
+    }
+  }, [open, initialCalloutType]);
   // Priority is always urgent for callouts
   const priority = 'urgent';
   const [faultDescription, setFaultDescription] = useState('');

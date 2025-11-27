@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
+import { AdminPWAProvider } from '@/components/admin/AdminPWAProvider';
 import { 
   Shield, 
   LayoutDashboard, 
@@ -16,7 +18,6 @@ import {
   Eye,
   X
 } from 'lucide-react';
-import { AdminPWAMetadata } from '@/components/admin/AdminPWAMetadata';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -31,63 +32,78 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     // Skip auth check for login page
     if (pathname === '/admin/login') {
-      setIsAdmin(true); // Allow login page to render
+      setIsAdmin(true);
       return;
     }
 
     checkAdminAccess();
     
     // Check if we're viewing as another company
-    const storedCompany = sessionStorage.getItem('admin_viewing_as_company');
-    if (storedCompany) {
-      setViewingAsCompany(JSON.parse(storedCompany));
+    if (typeof window !== 'undefined') {
+      try {
+        const storedCompany = sessionStorage.getItem('admin_viewing_as_company');
+        if (storedCompany) {
+          setViewingAsCompany(JSON.parse(storedCompany));
+        }
+      } catch (error) {
+        console.error('Error reading sessionStorage:', error);
+      }
     }
   }, [pathname]);
 
   async function checkAdminAccess() {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push('/admin/login');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_platform_admin')
+        .eq('auth_user_id', user.id)
+        .single();
+
+      if (!profile?.is_platform_admin) {
+        router.push('/admin/login');
+        return;
+      }
+
+      setIsAdmin(true);
+    } catch (error) {
+      console.error('Error checking admin access:', error);
       router.push('/admin/login');
-      return;
     }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_platform_admin')
-      .eq('auth_user_id', user.id)
-      .single();
-
-    if (!profile?.is_platform_admin) {
-      router.push('/admin/login');
-      return;
-    }
-
-    setIsAdmin(true);
   }
 
   const handleLogout = async () => {
-    sessionStorage.removeItem('admin_viewing_as_company');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('admin_viewing_as_company');
+    }
     await supabase.auth.signOut();
     router.push('/admin/login');
   };
 
   const exitViewAs = () => {
-    sessionStorage.removeItem('admin_viewing_as_company');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('admin_viewing_as_company');
+    }
     setViewingAsCompany(null);
     router.push('/admin/companies');
   };
 
-  // Show nothing while checking auth (except for login page)
+  // Show loading while checking auth
   if (isAdmin === null && pathname !== '/admin/login') {
     return (
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
+      <div className="h-screen bg-[#0B0D13] flex items-center justify-center">
         <div className="text-white/60">Verifying access...</div>
       </div>
     );
   }
 
-  // Login page renders without sidebar
+  // Login page renders without layout
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
@@ -102,12 +118,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <>
-      <AdminPWAMetadata />
-      <div className="min-h-screen bg-[#0B0D13] flex">
-        {/* Sidebar */}
-      <aside className="w-64 bg-white/[0.03] border-r border-white/[0.06] flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-white/[0.06]">
+      <AdminFaviconSetter />
+      <AdminPWAProvider />
+      <div className="h-screen bg-[#0B0D13] flex overflow-hidden">
+      {/* Fixed Sidebar */}
+      <aside className="w-64 bg-white/[0.03] border-r border-white/[0.06] flex flex-col flex-shrink-0">
+        {/* Logo Header */}
+        <div className="p-6 border-b border-white/[0.06] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#EC4899]/20 flex items-center justify-center">
               <Shield className="w-5 h-5 text-[#EC4899]" />
@@ -119,8 +136,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -141,8 +158,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           })}
         </nav>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-white/[0.06]">
+        {/* Footer - Fixed */}
+        <div className="p-4 border-t border-white/[0.06] flex-shrink-0">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-white/[0.06] hover:text-white w-full transition-colors"
@@ -153,11 +170,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        {/* View As Banner */}
+      {/* Main Content Area - Flex Column */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* View As Banner - Fixed at top */}
         {viewingAsCompany && (
-          <div className="bg-orange-500/20 border-b border-orange-500/40 px-6 py-3 flex items-center justify-between">
+          <div className="bg-orange-500/20 border-b border-orange-500/40 px-6 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <Eye className="w-5 h-5 text-orange-400" />
               <span className="text-orange-200">
@@ -174,13 +191,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         )}
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-auto">
-          {children}
+        {/* Page Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8" key={pathname}>
+            {children}
+          </div>
         </div>
       </main>
     </div>
     </>
   );
 }
-
