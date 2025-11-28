@@ -430,47 +430,59 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Fixed handleScheduleChange function as specified in the brief
+  // Auto-populate schedule: Copy from Monday (or first active day) to all other active days
   const handleScheduleChange = (day: string, type: string, field: string, value: string) => {
     setFormData(prev => {
       const updated = structuredClone(prev.operating_schedule);
       (updated[day] as any)[type][field] = value;
 
-      const current = updated[day];
-      const isComplete =
-        current.open.hh &&
-        current.open.mm &&
-        current.close.hh &&
-        current.close.mm;
+      // Find the source day to copy from (Monday first, then first active day)
+      const findSourceDay = () => {
+        // Check Monday first if it's active and has complete times
+        if (updated.Monday?.active && 
+            updated.Monday.open.hh && updated.Monday.open.mm &&
+            updated.Monday.close.hh && updated.Monday.close.mm) {
+          return 'Monday';
+        }
+        
+        // If Monday not available, find the first active day with complete times
+        for (const weekday of WEEKDAYS) {
+          if (updated[weekday]?.active &&
+              updated[weekday].open.hh && updated[weekday].open.mm &&
+              updated[weekday].close.hh && updated[weekday].close.mm) {
+            return weekday;
+          }
+        }
+        
+        return null;
+      };
 
-      // track per-day completion to avoid early copy
-      const copiedDays = prev._copiedDays || {};
+      const sourceDay = findSourceDay();
 
-      if (isComplete && !copiedDays[day]) {
-        for (const key in updated) {
-          if (
-            key !== day &&
-            updated[key].active &&
-            !updated[key].open.hh &&
-            !updated[key].open.mm &&
-            !updated[key].close.hh &&
-            !updated[key].close.mm
-          ) {
-            updated[key].open = { ...current.open };
-            updated[key].close = { ...current.close };
+      // Auto-populate: Copy from source day to all other active days that are empty
+      if (sourceDay) {
+        const sourceTimes = updated[sourceDay];
+        let copiedCount = 0;
+
+        for (const weekday of WEEKDAYS) {
+          // Skip the source day itself
+          if (weekday === sourceDay) continue;
+          
+          // Only copy to active days that are empty
+          if (updated[weekday]?.active &&
+              !updated[weekday].open.hh && !updated[weekday].open.mm &&
+              !updated[weekday].close.hh && !updated[weekday].close.mm) {
+            updated[weekday].open = { ...sourceTimes.open };
+            updated[weekday].close = { ...sourceTimes.close };
+            copiedCount++;
           }
         }
 
-        // Log message outside of setState using setTimeout to avoid render-time state mutation
-        setTimeout(() => {
-          console.log("Copied hours to all active days");
-        }, 0);
-
-        return {
-          ...prev,
-          operating_schedule: updated,
-          _copiedDays: { ...copiedDays, [day]: true },
-        };
+        if (copiedCount > 0) {
+          setTimeout(() => {
+            console.log(`Copied ${sourceDay} times to ${copiedCount} other active day(s)`);
+          }, 0);
+        }
       }
 
       return { ...prev, operating_schedule: updated };
