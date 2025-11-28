@@ -249,10 +249,20 @@ export default function BusinessDetailsTab() {
 
   const handleSave = async () => {
     setSaving(true);
+    
+    // Get the current authenticated user ID
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser?.id) {
+      console.error("No authenticated user found");
+      setSaving(false);
+      return;
+    }
+    
     const payload = {
       ...form,
-      created_by: (form as any).created_by || profile?.id,
-      user_id: (form as any).user_id || profile?.id,
+      // Always use the authenticated user's ID for user_id and created_by
+      created_by: authUser.id,
+      user_id: authUser.id,
       status: (form as any).status || "draft",
       onboarding_step: (form as any).onboarding_step || 1,
     } as any;
