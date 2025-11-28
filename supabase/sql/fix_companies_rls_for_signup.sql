@@ -57,5 +57,16 @@ CREATE POLICY "Users can update their company"
       AND company_id = companies.id
       AND LOWER(app_role::text) IN ('admin', 'owner')
     )
+  )
+  WITH CHECK (
+    -- Same conditions for WITH CHECK to allow the update
+    user_id = auth.uid()
+    OR
+    EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = auth.uid() 
+      AND company_id = companies.id
+      AND LOWER(app_role::text) IN ('admin', 'owner')
+    )
   );
 
