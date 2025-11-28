@@ -100,17 +100,23 @@ export function ConversationList({
   }, [userChannelIds]); // Only depend on userChannelIds, NOT conversations
 
   // Update conversation counts separately when conversations change
-  // This prevents loops by separating concerns
+  // This prevents loops by separating concerns - only depend on conversation count values
   useEffect(() => {
     const allCount = conversations.length;
     const pinnedCount = conversations.filter(c => c.is_pinned).length;
     
-    setTopicCounts((prev) => ({
-      ...prev,
-      all: allCount,
-      pinned: pinnedCount,
-    }));
-  }, [conversations.length, conversations.map(c => c.is_pinned).join(',')]); // Only depend on computed values
+    setTopicCounts((prev) => {
+      // Only update if counts actually changed to prevent unnecessary updates
+      if (prev.all === allCount && prev.pinned === pinnedCount) {
+        return prev;
+      }
+      return {
+        ...prev,
+        all: allCount,
+        pinned: pinnedCount,
+      };
+    });
+  }, [conversations]); // Depend on conversations array - React will handle memoization
 
   // Initial fetch and refresh when dependencies change
   useEffect(() => {
