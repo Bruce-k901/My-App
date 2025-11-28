@@ -391,13 +391,13 @@ const directLinks: SidebarLink[] = [
 
       {/* Hover Popups - Desktop only */}
       {sections.map((section) => {
-        const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+        // Remove restrictions - show all popups
         return (
           <SidebarPopup
             key={section.label}
             section={section}
-            isVisible={hoveredSection === section.label && !sectionRestricted}
-            onMouseEnter={() => !sectionRestricted && handleHover(section.label)}
+            isVisible={hoveredSection === section.label}
+            onMouseEnter={() => handleHover(section.label)}
             onMouseLeave={handleLeave}
             pathname={pathname}
             buttonRef={buttonRefs[section.label]}
