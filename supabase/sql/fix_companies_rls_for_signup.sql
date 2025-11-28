@@ -57,12 +57,12 @@ CREATE POLICY "Users can update their company"
     -- User created the company
     user_id = auth.uid()
     OR
-    -- User is admin of the company
+    -- User is admin of the company (use LOWER for case-insensitive comparison)
     EXISTS (
       SELECT 1 FROM public.profiles 
       WHERE id = auth.uid() 
       AND company_id = companies.id
-      AND app_role IN ('admin', 'owner')
+      AND LOWER(app_role::text) IN ('admin', 'owner')
     )
   );
 

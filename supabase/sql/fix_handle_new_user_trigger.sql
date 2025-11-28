@@ -29,7 +29,7 @@ BEGIN
       (NEW.raw_user_meta_data->>'first_name' || ' ' || NEW.raw_user_meta_data->>'last_name'),
       'User'
     ),
-    'admin',
+    'Admin',
     'Administrator'
   )
   ON CONFLICT (id) DO NOTHING; -- Prevent duplicate inserts if trigger fires twice
