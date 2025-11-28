@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Make this route public - no authentication required
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const manifest = {
     name: "Checkly - Compliance Management",

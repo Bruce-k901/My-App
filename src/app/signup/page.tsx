@@ -25,8 +25,28 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
 
   function generatePassword() {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    const password = Array.from({ length: 12 }, () => charset[Math.floor(Math.random() * charset.length)]).join("");
+    // Ensure password meets Supabase requirements:
+    // - Minimum 8 characters
+    // - Must have lowercase, uppercase, letters, and digits
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const digits = "0123456789";
+    const all = lowercase + uppercase + digits;
+    
+    // Guarantee at least one of each required type
+    let password = 
+      lowercase[Math.floor(Math.random() * lowercase.length)] +
+      uppercase[Math.floor(Math.random() * uppercase.length)] +
+      digits[Math.floor(Math.random() * digits.length)];
+    
+    // Fill the rest randomly (minimum 8 total, so 5 more)
+    for (let i = 0; i < 5; i++) {
+      password += all[Math.floor(Math.random() * all.length)];
+    }
+    
+    // Shuffle the password
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
     setForm({ ...form, password });
   }
 
