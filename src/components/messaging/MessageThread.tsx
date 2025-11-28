@@ -285,7 +285,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0"
+        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+        style={{ scrollbarWidth: 'thin' }}
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">

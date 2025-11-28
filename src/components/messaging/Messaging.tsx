@@ -6,6 +6,7 @@ import { ConversationList } from './ConversationList';
 import { MessageThread } from './MessageThread';
 import { MessageInput } from './MessageInput';
 import ConversationContentTabs from './ConversationContentTabs';
+import { ConversationHeader } from './ConversationHeader';
 import { useMessages } from '@/hooks/useMessages';
 import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
 import type { Message } from '@/types/messaging';
@@ -143,7 +144,9 @@ export function Messaging() {
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0">
         {selectedConversationId ? (
           <>
-            {/* Content Tabs - Fixed at top */}
+            {/* Conversation Header - Fixed at top */}
+            <ConversationHeader conversationId={selectedConversationId} />
+            {/* Content Tabs - Fixed below header */}
             <div className="flex-shrink-0 border-b border-white/[0.06]">
               <ConversationContentTabs conversationId={selectedConversationId} />
             </div>

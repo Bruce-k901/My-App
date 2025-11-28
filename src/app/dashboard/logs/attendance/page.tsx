@@ -54,8 +54,8 @@ export default function AttendanceLogsPage() {
   // Safety check - ensure we have required context (after hooks)
   if (!companyId) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] p-6 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="flex-1 flex items-center justify-center p-6 text-white h-full">
+        <div>Loading...</div>
       </div>
     );
   }

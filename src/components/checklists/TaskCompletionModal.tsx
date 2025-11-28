@@ -9,6 +9,7 @@ import MonitorDurationModal from './MonitorDurationModal'
 import { useToast } from '@/components/ui/ToastProvider'
 import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming'
 import CalloutModal from '@/components/modals/CalloutModal'
+import DocumentReviewModal from '@/components/modals/DocumentReviewModal'
 import { handleWorkflow } from './workflows'
 import type { ComplianceTemplate } from '@/data/compliance-templates'
 import Image from 'next/image'
@@ -51,6 +52,8 @@ export default function TaskCompletionModal({
   const [showActionOptionsSingle, setShowActionOptionsSingle] = useState(false) // Legacy single field action options
   const [showMonitorDurationModal, setShowMonitorDurationModal] = useState(false)
   const [showCalloutModal, setShowCalloutModal] = useState(false)
+  const [showDocumentReviewModal, setShowDocumentReviewModal] = useState(false)
+  const [documentData, setDocumentData] = useState<any>(null)
   const [calloutAsset, setCalloutAsset] = useState<any>(null)
   const [calloutQueue, setCalloutQueue] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', asset: any}>>([])
   const [pendingCallouts, setPendingCallouts] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', notes?: string}>>([])
@@ -91,6 +94,11 @@ export default function TaskCompletionModal({
         } catch (e) {
           // Not JSON, treat as regular completion notes
         }
+      }
+
+      // Load document data for document_expiry tasks
+      if (taskData.source_type === 'document_expiry' && taskData.document_id) {
+        loadDocumentData(taskData.document_id)
       }
       
       // Initialize form data with task data FIRST (before loading template fields)
@@ -278,6 +286,22 @@ export default function TaskCompletionModal({
       loadCalloutData(task.task_data.source_id)
     }
   }, [isOpen, task.task_data?.source_type, task.task_data?.source_id])
+
+  async function loadDocumentData(documentId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('global_documents')
+        .select('id, name, version, expiry_date, file_path')
+        .eq('id', documentId)
+        .single()
+
+      if (error) throw error
+      setDocumentData(data)
+    } catch (err: any) {
+      console.error('Error loading document data:', err)
+      setError('Failed to load document information')
+    }
+  }
 
   async function loadCalloutData(calloutId: string) {
     setCalloutLoading(true)
@@ -1571,7 +1595,13 @@ export default function TaskCompletionModal({
     setPhotos(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (skipDocumentReview = false) => {
+    // For document_expiry tasks, show document review modal instead of completing normally
+    const taskData = task.task_data as any
+    if (!skipDocumentReview && taskData?.source_type === 'document_expiry' && documentData) {
+      setShowDocumentReviewModal(true)
+      return
+    }
     if (!task.template) return
 
     setLoading(true)
@@ -5089,6 +5119,27 @@ export default function TaskCompletionModal({
             // Otherwise, require troubleshooting when opened from task (default behavior)
             return outOfRangeAssets.size > 0 || outOfRangeAssetId !== null
           })()}
+        />
+      )}
+
+      {/* Document Review Modal */}
+      {documentData && (
+        <DocumentReviewModal
+          isOpen={showDocumentReviewModal}
+          onClose={() => {
+            setShowDocumentReviewModal(false)
+          }}
+          documentId={documentData.id}
+          documentName={documentData.name}
+          currentExpiryDate={documentData.expiry_date}
+          currentVersion={documentData.version}
+          currentFilePath={documentData.file_path}
+          onSuccess={async () => {
+            // After document review is complete, mark the task as completed
+            setShowDocumentReviewModal(false)
+            // Complete the task normally (skip document review check)
+            await handleSubmit(true)
+          }}
         />
       )}
     </div>

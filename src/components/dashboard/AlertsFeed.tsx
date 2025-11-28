@@ -59,9 +59,12 @@ export default function AlertsFeed() {
               .limit(50);
             
             if (error) {
-              // Silently log error - notifications table may not exist or have different schema
+              // Silently log error - notifications table may not exist, have different schema, or RLS policy issue
               // This is expected and not critical - other alerts will still load
-              console.debug("Notifications query failed (expected if table doesn't exist):", error.message);
+              // Only log if it's not a 400 error (which might be RLS policy related)
+              if (error.code !== 'PGRST116' && !error.message?.includes('400')) {
+                console.debug("Notifications query failed:", error.message);
+              }
             } else if (data) {
               // Filter in JavaScript for severity if the column exists, otherwise show all
               const filteredData = data.filter((d: any) => {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
+import { LIBRARIES } from "@/lib/navigation-constants";
 
 export default function LibrariesPage() {
   const { companyId } = useAppContext();
@@ -46,18 +47,25 @@ export default function LibrariesPage() {
     load();
   }, [companyId]);
 
-  const items = [
-    { id: 'ingredients', name: 'Ingredients', href: '/dashboard/libraries/ingredients' },
-    { id: 'ppe', name: 'PPE', href: '/dashboard/libraries/ppe' },
-    { id: 'chemicals', name: 'Chemicals', href: '/dashboard/libraries/chemicals' },
-    { id: 'drinks', name: 'Drinks', href: '/dashboard/libraries/drinks' },
-    { id: 'disposables', name: 'Disposables', href: '/dashboard/libraries/disposables' },
-    { id: 'glassware', name: 'Glassware', href: '/dashboard/libraries/glassware' },
-    { id: 'packaging', name: 'Packaging', href: '/dashboard/libraries/packaging' },
-    { id: 'equipment', name: 'Serving Equipment', href: '/dashboard/libraries/serving-equipment' },
-    { id: 'appliances', name: 'Appliances', href: '/dashboard/libraries/appliances' },
-    { id: 'firstAid', name: 'First Aid Supplies', href: '/dashboard/libraries/first-aid' },
-  ];
+  // Map LIBRARIES constant to items format, matching the id keys used in counts
+  const libraryIdMap: { [key: string]: string } = {
+    'ingredients': 'ingredients',
+    'ppe': 'ppe',
+    'chemicals': 'chemicals',
+    'drinks': 'drinks',
+    'disposables': 'disposables',
+    'glassware': 'glassware',
+    'packaging': 'packaging',
+    'serving-equipment': 'equipment',
+    'appliances': 'appliances',
+    'first-aid': 'firstAid',
+  };
+
+  const items = LIBRARIES.map(lib => ({
+    id: libraryIdMap[lib.id] || lib.id,
+    name: lib.name.replace(' Library', ''), // Remove "Library" suffix for display
+    href: lib.href,
+  }));
 
   return (
     <div className="p-8">

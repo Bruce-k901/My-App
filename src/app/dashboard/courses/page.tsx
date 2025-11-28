@@ -2,36 +2,11 @@
 import Link from "next/link";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 import { Play } from "lucide-react";
+import { COURSES } from "@/lib/navigation-constants";
 
-const COURSES = [
-  {
-    slug: "food-safety",
-    title: "Food Safety Level 2 (UK)",
-    description:
-      "Self-study, mobile-friendly flow with interactive content, module quizzes, and a 30-question final assessment aligned to UK hygiene law.",
-    duration: "Approx. 4 hours",
-    level: "Level 2 • Self-study",
-    badge: "Updated"
-  },
-  {
-    slug: "health-and-safety",
-    title: "Health and Safety Level 2 (UK)",
-    description:
-      "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
-    duration: "Approx. 4 hours",
-    level: "Level 2 • Self-study",
-    badge: "New"
-  },
-  {
-    slug: "allergens",
-    title: "Allergen Awareness Level 2 (UK)",
-    description:
-      "Essential training on the 14 major allergens, legal responsibilities (Natasha's Law), and preventing cross-contamination.",
-    duration: "Approx. 3 hours",
-    level: "Level 2 • Self-study",
-    badge: "New"
-  },
-];
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function CoursesPage() {
   return (

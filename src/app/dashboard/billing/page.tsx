@@ -116,23 +116,30 @@ export default function BillingPage() {
       
       setSiteCount(finalSiteCount);
 
-      // Load subscription with plan details including pricing_model
+      // Load subscription separately to avoid 406 errors with nested selects
       const { data: subData, error: subError } = await supabase
         .from('company_subscriptions')
-        .select(`
-          *,
-          plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-        `)
+        .select('*')
         .eq('company_id', companyId)
-        .single();
+        .maybeSingle();
 
       if (subError && subError.code !== 'PGRST116') { // PGRST116 = no rows returned
         throw subError;
       }
 
       if (subData) {
-        const currentSubscription = subData as any;
-        setSubscription(currentSubscription);
+        // Load plan details separately
+        const { data: planData } = await supabase
+          .from('subscription_plans')
+          .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+          .eq('id', subData.plan_id)
+          .single();
+
+        const currentSubscription = {
+          ...subData,
+          plan: planData || null,
+        };
+        setSubscription(currentSubscription as any);
         
         // Update subscription site count and auto-assign plan if it changed
         if (currentSubscription.site_count !== finalSiteCount) {
@@ -142,14 +149,20 @@ export default function BillingPage() {
           // Reload subscription data after update to get fresh monthly_amount
           const { data: updatedSub } = await supabase
             .from('company_subscriptions')
-            .select(`
-              *,
-              plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-            `)
+            .select('*')
             .eq('company_id', companyId)
-            .single();
+            .maybeSingle();
           if (updatedSub) {
-            setSubscription(updatedSub as any);
+            // Reload plan details
+            const { data: updatedPlanData } = await supabase
+              .from('subscription_plans')
+              .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+              .eq('id', updatedSub.plan_id)
+              .single();
+            setSubscription({
+              ...updatedSub,
+              plan: updatedPlanData || null,
+            } as any);
           }
         }
       }

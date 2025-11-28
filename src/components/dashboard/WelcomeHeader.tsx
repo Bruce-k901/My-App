@@ -45,7 +45,7 @@ export default function WelcomeHeader() {
         .from("profiles")
         .select("full_name")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
       
       if (profile?.full_name) {
         const name = profile.full_name.split(" ")[0];

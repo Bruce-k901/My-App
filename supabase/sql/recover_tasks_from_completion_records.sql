@@ -126,3 +126,5 @@ WHERE ct.status = 'completed'
 ORDER BY ct.completed_at DESC
 LIMIT 10;
 
+
+

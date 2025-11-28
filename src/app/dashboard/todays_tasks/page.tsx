@@ -75,12 +75,14 @@ export default function DailyChecklistPage() {
   const [breachLoading, setBreachLoading] = useState(false)
   // Fix hydration error: calculate date only on client
   const [currentDate, setCurrentDate] = useState<string>('')
+  const [isMounted, setIsMounted] = useState(false)
 
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
   // Fix hydration error: NEVER render date on server, only on client after mount
   useEffect(() => {
+    setIsMounted(true)
     setCurrentDate(new Date().toLocaleDateString('en-US', { 
       weekday: 'long', 
       year: 'numeric', 
@@ -1081,8 +1083,8 @@ export default function DailyChecklistPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
-          {currentDate}
+        <p className="text-neutral-400 text-sm sm:text-base">
+          {isMounted ? currentDate : '\u00A0'}
         </p>
         </div>
         <button

@@ -21,7 +21,7 @@ const manrope = Manrope({
 export const metadata = {
   title: "Checkly",
   description: "Chaos into clarity for hospitality operations.",
-  manifest: "/manifest.json",
+  manifest: "/site.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

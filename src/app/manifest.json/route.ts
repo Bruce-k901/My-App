@@ -68,9 +68,12 @@ export async function GET() {
   };
 
   return NextResponse.json(manifest, {
+    status: 200,
     headers: {
       'Content-Type': 'application/manifest+json',
       'Cache-Control': 'public, max-age=3600',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
     },
   });
 }

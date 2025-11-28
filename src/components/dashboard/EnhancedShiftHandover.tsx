@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { Calendar, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
@@ -456,7 +457,17 @@ export default function EnhancedShiftHandover() {
             <p className="text-xs text-slate-400 hidden sm:block">Notes, tasks, reminders, and messages</p>
           </div>
         </div>
-        {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+          <Link
+            href="/dashboard/tasks/my-tasks"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
+          >
+            <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">My Tasks</span>
+            <span className="xs:hidden">Tasks</span>
+          </Link>
+        </div>
       </div>
 
       {/* Tabs */}

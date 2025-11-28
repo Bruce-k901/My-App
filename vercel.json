@@ -10,7 +10,7 @@
     },
     {
       "source": "/manifest.json",
-      "destination": "/manifest.json"
+      "destination": "/manifest.json/route"
     }
   ],
   "headers": [

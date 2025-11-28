@@ -14,7 +14,26 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Global lock to prevent concurrent executions
+let isRunning = false;
+
 Deno.serve(async (req) => {
+  // Prevent concurrent executions
+  if (isRunning) {
+    return new Response(
+      JSON.stringify({ 
+        message: "Task generation already in progress. Please wait.",
+        skipped: true 
+      }),
+      { 
+        status: 409, 
+        headers: { "Content-Type": "application/json" } 
+      }
+    );
+  }
+
+  isRunning = true;
+  
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -33,6 +52,8 @@ Deno.serve(async (req) => {
 
     const today = new Date();
     const todayString = today.toISOString().split("T")[0];
+    
+    console.log(`[${new Date().toISOString()}] Starting task generation for ${todayString}`);
 
     // ========================================================================
     // 1. GENERAL TASKS (from tasks table)
@@ -59,16 +80,20 @@ Deno.serve(async (req) => {
           .single();
 
         for (const task of generalTasks) {
-          // Check for existing
+          // Check for existing - use more comprehensive check
           const { data: existing } = await supabase
             .from("checklist_tasks")
             .select("id")
             .eq("site_id", task.site_id)
+            .eq("company_id", task.company_id)
             .eq("due_date", todayString)
-            .contains("task_data", { source_id: task.id })
+            .or(`task_data->>source_id.eq.${task.id},task_data->>original_task_id.eq.${task.id}`)
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existing && existing.length > 0) {
+            console.log(`Skipping duplicate general task: ${task.id}`);
+            continue;
+          }
 
           const sourceType = task.created_from_message_id
             ? "messaging_task"
@@ -137,19 +162,20 @@ Deno.serve(async (req) => {
               // Verify it's for today (double check)
               if (calTask.dueDate !== todayString) continue;
 
-              // Check for existing
+              // Check for existing - use more comprehensive check
               const { data: existing } = await supabase
                 .from("checklist_tasks")
                 .select("id")
                 .eq("company_id", entry.company_id)
                 .eq("due_date", todayString)
-                .contains("task_data", {
-                  source_type: "calendar_task",
-                  calendar_task_id: calTask.id,
-                })
+                .eq("task_data->>source_type", "calendar_task")
+                .eq("task_data->>calendar_task_id", calTask.id)
                 .limit(1);
 
-              if (existing && existing.length > 0) continue;
+              if (existing && existing.length > 0) {
+                console.log(`Skipping duplicate calendar task: ${calTask.id}`);
+                continue;
+              }
 
               // Create task
               const { error } = await supabase.from("checklist_tasks").insert({
@@ -202,12 +228,13 @@ Deno.serve(async (req) => {
           .eq("slug", "ppm-service-generic")
           .single();
 
-        // Need asset details
+        // Need asset details - exclude archived assets
         const assetIds = ppmTasks.map((t) => t.asset_id);
         const { data: assets } = await supabase
           .from("assets")
-          .select("id, name, site_id, company_id")
-          .in("id", assetIds);
+          .select("id, name, site_id, company_id, archived")
+          .in("id", assetIds)
+          .eq("archived", false); // Exclude archived assets
 
         const assetMap = new Map(assets?.map((a) => [a.id, a]));
 
@@ -223,24 +250,27 @@ Deno.serve(async (req) => {
 
         for (const ppm of ppmTasks) {
           const asset = assetMap.get(ppm.asset_id);
-          if (!asset) continue;
+          // Skip if asset not found or is archived
+          if (!asset || asset.archived) continue;
 
           // Get site GM for assignment
           const assignedToUserId = ppmSiteGmMap.get(asset.site_id) || null;
 
-          // Check existing
+          // Check existing - use more comprehensive check
           const { data: existing } = await supabase
             .from("checklist_tasks")
             .select("id")
             .eq("site_id", asset.site_id)
+            .eq("company_id", asset.company_id)
             .eq("due_date", todayString)
-            .contains("task_data", {
-              source_type: "ppm_service",
-              ppm_id: ppm.id,
-            })
+            .eq("task_data->>source_type", "ppm_service")
+            .eq("task_data->>ppm_id", ppm.id)
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existing && existing.length > 0) {
+            console.log(`Skipping duplicate PPM task: ${ppm.id}`);
+            continue;
+          }
 
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: ppmTemplate?.id || null,
@@ -306,19 +336,21 @@ Deno.serve(async (req) => {
           // Trigger if due within 30 days (so they have time to do it)
           if (daysUntil < 0 || daysUntil > 30) continue;
 
-          // Check existing
+          // Check existing - use more comprehensive check
           const { data: existing } = await supabase
             .from("checklist_tasks")
             .select("id")
             .eq("company_id", sop.company_id)
+            .eq("site_id", sop.site_id)
             .eq("due_date", todayString)
-            .contains("task_data", {
-              source_type: "sop_review",
-              sop_id: sop.id,
-            })
+            .eq("task_data->>source_type", "sop_review")
+            .eq("task_data->>sop_id", sop.id)
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existing && existing.length > 0) {
+            console.log(`Skipping duplicate SOP review task: ${sop.id}`);
+            continue;
+          }
 
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: sopTemplate?.id || null,
@@ -371,16 +403,21 @@ Deno.serve(async (req) => {
           .single();
 
         for (const ra of ras) {
-          // Check existing
+          // Check existing - use more comprehensive check
           const { data: existing } = await supabase
             .from("checklist_tasks")
             .select("id")
             .eq("company_id", ra.company_id)
+            .eq("site_id", ra.site_id)
             .eq("due_date", todayString)
-            .contains("task_data", { source_type: "ra_review", ra_id: ra.id })
+            .eq("task_data->>source_type", "ra_review")
+            .eq("task_data->>ra_id", ra.id)
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existing && existing.length > 0) {
+            console.log(`Skipping duplicate RA review task: ${ra.id}`);
+            continue;
+          }
 
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: raTemplate?.id || null,
@@ -431,19 +468,21 @@ Deno.serve(async (req) => {
           .single();
 
         for (const doc of docs) {
-          // Check existing
+          // Check existing - use more comprehensive check
           const { data: existing } = await supabase
             .from("checklist_tasks")
             .select("id")
             .eq("company_id", doc.company_id)
+            .eq("site_id", doc.site_id)
             .eq("due_date", todayString)
-            .contains("task_data", {
-              source_type: "document_expiry",
-              document_id: doc.id,
-            })
+            .eq("task_data->>source_type", "document_expiry")
+            .eq("task_data->>document_id", doc.id)
             .limit(1);
 
-          if (existing && existing.length > 0) continue;
+          if (existing && existing.length > 0) {
+            console.log(`Skipping duplicate document expiry task: ${doc.id}`);
+            continue;
+          }
 
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: docTemplate?.id || null,
@@ -617,14 +656,20 @@ Deno.serve(async (req) => {
     }
 
     // Return success
+    console.log(`[${new Date().toISOString()}] Task generation completed for ${todayString}:`, log);
+    
     return new Response(
       JSON.stringify({ success: true, log }),
       { headers: { "Content-Type": "application/json" } },
     );
   } catch (error) {
+    console.error(`[${new Date().toISOString()}] Task generation error:`, error);
     return new Response(
       JSON.stringify({ success: false, error: String(error) }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
+  } finally {
+    // Always reset the lock, even on error
+    isRunning = false;
   }
 });

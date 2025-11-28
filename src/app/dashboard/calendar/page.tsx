@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -592,8 +593,8 @@ export default function ManagerCalendarPage() {
   const selectedDateNotes = selectedDate ? notes[selectedDate] || "" : "";
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+    <div className="w-full -mt-[72px] pt-[72px]">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -605,6 +606,13 @@ export default function ManagerCalendarPage() {
               <p className="text-sm text-slate-400">Plan, organize, and track tasks, reminders, and messages</p>
             </div>
           </div>
+          <Link
+            href="/dashboard/tasks/my-tasks"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            View My Tasks
+          </Link>
         </div>
 
         {/* Tabs */}
