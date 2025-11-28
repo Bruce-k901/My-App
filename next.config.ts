@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: false, // Temporarily disabled for performance debugging
+  reactStrictMode: true, // Re-enabled for better Fast Refresh support
   // App Router is enabled by default in Next 15; no experimental flag needed
   // Ensure SSR build (not static export)
   // output: "standalone", // Only for production builds - causes issues in dev mode
