@@ -58,19 +58,9 @@ export function ConversationList({
   }, [user?.id]);
 
   // Fetch message topic counts (per-message topics, not conversation topics)
+  // Only depends on userChannelIds to prevent loops
   const fetchTopicCounts = useCallback(async () => {
     if (userChannelIds.length === 0) {
-      setTopicCounts({
-        all: conversations.length,
-        pinned: conversations.filter(c => c.is_pinned).length,
-        safety: 0,
-        maintenance: 0,
-        operations: 0,
-        hr: 0,
-        compliance: 0,
-        incidents: 0,
-        general: 0,
-      });
       return;
     }
 
@@ -82,29 +72,45 @@ export function ConversationList({
         .not('topic', 'is', null)
         .is('deleted_at', null);
 
-      const counts: Record<TopicCategory | 'pinned' | 'all', number> = {
-        all: conversations.length,
-        pinned: conversations.filter(c => c.is_pinned).length,
-        safety: 0,
-        maintenance: 0,
-        operations: 0,
-        hr: 0,
-        compliance: 0,
-        incidents: 0,
-        general: 0,
-      };
+      // Update only topic counts, conversation counts updated separately
+      setTopicCounts((prev) => {
+        const counts: Record<TopicCategory | 'pinned' | 'all', number> = {
+          all: prev.all || 0, // Preserve conversation counts
+          pinned: prev.pinned || 0,
+          safety: 0,
+          maintenance: 0,
+          operations: 0,
+          hr: 0,
+          compliance: 0,
+          incidents: 0,
+          general: 0,
+        };
 
-      data?.forEach((msg: any) => {
-        if (msg.topic && counts[msg.topic as TopicCategory] !== undefined) {
-          counts[msg.topic as TopicCategory] = (counts[msg.topic as TopicCategory] || 0) + 1;
-        }
+        data?.forEach((msg: any) => {
+          if (msg.topic && counts[msg.topic as TopicCategory] !== undefined) {
+            counts[msg.topic as TopicCategory] = (counts[msg.topic as TopicCategory] || 0) + 1;
+          }
+        });
+
+        return counts;
       });
-
-      setTopicCounts(counts);
     } catch (error) {
       console.error('Error fetching topic counts:', error);
     }
-  }, [userChannelIds, conversations]);
+  }, [userChannelIds]); // Only depend on userChannelIds, NOT conversations
+
+  // Update conversation counts separately when conversations change
+  // This prevents loops by separating concerns
+  useEffect(() => {
+    const allCount = conversations.length;
+    const pinnedCount = conversations.filter(c => c.is_pinned).length;
+    
+    setTopicCounts((prev) => ({
+      ...prev,
+      all: allCount,
+      pinned: pinnedCount,
+    }));
+  }, [conversations.length, conversations.map(c => c.is_pinned).join(',')]); // Only depend on computed values
 
   // Initial fetch and refresh when dependencies change
   useEffect(() => {
