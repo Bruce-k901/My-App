@@ -25,8 +25,28 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
 
   function generatePassword() {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    const password = Array.from({ length: 12 }, () => charset[Math.floor(Math.random() * charset.length)]).join("");
+    // Ensure password meets Supabase requirements:
+    // - Minimum 8 characters
+    // - Must have lowercase, uppercase, letters, and digits
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const digits = "0123456789";
+    const all = lowercase + uppercase + digits;
+    
+    // Guarantee at least one of each required type
+    let password = 
+      lowercase[Math.floor(Math.random() * lowercase.length)] +
+      uppercase[Math.floor(Math.random() * uppercase.length)] +
+      digits[Math.floor(Math.random() * digits.length)];
+    
+    // Fill the rest randomly (minimum 8 total, so 5 more)
+    for (let i = 0; i < 5; i++) {
+      password += all[Math.floor(Math.random() * all.length)];
+    }
+    
+    // Shuffle the password
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
     setForm({ ...form, password });
   }
 
@@ -35,6 +55,45 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
+    // Check if user is already logged in - if so, just create the company
+    const { data: { user: existingUser } } = await supabase.auth.getUser();
+    
+    if (existingUser) {
+      // User is already logged in - just create the company
+      try {
+        const { data: companyData, error: companyError } = await supabase
+          .from("companies")
+          .insert([{ name: form.company, user_id: existingUser.id }])
+          .select("id")
+          .single();
+        
+        if (companyError) {
+          setError(companyError.message || "Failed to create company");
+          setLoading(false);
+          return;
+        }
+        
+        const companyId = companyData?.id || null;
+        
+        // Create 60-day trial subscription for the new company
+        if (companyId) {
+          try {
+            await createTrialSubscription(companyId, "starter");
+          } catch (subError: any) {
+            console.error("Failed to create trial subscription:", subError);
+          }
+        }
+        
+        router.push("/dashboard");
+        return;
+      } catch (err: any) {
+        setError(err?.message || "Failed to create company");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // New user signup
     const { data: signUpRes, error: signupError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -42,7 +101,12 @@ export default function SignupPage() {
     });
 
     if (signupError) {
-      setError(signupError.message);
+      // Check if error is due to user already existing
+      if (signupError.message.includes('already registered') || signupError.message.includes('already exists')) {
+        setError("This email is already registered. Please log in instead, or use a different email.");
+      } else {
+        setError(signupError.message);
+      }
       setLoading(false);
       return;
     }

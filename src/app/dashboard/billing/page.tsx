@@ -116,23 +116,30 @@ export default function BillingPage() {
       
       setSiteCount(finalSiteCount);
 
-      // Load subscription with plan details including pricing_model
+      // Load subscription separately to avoid 406 errors with nested selects
       const { data: subData, error: subError } = await supabase
         .from('company_subscriptions')
-        .select(`
-          *,
-          plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-        `)
+        .select('*')
         .eq('company_id', companyId)
-        .single();
+        .maybeSingle();
 
       if (subError && subError.code !== 'PGRST116') { // PGRST116 = no rows returned
         throw subError;
       }
 
       if (subData) {
-        const currentSubscription = subData as any;
-        setSubscription(currentSubscription);
+        // Load plan details separately
+        const { data: planData } = await supabase
+          .from('subscription_plans')
+          .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+          .eq('id', subData.plan_id)
+          .single();
+
+        const currentSubscription = {
+          ...subData,
+          plan: planData || null,
+        };
+        setSubscription(currentSubscription as any);
         
         // Update subscription site count and auto-assign plan if it changed
         if (currentSubscription.site_count !== finalSiteCount) {
@@ -142,14 +149,20 @@ export default function BillingPage() {
           // Reload subscription data after update to get fresh monthly_amount
           const { data: updatedSub } = await supabase
             .from('company_subscriptions')
-            .select(`
-              *,
-              plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-            `)
+            .select('*')
             .eq('company_id', companyId)
-            .single();
+            .maybeSingle();
           if (updatedSub) {
-            setSubscription(updatedSub as any);
+            // Reload plan details
+            const { data: updatedPlanData } = await supabase
+              .from('subscription_plans')
+              .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+              .eq('id', updatedSub.plan_id)
+              .single();
+            setSubscription({
+              ...updatedSub,
+              plan: updatedPlanData || null,
+            } as any);
           }
         }
       }
@@ -385,11 +398,11 @@ export default function BillingPage() {
   const needsPlanSelection = !subscription || isTrialExpired || subscription.status === 'expired';
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Billing & Subscription</h1>
-        <p className="text-white/60">Manage your subscription, plans, add-ons, invoices, and data exports</p>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Billing & Subscription</h1>
+        <p className="text-white/60 text-sm sm:text-base">Manage your subscription, plans, add-ons, invoices, and data exports</p>
       </div>
 
       {error && (
@@ -495,8 +508,8 @@ export default function BillingPage() {
       {activeTab === 'overview' && (
         <>
           {/* Subscription Status Card */}
-          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-8 shadow-lg">
-        <div className="flex items-start justify-between mb-8">
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
           <div>
             <h2 className="text-3xl font-bold text-white mb-3">Current Subscription</h2>
             {subscription ? (

@@ -14,7 +14,7 @@ type Notification = {
   type: string;
   link?: string | null;
   created_at: string;
-  seen: boolean;
+  read: boolean;
   company_id: string;
   site_id: string | null;
   status?: string;
@@ -65,11 +65,11 @@ function NotificationBell() {
         .from("notifications")
         .select("*")
         .eq("company_id", companyId)
-        .eq("status", "active")
+        // Note: Removed .eq("status", "active") as the status column doesn't exist in the database
         .order("created_at", { ascending: false });
       if (siteId && role !== "Admin") base = base.eq("site_id", siteId);
       const [{ data: unseenRes }, { data: latestRes }] = await Promise.all([
-        base.eq("seen", false).select("id"),
+        base.eq("read", false).select("id"),
         base.limit(limit),
       ]);
       if (!mounted) return;
@@ -109,7 +109,7 @@ function NotificationBell() {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications" }, (payload) => {
         const note = payload.new as Notification;
         if (note.company_id !== companyId) return;
-        if (note.seen) setUnseen((c) => Math.max(0, c - 1));
+        if (note.read) setUnseen((c) => Math.max(0, c - 1));
       })
       .subscribe();
     return () => {

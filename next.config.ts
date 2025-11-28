@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: false, // Temporarily disabled for performance debugging
+  reactStrictMode: true, // Re-enabled for better Fast Refresh support
   // App Router is enabled by default in Next 15; no experimental flag needed
   // Ensure SSR build (not static export)
   // output: "standalone", // Only for production builds - causes issues in dev mode
 
-  // Ensure Next uses this project as the workspace root to avoid mis-inference
-  // when multiple lockfiles exist on the machine.
-  // Only use in production - can cause issues in dev mode (static asset 404s)
-  // outputFileTracingRoot: process.cwd(), // Disabled in dev mode
+  // Explicitly set the project root to avoid Next.js mis-inferring workspace root
+  // This prevents issues when multiple lockfiles exist on the machine
+  // Using path.resolve ensures absolute path for better reliability
+  outputFileTracingRoot: process.cwd(),
 
   // eslint configuration moved to eslint.config.mjs
   
@@ -40,6 +40,21 @@ const nextConfig: NextConfig = {
       );
     }
     return config;
+  },
+
+  // Add headers for static assets to prevent cache issues
+  async headers() {
+    return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
 };
 

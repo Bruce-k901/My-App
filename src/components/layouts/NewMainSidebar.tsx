@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { isRestricted, type AppRole } from "@/lib/accessControl";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
 import { useAppContext } from "@/context/AppContext";
+import { COURSES, LIBRARIES } from "@/lib/navigation-constants";
 import {
   LayoutGrid,
   Building2,
@@ -26,6 +27,7 @@ import {
   CreditCard,
   MessageSquare,
   Clock,
+  Shield,
 } from "lucide-react";
 
 // Section with hover popup
@@ -46,11 +48,22 @@ interface SidebarLink {
   icon: any;
 }
 
-const sections: SidebarSection[] = [
+interface NewMainSidebarProps {
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
+  const pathname = usePathname();
+  const { role: contextRole, signOut, profile } = useAppContext();
+  
+  // Build dynamic sections with courses and libraries
+  const sections: SidebarSection[] = [
   {
     label: "Organization",
     icon: Building2,
     items: [
+      { label: "Onboarding", href: "/dashboard/organization/onboarding" },
       { label: "Business Details", href: "/dashboard/business" },
       { label: "Sites", href: "/dashboard/sites" },
       { label: "Users", href: "/dashboard/users" },
@@ -64,8 +77,9 @@ const sections: SidebarSection[] = [
     icon: CheckSquare,
     items: [
       { label: "Compliance", href: "/dashboard/tasks/compliance" },
-      { label: "Templates", href: "/dashboard/tasks/templates" },
-      { label: "Active", href: "/dashboard/tasks/active" },
+      { label: "My Templates", href: "/dashboard/my_templates" },
+      { label: "My Tasks", href: "/dashboard/my_tasks" },
+      { label: "Today's Tasks", href: "/dashboard/todays_tasks" },
       { label: "Completed", href: "/dashboard/tasks/completed" },
     ],
   },
@@ -89,16 +103,11 @@ const sections: SidebarSection[] = [
       { label: "All Libraries", href: "/dashboard/libraries" },
       { label: "Create Library", href: "/dashboard/libraries/create" },
       { label: "Library Templates", href: "/dashboard/libraries/templates" },
-      // All created libraries
-      { label: "Ingredients Library", href: "/dashboard/libraries/ingredients" },
-      { label: "PPE Library", href: "/dashboard/libraries/ppe" },
-      { label: "Chemicals Library", href: "/dashboard/libraries/chemicals" },
-      { label: "Drinks Library", href: "/dashboard/libraries/drinks" },
-      { label: "First Aid Supplies", href: "/dashboard/libraries/first-aid" },
-      { label: "Disposables Library", href: "/dashboard/libraries/disposables" },
-      { label: "Glassware Library", href: "/dashboard/libraries/glassware" },
-      { label: "Packaging Library", href: "/dashboard/libraries/packaging" },
-      { label: "Serving Equipment", href: "/dashboard/libraries/serving-equipment" },
+      // Dynamically generated from LIBRARIES constant
+      ...LIBRARIES.map(lib => ({
+        label: lib.name,
+        href: lib.href,
+      })),
     ],
   },
   {
@@ -116,7 +125,11 @@ const sections: SidebarSection[] = [
     icon: GraduationCap,
     items: [
       { label: "All Courses", href: "/dashboard/courses" },
-      { label: "Food Safety", href: "/dashboard/courses/food-safety" },
+      // Dynamically generated from COURSES constant
+      ...COURSES.map(course => ({
+        label: course.title,
+        href: `/dashboard/courses/${course.slug}`,
+      })),
     ],
   },
   {
@@ -139,14 +152,7 @@ const directLinks: SidebarLink[] = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: HelpCircle },
 ];
-interface NewMainSidebarProps {
-  isMobileOpen?: boolean;
-  onMobileClose?: () => void;
-}
 
-export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
-  const pathname = usePathname();
-  const { role: contextRole, signOut } = useAppContext();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -318,7 +324,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto overflow-x-hidden">
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -330,18 +336,18 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
         {/* Hover Sections */}
         {sections.map((section) => {
-          const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+          // Remove restrictions - show all sections
           return (
             <SidebarSectionItem
               key={section.label}
               section={section}
               allSections={sections}
               isHovered={hoveredSection === section.label}
-              onHover={() => !sectionRestricted && handleHover(section.label)}
+              onHover={() => handleHover(section.label)}
               onLeave={handleLeave}
               pathname={pathname}
               buttonRef={buttonRefs[section.label]}
-              isRestricted={sectionRestricted}
+              isRestricted={false}
               role={role}
             />
           );
@@ -359,27 +365,39 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
         {/* Bottom Direct Links */}
         {directLinks.slice(2).map((link) => {
-          const linkRestricted = roleGuard ? isRestricted(role, link.label) : false;
+          // Remove restrictions - show all links
           return (
             <SidebarDirectLink
               key={link.href}
               item={link}
               isActive={pathname.startsWith(link.href)}
-              isRestricted={linkRestricted}
+              isRestricted={false}
             />
           );
         })}
+
+        {/* Admin Portal Link - Only for platform admins */}
+        {profile?.is_platform_admin && (
+          <>
+            <div className="w-12 h-px bg-white/[0.1] my-1" />
+            <SidebarDirectLink
+              item={{ label: "Admin Portal", href: "/admin", icon: Shield }}
+              isActive={pathname.startsWith("/admin")}
+              isRestricted={false}
+            />
+          </>
+        )}
       </aside>
 
       {/* Hover Popups - Desktop only */}
       {sections.map((section) => {
-        const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
+        // Remove restrictions - show all popups
         return (
           <SidebarPopup
             key={section.label}
             section={section}
-            isVisible={hoveredSection === section.label && !sectionRestricted}
-            onMouseEnter={() => !sectionRestricted && handleHover(section.label)}
+            isVisible={hoveredSection === section.label}
+            onMouseEnter={() => handleHover(section.label)}
             onMouseLeave={handleLeave}
             pathname={pathname}
             buttonRef={buttonRefs[section.label]}
@@ -390,7 +408,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
       {/* Mobile Drawer Sidebar */}
       {mounted && isMobileOpen ? createPortal(
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto">
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden">
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
             <h2 className="text-lg font-semibold text-white">Menu</h2>
@@ -411,12 +429,12 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                 Quick Actions
               </div>
               <Link
-                href="/dashboard/checklists"
+                href="/dashboard/todays_tasks"
                 onClick={onMobileClose}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
                   ${
-                    pathname === "/dashboard/checklists" || pathname.startsWith("/dashboard/checklists")
+                    pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
                       ? "bg-pink-500/20 text-pink-300 font-medium"
                       : "text-white/80 hover:text-white hover:bg-white/[0.08]"
                   }
@@ -471,8 +489,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
             {/* Sections */}
             {sections.map((section) => {
-              const sectionRestricted = roleGuard ? isRestricted(role, section.label) : false;
-              if (sectionRestricted) return null;
+              // Remove restrictions - show all sections
 
               // Find if any item in this section is active
               const hasActiveItem = section.items.some((item) => 
@@ -491,7 +508,6 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                     {section.label}
                   </div>
                   {itemsToShow.map((item) => {
-                    const itemRestricted = isRestricted(role, item.label);
                     const isExactMatch = pathname === item.href;
                     const isChildRoute = pathname.startsWith(item.href + "/");
                     const longerMatchExists = section.items.some((other) =>
@@ -499,22 +515,17 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
                       other.href.length > item.href.length &&
                       (pathname === other.href || pathname.startsWith(other.href + "/"))
                     );
-                    const isActive = !itemRestricted && (isExactMatch || isChildRoute) && !longerMatchExists;
+                    const isActive = (isExactMatch || isChildRoute) && !longerMatchExists;
 
                     return (
                       <Link
                         key={item.href}
-                        href={itemRestricted ? "#" : item.href}
-                        onClick={(e) => {
-                          if (itemRestricted) {
-                            e.preventDefault();
-                          } else {
-                            onMobileClose?.();
-                          }
+                        href={item.href}
+                        onClick={() => {
+                          onMobileClose?.();
                         }}
                         className={`
-                          block px-4 py-2.5 rounded-lg text-sm transition-colors
-                          ${itemRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                          block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer
                           ${
                             isActive
                               ? "bg-pink-500/20 text-pink-300 font-medium"
@@ -534,17 +545,30 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
 
             {/* Bottom Direct Links */}
             {directLinks.slice(1).map((link) => {
-              const linkRestricted = roleGuard ? isRestricted(role, link.label) : false;
+              // Remove restrictions - show all links
               return (
                 <MobileSidebarLink
                   key={link.href}
                   item={link}
                   isActive={pathname.startsWith(link.href)}
-                  isRestricted={linkRestricted}
+                  isRestricted={false}
                   onClick={onMobileClose}
                 />
               );
             })}
+
+            {/* Admin Portal Link - Only for platform admins */}
+            {profile?.is_platform_admin && (
+              <>
+                <div className="h-px bg-white/[0.1] my-4" />
+                <MobileSidebarLink
+                  item={{ label: "Admin Portal", href: "/admin", icon: Shield }}
+                  isActive={pathname.startsWith("/admin")}
+                  isRestricted={false}
+                  onClick={onMobileClose}
+                />
+              </>
+            )}
 
             <div className="h-px bg-white/[0.1] my-4" />
 
@@ -586,37 +610,26 @@ function SidebarDirectLink({
   const Icon = item.icon;
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isRestricted) {
-      e.preventDefault();
-    }
+    // No restrictions - allow navigation
   };
 
   return (
     <Link
-      href={isRestricted ? "#" : item.href}
+      href={item.href}
       onClick={handleClick}
       className={`
         relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
-        transition-all duration-200
-        ${isRestricted ? "opacity-40 cursor-not-allowed" : ""}
+        transition-all duration-200 cursor-pointer
         ${
-          isActive && !isRestricted
+          isActive
             ? "bg-pink-500/20 text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
             : "text-white/60 hover:text-white hover:bg-white/[0.08]"
         }
       `}
     >
       <Icon size={18} />
-      {isRestricted && (
-        <div className="absolute top-1 right-1 text-white/40">
-          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 1a5 5 0 0 0-5 5v4H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v4H9V6a3 3 0 0 1 3-3z"/>
-          </svg>
-        </div>
-      )}
       <div className="absolute left-full ml-4 px-3 py-2 bg-[#1a1c24] border border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
         {item.label}
-        {isRestricted && <span className="block text-xs text-red-400 mt-1">🔒 Restricted</span>}
       </div>
     </Link>
   );
@@ -670,9 +683,9 @@ function SidebarSectionItem({
       ref={buttonRef}
       className={`
         relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
-        transition-all duration-200 ${isRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+        transition-all duration-200 cursor-pointer
         ${
-          (isActive || isHovered) && !isRestricted
+          (isActive || isHovered)
             ? "bg-pink-500/20 text-pink-400"
             : "text-white/60 hover:text-white hover:bg-white/[0.08]"
         }
@@ -681,13 +694,6 @@ function SidebarSectionItem({
       onMouseLeave={onLeave}
     >
       <Icon size={18} />
-      {isRestricted && (
-        <div className="absolute top-1 right-1 text-white/40">
-          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 1a5 5 0 0 0-5 5v4H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v4H9V6a3 3 0 0 1 3-3z"/>
-          </svg>
-        </div>
-      )}
     </div>
   );
 }
@@ -707,22 +713,18 @@ function MobileSidebarLink({
   const Icon = item.icon;
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isRestricted) {
-      e.preventDefault();
-    } else {
-      onClick?.();
-    }
+    // No restrictions - allow navigation
+    onClick?.();
   };
 
   return (
     <Link
-      href={isRestricted ? "#" : item.href}
+      href={item.href}
       onClick={handleClick}
       className={`
-        flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors
-        ${isRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+        flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
         ${
-          isActive && !isRestricted
+          isActive
             ? "bg-pink-500/20 text-pink-300 font-medium"
             : "text-white/80 hover:text-white hover:bg-white/[0.08]"
         }
@@ -730,9 +732,6 @@ function MobileSidebarLink({
     >
       <Icon size={18} />
       <span>{item.label}</span>
-      {isRestricted && (
-        <span className="ml-auto text-white/30 text-xs">🔒</span>
-      )}
     </Link>
   );
 }
@@ -780,7 +779,6 @@ function SidebarPopup({
         {/* Items */}
         <div className="space-y-1 px-2">
           {section.items.map((item) => {
-            const itemRestricted = isRestricted(role, item.label);
             const isExactMatch = pathname === item.href;
             const isChildRoute = pathname.startsWith(item.href + "/");
             const longerMatchExists = section.items.some((other) =>
@@ -788,16 +786,14 @@ function SidebarPopup({
               other.href.length > item.href.length &&
               (pathname === other.href || pathname.startsWith(other.href + "/"))
             );
-            const isActive = !itemRestricted && (isExactMatch || isChildRoute) && !longerMatchExists;
+            const isActive = (isExactMatch || isChildRoute) && !longerMatchExists;
 
             return (
               <Link
                 key={item.href}
-                href={itemRestricted ? "#" : item.href}
-                onClick={(e) => { if (itemRestricted) e.preventDefault(); e.stopPropagation(); }}
+                href={item.href}
                 className={`
-                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150
-                  ${itemRestricted ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer
                   ${
                     isActive
                       ? "bg-pink-500/20 text-pink-300 font-medium"
@@ -806,9 +802,6 @@ function SidebarPopup({
                 `}
               >
                 {item.label}
-                {itemRestricted && (
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 text-xs">🔒</span>
-                )}
               </Link>
             );
           })}

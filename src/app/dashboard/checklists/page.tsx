@@ -14,6 +14,7 @@ import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/tempera
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { buildTaskQueryFilter, isTaskDueNow } from '@/lib/shift-utils'
+import { calculateTaskTiming } from '@/utils/taskTiming'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -76,32 +77,72 @@ export default function DailyChecklistPage() {
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
-  useEffect(() => {
-    if (companyId) {
-      fetchTodaysTasks()
-      fetchUpcomingTasks()
-      loadBreachActions()
-    } else {
-      setLoading(false)
-      setTasks([])
+  // Define loadBreachActions first (needed by fetchTodaysTasks)
+  const loadBreachActions = useCallback(async () => {
+    if (!siteId) {
+      setBreachActions([])
+      return
     }
-  }, [siteId, companyId, fetchTodaysTasks])
 
-  // Listen for refresh events (e.g., after clock-in)
-  useEffect(() => {
-    const handleRefresh = () => {
-      console.log('🔄 Refreshing tasks after clock-in/out')
-      if (fetchTodaysTasksRef.current) {
-        fetchTodaysTasksRef.current()
-        fetchUpcomingTasks()
+    try {
+      setBreachLoading(true)
+      const today = new Date()
+      const weekAgo = new Date(today.getTime())
+      weekAgo.setDate(weekAgo.getDate() - 7)
+
+      let query = supabase
+        .from('temperature_breach_actions')
+        .select(
+          `
+            id,
+            action_type,
+            status,
+            due_at,
+            completed_at,
+            notes,
+            metadata,
+            created_at,
+            temperature_log:temperature_logs(
+              id,
+              recorded_at,
+              reading,
+              unit,
+              status,
+              meta
+            )
+          `
+        )
+        .in('status', ['pending', 'acknowledged'])
+        .gte('created_at', weekAgo.toISOString())
+        .order('created_at', { ascending: false })
+
+      if (siteId) {
+        query = query.eq('site_id', siteId)
       }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setBreachActions((data || []).map((row) => ({
+        id: row.id,
+        action_type: row.action_type,
+        status: row.status,
+        due_at: row.due_at,
+        completed_at: row.completed_at,
+        notes: row.notes,
+        metadata: row.metadata ?? {},
+        created_at: row.created_at,
+        temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
+      })))
+    } catch (error: any) {
+      console.error('Failed to load breach actions', error?.message ?? error)
+    } finally {
+      setBreachLoading(false)
     }
+  }, [siteId])
 
-    window.addEventListener('refresh-tasks', handleRefresh)
-    return () => window.removeEventListener('refresh-tasks', handleRefresh)
-  }, []) // Empty deps - use ref instead
-
-  async function fetchUpcomingTasks() {
+  // Define fetchUpcomingTasks (needed by useEffect)
+  const fetchUpcomingTasks = useCallback(async () => {
     try {
       // CRITICAL: Check companyId before fetching
       if (!companyId) {
@@ -136,8 +177,9 @@ export default function DailyChecklistPage() {
     } catch (error) {
       console.error('Failed to fetch upcoming tasks:', error)
     }
-  }
+  }, [companyId])
 
+  // Define fetchTodaysTasks (needed by useEffect) - must be defined before useEffect
   const fetchTodaysTasks = useCallback(async () => {
     try {
       console.log('🔄 fetchTodaysTasks called at:', new Date().toISOString())
@@ -691,10 +733,13 @@ export default function DailyChecklistPage() {
       
       let profilesMap = new Map()
       if (completedByUserIds.length > 0) {
-        const { data: profiles } = await supabase
+        const uniqueUserIds = [...new Set(completedByUserIds)];
+        const query = supabase
           .from('profiles')
-          .select('id, full_name, email')
-          .in('id', [...new Set(completedByUserIds)])
+          .select('id, full_name, email');
+        const { data: profiles } = uniqueUserIds.length === 1
+          ? await query.eq('id', uniqueUserIds[0])
+          : await query.in('id', uniqueUserIds)
         
         if (profiles) {
           profilesMap = new Map(profiles.map(p => [p.id, p]))
@@ -754,7 +799,7 @@ export default function DailyChecklistPage() {
               completed_by: r.completed_by
             })))
           } else {
-            console.warn('⚠️ No completion records found after filtering')
+            // This is normal for pending tasks - only log if we expected records but they were filtered out
             if (completionRecords && completionRecords.length > 0) {
               console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
                 task_id: r.task_id,
@@ -984,75 +1029,38 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId, loadBreachActions]) // Dependencies for fetchTodaysTasks
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
     fetchTodaysTasksRef.current = fetchTodaysTasks
   }, [fetchTodaysTasks])
 
-  async function loadBreachActions() {
-    if (!siteId) {
-      setBreachActions([])
-      return
+  // Now define the useEffect that uses these functions
+  useEffect(() => {
+    if (companyId) {
+      fetchTodaysTasks()
+      fetchUpcomingTasks()
+      loadBreachActions()
+    } else {
+      setLoading(false)
+      setTasks([])
     }
+  }, [siteId, companyId, fetchTodaysTasks, fetchUpcomingTasks, loadBreachActions])
 
-    try {
-      setBreachLoading(true)
-      const today = new Date()
-      const weekAgo = new Date(today.getTime())
-      weekAgo.setDate(weekAgo.getDate() - 7)
-
-      let query = supabase
-        .from('temperature_breach_actions')
-        .select(
-          `
-            id,
-            action_type,
-            status,
-            due_at,
-            completed_at,
-            notes,
-            metadata,
-            created_at,
-            temperature_log:temperature_logs(
-              id,
-              recorded_at,
-              reading,
-              unit,
-              status,
-              meta
-            )
-          `
-        )
-        .in('status', ['pending', 'acknowledged'])
-        .gte('created_at', weekAgo.toISOString())
-        .order('created_at', { ascending: false })
-
-      if (siteId) {
-        query = query.eq('site_id', siteId)
+  // Listen for refresh events (e.g., after clock-in)
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('🔄 Refreshing tasks after clock-in/out')
+      if (fetchTodaysTasksRef.current) {
+        fetchTodaysTasksRef.current()
+        fetchUpcomingTasks()
       }
-
-      const { data, error } = await query
-
-      if (error) throw error
-      setBreachActions((data || []).map((row) => ({
-        id: row.id,
-        action_type: row.action_type,
-        status: row.status,
-        due_at: row.due_at,
-        completed_at: row.completed_at,
-        notes: row.notes,
-        metadata: row.metadata ?? {},
-        created_at: row.created_at,
-        temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
-      })))
-    } catch (error: any) {
-      console.error('Failed to load breach actions', error?.message ?? error)
-    } finally {
-      setBreachLoading(false)
     }
-  }
+
+    window.addEventListener('refresh-tasks', handleRefresh)
+    return () => window.removeEventListener('refresh-tasks', handleRefresh)
+  }, [fetchUpcomingTasks]) // Include fetchUpcomingTasks in deps
 
   const getStatusColor = (task: ChecklistTaskWithTemplate) => {
     if (task.status === 'completed') {

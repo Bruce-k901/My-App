@@ -236,7 +236,7 @@ export default function MyTasksPage() {
   });
 
   return (
-    <div className="p-8">
+    <div className="w-full -mt-[72px] pt-[72px] p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">My Tasks</h1>
         <p className="text-white/60">View and manage your assigned tasks</p>

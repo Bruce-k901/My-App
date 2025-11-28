@@ -24,7 +24,8 @@ interface TaskFromTemplateModalProps {
   onSave?: () => void;
   templateId: string;
   template?: any; // Template data if already loaded
-  existingTask?: any; // Existing task data for editing
+  existingTask?: any; // Existing task data for editing (legacy)
+  existingSiteChecklist?: any; // Existing site_checklist configuration for editing
 }
 
 export function TaskFromTemplateModal({ 
@@ -33,7 +34,8 @@ export function TaskFromTemplateModal({
   onSave,
   templateId,
   template: providedTemplate,
-  existingTask
+  existingTask,
+  existingSiteChecklist
 }: TaskFromTemplateModalProps) {
   const router = useRouter();
   const { companyId, siteId, profile } = useAppContext();
@@ -540,11 +542,11 @@ export function TaskFromTemplateModal({
 
   // Initialize form with existing task data when editing (even if template not found)
   useEffect(() => {
-    if (existingTask && isOpen && !loading) {
+    if ((existingTask || existingSiteChecklist) && isOpen && !loading) {
       if (template) {
-        // Template found - initialize with both template and task data
+        // Template found - initialize with both template and task/site_checklist data
         initializeFormData(template);
-      } else {
+      } else if (existingTask) {
         // Template not found - initialize with just task data so user can still edit
         setFormData({
           custom_name: existingTask.custom_name || '',
@@ -559,20 +561,84 @@ export function TaskFromTemplateModal({
           passFailStatus: '',
           notes: '',
         });
+      } else if (existingSiteChecklist) {
+        // For site_checklist, we need the template to initialize properly
+        // This case should be rare - template should always be available
+        console.warn('⚠️ Editing site_checklist but template not loaded yet');
       }
     }
-  }, [template, existingTask, isOpen, loading]);
+  }, [template, existingTask, existingSiteChecklist, isOpen, loading]);
 
   function initializeFormData(templateData: any) {
     console.log('🔄 initializeFormData called:', {
       hasExistingTask: !!existingTask,
+      hasExistingSiteChecklist: !!existingSiteChecklist,
       templateId: templateData?.id,
       templateName: templateData?.name,
       hasRecurrencePattern: !!templateData?.recurrence_pattern
     });
     
+    // Initialize form with existing site_checklist data if editing configuration
+    if (existingSiteChecklist) {
+      const dayparts = templateData.dayparts || [];
+      
+      // Build dayparts array from daypart_times
+      let daypartsArray: Array<{ daypart: string; due_time: string }> = [];
+      if (existingSiteChecklist.daypart_times && typeof existingSiteChecklist.daypart_times === 'object') {
+        for (const [daypart, timeValue] of Object.entries(existingSiteChecklist.daypart_times)) {
+          if (Array.isArray(timeValue)) {
+            timeValue.forEach(time => {
+              daypartsArray.push({ daypart, due_time: time });
+            });
+          } else {
+            daypartsArray.push({ daypart, due_time: timeValue as string });
+          }
+        }
+      } else if (dayparts.length > 0) {
+        // Use template dayparts if no daypart_times configured
+        const daypartTimes = templateData.recurrence_pattern?.daypart_times || {};
+        daypartsArray = dayparts.map((dp: string) => ({
+          daypart: dp,
+          due_time: daypartTimes[dp] || ''
+        }));
+      }
+      
+      // Extract equipment/assets from equipment_config
+      const selectedAssets = existingSiteChecklist.equipment_config || [];
+      
+      setFormData({
+        custom_name: existingSiteChecklist.name || templateData.name || '',
+        custom_instructions: templateData.instructions || '',
+        due_date: new Date().toISOString().split('T')[0], // Not used for configurations
+        due_time: '', // Not used for configurations
+        daypart: daypartsArray[0]?.daypart || dayparts[0] || '',
+        dayparts: daypartsArray,
+        priority: 'medium', // Not used for configurations
+        checklistItems: [],
+        yesNoChecklistItems: [],
+        temperatures: [],
+        photos: [],
+        passFailStatus: '',
+        notes: '',
+        sopUploads: [],
+        raUploads: [],
+        documentUploads: [],
+        selectedLibraries: {
+          ppe: [],
+          chemicals: [],
+          equipment: [],
+          ingredients: [],
+          drinks: [],
+          disposables: [],
+        },
+        selectedAssets: selectedAssets,
+        days_of_week: existingSiteChecklist.days_of_week || [],
+        date_of_month: existingSiteChecklist.date_of_month || undefined,
+        anniversary_date: existingSiteChecklist.anniversary_date || undefined,
+      });
+    }
     // Initialize form with existing task data if editing, otherwise use template defaults
-    if (existingTask) {
+    else if (existingTask) {
       const dayparts = templateData.dayparts || [];
       
       // Load task_data if it exists
@@ -1234,79 +1300,98 @@ export function TaskFromTemplateModal({
           }
         }
         
-        // Store dayparts if they exist
+        // Build daypart_times object for site_checklists
+        const daypartTimes: Record<string, string | string[]> = {};
         if (formData.dayparts && formData.dayparts.length > 0) {
-          taskData.dayparts = formData.dayparts;
+          for (const dp of formData.dayparts) {
+            if (dp.daypart && dp.due_time) {
+              if (daypartTimes[dp.daypart]) {
+                // If daypart already exists, convert to array
+                const existing = daypartTimes[dp.daypart];
+                daypartTimes[dp.daypart] = Array.isArray(existing) 
+                  ? [...existing, dp.due_time]
+                  : [existing, dp.due_time];
+              } else {
+                daypartTimes[dp.daypart] = dp.due_time;
+              }
+            }
+          }
         }
         
-        // Store temperature logs if they exist
-        if (formData.temperatures && formData.temperatures.length > 0) {
-          taskData.temperatures = formData.temperatures;
-        }
-        
-        // Store pass/fail status if it exists
-        if (formData.passFailStatus) {
-          taskData.passFailStatus = formData.passFailStatus;
-        }
-        
-        // Store uploaded files
-        if (formData.sopUploads && formData.sopUploads.length > 0) {
-          taskData.sopUploads = formData.sopUploads;
-        }
-        if (formData.raUploads && formData.raUploads.length > 0) {
-          taskData.raUploads = formData.raUploads;
-        }
-        if (formData.documentUploads && formData.documentUploads.length > 0) {
-          taskData.documentUploads = formData.documentUploads;
-        }
-        if (formData.photos && formData.photos.length > 0) {
-          taskData.photos = formData.photos;
-        }
-        
-        // Store library selections
-        if (formData.selectedLibraries && Object.keys(formData.selectedLibraries).some(key => formData.selectedLibraries[key as keyof typeof formData.selectedLibraries].length > 0)) {
-          taskData.selectedLibraries = formData.selectedLibraries;
-        }
-        
-        // Store asset selections
+        // Build equipment_config from selectedAssets or temperatures
+        let equipmentConfig = null;
         if (formData.selectedAssets && formData.selectedAssets.length > 0) {
-          taskData.selectedAssets = formData.selectedAssets;
+          equipmentConfig = formData.selectedAssets;
+        } else if (formData.temperatures && formData.temperatures.length > 0) {
+          // Extract equipment from temperature logs
+          equipmentConfig = formData.temperatures.map((temp: any) => ({
+            assetId: temp.assetId,
+            equipment: temp.equipment,
+            nickname: temp.nickname
+          }));
         }
         
-        // Use first daypart for backward compatibility (single daypart field)
-        const primaryDaypart = formData.dayparts && formData.dayparts.length > 0 
-          ? formData.dayparts[0].daypart 
-          : formData.daypart || null;
-        const primaryDueTime = formData.dayparts && formData.dayparts.length > 0 
-          ? formData.dayparts[0].due_time 
-          : formData.due_time || null;
+        // Determine frequency from template
+        const frequency = template?.frequency || 'daily';
         
-        // Create new checklist task
-        const { data, error } = await supabase
-          .from('checklist_tasks')
-          .insert({
-            template_id: templateId,
-            company_id: companyId,
-            site_id: siteId,
-            due_date: formData.due_date,
-            due_time: primaryDueTime,
-            daypart: primaryDaypart,
-            custom_name: formData.custom_name.trim(), // Required for new tasks, validated above
-            custom_instructions: instructions,
-            status: 'pending',
-            priority: formData.priority,
-            // Store task instance data (checklist items, temperatures, etc.)
-            task_data: Object.keys(taskData).length > 0 ? taskData : {},
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        toast.success('Task created successfully!');
+        // Build site_checklist configuration
+        const siteChecklistData: any = {
+          template_id: templateId,
+          company_id: companyId,
+          site_id: siteId,
+          name: formData.custom_name.trim() || template?.name || 'Task Configuration',
+          frequency: frequency,
+          active: true
+        };
         
-        // Redirect to Active Tasks page
-        router.push('/dashboard/tasks/active');
+        // Add daypart_times if we have multiple times
+        if (Object.keys(daypartTimes).length > 0) {
+          siteChecklistData.daypart_times = daypartTimes;
+        }
+        
+        // Add equipment_config if we have equipment
+        if (equipmentConfig) {
+          siteChecklistData.equipment_config = equipmentConfig;
+        }
+        
+        // Add scheduling for weekly/monthly/annual
+        if (frequency === 'weekly' && formData.days_of_week) {
+          siteChecklistData.days_of_week = formData.days_of_week;
+        } else if (frequency === 'monthly' && formData.date_of_month) {
+          siteChecklistData.date_of_month = formData.date_of_month;
+        } else if (frequency === 'annually' && formData.anniversary_date) {
+          siteChecklistData.anniversary_date = formData.anniversary_date;
+        }
+        
+        // Check if editing existing site_checklist
+        if (existingSiteChecklist) {
+          // Update existing configuration
+          const { error } = await supabase
+            .from('site_checklists')
+            .update(siteChecklistData)
+            .eq('id', existingSiteChecklist.id);
+          
+          if (error) throw error;
+          toast.success('Configuration updated successfully!');
+          
+          // Call onSave callback and close modal (don't redirect when editing)
+          if (onSave) onSave();
+          onClose();
+          return;
+        } else {
+          // Create new configuration
+          const { data, error } = await supabase
+            .from('site_checklists')
+            .insert(siteChecklistData)
+            .select()
+            .single();
+
+          if (error) throw error;
+          toast.success('Task configuration created successfully!');
+          
+          // Redirect to My Tasks page for new configurations
+          router.push('/dashboard/my_tasks');
+        }
       }
     } catch (error: any) {
       console.error('Error creating checklist:', error);
@@ -1370,11 +1455,11 @@ export function TaskFromTemplateModal({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-pink-500 mb-2">
-                {existingTask ? 'Edit Task' : 'Create Task'}: {template?.name || existingTask?.custom_name || 'Task'}
+                {existingTask || existingSiteChecklist ? (existingSiteChecklist ? 'Edit Configuration' : 'Edit Task') : 'Create Task'}: {template?.name || existingTask?.custom_name || existingSiteChecklist?.name || 'Task'}
               </h1>
               <p className="text-gray-400">
-                {existingTask 
-                  ? (template ? 'Update the task details' : 'Template not found. You can still edit the task details.')
+                {existingTask || existingSiteChecklist
+                  ? (existingSiteChecklist ? 'Update the task configuration' : (template ? 'Update the task details' : 'Template not found. You can still edit the task details.'))
                   : 'Fill in the details for this task instance'}
               </p>
             </div>
@@ -2435,7 +2520,9 @@ export function TaskFromTemplateModal({
               disabled={saving}
               className="px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
             >
-              {saving ? (existingTask ? 'Updating...' : 'Creating...') : (existingTask ? 'Update Task' : 'Create Task')}
+              {saving 
+                ? (existingTask || existingSiteChecklist ? 'Saving...' : 'Creating...') 
+                : (existingTask || existingSiteChecklist ? (existingSiteChecklist ? 'Save Configuration' : 'Update Task') : 'Create Task')}
             </button>
           </div>
         </form>
