@@ -1,6 +1,6 @@
--- Fix companies RLS to allow new users to create companies during signup
--- Problem: New users don't have company_id yet, so they can't create a company
--- Solution: Allow authenticated users to create a company if they don't have one yet
+-- Fix companies RLS to allow users to create multiple companies
+-- Problem: RLS was blocking users who already have a company from creating another one
+-- Solution: Allow any authenticated user to create companies where user_id = auth.uid()
 
 -- Drop existing INSERT policy if it exists
 DROP POLICY IF EXISTS companies_insert_own ON public.companies;
@@ -9,8 +9,8 @@ DROP POLICY IF EXISTS "Users can insert companies" ON public.companies;
 DROP POLICY IF EXISTS companies_user_access ON public.companies;
 
 -- Create new INSERT policy that allows:
--- 1. Users without a company_id (new signups) to create a company where user_id = auth.uid()
--- 2. Users with a company_id to create companies (if needed)
+-- Any authenticated user can create a company where user_id = auth.uid()
+-- This allows users to create multiple companies
 CREATE POLICY "Users can create companies"
   ON public.companies
   FOR INSERT
@@ -20,13 +20,6 @@ CREATE POLICY "Users can create companies"
     OR
     -- Allow if created_by matches auth.uid() (alternative field)
     created_by = auth.uid()
-    OR
-    -- Allow if user has no company_id yet (new signup)
-    NOT EXISTS (
-      SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() 
-      AND company_id IS NOT NULL
-    )
   );
 
 -- Ensure SELECT policy allows users to see their own company
