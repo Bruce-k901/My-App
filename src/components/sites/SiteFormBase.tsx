@@ -572,6 +572,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       const cleanedSchedule = normalizeScheduleKeys(formData.operating_schedule);
 
       // Prepare site data for upsert (without planned_closures)
+      // Convert empty strings to null for UUID fields to prevent PostgreSQL errors
+      const gmUserId = formData.gm_user_id?.trim();
       const siteData = {
         ...(formData.id && { id: formData.id }), // Include ID only if editing
         company_id: companyId,
@@ -582,7 +584,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         city: formData.city && typeof formData.city === 'string' ? formData.city.trim() : null,
         region: formData.region && typeof formData.region === 'string' ? formData.region.trim() : null,
         status: formData.status,
-        gm_user_id: formData.gm_user_id ? formData.gm_user_id.trim() : null,
+        gm_user_id: gmUserId && gmUserId.length > 0 ? gmUserId : null,
         operating_schedule: cleanedSchedule
       };
 
