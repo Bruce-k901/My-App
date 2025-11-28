@@ -75,6 +75,15 @@
           "value": "origin-when-cross-origin"
         }
       ]
+    },
+    {
+      "source": "/(.*\\.html|/|/dashboard|/dashboard/.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
     }
   ]
 }

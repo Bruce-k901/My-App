@@ -124,6 +124,48 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   }
                   return false;
                 };
+
+                // Handle chunk load errors - auto-reload on deployment cache mismatch
+                window.addEventListener('error', function(event) {
+                  const target = event.target;
+                  if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) {
+                    const src = target.src || target.href || '';
+                    if (src.includes('/_next/static/') && event.message && (
+                      event.message.includes('ChunkLoadError') ||
+                      event.message.includes('Loading chunk') ||
+                      event.message.includes('Failed to fetch dynamically imported module')
+                    )) {
+                      console.warn('Chunk load error detected, reloading page...');
+                      // Only reload once per session to prevent loops
+                      if (!sessionStorage.getItem('chunk-reload-attempted')) {
+                        sessionStorage.setItem('chunk-reload-attempted', 'true');
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 100);
+                      }
+                    }
+                  }
+                }, true);
+
+                // Also catch unhandled promise rejections from chunk loading
+                window.addEventListener('unhandledrejection', function(event) {
+                  const reason = event.reason;
+                  if (reason && (
+                    reason.message?.includes('ChunkLoadError') ||
+                    reason.message?.includes('Loading chunk') ||
+                    reason.message?.includes('Failed to fetch dynamically imported module') ||
+                    reason.name === 'ChunkLoadError'
+                  )) {
+                    console.warn('Chunk load error in promise, reloading page...');
+                    event.preventDefault();
+                    if (!sessionStorage.getItem('chunk-reload-attempted')) {
+                      sessionStorage.setItem('chunk-reload-attempted', 'true');
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 100);
+                    }
+                  }
+                });
               })();
             `,
           }}
