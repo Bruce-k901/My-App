@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import UserEntityCard from "@/components/users/UserEntityCard";
 import LazyAddUserModal from "@/components/users/LazyAddUserModal";
-import { Plus, Search, Archive, ChevronLeft } from "lucide-react";
+import { Plus, Search, Archive, ChevronLeft, Upload, Download } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 
 interface User {
   id: string;
@@ -47,6 +49,8 @@ export default function UsersTab() {
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
   const [editForms, setEditForms] = useState<Record<string, any>>({});
   const [viewArchived, setViewArchived] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchUsers = useCallback(async () => {
     if (!companyId) return;
@@ -359,6 +363,168 @@ export default function UsersTab() {
     }
   };
 
+  // Download users as CSV/XLSX
+  const handleDownload = () => {
+    try {
+      const fields = [
+        "full_name",
+        "email",
+        "app_role",
+        "position_title",
+        "phone_number",
+        "site_id",
+        "food_safety_level",
+        "food_safety_expiry_date",
+        "h_and_s_level",
+        "h_and_s_expiry_date",
+        "fire_marshal_trained",
+        "fire_marshal_expiry_date",
+        "first_aid_trained",
+        "first_aid_expiry_date",
+        "cossh_trained",
+        "cossh_expiry_date"
+      ];
+
+      const activeUsers = viewArchived ? users : users.filter(user => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          user.full_name?.toLowerCase().includes(query) ||
+          user.email?.toLowerCase().includes(query) ||
+          user.app_role?.toLowerCase().includes(query) ||
+          user.position_title?.toLowerCase().includes(query)
+        );
+      });
+
+      const rows = activeUsers.map((user: User) => {
+        const row: Record<string, any> = {};
+        for (const f of fields) {
+          const value = user[f as keyof User];
+          row[f] = value ?? "";
+        }
+        // Add site name lookup
+        if (user.site_id) {
+          const site = sites.find(s => s.id === user.site_id);
+          row["site_name"] = site?.name || "";
+        } else {
+          row["site_name"] = "";
+        }
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows, { header: [...fields, "site_name"] });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Users");
+      const xlsxArray = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([xlsxArray], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `users_export${viewArchived ? '_archived' : ''}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      console.log("Users exported successfully");
+    } catch (e: any) {
+      console.error("Export failed:", e?.message || "Unable to export");
+      alert(`Export failed: ${e?.message || "Unable to export"}`);
+    }
+  };
+
+  // Upload users from CSV
+  const handleUploadClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (viewArchived) {
+      alert("Cannot upload users while viewing archived users. Please go back to active users first.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setUploading(true);
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async ({ data }) => {
+        try {
+          await handleImport(data as any[]);
+        } finally {
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          setUploading(false);
+        }
+      },
+      error: (err) => {
+        console.error("Upload failed:", err.message || "Parsing error");
+        alert(`Upload failed: ${err.message || "Parsing error"}`);
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      },
+    });
+  };
+
+  const handleImport = async (rows: any[]) => {
+    try {
+      if (!companyId) {
+        alert("Upload failed: Company not loaded yet.");
+        return;
+      }
+
+      // Required fields
+      const required = ["email", "full_name"];
+      const valid = rows.filter(r => 
+        required.every(f => r[f] && String(r[f]).trim() !== "")
+      );
+
+      if (valid.length === 0) {
+        alert("Upload failed: No valid rows found. Required fields: email, full_name");
+        return;
+      }
+
+      // Check for existing users by email to avoid duplicates
+      const emails = valid.map(r => String(r.email).trim().toLowerCase());
+      const { data: existingUsers } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("company_id", companyId)
+        .in("email", emails);
+
+      const existingEmails = new Set(
+        (existingUsers || []).map(u => u.email?.toLowerCase()).filter(Boolean)
+      );
+
+      const newUsers = valid.filter(r => 
+        !existingEmails.has(String(r.email).trim().toLowerCase())
+      );
+
+      if (newUsers.length === 0) {
+        alert("All users in the file already exist. No new users to import.");
+        return;
+      }
+
+      if (newUsers.length < valid.length) {
+        alert(`Warning: ${valid.length - newUsers.length} user(s) already exist and were skipped.`);
+      }
+
+      // Get site names to IDs mapping
+      const siteNameMap = new Map(sites.map(s => [s.name.toLowerCase(), s.id]));
+
+      // Prepare payload for new user creation
+      // Note: User creation requires auth.signUp, so we'll need to handle this differently
+      // For now, we'll just log the users that would be created
+      alert(`Found ${newUsers.length} new user(s) to import. User creation requires email invitations - please use the "Add User" button to invite users individually, or contact support for bulk user import.`);
+      
+      console.log("Users that would be imported:", newUsers);
+    } catch (e: any) {
+      console.error("Upload failed:", e?.message || "Unexpected error");
+      alert(`Upload failed: ${e?.message || "Unexpected error"}`);
+    }
+  };
+
   const filteredUsers = users.filter(user => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -500,16 +666,52 @@ export default function UsersTab() {
 
           {/* Add User Button - hidden when viewing archived */}
           {(role === "Admin" || role === "Manager") && !viewArchived && (
+            <Tooltip label="Add User" side="top">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#EC4899] text-[#EC4899] bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+                aria-label="Add User"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </Tooltip>
+          )}
+
+          {/* Download Button */}
+          <Tooltip label="Download Users" side="top">
             <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+              onClick={handleDownload}
+              className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+              aria-label="Download Users"
             >
-              <Plus className="w-4 h-4" />
-              Add User
+              <Download className="h-5 w-5" />
             </button>
+          </Tooltip>
+
+          {/* Upload Button - hidden when viewing archived */}
+          {(role === "Admin" || role === "Manager") && !viewArchived && (
+            <Tooltip label="Upload Users CSV" side="top">
+              <button
+                onClick={handleUploadClick}
+                disabled={uploading}
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Upload Users"
+              >
+                <Upload className="h-5 w-5" />
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>
+
+      {/* Hidden file input for CSV upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,.xlsx,.xls"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
 
       {/* Users list */}
       <div className="space-y-4">
