@@ -88,6 +88,7 @@ export async function registerPushSubscription(): Promise<boolean> {
     }
 
     // Save subscription to database
+    // Use upsert with ignoreDuplicates to handle conflicts gracefully
     const { error } = await supabase
       .from('push_subscriptions')
       .upsert({
@@ -100,7 +101,8 @@ export async function registerPushSubscription(): Promise<boolean> {
         is_active: true,
         last_used_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id,endpoint'
+        onConflict: 'user_id,endpoint',
+        ignoreDuplicates: false // Update if exists
       })
 
     if (error) {

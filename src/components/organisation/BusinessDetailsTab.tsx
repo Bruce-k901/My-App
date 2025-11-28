@@ -267,18 +267,42 @@ export default function BusinessDetailsTab() {
       onboarding_step: (form as any).onboarding_step || 1,
     } as any;
 
-    const result = form.id
-      ? await supabase
+    let result;
+    if (form.id) {
+      // Update existing company
+      result = await supabase
+        .from("companies")
+        .update(payload)
+        .eq("id", form.id)
+        .select("*")
+        .single();
+    } else {
+      // Insert new company - handle name conflict by appending user ID
+      // First check if company name already exists for this user
+      const { data: existing } = await supabase
+        .from("companies")
+        .select("id, name")
+        .eq("name", payload.name)
+        .eq("user_id", authUser.id)
+        .maybeSingle();
+      
+      if (existing) {
+        // Company with this name already exists for this user - update it instead
+        result = await supabase
           .from("companies")
           .update(payload)
-          .eq("id", form.id)
+          .eq("id", existing.id)
           .select("*")
-          .single()
-      : await supabase
+          .single();
+      } else {
+        // Insert new company
+        result = await supabase
           .from("companies")
           .insert([payload])
           .select("*")
           .single();
+      }
+    }
 
     if (result.error) {
       console.error("Save error:", result.error?.message ?? result.error);

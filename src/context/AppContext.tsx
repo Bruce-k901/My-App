@@ -176,10 +176,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       
+      // Use simple id lookup - profiles.id should match auth.users.id
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .or(`id.eq.${userId},auth_user_id.eq.${userId}`)
+        .eq('id', userId)
         .maybeSingle(); // Use maybeSingle instead of single to handle "no rows" gracefully
       
       // DEBUG: Log profile query result
