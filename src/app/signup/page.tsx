@@ -55,6 +55,45 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
+    // Check if user is already logged in - if so, just create the company
+    const { data: { user: existingUser } } = await supabase.auth.getUser();
+    
+    if (existingUser) {
+      // User is already logged in - just create the company
+      try {
+        const { data: companyData, error: companyError } = await supabase
+          .from("companies")
+          .insert([{ name: form.company, user_id: existingUser.id }])
+          .select("id")
+          .single();
+        
+        if (companyError) {
+          setError(companyError.message || "Failed to create company");
+          setLoading(false);
+          return;
+        }
+        
+        const companyId = companyData?.id || null;
+        
+        // Create 60-day trial subscription for the new company
+        if (companyId) {
+          try {
+            await createTrialSubscription(companyId, "starter");
+          } catch (subError: any) {
+            console.error("Failed to create trial subscription:", subError);
+          }
+        }
+        
+        router.push("/dashboard");
+        return;
+      } catch (err: any) {
+        setError(err?.message || "Failed to create company");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // New user signup
     const { data: signUpRes, error: signupError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -62,7 +101,12 @@ export default function SignupPage() {
     });
 
     if (signupError) {
-      setError(signupError.message);
+      // Check if error is due to user already existing
+      if (signupError.message.includes('already registered') || signupError.message.includes('already exists')) {
+        setError("This email is already registered. Please log in instead, or use a different email.");
+      } else {
+        setError(signupError.message);
+      }
       setLoading(false);
       return;
     }

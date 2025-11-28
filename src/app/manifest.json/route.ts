@@ -4,6 +4,9 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+// Route matcher to ensure this is public
+export const runtime = 'edge';
+
 export async function GET() {
   const manifest = {
     name: "Checkly - Compliance Management",
