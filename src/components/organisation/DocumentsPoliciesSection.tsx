@@ -6,8 +6,10 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui";
 import UploadGlobalDocModal from "@/components/modals/UploadGlobalDocModal";
 import { useAppContext } from "@/context/AppContext";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, Archive, ArrowLeft, FileText, Edit } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import DocumentReviewModal from "@/components/modals/DocumentReviewModal";
 
 type GlobalDoc = {
   id: string;
@@ -18,12 +20,15 @@ type GlobalDoc = {
   notes?: string | null;
   file_path: string;
   created_at?: string;
+  is_archived?: boolean;
 };
 
 export default function DocumentsPoliciesSection() {
   const { companyId } = useAppContext();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const documentIdParam = searchParams?.get('document_id');
+  const showArchived = searchParams?.get('archived') === 'true';
   const [open, setOpen] = useState(false);
   const [docs, setDocs] = useState<GlobalDoc[]>([]);
   const [latestDoc, setLatestDoc] = useState<GlobalDoc | null>(null);
@@ -32,6 +37,8 @@ export default function DocumentsPoliciesSection() {
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<GlobalDoc | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -44,18 +51,55 @@ export default function DocumentsPoliciesSection() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
+      // Build query - handle is_archived column gracefully
+      // First try with is_archived filter, fallback to without if column doesn't exist
+      let query = supabase
         .from("global_documents")
-        .select("id,category,name,version,expiry_date,notes,file_path,created_at")
-        .eq("company_id", companyId)
-        .order("created_at", { ascending: false });
+        .select("id,category,name,version,expiry_date,notes,file_path,created_at,is_archived")
+        .eq("company_id", companyId);
+      
+      // Try to filter by is_archived
+      if (showArchived) {
+        query = query.eq("is_archived", true);
+      } else {
+        // For active documents, show all (is_archived=false or null/undefined)
+        // We'll filter in JavaScript as fallback
+      }
+      
+      query = query.order("created_at", { ascending: false });
+      
+      let { data, error } = await query;
+      
+      // If error is about is_archived column not existing, retry without filter
+      if (error && (error.message?.includes('is_archived') || error.code === 'PGRST204')) {
+        console.log('is_archived column not found, querying without filter');
+        query = supabase
+          .from("global_documents")
+          .select("id,category,name,version,expiry_date,notes,file_path,created_at")
+          .eq("company_id", companyId)
+          .order("created_at", { ascending: false });
+        
+        const retryResult = await query;
+        data = retryResult.data;
+        error = retryResult.error;
+      }
         
       if (error) {
         setError(error.message);
         setDocs([]);
         setLatestDoc(null);
       } else {
-        const list = (data || []) as GlobalDoc[];
+        let list = (data || []) as GlobalDoc[];
+        
+        // Filter by is_archived in JavaScript (handles both DB filter and fallback)
+        if (!showArchived) {
+          // Show documents where is_archived is false, null, or undefined
+          list = list.filter(doc => !doc.is_archived);
+        } else {
+          // Show only archived documents
+          list = list.filter(doc => doc.is_archived === true);
+        }
+        
         setDocs(list);
         setLatestDoc(list[0] || null);
       }
@@ -136,6 +180,54 @@ export default function DocumentsPoliciesSection() {
     return data.publicUrl;
   };
 
+  const handleArchive = async (doc: GlobalDoc) => {
+    try {
+      // Check if is_archived column exists by trying to update it
+      const { error: updateError } = await supabase
+        .from("global_documents")
+        .update({ is_archived: true })
+        .eq("id", doc.id);
+
+      if (updateError) {
+        // If column doesn't exist, show helpful message
+        if (updateError.message?.includes('is_archived') || updateError.code === 'PGRST204') {
+          toast.error("Archive feature requires database migration. Please run: add_is_archived_to_global_documents.sql");
+          return;
+        }
+        throw updateError;
+      }
+
+      toast.success("Document archived successfully");
+      load();
+    } catch (error: any) {
+      console.error("Error archiving document:", error);
+      toast.error(`Failed to archive document: ${error.message || "Unknown error"}`);
+    }
+  };
+
+  const handleUnarchive = async (doc: GlobalDoc) => {
+    try {
+      const { error: updateError } = await supabase
+        .from("global_documents")
+        .update({ is_archived: false })
+        .eq("id", doc.id);
+
+      if (updateError) {
+        if (updateError.message?.includes('is_archived') || updateError.code === 'PGRST204') {
+          toast.error("Unarchive feature requires database migration. Please run: add_is_archived_to_global_documents.sql");
+          return;
+        }
+        throw updateError;
+      }
+
+      toast.success("Document unarchived successfully");
+      load();
+    } catch (error: any) {
+      console.error("Error unarchiving document:", error);
+      toast.error(`Failed to unarchive document: ${error.message || "Unknown error"}`);
+    }
+  };
+
   const handleDelete = async (doc: GlobalDoc) => {
     setDeletingId(doc.id);
     try {
@@ -199,8 +291,34 @@ export default function DocumentsPoliciesSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-white font-semibold">Global Documents</h3>
-        <Button onClick={() => setOpen(true)}>Upload Document</Button>
+        <div className="flex items-center gap-4">
+          {showArchived && (
+            <button
+              onClick={() => router.push('/dashboard/documents')}
+              className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Documents</span>
+            </button>
+          )}
+          <h3 className="text-white font-semibold">
+            {showArchived ? "Archived Documents" : "Global Documents"}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {!showArchived && (
+            <Button
+              onClick={() => router.push('/dashboard/documents?archived=true')}
+              variant="outline"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              View Archived
+            </Button>
+          )}
+          {!showArchived && (
+            <Button onClick={() => setOpen(true)}>Upload Document</Button>
+          )}
+        </div>
       </div>
 
       {/* EHO Requirements Helper */}
@@ -258,60 +376,62 @@ export default function DocumentsPoliciesSection() {
       {/* Latest upload card */}
       {!loading && !error && latestDoc && (
         <div className="relative group">
-          {confirmDeleteId === latestDoc.id ? (
-            <div className="rounded-xl p-4 border border-red-500/50 bg-red-500/10">
-              <div className="text-white font-medium mb-2">Delete "{latestDoc.name}"?</div>
-              <div className="text-sm text-white/60 mb-3">This action cannot be undone.</div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleDelete(latestDoc)}
-                  disabled={deletingId === latestDoc.id}
-                  className="bg-red-500 hover:bg-red-600 text-white"
-                  size="sm"
-                >
-                  {deletingId === latestDoc.id ? "Deleting..." : "Delete"}
-                </Button>
-                <Button
-                  onClick={() => setConfirmDeleteId(null)}
-                  variant="ghost"
-                  size="sm"
-                  disabled={deletingId === latestDoc.id}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <a
-                href={getPublicUrl(latestDoc.file_path)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl p-4 border border-pink-500/40 bg-white/[0.06] hover:border-pink-500/60 hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12"
+          <>
+            <div
+                className="block rounded-xl p-4 border border-pink-500/40 bg-white/[0.06] hover:border-pink-500/60 hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
               >
-                <div>
-                  <div className="text-white font-medium">Latest Upload: {latestDoc.name}</div>
-                  <div className="text-slate-400 text-sm">
-                    {latestDoc.category} · {latestDoc.version || "v1"}
-                    {latestDoc.expiry_date ? ` · expires ${new Date(latestDoc.expiry_date).toLocaleDateString()}` : ""}
-                    {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="text-white font-medium">Latest Upload: {latestDoc.name}</div>
+                    <div className="text-slate-400 text-sm">
+                      {latestDoc.category} · {latestDoc.version || "v1"}
+                      {latestDoc.expiry_date ? ` · expires ${new Date(latestDoc.expiry_date).toLocaleDateString()}` : ""}
+                      {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
+                    </div>
+                    {latestDoc.notes && <div className="text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
                   </div>
-                  {latestDoc.notes && <div className="text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDocument(latestDoc);
+                        setShowReviewModal(true);
+                      }}
+                      className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                      title="Edit document - update expiry date or upload new version"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </button>
+                    {!showArchived && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleArchive(latestDoc);
+                        }}
+                        className="p-2.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-colors"
+                        title="Archive document"
+                      >
+                        <Archive className="w-5 h-5" />
+                      </button>
+                    )}
+                    {showArchived && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUnarchive(latestDoc);
+                        }}
+                        className="p-2.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-colors"
+                        title="Unarchive document"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </a>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setConfirmDeleteId(latestDoc.id);
-                }}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                disabled={deletingId === latestDoc.id}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          )}
+              </div>
+          </>
         </div>
       )}
 
@@ -338,8 +458,6 @@ export default function DocumentsPoliciesSection() {
               const url = getPublicUrl(d.file_path);
               const isNew = d.id === highlightId;
               const isEHORequired = expectedDocuments.find(ed => ed.name === d.name)
-              const isDeleting = deletingId === d.id
-              const showConfirm = confirmDeleteId === d.id
               
               return (
                 <li
@@ -349,36 +467,9 @@ export default function DocumentsPoliciesSection() {
                     isNew ? 'border-2 border-blue-500/60 bg-blue-500/10 rounded-xl' : ''
                   }`}
                 >
-                  {showConfirm ? (
-                    <div className="rounded-xl p-4 border border-red-500/50 bg-red-500/10">
-                      <div className="text-white font-medium mb-2">Delete "{d.name}"?</div>
-                      <div className="text-sm text-white/60 mb-3">This action cannot be undone.</div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleDelete(d)}
-                          disabled={isDeleting}
-                          className="bg-red-500 hover:bg-red-600 text-white"
-                          size="sm"
-                        >
-                          {isDeleting ? "Deleting..." : "Delete"}
-                        </Button>
-                        <Button
-                          onClick={() => setConfirmDeleteId(null)}
-                          variant="ghost"
-                          size="sm"
-                          disabled={isDeleting}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-500/60 bg-blue-500/10" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-500/5" : !isNew ? "bg-white/[0.06]" : ""} hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12`}
+                  <>
+                    <div
+                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-500/60 bg-blue-500/10" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-500/5" : !isNew ? "bg-white/[0.06]" : ""} hover:bg-white/[0.08] transition-all duration-200 pr-12 group`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -395,22 +486,48 @@ export default function DocumentsPoliciesSection() {
                             </div>
                             {d.notes && <div className="text-slate-400 text-sm mt-1">{d.notes}</div>}
                           </div>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedDocument(d);
+                                setShowReviewModal(true);
+                              }}
+                              className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                              title="Edit document - update expiry date or upload new version"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+                            {!showArchived && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleArchive(d);
+                                }}
+                                className="p-2.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-colors"
+                                title="Archive document"
+                              >
+                                <Archive className="w-5 h-5" />
+                              </button>
+                            )}
+                            {showArchived && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleUnarchive(d);
+                                }}
+                                className="p-2.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-colors"
+                                title="Unarchive document"
+                              >
+                                <ArrowLeft className="w-5 h-5" />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </a>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setConfirmDeleteId(d.id);
-                        }}
-                        className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                        disabled={isDeleting}
-                        title="Delete document"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
+                      </div>
+                  </>
                 </li>
               );
             })}
@@ -429,6 +546,26 @@ export default function DocumentsPoliciesSection() {
             }}
           />
         </div>
+      )}
+
+      {selectedDocument && (
+        <DocumentReviewModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false)
+            setSelectedDocument(null)
+          }}
+          documentId={selectedDocument.id}
+          documentName={selectedDocument.name}
+          currentExpiryDate={selectedDocument.expiry_date || null}
+          currentVersion={selectedDocument.version || null}
+          currentFilePath={selectedDocument.file_path}
+          onSuccess={() => {
+            setShowReviewModal(false)
+            setSelectedDocument(null)
+            load()
+          }}
+        />
       )}
     </div>
   );
