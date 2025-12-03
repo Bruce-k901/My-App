@@ -15,6 +15,17 @@ export async function POST(req: Request) {
       boh_foh,
       phone_number,
       pin_code,
+      // Training certificate fields
+      food_safety_level,
+      food_safety_expiry_date,
+      h_and_s_level,
+      h_and_s_expiry_date,
+      fire_marshal_trained,
+      fire_marshal_expiry_date,
+      first_aid_trained,
+      first_aid_expiry_date,
+      cossh_trained,
+      cossh_expiry_date,
     } = await req.json();
 
     if (!email || !company_id) {
@@ -68,14 +79,62 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate UUID and insert directly into profiles
-    const newUserId = crypto.randomUUID();
-    console.log("🟢 Generated local user ID:", newUserId);
-
     const roleValue = String(app_role || "Staff");
 
+    // Step 1: Try to create auth user via invite first, then use auth user ID for profile
+    let authUserId: string | null = null;
+    let invitationSent = false;
+    
+    try {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'http://localhost:3000');
+      
+      const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
+        String(email).toLowerCase(),
+        {
+          data: {
+            full_name,
+            company_id,
+          },
+          redirectTo: `${appUrl}/setup-account`,
+        }
+      );
+
+      if (inviteError) {
+        console.error("❌ Invite failed:", inviteError);
+        // Check if user already exists in auth
+        if (inviteError.message?.includes("already registered") || inviteError.message?.includes("already exists")) {
+          // User exists in auth - find their ID
+          const { data: existingUsers } = await admin.auth.admin.listUsers();
+          const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === String(email).toLowerCase());
+          
+          if (existingUser) {
+            authUserId = existingUser.id;
+            console.log(`✅ Found existing auth user: ${authUserId}`);
+          } else {
+            console.warn("⚠️ User exists in auth but could not be found");
+          }
+        } else {
+          // Other error - we'll create profile with generated ID
+          console.warn("⚠️ Invitation failed. Profile will be created without auth user link.");
+        }
+      } else if (inviteData?.user?.id) {
+        authUserId = inviteData.user.id;
+        invitationSent = true;
+        console.log(`✅ Invitation email sent to ${email}, auth user ID: ${authUserId}`);
+      }
+    } catch (inviteErr: any) {
+      console.error("❌ Invite exception:", inviteErr);
+      // Continue - we'll create profile with generated ID
+    }
+
+    // Step 2: Create profile using auth user ID if available, otherwise generate one
+    const profileId = authUserId || crypto.randomUUID();
+    console.log(`🟢 Creating profile with ID: ${profileId} ${authUserId ? '(from auth user)' : '(generated)'}`);
+
     const { error: insertError } = await admin.from("profiles").insert({
-      id: newUserId,
+      id: profileId,
       full_name,
       email: String(email).toLowerCase(),
       company_id,
@@ -85,6 +144,17 @@ export async function POST(req: Request) {
       boh_foh: boh_foh ?? null,
       phone_number: phone_number ?? null,
       pin_code: pin_code ?? null,
+      // Training certificate fields
+      food_safety_level: food_safety_level ?? null,
+      food_safety_expiry_date: food_safety_expiry_date || null,
+      h_and_s_level: h_and_s_level ?? null,
+      h_and_s_expiry_date: h_and_s_expiry_date || null,
+      fire_marshal_trained: fire_marshal_trained ?? false,
+      fire_marshal_expiry_date: fire_marshal_expiry_date || null,
+      first_aid_trained: first_aid_trained ?? false,
+      first_aid_expiry_date: first_aid_expiry_date || null,
+      cossh_trained: cossh_trained ?? false,
+      cossh_expiry_date: cossh_expiry_date || null,
     });
 
     if (insertError) {
@@ -98,8 +168,8 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log(`✅ New user saved locally: ${email} (${newUserId})`);
-    return NextResponse.json({ ok: true, id: newUserId }, { status: 200 });
+    console.log(`✅ New user saved: ${email} (${profileId})${invitationSent ? ' - Invitation sent' : ''}`);
+    return NextResponse.json({ ok: true, id: profileId, invited: invitationSent }, { status: 200 });
   } catch (e: any) {
     console.error("🔥 Unhandled server error:", e);
     return NextResponse.json(

@@ -63,10 +63,10 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
     label: "Organization",
     icon: Building2,
     items: [
-      { label: "Onboarding", href: "/dashboard/organization/onboarding" },
+      { label: "Onboarding", href: "/dashboard/organization/onboarding" }, // Always visible - no restrictions
       { label: "Business Details", href: "/dashboard/business" },
-      { label: "Sites", href: "/dashboard/sites" },
       { label: "Users", href: "/dashboard/users" },
+      { label: "Sites", href: "/dashboard/sites" },
       { label: "Emergency Contacts", href: "/dashboard/organization/emergency-contacts" },
       { label: "Training Matrix", href: "/dashboard/training" },
       { label: "Documents", href: "/dashboard/documents" },
@@ -136,8 +136,9 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
     label: "Logs",
     icon: Clock,
     items: [
+      { label: "All Logs", href: "/dashboard/logs" },
+      { label: "Temperature Logs", href: "/dashboard/logs/temperature" },
       { label: "Attendance Register", href: "/dashboard/logs/attendance" },
-      { label: "Temperature Logs", href: "/logs/temperature" },
     ],
   },
 ];
@@ -240,18 +241,18 @@ const directLinks: SidebarLink[] = [
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       
-      // Check if click is on a link inside popup - allow it to navigate
+      // Check if click is on ANY link - always allow navigation, don't interfere
       const clickedLink = target.closest('a');
-      const isInPopup = target.closest('[data-popup]');
-      
-      if (clickedLink && isInPopup) {
-        // Link clicked inside popup - allow navigation, popup will close via pathname change
+      if (clickedLink) {
+        // Link clicked - allow navigation, don't interfere
+        // Popup will close via pathname change effect
         return;
       }
       
       const isSidebar = target.closest('aside');
       const isPopup = target.closest('[data-popup]');
       
+      // Only close popup if clicking outside both sidebar and popup
       if (!isSidebar && !isPopup) {
         setHoveredSection(null);
         isHoveringRef.current = false;
@@ -314,6 +315,7 @@ const directLinks: SidebarLink[] = [
       className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
       onClick={onMobileClose}
       style={{ zIndex: 40 }}
+      suppressHydrationWarning
     />,
     document.body
   ) : null;
@@ -324,7 +326,7 @@ const directLinks: SidebarLink[] = [
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto overflow-x-hidden">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -408,7 +410,7 @@ const directLinks: SidebarLink[] = [
 
       {/* Mobile Drawer Sidebar */}
       {mounted && isMobileOpen ? createPortal(
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden">
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
             <h2 className="text-lg font-semibold text-white">Menu</h2>
@@ -431,14 +433,11 @@ const directLinks: SidebarLink[] = [
               <Link
                 href="/dashboard/todays_tasks"
                 onClick={onMobileClose}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
-                  ${
-                    pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
-                      ? "bg-pink-500/20 text-pink-300 font-medium"
-                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                  }
-                `}
+                className={
+                  pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                }
               >
                 <CheckSquare size={20} />
                 <span>Today's Tasks</span>
@@ -446,14 +445,11 @@ const directLinks: SidebarLink[] = [
               <Link
                 href="/dashboard/incidents"
                 onClick={onMobileClose}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
-                  ${
-                    pathname === "/dashboard/incidents" || pathname.startsWith("/dashboard/incidents")
-                      ? "bg-pink-500/20 text-pink-300 font-medium"
-                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                  }
-                `}
+                className={
+                  pathname === "/dashboard/incidents" || pathname.startsWith("/dashboard/incidents")
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                }
               >
                 <AlertTriangle size={20} />
                 <span>Incidents</span>
@@ -461,14 +457,11 @@ const directLinks: SidebarLink[] = [
               <Link
                 href="/dashboard/logs/attendance"
                 onClick={onMobileClose}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
-                  ${
-                    pathname === "/dashboard/logs/attendance" || pathname.startsWith("/dashboard/logs/attendance")
-                      ? "bg-pink-500/20 text-pink-300 font-medium"
-                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                  }
-                `}
+                className={
+                  pathname === "/dashboard/logs/attendance" || pathname.startsWith("/dashboard/logs/attendance")
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                }
               >
                 <Clock size={20} />
                 <span>Attendance</span>
@@ -524,14 +517,11 @@ const directLinks: SidebarLink[] = [
                         onClick={() => {
                           onMobileClose?.();
                         }}
-                        className={`
-                          block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer
-                          ${
-                            isActive
-                              ? "bg-pink-500/20 text-pink-300 font-medium"
-                              : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                          }
-                        `}
+                        className={
+                          isActive
+                            ? "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                            : "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                        }
                       >
                         {item.label}
                       </Link>
@@ -609,23 +599,16 @@ function SidebarDirectLink({
 }) {
   const Icon = item.icon;
 
-  const handleClick = (e: React.MouseEvent) => {
-    // No restrictions - allow navigation
-  };
-
+  // Use static className to prevent hydration mismatches
+  // CRITICAL: Must use static string, not template literal, to prevent hydration mismatch
+  const staticClassName = isActive
+    ? "relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-pink-500/20 text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
+    : "relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-white/60 hover:text-white hover:bg-white/[0.08]";
+  
   return (
     <Link
       href={item.href}
-      onClick={handleClick}
-      className={`
-        relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
-        transition-all duration-200 cursor-pointer
-        ${
-          isActive
-            ? "bg-pink-500/20 text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
-            : "text-white/60 hover:text-white hover:bg-white/[0.08]"
-        }
-      `}
+      className={staticClassName}
     >
       <Icon size={18} />
       <div className="absolute left-full ml-4 px-3 py-2 bg-[#1a1c24] border border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
@@ -678,20 +661,25 @@ function SidebarSectionItem({
   // Only highlight if this section owns the best match
   const isActive = bestMatchSection === section.label;
 
+  const handleClick = () => {
+    // Toggle popup on click if not already hovered
+    if (!isHovered) {
+      onHover();
+    }
+  };
+
+  // Use static className to prevent hydration mismatch
+  const buttonClassName = (isActive || isHovered)
+    ? "relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-pink-500/20 text-pink-400"
+    : "relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-white/60 hover:text-white hover:bg-white/[0.08]";
+  
   return (
     <div
       ref={buttonRef}
-      className={`
-        relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0
-        transition-all duration-200 cursor-pointer
-        ${
-          (isActive || isHovered)
-            ? "bg-pink-500/20 text-pink-400"
-            : "text-white/60 hover:text-white hover:bg-white/[0.08]"
-        }
-      `}
+      className={buttonClassName}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
+      onClick={handleClick}
     >
       <Icon size={18} />
     </div>
@@ -717,18 +705,16 @@ function MobileSidebarLink({
     onClick?.();
   };
 
+  // Use static className to prevent hydration mismatch
+  const linkClassName = isActive
+    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]";
+  
   return (
     <Link
       href={item.href}
       onClick={handleClick}
-      className={`
-        flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer
-        ${
-          isActive
-            ? "bg-pink-500/20 text-pink-300 font-medium"
-            : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-        }
-      `}
+      className={linkClassName}
     >
       <Icon size={18} />
       <span>{item.label}</span>
@@ -792,14 +778,11 @@ function SidebarPopup({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`
-                  block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer
-                  ${
-                    isActive
-                      ? "bg-pink-500/20 text-pink-300 font-medium"
-                      : "text-white/80 hover:text-white hover:bg-white/[0.08] hover:pl-5"
-                  }
-                `}
+                className={
+                  isActive
+                    ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08] hover:pl-5"
+                }
               >
                 {item.label}
               </Link>

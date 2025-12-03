@@ -73,23 +73,17 @@ export default function DailyChecklistPage() {
   const { siteId, companyId } = useAppContext()
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
-  // Fix hydration error: calculate date only on client
-  const [currentDate, setCurrentDate] = useState<string>('')
-  const [isMounted, setIsMounted] = useState(false)
-
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
-  // Fix hydration error: NEVER render date on server, only on client after mount
-  useEffect(() => {
-    setIsMounted(true)
-    setCurrentDate(new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    }))
-  }, [])
+  // Format date - use suppressHydrationWarning to prevent mismatch
+  // Server and client may format dates slightly differently, but that's OK
+  const currentDate = new Date().toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
   const loadBreachActions = useCallback(async () => {
@@ -303,12 +297,35 @@ export default function DailyChecklistPage() {
             `)
             .in('id', templateIds)
           
+          if (templatesError) {
+            console.error('❌ Error fetching templates:', {
+              error: templatesError,
+              message: templatesError.message,
+              code: templatesError.code,
+              details: templatesError.details,
+              templateIds: templateIds,
+              templateIdsCount: templateIds.length
+            })
+          }
+          
           if (!templatesError && templates) {
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
               const enriched = enrichTemplateWithDefinition(template)
               acc[enriched.id] = enriched
               return acc
             }, {})
+            
+            // Log if we didn't get all templates
+            const foundTemplateIds = new Set(templates.map((t: any) => t.id))
+            const missingTemplateIds = templateIds.filter(id => !foundTemplateIds.has(id))
+            if (missingTemplateIds.length > 0) {
+              console.warn('⚠️ Some templates not found:', {
+                requested: templateIds.length,
+                found: templates.length,
+                missing: missingTemplateIds,
+                missingCount: missingTemplateIds.length
+              })
+            }
           }
         }
       }
@@ -352,7 +369,7 @@ export default function DailyChecklistPage() {
       // (This handles edge cases where new templates were added between fetches)
       const filteredTemplateIds = [...new Set(data.map((t: any) => t.template_id).filter((id): id is string => id !== null && !templatesMap[id]))]
       if (filteredTemplateIds.length > 0) {
-        const { data: fullTemplates } = await supabase
+        const { data: fullTemplates, error: fullTemplatesError } = await supabase
           .from('task_templates')
           .select(`
             id, name, slug, description, category, frequency, compliance_standard, is_critical, 
@@ -361,6 +378,15 @@ export default function DailyChecklistPage() {
             template_fields (*)
           `)
           .in('id', filteredTemplateIds)
+        
+        if (fullTemplatesError) {
+          console.error('❌ Error fetching additional templates:', {
+            error: fullTemplatesError,
+            message: fullTemplatesError.message,
+            code: fullTemplatesError.code,
+            templateIds: filteredTemplateIds
+          })
+        }
         
         if (fullTemplates) {
           fullTemplates.forEach(t => {
@@ -376,13 +402,14 @@ export default function DailyChecklistPage() {
       }))
       
       // Filter out tasks with missing templates (orphaned tasks)
+      // NOTE: We're temporarily showing orphaned tasks with a warning instead of hiding them
+      // This helps diagnose why templates aren't being found (RLS issue, missing templates, etc.)
       const validTasks = tasksWithTemplates.filter(task => {
         if (task.template_id && !task.template) {
-          console.warn('⚠️ Task has template_id but template not found:', {
-            task_id: task.id,
-            template_id: task.template_id
-          });
-          return false; // Exclude orphaned tasks
+          console.warn(`⚠️ Task has template_id but template not found: task_id=${task.id}, template_id=${task.template_id}`);
+          // Temporarily include orphaned tasks so we can see them and diagnose the issue
+          // TODO: Once templates are loading correctly, change this back to `return false`
+          return true; // Include orphaned tasks for now
         }
         return true;
       });
@@ -1083,8 +1110,8 @@ export default function DailyChecklistPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base">
-          {isMounted ? currentDate : '\u00A0'}
+        <p className="text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
+          {currentDate}
         </p>
         </div>
         <button

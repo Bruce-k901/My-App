@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import UserEntityCard from "@/components/users/UserEntityCard";
-import LazyAddUserModal from "@/components/users/LazyAddUserModal";
+// Import directly to avoid caching issues - remove lazy loading temporarily
+import AddUserModal from "@/components/users/AddUserModal";
 import { Plus, Search, Archive, ChevronLeft, Upload, Download } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Papa from "papaparse";
@@ -778,6 +779,27 @@ export default function UsersTab() {
                 siteOptions={sites.map(site => ({ label: site.name, value: site.id }))}
                 onArchive={viewArchived ? undefined : handleUserArchive}
                 onUnarchive={viewArchived ? handleUserUnarchive : undefined}
+                onSendInvite={async (userId: string, email: string) => {
+                  try {
+                    const res = await fetch("/api/users/resend-invite", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, userId }),
+                    });
+
+                    const json = await res.json();
+
+                    if (!res.ok) {
+                      alert(`Failed to send invite: ${json.error || "Unknown error"}`);
+                      return;
+                    }
+
+                    alert(`Invitation email sent to ${email}`);
+                  } catch (err: any) {
+                    console.error("Error sending invite:", err);
+                    alert(`Failed to send invite: ${err?.message || "Unknown error"}`);
+                  }
+                }}
               />
             );
           })
@@ -786,7 +808,7 @@ export default function UsersTab() {
 
       {/* Add User Modal */}
       {showAddModal && companyId && (
-        <LazyAddUserModal
+        <AddUserModal
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
           companyId={companyId}

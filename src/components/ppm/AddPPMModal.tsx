@@ -79,7 +79,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
         .select('id, name')
         .order('name');
 
-      // Fetch assets
+      // Fetch assets - exclude archived assets
       const { data: assetsData } = await supabase
         .from('assets')
         .select(`
@@ -88,6 +88,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
           category,
           site:sites(id, name)
         `)
+        .eq('archived', false) // Exclude archived assets
         .order('name');
 
       setSites(sitesData || []);

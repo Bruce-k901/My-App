@@ -19,6 +19,7 @@ INSERT INTO public.task_templates (
   is_template_library,
   is_active,
   repeatable_field_name,
+  asset_type,
   evidence_types,
   instructions,
   triggers_contractor_on_failure
@@ -38,6 +39,7 @@ INSERT INTO public.task_templates (
   TRUE, -- This is a compliance template library template
   TRUE,
   'asset_name', -- Repeatable field for multiple assets
+  'refrigeration_equipment', -- Asset type enables asset dropdown feature
   ARRAY['temperature', 'checklist'], -- Temperature logs and checklist
   '**What (Purpose):** Ensure chilled and frozen storage units are maintaining safe holding temperatures.
 
@@ -54,7 +56,8 @@ INSERT INTO public.task_templates (
 4. Tag any unit outside limits for monitoring and recheck in 1 hour.',
   TRUE -- Triggers monitor/callout on out-of-range temperatures
 ) 
-ON CONFLICT (company_id, slug) DO NOTHING; -- Don't insert if already exists (unique constraint on company_id, slug)
+ON CONFLICT (company_id, slug) DO UPDATE SET
+  asset_type = EXCLUDED.asset_type; -- Update asset_type if template already exists
 
 -- Insert template fields for Fridge/Freezer Temperature Check
 -- Field 1: Asset Selection (dropdown)

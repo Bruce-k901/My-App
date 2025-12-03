@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import EnhancedShiftHandover from "@/components/dashboard/EnhancedShiftHandover";
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
 import AlertsFeed from "@/components/dashboard/AlertsFeed";
@@ -11,7 +13,18 @@ import ComplianceMetricsWidget from "@/components/dashboard/ComplianceMetricsWid
 import { useAppContext } from "@/context/AppContext";
 
 export default function DashboardHomePage() {
-  const { companyId, siteId, loading } = useAppContext();
+  const router = useRouter();
+  const { companyId, siteId, loading, user } = useAppContext();
+  
+  // Note: Users should always have a company after signup (created in auth callback)
+  // This redirect is a safety net in case something went wrong during signup
+  useEffect(() => {
+    if (!loading && user && !companyId) {
+      // This can happen during first signup before company is created
+      console.debug('User has no company yet (redirecting to business details to complete setup)');
+      router.replace('/dashboard/business');
+    }
+  }, [loading, user, companyId, router]);
   
   // Don't render MetricsGrid if companyId is not available
   const shouldShowMetricsGrid = !loading && companyId;

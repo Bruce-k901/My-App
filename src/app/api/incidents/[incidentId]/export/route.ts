@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-type RouteContext = {
-  params: {
-    incidentId: string;
-  };
-};
-
-export async function GET(_request: NextRequest, { params }: RouteContext) {
-  const incidentId = params.incidentId;
+// Next.js 15: params is now a Promise
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ incidentId: string }> }
+) {
+  const { incidentId } = await params;
 
   if (!incidentId) {
     return NextResponse.json({ error: "Incident ID is required" }, { status: 400 });

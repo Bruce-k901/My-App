@@ -2,7 +2,7 @@
 
 import CardHeader from '@/components/ui/CardHeader';
 import { Input, Select } from '@/components/ui';
-import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
+import { Eye, EyeOff, X, Archive, Save, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { components, layout } from '@/styles/uiTokens';
 import '@/styles/globals.css';
@@ -24,6 +24,7 @@ interface UserEntityCardProps {
   siteOptions: any[];
   onArchive: (_userId: string) => void;
   onUnarchive: (_userId: string) => void;
+  onSendInvite?: (_userId: string, _email: string) => void;
 }
 
 export default function UserEntityCard({
@@ -43,6 +44,7 @@ export default function UserEntityCard({
   siteOptions,
   onArchive,
   onUnarchive,
+  onSendInvite,
 }: UserEntityCardProps) {
   const [showPin, setShowPin] = useState(false);
 
@@ -321,7 +323,7 @@ export default function UserEntityCard({
             </div>
 
             {/* Action Buttons */}
-            <div className={layout.buttonGroup}>
+            <div className="flex flex-wrap items-center gap-2 pt-4">
               <button
                 onClick={onSave}
                 className={components.saveButton}
@@ -336,6 +338,18 @@ export default function UserEntityCard({
                 <X size={18} />
               </button>
 
+              {/* Send Invite button */}
+              {onSendInvite && user.email && (
+                <button
+                  onClick={() => onSendInvite(user.id, user.email)}
+                  className="px-3 py-2 border border-[#EC4899] text-[#EC4899] rounded-md hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 flex items-center gap-2"
+                  title="Send Invitation Email"
+                >
+                  <Mail size={18} />
+                  <span className="text-sm">Send Invite</span>
+                </button>
+              )}
+
               {/* Archive/Restore button */}
               {onUnarchive ? (
                 <button
@@ -348,7 +362,8 @@ export default function UserEntityCard({
               ) : onArchive ? (
                 <button
                   onClick={() => onArchive(user.id)}
-                  className={components.archiveButton}
+                  className="px-3 py-2 border border-[#F97316] text-[#F97316] rounded-md hover:shadow-[0_0_12px_rgba(249,115,22,0.7)] transition-all duration-200"
+                  title="Archive User"
                 >
                   <Archive size={18} />
                 </button>

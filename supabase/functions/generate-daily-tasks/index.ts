@@ -313,7 +313,8 @@ Deno.serve(async (req) => {
       const { data: sops, error: sopError } = await supabase
         .from("sop_entries")
         .select("id, title, ref_code, company_id, site_id, sop_data")
-        .eq("status", "Published");
+        .eq("status", "Published")
+        .neq("status", "Archived"); // Exclude archived SOPs
 
       if (sopError) throw sopError;
 
@@ -390,6 +391,7 @@ Deno.serve(async (req) => {
         .from("risk_assessments")
         .select("id, title, ref_code, company_id, site_id, next_review_date")
         .eq("status", "Published")
+        .neq("status", "Archived") // Exclude archived risk assessments
         .lte("next_review_date", thirtyDaysString)
         .gte("next_review_date", todayString);
 
@@ -455,6 +457,7 @@ Deno.serve(async (req) => {
       const { data: docs, error: docError } = await supabase
         .from("global_documents")
         .select("id, name, category, company_id, expiry_date")
+        .eq("is_archived", false) // Exclude archived documents
         .lte("expiry_date", thirtyDaysString)
         .gte("expiry_date", todayString);
 

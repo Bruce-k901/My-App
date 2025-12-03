@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function TasksPage() {
+function TasksPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get the current URL search params from the browser
-    const searchParams = new URLSearchParams(window.location.search);
+    // Use Next.js searchParams instead of window.location to prevent hydration issues
     const taskParam = searchParams.get('task');
     
     // Redirect to my-tasks page, preserving the task query parameter
@@ -17,13 +18,25 @@ export default function TasksPage() {
     } else {
       router.replace('/dashboard/tasks/my-tasks');
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   // Show loading state while redirecting
   return (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="text-white">Redirecting...</div>
     </div>
+  );
+}
+
+export default function TasksPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white">Loading...</div>
+      </div>
+    }>
+      <TasksPageContent />
+    </Suspense>
   );
 }
 

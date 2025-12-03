@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <html lang="en" className={manrope.variable}>
+    <html lang="en" className={manrope.variable} suppressHydrationWarning>
       <head>
         {/* Early suppression script - runs IMMEDIATELY before any resources load */}
         <script
@@ -172,7 +172,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10B981" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Checkly" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
@@ -183,7 +183,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3" />
         <link rel="shortcut icon" href="/favicon.ico?v=3" />
       </head>
-      <body className="bg-neutral-950 text-white font-sans">
+      <body className="bg-neutral-950 text-white font-sans" suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>

@@ -17,7 +17,8 @@ INSERT INTO public.task_templates (
   compliance_standard, 
   is_critical, 
   is_template_library,
-  repeatable_field_name, 
+  repeatable_field_name,
+  asset_type,
   evidence_types,
   instructions
 ) VALUES (
@@ -35,6 +36,7 @@ INSERT INTO public.task_templates (
   TRUE, -- Critical compliance task
   TRUE, -- Library template
   'equipment_name',
+  'hot_holding_equipment', -- Asset type enables asset dropdown feature
   ARRAY['temperature', 'text_note'],
   'Purpose:
 Ensure hot holding equipment maintains food at safe temperatures above 63°C
@@ -47,7 +49,10 @@ Check each hot holding unit with calibrated probe thermometer and record tempera
 
 Special Requirements:
 Recheck any unit below 63°C immediately and escalate to manager'
-) RETURNING id;
+) 
+ON CONFLICT (company_id, slug) DO UPDATE SET
+  asset_type = EXCLUDED.asset_type; -- Update asset_type if template already exists
+RETURNING id;
 
 -- Fields for Hot Holding Temperature Verification
 -- Equipment Name (repeatable field)

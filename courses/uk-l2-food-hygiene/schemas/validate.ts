@@ -1,10 +1,11 @@
-import { ZodSchema } from "zod";
+import { ZodSchema, ZodIssue } from "zod";
 
 export function safeParseOrThrow<T>(schema: ZodSchema<T>, data: unknown, context: string): T {
   const result = schema.safeParse(data);
   if (!result.success) {
-    const message = result.error.errors
-      .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
+    // Zod: use 'issues' property, not 'errors'
+    const message = result.error.issues
+      .map((issue: ZodIssue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
       .join("; ");
     throw new Error(`${context} validation failed: ${message}`);
   }

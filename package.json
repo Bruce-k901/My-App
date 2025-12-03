@@ -13,6 +13,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
+    "test:onboarding": "vitest run tests/integration/onboarding.test.ts",
+    "check:db": "tsx scripts/check-database-state.ts",
     "verify-cron": "tsx scripts/verify-cron-setup.ts"
   },
   "dependencies": {
@@ -72,7 +74,8 @@
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "@vitest/coverage-v8": "^3.2.4",
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^10.4.22",
+    "baseline-browser-mapping": "^2.8.32",
     "eslint": "^9",
     "eslint-config-next": "^16.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -87,7 +90,7 @@
     "typescript": "^5",
     "vitest": "^3.2.4",
     "webpack-bundle-analyzer": "^4.10.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "lint-staged": {
     "src/**/*.{js,ts,tsx,jsx}": [

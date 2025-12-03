@@ -19,8 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import Link from "next/link";
-import PlanSelection from "@/components/billing/PlanSelection";
-import AddonsSelection from "@/components/billing/AddonsSelection";
+import UnifiedPlanSelection from "@/components/billing/UnifiedPlanSelection";
 
 interface Subscription {
   id: string;
@@ -64,7 +63,7 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'plans' | 'addons'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'plan-selection'>('overview');
   const [siteCount, setSiteCount] = useState(0);
   const [purchasedAddons, setPurchasedAddons] = useState<any[]>([]);
   const [totalAddonMonthlyCost, setTotalAddonMonthlyCost] = useState(0);
@@ -271,11 +270,7 @@ export default function BillingPage() {
     }
   }
 
-  function handlePlanChanged() {
-    loadBillingData();
-  }
-
-  function handleAddonChanged() {
+  function handleChanged() {
     loadBillingData();
   }
 
@@ -427,7 +422,7 @@ export default function BillingPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => setActiveTab('plans')}
+                  onClick={() => setActiveTab('plan-selection')}
                   className="bg-[#EC4899] text-white hover:bg-[#EC4899]/90"
                 >
                   Choose Your Plan
@@ -458,48 +453,26 @@ export default function BillingPage() {
           Overview
         </button>
         <button
-          onClick={() => setActiveTab('plans')}
+          onClick={() => setActiveTab('plan-selection')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-            activeTab === 'plans'
+            activeTab === 'plan-selection'
               ? 'bg-[#EC4899] text-white'
               : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
           }`}
         >
           <Package className="w-4 h-4" />
-          Plans
-        </button>
-        <button
-          onClick={() => setActiveTab('addons')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-            activeTab === 'addons'
-              ? 'bg-[#EC4899] text-white'
-              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
-          }`}
-        >
-          <Package className="w-4 h-4" />
-          Add-ons & Offers
+          Plan & Add-ons
         </button>
       </div>
 
-      {/* Plan Selection Tab */}
-      {activeTab === 'plans' && companyId && (
+      {/* Plan & Add-ons Selection Tab */}
+      {activeTab === 'plan-selection' && companyId && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <PlanSelection
+          <UnifiedPlanSelection
             companyId={companyId}
             currentPlanId={subscription?.plan_id || null}
             siteCount={siteCount}
-            onPlanChanged={handlePlanChanged}
-          />
-        </div>
-      )}
-
-      {/* Add-ons Selection Tab */}
-      {activeTab === 'addons' && companyId && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <AddonsSelection
-            companyId={companyId}
-            siteCount={siteCount}
-            onAddonChanged={handleAddonChanged}
+            onChanged={handleChanged}
           />
         </div>
       )}
@@ -880,4 +853,7 @@ export default function BillingPage() {
     </div>
   );
 }
+
+
+
 

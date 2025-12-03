@@ -355,16 +355,41 @@ export function TaskFromTemplateModal({
 
   async function loadTemplateFields(templateId: string) {
     try {
+      if (!templateId) {
+        setTemplateFields([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('template_fields')
         .select('*')
         .eq('template_id', templateId)
         .order('field_order');
 
-      if (error) throw error;
+      if (error) {
+        // Log the error for debugging (but don't break the component)
+        console.error('Error loading template fields:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          templateId
+        });
+        setTemplateFields([]);
+        return;
+      }
+      
+      // Successfully loaded fields
+      if (data && data.length > 0) {
+        console.log(`✅ Loaded ${data.length} template field(s) for template:`, templateId);
+      }
       setTemplateFields(data || []);
-    } catch (error) {
-      console.error('Error loading template fields:', error);
+    } catch (error: any) {
+      // Gracefully handle any errors - don't break the component
+      console.error('Exception loading template fields:', {
+        message: error?.message,
+        templateId
+      });
       setTemplateFields([]);
     }
   }
@@ -411,6 +436,9 @@ export function TaskFromTemplateModal({
   async function fetchTemplate() {
     console.log('🚀 fetchTemplate called', { hasProvidedTemplate: !!providedTemplate, templateId });
     
+    // UUID regex for checking if template ID is a database UUID or a slug
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    
     if (providedTemplate) {
       // CRITICAL: Ensure recurrence_pattern is a proper object
       let templateData = { ...providedTemplate };
@@ -432,7 +460,21 @@ export function TaskFromTemplateModal({
       });
       
       const enrichedTemplate = enrichTemplateWithDefinition(templateData);
-      await loadTemplateFields(enrichedTemplate.id as string);
+      
+      // For code-defined templates (slug-based IDs), try to load fields from database first
+      // If that fails, the template should still work with evidence_types-based features
+      const isUuid = uuidRegex.test(enrichedTemplate.id as string);
+      
+      if (isUuid) {
+        // Database template - load fields normally
+        await loadTemplateFields(enrichedTemplate.id as string);
+      } else {
+        // Code-defined template - fields might not exist in DB yet
+        // Features will still work based on evidence_types
+        console.log('Code-defined template detected, skipping field load:', enrichedTemplate.slug);
+        setTemplateFields([]);
+      }
+      
       setTemplate(enrichedTemplate as any);
       setLoading(false);
       initializeFormData(enrichedTemplate as any);
@@ -441,12 +483,22 @@ export function TaskFromTemplateModal({
 
     setLoading(true);
     try {
+      // Check if templateId is a valid UUID (database ID) or a slug
+      const isUuid = uuidRegex.test(templateId);
+      
       // Use maybeSingle() to gracefully handle missing templates (returns null instead of error)
-      const { data, error } = await supabase
+      let query = supabase
         .from('task_templates')
-        .select('*, recurrence_pattern') // Explicitly include recurrence_pattern
-        .eq('id', templateId)
-        .maybeSingle(); // Returns null if no rows, doesn't throw error
+        .select('*, recurrence_pattern'); // Explicitly include recurrence_pattern
+      
+      // If it's a UUID, query by id; otherwise query by slug
+      if (isUuid) {
+        query = query.eq('id', templateId);
+      } else {
+        query = query.eq('slug', templateId);
+      }
+      
+      const { data, error } = await query.maybeSingle(); // Returns null if no rows, doesn't throw error
       
       // Handle any errors (including PGRST116 - template not found)
       if (error) {
@@ -505,21 +557,34 @@ export function TaskFromTemplateModal({
       }
       
       const enrichedTemplate = enrichTemplateWithDefinition(templateData);
-      await loadTemplateFields(enrichedTemplate.id as string);
+      
+      // Load template fields - only if template has a valid UUID (exists in database)
+      const isUuidForTemplate = uuidRegex.test(enrichedTemplate.id as string);
+      
+      if (isUuidForTemplate) {
+        await loadTemplateFields(enrichedTemplate.id as string);
+        // Load call points if template has fire_alarm_call_point field
+        await loadCallPoints(templateData.id);
+      } else {
+        // Code-defined template - fields might not exist in DB yet
+        console.log('Code-defined template detected, skipping field load:', enrichedTemplate.slug);
+        setTemplateFields([]);
+      }
+      
       setTemplate(enrichedTemplate as any);
       
       // Debug: Check if recurrence_pattern is loaded
       console.log('📦 Template loaded:', {
         id: templateData.id,
         name: templateData.name,
+        slug: enrichedTemplate.slug,
         has_recurrence_pattern: !!templateData.recurrence_pattern,
         recurrence_pattern: templateData.recurrence_pattern,
         repeatable_field_name: templateData.repeatable_field_name,
+        asset_type: templateData.asset_type,
+        evidence_types: templateData.evidence_types,
         default_checklist_items: templateData.recurrence_pattern?.default_checklist_items
       });
-      
-      // Load call points if template has fire_alarm_call_point field
-      await loadCallPoints(templateData.id);
       
       initializeFormData(enrichedTemplate as any);
     } catch (error: any) {

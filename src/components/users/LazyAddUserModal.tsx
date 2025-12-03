@@ -36,8 +36,17 @@ const AddUserModalSkeleton = () => (
 );
 
 // Dynamically import the actual AddUserModal component
+// Using a function that returns a promise to prevent caching issues
+// Adding timestamp to force fresh import
 const DynamicAddUserModal = dynamic(
-  () => import('./AddUserModal'),
+  () => {
+    // Force fresh import by adding cache-busting query
+    const timestamp = Date.now();
+    return import(`./AddUserModal?t=${timestamp}`).catch(() => 
+      // Fallback to normal import if query param fails
+      import('./AddUserModal')
+    ).then(mod => ({ default: mod.default }));
+  },
   {
     loading: () => <AddUserModalSkeleton />,
     ssr: false,

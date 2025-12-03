@@ -68,10 +68,10 @@ if (typeof window !== 'undefined') {
         return originalFetch.call(window, input, init);
       }
       
-      // CRITICAL: Only intercept attendance_logs REST API requests
+      // CRITICAL: Only intercept attendance_logs and notifications REST API requests
       // Skip auth endpoints, storage, functions, etc. to avoid breaking cookies/auth
       if (url && 
-          url.includes('/rest/v1/attendance_logs') && 
+          (url.includes('/rest/v1/attendance_logs') || url.includes('/rest/v1/notifications')) && 
           !url.includes('/auth/') &&
           !url.includes('/storage/') &&
           !url.includes('/functions/') &&
@@ -100,8 +100,55 @@ if (typeof window !== 'undefined') {
           console.warn('✅ Fixed URL (converted clock_in_at::date to clock_in_date):', fixedUrl);
         }
         
+        // Fix notifications queries with severity=in.(critical,warning) syntax
+        // PostgREST doesn't support .in() filter in URL - need to use .in() in code
+        // Check for both encoded (%28 = (, %29 = )) and non-encoded versions
+        if (url.includes('/rest/v1/notifications') && url.includes('severity')) {
+          // More comprehensive check - catch all severity filter patterns
+          const hasSeverityFilter = (
+            url.includes('severity=in.') || 
+            url.includes('severity%3Din.') ||
+            url.includes('severity=in.%28') ||
+            url.includes('severity%3Din.%28') ||
+            url.includes('severity=in.(') ||
+            /severity[=%]3?D?in\./.test(url)
+          );
+          
+          if (hasSeverityFilter) {
+            console.debug('🚨 INTERCEPTED: Notifications query with severity=in.() detected!');
+            console.debug('📋 Original URL:', url);
+            
+            // Remove ALL severity filter patterns from URL
+            // Handle both URL-encoded and non-encoded versions
+            // Match patterns like: severity=in.(critical,warning) or severity=in.%28critical%2Cwarning%29
+            fixedUrl = url
+              // Remove &severity=in.%28...%29 patterns (URL encoded, allowing % in the middle)
+              .replace(/[&?]severity=in\.%28[^%]*%29/g, '') // Matches &severity=in.(...) with any chars until %29
+              .replace(/[&?]severity=in\.%28.*?%29/g, '') // Fallback for complex patterns
+              // Remove &severity%3Din.%28...%29 patterns (fully encoded)
+              .replace(/[&?]severity%3Din\.%28[^%]*%29/g, '') // Matches &severity%3Din.(...)
+              .replace(/[&?]severity%3Din\.%28.*?%29/g, '') // Fallback
+              // Remove &severity=in.(...) patterns (non-encoded)
+              .replace(/[&?]severity=in\.\([^)]*\)/g, '') // Matches &severity=in.(...)
+              // Remove any remaining severity=in. patterns (catch-all)
+              .replace(/[&?]severity=in\.[^&?]*/g, '') // Matches &severity=in.anything
+              .replace(/[&?]severity%3Din\.[^&?]*/g, '') // Matches &severity%3Din.anything
+              // Clean up any remaining ? or & at start/end or double separators
+              .replace(/\?&/, '?')
+              .replace(/&+/g, '&') // Replace multiple & with single &
+              .replace(/\?$/, '')
+              .replace(/&$/, '')
+              .replace(/^([^?]*)\?$/, '$1'); // Remove trailing ? if no params remain
+            
+            wasFixed = true;
+            console.debug('✅ Fixed URL (removed severity=in.() filter):', fixedUrl);
+          }
+        }
+        
         // CRITICAL: Views are read-only - redirect INSERT/UPDATE/DELETE to staff_attendance
-        if (method === 'POST' || method === 'PATCH' || method === 'PUT' || method === 'DELETE') {
+        // Only check for attendance_logs if the URL actually contains it
+        if ((method === 'POST' || method === 'PATCH' || method === 'PUT' || method === 'DELETE') 
+            && url.includes('/rest/v1/attendance_logs')) {
           console.error('🚨🚨🚨 CRITICAL: Write operation on attendance_logs view detected!');
           console.error('📋 This should NEVER happen - attendance_logs is read-only!');
           console.error('📋 Original URL:', url);

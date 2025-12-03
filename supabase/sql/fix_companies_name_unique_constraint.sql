@@ -10,3 +10,9 @@ DROP CONSTRAINT IF EXISTS uq_companies_name;
 -- But for now, just remove it to allow multiple companies with same name
 -- Users can have multiple companies with the same name if needed
 
+-- Seed a test company (for local/dev use)
+-- Safe because we just removed the global unique constraint on name
+INSERT INTO public.companies (name)
+VALUES ('Checkly Test Co')
+ON CONFLICT DO NOTHING;
+

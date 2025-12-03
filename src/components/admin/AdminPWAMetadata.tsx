@@ -27,11 +27,11 @@ export function AdminPWAMetadata() {
     }
 
     try {
-      // Add apple-mobile-web-app-capable if not present
-      let appleCapable = document.querySelector('meta[name="apple-mobile-web-app-capable"]');
+      // Add mobile-web-app-capable if not present
+      let appleCapable = document.querySelector('meta[name="mobile-web-app-capable"]');
       if (!appleCapable && document.head) {
         appleCapable = document.createElement('meta');
-        appleCapable.setAttribute('name', 'apple-mobile-web-app-capable');
+        appleCapable.setAttribute('name', 'mobile-web-app-capable');
         appleCapable.setAttribute('content', 'yes');
         document.head.appendChild(appleCapable);
       }

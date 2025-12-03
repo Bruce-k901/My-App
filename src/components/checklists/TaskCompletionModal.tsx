@@ -1658,6 +1658,20 @@ export default function TaskCompletionModal({
       // Save temperature records for each equipment/temperature entry
       const temperatureRecords: any[] = []
       
+      // DEBUG: Log temperature field detection
+      console.log('🌡️ [TEMP LOGS] Checking for temperature data:', {
+        hasRepeatableField: !!repeatableField,
+        repeatableFieldName: repeatableField?.field_name,
+        repeatableFieldValue: repeatableField ? formData[repeatableField.field_name] : undefined,
+        hasTemperatureField: formData.temperature !== undefined,
+        temperatureValue: formData.temperature,
+        formDataKeys: Object.keys(formData).filter(k => k.toLowerCase().includes('temp')),
+        templateAssetId: task.template?.asset_id,
+        companyId,
+        siteId,
+        profileId: profile?.id
+      })
+      
       // Check if this is a temperature task with equipment fields
       if (repeatableField && formData[repeatableField.field_name]) {
         // Handle repeatable equipment list (e.g., multiple fridges)
@@ -1703,10 +1717,64 @@ export default function TaskCompletionModal({
             })
           }
         }
-      } else if (formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '') {
+      } 
+      
+      // Also check for any field with "temp" in the name (case-insensitive)
+      const tempFieldKeys = Object.keys(formData).filter(k => 
+        k.toLowerCase().includes('temp') && 
+        k !== 'temp_action' && 
+        formData[k] !== undefined && 
+        formData[k] !== null && 
+        formData[k] !== ''
+      )
+      
+      if (tempFieldKeys.length > 0 && temperatureRecords.length === 0) {
+        console.log('🌡️ [TEMP LOGS] Found temperature fields by name search:', tempFieldKeys)
+        for (const tempKey of tempFieldKeys) {
+          const tempValue = formData[tempKey]
+          const assetId = task.template?.asset_id
+          
+          if (assetId && tempValue) {
+            console.log('🌡️ [TEMP LOGS] Creating temp log from field:', tempKey, 'value:', tempValue, 'asset:', assetId)
+            const assetRange = assetTempRanges.get(assetId)
+            let status = 'ok'
+            if (assetRange) {
+              const { min, max } = assetRange
+              const temp = parseFloat(String(tempValue))
+              const tolerance = 2
+              const warningTolerance = 1
+              
+              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                status = 'failed'
+              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                status = 'warning'
+              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                status = 'warning'
+              }
+            }
+            
+            temperatureRecords.push({
+              company_id: companyId,
+              site_id: siteId,
+              asset_id: assetId,
+              recorded_by: profile.id,
+              reading: parseFloat(String(tempValue)),
+              unit: '°C',
+              recorded_at: completedAt,
+              day_part: task.daypart || null,
+              status,
+              notes: `Recorded via task: ${task.template.name}`,
+              photo_url: photoUrls.length > 0 ? photoUrls[0] : null
+            })
+          }
+        }
+      }
+      
+      if (formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '') {
         // Handle single temperature field (template's linked asset)
         const assetId = task.template.asset_id
         if (assetId) {
+          console.log('🌡️ [TEMP LOGS] Creating temp log from formData.temperature:', formData.temperature, 'asset:', assetId)
           const assetRange = assetTempRanges.get(assetId)
           let status = 'ok'
           if (assetRange) {
@@ -1742,16 +1810,43 @@ export default function TaskCompletionModal({
 
       // Insert temperature records
       if (temperatureRecords.length > 0) {
-        const { error: tempError } = await supabase
+        console.log('🌡️ [TEMP LOGS] Attempting to insert temperature records:', {
+          count: temperatureRecords.length,
+          records: temperatureRecords.map(r => ({
+            asset_id: r.asset_id,
+            reading: r.reading,
+            company_id: r.company_id,
+            site_id: r.site_id,
+            recorded_by: r.recorded_by
+          }))
+        })
+        
+        const { data: insertedData, error: tempError } = await supabase
           .from('temperature_logs')
           .insert(temperatureRecords)
+          .select()
 
         if (tempError) {
-          console.error('Temperature logs insert error:', tempError)
+          console.error('❌ Temperature logs insert error:', tempError)
+          console.error('❌ Error details:', {
+            message: tempError.message,
+            details: tempError.details,
+            hint: tempError.hint,
+            code: tempError.code
+          })
           // Don't fail the whole operation, but log it
         } else {
-          console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`)
+          console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`, insertedData)
         }
+      } else {
+        console.log('⚠️ [TEMP LOGS] No temperature records to insert. Check formData:', {
+          formDataKeys: Object.keys(formData),
+          formDataValues: Object.entries(formData).filter(([k, v]) => 
+            k.toLowerCase().includes('temp') || (typeof v === 'number' && v > -50 && v < 50)
+          ),
+          hasRepeatableField: !!repeatableField,
+          templateAssetId: task.template?.asset_id
+        })
       }
 
       // Handle callout follow-up tasks - update/close the callout
@@ -2420,7 +2515,7 @@ export default function TaskCompletionModal({
               type: 'task',
               title: 'Task Completed Late',
               message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
-              // severity: 'warning', // Removed as column does not exist
+              severity: 'warning', // Required field - must be 'info', 'warning', or 'critical'
               status: 'active',
             })
           

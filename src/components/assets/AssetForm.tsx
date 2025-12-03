@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabaseClient';
 import Select from '@/components/ui/Select';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
 import { Tooltip } from '@/components/ui/tooltip/Tooltip';
+import { TemperatureInput } from '@/components/ui';
 import { Save, XCircle, Loader2 } from 'lucide-react';
 
 export default function AssetForm({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved?: (asset: any) => void }) {
@@ -383,17 +384,10 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                       <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
                     </Tooltip>
                   </label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    pattern="-?[0-9]*\.?[0-9]*"
+                  <TemperatureInput
                     value={form.watch('working_temp_min') || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      // Allow negative numbers, decimals, and empty string
-                      if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
-                        form.setValue('working_temp_min', value);
-                      }
+                    onChange={(value) => {
+                      form.setValue('working_temp_min', value);
                     }}
                     placeholder="e.g. 0 for fridges, -20 for freezers"
                     className="w-full"
@@ -406,17 +400,10 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                       <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
                     </Tooltip>
                   </label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    pattern="-?[0-9]*\.?[0-9]*"
+                  <TemperatureInput
                     value={form.watch('working_temp_max') || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      // Allow negative numbers, decimals, and empty string
-                      if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
-                        form.setValue('working_temp_max', value);
-                      }
+                    onChange={(value) => {
+                      form.setValue('working_temp_max', value);
                     }}
                     placeholder="e.g. 5 for fridges, -18 for freezers"
                     className="w-full"

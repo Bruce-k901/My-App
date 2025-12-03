@@ -79,17 +79,15 @@ function GeneralRiskAssessmentTemplateContent() {
   const [siteId, setSiteId] = useState("");
   const [assessorName, setAssessorName] = useState("");
   // Use client-safe date initialization to prevent hydration mismatch
-  const [assessmentDate, setAssessmentDate] = useState<string>(() => {
-    if (typeof window === 'undefined') return '';
-    return new Date().toISOString().split('T')[0];
-  });
+  // Always initialize with empty string, then set after mount
+  const [assessmentDate, setAssessmentDate] = useState<string>('');
   
-  // Initialize date after hydration
+  // Initialize date after mount to prevent hydration mismatch
   useEffect(() => {
-    if (!assessmentDate && typeof window !== 'undefined') {
+    if (!assessmentDate) {
       setAssessmentDate(new Date().toISOString().split('T')[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
   const [reviewDate, setReviewDate] = useState("");
   const [status, setStatus] = useState("Draft");

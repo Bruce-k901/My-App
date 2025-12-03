@@ -1,0 +1,8 @@
+# Browsers that we support
+# This file helps reduce baseline-browser-mapping warnings
+# by explicitly defining our browser targets
+
+defaults
+not dead
+not op_mini all
+

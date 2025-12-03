@@ -9,14 +9,10 @@ export function PWAProvider() {
   const pathname = usePathname();
   
   useEffect(() => {
-    // Skip registration on admin routes - admin has its own service worker
-    if (pathname?.startsWith('/admin')) {
-      return;
-    }
-    
-    // Register main app service worker
+    // Register main app service worker for all routes (including admin)
+    // The main service worker handles both main app and admin routes
     registerServiceWorker();
-  }, [pathname]);
+  }, []); // Empty deps - only register once
 
   // Don't show install prompt on admin routes
   if (pathname?.startsWith('/admin')) {

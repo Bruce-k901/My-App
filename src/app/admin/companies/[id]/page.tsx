@@ -21,14 +21,14 @@ import {
 interface CompanyDetails {
   id: string;
   name: string;
-  created_at: string;
+  created_at: string | null;
 }
 
 interface CompanyUser {
   id: string;
   full_name: string | null;
-  email: string;
-  app_role: string;
+  email: string | null;
+  app_role: "Admin" | "Manager" | "Staff" | "Owner" | "General Manager";
   last_login: string | null;
   position_title: string | null;
 }
@@ -168,7 +168,7 @@ export default function CompanyDetailPage() {
             <h1 className="text-3xl font-bold text-white">{company.name}</h1>
             <p className="text-white/60 flex items-center gap-2 mt-1">
               <Calendar className="w-4 h-4" />
-              Joined {new Date(company.created_at).toLocaleDateString()}
+              Joined {company.created_at ? new Date(company.created_at).toLocaleDateString() : 'Unknown date'}
             </p>
           </div>
         </div>

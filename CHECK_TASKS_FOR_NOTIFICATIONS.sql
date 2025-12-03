@@ -69,3 +69,5 @@ FROM checklist_tasks
 WHERE due_date = CURRENT_DATE
   AND status IN ('pending', 'in_progress');
 
+
+

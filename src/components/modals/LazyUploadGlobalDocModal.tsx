@@ -26,8 +26,9 @@ const UploadModalSkeleton = () => (
 );
 
 // Dynamically import the actual UploadGlobalDocModal component
+// Using a function that returns a promise to prevent caching issues
 const DynamicUploadGlobalDocModal = dynamic(
-  () => import('./UploadGlobalDocModal'),
+  () => import('./UploadGlobalDocModal').then(mod => ({ default: mod.default })),
   {
     loading: () => <UploadModalSkeleton />,
     ssr: false,

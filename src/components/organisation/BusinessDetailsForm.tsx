@@ -25,7 +25,23 @@ export default function BusinessDetailsForm({ onSaved }: { onSaved?: () => void 
     const load = async () => {
       if (!companyId) return;
       try {
-        const { data, error } = await supabase.from("companies").select("*").eq("id", companyId).single();
+        // Always use API route to bypass RLS
+        let data = null;
+        let error = null;
+        
+        try {
+          const response = await fetch(`/api/company/get?id=${companyId}`);
+          if (response.ok) {
+            data = await response.json();
+            error = null;
+          } else {
+            error = new Error(`Failed to fetch company: ${response.status}`);
+          }
+        } catch (apiError) {
+          console.error('API route error:', apiError);
+          error = apiError;
+        }
+        
         if (error) throw error;
         setCompany((data || null) as Company | null);
       } catch (e: any) {
@@ -49,8 +65,20 @@ export default function BusinessDetailsForm({ onSaved }: { onSaved?: () => void 
         phone: company.phone ?? null,
         address: company.address ?? null,
       };
-      const { error } = await supabase.from("companies").update(payload).eq("id", companyId);
-      if (error) throw error;
+      // Update via API route to bypass RLS
+      const response = await fetch("/api/company/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: companyId,
+          ...payload,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update company");
+      }
       if (onSaved) onSaved();
     } catch (e: any) {
       setError(e?.message || "Failed to save company details");

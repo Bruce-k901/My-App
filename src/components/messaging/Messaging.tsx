@@ -99,7 +99,7 @@ export function Messaging() {
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-[88px] left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
+          className="md:hidden fixed top-[80px] left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
           aria-label="Back to conversations"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -119,7 +119,7 @@ export function Messaging() {
           flex flex-col
           ${
             isMobile 
-              ? `fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out ${
+              ? `fixed top-[72px] left-0 z-40 transition-transform duration-300 ease-in-out ${
                   isSidebarOpen || !selectedConversationId ? 'translate-x-0' : '-translate-x-full'
                 }`
               : ''

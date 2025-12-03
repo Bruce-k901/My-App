@@ -55,27 +55,6 @@ const setupSteps: SetupStep[] = [
     ]
   },
   {
-    id: 'sites',
-    title: 'Site Configuration',
-    description: 'Add all your venues, locations, and operational sites to the platform.',
-    icon: <MapPin className="w-5 h-5" />,
-    estimatedTime: '5-10 minutes per site',
-    importance: 'critical',
-    href: '/dashboard/sites',
-    benefits: [
-      'Enables site-specific task scheduling',
-      'Allows location-based compliance tracking',
-      'Facilitates multi-site reporting and analytics',
-      'Supports site-specific user permissions'
-    ],
-    tips: [
-      'Add sites in order of priority (flagship first)',
-      'Include accurate opening hours for task scheduling',
-      'Assign General Managers during setup',
-      'Add site-specific contact information'
-    ]
-  },
-  {
     id: 'users',
     title: 'User Management & Roles',
     description: 'Invite team members and assign appropriate roles and permissions.',
@@ -94,6 +73,27 @@ const setupSteps: SetupStep[] = [
       'Use role-based permissions (Admin, Manager, Staff)',
       'Verify email addresses before sending invites',
       'Plan shift patterns for task scheduling'
+    ]
+  },
+  {
+    id: 'sites',
+    title: 'Site Configuration',
+    description: 'Add all your venues, locations, and operational sites to the platform.',
+    icon: <MapPin className="w-5 h-5" />,
+    estimatedTime: '5-10 minutes per site',
+    importance: 'critical',
+    href: '/dashboard/sites',
+    benefits: [
+      'Enables site-specific task scheduling',
+      'Allows location-based compliance tracking',
+      'Facilitates multi-site reporting and analytics',
+      'Supports site-specific user permissions'
+    ],
+    tips: [
+      'Add sites in order of priority (flagship first)',
+      'Include accurate opening hours for task scheduling',
+      'Assign General Managers during setup',
+      'Add site-specific contact information'
     ]
   },
   {
@@ -226,7 +226,7 @@ export default function OnboardingPage() {
   return (
     <>
       {/* Single DarkVeil Background Container */}
-      <div className="relative overflow-hidden">
+      <div className="relative">
         {/* Single DarkVeil Background - covers entire page */}
         <div className="absolute inset-0 w-full h-full -z-0">
           <div className="w-full h-full min-h-screen">
@@ -255,11 +255,11 @@ export default function OnboardingPage() {
               A comprehensive guide to configuring Checkly for maximum compliance, efficiency, and operational excellence. 
               Proper setup is the foundation of a successful deployment.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-0 px-4">
-              <Link href="/dashboard/business">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-0 px-4 relative z-10">
+              <Link href="/dashboard/business" className="inline-block">
                 <Button variant="primary">Start Setup Now</Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" className="inline-block">
                 <Button variant="primary">Schedule Onboarding Call</Button>
               </Link>
             </div>
@@ -422,8 +422,8 @@ export default function OnboardingPage() {
                       </div>
 
                       {/* Go to Page Button */}
-                      <div className="pt-2">
-                        <Link href={step.href}>
+                      <div className="pt-2 relative z-10">
+                        <Link href={step.href} className="block">
                           <Button variant="primary" fullWidth>
                             Go to {step.title}
                           </Button>
@@ -447,11 +447,11 @@ export default function OnboardingPage() {
               Our onboarding team is here to help you every step of the way. 
               Schedule a personalized setup session or dive in on your own.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
-              <Link href="/dashboard/business">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4 relative z-10">
+              <Link href="/dashboard/business" className="inline-block">
                 <Button variant="primary">Begin Setup Process</Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" className="inline-block">
                 <Button variant="primary">Talk to Our Team</Button>
               </Link>
             </div>

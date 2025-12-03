@@ -108,6 +108,19 @@ self.addEventListener('fetch', (event) => {
 
   const requestUrl = event.request.url;
 
+  // Skip webpack HMR files and other development-only files
+  // These are temporary and shouldn't be cached or intercepted
+  if (
+    requestUrl.includes('webpack.hot-update') ||
+    requestUrl.includes('hot-update.json') ||
+    requestUrl.includes('hot-update.js') ||
+    requestUrl.includes('_next/webpack-hmr') ||
+    requestUrl.includes('__webpack_hmr')
+  ) {
+    // Let these requests pass through without service worker interception
+    return;
+  }
+
   // Don't cache favicon - always fetch fresh (but handle errors gracefully)
   if (requestUrl.includes('favicon') || requestUrl.includes('icon')) {
     event.respondWith(

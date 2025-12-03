@@ -181,13 +181,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   return (
     <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
       {/* Left: Mobile Menu Button + Logo */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1" suppressHydrationWarning>
         {/* Mobile Menu Button - Only visible on mobile */}
         {onMobileMenuClick && (
           <button
             onClick={onMobileMenuClick}
             className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors flex-shrink-0"
             aria-label="Open menu"
+            suppressHydrationWarning
           >
             <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
@@ -202,11 +203,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Middle: Actions - Show on all screens, compact on mobile */}
-      <div className="flex items-center gap-3 sm:gap-4 mr-2 sm:mr-0">
+      <div className="flex items-center gap-2 sm:gap-4 mr-2 sm:mr-0" suppressHydrationWarning>
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/todays_tasks"
-          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
+          className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
         >
           <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
           <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Today's Tasks</span>
@@ -223,11 +224,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
               }
               setIsIncidentsMenuOpen((open) => !open);
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10 ${
+            className={
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
-                ? 'bg-white/[0.12] text-white border-pink-500/30'
-                : ''
-            }`}
+                ? 'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10'
+                : 'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10'
+            }
           >
             <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
             <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Incidents</span>
@@ -344,14 +345,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
                               // Close menu immediately on click
                               setIsIncidentsMenuOpen(false);
                             }}
-                            className={`
-                              block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer
-                              ${
-                                isActive
-                                  ? "bg-pink-500/20 text-pink-300 font-medium"
-                                  : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                              }
-                            `}
+                            className={
+                              isActive
+                                ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                                : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                            }
                           >
                             <div className="flex items-center gap-3">
                               <Icon size={18} className={isActive ? "text-pink-400" : "text-white/60"} />
@@ -372,15 +370,15 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Right: Messages, Clock and Menu */}
-      <div className="flex items-center gap-3 sm:gap-3">
+      <div className="flex items-center gap-2 sm:gap-3" suppressHydrationWarning>
         {/* Messages Button - Quick access */}
         <Link
           href="/dashboard/messaging"
-          className={`relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10 ${
+          className={
             pathname.startsWith('/dashboard/messaging')
-              ? 'bg-white/[0.12] text-white border-pink-500/30'
-              : ''
-          }`}
+              ? 'relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10'
+              : 'relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10'
+          }
         >
           <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
           <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Messages</span>
@@ -397,9 +395,9 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         </div>
 
         {/* Clock - Hidden on mobile */}
-        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10">
+        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10" suppressHydrationWarning>
           <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-          <div className="font-mono text-xs sm:text-sm text-white whitespace-nowrap">
+          <div className="font-mono text-xs sm:text-sm text-white whitespace-nowrap" suppressHydrationWarning>
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}
           </div>
         </div>
@@ -409,15 +407,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           <button
             ref={burgerMenuButtonRef}
             onClick={() => setIsBurgerMenuOpen(!isBurgerMenuOpen)}
-            className={`
-              relative flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.06] border border-white/[0.1]
-              transition-all duration-200
-              ${
-                isBurgerMenuOpen
-                  ? "bg-pink-500/20 text-pink-400 border-pink-500/30"
-                  : "text-white/60 hover:text-white hover:bg-white/[0.12]"
-              }
-            `}
+            className={
+              isBurgerMenuOpen
+                ? "relative flex items-center justify-center w-10 h-10 rounded-lg bg-pink-500/20 border border-pink-500/30 text-pink-400 transition-all duration-200 hover:text-pink-400 hover:bg-pink-500/20"
+                : "relative flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/60 transition-all duration-200 hover:text-white hover:bg-white/[0.12]"
+            }
             aria-label="Menu"
           >
             <Menu className="w-5 h-5" />
@@ -545,14 +539,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
                                   e.stopPropagation();
                                   setIsBurgerMenuOpen(false);
                                 }}
-                                className={`
-                                  block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer
-                                  ${
-                                    isActive
-                                      ? "bg-pink-500/20 text-pink-300 font-medium"
-                                      : "text-white/80 hover:text-white hover:bg-white/[0.08]"
-                                  }
-                                `}
+                                className={
+                                  isActive
+                                    ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                                    : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                                }
                               >
                                 <div className="flex items-center gap-3">
                                   <Icon size={18} className={isActive ? "text-pink-400" : "text-white/60"} />

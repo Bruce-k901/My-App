@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
-import { Search, Clock, FileText, Calendar, Copy, Filter, CheckCircle2, Utensils, ShieldAlert, Flame, ClipboardCheck } from "lucide-react";
+import { Search, Clock, FileText, Calendar, Copy, CheckCircle2, Utensils, ShieldAlert, Flame, ClipboardCheck } from "lucide-react";
 import { TaskTemplate } from "@/types/checklist-types";
 import { useAppContext } from "@/context/AppContext";
-import { COMPLIANCE_MODULE_SLUGS } from "@/data/compliance-templates";
+import { COMPLIANCE_MODULE_SLUGS, COMPLIANCE_MODULE_TEMPLATES, getAllTemplates } from "@/data/compliance-templates";
 import { enrichTemplateWithDefinition } from "@/lib/templates/enrich-template";
+import Select from "@/components/ui/Select";
 
 const FREQUENCY_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -27,13 +28,12 @@ export default function CompliancePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TaskTemplate | null>(null);
+  const [templateUsageCounts, setTemplateUsageCounts] = useState<Map<string, number>>(new Map());
   const hasAttemptedSeed = useRef(false);
-  const shouldAutoSeed = process.env.NEXT_PUBLIC_ENABLE_COMPLIANCE_TEMPLATE_AUTOFILL === "true";
 
   async function seedGlobalTemplates() {
-    if (!shouldAutoSeed) {
-      return false;
-    }
+    // Prevent multiple simultaneous seed attempts
     if (hasAttemptedSeed.current) {
       return false;
     }
@@ -52,6 +52,7 @@ export default function CompliancePage() {
       if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         console.error("Failed to seed compliance templates:", errorBody);
+        // Don't return false - we'll fall back to code definitions
         return false;
       }
 
@@ -60,8 +61,24 @@ export default function CompliancePage() {
       return true;
     } catch (error) {
       console.error("Error seeding compliance templates:", error);
+      // Don't return false - we'll fall back to code definitions
       return false;
+    } finally {
+      // Reset after a delay to allow retry if needed
+      setTimeout(() => {
+        hasAttemptedSeed.current = false;
+      }, 5000);
     }
+  }
+
+  // Convert code-defined templates to TaskTemplate format for display
+  function getCodeDefinedTemplates(): TaskTemplate[] {
+    const codeTemplates = getAllTemplates();
+    return codeTemplates.map((template) => {
+      // Convert ComplianceTemplate to TaskTemplate format
+      const { workflowType, workflowConfig, ...taskTemplate } = template;
+      return enrichTemplateWithDefinition(taskTemplate as TaskTemplate);
+    });
   }
 
   useEffect(() => {
@@ -76,7 +93,11 @@ export default function CompliancePage() {
     } else if (!authLoading && !session?.user) {
       // Auth finished loading but no user - set loading to false
       setLoading(false);
-      setTemplates([]);
+      // Still show code-defined templates even without auth (for preview)
+      const codeTemplates = getCodeDefinedTemplates();
+      setTemplates(codeTemplates);
+      setFilteredTemplates(codeTemplates);
+      // Can't fetch usage counts without auth/companyId
     }
   }, [companyId, session, authLoading]);
 
@@ -112,18 +133,18 @@ export default function CompliancePage() {
       const presentSlugs = new Set(templatesData.map((template: any) => template.slug));
       const missingSlugs = COMPLIANCE_MODULE_SLUGS.filter((slug) => !presentSlugs.has(slug));
 
-      if (shouldAutoSeed && missingSlugs.length > 0) {
+      // Always attempt to seed missing templates (they're shipped with the app)
+      if (missingSlugs.length > 0) {
         console.log("Missing compliance templates detected:", missingSlugs);
         const seeded = await seedGlobalTemplates();
         if (seeded) {
+          // Retry fetch after seeding
           await fetchTemplates();
           return;
         }
       }
-      console.log('Fetched compliance templates:', templatesData.length, 'templates');
-      if (templatesData.length) {
-        console.log('Template names:', templatesData.map((t: any) => t.name));
-      }
+      
+      console.log('Fetched compliance templates from database:', templatesData.length, 'templates');
       
       const filteredData = templatesData.filter((template: any) => {
         const name = template.name?.toLowerCase() ?? '';
@@ -144,14 +165,98 @@ export default function CompliancePage() {
         }
       });
       
-      const uniqueTemplates = Array.from(templatesMap.values());
+      let uniqueTemplates = Array.from(templatesMap.values());
+      
+      // If we have fewer templates than expected, merge with code-defined templates
+      // This ensures templates are always available even if database seeding failed
+      if (uniqueTemplates.length < COMPLIANCE_MODULE_SLUGS.length) {
+        console.log('Some templates missing from database, using code definitions as fallback');
+        const codeTemplates = getCodeDefinedTemplates();
+        
+        // Create a map of database templates by slug
+        const dbTemplatesBySlug = new Map<string, TaskTemplate>();
+        uniqueTemplates.forEach(t => {
+          if (t.slug) {
+            dbTemplatesBySlug.set(t.slug, t);
+          }
+        });
+        
+        // Add code-defined templates that aren't in the database
+        codeTemplates.forEach(codeTemplate => {
+          if (codeTemplate.slug && !dbTemplatesBySlug.has(codeTemplate.slug)) {
+            // Use code template but mark it as not yet in database
+            uniqueTemplates.push(codeTemplate);
+          }
+        });
+      }
+      
       setTemplates(uniqueTemplates);
       setFilteredTemplates(uniqueTemplates);
+      
+      // Fetch usage counts for templates
+      await fetchTemplateUsageCounts(uniqueTemplates.map(t => t.id));
     } catch (error) {
       console.error('Failed to fetch templates:', error);
       setTemplates([]);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchTemplateUsageCounts(templateIds: string[]) {
+    if (!companyId || templateIds.length === 0) {
+      return;
+    }
+
+    try {
+      // Filter out any null/undefined/invalid template IDs
+      // Also filter to only valid UUIDs (templates that exist in database)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const validTemplateIds = templateIds.filter(
+        id => id && typeof id === 'string' && uuidRegex.test(id)
+      );
+      
+      if (validTemplateIds.length === 0) {
+        // No valid template IDs to query - this is fine, just return
+        return;
+      }
+
+      // Count tasks for each template from checklist_tasks table
+      // Count all tasks (pending, in_progress, completed, etc.) to show which templates are in use
+      const { data, error } = await supabase
+        .from('checklist_tasks')
+        .select('template_id')
+        .eq('company_id', companyId)
+        .in('template_id', validTemplateIds);
+
+      if (error) {
+        console.error('Error fetching template usage counts:', error);
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        // Don't throw - just return empty counts so the page still works
+        return;
+      }
+
+      // Count occurrences of each template_id
+      const counts = new Map<string, number>();
+      data?.forEach((task: any) => {
+        if (task.template_id) {
+          counts.set(task.template_id, (counts.get(task.template_id) || 0) + 1);
+        }
+      });
+
+      setTemplateUsageCounts(counts);
+    } catch (error: any) {
+      console.error('Failed to fetch template usage counts:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        stack: error?.stack
+      });
+      // Don't throw - just continue without usage counts
     }
   }
 
@@ -183,12 +288,17 @@ export default function CompliancePage() {
 
   const handleTaskCreated = () => {
     setSelectedTemplateId(null); // Close modal
-    // Optionally refresh templates if needed
+    setSelectedTemplate(null); // Clear selected template
+    // Refresh usage counts after task creation
+    if (templates.length > 0) {
+      fetchTemplateUsageCounts(templates.map(t => t.id));
+    }
   };
 
   // Handle template click - opens TaskFromTemplateModal to create a task
-  const handleUseTemplate = (templateId: string) => {
-    setSelectedTemplateId(templateId);
+  const handleUseTemplate = (template: TaskTemplate) => {
+    setSelectedTemplateId(template.id);
+    setSelectedTemplate(template);
   };
 
   const getTemplateIcon = (template: TaskTemplate) => {
@@ -246,20 +356,20 @@ export default function CompliancePage() {
           />
         </div>
         
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4 pointer-events-none" />
-          <select
+        <div className="w-full sm:w-auto">
+          <Select
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="w-full sm:w-auto pl-10 pr-8 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/40 appearance-none cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </option>
-            ))}
-          </select>
+            onValueChange={setFilterCategory}
+            options={[
+              { label: 'All Categories', value: 'all' },
+              ...categories.map(category => ({
+                label: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                value: category
+              }))
+            ]}
+            placeholder="All Categories"
+            className="w-full sm:w-auto"
+          />
         </div>
       </div>
 
@@ -295,11 +405,17 @@ export default function CompliancePage() {
                       <p className="text-white/60 text-sm mb-3 line-clamp-2">{template.description}</p>
                     )}
                   </div>
-                  {template.company_id === null && (
-                    <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full whitespace-nowrap flex-shrink-0">
-                      Global
-                    </span>
-                  )}
+                  {(() => {
+                    const usageCount = templateUsageCounts.get(template.id) || 0;
+                    if (usageCount > 0) {
+                      return (
+                        <span className="px-2 py-1 text-xs bg-green-500/20 text-green-400 border border-green-500/30 rounded-full whitespace-nowrap flex-shrink-0">
+                          {usageCount} in use
+                        </span>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
 
                 {/* Category and Critical Badges */}
@@ -339,7 +455,7 @@ export default function CompliancePage() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleUseTemplate(template.id);
+                    handleUseTemplate(template);
                   }}
                   className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-pink-500/20 border border-pink-500/40 rounded-lg text-pink-400 hover:bg-pink-500/30 transition-colors group-hover:border-pink-500/60"
                 >
@@ -388,8 +504,12 @@ export default function CompliancePage() {
       {selectedTemplateId && (
         <TaskFromTemplateModal
           isOpen={!!selectedTemplateId}
-          onClose={() => setSelectedTemplateId(null)}
+          onClose={() => {
+            setSelectedTemplateId(null);
+            setSelectedTemplate(null);
+          }}
           templateId={selectedTemplateId}
+          template={selectedTemplate || undefined}
           onSave={handleTaskCreated}
         />
       )}

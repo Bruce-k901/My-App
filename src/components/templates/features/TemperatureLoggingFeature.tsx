@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { MonitorCalloutModal } from './MonitorCalloutModal';
+import { TemperatureInput } from '@/components/ui';
 
 interface TemperatureLoggingFeatureProps {
   temperatures: Array<{ assetId?: string; equipment?: string; nickname?: string; temp?: number }>;
@@ -154,17 +155,10 @@ export function TemperatureLoggingFeature({
                   className="px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white"
                 />
                 <div className="relative">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    pattern="-?[0-9]*\.?[0-9]*"
+                  <TemperatureInput
                     value={temp.temp || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      // Allow negative numbers, decimals, and empty string
-                      if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
-                        handleTempChange(index, value === '' || value === '-' ? undefined : parseFloat(value));
-                      }
+                    onChange={(value) => {
+                      handleTempChange(index, value === '' || value === '-' ? undefined : parseFloat(value));
                     }}
                     placeholder="Temperature (°C)"
                     className={`px-4 py-2 rounded-lg bg-[#0f1220] border text-white w-full ${

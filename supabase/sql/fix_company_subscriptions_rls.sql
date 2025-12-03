@@ -10,43 +10,32 @@ DROP POLICY IF EXISTS "Users can create subscriptions for their company" ON publ
 DROP POLICY IF EXISTS "Users can update their company subscriptions" ON public.company_subscriptions;
 
 -- SELECT: Users can view subscriptions for their company
+-- Use security definer function to avoid infinite recursion
 CREATE POLICY "Users can view their company subscriptions"
   ON public.company_subscriptions
   FOR SELECT
   USING (
-    company_id IN (
-      SELECT company_id FROM public.profiles WHERE id = auth.uid()
-    )
+    company_id = public.get_user_company_id()
   );
 
--- INSERT: Users can create subscriptions for their company (typically done by system/admin)
+-- INSERT: Users can create subscriptions for their company
+-- Use security definer function to avoid infinite recursion
 CREATE POLICY "Users can create subscriptions for their company"
   ON public.company_subscriptions
   FOR INSERT
   WITH CHECK (
-    company_id IN (
-      SELECT company_id FROM public.profiles 
-      WHERE id = auth.uid() 
-      AND LOWER(app_role::text) IN ('admin', 'owner')
-    )
+    company_id = public.get_user_company_id()
   );
 
--- UPDATE: Only admins can update subscriptions
+-- UPDATE: Users can update subscriptions for their company
+-- Use security definer function to avoid infinite recursion
 CREATE POLICY "Users can update their company subscriptions"
   ON public.company_subscriptions
   FOR UPDATE
   USING (
-    company_id IN (
-      SELECT company_id FROM public.profiles 
-      WHERE id = auth.uid() 
-      AND LOWER(app_role::text) IN ('admin', 'owner')
-    )
+    company_id = public.get_user_company_id()
   )
   WITH CHECK (
-    company_id IN (
-      SELECT company_id FROM public.profiles 
-      WHERE id = auth.uid() 
-      AND LOWER(app_role::text) IN ('admin', 'owner')
-    )
+    company_id = public.get_user_company_id()
   );
 

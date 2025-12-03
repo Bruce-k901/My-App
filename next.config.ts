@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
 
   // Use webpack explicitly to avoid Turbopack conflicts
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Disable caching in development to prevent stale component versions
+    if (dev) {
+      config.cache = false;
+    }
+    
     // Add bundle analyzer for production builds
     if (!dev && !isServer) {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');

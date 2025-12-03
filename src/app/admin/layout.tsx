@@ -5,7 +5,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
-import { AdminPWAProvider } from '@/components/admin/AdminPWAProvider';
 import { 
   Shield, 
   LayoutDashboard, 
@@ -119,7 +118,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <>
       <AdminFaviconSetter />
-      <AdminPWAProvider />
       <div className="h-screen bg-[#0B0D13] flex overflow-hidden">
       {/* Fixed Sidebar */}
       <aside className="w-64 bg-white/[0.03] border-r border-white/[0.06] flex flex-col flex-shrink-0">

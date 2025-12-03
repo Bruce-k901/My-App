@@ -115,11 +115,20 @@ export function AppContextProvider({ children }: { children: React.ReactNode }):
       if (companyId) {
         console.log("🔄 Loading company data...");
         
-        const { data: company, error: companyError } = await supabase
-          .from("companies")
-          .select("*")
-          .eq("id", companyId)
-          .single();
+        // Use API route to bypass RLS
+        let company = null;
+        let companyError = null;
+        try {
+          const response = await fetch(`/api/company/get?id=${companyId}`);
+          if (response.ok) {
+            company = await response.json();
+          } else {
+            const errorText = await response.text();
+            companyError = new Error(`API route failed: ${errorText}`);
+          }
+        } catch (apiError) {
+          companyError = apiError instanceof Error ? apiError : new Error('Unknown API error');
+        }
         
         if (companyError) {
           console.error("❌ Company error:", companyError);

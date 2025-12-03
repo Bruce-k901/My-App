@@ -10,7 +10,7 @@
  * Or use this TypeScript version to import programmatically:
  */
 
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 const COMPANY_ID = 'YOUR_COMPANY_ID_HERE'; // Replace with actual UUID
 
@@ -283,8 +283,7 @@ const tasks = [
 ];
 
 export async function importEHOComplianceTasks(companyId: string) {
-  const supabase = createClient();
-  
+  // Use the singleton supabase client
   // Implementation would go here
   // For now, use the SQL migration instead
 }
