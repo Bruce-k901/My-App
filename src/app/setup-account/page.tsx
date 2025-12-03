@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/layouts";
 import GlassCard from "@/components/ui/GlassCard";
@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { redirectToDashboard } from "@/lib/auth";
 import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
 
-export default function SetupAccountPage() {
+function SetupAccountContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [canSetup, setCanSetup] = useState(false);
@@ -355,6 +355,22 @@ export default function SetupAccountPage() {
         </p>
       </GlassCard>
     </AuthLayout>
+  );
+}
+
+export default function SetupAccountPage() {
+  return (
+    <Suspense fallback={
+      <AuthLayout>
+        <GlassCard>
+          <div className="text-center py-8">
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        </GlassCard>
+      </AuthLayout>
+    }>
+      <SetupAccountContent />
+    </Suspense>
   );
 }
 
