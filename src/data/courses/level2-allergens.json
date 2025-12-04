@@ -20,21 +20,21 @@
               "type": "text-graphic-split",
               "title": "Why it Matters",
               "content": "## A Growing Issue\n\n- **2 Million**: The number of people in the UK with a diagnosed food allergy.\n- **Fatalities**: On average, 10 people die from food-induced anaphylaxis in the UK every year.\n- **Your Role**: As a food handler, you are the last line of defence. Your actions can literally save a life.\n\n### The Impact\nFor allergy sufferers, eating out is a matter of trust. If you break that trust, the consequences can be devastating.",
-              "mediaUrl": "/images/placeholder-allergy.png"
+              "mediaUrl": "/courses/allergens/intro_to_allergens.png"
             },
             {
               "id": "m1-s2",
               "type": "text-graphic-split",
               "title": "What is a Food Allergy?",
               "content": "## The Immune System\n\nA food allergy is when the body's immune system mistakenly attacks a food protein, believing it to be harmful.\n\n### Key Facts:\n- **Speed**: Reactions can happen within seconds or minutes.\n- **Amount**: Even a microscopic trace (e.g., from a knife) can trigger a reaction.\n- **Anaphylaxis**: The most severe reaction, which can cause breathing difficulties and death.",
-              "mediaUrl": "/images/placeholder-immune.png"
+              "mediaUrl": "/courses/allergens/what_are_allergens.png"
             },
             {
               "id": "m1-s3",
               "type": "text-graphic-split",
               "title": "Allergy vs Intolerance vs Coeliac",
               "content": "## Know the Difference\n\n### Food Allergy\n- **System**: Immune System.\n- **Risk**: Life-threatening.\n- **Example**: Nut allergy.\n\n### Food Intolerance\n- **System**: Digestive System.\n- **Risk**: Unpleasant (bloating, pain) but not usually life-threatening.\n- **Example**: Lactose intolerance.\n\n### Coeliac Disease\n- **System**: Autoimmune.\n- **Risk**: Long-term health damage.\n- **Action**: Must strictly avoid Gluten.",
-              "mediaUrl": "/images/placeholder-definitions.png"
+              "mediaUrl": "/courses/allergens/allergy_intollerance_coeliac.png"
             }
           ]
         },
@@ -47,21 +47,21 @@
               "type": "text-graphic-split",
               "title": "Food Information Regulations 2014",
               "content": "## The 14 Allergens\n\nBy law, you must provide accurate allergen information for the **14 Major Allergens**.\n\n### Non-Pre-Packed Food (e.g., Restaurants)\n- Information can be written (menu, chalkboard) or verbal.\n- If verbal, there must be a sign inviting customers to ask staff.\n- You must have a way to check (e.g., an Allergen Matrix or Chef). **Guessing is illegal.**",
-              "mediaUrl": "/images/placeholder-law.png"
+              "mediaUrl": "/courses/allergens/food_information_regulation.png"
             },
             {
               "id": "m1-s5",
               "type": "text-graphic-split",
               "title": "Natasha's Law (PPDS)",
               "content": "## Pre-Packed for Direct Sale\n\nIntroduced in 2021 following the death of Natasha Ednan-Laperouse.\n\n### What is PPDS?\nFood that is packaged **at the same place** it is sold, **before** the customer orders it (e.g., a sandwich made in the morning and put in a display fridge).\n\n### The Requirement\nPPDS food must have a label showing:\n1.  **Name of the food**.\n2.  **Full ingredients list**.\n3.  **Allergens emphasised** (e.g., in **bold**, *italics*, or COLOUR).",
-              "mediaUrl": "/images/placeholder-natasha.png"
+              "mediaUrl": "/courses/allergens/natashas_law.png"
             },
             {
               "id": "m1-s6",
               "type": "text-graphic-split",
               "title": "Consequences",
               "content": "## If You Get It Wrong\n\n### Legal\n- **Unlimited Fines**: For the business and individuals.\n- **Prison**: Up to 2 years for serious breaches.\n\n### Business\n- **Closure**: EHOs can close unsafe businesses.\n- **Reputation**: Ruined trust and loss of customers.\n\n### Moral\n- **Guilt**: Living with the knowledge that you caused serious harm or death.",
-              "mediaUrl": "/images/placeholder-court.png"
+              "mediaUrl": "/courses/allergens/consequences.png"
             },
             {
               "id": "m1-sc1",
@@ -105,50 +105,43 @@
               "id": "m2-s1",
               "type": "text-graphic-split",
               "title": "Celery & Cereals",
-              "content": "## 1. Celery\n- **Found in**: Stocks, soups, salads, spice mixes, Marmite.\n- **Includes**: Stalks, leaves, seeds, and celeriac.\n\n## 2. Cereals containing Gluten\n- **Wheat**: Bread, pasta, cakes, soy sauce, batter.\n- **Rye**: Bread, crackers.\n- **Barley**: Beer, malt vinegar, soups.\n- **Oats**: Often contaminated with gluten (unless certified GF).\n- **Note**: Rice, corn, and potatoes are naturally gluten-free.",
-              "mediaUrl": "/images/placeholder-celery.png"
+              "content": "## 1. Celery\n- **Found in**: Stocks, soups, salads, spice mixes, Marmite.\n- **Includes**: Stalks, leaves, seeds, and celeriac.\n\n## 2. Cereals containing Gluten\n- **Wheat**: Bread, pasta, cakes, soy sauce, batter.\n- **Rye**: Bread, crackers.\n- **Barley**: Beer, malt vinegar, soups.\n- **Oats**: Often contaminated with gluten (unless certified GF).\n- **Note**: Rice, corn, and potatoes are naturally gluten-free."
             },
             {
               "id": "m2-s2",
               "type": "text-graphic-split",
               "title": "Crustaceans & Eggs",
-              "content": "## 3. Crustaceans\n- **Examples**: Prawns, crabs, lobster, crayfish, shrimp, scampi.\n- **Found in**: Thai curry pastes, fish soups, paella.\n\n## 4. Eggs\n- **Found in**: Cakes, mayonnaise, mousses, pasta, quiche, glazed buns.\n- **Note**: Watch out for dried egg powder in mixes.",
-              "mediaUrl": "/images/placeholder-crustaceans.png"
+              "content": "## 3. Crustaceans\n- **Examples**: Prawns, crabs, lobster, crayfish, shrimp, scampi.\n- **Found in**: Thai curry pastes, fish soups, paella.\n\n## 4. Eggs\n- **Found in**: Cakes, mayonnaise, mousses, pasta, quiche, glazed buns.\n- **Note**: Watch out for dried egg powder in mixes."
             },
             {
               "id": "m2-s3",
               "type": "text-graphic-split",
               "title": "Fish & Lupin",
-              "content": "## 5. Fish\n- **Found in**: Fish sauce (Thai/Vietnamese), Worcestershire sauce, Caesar dressing, stock cubes.\n\n## 6. Lupin\n- **What is it?**: A flower/legume. Seeds are crushed to make flour.\n- **Found in**: Some breads, pastries, and pasta (often used as a soya alternative).",
-              "mediaUrl": "/images/placeholder-fish.png"
+              "content": "## 5. Fish\n- **Found in**: Fish sauce (Thai/Vietnamese), Worcestershire sauce, Caesar dressing, stock cubes.\n\n## 6. Lupin\n- **What is it?**: A flower/legume. Seeds are crushed to make flour.\n- **Found in**: Some breads, pastries, and pasta (often used as a soya alternative)."
             },
             {
               "id": "m2-s4",
               "type": "text-graphic-split",
               "title": "Milk & Molluscs",
-              "content": "## 7. Milk\n- **Found in**: Butter, cheese, cream, yogurt, chocolate, glazed buns, powdered soups.\n- **Note**: Lactose-free milk still contains milk protein (casein), so it is **NOT** safe for milk allergy sufferers.\n\n## 8. Molluscs\n- **Examples**: Mussels, clams, oysters, scallops, snails, squid, octopus.\n- **Found in**: Oyster sauce, fish stews.",
-              "mediaUrl": "/images/placeholder-milk.png"
+              "content": "## 7. Milk\n- **Found in**: Butter, cheese, cream, yogurt, chocolate, glazed buns, powdered soups.\n- **Note**: Lactose-free milk still contains milk protein (casein), so it is **NOT** safe for milk allergy sufferers.\n\n## 8. Molluscs\n- **Examples**: Mussels, clams, oysters, scallops, snails, squid, octopus.\n- **Found in**: Oyster sauce, fish stews."
             },
             {
               "id": "m2-s5",
               "type": "text-graphic-split",
               "title": "Mustard & Nuts",
-              "content": "## 9. Mustard\n- **Forms**: Liquid, powder, and seeds.\n- **Found in**: Curries, marinades, salad dressings, sauces, soups.\n\n## 10. Nuts (Tree Nuts)\n- **Examples**: Almonds, hazelnuts, walnuts, cashews, pecans, brazils, pistachios, macadamia.\n- **Found in**: Pesto, marzipan, cakes, Asian dishes, ice cream.\n- **Note**: Peanuts are **NOT** tree nuts.",
-              "mediaUrl": "/images/placeholder-nuts.png"
+              "content": "## 9. Mustard\n- **Forms**: Liquid, powder, and seeds.\n- **Found in**: Curries, marinades, salad dressings, sauces, soups.\n\n## 10. Nuts (Tree Nuts)\n- **Examples**: Almonds, hazelnuts, walnuts, cashews, pecans, brazils, pistachios, macadamia.\n- **Found in**: Pesto, marzipan, cakes, Asian dishes, ice cream.\n- **Note**: Peanuts are **NOT** tree nuts."
             },
             {
               "id": "m2-s6",
               "type": "text-graphic-split",
               "title": "Peanuts & Sesame",
-              "content": "## 11. Peanuts\n- **Type**: A legume (grown underground).\n- **Found in**: Satay sauce, cakes, biscuits, groundnut oil, curry pastes.\n- **Note**: Refined peanut oil *may* be safe, but unrefined is not. Always check.\n\n## 12. Sesame Seeds\n- **Found in**: Hummus (tahini), bread rolls, stir-fries, gomashio.",
-              "mediaUrl": "/images/placeholder-peanuts.png"
+              "content": "## 11. Peanuts\n- **Type**: A legume (grown underground).\n- **Found in**: Satay sauce, cakes, biscuits, groundnut oil, curry pastes.\n- **Note**: Refined peanut oil *may* be safe, but unrefined is not. Always check.\n\n## 12. Sesame Seeds\n- **Found in**: Hummus (tahini), bread rolls, stir-fries, gomashio."
             },
             {
               "id": "m2-s7",
               "type": "text-graphic-split",
               "title": "Soya & Sulphites",
-              "content": "## 13. Soya\n- **Found in**: Tofu, edamame, soy sauce, miso, textured vegetable protein (vegetarian mince), bean curd.\n\n## 14. Sulphur Dioxide (Sulphites)\n- **Use**: A preservative.\n- **Found in**: Dried fruit (apricots, raisins), wine, beer, soft drinks, sausages, burgers.\n- **Limit**: Must be declared if >10mg/kg.",
-              "mediaUrl": "/images/placeholder-soya.png"
+              "content": "## 13. Soya\n- **Found in**: Tofu, edamame, soy sauce, miso, textured vegetable protein (vegetarian mince), bean curd.\n\n## 14. Sulphur Dioxide (Sulphites)\n- **Use**: A preservative.\n- **Found in**: Dried fruit (apricots, raisins), wine, beer, soft drinks, sausages, burgers.\n- **Limit**: Must be declared if >10mg/kg."
             },
             {
               "id": "m2-sc1",
@@ -192,15 +185,13 @@
               "id": "m3-s1",
               "type": "text-graphic-split",
               "title": "How it Spreads",
-              "content": "## Direct vs Indirect\n\n- **Direct**: Removing nuts from a salad but serving the salad (traces remain).\n- **Indirect**: Using a knife to cut peanut butter toast, then wiping it and using it for a cheese sandwich.\n- **Fryers**: Cooking chips in the same oil as battered fish (Gluten/Fish contamination).\n- **Steam**: Frothing milk for a cappuccino on a wand used for soy milk.",
-              "mediaUrl": "/images/placeholder-cross-contamination.png"
+              "content": "## Direct vs Indirect\n\n- **Direct**: Removing nuts from a salad but serving the salad (traces remain).\n- **Indirect**: Using a knife to cut peanut butter toast, then wiping it and using it for a cheese sandwich.\n- **Fryers**: Cooking chips in the same oil as battered fish (Gluten/Fish contamination).\n- **Steam**: Frothing milk for a cappuccino on a wand used for soy milk."
             },
             {
               "id": "m3-s2",
               "type": "text-graphic-split",
               "title": "Control Measures",
-              "content": "## The Purple Rule\nPurple is the standard colour for 'Allergen Free' equipment in kitchens.\n\n### Best Practices:\n- **Storage**: Store allergens in sealed containers, ideally below non-allergens (to prevent spills).\n- **Hand Washing**: Wash hands thoroughly before preparing an allergen-free meal.\n- **Equipment**: Use separate chopping boards, knives, and pans.\n- **Cleaning**: A 'quick wipe' is not enough. Use a two-stage clean (clean then sanitise) with a fresh cloth.",
-              "mediaUrl": "/images/placeholder-purple.png"
+              "content": "## The Purple Rule\nPurple is the standard colour for 'Allergen Free' equipment in kitchens.\n\n### Best Practices:\n- **Storage**: Store allergens in sealed containers, ideally below non-allergens (to prevent spills).\n- **Hand Washing**: Wash hands thoroughly before preparing an allergen-free meal.\n- **Equipment**: Use separate chopping boards, knives, and pans.\n- **Cleaning**: A 'quick wipe' is not enough. Use a two-stage clean (clean then sanitise) with a fresh cloth."
             },
             {
               "id": "m3-sc1",
@@ -244,8 +235,7 @@
               "id": "m4-s1",
               "type": "text-graphic-split",
               "title": "Taking the Order",
-              "content": "## Never Guess\n\nIf a customer mentions an allergy:\n1.  **Listen**: Take it seriously.\n2.  **Check**: Consult the Allergen Matrix or Chef. Do not rely on memory.\n3.  **Confirm**: Tell the kitchen clearly (\"Table 4, Severe Nut Allergy\").\n4.  **Deliver**: Ensure the meal goes to the right person.\n\n### \"May Contain\"\nManufacturers use this to warn of cross-contamination risks in their factories (e.g., \"May contain traces of nuts\"). You must pass this information to the customer so they can decide.",
-              "mediaUrl": "/images/placeholder-order.png"
+              "content": "## Never Guess\n\nIf a customer mentions an allergy:\n1.  **Listen**: Take it seriously.\n2.  **Check**: Consult the Allergen Matrix or Chef. Do not rely on memory.\n3.  **Confirm**: Tell the kitchen clearly (\"Table 4, Severe Nut Allergy\").\n4.  **Deliver**: Ensure the meal goes to the right person.\n\n### \"May Contain\"\nManufacturers use this to warn of cross-contamination risks in their factories (e.g., \"May contain traces of nuts\"). You must pass this information to the customer so they can decide."
             },
             {
               "id": "m4-sc1",
@@ -289,15 +279,13 @@
               "id": "m5-s1",
               "type": "text-graphic-split",
               "title": "Signs & Symptoms",
-              "content": "## Anaphylactic Shock\nA severe, life-threatening reaction.\n\n### Symptoms:\n- **Airway**: Swollen tongue, difficulty swallowing, throat tightness.\n- **Breathing**: Wheezing, difficulty breathing, noisy breathing.\n- **Circulation**: Pale/clammy skin, faintness, collapse.\n- **Skin**: Hives (nettle rash), flushing, swelling (angioedema).\n- **Other**: Sense of impending doom.",
-              "mediaUrl": "/images/placeholder-anaphylaxis.png"
+              "content": "## Anaphylactic Shock\nA severe, life-threatening reaction.\n\n### Symptoms:\n- **Airway**: Swollen tongue, difficulty swallowing, throat tightness.\n- **Breathing**: Wheezing, difficulty breathing, noisy breathing.\n- **Circulation**: Pale/clammy skin, faintness, collapse.\n- **Skin**: Hives (nettle rash), flushing, swelling (angioedema).\n- **Other**: Sense of impending doom."
             },
             {
               "id": "m5-s2",
               "type": "text-graphic-split",
               "title": "Action Plan",
-              "content": "## What to Do\n\n1.  **Call 999**: Ask for an ambulance and say \"Anaphylaxis\".\n2.  **EpiPen**: If the patient has an Adrenaline Auto-Injector (AAI), help them use it. Usually injected into the outer thigh.\n3.  **Position**: Lie the patient flat with legs raised. **Do not stand them up** (this can stop the heart).\n4.  **Repeat**: If no improvement after 5 minutes, use a second AAI if available.",
-              "mediaUrl": "/images/placeholder-epipen.png"
+              "content": "## What to Do\n\n1.  **Call 999**: Ask for an ambulance and say \"Anaphylaxis\".\n2.  **EpiPen**: If the patient has an Adrenaline Auto-Injector (AAI), help them use it. Usually injected into the outer thigh.\n3.  **Position**: Lie the patient flat with legs raised. **Do not stand them up** (this can stop the heart).\n4.  **Repeat**: If no improvement after 5 minutes, use a second AAI if available."
             },
             {
               "id": "m5-sc1",

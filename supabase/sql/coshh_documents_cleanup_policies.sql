@@ -1,31 +1,31 @@
--- Create COSHH Documents Storage Bucket
--- This migration creates the coshh-documents storage bucket for COSHH data sheets
--- Run this in Supabase SQL Editor
+-- Cleanup and Fix COSHH Documents Storage Policies
+-- This removes duplicate policies and ensures only the correct ones exist
 
--- Step 1: Check if bucket already exists
-SELECT * FROM storage.buckets WHERE id = 'coshh-documents';
+-- Step 1: Remove all existing COSHH policies (including duplicates)
+DROP POLICY IF EXISTS "Users can upload COSHH documents for their company" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view COSHH documents from their company" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update COSHH documents from their company" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete COSHH documents from their company" ON storage.objects;
 
--- Step 2: Create the bucket (if it doesn't exist)
--- Note: If the INSERT fails, you may need to create the bucket manually in the Supabase dashboard
--- Go to Storage > Create bucket > Name: coshh-documents > Public: NO > File size: 10MB
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
-  'coshh-documents',
-  'coshh-documents',
-  false, -- Private bucket (authenticated access only)
-  10485760, -- 10MB limit (10 * 1024 * 1024)
-  ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-)
-ON CONFLICT (id) DO NOTHING;
+-- Remove any auto-generated duplicate policies (they have random suffixes)
+DO $$
+DECLARE
+    policy_record RECORD;
+BEGIN
+    FOR policy_record IN 
+        SELECT policyname 
+        FROM pg_policies 
+        WHERE schemaname = 'storage' 
+        AND tablename = 'objects'
+        AND policyname LIKE '%COSHH documents%'
+    LOOP
+        EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects', policy_record.policyname);
+    END LOOP;
+END $$;
 
--- Step 3: Verify bucket was created
-SELECT * FROM storage.buckets WHERE id = 'coshh-documents';
-
--- Step 3: Create RLS Policies for COSHH Documents Storage
--- These policies ensure users can only access files from their own company
+-- Step 2: Create clean policies (one for each operation)
 
 -- Allow authenticated users to upload files to their company folder
-DROP POLICY IF EXISTS "Users can upload COSHH documents for their company" ON storage.objects;
 CREATE POLICY "Users can upload COSHH documents for their company"
 ON storage.objects
 FOR INSERT
@@ -40,7 +40,6 @@ WITH CHECK (
 );
 
 -- Allow authenticated users to view files from their company
-DROP POLICY IF EXISTS "Users can view COSHH documents from their company" ON storage.objects;
 CREATE POLICY "Users can view COSHH documents from their company"
 ON storage.objects
 FOR SELECT
@@ -55,7 +54,6 @@ USING (
 );
 
 -- Allow authenticated users to update files from their company
-DROP POLICY IF EXISTS "Users can update COSHH documents from their company" ON storage.objects;
 CREATE POLICY "Users can update COSHH documents from their company"
 ON storage.objects
 FOR UPDATE
@@ -78,7 +76,6 @@ WITH CHECK (
 );
 
 -- Allow authenticated users to delete files from their company
-DROP POLICY IF EXISTS "Users can delete COSHH documents from their company" ON storage.objects;
 CREATE POLICY "Users can delete COSHH documents from their company"
 ON storage.objects
 FOR DELETE
@@ -92,10 +89,20 @@ USING (
   )
 );
 
--- Step 4: Verify policies were created
--- SELECT policyname, cmd
--- FROM pg_policies
--- WHERE schemaname = 'storage' 
--- AND tablename = 'objects'
--- AND policyname LIKE '%COSHH%';
+-- Step 3: Verify only the correct policies exist
+SELECT 
+  policyname, 
+  cmd,
+  roles
+FROM pg_policies
+WHERE schemaname = 'storage' 
+AND tablename = 'objects'
+AND policyname LIKE '%COSHH%'
+ORDER BY policyname;
+
+-- You should see exactly 4 policies:
+-- 1. Users can delete COSHH documents from their company (DELETE)
+-- 2. Users can update COSHH documents from their company (UPDATE)
+-- 3. Users can upload COSHH documents for their company (INSERT)
+-- 4. Users can view COSHH documents from their company (SELECT)
 

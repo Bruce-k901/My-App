@@ -69,6 +69,13 @@ export default function UnifiedPlanSelection({
 
   // Selection state
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(currentPlanId);
+  // Smart Sensors: separate hardware pack and software tier
+  const [selectedSmartSensorPack, setSelectedSmartSensorPack] = useState<string | null>(null);
+  const [selectedSmartSensorSoftware, setSelectedSmartSensorSoftware] = useState<string | null>(null);
+  // Asset Tags: separate tag pack and software tier
+  const [selectedAssetTagPack, setSelectedAssetTagPack] = useState<string | null>(null);
+  const [selectedAssetTagSoftware, setSelectedAssetTagSoftware] = useState<string | null>(null);
+  // Backward compatibility: old naming
   const [selectedSmartSensor, setSelectedSmartSensor] = useState<string | null>(null);
   const [selectedMaintenanceKit, setSelectedMaintenanceKit] = useState<string | null>(null);
   const [selectedOtherAddons, setSelectedOtherAddons] = useState<Set<string>>(new Set());
@@ -117,6 +124,20 @@ export default function UnifiedPlanSelection({
 
       setAddons(addonsWithFeatures);
 
+      // Calculate addon groups for debugging
+      const smartSensorPacks = addonsWithFeatures.filter(a => a.name.startsWith('smart_sensor_pack_'));
+      const smartSensorSoftware = addonsWithFeatures.filter(a => a.name.startsWith('smart_sensor_software_'));
+      const assetTagPacks = addonsWithFeatures.filter(a => a.name.startsWith('maintenance_kit_') || a.name.startsWith('asset_tags_pack_'));
+      const assetTagSoftware = addonsWithFeatures.filter(a => a.name.startsWith('asset_tags_software_'));
+
+      console.log('🔍 Addon Debug Info:');
+      console.log('Total addons loaded:', addonsWithFeatures.length);
+      console.log('Smart Sensor Packs:', smartSensorPacks.length, smartSensorPacks.map(a => a.name));
+      console.log('Smart Sensor Software:', smartSensorSoftware.length, smartSensorSoftware.map(a => a.name));
+      console.log('Asset Tag Packs:', assetTagPacks.length, assetTagPacks.map(a => a.name));
+      console.log('Asset Tag Software:', assetTagSoftware.length, assetTagSoftware.map(a => a.name));
+      console.log('All addon names:', addonsWithFeatures.map(a => a.name));
+
       // Load sites
       const { data: sitesData, error: sitesError } = await supabase
         .from('sites')
@@ -145,15 +166,27 @@ export default function UnifiedPlanSelection({
       if (purchasedData) {
         purchasedData.forEach((purchase: any) => {
           const addonName = purchase.addon?.name;
-          if (addonName?.startsWith('smart_sensor_')) {
-            setSelectedSmartSensor(purchase.addon_id);
-          } else if (addonName?.startsWith('maintenance_kit_')) {
-            setSelectedMaintenanceKit(purchase.addon_id);
+          // Handle new naming conventions
+          if (addonName?.startsWith('smart_sensor_pack_')) {
+            setSelectedSmartSensorPack(purchase.addon_id);
+          } else if (addonName?.startsWith('smart_sensor_software_')) {
+            setSelectedSmartSensorSoftware(purchase.addon_id);
+          } else if (addonName?.startsWith('asset_tags_pack_') || addonName?.startsWith('maintenance_kit_')) {
+            setSelectedAssetTagPack(purchase.addon_id);
+          } else if (addonName?.startsWith('asset_tags_software_')) {
+            setSelectedAssetTagSoftware(purchase.addon_id);
           } else {
             setSelectedOtherAddons(prev => new Set(prev).add(purchase.addon_id));
           }
         });
       }
+
+      // Debug: Log loaded addons
+      console.log('Loaded addons:', addonsWithFeatures.length);
+      console.log('Smart Sensor Packs:', smartSensorPackAddons.length);
+      console.log('Smart Sensor Software:', smartSensorSoftwareAddons.length);
+      console.log('Asset Tag Packs:', assetTagPackAddons.length);
+      console.log('Asset Tag Software:', assetTagsSoftwareAddons.length);
 
     } catch (error: any) {
       console.error('Error loading data:', error);
@@ -197,74 +230,147 @@ export default function UnifiedPlanSelection({
 
       const currentAddonIds = new Set(currentPurchases?.map(p => p.addon_id) || []);
 
-      // 3. Handle Smart Sensor changes
-      const currentSensor = currentPurchases?.find((p: any) => p.addon?.name?.startsWith('smart_sensor_'));
-      if (selectedSmartSensor && selectedSmartSensor !== currentSensor?.addon_id) {
-        // Cancel old sensor if exists
-        if (currentSensor) {
+      // 3. Handle Smart Sensor Hardware Pack (one-time)
+      const currentSensorPack = currentPurchases?.find((p: any) => 
+        p.addon?.name?.startsWith('smart_sensor_pack_')
+      );
+      if (selectedSmartSensorPack && selectedSmartSensorPack !== currentSensorPack?.addon_id) {
+        // Cancel old pack if exists
+        if (currentSensorPack) {
           await fetch('/api/billing/cancel-addon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ purchase_id: currentSensor.id }),
+            body: JSON.stringify({ purchase_id: currentSensorPack.id }),
           });
         }
-        // Purchase new sensor
-        const totalSensorQty = Object.values(sensorQuantities).reduce((sum, qty) => sum + qty, 0);
-        const avgQty = Math.round(totalSensorQty / sites.length) || 1;
+        // Purchase new pack (one-time, quantity 1)
         await fetch('/api/billing/purchase-addon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             company_id: companyId,
-            addon_id: selectedSmartSensor,
-            quantity: avgQty,
-            per_site_quantities: sensorQuantities,
+            addon_id: selectedSmartSensorPack,
+            quantity: 1,
           }),
         });
-      } else if (!selectedSmartSensor && currentSensor) {
-        // Remove sensor
+      } else if (!selectedSmartSensorPack && currentSensorPack) {
+        // Remove pack
         await fetch('/api/billing/cancel-addon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ purchase_id: currentSensor.id }),
+          body: JSON.stringify({ purchase_id: currentSensorPack.id }),
         });
       }
 
-      // 4. Handle Maintenance Kit changes
-      const currentKit = currentPurchases?.find((p: any) => p.addon?.name?.startsWith('maintenance_kit_'));
-      if (selectedMaintenanceKit && selectedMaintenanceKit !== currentKit?.addon_id) {
-        if (currentKit) {
+      // 4. Handle Smart Sensor Software Tier (monthly per site)
+      const currentSensorSoftware = currentPurchases?.find((p: any) => 
+        p.addon?.name?.startsWith('smart_sensor_software_') || 
+        (p.addon?.name?.startsWith('smart_sensor_') && !p.addon?.name?.startsWith('smart_sensor_pack_'))
+      );
+      if (selectedSmartSensorSoftware && selectedSmartSensorSoftware !== currentSensorSoftware?.addon_id) {
+        // Cancel old software if exists
+        if (currentSensorSoftware) {
           await fetch('/api/billing/cancel-addon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ purchase_id: currentKit.id }),
+            body: JSON.stringify({ purchase_id: currentSensorSoftware.id }),
           });
         }
-        const totalKitQty = Object.values(kitQuantities).reduce((sum, qty) => sum + qty, 0);
-        const avgQty = Math.round(totalKitQty / sites.length) || 1;
+        // Purchase new software (monthly per site)
         await fetch('/api/billing/purchase-addon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             company_id: companyId,
-            addon_id: selectedMaintenanceKit,
-            quantity: avgQty,
-            per_site_quantities: kitQuantities,
+            addon_id: selectedSmartSensorSoftware,
+            quantity: siteCount,
           }),
         });
-      } else if (!selectedMaintenanceKit && currentKit) {
+      } else if (!selectedSmartSensorSoftware && currentSensorSoftware) {
+        // Remove software
         await fetch('/api/billing/cancel-addon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ purchase_id: currentKit.id }),
+          body: JSON.stringify({ purchase_id: currentSensorSoftware.id }),
         });
       }
 
-      // 5. Handle other addons
-      const otherCurrentPurchases = currentPurchases?.filter((p: any) => 
-        !p.addon?.name?.startsWith('smart_sensor_') && 
-        !p.addon?.name?.startsWith('maintenance_kit_')
-      ) || [];
+      // 5. Handle Asset Tag Pack (one-time)
+      const currentTagPack = currentPurchases?.find((p: any) => 
+        p.addon?.name?.startsWith('asset_tags_pack_') || 
+        p.addon?.name?.startsWith('maintenance_kit_')
+      );
+      if (selectedAssetTagPack && selectedAssetTagPack !== currentTagPack?.addon_id) {
+        // Cancel old pack if exists
+        if (currentTagPack) {
+          await fetch('/api/billing/cancel-addon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ purchase_id: currentTagPack.id }),
+          });
+        }
+        // Purchase new pack (one-time, quantity 1)
+        await fetch('/api/billing/purchase-addon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            company_id: companyId,
+            addon_id: selectedAssetTagPack,
+            quantity: 1,
+          }),
+        });
+      } else if (!selectedAssetTagPack && currentTagPack) {
+        // Remove pack
+        await fetch('/api/billing/cancel-addon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ purchase_id: currentTagPack.id }),
+        });
+      }
+
+      // 6. Handle Asset Tags Software Tier (monthly per site)
+      const currentTagSoftware = currentPurchases?.find((p: any) => 
+        p.addon?.name?.startsWith('asset_tags_software_')
+      );
+      if (selectedAssetTagSoftware && selectedAssetTagSoftware !== currentTagSoftware?.addon_id) {
+        // Cancel old software if exists
+        if (currentTagSoftware) {
+          await fetch('/api/billing/cancel-addon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ purchase_id: currentTagSoftware.id }),
+          });
+        }
+        // Purchase new software (monthly per site)
+        await fetch('/api/billing/purchase-addon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            company_id: companyId,
+            addon_id: selectedAssetTagSoftware,
+            quantity: siteCount,
+          }),
+        });
+      } else if (!selectedAssetTagSoftware && currentTagSoftware) {
+        // Remove software
+        await fetch('/api/billing/cancel-addon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ purchase_id: currentTagSoftware.id }),
+        });
+      }
+
+      // 7. Handle other addons (exclude all tiered addons)
+      const otherCurrentPurchases = currentPurchases?.filter((p: any) => {
+        const name = p.addon?.name || '';
+        return !name.startsWith('smart_sensor_pack_') &&
+               !name.startsWith('smart_sensor_software_') &&
+               !name.startsWith('smart_sensor_') &&
+               !name.startsWith('asset_tags_pack_') &&
+               !name.startsWith('asset_tags_software_') &&
+               !name.startsWith('maintenance_kit_') &&
+               !name.startsWith('maintenance_');
+      }) || [];
 
       // Remove deselected addons
       for (const purchase of otherCurrentPurchases) {
@@ -320,8 +426,46 @@ export default function UnifiedPlanSelection({
       }
     }
 
-    // Smart Sensor costs
-    if (selectedSmartSensor) {
+    // Smart Sensor Hardware Pack (one-time)
+    if (selectedSmartSensorPack) {
+      const pack = addons.find(a => a.id === selectedSmartSensorPack);
+      if (pack && pack.hardware_cost) {
+        oneTimeCost += pack.hardware_cost;
+      } else if (pack && pack.price) {
+        oneTimeCost += pack.price;
+      }
+    }
+
+    // Smart Sensor Software Tier (monthly per site)
+    if (selectedSmartSensorSoftware) {
+      const software = addons.find(a => a.id === selectedSmartSensorSoftware);
+      if (software) {
+        const monthlyCost = software.monthly_management_cost || software.price || 0;
+        addonMonthlyCost += monthlyCost * siteCount;
+      }
+    }
+
+    // Asset Tag Pack (one-time)
+    if (selectedAssetTagPack) {
+      const pack = addons.find(a => a.id === selectedAssetTagPack);
+      if (pack && pack.hardware_cost) {
+        oneTimeCost += pack.hardware_cost;
+      } else if (pack && pack.price) {
+        oneTimeCost += pack.price;
+      }
+    }
+
+    // Asset Tags Software Tier (monthly per site)
+    if (selectedAssetTagSoftware) {
+      const software = addons.find(a => a.id === selectedAssetTagSoftware);
+      if (software) {
+        const monthlyCost = software.monthly_management_cost || software.price || 0;
+        addonMonthlyCost += monthlyCost * siteCount;
+      }
+    }
+
+    // Backward compatibility: Old smart sensor addons (combined hardware + software)
+    if (selectedSmartSensor && !selectedSmartSensorPack && !selectedSmartSensorSoftware) {
       const sensor = addons.find(a => a.id === selectedSmartSensor);
       if (sensor) {
         // Hardware cost (one-time)
@@ -336,8 +480,8 @@ export default function UnifiedPlanSelection({
       }
     }
 
-    // Maintenance Kit costs
-    if (selectedMaintenanceKit) {
+    // Backward compatibility: Old maintenance kit addons
+    if (selectedMaintenanceKit && !selectedAssetTagPack) {
       const kit = addons.find(a => a.id === selectedMaintenanceKit);
       if (kit && kit.hardware_cost) {
         const totalKits = Object.values(kitQuantities).reduce((sum, qty) => sum + qty, 0);
@@ -367,29 +511,60 @@ export default function UnifiedPlanSelection({
 
   const costs = calculateCosts();
 
-  // Get addon groups
-  const smartSensorAddons = addons
-    .filter(a => a.name.startsWith('smart_sensor_'))
+  // Get addon groups - Updated for new pricing structure
+  // Smart Sensor Hardware Packs (one-time)
+  const smartSensorPackAddons = addons
+    .filter(a => a.name.startsWith('smart_sensor_pack_'))
     .sort((a, b) => {
-      const tierOrder = { 'basic': 1, 'pro': 2, 'observatory': 3 };
+      const tierOrder = { 'starter': 1, 'standard': 2, 'professional': 3 };
       const aTier = a.name.split('_').pop() || '';
       const bTier = b.name.split('_').pop() || '';
       return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
     });
 
-  const maintenanceKitAddons = addons
-    .filter(a => a.name.startsWith('maintenance_kit_'))
+  // Smart Sensor Software Tiers (monthly per site) - ONLY new naming convention
+  const smartSensorSoftwareAddons = addons
+    .filter(a => a.name.startsWith('smart_sensor_software_'))
     .sort((a, b) => {
-      const tierOrder = { 'basic': 1, 'pro': 2, 'observatory': 3 };
+      const tierOrder = { 'essential': 1, 'professional': 2, 'business': 3 };
       const aTier = a.name.split('_').pop() || '';
       const bTier = b.name.split('_').pop() || '';
       return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
     });
 
-  const otherAddons = addons.filter(a => 
-    !a.name.startsWith('smart_sensor_') && 
-    !a.name.startsWith('maintenance_kit_')
-  );
+  // Asset Tag Packs (one-time) - backward compatible with maintenance_kit_ (but NOT maintenance_hardware_kit)
+  const assetTagPackAddons = addons
+    .filter(a => a.name.startsWith('maintenance_kit_') || 
+                 a.name.startsWith('asset_tags_pack_'))
+    .sort((a, b) => {
+      const tierOrder = { 'basic': 1, 'starter': 1, 'pro': 2, 'professional': 2, 'observatory': 3, 'premium': 3 };
+      const aTier = a.name.split('_').pop() || '';
+      const bTier = b.name.split('_').pop() || '';
+      return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
+    });
+
+  // Asset Tags Software Tiers (monthly per site)
+  const assetTagsSoftwareAddons = addons
+    .filter(a => a.name.startsWith('asset_tags_software_'))
+    .sort((a, b) => {
+      const tierOrder = { 'essential': 1, 'professional': 2, 'business': 3 };
+      const aTier = a.name.split('_').pop() || '';
+      const bTier = b.name.split('_').pop() || '';
+      return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
+    });
+
+  const otherAddons = addons.filter(a => {
+    const name = a.name;
+    // Exclude all tiered addons (both old and new naming)
+    // Also exclude maintenance_hardware_kit completely
+    return !name.startsWith('smart_sensor_pack_') &&
+           !name.startsWith('smart_sensor_software_') &&
+           !name.startsWith('smart_sensor_') && // Exclude all old smart_sensor_ addons (bundles, basic, pro, etc.)
+           !name.startsWith('maintenance_kit_') &&
+           !name.startsWith('maintenance_hardware_kit') && // Exclude maintenance_hardware_kit completely
+           !name.startsWith('asset_tags_pack_') &&
+           !name.startsWith('asset_tags_software_');
+  });
 
   if (loading) {
     return (
@@ -478,16 +653,16 @@ export default function UnifiedPlanSelection({
                   </ul>
 
                   {plan.features.length > 3 && (
-                    <button
+                    <div
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowPlanDetails(showPlanDetails === plan.id ? null : plan.id);
                       }}
-                      className="mt-3 text-sm text-[#EC4899] hover:text-[#EC4899]/80 flex items-center gap-1"
+                      className="mt-3 text-sm text-[#EC4899] hover:text-[#EC4899]/80 flex items-center gap-1 cursor-pointer"
                     >
                       {showPlanDetails === plan.id ? 'Show less' : `+${plan.features.length - 3} more features`}
                       {showPlanDetails === plan.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    </button>
+                    </div>
                   )}
 
                   {showPlanDetails === plan.id && (
@@ -506,270 +681,419 @@ export default function UnifiedPlanSelection({
           </div>
         </div>
 
-        {/* STEP 2: Smart Sensor Bundles */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm">
-              2
+        {/* STEP 2: Smart Temperature Sensors */}
+        {/* Debug: Show section even if no addons for testing */}
+        {true && (
+          <div className="space-y-6">
+          <div className="bg-gradient-to-r from-[#EC4899]/10 to-transparent border-l-4 border-[#EC4899] rounded-r-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="w-5 h-5 text-[#EC4899]" />
+              <h3 className="text-2xl font-bold text-white">Smart Temperature Sensors</h3>
             </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-white">Smart Sensor Bundles</h3>
-              <p className="text-sm text-white/60">Optional - Choose ONE tier for temperature monitoring</p>
+            <p className="text-white/70 text-sm ml-7 mb-4">
+              Plug-and-play temperature monitoring for fridges, freezers, and prep areas. Automatic logging, instant breach alerts, and EHO-ready compliance reports. Stop worrying about stock losses.
+            </p>
+            <div className="ml-7 mt-4">
+              <div className="bg-gradient-to-r from-[#EC4899]/10 to-blue-500/10 rounded-xl p-4 border border-[#EC4899]/20">
+                <p className="text-sm font-semibold text-white mb-2 text-center">How It Works:</p>
+                <p className="text-xs text-gray-300 text-center">
+                  Choose <strong className="text-white">one hardware pack</strong> (physical sensors) + <strong className="text-white">one software tier</strong> (monitoring features). The hardware pack is a one-time purchase, and the software tier is billed monthly per site.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-white/80">
-              <p className="font-medium text-white mb-1">How Smart Sensors Work</p>
-              <p>Hardware cost is <strong>one-time per sensor</strong>. Monthly management is <strong>per site</strong> (not per sensor). You can configure different quantities for each site below.</p>
-            </div>
-          </div>
+          {/* Step 1: Hardware Packs */}
+          {smartSensorPackAddons.length > 0 ? (
+            <div className="space-y-4">
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-white mb-2">Step 1: Choose Your Hardware Pack</h4>
+                <p className="text-white/60 text-sm">One-time purchase • Free replacement for faulty units within warranty period</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {smartSensorPackAddons.map((addon) => {
+                  const isSelected = selectedSmartSensorPack === addon.id;
+                  const tier = addon.name.split('_').pop() || '';
+                  const tierIcons = { 'starter': TrendingUp, 'standard': Sparkles, 'professional': Award };
+                  const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Zap;
+                  const isMostPopular = tier === 'standard';
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {smartSensorAddons.map((addon) => {
-              const isSelected = selectedSmartSensor === addon.id;
-              const tier = addon.name.split('_').pop() || '';
-              const tierIcons = { 'basic': TrendingUp, 'pro': Sparkles, 'observatory': Award };
-              const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Zap;
-              const isRecommended = tier === 'pro';
+                  return (
+                    <button
+                      key={addon.id}
+                      onClick={() => setSelectedSmartSensorPack(isSelected ? null : addon.id)}
+                      className={`relative text-left p-5 rounded-xl border-2 transition-all ${
+                        isSelected
+                          ? 'border-[#EC4899] bg-[#EC4899]/10 shadow-[0_0_20px_rgba(236,72,153,0.3)]'
+                          : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {isMostPopular && !isSelected && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 bg-gradient-to-r from-[#EC4899] to-purple-500 text-white text-xs font-bold rounded-full">
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
 
-              const totalSensors = Object.values(sensorQuantities).reduce((sum, qty) => sum + qty, 0);
-              const hardwareCost = addon.hardware_cost ? addon.hardware_cost * totalSensors : 0;
-              const monthlyCost = addon.monthly_management_cost ? addon.monthly_management_cost * siteCount : 0;
+                      {isSelected && (
+                        <div className="absolute top-4 right-4">
+                          <CheckCircle2 className="w-6 h-6 text-[#EC4899]" />
+                        </div>
+                      )}
 
-              return (
-                <button
-                  key={addon.id}
-                  onClick={() => setSelectedSmartSensor(isSelected ? null : addon.id)}
-                  className={`relative text-left p-5 rounded-xl border-2 transition-all ${
-                    isSelected
-                      ? 'border-[#EC4899] bg-[#EC4899]/10 shadow-[0_0_20px_rgba(236,72,153,0.3)]'
-                      : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
-                  }`}
-                >
-                  {isRecommended && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="px-3 py-1 bg-gradient-to-r from-[#EC4899] to-purple-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3" />
-                        RECOMMENDED
-                      </span>
-                    </div>
-                  )}
-
-                  {isSelected && (
-                    <div className="absolute top-4 right-4">
-                      <CheckCircle2 className="w-6 h-6 text-[#EC4899]" />
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-[#EC4899]/20 rounded-lg">
-                      <TierIcon className="w-5 h-5 text-[#EC4899]" />
-                    </div>
-                    <h4 className="text-lg font-bold text-white capitalize">{tier}</h4>
-                  </div>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-white/60">Hardware</span>
-                      <span className="text-sm font-bold text-white">£{hardwareCost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-white/60">Monthly</span>
-                      <span className="text-sm font-bold text-[#EC4899]">£{monthlyCost.toFixed(2)}/mo</span>
-                    </div>
-                    <div className="pt-2 border-t border-white/10 text-xs text-white/50">
-                      {totalSensors} sensors × £{addon.hardware_cost?.toFixed(2)}<br/>
-                      {siteCount} sites × £{addon.monthly_management_cost?.toFixed(2)}/mo
-                    </div>
-                  </div>
-
-                  <ul className="space-y-1.5 text-xs text-white/70">
-                    {addon.features.slice(0, 3).map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Quantity Configuration */}
-          {selectedSmartSensor && sites.length > 0 && (
-            <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4">
-              <button
-                onClick={() => setExpandedSensorSites(!expandedSensorSites)}
-                className="w-full flex items-center justify-between text-white hover:text-white/80 transition-colors"
-              >
-                <span className="font-medium">Configure sensors per site ({sites.length} sites)</span>
-                {expandedSensorSites ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </button>
-
-              {expandedSensorSites && (
-                <div className="mt-4 space-y-3">
-                  {sites.map((site) => (
-                    <div key={site.id} className="flex items-center justify-between gap-4">
-                      <span className="text-sm text-white/70">{site.name}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setSensorQuantities(prev => ({
-                            ...prev,
-                            [site.id]: Math.max(0, (prev[site.id] || 1) - 1)
-                          }))}
-                          className="w-8 h-8 rounded bg-white/[0.05] backdrop-blur-md border border-[#EC4899]/50 hover:border-[#EC4899] hover:shadow-[0_0_12px_rgba(192,38,211,0.4)] text-white flex items-center justify-center transition-all duration-300"
-                        >
-                          -
-                        </button>
-                        <Input
-                          type="number"
-                          min="0"
-                          value={sensorQuantities[site.id] || 1}
-                          onChange={(e) => setSensorQuantities(prev => ({
-                            ...prev,
-                            [site.id]: Math.max(0, parseInt(e.target.value) || 0)
-                          }))}
-                          className="w-16 text-center"
-                        />
-                        <button
-                          onClick={() => setSensorQuantities(prev => ({
-                            ...prev,
-                            [site.id]: (prev[site.id] || 1) + 1
-                          }))}
-                          className="w-8 h-8 rounded bg-white/[0.05] backdrop-blur-md border border-[#EC4899]/50 hover:border-[#EC4899] hover:shadow-[0_0_12px_rgba(192,38,211,0.4)] text-white flex items-center justify-center transition-all duration-300"
-                        >
-                          +
-                        </button>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-2 bg-[#EC4899]/20 rounded-lg">
+                          <TierIcon className="w-5 h-5 text-[#EC4899]" />
+                        </div>
+                        <h4 className="text-lg font-bold text-white">{addon.display_name}</h4>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+
+                      <p className="text-sm text-white/70 mb-4">{addon.description}</p>
+
+                      <div className="mb-4">
+                        <div className="text-2xl font-bold text-white mb-1">
+                          £{addon.hardware_cost?.toFixed(0) || addon.price.toFixed(0)}
+                        </div>
+                        <div className="text-xs text-white/60">one-time</div>
+                      </div>
+
+                      {addon.features && addon.features.length > 0 && (
+                        <ul className="space-y-1.5 text-xs text-white/70">
+                          {addon.features.slice(0, 4).map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-white/[0.03] rounded-lg border border-white/10">
+              <p className="text-white/60 mb-2">No hardware packs available</p>
+              <p className="text-xs text-white/40">Addons: {addons.filter(a => a.name.startsWith('smart_sensor_pack_')).length} found</p>
             </div>
           )}
-        </div>
 
-        {/* STEP 3: Maintenance Kits */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm">
-              3
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-white">Maintenance Kits</h3>
-              <p className="text-sm text-white/60">Optional - Choose ONE tier for equipment tagging</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {maintenanceKitAddons.map((addon) => {
-              const isSelected = selectedMaintenanceKit === addon.id;
-              const tier = addon.name.split('_').pop() || '';
-              const tierIcons = { 'basic': Package, 'pro': Wrench, 'observatory': Shield };
-              const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Package;
-
-              const totalKits = Object.values(kitQuantities).reduce((sum, qty) => sum + qty, 0);
-              const hardwareCost = addon.hardware_cost ? addon.hardware_cost * totalKits : 0;
-
-              return (
-                <button
-                  key={addon.id}
-                  onClick={() => setSelectedMaintenanceKit(isSelected ? null : addon.id)}
-                  className={`relative text-left p-5 rounded-xl border-2 transition-all ${
-                    isSelected
-                      ? 'border-[#EC4899] bg-[#EC4899]/10 shadow-[0_0_20px_rgba(236,72,153,0.3)]'
-                      : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
-                  }`}
-                >
-                  {isSelected && (
-                    <div className="absolute top-4 right-4">
-                      <CheckCircle2 className="w-6 h-6 text-[#EC4899]" />
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-purple-500/20 rounded-lg">
-                      <TierIcon className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <h4 className="text-lg font-bold text-white capitalize">{tier}</h4>
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="text-2xl font-bold text-white">£{hardwareCost.toFixed(2)}</div>
-                    <div className="text-xs text-white/60 mt-1">
-                      {totalKits} tags × £{addon.hardware_cost?.toFixed(2)} (one-time)
-                    </div>
-                  </div>
-
-                  <ul className="space-y-1.5 text-xs text-white/70">
-                    {addon.features.slice(0, 3).map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Quantity Configuration */}
-          {selectedMaintenanceKit && sites.length > 0 && (
-            <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4">
-              <button
-                onClick={() => setExpandedKitSites(!expandedKitSites)}
-                className="w-full flex items-center justify-between text-white hover:text-white/80 transition-colors"
-              >
-                <span className="font-medium">Configure tags per site ({sites.length} sites)</span>
-                {expandedKitSites ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </button>
-
-              {expandedKitSites && (
-                <div className="mt-4 space-y-3">
-                  {sites.map((site) => (
-                    <div key={site.id} className="flex items-center justify-between gap-4">
-                      <span className="text-sm text-white/70">{site.name}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setKitQuantities(prev => ({
-                            ...prev,
-                            [site.id]: Math.max(0, (prev[site.id] || 1) - 1)
-                          }))}
-                          className="w-8 h-8 rounded bg-white/[0.05] backdrop-blur-md border border-[#EC4899]/50 hover:border-[#EC4899] hover:shadow-[0_0_12px_rgba(192,38,211,0.4)] text-white flex items-center justify-center transition-all duration-300"
-                        >
-                          -
-                        </button>
-                        <Input
-                          type="number"
-                          min="0"
-                          value={kitQuantities[site.id] || 1}
-                          onChange={(e) => setKitQuantities(prev => ({
-                            ...prev,
-                            [site.id]: Math.max(0, parseInt(e.target.value) || 0)
-                          }))}
-                          className="w-16 text-center"
-                        />
-                        <button
-                          onClick={() => setKitQuantities(prev => ({
-                            ...prev,
-                            [site.id]: (prev[site.id] || 1) + 1
-                          }))}
-                          className="w-8 h-8 rounded bg-white/[0.05] backdrop-blur-md border border-[#EC4899]/50 hover:border-[#EC4899] hover:shadow-[0_0_12px_rgba(192,38,211,0.4)] text-white flex items-center justify-center transition-all duration-300"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+          {/* Connecting Element */}
+          {smartSensorPackAddons.length > 0 && smartSensorSoftwareAddons.length > 0 && (
+            <div className="flex items-center justify-center my-4">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-gradient-to-r from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-16"></div>
+                <div className="bg-[#EC4899]/20 border border-[#EC4899]/40 rounded-full px-3 py-1.5">
+                  <span className="text-sm font-semibold text-white">+</span>
                 </div>
-              )}
+                <div className="h-px bg-gradient-to-l from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-16"></div>
+              </div>
             </div>
           )}
-        </div>
+
+          {/* Step 2: Software Tiers */}
+          {smartSensorSoftwareAddons.length > 0 ? (
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h4>
+                <p className="text-white/60 text-sm">Monthly per site • Cancel anytime • Works with any hardware pack</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {smartSensorSoftwareAddons.map((addon) => {
+                  const isSelected = selectedSmartSensorSoftware === addon.id;
+                  const tier = addon.name.split('_').pop() || '';
+                  const tierIcons = { 'essential': TrendingUp, 'professional': Sparkles, 'business': Award, 'basic': TrendingUp, 'pro': Sparkles, 'observatory': Award };
+                  const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Zap;
+                  const isMostPopular = tier === 'professional' || tier === 'pro';
+
+                  const monthlyCost = addon.monthly_management_cost ? addon.monthly_management_cost * siteCount : 0;
+
+                  return (
+                    <button
+                      key={addon.id}
+                      onClick={() => setSelectedSmartSensorSoftware(isSelected ? null : addon.id)}
+                      className={`relative text-left p-5 rounded-xl border-2 transition-all ${
+                        isSelected
+                          ? 'border-[#EC4899] bg-[#EC4899]/10 shadow-[0_0_20px_rgba(236,72,153,0.3)]'
+                          : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {isMostPopular && !isSelected && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 bg-gradient-to-r from-[#EC4899] to-purple-500 text-white text-xs font-bold rounded-full">
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
+
+                      {isSelected && (
+                        <div className="absolute top-4 right-4">
+                          <CheckCircle2 className="w-6 h-6 text-[#EC4899]" />
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-2 bg-[#EC4899]/20 rounded-lg">
+                          <TierIcon className="w-5 h-5 text-[#EC4899]" />
+                        </div>
+                        <h4 className="text-lg font-bold text-white">{addon.display_name}</h4>
+                      </div>
+
+                      <p className="text-sm text-white/70 mb-4">{addon.description}</p>
+
+                      <div className="mb-4">
+                        <div className="text-2xl font-bold text-white mb-1">
+                          £{addon.monthly_management_cost?.toFixed(0) || addon.price.toFixed(0)}
+                        </div>
+                        <div className="text-xs text-white/60">per site / month</div>
+                        {siteCount > 0 && (
+                          <div className="text-xs text-white/50 mt-1">
+                            {siteCount} sites × £{addon.monthly_management_cost?.toFixed(0) || addon.price.toFixed(0)} = £{monthlyCost.toFixed(2)}/mo
+                          </div>
+                        )}
+                      </div>
+
+                      {addon.features && addon.features.length > 0 && (
+                        <ul className="space-y-1.5 text-xs text-white/70">
+                          {addon.features.slice(0, 4).map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-white/[0.03] rounded-lg border border-white/10">
+              <p className="text-white/60 mb-2">No software tiers available</p>
+              <p className="text-xs text-white/40">Addons: {addons.filter(a => a.name.startsWith('smart_sensor_software_')).length} found</p>
+            </div>
+          )}
+          </div>
+        )}
+
+        {/* STEP 3: Asset Tags */}
+        {/* Debug: Show section even if no addons for testing */}
+        {true && (
+          <div className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-500/10 to-transparent border-l-4 border-blue-500 rounded-r-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Package className="w-5 h-5 text-blue-400" />
+              <h3 className="text-2xl font-bold text-white">Asset Tags</h3>
+            </div>
+            <p className="text-white/70 text-sm ml-7 mb-4">
+              Give your equipment a digital passport. Physical tags that staff and contractors scan to access service history, report faults, and log maintenance visits. No more chasing paperwork or forgotten serial numbers.
+            </p>
+            <div className="ml-7 mt-4">
+              <div className="bg-gradient-to-r from-[#EC4899]/10 to-blue-500/10 rounded-xl p-4 border border-[#EC4899]/20">
+                <p className="text-sm font-semibold text-white mb-2 text-center">How It Works:</p>
+                <p className="text-xs text-gray-300 text-center mb-3">
+                  Choose <strong className="text-white">one tag pack</strong> (physical tags) + <strong className="text-white">one software tier</strong> (scanning features). The tag pack is a one-time purchase, and the software tier is billed monthly per site.
+                </p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-left mt-3">
+                  <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                    <p className="text-xs font-semibold text-white mb-1">1. Choose</p>
+                    <p className="text-xs text-gray-300">Select tag pack & software tier</p>
+                  </div>
+                  <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                    <p className="text-xs font-semibold text-white mb-1">2. Ship</p>
+                    <p className="text-xs text-gray-300">We send tags with setup guide</p>
+                  </div>
+                  <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                    <p className="text-xs font-semibold text-white mb-1">3. Link</p>
+                    <p className="text-xs text-gray-300">Connect tags to assets in Checkly</p>
+                  </div>
+                  <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                    <p className="text-xs font-semibold text-white mb-1">4. Scan</p>
+                    <p className="text-xs text-gray-300">Staff & contractors access everything</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 1: Tag Packs */}
+          {assetTagPackAddons.length > 0 ? (
+            <div className="space-y-4">
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-white mb-2">Step 1: Choose Your Tag Pack</h4>
+                <p className="text-white/60 text-sm">One-time purchase • Free replacement tags included</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {assetTagPackAddons.map((addon) => {
+                  const isSelected = selectedAssetTagPack === addon.id;
+                  const tier = addon.name.split('_').pop() || '';
+                  const tierIcons = { 'basic': Package, 'starter': Package, 'pro': Wrench, 'professional': Wrench, 'observatory': Shield, 'premium': Shield };
+                  const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Package;
+                  const isMostPopular = tier === 'professional' || tier === 'pro';
+
+                  return (
+                    <button
+                      key={addon.id}
+                      onClick={() => setSelectedAssetTagPack(isSelected ? null : addon.id)}
+                      className={`relative text-left p-5 rounded-xl border-2 transition-all ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.3)]'
+                          : 'border-white/10 bg-white/[0.03] hover:border-blue-500/20 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {isMostPopular && !isSelected && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full">
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
+
+                      {isSelected && (
+                        <div className="absolute top-4 right-4">
+                          <CheckCircle2 className="w-6 h-6 text-blue-400" />
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <TierIcon className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <h4 className="text-lg font-bold text-white">{addon.display_name}</h4>
+                      </div>
+
+                      <p className="text-sm text-white/70 mb-4">{addon.description}</p>
+
+                      <div className="mb-4">
+                        <div className="text-2xl font-bold text-white mb-1">
+                          £{addon.hardware_cost?.toFixed(0) || addon.price.toFixed(0)}
+                        </div>
+                        <div className="text-xs text-white/60">one-time</div>
+                      </div>
+
+                      {addon.features && addon.features.length > 0 && (
+                        <ul className="space-y-1.5 text-xs text-white/70">
+                          {addon.features.slice(0, 4).map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-white/[0.03] rounded-lg border border-white/10">
+              <p className="text-white/60 mb-2">No tag packs available</p>
+              <p className="text-xs text-white/40">Addons: {addons.filter(a => a.name.startsWith('asset_tags_pack_') || a.name.startsWith('maintenance_kit_')).length} found</p>
+            </div>
+          )}
+
+          {/* Connecting Element */}
+          {assetTagPackAddons.length > 0 && assetTagsSoftwareAddons.length > 0 && (
+            <div className="flex items-center justify-center my-4">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-gradient-to-r from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-16"></div>
+                <div className="bg-[#EC4899]/20 border border-[#EC4899]/40 rounded-full px-3 py-1.5">
+                  <span className="text-sm font-semibold text-white">+</span>
+                </div>
+                <div className="h-px bg-gradient-to-l from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-16"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Software Tiers */}
+          {assetTagsSoftwareAddons.length > 0 ? (
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h4>
+                <p className="text-white/60 text-sm">Monthly per site • Cancel anytime • Works with any tag pack</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {assetTagsSoftwareAddons.map((addon) => {
+                  const isSelected = selectedAssetTagSoftware === addon.id;
+                  const tier = addon.name.split('_').pop() || '';
+                  const tierIcons = { 'essential': TrendingUp, 'professional': Sparkles, 'business': Award };
+                  const TierIcon = tierIcons[tier as keyof typeof tierIcons] || Zap;
+                  const isMostPopular = tier === 'professional';
+
+                  const monthlyCost = addon.monthly_management_cost ? addon.monthly_management_cost * siteCount : 0;
+
+                  return (
+                    <button
+                      key={addon.id}
+                      onClick={() => setSelectedAssetTagSoftware(isSelected ? null : addon.id)}
+                      className={`relative text-left p-5 rounded-xl border-2 transition-all ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.3)]'
+                          : 'border-white/10 bg-white/[0.03] hover:border-blue-500/20 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {isMostPopular && !isSelected && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full">
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
+
+                      {isSelected && (
+                        <div className="absolute top-4 right-4">
+                          <CheckCircle2 className="w-6 h-6 text-blue-400" />
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <TierIcon className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <h4 className="text-lg font-bold text-white">{addon.display_name}</h4>
+                      </div>
+
+                      <p className="text-sm text-white/70 mb-4">{addon.description}</p>
+
+                      <div className="mb-4">
+                        <div className="text-2xl font-bold text-white mb-1">
+                          £{addon.monthly_management_cost?.toFixed(0) || addon.price.toFixed(0)}
+                        </div>
+                        <div className="text-xs text-white/60">per site / month</div>
+                        {siteCount > 0 && (
+                          <div className="text-xs text-white/50 mt-1">
+                            {siteCount} sites × £{addon.monthly_management_cost?.toFixed(0) || addon.price.toFixed(0)} = £{monthlyCost.toFixed(2)}/mo
+                          </div>
+                        )}
+                      </div>
+
+                      {addon.features && addon.features.length > 0 && (
+                        <ul className="space-y-1.5 text-xs text-white/70">
+                          {addon.features.slice(0, 4).map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-white/[0.03] rounded-lg border border-white/10">
+              <p className="text-white/60 mb-2">No software tiers available</p>
+              <p className="text-xs text-white/40">Addons: {addons.filter(a => a.name.startsWith('smart_sensor_software_')).length} found</p>
+            </div>
+          )}
+          </div>
+        )}
 
         {/* STEP 4: Other Add-ons */}
         {otherAddons.length > 0 && (
@@ -852,19 +1176,87 @@ export default function UnifiedPlanSelection({
               <span className="text-lg font-bold text-white">£{costs.planMonthlyCost.toFixed(2)}/mo</span>
             </div>
 
-            {costs.addonMonthlyCost > 0 && (
-              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                <span className="text-sm text-white/70">Add-ons (Monthly)</span>
-                <span className="text-lg font-bold text-[#EC4899]">£{costs.addonMonthlyCost.toFixed(2)}/mo</span>
-              </div>
-            )}
+            {/* Smart Sensor Hardware Pack */}
+            {selectedSmartSensorPack && (() => {
+              const pack = addons.find(a => a.id === selectedSmartSensorPack);
+              const cost = pack?.hardware_cost || pack?.price || 0;
+              return cost > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Sensor Hardware Pack</span>
+                  <span className="text-lg font-bold text-white">£{cost.toFixed(2)}</span>
+                </div>
+              ) : null;
+            })()}
 
-            {costs.oneTimeCost > 0 && (
-              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                <span className="text-sm text-white/70">Hardware (One-time)</span>
-                <span className="text-lg font-bold text-white">£{costs.oneTimeCost.toFixed(2)}</span>
-              </div>
-            )}
+            {/* Smart Sensor Software Tier */}
+            {selectedSmartSensorSoftware && (() => {
+              const software = addons.find(a => a.id === selectedSmartSensorSoftware);
+              const monthlyCost = (software?.monthly_management_cost || software?.price || 0) * siteCount;
+              return monthlyCost > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Sensor Software ({siteCount} sites)</span>
+                  <span className="text-lg font-bold text-[#EC4899]">£{monthlyCost.toFixed(2)}/mo</span>
+                </div>
+              ) : null;
+            })()}
+
+            {/* Asset Tag Pack */}
+            {selectedAssetTagPack && (() => {
+              const pack = addons.find(a => a.id === selectedAssetTagPack);
+              const cost = pack?.hardware_cost || pack?.price || 0;
+              return cost > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Tag Pack</span>
+                  <span className="text-lg font-bold text-white">£{cost.toFixed(2)}</span>
+                </div>
+              ) : null;
+            })()}
+
+            {/* Asset Tags Software Tier */}
+            {selectedAssetTagSoftware && (() => {
+              const software = addons.find(a => a.id === selectedAssetTagSoftware);
+              const monthlyCost = (software?.monthly_management_cost || software?.price || 0) * siteCount;
+              return monthlyCost > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Tag Software ({siteCount} sites)</span>
+                  <span className="text-lg font-bold text-[#EC4899]">£{monthlyCost.toFixed(2)}/mo</span>
+                </div>
+              ) : null;
+            })()}
+
+            {/* Other Add-ons Monthly */}
+            {(() => {
+              let otherMonthly = 0;
+              selectedOtherAddons.forEach(addonId => {
+                const addon = addons.find(a => a.id === addonId);
+                if (addon && addon.price_type === 'monthly') {
+                  otherMonthly += addon.price;
+                }
+              });
+              return otherMonthly > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Other Add-ons (Monthly)</span>
+                  <span className="text-lg font-bold text-[#EC4899]">£{otherMonthly.toFixed(2)}/mo</span>
+                </div>
+              ) : null;
+            })()}
+
+            {/* Other Add-ons One-time */}
+            {(() => {
+              let otherOneTime = 0;
+              selectedOtherAddons.forEach(addonId => {
+                const addon = addons.find(a => a.id === addonId);
+                if (addon && addon.price_type === 'one_time') {
+                  otherOneTime += addon.price;
+                }
+              });
+              return otherOneTime > 0 ? (
+                <div className="flex items-center justify-between py-2 border-b border-white/10">
+                  <span className="text-sm text-white/70">Other Add-ons (One-time)</span>
+                  <span className="text-lg font-bold text-white">£{otherOneTime.toFixed(2)}</span>
+                </div>
+              ) : null;
+            })()}
           </div>
 
           <div className="space-y-3 pt-4 border-t-2 border-[#EC4899]/30">

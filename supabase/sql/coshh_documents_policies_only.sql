@@ -1,27 +1,11 @@
--- Create COSHH Documents Storage Bucket
--- This migration creates the coshh-documents storage bucket for COSHH data sheets
--- Run this in Supabase SQL Editor
+-- COSHH Documents Storage Policies
+-- Run this AFTER creating the bucket manually in Supabase dashboard
+-- The bucket must be named: coshh-documents
 
--- Step 1: Check if bucket already exists
-SELECT * FROM storage.buckets WHERE id = 'coshh-documents';
+-- Step 1: Verify bucket exists (uncomment to check)
+-- SELECT * FROM storage.buckets WHERE id = 'coshh-documents';
 
--- Step 2: Create the bucket (if it doesn't exist)
--- Note: If the INSERT fails, you may need to create the bucket manually in the Supabase dashboard
--- Go to Storage > Create bucket > Name: coshh-documents > Public: NO > File size: 10MB
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
-  'coshh-documents',
-  'coshh-documents',
-  false, -- Private bucket (authenticated access only)
-  10485760, -- 10MB limit (10 * 1024 * 1024)
-  ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Step 3: Verify bucket was created
-SELECT * FROM storage.buckets WHERE id = 'coshh-documents';
-
--- Step 3: Create RLS Policies for COSHH Documents Storage
+-- Step 2: Create RLS Policies for COSHH Documents Storage
 -- These policies ensure users can only access files from their own company
 
 -- Allow authenticated users to upload files to their company folder
@@ -92,10 +76,10 @@ USING (
   )
 );
 
--- Step 4: Verify policies were created
--- SELECT policyname, cmd
--- FROM pg_policies
--- WHERE schemaname = 'storage' 
--- AND tablename = 'objects'
--- AND policyname LIKE '%COSHH%';
+-- Step 3: Verify policies were created
+SELECT policyname, cmd
+FROM pg_policies
+WHERE schemaname = 'storage' 
+AND tablename = 'objects'
+AND policyname LIKE '%COSHH%';
 

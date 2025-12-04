@@ -2507,25 +2507,45 @@ export default function TaskCompletionModal({
 
       // Create alert if task was completed late (after window end)
       if (completedLate) {
-        try {
-          const { error: alertError } = await supabase
-            .from('notifications')
-            .insert({
-              company_id: companyId,
-              type: 'task',
-              title: 'Task Completed Late',
-              message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
-              severity: 'warning', // Required field - must be 'info', 'warning', or 'critical'
-              status: 'active',
-            })
-          
-          if (alertError) {
-            console.error('Error creating late completion alert:', alertError)
-          } else {
-            console.log('✅ Late completion alert created')
+        // Only create alert if companyId is available (required for RLS policy)
+        if (companyId) {
+          try {
+            const { error: alertError, data } = await supabase
+              .from('notifications')
+              .insert({
+                company_id: companyId,
+                type: 'task',
+                title: 'Task Completed Late',
+                message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
+                severity: 'warning', // Required field - must be 'info', 'warning', or 'critical'
+                status: 'active',
+              })
+              .select()
+            
+            if (alertError) {
+              // Better error logging - serialize the error object properly
+              const errorDetails = {
+                message: alertError.message,
+                details: alertError.details,
+                hint: alertError.hint,
+                code: alertError.code,
+                error: alertError
+              }
+              console.error('Error creating late completion alert:', errorDetails)
+            } else {
+              console.log('✅ Late completion alert created', data)
+            }
+          } catch (alertErr) {
+            // Handle unexpected errors
+            const errorMessage = alertErr instanceof Error 
+              ? alertErr.message 
+              : typeof alertErr === 'object' && alertErr !== null
+              ? JSON.stringify(alertErr, null, 2)
+              : String(alertErr)
+            console.error('Error creating late completion alert:', errorMessage, alertErr)
           }
-        } catch (alertErr) {
-          console.error('Error creating late completion alert:', alertErr)
+        } else {
+          console.warn('⚠️ Cannot create late completion alert: companyId is missing')
         }
       }
 

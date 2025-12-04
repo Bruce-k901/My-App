@@ -146,18 +146,48 @@ export function CourseLayout({ course }: CourseLayoutProps) {
           <div className="max-w-4xl w-full animate-in fade-in duration-500">
             
             {currentSlide.type === 'text-graphic-split' && (
-              <div className="grid lg:grid-cols-2 gap-12 items-start">
+              <div className={`grid ${currentSlide.mediaUrl ? 'lg:grid-cols-2' : 'lg:grid-cols-1 max-w-3xl mx-auto'} gap-12 items-start`}>
                 <div className="space-y-6">
                     <h2 className="text-3xl font-bold text-white">{currentSlide.title}</h2>
                     <div className="prose prose-invert prose-p:text-slate-300 prose-headings:text-white prose-strong:text-white prose-li:text-slate-300">
-                        {/* Basic Markdown-like rendering */}
-                        {currentSlide.content?.split('\n').map((line, i) => {
-                            if (line.startsWith('## ')) return <h2 key={i} className="text-2xl font-bold mt-6 mb-4">{line.replace('## ', '')}</h2>;
-                            if (line.startsWith('### ')) return <h3 key={i} className="text-xl font-semibold mt-4 mb-2">{line.replace('### ', '')}</h3>;
-                            if (line.startsWith('- ')) return <li key={i} className="ml-4 list-disc">{line.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</li>;
-                            if (line.trim() === '') return <br key={i} />;
-                            return <p key={i} dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />;
-                        })}
+                        {(() => {
+                            const lines = currentSlide.content?.split('\n') || [];
+                            const elements: React.ReactNode[] = [];
+                            let currentList: string[] = [];
+                            
+                            const flushList = () => {
+                                if (currentList.length > 0) {
+                                    elements.push(
+                                        <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-2 mt-4 mb-4 ml-4">
+                                            {currentList.map((item, idx) => (
+                                                <li key={idx} dangerouslySetInnerHTML={{__html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />
+                                            ))}
+                                        </ul>
+                                    );
+                                    currentList = [];
+                                }
+                            };
+                            
+                            lines.forEach((line, i) => {
+                                if (line.startsWith('## ')) {
+                                    flushList();
+                                    elements.push(<h2 key={i} className="text-2xl font-bold mt-6 mb-4">{line.replace('## ', '')}</h2>);
+                                } else if (line.startsWith('### ')) {
+                                    flushList();
+                                    elements.push(<h3 key={i} className="text-xl font-semibold mt-4 mb-2">{line.replace('### ', '')}</h3>);
+                                } else if (line.startsWith('- ')) {
+                                    currentList.push(line.replace('- ', ''));
+                                } else if (line.trim() === '') {
+                                    flushList();
+                                    elements.push(<br key={i} />);
+                                } else {
+                                    flushList();
+                                    elements.push(<p key={i} dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />);
+                                }
+                            });
+                            flushList();
+                            return elements;
+                        })()}
                     </div>
                 </div>
                 {currentSlide.mediaUrl && (

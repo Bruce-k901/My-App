@@ -7,6 +7,8 @@ import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { EmergencyIncidentModal } from '@/components/incidents/EmergencyIncidentModal';
+import { IncidentReportViewer } from '@/components/incidents/IncidentReportViewer';
+import { downloadIncidentReportPDF } from '@/lib/incident-report-pdf';
 import Select from '@/components/ui/Select';
 import Link from 'next/link';
 
@@ -54,6 +56,8 @@ export default function IncidentsStoragePage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isIncidentModalOpen, setIsIncidentModalOpen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewingIncident, setViewingIncident] = useState<Incident | null>(null);
 
   useEffect(() => {
     // Wait for context to load before fetching
@@ -61,7 +65,7 @@ export default function IncidentsStoragePage() {
       return;
     }
     fetchIncidents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId, siteId, contextLoading]);
 
   async function fetchIncidents() {
@@ -429,8 +433,8 @@ export default function IncidentsStoragePage() {
                   <div className="flex items-center gap-2 pt-4 border-t border-white/10">
                     <Button
                       onClick={() => {
-                        setSelectedIncident(incident);
-                        toast.info('View incident report feature coming soon');
+                        setViewingIncident(incident);
+                        setIsViewerOpen(true);
                       }}
                       variant="outline"
                       size="sm"
@@ -440,8 +444,14 @@ export default function IncidentsStoragePage() {
                       View Report
                     </Button>
                     <Button
-                      onClick={() => {
-                        toast.info('Download report feature coming soon');
+                      onClick={async () => {
+                        try {
+                          await downloadIncidentReportPDF(incident);
+                          toast.success('Report download started');
+                        } catch (error: any) {
+                          console.error('Error downloading report:', error);
+                          toast.error(error.message || 'Failed to download report');
+                        }
                       }}
                       variant="outline"
                       size="sm"
@@ -468,6 +478,25 @@ export default function IncidentsStoragePage() {
         onComplete={(incidentId) => {
           fetchIncidents();
           toast.success('Incident report created');
+        }}
+      />
+
+      {/* Incident Report Viewer */}
+      <IncidentReportViewer
+        incident={viewingIncident}
+        isOpen={isViewerOpen}
+        onClose={() => {
+          setIsViewerOpen(false);
+          setViewingIncident(null);
+        }}
+        onDownload={async (incident) => {
+          try {
+            await downloadIncidentReportPDF(incident);
+            toast.success('Report download started');
+          } catch (error: any) {
+            console.error('Error downloading report:', error);
+            toast.error(error.message || 'Failed to download report');
+          }
         }}
       />
     </div>

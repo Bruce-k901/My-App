@@ -210,6 +210,13 @@ export default function EnhancedShiftHandover() {
       await supabase.from("profile_settings").upsert(row, { onConflict: "key,company_id" });
       setSavedAt(new Date().toLocaleTimeString());
       toast.success("Handover notes saved");
+      
+      // Dispatch custom event to notify calendar page of the update
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("handover-saved"));
+        // Also use localStorage as a backup signal
+        localStorage.setItem("handover_updated", Date.now().toString());
+      }
     } catch (error: any) {
       toast.error(`Failed to save: ${error.message}`);
     }
@@ -291,6 +298,14 @@ export default function EnhancedShiftHandover() {
 
   const createReminderNotification = async (reminder: ReminderItem) => {
     try {
+      // Validate required fields
+      if (!companyId) {
+        const errorMessage = "Company ID is missing. Cannot create reminder notification.";
+        console.error(errorMessage);
+        toast.error(errorMessage);
+        return false;
+      }
+
       const reminderDateTime = new Date(`${reminder.date}T${reminder.time || "09:00"}`);
       const now = new Date();
       
@@ -300,25 +315,70 @@ export default function EnhancedShiftHandover() {
       }
 
       // Create notification for the reminder using 'task' type (compatible with existing schema)
-      // Store reminder details in message and use due_date for scheduling
+      // Store reminder details in message including the scheduled date/time
       const reminderMessage = `Reminder: ${reminder.title}\nScheduled for ${new Date(reminder.date).toLocaleDateString()}${reminder.time ? ` at ${reminder.time}` : ""}\nRepeat: ${reminder.repeat}\n[Handover Reminder ID: ${reminder.id}]`;
       
-      const { error } = await supabase.from("notifications").insert({
+      // Type assertion needed because TypeScript types are out of sync with actual database schema
+      // The database has due_date, status, priority columns, but types don't reflect this
+      const notificationData = {
         company_id: companyId,
-        site_id: siteId,
+        site_id: siteId || null,
         type: "task", // Using existing type
         title: `Reminder: ${reminder.title}`,
         message: reminderMessage,
         severity: "info", // Required field - must be 'info', 'warning', or 'critical'
-        status: "active", // Will be shown when due_date arrives
-        due_date: reminder.date, // Use due_date for scheduling
+        recipient_role: null as string | null,
+        // These fields exist in DB but not in TypeScript types yet
+        status: "active",
+        due_date: reminder.date,
         priority: "medium",
-      });
+      } as any;
+      
+      const { error } = await supabase.from("notifications").insert(notificationData);
 
-      if (error) throw error;
+      if (error) {
+        // Extract meaningful error information
+        const errorMessage = error.message || "Unknown error";
+        const errorCode = error.code || "unknown";
+        const errorDetails = error.details || null;
+        const errorHint = error.hint || null;
+        
+        const fullError = {
+          message: errorMessage,
+          code: errorCode,
+          details: errorDetails,
+          hint: errorHint,
+        };
+        
+        console.error("Failed to create reminder notification:", fullError);
+        
+        // Show user-friendly error message
+        const userMessage = errorHint 
+          ? `Failed to schedule reminder: ${errorHint}`
+          : errorMessage 
+          ? `Failed to schedule reminder: ${errorMessage}`
+          : "Failed to schedule reminder. Please try again.";
+        
+        toast.error(userMessage);
+        throw error;
+      }
       return true;
     } catch (error: any) {
-      console.error("Failed to create reminder notification:", error);
+      // Handle non-Supabase errors
+      if (error?.message || error?.code) {
+        // Already handled above, just return false
+        return false;
+      }
+      
+      // Handle unexpected errors
+      const errorMessage = error?.toString() || "Unknown error occurred";
+      console.error("Failed to create reminder notification:", {
+        error,
+        message: errorMessage,
+        stack: error?.stack,
+      });
+      
+      toast.error("Failed to schedule reminder. Please try again.");
       return false;
     }
   };
@@ -453,12 +513,20 @@ export default function EnhancedShiftHandover() {
             <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
           </div>
           <div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white">Shift Handover & Actions</h3>
+            <h3 className="text-xl sm:text-2xl font-semibold text-white">Daily Notes & Actions</h3>
             <p className="text-xs text-slate-400 hidden sm:block">Notes, tasks, reminders, and messages</p>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+          <Link
+            href="/dashboard/calendar"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
+          >
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Calendar & Diary</span>
+            <span className="xs:hidden">Calendar</span>
+          </Link>
           <Link
             href="/dashboard/tasks/my-tasks"
             className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
