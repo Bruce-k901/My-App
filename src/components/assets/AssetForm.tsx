@@ -37,12 +37,11 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
       warranty_end: '',
       next_service_date: '',
       ppm_frequency_months: 6,
-      status: 'Active',
+      status: 'active',
       notes: '',
       ppm_contractor_id: '',
       reactive_contractor_id: '',
       warranty_contractor_id: '',
-      document_url: '',
       working_temp_min: '',
       working_temp_max: '',
     }
@@ -112,12 +111,11 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
         warranty_end: '',
         next_service_date: '',
         ppm_frequency_months: 6,
-        status: 'Active',
+        status: 'active',
         notes: '',
         ppm_contractor_id: '',
         reactive_contractor_id: '',
         warranty_contractor_id: '',
-        document_url: '',
         working_temp_min: '',
         working_temp_max: '',
       });
@@ -134,9 +132,40 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
         working_temp_max: formData.working_temp_max ? parseFloat(formData.working_temp_max) : null,
       };
       
-      // Create new asset
+      // Remove fields that don't exist in the database schema
+      const { document_url, ...validFormData } = formData;
+      
+      // Normalize status to lowercase and ensure it's a valid value
+      const normalizeStatus = (status: string | undefined | null): string => {
+        if (!status || typeof status !== 'string') return 'active';
+        const normalized = status.toLowerCase().trim();
+        // Valid status values: 'active', 'inactive', 'maintenance', 'retired'
+        const validStatuses = ['active', 'inactive', 'maintenance', 'retired'];
+        return validStatuses.includes(normalized) ? normalized : 'active';
+      };
+      
+      // Convert empty strings to null for optional fields (database expects null, not empty strings)
+      const cleanedData = {
+        ...validFormData,
+        brand: validFormData.brand || null,
+        model: validFormData.model || null,
+        serial_number: validFormData.serial_number || null,
+        install_date: validFormData.install_date || null,
+        warranty_end: validFormData.warranty_end || null,
+        next_service_date: validFormData.next_service_date || null,
+        ppm_contractor_id: validFormData.ppm_contractor_id || null,
+        reactive_contractor_id: validFormData.reactive_contractor_id || null,
+        warranty_contractor_id: validFormData.warranty_contractor_id || null,
+        notes: validFormData.notes || null,
+        status: normalizeStatus(validFormData.status),
+      };
+      
+      // Debug: log the cleaned data to see what's being sent
+      console.log('Cleaned asset data being sent:', cleanedData);
+      
+      // Create new asset - only include valid database fields
       const { data, error } = await createAsset({
-        ...formData,
+        ...cleanedData,
         ...temperatureData,
         company_id: companyId,
       });

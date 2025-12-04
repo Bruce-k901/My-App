@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { NumericKeyboard } from './NumericKeyboard';
+import { cn } from '@/lib/utils';
 
 interface TemperatureInputProps {
   value: string | number | undefined;
@@ -35,8 +36,25 @@ export function TemperatureInput({
 }: TemperatureInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isMobile = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  
+  // Strict mobile detection: only show keyboard on actual mobile devices
+  // Checks for touch support AND small screen width (mobile/tablet)
+  useEffect(() => {
+    const checkMobile = () => {
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(hasTouch && isSmallScreen);
+    };
+    
+    // Check on mount
+    checkMobile();
+    
+    // Check on resize (in case window is resized)
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Convert value to string for display
   const displayValue = value === undefined || value === null ? '' : String(value);
@@ -49,13 +67,26 @@ export function TemperatureInput({
     onFocus?.();
   };
 
-  const handleBlur = () => {
-    // Delay hiding keyboard to allow button clicks to register
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Use a timeout to check if the blur was caused by clicking the keyboard
+    // This allows the click event to fire first
     setTimeout(() => {
-      setIsFocused(false);
-      setShowKeyboard(false);
-    }, 200);
-    onBlur?.();
+      const activeElement = document.activeElement;
+      const keyboardElement = document.querySelector('[data-numeric-keyboard]');
+      
+      // If the active element is inside the keyboard, keep the input focused
+      if (keyboardElement && activeElement && keyboardElement.contains(activeElement)) {
+        inputRef.current?.focus();
+        return;
+      }
+      
+      // Only hide keyboard if input is truly not focused
+      if (document.activeElement !== inputRef.current) {
+        setIsFocused(false);
+        setShowKeyboard(false);
+        onBlur?.();
+      }
+    }, 150);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,7 +172,12 @@ export function TemperatureInput({
         disabled={disabled}
         id={id}
         name={name}
-        className={className}
+        className={cn(
+          "w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2",
+          "placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50",
+          "hover:bg-neutral-700 hover:border-neutral-600 transition-colors",
+          className
+        )}
         // Prevent zoom on iOS when focusing
         style={{ fontSize: '16px' }}
       />

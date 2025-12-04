@@ -29,13 +29,25 @@ export function useCreateAsset() {
         defaultContractors = defaults?.[0];
       }
       
+      // Normalize status to ensure it's lowercase and valid
+      const normalizeStatus = (status: string | undefined | null): string => {
+        if (!status || typeof status !== 'string') return 'active';
+        const normalized = status.toLowerCase().trim();
+        const validStatuses = ['active', 'inactive', 'maintenance', 'retired'];
+        return validStatuses.includes(normalized) ? normalized : 'active';
+      };
+      
       // Merge default contractors with asset data
       const assetData = {
         ...asset,
+        status: normalizeStatus(asset.status), // Ensure status is always valid and lowercase
         ppm_contractor_id: asset.ppm_contractor_id || defaultContractors?.ppm_contractor_id || null,
         reactive_contractor_id: asset.reactive_contractor_id || defaultContractors?.reactive_contractor_id || null,
         warranty_contractor_id: asset.warranty_contractor_id || defaultContractors?.warranty_contractor_id || null,
       };
+      
+      // Debug: log the final asset data
+      console.log('Final asset data being inserted:', assetData);
       
       const { data, error } = await supabase
         .from('assets')
