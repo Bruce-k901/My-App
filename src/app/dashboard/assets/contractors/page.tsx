@@ -50,14 +50,22 @@ export default function ContractorsPage() {
         .select(`
           id,
           name,
+          contact_name,
           email,
           phone,
           ooh_phone,
+          address,
           region,
           website,
           callout_fee,
           hourly_rate,
           postcode,
+          category,
+          site_id,
+          type,
+          contract_start,
+          contract_expiry,
+          contract_file,
           contractor_categories ( name, description )
         `)
         .eq('is_active', true)
@@ -69,7 +77,9 @@ export default function ContractorsPage() {
       const mapped = (contractors || []).map((row: any) => ({
         id: row.id,
         name: row.name || "(Unnamed Contractor)",
-        category: row.contractor_categories?.name || "—",
+        contact_name: row.contact_name || "",
+        address: row.address || "",
+        category: row.category || row.contractor_categories?.name || "—", // Use direct category field first, fallback to join
         email: row.email || "",
         phone: row.phone || "",
         ooh_phone: row.ooh_phone || "",
@@ -78,6 +88,11 @@ export default function ContractorsPage() {
         website: row.website || "",
         hourly_rate: row.hourly_rate ?? null,
         callout_fee: row.callout_fee ?? null,
+        site_id: row.site_id || null,
+        type: row.type || null,
+        contract_start: row.contract_start || null,
+        contract_expiry: row.contract_expiry || null,
+        contract_file: row.contract_file || null,
         site_names: [], // Will be populated later if needed
         site_count: 0, // Will be populated later if needed
       }));

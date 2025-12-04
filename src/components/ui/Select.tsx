@@ -28,11 +28,22 @@ export default function Select({
   const getLabel = (opt: Option) => (typeof opt === "string" ? opt : opt.label);
   const getValue = (opt: Option) => (typeof opt === "string" ? opt : opt.value);
 
+  // Always normalize to string to keep component controlled
+  // Empty string will show placeholder in Radix Select when it doesn't match any option
+  const normalizedValue = React.useMemo(() => {
+    // Always return a string - never undefined - to keep component controlled
+    return value === undefined || value === null ? "" : String(value);
+  }, [value]);
+  
   return (
     <div className={cn("relative", className)}>
       {label && <label className="block text-xs text-slate-400 mb-1">{label}</label>}
       
-      <SelectPrimitive.Root value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
+      <SelectPrimitive.Root 
+        value={normalizedValue}
+        onValueChange={onValueChange} 
+        disabled={disabled}
+      >
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency

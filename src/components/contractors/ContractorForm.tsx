@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import Label from "@/components/ui/Label";
 import Select from "@/components/ui/Select";
+import SiteSelector from "@/components/ui/SiteSelector";
 import { supabase } from "@/lib/supabase";
+import { useAppContext } from "@/context/AppContext";
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
 
 // Simple UK postcode validator
@@ -24,6 +26,7 @@ type Props = {
 };
 
 export default function ContractorForm({ form, setForm, isEditing = false }: Props) {
+  const { companyId } = useAppContext();
   const [postcodeError, setPostcodeError] = useState("");
   const [lookupResults, setLookupResults] = useState<LookupResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -116,7 +119,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
   }, [query]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
       {/* LEFT COLUMN */}
       <div className="space-y-3">
@@ -156,31 +159,29 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Contact Name *</label>
+          <label className="block text-sm font-medium text-gray-300">Contact Name</label>
           <input
             type="text"
             value={form.contact_name || ""}
             onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
             placeholder="Primary contact person"
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Address *</label>
+          <label className="block text-sm font-medium text-gray-300">Address</label>
           <textarea
             rows={2}
             value={form.address || ""}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
             placeholder="Full business address"
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Postcode *</label>
+          <label className="block text-sm font-medium text-gray-300">Postcode</label>
           <input
             type="text"
             value={form.postcode || ""}
@@ -193,9 +194,19 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               postcodeError ? "border-red-500 bg-red-900/20" : "border-gray-600 bg-gray-800"
             }`}
             placeholder="SW1A 1AA"
-            required
           />
           {postcodeError && <p className="text-red-400 text-xs mt-1">{postcodeError}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Region</label>
+          <input
+            type="text"
+            value={form.region || ""}
+            onChange={(e) => setForm({ ...form, region: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            placeholder="Auto-populated from postcode"
+          />
         </div>
 
         <div>
@@ -243,13 +254,12 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Telephone *</label>
+            <label className="block text-sm font-medium text-gray-300">Telephone</label>
             <input
               type="text"
               value={form.phone || ""}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-              required
             />
           </div>
           <div>
@@ -264,24 +274,111 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Email *</label>
+          <label className="block text-sm font-medium text-gray-300">Email</label>
           <input
             type="email"
             value={form.email || ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-            required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-300">Service Description</label>
           <textarea
-            rows={5}
+            rows={3}
             placeholder="Describe the services this contractor provides..."
             value={form.notes || ""}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Site</label>
+          <SiteSelector
+            value={form.site_id || null}
+            onChange={(value) => setForm({ ...form, site_id: value || "" })}
+            placeholder="All Sites (optional)"
+            className="w-full"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Type</label>
+          <Select
+            value={form.type || ""}
+            onValueChange={(value: string) => setForm({ ...form, type: value })}
+            options={[
+              { value: "reactive", label: "Reactive" },
+              { value: "ppm", label: "PPM (Planned Preventative Maintenance)" },
+              { value: "warranty", label: "Warranty" },
+              { value: "emergency", label: "Emergency" },
+            ]}
+            placeholder="Select type (optional)"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
+          <Select
+            value={form.status || "active"}
+            onValueChange={(value: string) => setForm({ ...form, status: value })}
+            options={[
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+              { value: "suspended", label: "Suspended" },
+            ]}
+            placeholder="Select status"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="is_active"
+            checked={form.is_active !== undefined ? form.is_active : true}
+            onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+            className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-[#EC4899] focus:ring-[#EC4899]"
+          />
+          <label htmlFor="is_active" className="text-sm font-medium text-gray-300">
+            Active Contractor
+          </label>
+        </div>
+      </div>
+
+      {/* THIRD COLUMN - Contract Details */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-2">Contract Details</h3>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Contract Start Date</label>
+          <input
+            type="date"
+            value={form.contract_start || ""}
+            onChange={(e) => setForm({ ...form, contract_start: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Contract Expiry Date</label>
+          <input
+            type="date"
+            value={form.contract_expiry || ""}
+            onChange={(e) => setForm({ ...form, contract_expiry: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300">Contract File URL</label>
+          <input
+            type="text"
+            value={form.contract_file || ""}
+            onChange={(e) => setForm({ ...form, contract_file: e.target.value })}
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            placeholder="URL or path to contract document"
           />
         </div>
       </div>
@@ -301,11 +398,14 @@ function ContractorCategorySelect({ form, setForm }: { form: any; setForm: (form
     fetchCategories();
   }, []);
 
+  // Always use string value (empty string when no selection) to keep Select controlled
+  const categoryValue = form.category || "";
+  
   return (
     <div>
       <Label htmlFor="category">Category</Label>
       <Select
-        value={form.category || ""}
+        value={categoryValue}
         onValueChange={(value: string) => setForm({ ...form, category: value })}
         options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
         placeholder="Select category"
