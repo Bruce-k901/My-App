@@ -61,6 +61,29 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     const isEdit = !!contractor?.id;
     
     if (isEdit) {
+      // When editing, we need to look up the category ID from the category name
+      // The form stores category as ID (UUID), but the database stores it as name (text)
+      const loadCategoryId = async () => {
+        if (contractor.category) {
+          try {
+            const { data: categoryData } = await supabase
+              .from("contractor_categories")
+              .select("id")
+              .eq("name", contractor.category)
+              .maybeSingle();
+            
+            if (categoryData?.id) {
+              setForm(prev => ({ ...prev, category: categoryData.id }));
+              return;
+            }
+          } catch (err) {
+            console.warn("Could not lookup category ID:", err);
+          }
+        }
+        // If lookup fails or no category, set to empty string
+        setForm(prev => ({ ...prev, category: "" }));
+      };
+      
       setForm({
         name: contractor.name || "",
         contact_name: contractor.contact_name || "",
@@ -68,7 +91,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         phone: contractor.phone || "",
         ooh_phone: contractor.ooh_phone || contractor.ooh || contractor.emergency_phone || "",
         address: contractor.address || "",
-        category: contractor.category || "", // Always use empty string (controlled)
+        category: "", // Will be set after lookup
         notes: contractor.notes || contractor.service_description || "",
         service_description: contractor.service_description || contractor.notes || "",
         postcode: contractor.postcode || "",
@@ -86,6 +109,9 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         created_at: contractor.created_at || null,
         updated_at: contractor.updated_at || null,
       });
+      
+      // Look up category ID after setting initial form
+      loadCategoryId();
     } else if (prefill) {
       setForm({
         name: prefill.name || "",
@@ -204,12 +230,22 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
       }
       
       console.log("📝 Final categoryName:", categoryName, "form.category:", form.category);
+      console.log("📝 Category details:", {
+        formCategory: form.category,
+        categoryName: categoryName,
+        categoryNameType: typeof categoryName,
+        categoryNameLength: categoryName?.length,
+        isEmpty: !categoryName || categoryName.trim() === ''
+      });
 
       // Build notes field - just the service description, not other fields
       // Other fields (postcode, website, hourly_rate, callout_fee) are saved to their own columns
       let notes = form.notes || form.service_description || "";
 
       // Use contractors table directly - include ALL form fields in their proper columns
+      // CRITICAL: Ensure category is always a non-empty string (NOT NULL constraint)
+      const finalCategory = categoryName && categoryName.trim() !== '' ? categoryName.trim() : '';
+      
       const contractorTableData: any = {
         company_id: companyId,
         name: form.name.trim(),
@@ -224,7 +260,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         website: form.website?.trim() || null,
         hourly_rate: form.hourly_rate !== null && form.hourly_rate !== "" ? Number(form.hourly_rate) : null,
         callout_fee: form.callout_fee !== null && form.callout_fee !== "" ? Number(form.callout_fee) : null,
-        category: categoryName || '', // Required field - must be text, not ID, default to empty string if missing
+        category: finalCategory, // Required field - must be text, NOT NULL, ensure it's never null or undefined
         notes: notes || null,
         site_id: form.site_id && form.site_id.trim() !== '' ? form.site_id : null,
         type: form.type && form.type.trim() !== '' ? form.type.trim() : null,
@@ -234,6 +270,20 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         contract_expiry: form.contract_expiry ? form.contract_expiry : null,
         contract_file: form.contract_file?.trim() || null,
       };
+      
+      // Explicit validation for category
+      if (!contractorTableData.category || contractorTableData.category === '') {
+        console.error("❌ CRITICAL: Category is empty! This will fail NOT NULL constraint!");
+        showToast("Category is required. Please select a category.");
+        setLoading(false);
+        return;
+      }
+      
+      console.log("✅ Category validation passed:", {
+        category: contractorTableData.category,
+        type: typeof contractorTableData.category,
+        length: contractorTableData.category.length
+      });
       
       // Ensure contact_name is properly set (nullable field - use null if empty)
       const trimmedContactName = contractorTableData.contact_name?.trim();
@@ -358,11 +408,29 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
             console.log("🔍 [AddContractorModal] Verification comparison:", {
               contact_name: { rpc: result.contact_name, db: verifyData.contact_name, match: result.contact_name === verifyData.contact_name },
               address: { rpc: result.address, db: verifyData.address, match: result.address === verifyData.address },
-              category: { rpc: result.category, db: verifyData.category, match: result.category === verifyData.category },
+              category: { 
+                rpc: result.category, 
+                db: verifyData.category, 
+                sent: contractorTableData.category,
+                match: result.category === verifyData.category,
+                rpcMatchesSent: result.category === contractorTableData.category,
+                dbMatchesSent: verifyData.category === contractorTableData.category
+              },
               website: { rpc: result.website, db: verifyData.website, match: result.website === verifyData.website },
               site_id: { rpc: result.site_id, db: verifyData.site_id, match: result.site_id === verifyData.site_id },
               type: { rpc: result.type, db: verifyData.type, match: result.type === verifyData.type },
             });
+            
+            // Explicit check for category
+            if (verifyData.category !== contractorTableData.category) {
+              console.error("❌ CRITICAL: Category mismatch!", {
+                sent: contractorTableData.category,
+                rpcReturned: result.category,
+                databaseHas: verifyData.category
+              });
+            } else {
+              console.log("✅ Category verified in database:", verifyData.category);
+            }
           }
           
           // Helper function to normalize values for comparison (treat null, undefined, and empty string as equivalent)

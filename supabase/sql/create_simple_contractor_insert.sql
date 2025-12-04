@@ -99,7 +99,10 @@ BEGIN
     CASE WHEN p_ooh_phone IS NULL OR TRIM(p_ooh_phone) = '' THEN NULL ELSE TRIM(p_ooh_phone) END,
     CASE WHEN p_ooh_phone IS NULL OR TRIM(p_ooh_phone) = '' THEN NULL ELSE TRIM(p_ooh_phone) END, -- Also set ooh for compatibility
     CASE WHEN p_address IS NULL OR TRIM(p_address) = '' THEN NULL ELSE TRIM(p_address) END,
-    COALESCE(NULLIF(TRIM(p_category), ''), ''), -- Category is NOT NULL, default to empty string
+    CASE 
+      WHEN p_category IS NULL OR TRIM(p_category) = '' THEN '' 
+      ELSE TRIM(p_category) 
+    END, -- Category is NOT NULL, ensure it's never null
     CASE WHEN p_postcode IS NULL OR TRIM(p_postcode) = '' THEN NULL ELSE TRIM(p_postcode) END,
     CASE WHEN p_region IS NULL OR TRIM(p_region) = '' THEN NULL ELSE TRIM(p_region) END,
     CASE WHEN p_website IS NULL OR TRIM(p_website) = '' THEN NULL ELSE TRIM(p_website) END,
@@ -238,7 +241,10 @@ BEGIN
     ooh_phone = CASE WHEN p_ooh_phone IS NULL OR TRIM(p_ooh_phone) = '' THEN NULL ELSE TRIM(p_ooh_phone) END,
     ooh = CASE WHEN p_ooh_phone IS NULL OR TRIM(p_ooh_phone) = '' THEN NULL ELSE TRIM(p_ooh_phone) END, -- Also set ooh for compatibility
     address = CASE WHEN p_address IS NULL OR TRIM(p_address) = '' THEN NULL ELSE TRIM(p_address) END,
-    category = COALESCE(NULLIF(TRIM(p_category), ''), ''), -- Category is NOT NULL, default to empty string
+    category = CASE 
+      WHEN p_category IS NULL OR TRIM(p_category) = '' THEN '' 
+      ELSE TRIM(p_category) 
+    END, -- Category is NOT NULL, ensure it's never null
     postcode = CASE WHEN p_postcode IS NULL OR TRIM(p_postcode) = '' THEN NULL ELSE TRIM(p_postcode) END,
     region = CASE WHEN p_region IS NULL OR TRIM(p_region) = '' THEN NULL ELSE TRIM(p_region) END,
     website = CASE WHEN p_website IS NULL OR TRIM(p_website) = '' THEN NULL ELSE TRIM(p_website) END,

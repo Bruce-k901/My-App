@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Label from "@/components/ui/Label";
 import Select from "@/components/ui/Select";
 import SiteSelector from "@/components/ui/SiteSelector";
+import { Button } from "@/components/ui/Button";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
+import { Upload, X, FileText } from "lucide-react";
 
 // Simple UK postcode validator
 const UK_POSTCODE_REGEX = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/;
@@ -371,16 +373,10 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300">Contract File URL</label>
-          <input
-            type="text"
-            value={form.contract_file || ""}
-            onChange={(e) => setForm({ ...form, contract_file: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
-            placeholder="URL or path to contract document"
-          />
-        </div>
+        <ContractFileUpload 
+          value={form.contract_file || ""}
+          onChange={(url) => setForm({ ...form, contract_file: url })}
+        />
       </div>
     </div>
   );
@@ -410,6 +406,167 @@ function ContractorCategorySelect({ form, setForm }: { form: any; setForm: (form
         options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
         placeholder="Select category"
       />
+    </div>
+  );
+}
+
+// Contract File Upload Component
+function ContractFileUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { companyId } = useAppContext();
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setError(`File size must be less than 10MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      // Generate unique filename
+      const timestamp = Date.now();
+      const fileExtension = file.name.split('.').pop();
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const fileName = `contract_${timestamp}_${sanitizedName}`;
+      const filePath = `contracts/${companyId}/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('contracts')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        // If bucket doesn't exist, try creating it or use a different bucket
+        if (uploadError.message.includes('Bucket not found')) {
+          // Try using a generic bucket or create the bucket
+          const fallbackPath = `contracts/${fileName}`;
+          const { data: fallbackData, error: fallbackError } = await supabase.storage
+            .from('task-documents') // Use existing bucket as fallback
+            .upload(fallbackPath, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+
+          if (fallbackError) {
+            throw fallbackError;
+          }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('task-documents')
+            .getPublicUrl(fallbackPath);
+
+          onChange(publicUrl);
+        } else {
+          throw uploadError;
+        }
+      } else {
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('contracts')
+          .getPublicUrl(filePath);
+
+        onChange(publicUrl);
+      }
+
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (err: any) {
+      console.error('Contract file upload error:', err);
+      setError(err.message || 'Failed to upload file. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemove = () => {
+    onChange('');
+    setError(null);
+  };
+
+  const getFileName = (url: string) => {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+      return pathParts[pathParts.length - 1] || 'Contract file';
+    } catch {
+      return url.split('/').pop() || 'Contract file';
+    }
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-300 mb-2">Contract File</label>
+      
+      {value ? (
+        <div className="flex items-center gap-2 p-2 rounded-md border border-gray-600 bg-gray-800">
+          <FileText className="h-4 w-4 text-gray-400" />
+          <span className="flex-1 text-sm text-white truncate">{getFileName(value)}</span>
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#EC4899] hover:text-[#EC4899]/80 text-xs"
+          >
+            View
+          </a>
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="text-red-400 hover:text-red-300"
+            title="Remove file"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileSelect}
+            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+            className="hidden"
+            disabled={uploading}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="w-full border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+          >
+            {uploading ? (
+              <>Uploading...</>
+            ) : (
+              <>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Contract File
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-gray-400 mt-1">
+            PDF, Word, or image files (max 10MB)
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <p className="text-red-400 text-xs mt-1">{error}</p>
+      )}
     </div>
   );
 }
