@@ -190,12 +190,25 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
       showToast({ title: "User invited", description: `Profile created and invite sent to ${form.email}.`, type: "success" });
       
       // Refresh the user list BEFORE closing the modal to ensure the new user appears
+      // Add a small delay to ensure database transaction has committed
       if (onRefresh) {
         try {
+          console.log("🔄 Refreshing user list after creating user...");
+          // Small delay to ensure database transaction has committed
+          await new Promise(resolve => setTimeout(resolve, 500));
           await onRefresh();
+          console.log("✅ User list refreshed");
         } catch (refreshError) {
-          console.error("Failed to refresh user list:", refreshError);
-          // Don't block the success flow if refresh fails
+          console.error("❌ Failed to refresh user list:", refreshError);
+          // Try again after a longer delay
+          try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await onRefresh();
+            console.log("✅ User list refreshed on retry");
+          } catch (retryError) {
+            console.error("❌ Retry refresh also failed:", retryError);
+            // Don't block the success flow if refresh fails
+          }
         }
       }
       
@@ -327,10 +340,15 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
             <div>
               <label className="text-xs text-neutral-400">BOH/FOH</label>
               <Select
-                value={form.boh_foh ? form.boh_foh.toUpperCase() : ""}
-                options={["BOH", "FOH"]}
+                value={form.boh_foh || ""}
+                options={[
+                  { label: "BOH", value: "BOH" },
+                  { label: "FOH", value: "FOH" },
+                ]}
                 onValueChange={(val) => {
-                  setForm({ ...form, boh_foh: val.toLowerCase() });
+                  // Store uppercase value to match database constraint
+                  // val will be "BOH" or "FOH" (uppercase) from the options
+                  setForm({ ...form, boh_foh: val || null });
                 }}
                 placeholder="Select…"
               />

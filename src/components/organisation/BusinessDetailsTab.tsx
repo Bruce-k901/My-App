@@ -91,9 +91,27 @@ export default function BusinessDetailsTab() {
       });
 
       // First priority: Use contextCompany if available and has data
-      if (contextCompany && contextCompany.id && contextCompany.name) {
-        console.log('✅ Using contextCompany directly:', contextCompany.name);
-        setForm(contextCompany);
+      // Check for id OR name (company might have id but name could be null initially)
+      if (contextCompany && contextCompany.id) {
+        console.log('✅ Using contextCompany directly:', contextCompany.name || contextCompany.id);
+        // Ensure form has all fields, even if some are null
+        setForm({
+          id: contextCompany.id,
+          name: contextCompany.name || "",
+          legal_name: contextCompany.legal_name || "",
+          industry: contextCompany.industry || "",
+          vat_number: contextCompany.vat_number || "",
+          company_number: contextCompany.company_number || "",
+          phone: contextCompany.phone || "",
+          website: contextCompany.website || "",
+          country: contextCompany.country || "",
+          contact_email: contextCompany.contact_email || contextCompany.email || profileRow?.email || "",
+          address_line1: contextCompany.address_line1 || "",
+          address_line2: contextCompany.address_line2 || "",
+          city: contextCompany.city || "",
+          postcode: contextCompany.postcode || "",
+          logo_url: contextCompany.logo_url || null,
+        });
         setHasInitialized(true);
         setLoading(false);
         return;
@@ -121,9 +139,41 @@ export default function BusinessDetailsTab() {
 
           if (profileError) {
             console.error('❌ Profile fetch error:', profileError);
+            // If 406 error, try API route fallback
+            const is406Error = profileError.code === 'PGRST116' || 
+              profileError.message?.includes('406') || 
+              (profileError as any).status === 406 ||
+              profileError.message?.includes('Not Acceptable');
+            
+            if (is406Error) {
+              console.warn('⚠️ Profile query blocked by RLS (406), trying API route fallback');
+              try {
+                const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+                if (apiResponse.ok) {
+                  profileRow = await apiResponse.json();
+                  console.log('✅ Profile fetched via API route:', { id: profileRow.id, company_id: profileRow.company_id });
+                }
+              } catch (apiError) {
+                console.error('❌ API route fallback failed:', apiError);
+              }
+            }
           } else if (data) {
             profileRow = data;
             console.log('✅ Profile fetched:', { id: profileRow.id, company_id: profileRow.company_id });
+          } else if (!data && !profileError) {
+            // Null data with no error - might be RLS blocking silently, try API route
+            console.warn('⚠️ Profile query returned null data (RLS might be blocking), trying API route fallback');
+            try {
+              const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+              if (apiResponse.ok) {
+                profileRow = await apiResponse.json();
+                console.log('✅ Profile fetched via API route (null data fallback):', { id: profileRow.id, company_id: profileRow.company_id });
+              }
+            } catch (apiError) {
+              console.error('❌ API route fallback failed:', apiError);
+              // Profile not found - expected during first signup before profile is created
+              console.debug('No profile found for userId (expected during first signup):', userId);
+            }
           } else {
             // Profile not found - expected during first signup before profile is created
             console.debug('No profile found for userId (expected during first signup):', userId);
@@ -186,17 +236,43 @@ export default function BusinessDetailsTab() {
           // This prevents RLS permission errors
 
           if (companyData && companyData.id) {
-            console.log('✅ Setting company data:', companyData.name);
+            console.log('✅ Setting company data:', companyData.name || companyData.id);
             setCompany(companyData);
-            setForm(companyData);
+            // Ensure form has all fields, even if some are null
+            setForm({
+              id: companyData.id,
+              name: companyData.name || "",
+              legal_name: companyData.legal_name || "",
+              industry: companyData.industry || "",
+              vat_number: companyData.vat_number || "",
+              company_number: companyData.company_number || "",
+              phone: companyData.phone || "",
+              website: companyData.website || "",
+              country: companyData.country || "",
+              contact_email: companyData.contact_email || companyData.email || profileRow?.email || "",
+              address_line1: companyData.address_line1 || "",
+              address_line2: companyData.address_line2 || "",
+              city: companyData.city || "",
+              postcode: companyData.postcode || "",
+              logo_url: companyData.logo_url || null,
+            });
             setHasInitialized(true);
           } else {
-            // No company found - expected during first signup before company is created
-            // Use debug instead of warn to reduce console noise
-            console.debug('No company found (expected during first signup), using empty form');
+            // No company found or error occurred
             if (companyError) {
-              console.debug('Company query error:', companyError);
+              console.error('❌ Company query error:', companyError);
+              // Check if it's a 403 (access denied) or 404 (not found)
+              const errorMessage = companyError.message || '';
+              if (errorMessage.includes('403') || errorMessage.includes('Access denied')) {
+                console.error('❌ Access denied to company - user may not belong to this company');
+              } else if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+                console.error('❌ Company not found - company_id may be invalid');
+              }
+            } else {
+              console.warn('⚠️ No company data returned (company may not exist or be empty)');
             }
+            
+            // Set empty form but log the issue
             setForm({
               name: "",
               legal_name: "",
@@ -513,7 +589,29 @@ export default function BusinessDetailsTab() {
     formId: form?.id,
     formName: form?.name,
     formKeys: Object.keys(form || {}),
+    hasContextCompany: !!contextCompany,
+    contextCompanyId: contextCompany?.id,
+    companyId,
+    profileCompanyId: profile?.company_id,
   });
+
+  // Show helpful message if form is empty and user has company_id
+  if (!form?.id && !form?.name && profile?.company_id && hasInitialized && !loading) {
+    return (
+      <div className="rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3 text-sm text-slate-300">
+        <p className="font-medium mb-2">⚠️ Company Data Not Found</p>
+        <p className="mb-2">
+          Your account is linked to a company, but the company data could not be loaded.
+        </p>
+        <p className="text-xs text-slate-400">
+          Company ID: {profile.company_id}
+        </p>
+        <p className="text-xs text-slate-400 mt-2">
+          Please contact an administrator or try refreshing the page.
+        </p>
+      </div>
+    );
+  }
 
   const requiredFields = ["name", "industry", "country", "contact_email"];
   const fields = [

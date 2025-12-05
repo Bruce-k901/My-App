@@ -58,12 +58,13 @@ export async function POST(req: Request) {
       pin_code,
     });
 
-    // Check duplicates
-    const { data: existing, error: checkErr } = await admin
+    // Check for existing profile with this email (regardless of company_id)
+    // This handles cases where a user was removed from a company and needs to be re-added
+    const emailLower = String(email).toLowerCase();
+    const { data: existingProfile, error: checkErr } = await admin
       .from("profiles")
-      .select("id")
-      .eq("company_id", company_id)
-      .eq("email", String(email).toLowerCase())
+      .select("id, company_id, email")
+      .eq("email", emailLower)
       .limit(1);
 
     if (checkErr) {
@@ -71,12 +72,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: checkErr.message }, { status: 500 });
     }
 
-    if (existing && existing.length > 0) {
-      console.warn("⚠️ Profile already exists for this company:", email);
-      return NextResponse.json(
-        { error: "Profile already exists", code: "profile_exists" },
-        { status: 409 }
-      );
+    // If profile exists with same company_id, it's a duplicate
+    if (existingProfile && existingProfile.length > 0) {
+      const existing = existingProfile[0];
+      if (existing.company_id === company_id) {
+        console.warn("⚠️ Profile already exists for this company:", email);
+        return NextResponse.json(
+          { error: "Profile already exists", code: "profile_exists" },
+          { status: 409 }
+        );
+      } else {
+        // Profile exists but with different/no company_id - we'll update it instead
+        console.log(`ℹ️ Profile exists with different company_id. Will update instead of insert.`, {
+          existingId: existing.id,
+          existingCompanyId: existing.company_id,
+          newCompanyId: company_id,
+        });
+      }
     }
 
     const roleValue = String(app_role || "Staff");
@@ -90,8 +102,11 @@ export async function POST(req: Request) {
         ? `https://${process.env.VERCEL_URL}` 
         : 'http://localhost:3000');
       
+      const emailLower = String(email).toLowerCase();
+      console.log(`📧 [CREATE-USER] Calling inviteUserByEmail for ${emailLower}`);
+      
       const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-        String(email).toLowerCase(),
+        emailLower,
         {
           data: {
             full_name,
@@ -102,52 +117,175 @@ export async function POST(req: Request) {
       );
 
       if (inviteError) {
-        console.error("❌ Invite failed:", inviteError);
+        console.error(`❌ [CREATE-USER] inviteUserByEmail failed for ${emailLower}:`, {
+          message: inviteError.message,
+          status: inviteError.status,
+          name: inviteError.name,
+        });
+        
+        // Check for email configuration errors
+        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send|rate.*limit/i.test(inviteError.message || "");
+        if (isEmailConfigError) {
+          console.error(`🚨 [CREATE-USER] Email configuration/rate limit issue detected: ${inviteError.message}`);
+          console.error(`💡 [CREATE-USER] Check Supabase Dashboard → Authentication → Email Templates → SMTP Settings`);
+          console.error(`💡 [CREATE-USER] For local dev, check Inbucket at http://localhost:54324`);
+          console.error(`💡 [CREATE-USER] Rate limit: Only 2 emails/hour allowed (check config.toml auth.rate_limit.email_sent)`);
+          // Continue to create profile anyway, but log the issue
+        }
+        
         // Check if user already exists in auth
         if (inviteError.message?.includes("already registered") || inviteError.message?.includes("already exists")) {
-          // User exists in auth - find their ID
+          // User exists in auth - find their ID and send recovery email instead
           const { data: existingUsers } = await admin.auth.admin.listUsers();
-          const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === String(email).toLowerCase());
+          const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === emailLower);
           
           if (existingUser) {
             authUserId = existingUser.id;
-            console.log(`✅ Found existing auth user: ${authUserId}`);
+            console.log(`✅ [CREATE-USER] Found existing auth user: ${authUserId}`);
+            
+            // Send recovery/password reset email for existing users
+            // Use resetPasswordForEmail which actually SENDS the email (not just generates a link)
+            try {
+              console.log(`📧 [CREATE-USER] Sending password reset email to existing user: ${emailLower}`);
+              
+              // Use the regular client's resetPasswordForEmail which actually sends emails
+              // We need to create a client instance for this
+              const { createClient } = await import('@supabase/supabase-js');
+              const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+              const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+              
+              if (!supabaseUrl || !serviceRoleKey) {
+                throw new Error('Missing Supabase URL or Service Role Key');
+              }
+              
+              const supabaseClient = createClient(supabaseUrl, serviceRoleKey, {
+                auth: {
+                  autoRefreshToken: false,
+                  persistSession: false,
+                },
+              });
+              
+              // resetPasswordForEmail actually SENDS the email
+              const { data: resetData, error: resetError } = await supabaseClient.auth.resetPasswordForEmail(
+                emailLower,
+                {
+                  redirectTo: `${appUrl}/setup-account`,
+                }
+              );
+              
+              if (resetError) {
+                console.error(`❌ [CREATE-USER] Password reset email failed for ${emailLower}:`, {
+                  message: resetError.message,
+                  status: resetError.status,
+                  name: resetError.name,
+                });
+                
+                // Check for email configuration errors
+                const isResetEmailConfigError = /smtp|email.*config|mail.*server|unable.*send|rate.*limit/i.test(resetError.message || "");
+                if (isResetEmailConfigError) {
+                  console.error(`🚨 [CREATE-USER] Email configuration/rate limit issue detected: ${resetError.message}`);
+                  console.error(`💡 [CREATE-USER] Check Supabase Dashboard → Authentication → Email Templates → SMTP Settings`);
+                  console.error(`💡 [CREATE-USER] For local dev, check Inbucket at http://localhost:54324`);
+                  console.error(`💡 [CREATE-USER] Rate limit: Only 2 emails/hour allowed (check config.toml auth.rate_limit.email_sent)`);
+                }
+              } else {
+                invitationSent = true;
+                console.log(`✅ [CREATE-USER] Password reset email sent to existing user ${emailLower}`);
+                console.log(`💡 [CREATE-USER] Check Inbucket at http://localhost:54324 for local dev emails`);
+                console.log(`💡 [CREATE-USER] Email should arrive shortly. If not, check rate limits and SMTP config.`);
+              }
+            } catch (recoveryErr: any) {
+              console.error(`❌ [CREATE-USER] Password reset email exception for ${emailLower}:`, {
+                message: recoveryErr?.message,
+                stack: recoveryErr?.stack,
+                name: recoveryErr?.name,
+              });
+            }
           } else {
-            console.warn("⚠️ User exists in auth but could not be found");
+            console.warn(`⚠️ [CREATE-USER] User exists in auth but could not be found for ${emailLower}`);
           }
         } else {
           // Other error - we'll create profile with generated ID
-          console.warn("⚠️ Invitation failed. Profile will be created without auth user link.");
+          console.warn(`⚠️ [CREATE-USER] Invitation failed for ${emailLower}. Profile will be created without auth user link.`);
         }
       } else if (inviteData?.user?.id) {
         authUserId = inviteData.user.id;
         invitationSent = true;
-        console.log(`✅ Invitation email sent to ${email}, auth user ID: ${authUserId}`);
+        console.log(`✅ [CREATE-USER] Invitation email sent to ${emailLower}, auth user ID: ${authUserId}`);
       }
     } catch (inviteErr: any) {
       console.error("❌ Invite exception:", inviteErr);
       // Continue - we'll create profile with generated ID
     }
 
-    // Step 2: Create profile using auth user ID if available, otherwise generate one
-    const profileId = authUserId || crypto.randomUUID();
-    console.log(`🟢 Creating profile with ID: ${profileId} ${authUserId ? '(from auth user)' : '(generated)'}`);
+    // Step 2: Create or update profile
+    const existingProfileData = existingProfile && existingProfile.length > 0 ? existingProfile[0] : null;
+    const profileId = existingProfileData?.id || authUserId || crypto.randomUUID();
+    const isUpdate = !!existingProfileData;
+    
+    console.log(`🟢 ${isUpdate ? 'Updating' : 'Creating'} profile with ID: ${profileId} ${authUserId ? '(from auth user)' : existingProfileData ? '(existing profile)' : '(generated)'}`);
 
-    const { error: insertError } = await admin.from("profiles").insert({
-      id: profileId,
+    // Helper function to convert empty strings to null (especially important for UUID fields)
+    const nullIfEmpty = (value: any): any => {
+      if (value === null || value === undefined) return null;
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        return trimmed === '' ? null : trimmed;
+      }
+      return value;
+    };
+
+    // Helper function to convert to integer or null for integer fields
+    const nullIfEmptyInt = (value: any): number | null => {
+      if (value === null || value === undefined) return null;
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed === '') return null;
+        const parsed = parseInt(trimmed, 10);
+        return isNaN(parsed) ? null : parsed;
+      }
+      if (typeof value === 'number') {
+        return isNaN(value) ? null : Math.floor(value);
+      }
+      return null;
+    };
+
+    // Helper function specifically for UUID fields - must be valid UUID or null
+    const nullIfEmptyUUID = (value: any): string | null => {
+      if (value === null || value === undefined) return null;
+      const str = String(value).trim();
+      if (str === '') return null;
+      // Basic UUID format check (8-4-4-4-12 hex characters)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(str)) {
+        console.warn(`⚠️ Invalid UUID format: "${str}", converting to null`);
+        return null;
+      }
+      return str;
+    };
+
+    const profileData = {
       full_name,
-      email: String(email).toLowerCase(),
+      email: emailLower,
       company_id,
-      site_id: site_id ?? null,
-      app_role: roleValue,
-      position_title: position_title ?? null,
-      boh_foh: boh_foh ?? null,
-      phone_number: phone_number ?? null,
-      pin_code: pin_code ?? null,
-      // Training certificate fields
-      food_safety_level: food_safety_level ?? null,
+      // UUID fields: convert empty strings to null and validate format
+      site_id: nullIfEmptyUUID(site_id),
+      app_role: roleValue, // Should be "Admin", "Manager", "Staff", or "Owner"
+      // Text fields: convert empty strings to null
+      position_title: nullIfEmpty(position_title),
+      // boh_foh must be uppercase "BOH" or "FOH" or null (per check constraint)
+      boh_foh: (() => {
+        if (!boh_foh) return null;
+        const upper = String(boh_foh).toUpperCase().trim();
+        // Only allow valid values: "BOH" or "FOH"
+        return (upper === "BOH" || upper === "FOH") ? upper : null;
+      })(),
+      phone_number: nullIfEmpty(phone_number),
+      pin_code: nullIfEmpty(pin_code),
+      // Training certificate fields (integers)
+      food_safety_level: nullIfEmptyInt(food_safety_level),
       food_safety_expiry_date: food_safety_expiry_date || null,
-      h_and_s_level: h_and_s_level ?? null,
+      h_and_s_level: nullIfEmptyInt(h_and_s_level),
       h_and_s_expiry_date: h_and_s_expiry_date || null,
       fire_marshal_trained: fire_marshal_trained ?? false,
       fire_marshal_expiry_date: fire_marshal_expiry_date || null,
@@ -155,21 +293,61 @@ export async function POST(req: Request) {
       first_aid_expiry_date: first_aid_expiry_date || null,
       cossh_trained: cossh_trained ?? false,
       cossh_expiry_date: cossh_expiry_date || null,
-    });
+    };
 
-    if (insertError) {
-      console.error("❌ Insert failed:", insertError);
+    console.log(`🔍 Profile data to ${isUpdate ? 'update' : 'insert'}:`, JSON.stringify(profileData, null, 2));
+    console.log(`🔍 Profile ID: ${profileId}, Auth User ID: ${authUserId || 'none'}`);
+
+    let dbError;
+    if (isUpdate) {
+      // Update existing profile
+      const { error: updateError } = await admin
+        .from("profiles")
+        .update(profileData)
+        .eq("id", profileId);
+      dbError = updateError;
+    } else {
+      // Insert new profile
+      const { error: insertError } = await admin
+        .from("profiles")
+        .insert({
+          id: profileId,
+          ...profileData,
+        });
+      dbError = insertError;
+    }
+
+    if (dbError) {
+      console.error(`❌ ${isUpdate ? 'Update' : 'Insert'} failed:`, dbError);
+      console.error(`❌ Full error object:`, JSON.stringify(dbError, null, 2));
+      console.error(`❌ Profile data attempted:`, JSON.stringify({ id: profileId, ...profileData }, null, 2));
       return NextResponse.json(
         {
-          error: "Insert failed",
-          details: insertError.message || insertError,
+          error: `${isUpdate ? 'Update' : 'Insert'} failed`,
+          details: dbError.message || dbError,
+          code: dbError.code,
+          hint: dbError.hint,
         },
         { status: 400 }
       );
     }
 
-    console.log(`✅ New user saved: ${email} (${profileId})${invitationSent ? ' - Invitation sent' : ''}`);
-    return NextResponse.json({ ok: true, id: profileId, invited: invitationSent }, { status: 200 });
+    console.log(`✅ User ${isUpdate ? 'updated' : 'saved'}: ${email} (${profileId})${invitationSent ? ' - Email sent' : ' - No email sent (check logs)'}`);
+    
+    // Return response with email status
+    const response: any = { 
+      ok: true, 
+      id: profileId, 
+      invited: invitationSent, 
+      updated: isUpdate 
+    };
+    
+    // If email wasn't sent but user exists, provide helpful message
+    if (!invitationSent && existingProfileData) {
+      response.warning = "User profile updated but email may not have been sent. Check terminal logs and Inbucket.";
+    }
+    
+    return NextResponse.json(response, { status: 200 });
   } catch (e: any) {
     console.error("🔥 Unhandled server error:", e);
     return NextResponse.json(

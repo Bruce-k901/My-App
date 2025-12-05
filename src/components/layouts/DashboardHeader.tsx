@@ -179,7 +179,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
+    <header className="flex items-center justify-between h-[72px] px-2 sm:px-4 md:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
       {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1" suppressHydrationWarning>
         {/* Mobile Menu Button - Only visible on mobile */}
@@ -203,14 +203,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Middle: Actions - Show on all screens, compact on mobile */}
-      <div className="flex items-center gap-2 sm:gap-4 mr-2 sm:mr-0" suppressHydrationWarning>
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mr-2 sm:mr-0" suppressHydrationWarning>
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/todays_tasks"
-          className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 sm:h-10"
+          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-gradient-to-r from-pink-600/20 to-blue-600/20 border border-pink-500/30 text-white hover:from-pink-600/30 hover:to-blue-600/30 transition-all shadow-[0_0_10px_rgba(236,72,153,0.2)] hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] h-9 md:h-10"
         >
-          <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-          <span className="font-semibold text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Today's Tasks</span>
+          <ClipboardCheck className="w-4 h-4 md:w-5 md:h-5 text-pink-400 flex-shrink-0" />
+          <span className="font-semibold text-xs md:text-sm whitespace-nowrap hidden md:inline">Today's Tasks</span>
         </Link>
 
         {/* Incidents Reports - With Dropdown */}
@@ -226,12 +226,12 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             }}
             className={
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
-                ? 'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10'
-                : 'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 sm:h-10'
+                ? 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
+                : 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
             }
           >
-            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-            <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Incidents</span>
+            <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-pink-400 flex-shrink-0" />
+            <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden md:inline">Incidents</span>
           </div>
 
           {/* Dropdown Menu - Matching Sidebar Popup UX */}
@@ -370,18 +370,18 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       </div>
 
       {/* Right: Messages, Clock and Menu */}
-      <div className="flex items-center gap-2 sm:gap-3" suppressHydrationWarning>
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4" suppressHydrationWarning>
         {/* Messages Button - Quick access */}
         <Link
           href="/dashboard/messaging"
           className={
             pathname.startsWith('/dashboard/messaging')
-              ? 'relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10'
-              : 'relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 sm:h-10'
+              ? 'relative flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-pink-500/30 text-white hover:text-white hover:bg-white/[0.12] transition-all h-9 md:h-10'
+              : 'relative flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 md:h-10'
           }
         >
-          <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-          <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden sm:inline">Messages</span>
+          <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-pink-400 flex-shrink-0" />
+          <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden md:inline">Messages</span>
           {unreadMessageCount > 0 && (
             <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
               {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
@@ -390,14 +390,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         </Link>
 
         {/* Clock In Button */}
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <ClockInButton />
         </div>
 
-        {/* Clock - Hidden on mobile */}
-        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 sm:h-10" suppressHydrationWarning>
-          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0" />
-          <div className="font-mono text-xs sm:text-sm text-white whitespace-nowrap" suppressHydrationWarning>
+        {/* Clock - Hidden on mobile and tablet */}
+        <div className="hidden md:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10" suppressHydrationWarning>
+          <Clock className="w-4 h-4 md:w-5 md:h-5 text-pink-400 flex-shrink-0" />
+          <div className="font-mono text-xs md:text-sm text-white whitespace-nowrap" suppressHydrationWarning>
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}
           </div>
         </div>

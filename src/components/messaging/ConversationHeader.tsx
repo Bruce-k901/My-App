@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Users, Building2, User, MoreVertical } from 'lucide-react';
+import { Users, Building2, User, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import type { Conversation } from '@/types/messaging';
+import AIAssistantWidget from '@/components/assistant/AIAssistantWidget';
 
 interface ConversationHeaderProps {
   conversationId: string;
@@ -127,7 +128,7 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
   }
 
   return (
-    <div className="flex-shrink-0 h-16 border-b border-white/[0.06] bg-white/[0.02] px-4 flex items-center justify-between">
+    <div className="flex-shrink-0 h-16 border-b border-white/[0.06] bg-[#0B0D13] px-4 flex items-center justify-between relative">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="flex-shrink-0 p-2 bg-pink-500/10 rounded-lg">
           <Icon className="w-5 h-5 text-pink-400" />
@@ -143,12 +144,10 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
           )}
         </div>
       </div>
-      <button
-        className="flex-shrink-0 p-2 rounded-lg hover:bg-white/[0.05] text-white/60 hover:text-white transition-colors"
-        aria-label="Conversation options"
-      >
-        <MoreVertical className="w-5 h-5" />
-      </button>
+      {/* Ask AI Button - Positioned in top right */}
+      <div className="flex-shrink-0 relative">
+        <AIAssistantWidget position="top-right" compact={true} />
+      </div>
     </div>
   );
 }

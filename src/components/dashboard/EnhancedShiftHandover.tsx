@@ -36,6 +36,17 @@ interface MessageItem {
   sentAt?: string;
 }
 
+interface MentionedMessage {
+  id: string;
+  content: string;
+  sender_name: string;
+  sender_id: string;
+  channel_id: string;
+  conversation_name?: string;
+  created_at: string;
+  channel_type?: string;
+}
+
 interface User {
   id: string;
   full_name: string;
@@ -50,12 +61,13 @@ interface TaskTemplate {
 }
 
 export default function EnhancedShiftHandover() {
-  const { companyId, siteId, userProfile } = useAppContext();
+  const { companyId, siteId, userProfile, userId } = useAppContext();
   const [notes, setNotes] = useState("");
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [sentMessages, setSentMessages] = useState<MessageItem[]>([]);
+  const [mentionedMessages, setMentionedMessages] = useState<MentionedMessage[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [taskTemplates, setTaskTemplates] = useState<TaskTemplate[]>([]);
   const [saving, setSaving] = useState(false);
@@ -187,6 +199,111 @@ export default function EnhancedShiftHandover() {
     };
     load();
   }, [companyId]);
+
+  // Load @mentioned messages
+  useEffect(() => {
+    const loadMentionedMessages = async () => {
+      if (!userId || !companyId) return;
+
+      try {
+        // Get today's date range
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStart = today.toISOString();
+        const todayEnd = new Date(today);
+        todayEnd.setHours(23, 59, 59, 999);
+        const todayEndISO = todayEnd.toISOString();
+
+        // Query messages where current user is mentioned (check metadata.mentions array)
+        // Join through messaging_channels to filter by company_id
+        const { data: messagesData, error } = await supabase
+          .from("messaging_messages")
+          .select(`
+            id,
+            content,
+            sender_id,
+            channel_id,
+            created_at,
+            metadata,
+            messaging_channels:channel_id (
+              name,
+              channel_type,
+              company_id
+            )
+          `)
+          .gte("created_at", todayStart)
+          .lte("created_at", todayEndISO)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(100);
+
+        if (error) throw error;
+
+        // Filter messages where user is mentioned AND belong to user's company
+        const mentioned = (messagesData || [])
+          .filter((msg: any) => {
+            // Check if message belongs to user's company
+            if (msg.messaging_channels?.company_id !== companyId) return false;
+            // Check if user is mentioned
+            const mentions = msg.metadata?.mentions || [];
+            return Array.isArray(mentions) && mentions.includes(userId);
+          })
+          .map((msg: any) => ({
+            id: msg.id,
+            content: msg.content,
+            sender_name: msg.metadata?.sender_name || "Unknown",
+            sender_id: msg.sender_id,
+            channel_id: msg.channel_id,
+            conversation_name: msg.messaging_channels?.name || 
+              (msg.messaging_channels?.channel_type === 'direct' ? 'Direct Message' : 'Group Chat'),
+            created_at: msg.created_at,
+            channel_type: msg.messaging_channels?.channel_type,
+          }));
+
+        setMentionedMessages(mentioned);
+      } catch (error: any) {
+        console.error("Failed to load mentioned messages:", error);
+      }
+    };
+
+    loadMentionedMessages();
+
+    // Subscribe to new messages with mentions
+    if (userId && companyId) {
+      const channel = supabase
+        .channel(`mentioned-messages-${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messaging_messages",
+          },
+          async (payload) => {
+            const msg = payload.new as any;
+            const mentions = msg.metadata?.mentions || [];
+            if (Array.isArray(mentions) && mentions.includes(userId)) {
+              // Verify message belongs to user's company
+              const { data: channelData } = await supabase
+                .from("messaging_channels")
+                .select("company_id")
+                .eq("id", msg.channel_id)
+                .single();
+              
+              if (channelData?.company_id === companyId) {
+                // Reload mentioned messages
+                loadMentionedMessages();
+              }
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [userId, companyId]);
 
   const save = async () => {
     setSaving(true);
@@ -544,7 +661,7 @@ export default function EnhancedShiftHandover() {
           { id: "notes", label: "Notes", icon: FileText },
           { id: "tasks", label: `Tasks (${tasks.length})`, icon: CheckCircle2 },
           { id: "reminders", label: `Reminders (${reminders.length})`, icon: Bell },
-          { id: "messages", label: `Messages (${messages.length})`, icon: MessageSquare },
+          { id: "messages", label: `Messages (${messages.length}${mentionedMessages.length > 0 ? ` • @${mentionedMessages.length}` : ''})`, icon: MessageSquare },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -910,6 +1027,44 @@ export default function EnhancedShiftHandover() {
                       </span>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* @Mentioned Messages */}
+          {mentionedMessages.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-sm font-semibold text-pink-400 mb-3 flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-bold">
+                  @
+                </span>
+                Messages Mentioning You ({mentionedMessages.length})
+              </h4>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {mentionedMessages.map((msg) => (
+                  <Link
+                    key={msg.id}
+                    href={`/dashboard/messaging?conversation=${msg.channel_id}`}
+                    className="block bg-pink-500/5 border border-pink-500/20 rounded-lg p-3 hover:bg-pink-500/10 hover:border-pink-500/30 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h5 className="font-medium text-white text-sm truncate">
+                            {msg.sender_name}
+                          </h5>
+                          <span className="text-xs text-pink-400/70">
+                            in {msg.conversation_name}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300 mb-1 line-clamp-2">{msg.content}</p>
+                        <div className="text-xs text-slate-500">
+                          {new Date(msg.created_at).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>

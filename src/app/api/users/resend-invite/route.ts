@@ -17,13 +17,19 @@ export async function POST(req: Request) {
       );
     }
 
+    const emailLower = String(email).toLowerCase();
+    console.log(`📧 [RESEND-INVITE] Processing resend invite request for: ${emailLower}`);
+
     const admin = getSupabaseAdmin();
 
     // Check if user exists in auth
+    console.log(`📧 [RESEND-INVITE] Checking if user exists in auth...`);
     const { data: existingUsers } = await admin.auth.admin.listUsers();
     const existingUser = existingUsers.users.find(
-      (u) => u.email?.toLowerCase() === String(email).toLowerCase()
+      (u) => u.email?.toLowerCase() === emailLower
     );
+    
+    console.log(`📧 [RESEND-INVITE] User exists in auth: ${!!existingUser}`);
 
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ||
@@ -32,18 +38,39 @@ export async function POST(req: Request) {
     if (existingUser) {
       // User exists in auth - send password reset email instead
       // This allows them to set/reset their password
+      const emailLower = String(email).toLowerCase();
+      console.log(`📧 [RESEND-INVITE] Generating recovery link for existing user: ${emailLower}`);
+      
       const { data, error } = await admin.auth.admin.generateLink({
         type: "recovery",
-        email: String(email).toLowerCase(),
+        email: emailLower,
         options: {
           redirectTo: `${appUrl}/setup-account`,
         },
       });
 
       if (error) {
-        console.error("❌ Password reset link generation failed:", error);
+        console.error(`❌ [RESEND-INVITE] Password reset link generation failed for ${emailLower}:`, {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+        
+        // Check for email configuration errors
+        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send/i.test(error.message || "");
+        if (isEmailConfigError) {
+          console.error(`🚨 [RESEND-INVITE] Email configuration issue detected: ${error.message}`);
+          return NextResponse.json({ 
+            error: "Email service is not configured. Please check Supabase SMTP settings.", 
+            code: "email_config_error",
+            details: error.message 
+          }, { status: 500 });
+        }
+        
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+      
+      console.log(`✅ [RESEND-INVITE] Successfully generated recovery link for ${emailLower}`);
 
       return NextResponse.json({
         ok: true,
@@ -52,17 +79,40 @@ export async function POST(req: Request) {
       });
     } else {
       // User doesn't exist in auth - send invitation
+      const emailLower = String(email).toLowerCase();
+      console.log(`📧 [RESEND-INVITE] Calling inviteUserByEmail for ${emailLower}`);
+      
       const { data, error } = await admin.auth.admin.inviteUserByEmail(
-        String(email).toLowerCase(),
+        emailLower,
         {
           redirectTo: `${appUrl}/setup-account`,
         }
       );
 
       if (error) {
-        console.error("❌ Invite failed:", error);
+        console.error(`❌ [RESEND-INVITE] inviteUserByEmail failed for ${emailLower}:`, {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+        
+        // Check for email configuration errors
+        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send/i.test(error.message || "");
+        if (isEmailConfigError) {
+          console.error(`🚨 [RESEND-INVITE] Email configuration issue detected: ${error.message}`);
+          return NextResponse.json({ 
+            error: "Email service is not configured. Please check Supabase SMTP settings.", 
+            code: "email_config_error",
+            details: error.message 
+          }, { status: 500 });
+        }
+        
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+      
+      console.log(`✅ [RESEND-INVITE] Successfully sent invite to ${emailLower}`, {
+        userId: data?.user?.id,
+      });
 
       return NextResponse.json({
         ok: true,
@@ -71,13 +121,18 @@ export async function POST(req: Request) {
       });
     }
   } catch (e: any) {
-    console.error("❌ Resend invite exception:", e);
+    console.error(`🔥 [RESEND-INVITE] Unhandled exception:`, {
+      message: e?.message,
+      stack: e?.stack,
+      name: e?.name,
+    });
     return NextResponse.json(
       { error: e?.message || "Server error" },
       { status: 500 }
     );
   }
 }
+
 
 
 

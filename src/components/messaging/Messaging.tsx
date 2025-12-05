@@ -145,13 +145,15 @@ export function Messaging() {
         {selectedConversationId ? (
           <>
             {/* Conversation Header - Fixed at top */}
-            <ConversationHeader conversationId={selectedConversationId} />
-            {/* Content Tabs - Fixed below header */}
-            <div className="flex-shrink-0 border-b border-white/[0.06]">
+            <div className="flex-shrink-0 bg-[#0B0D13] z-10">
+              <ConversationHeader conversationId={selectedConversationId} />
+            </div>
+            {/* Content Tabs (Tasks, Images, Files) - Fixed below header */}
+            <div className="flex-shrink-0 bg-[#0B0D13]">
               <ConversationContentTabs conversationId={selectedConversationId} />
             </div>
-            {/* Message Thread - Scrollable */}
-            <div className="flex-1 min-h-0 overflow-hidden">
+            {/* Message Thread - Scrollable, takes remaining space */}
+            <div className="flex-1 min-h-0 overflow-y-auto">
               <MessageThread 
                 conversationId={selectedConversationId}
                 messagesHook={messagesHook}
@@ -159,7 +161,7 @@ export function Messaging() {
               />
             </div>
             {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0 border-t border-white/[0.06]">
+            <div className="flex-shrink-0 bg-[#0B0D13] border-t border-white/[0.06]">
               <MessageInput
                 conversationId={selectedConversationId}
                 sendMessage={messagesHook.sendMessage}

@@ -74,7 +74,12 @@ const QUICK_ACTIONS: QuickAction[] = [
 // MAIN COMPONENT
 // ============================================================================
 
-export default function AIAssistantWidget() {
+interface AIAssistantWidgetProps {
+  position?: 'bottom-right' | 'top-right';
+  compact?: boolean;
+}
+
+export default function AIAssistantWidget({ position = 'bottom-right', compact = false }: AIAssistantWidgetProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -256,14 +261,17 @@ export default function AIAssistantWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000] flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 rounded-full 
+          className={`${position === 'top-right' 
+            ? 'fixed top-[88px] right-4 lg:right-6 z-[10001]' 
+            : 'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000]'
+          } flex items-center gap-2 ${compact ? 'px-2 py-2' : 'px-3 py-2.5 sm:px-4 sm:py-3'} rounded-full 
             bg-transparent text-[#EC4899] border border-[#EC4899] shadow-lg 
             hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] hover:scale-105 
-            transition-all duration-200 ease-in-out"
+            transition-all duration-200 ease-in-out`}
           aria-label="Open AI Assistant"
         >
-          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="font-medium text-sm sm:text-base">Ask AI</span>
+          <Sparkles className={`${compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} />
+          {!compact && <span className="font-medium text-sm sm:text-base">Ask AI</span>}
         </button>
       )}
       
@@ -279,10 +287,13 @@ export default function AIAssistantWidget() {
           
           {/* Chat Panel */}
           <div 
-            className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 z-[10000] 
+            className={`${position === 'top-right' 
+              ? 'fixed inset-0 sm:inset-auto sm:top-20 sm:right-4' 
+              : 'fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6'
+            } z-[10000] 
               w-full sm:w-[400px] h-full sm:h-[600px] sm:max-h-[80vh] 
               bg-[#0f1220] border-0 sm:border border-white/[0.06] rounded-none sm:rounded-2xl shadow-2xl 
-              flex flex-col overflow-hidden"
+              flex flex-col overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
           {/* Header */}

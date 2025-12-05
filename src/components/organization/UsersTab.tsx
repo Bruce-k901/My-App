@@ -138,20 +138,35 @@ export default function UsersTab() {
       }
 
       if (error) {
-        console.error("Failed to fetch users:", error);
+        console.error("❌ Failed to fetch users:", error);
         const errorMessage = error.message || error.code || "Unknown error";
         console.error("Full error details:", {
           message: error.message,
           code: error.code,
           details: error.details,
-          hint: error.hint
+          hint: error.hint,
+          status: (error as any).status,
         });
+        
+        // If it's a 406 error (RLS blocking), log helpful message
+        if (error.code === 'PGRST116' || error.message?.includes('406') || (error as any).status === 406) {
+          console.error("🚨 RLS is blocking user list query. Check profiles_select_company policy.");
+        }
         setUsers([]);
         setLoading(false);
         return;
       }
 
-      setUsers(data || []);
+      if (data) {
+        console.log(`✅ Fetched ${data.length} users for company ${companyId}`, {
+          userIds: data.map(u => u.id),
+          emails: data.map(u => u.email),
+        });
+        setUsers(data);
+      } else {
+        console.warn("⚠️ No users data returned (empty array or null)");
+        setUsers([]);
+      }
       setLoading(false);
     } catch (error: any) {
       console.error("Failed to fetch users:", error);

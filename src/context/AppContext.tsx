@@ -225,22 +225,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         data = result.data;
         error = result.error;
         
-        // If we get a 406 error, fall back to API route
-        if (error && (error.code === 'PGRST116' || error.message?.includes('406') || (error as any).status === 406)) {
-          console.warn('⚠️ Direct profile query blocked by RLS (406), using API route fallback');
-          error = null; // Clear error to try API route
+        // If we get a 406 error (RLS blocking), fall back to API route
+        // Check for various 406 error indicators
+        const is406Error = error && (
+          error.code === 'PGRST116' || 
+          error.message?.includes('406') || 
+          (error as any).status === 406 ||
+          error.message?.includes('Not Acceptable') ||
+          error.message?.includes('row-level security')
+        );
+        
+        if (is406Error) {
+          console.warn('⚠️ AppContext: Direct profile query blocked by RLS (406), using API route fallback');
           
           try {
             const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
             if (apiResponse.ok) {
               data = await apiResponse.json();
+              error = null; // Clear error since API route succeeded
               console.log('✅ Profile loaded via API route fallback');
             } else {
               const errorText = await apiResponse.text();
               error = new Error(`API route failed: ${errorText}`);
+              console.error('❌ API route fallback also failed:', errorText);
             }
           } catch (apiError) {
             error = apiError instanceof Error ? apiError : new Error('API route error');
+            console.error('❌ API route fallback exception:', apiError);
           }
         }
       } catch (queryError) {
@@ -251,8 +262,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       console.log('Profile query result (AppContext):', { 
         data, 
         error, 
-        userId 
+        userId,
+        hasData: !!data,
+        hasError: !!error,
+        errorCode: error?.code,
+        errorMessage: error?.message,
       });
+      
+      // If we got null data but no error, it might be RLS blocking silently
+      // Try API route fallback
+      if (!data && !error) {
+        console.warn('⚠️ AppContext: Profile query returned null data with no error - might be RLS blocking silently, trying API route');
+        try {
+          const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+          if (apiResponse.ok) {
+            data = await apiResponse.json();
+            console.log('✅ Profile loaded via API route (null data fallback)');
+          } else {
+            const errorText = await apiResponse.text();
+            console.error('❌ API route failed:', errorText);
+            error = new Error(`API route failed: ${errorText}`);
+          }
+        } catch (apiError) {
+          console.error('❌ API route exception:', apiError);
+          error = apiError instanceof Error ? apiError : new Error('API route error');
+        }
+      }
       
       if (error) {
         // Check if error is truly empty

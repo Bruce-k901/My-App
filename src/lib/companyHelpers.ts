@@ -25,15 +25,23 @@ export async function getCurrentUserCompanyId(): Promise<string> {
     profile = result.data;
     profileError = result.error;
     
-    // If we get a 406 error, fall back to API route
-    if (profileError && (profileError.code === 'PGRST116' || profileError.message?.includes('406') || (profileError as any).status === 406)) {
-      console.warn('⚠️ Direct profile query blocked by RLS (406), using API route fallback');
+    // If we get a 406 error OR null data (RLS blocking silently), fall back to API route
+    const is406Error = profileError && (
+      profileError.code === 'PGRST116' || 
+      profileError.message?.includes('406') || 
+      (profileError as any).status === 406 ||
+      profileError.message?.includes('Not Acceptable')
+    );
+    
+    if (is406Error || (!profile && !profileError)) {
+      console.warn('⚠️ Direct profile query blocked by RLS (406 or null data), using API route fallback');
       try {
         const apiResponse = await fetch(`/api/profile/get?userId=${session.user.id}`);
         if (apiResponse.ok) {
           const fullProfile = await apiResponse.json();
           profile = { company_id: fullProfile.company_id };
           profileError = null;
+          console.log('✅ Profile loaded via API route fallback in companyHelpers');
         } else {
           const errorText = await apiResponse.text();
           profileError = new Error(`API route failed: ${errorText}`);

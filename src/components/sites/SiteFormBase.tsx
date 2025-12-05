@@ -618,6 +618,12 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       console.log("Saving site data:", formData.city, formData.region);
 
       // Upsert site data
+      console.log("Attempting to save site with data:", {
+        company_id: siteData.company_id,
+        name: siteData.name,
+        has_id: !!siteData.id,
+      });
+
       const { data: siteResult, error: siteError } = await supabase
         .from("sites")
         .upsert(siteData, { onConflict: "id" })
@@ -625,7 +631,25 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         .single();
 
       if (siteError) {
-        console.error(`Save failed: ${siteError.message}`);
+        console.error(`Save failed: ${siteError.message}`, {
+          error_code: siteError.code,
+          error_details: siteError.details,
+          error_hint: siteError.hint,
+          siteData: siteData,
+        });
+        
+        // Try to get more info about the user's profile
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, company_id, app_role")
+          .eq("id", (await supabase.auth.getUser()).data.user?.id)
+          .single();
+        
+        console.error("User profile info:", {
+          profileData,
+          profileError,
+        });
+        
         return;
       }
 

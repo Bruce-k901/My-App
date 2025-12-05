@@ -26,7 +26,11 @@ export function SuppressConsoleWarnings() {
         msg.includes("preloaded using link preload") ||
         msg.includes("preload but not used") ||
         msg.includes("checkly_logo_touching_blocks") ||
-        (msg.includes("preload") && msg.includes("svg")) ||
+        (msg.includes("resource") && msg.includes("preload") && msg.includes("not used")) ||
+        (msg.includes("preload") && (msg.includes("svg") || msg.includes("css"))) ||
+        (msg.includes("preload") && msg.includes(".css")) ||
+        (msg.includes("_next/static/css") && msg.includes("preload")) ||
+        (msg.includes("app/layout.css") || (msg.includes("app/dashboard") && msg.includes(".css"))) ||
         // Suppress push subscription errors (expected when table doesn't exist or profile missing)
         msg.includes("error saving push subscription") ||
         msg.includes("error registering push subscription") ||
@@ -131,11 +135,14 @@ export function SuppressConsoleWarnings() {
     if (typeof window !== "undefined" && "PerformanceObserver" in window) {
       try {
         const observer = new PerformanceObserver((list) => {
-          // Filter out preload-related entries
+          // Filter out preload-related entries (CSS, SVG, etc.)
           for (const entry of list.getEntries()) {
+            const entryName = entry.name.toLowerCase();
             if (
-              entry.name.includes("checkly_logo_touching_blocks") ||
-              (entry.name.includes("_next/static/media") && entry.name.includes(".svg"))
+              entryName.includes("checkly_logo_touching_blocks") ||
+              (entryName.includes("_next/static/media") && entryName.includes(".svg")) ||
+              (entryName.includes("_next/static/css") && entryName.includes(".css")) ||
+              (entryName.includes("app/layout.css") || entryName.includes("app/dashboard") && entryName.includes(".css"))
             ) {
               // Suppress by not logging these entries
               return;

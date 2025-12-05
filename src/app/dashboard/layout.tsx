@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import NewMainSidebar from "@/components/layouts/NewMainSidebar";
 import DashboardHeader from "@/components/layouts/DashboardHeader";
 import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const isMessagingPage = pathname?.includes('/messaging');
 
   return (
     <div className="dashboard-page flex h-screen bg-[#0B0D13] text-white overflow-hidden">
@@ -22,7 +25,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
-      <AIAssistantWidget />
+      {/* Hide global AI widget on messaging page - it's shown in ConversationHeader instead */}
+      {!isMessagingPage && <AIAssistantWidget />}
     </div>
   );
 }

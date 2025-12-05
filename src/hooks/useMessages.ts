@@ -422,6 +422,56 @@ export function useMessages({
       const senderName = senderInfo.full_name ||
         senderInfo.email?.split("@")[0] || "You";
 
+      // Extract mentions from content (@Username patterns)
+      // Match @ followed by non-whitespace characters (until space, newline, or end)
+      const mentionPattern = /@([^\s@\n]+)/g;
+      const mentions: string[] = [];
+      let match;
+      while ((match = mentionPattern.exec(content.trim())) !== null) {
+        mentions.push(match[1]);
+      }
+
+      // Get conversation details for notifications
+      const { data: conversationData } = await supabase
+        .from("messaging_channels")
+        .select("company_id, name, channel_type")
+        .eq("id", conversationId)
+        .single();
+
+      // Resolve mention usernames to user IDs
+      const mentionedUserIds: string[] = [];
+      if (mentions.length > 0 && conversationData?.company_id) {
+        // Get all users in the company to match mentions
+        const { data: companyUsers } = await supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .eq("company_id", conversationData.company_id);
+
+        if (companyUsers) {
+          for (const mention of mentions) {
+            const mentionLower = mention.toLowerCase().trim();
+            
+            // Try to match by full name (exact or contains) or email prefix
+            const matchedUser = companyUsers.find((u: any) => {
+              if (!u.full_name && !u.email) return false;
+              
+              // Exact name match
+              const exactNameMatch = u.full_name?.toLowerCase() === mentionLower;
+              // Partial name match (contains)
+              const partialNameMatch = u.full_name?.toLowerCase().includes(mentionLower);
+              // Email prefix match
+              const emailMatch = u.email?.split("@")[0].toLowerCase() === mentionLower;
+              
+              return exactNameMatch || partialNameMatch || emailMatch;
+            });
+
+            if (matchedUser && matchedUser.id !== user.id && !mentionedUserIds.includes(matchedUser.id)) {
+              mentionedUserIds.push(matchedUser.id);
+            }
+          }
+        }
+      }
+
       // First, insert the message without selecting anything back
       // We'll use the optimistic message data we already have
       const { data: insertResult, error: insertError } = await supabase
@@ -435,6 +485,8 @@ export function useMessages({
           metadata: {
             sender_name: senderName,
             sender_email: senderInfo.email,
+            mentions: mentionedUserIds, // Store mentioned user IDs
+            mention_texts: mentions, // Store mention text for display
           },
         })
         .select("id")
@@ -485,6 +537,53 @@ export function useMessages({
         // Remove optimistic message on error
         setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
         throw insertError;
+      }
+
+      // Create notifications for mentioned users
+      if (mentionedUserIds.length > 0 && conversationData?.company_id && insertResult?.id) {
+        try {
+          const conversationName = conversationData.name || 
+            (conversationData.channel_type === 'direct' ? 'Direct Message' : 'Group Chat');
+          
+          const notificationPromises = mentionedUserIds.map(async (mentionedUserId) => {
+            try {
+              // Try message_mention type first, fallback to 'task' if constraint not updated yet
+              const result = await supabase.from("notifications").insert({
+                company_id: conversationData.company_id,
+                user_id: mentionedUserId,
+                type: "message_mention" as any, // Type assertion - will fail gracefully if constraint not updated
+                title: `${senderName} mentioned you`,
+                message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}\n\nMessage ID: ${insertResult.id}\nChannel: ${conversationId}`,
+                severity: "info",
+              }).select();
+              
+              // If that fails, try with 'task' type as fallback
+              if (result.error && result.error.code === '23514') { // Check constraint violation
+                console.warn('message_mention type not available, using task type');
+                return await supabase.from("notifications").insert({
+                  company_id: conversationData.company_id,
+                  user_id: mentionedUserId,
+                  type: "task",
+                  title: `@${senderName} mentioned you`,
+                  message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}`,
+                  severity: "info",
+                });
+              }
+              
+              return result;
+            } catch (err) {
+              console.error(`Error creating notification for user ${mentionedUserId}:`, err);
+              return { error: err };
+            }
+          });
+
+          const results = await Promise.all(notificationPromises);
+          const successCount = results.filter(r => !r.error).length;
+          console.log(`✅ Created ${successCount}/${mentionedUserIds.length} mention notification(s)`);
+        } catch (notifError) {
+          console.error("Error creating mention notifications:", notifError);
+          // Don't fail message send if notifications fail
+        }
       }
 
       // Replace temp message with real message

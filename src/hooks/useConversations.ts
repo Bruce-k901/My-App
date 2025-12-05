@@ -633,16 +633,15 @@ export function useConversations({
 
   // Initial load - wait for AppContext to finish loading before loading conversations
   useEffect(() => {
-    if (autoLoad && !contextLoading) {
-      if (companyId) {
-        loadConversations();
-      } else {
-        // Context finished loading but no companyId - set loading to false
-        // Silent - companyId might not be available yet, will retry when it becomes available
-        setLoading(false);
-      }
+    if (autoLoad && !contextLoading && companyId) {
+      loadConversations();
+    } else if (autoLoad && !contextLoading && !companyId) {
+      // Context finished loading but no companyId - set loading to false
+      // Silent - companyId might not be available yet, will retry when it becomes available
+      setLoading(false);
     }
-  }, [autoLoad, contextLoading, companyId, loadConversations]);
+     
+  }, [autoLoad, contextLoading, companyId]); // Removed loadConversations to prevent loops
 
   // Retry loading when companyId becomes available after initial load
   useEffect(() => {
@@ -650,7 +649,8 @@ export function useConversations({
       // CompanyId became available after initial load, retry loading conversations
       loadConversations();
     }
-  }, [autoLoad, contextLoading, companyId, conversations.length, loading, loadConversations]);
+     
+  }, [autoLoad, contextLoading, companyId, conversations.length, loading]); // Removed loadConversations to prevent loops
 
   // Real-time subscription for conversation updates
   useEffect(() => {
@@ -709,7 +709,8 @@ export function useConversations({
       }
       supabase.removeChannel(channel);
     };
-  }, [companyId, loadConversations, reloadTimeoutRef]);
+     
+  }, [companyId]); // Removed loadConversations and reloadTimeoutRef to prevent loops
 
   return {
     conversations,

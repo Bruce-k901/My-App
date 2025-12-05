@@ -106,3 +106,4 @@ ORDER BY policyname;
 -- 3. Users can upload COSHH documents for their company (INSERT)
 -- 4. Users can view COSHH documents from their company (SELECT)
 
+

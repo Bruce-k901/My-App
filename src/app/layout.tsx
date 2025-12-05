@@ -76,14 +76,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 function shouldSuppress(message) {
                   if (!message || typeof message !== 'string') return false;
                   const msg = message.toLowerCase();
-                  // Catch all variations of preload warnings
+                  // Catch all variations of preload warnings, including CSS files
+                  // Match patterns like: "The resource <URL> was preloaded using link preload but not used"
                   return (
                     msg.includes('was preloaded using link preload but not used') ||
                     msg.includes('preloaded using link preload') ||
                     msg.includes('preload but not used') ||
                     msg.includes('checkly_logo_touching_blocks') ||
-                    (msg.includes('preload') && (msg.includes('svg') || msg.includes('media') || msg.includes('static') || msg.includes('_next'))) ||
-                    (msg.includes('resource') && msg.includes('preload') && msg.includes('not used'))
+                    (msg.includes('resource') && msg.includes('preload') && msg.includes('not used')) ||
+                    (msg.includes('preload') && (msg.includes('svg') || msg.includes('css') || msg.includes('media') || msg.includes('static') || msg.includes('_next'))) ||
+                    (msg.includes('preload') && msg.includes('.css')) ||
+                    (msg.includes('_next/static/css') && msg.includes('preload')) ||
+                    (msg.includes('app/layout.css') || (msg.includes('app/dashboard') && msg.includes('.css')))
                   );
                 }
 
@@ -166,6 +170,33 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     }
                   }
                 });
+
+                // Suppress PerformanceObserver warnings about CSS preload
+                if (typeof PerformanceObserver !== 'undefined') {
+                  try {
+                    const perfObserver = new PerformanceObserver(function(list) {
+                      // Suppress CSS preload warnings by not processing them
+                      for (const entry of list.getEntries()) {
+                        const name = entry.name.toLowerCase();
+                        if (
+                          name.includes('_next/static/css') ||
+                          name.includes('app/layout.css') ||
+                          name.includes('app/dashboard') && name.includes('.css') ||
+                          name.includes('checkly_logo_touching_blocks') ||
+                          (name.includes('_next/static/media') && name.includes('.svg'))
+                        ) {
+                          // Suppress by not logging
+                          return;
+                        }
+                      }
+                    });
+                    if (perfObserver && typeof perfObserver.observe === 'function') {
+                      perfObserver.observe({ entryTypes: ['resource'] });
+                    }
+                  } catch (e) {
+                    // PerformanceObserver might not support all entry types
+                  }
+                }
               })();
             `,
           }}

@@ -137,6 +137,28 @@ BEGIN
 END;
 $$;
 
+-- Helper function specifically for owner/admin (used for sites INSERT/UPDATE)
+CREATE OR REPLACE FUNCTION public.is_user_owner_or_admin()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+DECLARE
+  result BOOLEAN;
+BEGIN
+  -- Direct query bypassing RLS by using SECURITY DEFINER
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid()
+      AND LOWER(app_role::text) IN ('owner', 'admin')
+  ) INTO result;
+  
+  RETURN COALESCE(result, false);
+END;
+$$;
+
 -- Users can access their own profile AND profiles in their company
 -- This allows managers/admins to view and manage team members
 
@@ -257,48 +279,38 @@ CREATE POLICY companies_update_own_or_profile
 -- STEP 5: SITES POLICIES (Depends on Companies)
 -- ============================================================================
 -- Sites belong to companies, so access flows through profile.company_id
+-- CRITICAL: Use security definer functions to avoid infinite recursion
+-- when querying profiles table from within RLS policies
 
 CREATE POLICY sites_select_company
   ON public.sites
   FOR SELECT
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.company_id = sites.company_id
-    )
+    public.get_user_company_id() IS NOT NULL
+    AND public.get_user_company_id() = sites.company_id
   );
 
 CREATE POLICY sites_insert_company
   ON public.sites
   FOR INSERT
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.company_id = sites.company_id
-        AND LOWER(p.app_role::text) IN ('owner', 'admin')
-    )
+    public.get_user_company_id() IS NOT NULL
+    AND public.get_user_company_id() = sites.company_id
+    AND public.is_user_owner_or_admin() = true
   );
 
 CREATE POLICY sites_update_company
   ON public.sites
   FOR UPDATE
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.company_id = sites.company_id
-        AND LOWER(p.app_role::text) IN ('owner', 'admin')
-    )
+    public.get_user_company_id() IS NOT NULL
+    AND public.get_user_company_id() = sites.company_id
+    AND public.is_user_owner_or_admin() = true
   )
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-        AND p.company_id = sites.company_id
-        AND LOWER(p.app_role::text) IN ('owner', 'admin')
-    )
+    public.get_user_company_id() IS NOT NULL
+    AND public.get_user_company_id() = sites.company_id
+    AND public.is_user_owner_or_admin() = true
   );
 
 -- ============================================================================

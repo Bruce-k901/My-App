@@ -120,8 +120,11 @@ export function ConversationList({
 
   // Initial fetch and refresh when dependencies change
   useEffect(() => {
-    fetchTopicCounts();
-  }, [fetchTopicCounts]);
+    if (userChannelIds.length > 0) {
+      fetchTopicCounts();
+    }
+     
+  }, [userChannelIds]); // Only depend on userChannelIds to prevent loops
 
   // Real-time subscription for message topic updates
   useEffect(() => {
@@ -148,7 +151,8 @@ export function ConversationList({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userChannelIds, fetchTopicCounts]);
+     
+  }, [userChannelIds]); // Removed fetchTopicCounts to prevent loops - it's stable anyway
 
   // Filter conversations by topic and search term
   const filteredConversations = useMemo(() => {
