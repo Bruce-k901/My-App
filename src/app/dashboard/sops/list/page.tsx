@@ -364,55 +364,60 @@ function SOPsListContent() {
                         <div
                           id={`sop-row-${sop.id}`}
                           key={sop.id}
-                          className={`rounded-lg p-4 flex items-center justify-between group transition-colors ${
+                          className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors ${
                             isHighlighted
                               ? 'bg-blue-500/20 border-2 border-blue-500/60 shadow-lg shadow-blue-500/20 animate-pulse'
                               : 'bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700'
                           }`}
                         >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className={`p-2 rounded-lg ${statusBadge.bg}`}>
+                          <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div className={`p-2 rounded-lg flex-shrink-0 ${statusBadge.bg}`}>
                               <StatusIcon size={20} className={statusBadge.text} />
                             </div>
-                            <div className="text-left flex-1">
-                              <h4 className="text-white font-medium group-hover:text-magenta-400 transition-colors">
+                            <div className="text-left flex-1 min-w-0">
+                              <h4 className="text-white font-medium group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-neutral-400 mt-1">
-                                <span>{sop.ref_code}</span>
-                                <span>•</span>
-                                <span>{sop.category}</span>
-                                <span>•</span>
-                                <span className={`px-2 py-0.5 rounded-full text-xs ${statusBadge.bg} ${statusBadge.text}`}>
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-neutral-400 mt-1">
+                                <span className="whitespace-nowrap">{sop.ref_code}</span>
+                                <span className="hidden sm:inline">•</span>
+                                <span className="break-words">{sop.category}</span>
+                                <span className="hidden sm:inline">•</span>
+                                <span className={`px-2 py-0.5 rounded-full text-xs whitespace-nowrap ${statusBadge.bg} ${statusBadge.text}`}>
                                   {sop.status}
                                 </span>
                               </div>
+                              <div className="text-xs text-neutral-500 mt-1 sm:hidden">
+                                Created {new Date(sop.created_at).toLocaleDateString()} by {sop.author}
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="text-right text-sm text-neutral-400">
+                          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
+                            <div className="text-right text-sm text-neutral-400 hidden sm:block">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
                               <div className="text-xs">by {sop.author}</div>
                             </div>
-                            <button
-                              onClick={() => handleEditSOP(sop)}
-                              className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
-                            >
-                              <Edit size={16} />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleArchiveSOP(sop.id)}
-                              disabled={archivingId === sop.id}
-                              className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
-                              title="Archive SOP"
-                            >
-                              {archivingId === sop.id ? (
-                                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <FileBox size={18} />
-                              )}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleEditSOP(sop)}
+                                className="px-2 sm:px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                              >
+                                <Edit size={16} />
+                                <span className="hidden sm:inline">Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleArchiveSOP(sop.id)}
+                                disabled={archivingId === sop.id}
+                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                title="Archive SOP"
+                              >
+                                {archivingId === sop.id ? (
+                                  <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <FileBox size={18} />
+                                )}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       );
