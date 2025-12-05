@@ -12,11 +12,44 @@ export async function getCurrentUserCompanyId(): Promise<string> {
       throw new Error("No active session found");
     }
 
-    const { data: profile, error: profileError } = await supabase
+    // Try direct query first, fall back to API route if RLS blocks it (406 error)
+    let profile = null;
+    let profileError = null;
+    
+    const result = await supabase
       .from("profiles")
       .select("company_id")
       .eq("id", session.user.id)
       .single();
+    
+    profile = result.data;
+    profileError = result.error;
+    
+    // If we get a 406 error OR null data (RLS blocking silently), fall back to API route
+    const is406Error = profileError && (
+      profileError.code === 'PGRST116' || 
+      profileError.message?.includes('406') || 
+      (profileError as any).status === 406 ||
+      profileError.message?.includes('Not Acceptable')
+    );
+    
+    if (is406Error || (!profile && !profileError)) {
+      console.warn('⚠️ Direct profile query blocked by RLS (406 or null data), using API route fallback');
+      try {
+        const apiResponse = await fetch(`/api/profile/get?userId=${session.user.id}`);
+        if (apiResponse.ok) {
+          const fullProfile = await apiResponse.json();
+          profile = { company_id: fullProfile.company_id };
+          profileError = null;
+          console.log('✅ Profile loaded via API route fallback in companyHelpers');
+        } else {
+          const errorText = await apiResponse.text();
+          profileError = new Error(`API route failed: ${errorText}`);
+        }
+      } catch (apiError) {
+        profileError = apiError instanceof Error ? apiError : new Error('API route error');
+      }
+    }
 
     if (profileError) {
       throw new Error(`Failed to fetch user profile: ${profileError.message}`);

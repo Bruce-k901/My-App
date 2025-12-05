@@ -165,7 +165,7 @@ export function ClockInButton() {
                 <button
                   type="button"
                   onClick={async () => {
-                    console.log('🕐 Clock Out confirmed')
+                    console.log('Clock Out confirmed')
                     setShowClockOutConfirm(false)
                     await handleClockOutConfirm()
                   }}
@@ -218,7 +218,7 @@ export function ClockInButton() {
               <button
                 type="button"
                 onClick={async () => {
-                  console.log('🕐 Clock In confirmed')
+                  console.log('Clock In confirmed')
                   setShowClockInConfirm(false)
                   await handleClockInConfirm()
                 }}
@@ -248,7 +248,7 @@ export function ClockInButton() {
               <button
                 type="button"
                 onClick={async () => {
-                  console.log('🕐 Clock Out confirmed')
+                  console.log('Clock Out confirmed')
                   setShowClockOutConfirm(false)
                   await handleClockOutConfirm()
                 }}

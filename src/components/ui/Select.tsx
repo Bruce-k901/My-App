@@ -28,11 +28,22 @@ export default function Select({
   const getLabel = (opt: Option) => (typeof opt === "string" ? opt : opt.label);
   const getValue = (opt: Option) => (typeof opt === "string" ? opt : opt.value);
 
+  // Always normalize to string to keep component controlled
+  // Empty string will show placeholder in Radix Select when it doesn't match any option
+  const normalizedValue = React.useMemo(() => {
+    // Always return a string - never undefined - to keep component controlled
+    return value === undefined || value === null ? "" : String(value);
+  }, [value]);
+  
   return (
     <div className={cn("relative", className)}>
       {label && <label className="block text-xs text-slate-400 mb-1">{label}</label>}
       
-      <SelectPrimitive.Root value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
+      <SelectPrimitive.Root 
+        value={normalizedValue}
+        onValueChange={onValueChange} 
+        disabled={disabled}
+      >
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency
@@ -58,7 +69,7 @@ export default function Select({
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
-            className="relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-white/[0.1] bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            className="relative z-[10000] max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-white/[0.1] bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             position="popper"
             sideOffset={6}
           >

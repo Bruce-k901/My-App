@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -41,6 +41,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // It will be set to true in useEffect if needed
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [viewingAsCompanyId, setViewingAsCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
     // Mark as mounted to prevent hydration issues
@@ -57,11 +58,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth state changed:', event, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        // Force a fresh profile fetch on SIGNED_IN event (e.g., after setup-account)
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          console.log('🔄 Forcing profile refresh after auth event:', event);
+          // Small delay to ensure session is fully established
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+          }, 100);
+        } else {
+          fetchProfile(session.user.id);
+        }
       } else {
         setProfile(null);
         setCompany(null);
@@ -72,9 +83,126 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Check for admin "View As" mode
+  useEffect(() => {
+    // Only check sessionStorage on client side after mount
+    if (!isMounted) return;
+
+    const checkViewAsMode = () => {
+      const viewingAs = sessionStorage.getItem('admin_viewing_as_company');
+      if (viewingAs) {
+        try {
+          const { id } = JSON.parse(viewingAs);
+          setViewingAsCompanyId(id);
+          console.log('👁️ Admin viewing as company:', id);
+          
+          // Fetch the company data for the viewed company
+          fetchCompanyById(id);
+        } catch (error) {
+          console.error('Error parsing admin_viewing_as_company:', error);
+          sessionStorage.removeItem('admin_viewing_as_company');
+          setViewingAsCompanyId(null);
+        }
+      } else {
+        // If sessionStorage is cleared, reset viewingAsCompanyId
+        setViewingAsCompanyId(null);
+      }
+    };
+
+    // Check on mount
+    checkViewAsMode();
+
+    // Listen for storage changes (e.g., when admin exits "View As" from another tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'admin_viewing_as_company') {
+        checkViewAsMode();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [isMounted]);
+
+  // Reload user's own company when exiting "View As" mode
+  useEffect(() => {
+    if (!viewingAsCompanyId) {
+      // View As mode is not active
+      if (profile?.company_id) {
+        // User has a company - reload it if it's different from current company
+        if (company?.id !== profile.company_id) {
+          console.log('🔄 Reloading user\'s own company after exiting View As mode');
+          fetchCompanyById(profile.company_id);
+        }
+      } else {
+        // User has no company - clear company state
+        if (company) {
+          console.log('🔄 Clearing company state (user has no company)');
+          setCompany(null);
+        }
+      }
+    }
+  }, [viewingAsCompanyId, profile?.company_id]);
+
+  // Track failed company fetches to prevent infinite loops
+  const failedCompanyFetches = React.useRef<Set<string>>(new Set());
+
+  async function fetchCompanyById(companyId: string) {
+    // Prevent infinite loops - if we've already failed to fetch this company, don't try again
+    if (failedCompanyFetches.current.has(companyId)) {
+      console.debug('⚠️ AppContext: Skipping fetch for company (already failed):', companyId);
+      return;
+    }
+
+    try {
+      console.log('🔄 AppContext loading company (View As):', companyId);
+      
+      // Always use API route to bypass RLS
+      let companyData = null;
+      let companyError = null;
+      
+      try {
+        const response = await fetch(`/api/company/get?id=${companyId}`);
+        if (response.ok) {
+          companyData = await response.json();
+        } else {
+          const errorText = await response.text();
+          companyError = new Error(`API route failed: ${errorText}`);
+        }
+      } catch (apiError) {
+        console.error('API route error:', apiError);
+        companyError = apiError instanceof Error ? apiError : new Error('Unknown API error');
+      }
+      
+      if (!companyError && companyData && companyData.id) {
+        console.log('✅ AppContext company loaded (View As):', companyData.name);
+        setCompany(companyData);
+        // Remove from failed set if we succeeded
+        failedCompanyFetches.current.delete(companyId);
+      } else {
+        // Mark as failed to prevent infinite retries
+        failedCompanyFetches.current.add(companyId);
+        console.warn('⚠️ AppContext: No company found for View As', {
+          hasError: !!companyError,
+          errorMessage: companyError?.message,
+          errorCode: companyError?.code,
+          hasData: !!companyData,
+          company_id: companyId
+        });
+        setCompany(null);
+      }
+    } catch (error) {
+      console.error('❌ AppContext fetchCompanyById error:', error);
+      setCompany(null);
+    }
+  }
+
   async function fetchProfile(userId: string) {
     try {
       console.log('🔍 AppContext fetchProfile:', userId);
+      setLoading(true); // Set loading to true when starting to fetch
       
       if (!userId) {
         console.warn('⚠️ AppContext fetchProfile: No userId provided');
@@ -83,11 +211,83 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(`id.eq.${userId},auth_user_id.eq.${userId}`)
-        .maybeSingle(); // Use maybeSingle instead of single to handle "no rows" gracefully
+      // Try direct Supabase query first, but fall back to API route if RLS blocks it
+      // This handles cases where RLS policies prevent direct access (e.g., 406 errors)
+      let data = null;
+      let error = null;
+      
+      try {
+        const result = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        data = result.data;
+        error = result.error;
+        
+        // If we get a 406 error (RLS blocking), fall back to API route
+        // Check for various 406 error indicators
+        const is406Error = error && (
+          error.code === 'PGRST116' || 
+          error.message?.includes('406') || 
+          (error as any).status === 406 ||
+          error.message?.includes('Not Acceptable') ||
+          error.message?.includes('row-level security')
+        );
+        
+        if (is406Error) {
+          console.warn('⚠️ AppContext: Direct profile query blocked by RLS (406), using API route fallback');
+          
+          try {
+            const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+            if (apiResponse.ok) {
+              data = await apiResponse.json();
+              error = null; // Clear error since API route succeeded
+              console.log('✅ Profile loaded via API route fallback');
+            } else {
+              const errorText = await apiResponse.text();
+              error = new Error(`API route failed: ${errorText}`);
+              console.error('❌ API route fallback also failed:', errorText);
+            }
+          } catch (apiError) {
+            error = apiError instanceof Error ? apiError : new Error('API route error');
+            console.error('❌ API route fallback exception:', apiError);
+          }
+        }
+      } catch (queryError) {
+        error = queryError instanceof Error ? queryError : new Error('Query error');
+      }
+      
+      // DEBUG: Log profile query result
+      console.log('Profile query result (AppContext):', { 
+        data, 
+        error, 
+        userId,
+        hasData: !!data,
+        hasError: !!error,
+        errorCode: error?.code,
+        errorMessage: error?.message,
+      });
+      
+      // If we got null data but no error, it might be RLS blocking silently
+      // Try API route fallback
+      if (!data && !error) {
+        console.warn('⚠️ AppContext: Profile query returned null data with no error - might be RLS blocking silently, trying API route');
+        try {
+          const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+          if (apiResponse.ok) {
+            data = await apiResponse.json();
+            console.log('✅ Profile loaded via API route (null data fallback)');
+          } else {
+            const errorText = await apiResponse.text();
+            console.error('❌ API route failed:', errorText);
+            error = new Error(`API route failed: ${errorText}`);
+          }
+        } catch (apiError) {
+          console.error('❌ API route exception:', apiError);
+          error = apiError instanceof Error ? apiError : new Error('API route error');
+        }
+      }
       
       if (error) {
         // Check if error is truly empty
@@ -185,8 +385,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         
         // Handle specific error cases
         if (error.code === 'PGRST116') {
-          // No rows returned - user doesn't have a profile yet
-          console.warn('⚠️ No profile found for user:', userId);
+          // No rows returned - user doesn't have a profile yet (expected during first signup)
+          console.debug('No profile found for user (will be created by auth callback):', userId);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+        
+        // Handle 406 errors (RLS or table doesn't exist) - expected during first signup
+        if (error.message?.includes('406') || error.message?.includes('Not Acceptable')) {
+          console.debug('Profile query returned 406 (RLS or table issue, expected during first signup):', userId);
           setProfile(null);
           setLoading(false);
           return;
@@ -201,8 +409,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Handle case where data is null (no profile found)
+      // This is expected during first signup before profile is created
       if (!data) {
-        console.warn('⚠️ AppContext: No profile data returned for user:', userId);
+        console.debug('No profile data returned for user (expected during first signup):', userId);
         setProfile(null);
         setLoading(false);
         return;
@@ -215,40 +424,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
       setProfile(data);
       
-      // Load company data if profile has company_id
-      if (data?.company_id) {
+      // Check if admin is viewing as another company
+      const viewingAs = sessionStorage.getItem('admin_viewing_as_company');
+      if (viewingAs) {
+        try {
+          const { id } = JSON.parse(viewingAs);
+          setViewingAsCompanyId(id);
+          console.log('👁️ Admin viewing as company (from fetchProfile):', id);
+          // Don't load user's own company - the viewingAsCompanyId useEffect will load the viewed company
+          setLoading(false);
+          return;
+        } catch (error) {
+          console.error('Error parsing admin_viewing_as_company in fetchProfile:', error);
+        }
+      }
+      
+      // Load company data if profile has company_id (only if not in View As mode)
+      if (data?.company_id && !viewingAsCompanyId) {
         console.log('🔄 AppContext loading company:', data.company_id);
         
-        // Try direct ID lookup first
-        let { data: companyData, error: companyError } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('id', data.company_id)
-          .maybeSingle();
+        // Always use API route to bypass RLS
+        let companyData = null;
+        let companyError = null;
         
-        // If that fails, try created_by
-        if (companyError || !companyData) {
-          console.log('⚠️ Direct lookup failed, trying created_by:', {
-            error: companyError?.message || companyError?.code,
-            hasData: !!companyData
-          });
-          const { data: createdData, error: createdError } = await supabase
-            .from('companies')
-            .select('*')
-            .eq('created_by', userId)
-            .maybeSingle();
-          
-          if (!createdError && createdData) {
-            companyData = createdData;
-            companyError = null;
-            console.log('✅ AppContext company found via created_by:', createdData.name);
-          } else if (createdError) {
-            console.error('❌ AppContext: Error fetching company via created_by:', {
-              message: createdError.message,
-              code: createdError.code,
-              details: createdError.details
-            });
+        try {
+          const response = await fetch(`/api/company/get?id=${data.company_id}`);
+          if (response.ok) {
+            companyData = await response.json();
+            console.log('✅ AppContext company found via API route:', companyData.name);
+          } else {
+            // Try with userId as fallback
+            const fallbackResponse = await fetch(`/api/company/get?userId=${userId}`);
+            if (fallbackResponse.ok) {
+              companyData = await fallbackResponse.json();
+              console.log('✅ AppContext company found via API route (userId):', companyData.name);
+            } else {
+              const errorText = await response.text();
+              companyError = new Error(`API route failed: ${errorText}`);
+              console.error('❌ AppContext: Error fetching company via API route:', {
+                message: companyError.message,
+                errorText
+              });
+            }
           }
+        } catch (apiError) {
+          console.error('API route error:', apiError);
+          companyError = apiError instanceof Error ? apiError : new Error('Unknown API error');
         }
         
         if (!companyError && companyData && companyData.id) {
@@ -406,7 +627,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     profile,
-    companyId: profile?.company_id || user?.user_metadata?.company_id || null,
+    // Use viewingAsCompanyId if admin is viewing as another company, otherwise use profile's company_id
+    companyId: viewingAsCompanyId || profile?.company_id || user?.user_metadata?.company_id || null,
     company,
     siteId: profile?.site_id || user?.user_metadata?.site_id || null,
     role: profile?.app_role || user?.user_metadata?.app_role || 'Staff',

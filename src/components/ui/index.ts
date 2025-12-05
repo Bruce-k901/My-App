@@ -10,3 +10,5 @@ export { default as FormError } from "./FormError";
 export { default as FormGroup } from "./FormGroup";
 export { default as Select } from "./Select";
 export { default as Checkbox } from "./Checkbox";
+export { TemperatureInput } from "./TemperatureInput";
+export { NumericKeyboard } from "./NumericKeyboard";

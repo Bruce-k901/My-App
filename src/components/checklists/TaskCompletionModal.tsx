@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb } from 'lucide-react'
+import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb, ArrowRight } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskCompletionPayload } from '@/types/checklist-types'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -9,9 +9,11 @@ import MonitorDurationModal from './MonitorDurationModal'
 import { useToast } from '@/components/ui/ToastProvider'
 import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming'
 import CalloutModal from '@/components/modals/CalloutModal'
+import DocumentReviewModal from '@/components/modals/DocumentReviewModal'
 import { handleWorkflow } from './workflows'
 import type { ComplianceTemplate } from '@/data/compliance-templates'
 import Image from 'next/image'
+import Link from 'next/link'
 import CheckboxCustom from '@/components/ui/CheckboxCustom'
 
 interface TaskCompletionModalProps {
@@ -50,6 +52,8 @@ export default function TaskCompletionModal({
   const [showActionOptionsSingle, setShowActionOptionsSingle] = useState(false) // Legacy single field action options
   const [showMonitorDurationModal, setShowMonitorDurationModal] = useState(false)
   const [showCalloutModal, setShowCalloutModal] = useState(false)
+  const [showDocumentReviewModal, setShowDocumentReviewModal] = useState(false)
+  const [documentData, setDocumentData] = useState<any>(null)
   const [calloutAsset, setCalloutAsset] = useState<any>(null)
   const [calloutQueue, setCalloutQueue] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', asset: any}>>([])
   const [pendingCallouts, setPendingCallouts] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', notes?: string}>>([])
@@ -66,6 +70,13 @@ export default function TaskCompletionModal({
   const [raUploads, setRaUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const [documentUploads, setDocumentUploads] = useState<Array<{ url: string; fileName: string }>>([])
   const templateNote = task.template_notes || task.template?.notes || null
+  
+  // Callout follow-up task state
+  const [calloutData, setCalloutData] = useState<any>(null)
+  const [calloutLoading, setCalloutLoading] = useState(false)
+  const [calloutRepairSummary, setCalloutRepairSummary] = useState('')
+  const [calloutUpdateNotes, setCalloutUpdateNotes] = useState('')
+  const [calloutCloseDocuments, setCalloutCloseDocuments] = useState<File[]>([])
 
   useEffect(() => {
     if (isOpen) {
@@ -83,6 +94,11 @@ export default function TaskCompletionModal({
         } catch (e) {
           // Not JSON, treat as regular completion notes
         }
+      }
+
+      // Load document data for document_expiry tasks
+      if (taskData.source_type === 'document_expiry' && taskData.document_id) {
+        loadDocumentData(taskData.document_id)
       }
       
       // Initialize form data with task data FIRST (before loading template fields)
@@ -255,9 +271,66 @@ export default function TaskCompletionModal({
       setSopUploads([])
       setRaUploads([])
       setDocumentUploads([])
+      // Reset callout follow-up state
+      setCalloutData(null)
+      setCalloutRepairSummary('')
+      setCalloutUpdateNotes('')
+      setCalloutCloseDocuments([])
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isOpen, task])
+
+  // Load callout data for callout follow-up tasks
+  useEffect(() => {
+    if (isOpen && task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
+      loadCalloutData(task.task_data.source_id)
+    }
+  }, [isOpen, task.task_data?.source_type, task.task_data?.source_id])
+
+  async function loadDocumentData(documentId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('global_documents')
+        .select('id, name, version, expiry_date, file_path')
+        .eq('id', documentId)
+        .single()
+
+      if (error) throw error
+      setDocumentData(data)
+    } catch (err: any) {
+      console.error('Error loading document data:', err)
+      setError('Failed to load document information')
+    }
+  }
+
+  async function loadCalloutData(calloutId: string) {
+    setCalloutLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('callouts')
+        .select('*, assets(id, name, category), sites(id, name)')
+        .eq('id', calloutId)
+        .single()
+
+      if (error) throw error
+      if (data) {
+        setCalloutData(data)
+        // Pre-fill notes if callout has existing notes
+        if (data.notes) {
+          setCalloutUpdateNotes(data.notes)
+        }
+      }
+    } catch (error: any) {
+      console.error('Error loading callout data:', error)
+      showToast({
+        title: 'Error',
+        description: 'Failed to load callout details',
+        type: 'error'
+      })
+    } finally {
+      setCalloutLoading(false)
+    }
+  }
 
   // Load task resources (assets, libraries, SOPs, RAs) from task_data
   async function loadTaskResources(taskData: Record<string, any>) {
@@ -265,6 +338,37 @@ export default function TaskCompletionModal({
       // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
       // Monitoring tasks should only show the asset that was out of range
       const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
+      // CRITICAL: For PPM tasks, load the asset from task_data.source_id (or asset_id for backwards compatibility)
+      // PPM tasks use source_id (not asset_id) - this is the asset ID
+      const ppmAssetId = taskData.source_id || taskData.asset_id
+      const isPPMTask = taskData.source_type === 'ppm_overdue' && ppmAssetId
+      if (isPPMTask && ppmAssetId) {
+        const { data: assetData, error: assetError } = await supabase
+          .from('assets')
+          .select('id, name, category, site_id, sites(id, name)')
+          .eq('id', ppmAssetId)
+          .single()
+        
+        if (!assetError && assetData) {
+          const site = Array.isArray(assetData.sites) ? assetData.sites[0] : assetData.sites
+          const assetWithSite = {
+            ...assetData,
+            site_name: site?.name || 'No site assigned'
+          }
+          setSelectedAssets([assetWithSite])
+          // Update assetsMap state
+          setAssetsMap(prev => {
+            const newMap = new Map(prev)
+            newMap.set(assetData.id, assetWithSite)
+            return newMap
+          })
+          console.log('🔧 PPM task: Loaded asset for callout:', {
+            assetId: assetData.id,
+            assetName: assetData.name
+          })
+        }
+      }
       
       // Load selected assets
       if (taskData.selectedAssets && Array.isArray(taskData.selectedAssets) && taskData.selectedAssets.length > 0) {
@@ -614,11 +718,11 @@ export default function TaskCompletionModal({
               max: asset.working_temp_max
             })
           })
-        } else {
+        } else if (allAssetIds.size > 0) {
+          // Only warn if we expected to find assets but didn't
           console.warn('⚠️ [TEMPERATURE SYSTEM] No assets found with IDs:', Array.from(allAssetIds))
         }
-      } else {
-        console.warn('⚠️ [TEMPERATURE SYSTEM] No asset IDs to load ranges for')
+        // Note: No asset IDs is normal for tasks without asset selection - no warning needed
       }
       
       // CRITICAL: Always set the ranges, even if empty (prevents stale data)
@@ -827,7 +931,7 @@ export default function TaskCompletionModal({
       if (taskError) throw taskError
 
       // Create notification/alert
-      await createAlert('monitor', assetName, tempValue, monitoringTask.id)
+      await createTemperatureAlert('monitor', assetName, tempValue, monitoringTask.id)
 
       showToast({ 
         title: 'Monitoring task created', 
@@ -871,7 +975,7 @@ export default function TaskCompletionModal({
     }
   }
 
-  const createAlert = async (actionType: 'monitor' | 'callout', assetName: string, tempValue: number, taskId?: string) => {
+  const createTemperatureAlert = async (actionType: 'monitor' | 'callout', assetName: string, tempValue: number, taskId?: string) => {
     if (!companyId || !siteId) {
       console.error('Missing companyId or siteId for alert creation')
       return
@@ -898,14 +1002,17 @@ export default function TaskCompletionModal({
       // Create notification
       // Note: site_id is omitted due to foreign key constraint issues (references sites_redundant, not sites)
       // The notification will still work without site_id - company_id is sufficient for filtering
+      // Note: recipient_role column doesn't exist in notifications table - removed
+      
+      console.log('🔔 Creating notification (v3 - renamed function):', { title, message })
+      
       const notificationData: any = {
         company_id: companyId,
         // site_id: siteId, // Omitted - foreign key constraint references sites_redundant, not sites
         type: 'temperature',
         title,
         message,
-        severity: actionType === 'callout' ? 'critical' : 'warning',
-        recipient_role: 'manager',
+        // severity removed as column does not exist in notifications table
         status: 'active',
       }
 
@@ -924,7 +1031,7 @@ export default function TaskCompletionModal({
           hint: notifError.hint || null,
           attemptedData: notificationData
         }
-        console.error('❌ Error creating notification:', JSON.stringify(errorInfo, null, 2))
+        console.error('❌ Error creating notification (v3):', JSON.stringify(errorInfo, null, 2))
         
         // Check if it's an RLS policy issue
         if (notifError.code === '42501' || notifError.code === 'PGRST301' || 
@@ -1247,7 +1354,7 @@ export default function TaskCompletionModal({
         
         // Update outOfRangeAssetId for backwards compatibility
         setOutOfRangeAssetId(targetAssetId)
-        await createAlert('callout', assetName, tempValue)
+        await createTemperatureAlert('callout', assetName, tempValue)
         return
       } catch (error) {
         console.error('Error loading contractor info for callout:', error)
@@ -1361,7 +1468,7 @@ export default function TaskCompletionModal({
       
       // Update outOfRangeAssetId for backwards compatibility
       setOutOfRangeAssetId(targetAssetId)
-      await createAlert('callout', assetName, tempValue)
+      await createTemperatureAlert('callout', assetName, tempValue)
       
     } catch (error) {
       console.error('Error loading asset for callout:', error)
@@ -1488,7 +1595,13 @@ export default function TaskCompletionModal({
     setPhotos(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (skipDocumentReview = false) => {
+    // For document_expiry tasks, show document review modal instead of completing normally
+    const taskData = task.task_data as any
+    if (!skipDocumentReview && taskData?.source_type === 'document_expiry' && documentData) {
+      setShowDocumentReviewModal(true)
+      return
+    }
     if (!task.template) return
 
     setLoading(true)
@@ -1545,6 +1658,20 @@ export default function TaskCompletionModal({
       // Save temperature records for each equipment/temperature entry
       const temperatureRecords: any[] = []
       
+      // DEBUG: Log temperature field detection
+      console.log('🌡️ [TEMP LOGS] Checking for temperature data:', {
+        hasRepeatableField: !!repeatableField,
+        repeatableFieldName: repeatableField?.field_name,
+        repeatableFieldValue: repeatableField ? formData[repeatableField.field_name] : undefined,
+        hasTemperatureField: formData.temperature !== undefined,
+        temperatureValue: formData.temperature,
+        formDataKeys: Object.keys(formData).filter(k => k.toLowerCase().includes('temp')),
+        templateAssetId: task.template?.asset_id,
+        companyId,
+        siteId,
+        profileId: profile?.id
+      })
+      
       // Check if this is a temperature task with equipment fields
       if (repeatableField && formData[repeatableField.field_name]) {
         // Handle repeatable equipment list (e.g., multiple fridges)
@@ -1590,10 +1717,64 @@ export default function TaskCompletionModal({
             })
           }
         }
-      } else if (formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '') {
+      } 
+      
+      // Also check for any field with "temp" in the name (case-insensitive)
+      const tempFieldKeys = Object.keys(formData).filter(k => 
+        k.toLowerCase().includes('temp') && 
+        k !== 'temp_action' && 
+        formData[k] !== undefined && 
+        formData[k] !== null && 
+        formData[k] !== ''
+      )
+      
+      if (tempFieldKeys.length > 0 && temperatureRecords.length === 0) {
+        console.log('🌡️ [TEMP LOGS] Found temperature fields by name search:', tempFieldKeys)
+        for (const tempKey of tempFieldKeys) {
+          const tempValue = formData[tempKey]
+          const assetId = task.template?.asset_id
+          
+          if (assetId && tempValue) {
+            console.log('🌡️ [TEMP LOGS] Creating temp log from field:', tempKey, 'value:', tempValue, 'asset:', assetId)
+            const assetRange = assetTempRanges.get(assetId)
+            let status = 'ok'
+            if (assetRange) {
+              const { min, max } = assetRange
+              const temp = parseFloat(String(tempValue))
+              const tolerance = 2
+              const warningTolerance = 1
+              
+              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                status = 'failed'
+              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                status = 'warning'
+              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                status = 'warning'
+              }
+            }
+            
+            temperatureRecords.push({
+              company_id: companyId,
+              site_id: siteId,
+              asset_id: assetId,
+              recorded_by: profile.id,
+              reading: parseFloat(String(tempValue)),
+              unit: '°C',
+              recorded_at: completedAt,
+              day_part: task.daypart || null,
+              status,
+              notes: `Recorded via task: ${task.template.name}`,
+              photo_url: photoUrls.length > 0 ? photoUrls[0] : null
+            })
+          }
+        }
+      }
+      
+      if (formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '') {
         // Handle single temperature field (template's linked asset)
         const assetId = task.template.asset_id
         if (assetId) {
+          console.log('🌡️ [TEMP LOGS] Creating temp log from formData.temperature:', formData.temperature, 'asset:', assetId)
           const assetRange = assetTempRanges.get(assetId)
           let status = 'ok'
           if (assetRange) {
@@ -1629,15 +1810,236 @@ export default function TaskCompletionModal({
 
       // Insert temperature records
       if (temperatureRecords.length > 0) {
-        const { error: tempError } = await supabase
+        console.log('🌡️ [TEMP LOGS] Attempting to insert temperature records:', {
+          count: temperatureRecords.length,
+          records: temperatureRecords.map(r => ({
+            asset_id: r.asset_id,
+            reading: r.reading,
+            company_id: r.company_id,
+            site_id: r.site_id,
+            recorded_by: r.recorded_by
+          }))
+        })
+        
+        const { data: insertedData, error: tempError } = await supabase
           .from('temperature_logs')
           .insert(temperatureRecords)
+          .select()
 
         if (tempError) {
-          console.error('Temperature logs insert error:', tempError)
+          console.error('❌ Temperature logs insert error:', tempError)
+          console.error('❌ Error details:', {
+            message: tempError.message,
+            details: tempError.details,
+            hint: tempError.hint,
+            code: tempError.code
+          })
           // Don't fail the whole operation, but log it
         } else {
-          console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`)
+          console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`, insertedData)
+        }
+      } else {
+        console.log('⚠️ [TEMP LOGS] No temperature records to insert. Check formData:', {
+          formDataKeys: Object.keys(formData),
+          formDataValues: Object.entries(formData).filter(([k, v]) => 
+            k.toLowerCase().includes('temp') || (typeof v === 'number' && v > -50 && v < 50)
+          ),
+          hasRepeatableField: !!repeatableField,
+          templateAssetId: task.template?.asset_id
+        })
+      }
+
+      // Handle callout follow-up tasks - update/close the callout
+      if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id && calloutData) {
+        try {
+          const updateData: any = {
+            updated_at: completedAt
+          }
+
+          // Add update notes if provided
+          if (calloutUpdateNotes && calloutUpdateNotes.trim()) {
+            const existingNotes = calloutData.notes || ''
+            updateData.notes = existingNotes 
+              ? `${existingNotes}\n\n[${new Date().toLocaleString()}] ${calloutUpdateNotes}`
+              : calloutUpdateNotes
+          }
+
+          // If callout is open, check if we're trying to close it
+          if (calloutData.status === 'open') {
+            // If repair summary is provided, we're closing the callout
+            if (calloutRepairSummary && calloutRepairSummary.trim()) {
+              // Upload documents if any
+              const documentUrls: Array<{ url: string; name: string; type: string }> = []
+              
+              if (calloutCloseDocuments.length > 0) {
+                for (const file of calloutCloseDocuments) {
+                  try {
+                    const fileExt = file.name.split('.').pop()
+                    const random = Math.random().toString(36).slice(2, 8)
+                    const filePath = `${companyId}/callout-documents/${calloutData.id}/${Date.now()}-${random}.${fileExt}`
+                    
+                    // Try callout-documents bucket first, fallback to global_docs
+                    let bucketName = 'callout-documents'
+                    let { error: uploadError } = await supabase.storage
+                      .from(bucketName)
+                      .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                        contentType: file.type || 'application/pdf'
+                      })
+                    
+                    if (uploadError) {
+                      // Fallback to global_docs bucket
+                      bucketName = 'global_docs'
+                      const fallbackResult = await supabase.storage
+                        .from(bucketName)
+                        .upload(filePath, file, {
+                          cacheControl: '3600',
+                          upsert: false,
+                          contentType: file.type || 'application/pdf'
+                        })
+                      uploadError = fallbackResult.error
+                    }
+                    
+                    if (uploadError) throw uploadError
+                    
+                    const { data: urlData } = supabase.storage
+                      .from(bucketName)
+                      .getPublicUrl(filePath)
+                    
+                    documentUrls.push({
+                      url: urlData.publicUrl,
+                      name: file.name,
+                      type: file.type?.includes('pdf') ? 'invoice' : 'worksheet' // Default to invoice for PDFs, worksheet for images
+                    })
+                  } catch (uploadErr: any) {
+                    console.error('Error uploading callout document:', uploadErr)
+                    showToast({
+                      title: 'Document upload failed',
+                      description: `Failed to upload ${file.name}: ${uploadErr.message}`,
+                      type: 'warning'
+                    })
+                    // Continue with other documents
+                  }
+                }
+              }
+
+              // Merge with existing documents
+              const existingDocuments = calloutData.documents || []
+              const allDocuments = [...existingDocuments, ...documentUrls]
+
+              updateData.repair_summary = calloutRepairSummary
+              updateData.status = 'closed'
+              updateData.closed_at = completedAt
+              updateData.documents = allDocuments
+
+              // Try RPC function first, fallback to direct update
+              // Note: RPC may fail due to permissions or function not existing, so we always have a fallback
+              let calloutClosed = false
+              
+              try {
+                // Ensure documents is properly formatted as JSONB array
+                const documentsArray = Array.isArray(allDocuments) ? allDocuments : []
+                
+                const { data: rpcData, error: rpcError } = await supabase.rpc('close_callout', {
+                  p_callout_id: calloutData.id,
+                  p_repair_summary: calloutRepairSummary,
+                  p_documents: documentsArray
+                })
+
+                if (rpcError) {
+                  console.warn('RPC close_callout error, using direct update:', rpcError)
+                  console.warn('RPC error details:', {
+                    message: rpcError.message,
+                    code: rpcError.code,
+                    details: rpcError.details,
+                    hint: rpcError.hint
+                  })
+                  
+                  // Fall through to direct update
+                  const { error: updateError } = await supabase
+                    .from('callouts')
+                    .update(updateData)
+                    .eq('id', calloutData.id)
+
+                  if (updateError) {
+                    console.error('Direct update also failed:', updateError)
+                    // Don't throw - log error but allow task completion
+                    showToast({
+                      title: 'Warning',
+                      description: 'Callout may not have been closed. Please check manually.',
+                      type: 'warning'
+                    })
+                  } else {
+                    console.log('✅ Callout closed successfully via direct update (RPC failed)')
+                    calloutClosed = true
+                  }
+                } else {
+                  console.log('✅ Callout closed successfully via RPC')
+                  calloutClosed = true
+                }
+              } catch (error: any) {
+                console.error('Error closing callout:', error)
+                // Try direct update as final fallback
+                try {
+                  const { error: updateError } = await supabase
+                    .from('callouts')
+                    .update(updateData)
+                    .eq('id', calloutData.id)
+                  
+                  if (updateError) {
+                    console.error('Direct update failed:', updateError)
+                    showToast({
+                      title: 'Warning',
+                      description: 'Callout may not have been closed. Please check manually.',
+                      type: 'warning'
+                    })
+                  } else {
+                    console.log('✅ Callout closed successfully via direct update (fallback)')
+                    calloutClosed = true
+                  }
+                } catch (fallbackError: any) {
+                  console.error('Fallback update also failed:', fallbackError)
+                  showToast({
+                    title: 'Warning',
+                    description: 'Callout may not have been closed. Please check manually.',
+                    type: 'warning'
+                  })
+                }
+              }
+              
+              // Note: We don't throw an error here - task completion should proceed even if callout close fails
+              // The user can manually close the callout later if needed
+            } else if (Object.keys(updateData).length > 1) {
+              // Just update notes if callout is still open and we have notes (but not closing)
+              const { error: updateError } = await supabase
+                .from('callouts')
+                .update(updateData)
+                .eq('id', calloutData.id)
+
+              if (updateError) {
+                console.warn('Error updating callout notes:', updateError)
+                // Don't fail the task completion if notes update fails
+              }
+            }
+            // If callout is open but no repair summary and no notes, that's fine - just complete the task
+          } else {
+            // Callout is already closed/reopened - just update notes if provided
+            if (Object.keys(updateData).length > 1) {
+              const { error: updateError } = await supabase
+                .from('callouts')
+                .update(updateData)
+                .eq('id', calloutData.id)
+
+              if (updateError) {
+                console.warn('Error updating callout notes:', updateError)
+                // Don't fail the task completion if notes update fails
+              }
+            }
+          }
+        } catch (error: any) {
+          console.error('Error handling callout follow-up:', error)
+          throw error // Re-throw to prevent task completion if callout update fails
         }
       }
 
@@ -2105,26 +2507,45 @@ export default function TaskCompletionModal({
 
       // Create alert if task was completed late (after window end)
       if (completedLate) {
-        try {
-          const { error: alertError } = await supabase
-            .from('notifications')
-            .insert({
-              company_id: companyId,
-              type: 'task',
-              title: 'Task Completed Late',
-              message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
-              severity: 'warning',
-              recipient_role: 'manager',
-              status: 'active',
-            })
-          
-          if (alertError) {
-            console.error('Error creating late completion alert:', alertError)
-          } else {
-            console.log('✅ Late completion alert created')
+        // Only create alert if companyId is available (required for RLS policy)
+        if (companyId) {
+          try {
+            const { error: alertError, data } = await supabase
+              .from('notifications')
+              .insert({
+                company_id: companyId,
+                type: 'task',
+                title: 'Task Completed Late',
+                message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,
+                severity: 'warning', // Required field - must be 'info', 'warning', or 'critical'
+                status: 'active',
+              })
+              .select()
+            
+            if (alertError) {
+              // Better error logging - serialize the error object properly
+              const errorDetails = {
+                message: alertError.message,
+                details: alertError.details,
+                hint: alertError.hint,
+                code: alertError.code,
+                error: alertError
+              }
+              console.error('Error creating late completion alert:', errorDetails)
+            } else {
+              console.log('✅ Late completion alert created', data)
+            }
+          } catch (alertErr) {
+            // Handle unexpected errors
+            const errorMessage = alertErr instanceof Error 
+              ? alertErr.message 
+              : typeof alertErr === 'object' && alertErr !== null
+              ? JSON.stringify(alertErr, null, 2)
+              : String(alertErr)
+            console.error('Error creating late completion alert:', errorMessage, alertErr)
           }
-        } catch (alertErr) {
-          console.error('Error creating late completion alert:', alertErr)
+        } else {
+          console.warn('⚠️ Cannot create late completion alert: companyId is missing')
         }
       }
 
@@ -4473,6 +4894,213 @@ export default function TaskCompletionModal({
               </div>
             )}
 
+            {/* Generic Task Navigation Section - Certificate, SOP, Document tasks */}
+            {(() => {
+              const taskData = task.task_data as any
+              if (!taskData?.source_type) return null
+              
+              let link: string | null = null
+              let label: string = ''
+              let description: string = ''
+              
+              switch (taskData.source_type) {
+                case 'certificate_expiry':
+                  if (taskData.profile_id) {
+                    link = `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
+                    label = 'View Training Details'
+                    description = 'Update certificate expiry date and training records'
+                  }
+                  break
+                
+                case 'sop_review':
+                  if (taskData.sop_id) {
+                    link = `/dashboard/sops/list?sop_id=${taskData.sop_id}`
+                    label = 'Review SOP'
+                    description = 'Review and update the SOP, set new review date'
+                  }
+                  break
+                
+                case 'document_expiry':
+                  if (taskData.document_id) {
+                    link = `/dashboard/documents?document_id=${taskData.document_id}`
+                    label = 'Review Document'
+                    description = 'Review and update the document, set new expiry date'
+                  }
+                  break
+                
+                case 'ppm_overdue':
+                  // PPM tasks should not show "View PPM Schedule" - user should place callout first
+                  // Return null to hide this quick navigation section
+                  return null
+              }
+              
+              if (!link) return null
+              
+              return (
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <FileText className="h-5 w-5 text-blue-400 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium text-sm mb-1">Quick Navigation</h3>
+                      <p className="text-white/70 text-xs">
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href={link}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    {label}
+                  </Link>
+                </div>
+              )
+            })()}
+
+            {/* Callout Follow-up Task Section */}
+            {task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id && (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3 mb-4">
+                  <PhoneCall className="h-5 w-5 text-blue-400 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-sm mb-1">Callout Follow-up Required</h3>
+                    {calloutLoading ? (
+                      <p className="text-white/70 text-xs">Loading callout details...</p>
+                    ) : calloutData ? (
+                      <div className="space-y-2">
+                        <p className="text-white/70 text-xs">
+                          <span className="font-medium">Status:</span> {calloutData.status}
+                          {calloutData.asset_id && calloutData.assets && (
+                            <>
+                              <br />
+                              <span className="font-medium">Asset:</span> {calloutData.assets.name || 'Unknown'}
+                            </>
+                          )}
+                          {calloutData.fault_description && (
+                            <>
+                              <br />
+                              <span className="font-medium">Issue:</span> {calloutData.fault_description}
+                            </>
+                          )}
+                        </p>
+                        {calloutData.status === 'open' && (
+                          <div className="mt-3 space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Update Notes (Optional)
+                              </label>
+                              <textarea
+                                value={calloutUpdateNotes}
+                                onChange={(e) => setCalloutUpdateNotes(e.target.value)}
+                                placeholder="Add any updates or notes about this callout..."
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                rows={3}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Repair Summary (Optional - Required to close callout)
+                              </label>
+                              <textarea
+                                value={calloutRepairSummary}
+                                onChange={(e) => setCalloutRepairSummary(e.target.value)}
+                                placeholder="Enter repair summary to close this callout. Leave empty to just update notes..."
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                rows={4}
+                              />
+                              <p className="text-xs text-white/50 mt-1">
+                                Enter a repair summary to close this callout. You can complete the task without closing the callout by leaving this empty.
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/80 mb-1">
+                                Documents (Optional - PDF/Photos)
+                              </label>
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                multiple
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || [])
+                                  setCalloutCloseDocuments(prev => [...prev, ...files])
+                                }}
+                                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 file:cursor-pointer"
+                              />
+                              {calloutCloseDocuments.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {calloutCloseDocuments.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs text-white/70 bg-white/5 rounded px-2 py-1">
+                                      <span>{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setCalloutCloseDocuments(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-400 hover:text-red-300"
+                                      >
+                                        Remove
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              <p className="text-xs text-white/50 mt-1">
+                                Upload invoices, worksheets, or photos related to the repair.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {calloutData.status !== 'open' && (
+                          <p className="text-white/50 text-xs mt-2">
+                            This callout is already {calloutData.status}. You can still complete the task to acknowledge the follow-up.
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-white/70 text-xs">Callout details not available</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PPM Task Callout Section - Always show callout button for PPM tasks */}
+            {task.task_data?.source_type === 'ppm_overdue' && (task.task_data?.source_id || task.task_data?.asset_id) && (
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="h-5 w-5 text-orange-400 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-medium text-sm mb-1">PPM Service Required</h3>
+                    <p className="text-white/70 text-xs">
+                      This asset requires scheduled maintenance. If service is needed, create a callout for the contractor.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    // PPM tasks use source_id (not asset_id) - this is the asset ID
+                    const assetId = task.task_data?.source_id || task.task_data?.asset_id
+                    if (assetId) {
+                      await handleCalloutAction(assetId)
+                    } else {
+                      showToast({
+                        title: 'Error',
+                        description: 'Asset information not available for callout.',
+                        type: 'error'
+                      })
+                    }
+                  }}
+                  className="w-full flex items-center gap-3 p-3 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                >
+                  <PhoneCall className="h-5 w-5" />
+                  <div className="text-left">
+                    <p className="text-sm font-medium">Place Callout</p>
+                    <p className="text-xs text-red-400/70">Create a callout for PPM service</p>
+                  </div>
+                </button>
+              </div>
+            )}
+
             {/* Photo Upload - Mobile Optimized */}
             {task.template?.evidence_types?.includes('photo') && (
               <div>
@@ -4585,7 +5213,48 @@ export default function TaskCompletionModal({
             }, 300) // Small delay for smooth transition
           }}
           asset={calloutAsset}
-          requireTroubleshoot={true} // Always require troubleshooting when opened from task
+          initialCalloutType={(() => {
+            // PPM tasks should use 'ppm' callout type for preventative maintenance
+            const taskData = task.task_data as any
+            const isPPMTask = taskData?.source_type === 'ppm_overdue' || taskData?.source_type === 'ppm_service'
+            return isPPMTask ? 'ppm' : 'reactive'
+          })()}
+          requireTroubleshoot={(() => {
+            // PPM tasks should NOT require troubleshooting - they're scheduled maintenance
+            const taskData = task.task_data as any
+            const isPPMTask = taskData?.source_type === 'ppm_overdue' || taskData?.source_type === 'ppm_service'
+            
+            // Only require troubleshooting for temperature tasks that are out of range
+            // PPM tasks bypass troubleshooting
+            if (isPPMTask) {
+              return false
+            }
+            
+            // For temperature tasks, require troubleshooting if there's an out-of-range asset
+            // Otherwise, require troubleshooting when opened from task (default behavior)
+            return outOfRangeAssets.size > 0 || outOfRangeAssetId !== null
+          })()}
+        />
+      )}
+
+      {/* Document Review Modal */}
+      {documentData && (
+        <DocumentReviewModal
+          isOpen={showDocumentReviewModal}
+          onClose={() => {
+            setShowDocumentReviewModal(false)
+          }}
+          documentId={documentData.id}
+          documentName={documentData.name}
+          currentExpiryDate={documentData.expiry_date}
+          currentVersion={documentData.version}
+          currentFilePath={documentData.file_path}
+          onSuccess={async () => {
+            // After document review is complete, mark the task as completed
+            setShowDocumentReviewModal(false)
+            // Complete the task normally (skip document review check)
+            await handleSubmit(true)
+          }}
         />
       )}
     </div>

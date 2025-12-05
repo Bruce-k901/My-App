@@ -194,19 +194,17 @@ export default function ArchivedAssetsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg">Loading archived assets...</div>
-          </div>
+      <div className="w-full">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-white">Loading archived assets...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="w-full">
+      <div className="w-full px-4 py-8">
         {/* Header with Controls */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">

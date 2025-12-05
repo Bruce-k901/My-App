@@ -5,6 +5,7 @@ import { X, User, Users, Building2, Search } from 'lucide-react';
 import { useConversations } from '@/hooks/useConversations';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import type { TopicCategory } from '@/types/messaging';
 
 interface StartConversationModalProps {
   isOpen: boolean;
@@ -113,16 +114,46 @@ export function StartConversationModal({
 
     setCreating(true);
     try {
-      const conversation = await createConversation(
-        conversationType,
-        selectedUsers,
-        conversationType === 'group' ? groupName.trim() : undefined
-      );
+      // Create conversation with topic data
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
-      if (conversation) {
-        onConversationCreated(conversation.id);
-        handleClose();
+      const conversationData: any = {
+        channel_type: conversationType,
+        company_id: companyId,
+        created_by: user.id,
+      };
+
+      if (conversationType === 'group' && groupName.trim()) {
+        conversationData.name = groupName.trim();
       }
+
+      const { data: conversation, error: createError } = await supabase
+        .from('messaging_channels')
+        .insert(conversationData)
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // Add participants
+      const allParticipantIds = [user.id, ...selectedUsers];
+      const participants = allParticipantIds.map((userId, index) => ({
+        channel_id: conversation.id,
+        user_id: userId,
+        member_role: index === 0 ? 'admin' : 'member' as const,
+      }));
+
+      const { error: participantsError } = await supabase
+        .from('messaging_channel_members')
+        .insert(participants);
+
+      if (participantsError) {
+        console.error('Error inserting participants:', participantsError);
+      }
+
+      onConversationCreated(conversation.id);
+      handleClose();
     } catch (error) {
       console.error('Error creating conversation:', error);
     } finally {

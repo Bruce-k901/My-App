@@ -5,9 +5,12 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { ConversationList } from './ConversationList';
 import { MessageThread } from './MessageThread';
 import { MessageInput } from './MessageInput';
+import ConversationContentTabs from './ConversationContentTabs';
+import { ConversationHeader } from './ConversationHeader';
 import { useMessages } from '@/hooks/useMessages';
-import { MessageSquare, Menu } from 'lucide-react';
+import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
 import type { Message } from '@/types/messaging';
+import { supabase } from '@/lib/supabase';
 
 export function Messaging() {
   const searchParams = useSearchParams();
@@ -87,63 +90,70 @@ export function Messaging() {
   });
 
   return (
-    <div className="flex h-[calc(100vh-72px)] bg-[#0B0D13] overflow-hidden relative">
-      {/* Mobile: Burger Button - Only show when viewing a conversation, takes us back to overview */}
-      {selectedConversationId && (
+    <div className="flex h-full w-full bg-[#0B0D13] overflow-hidden">
+      {/* Mobile: Back Button - Only show when viewing a conversation */}
+      {selectedConversationId && isMobile && (
         <button
           onClick={() => {
             setSelectedConversationId(null);
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-[76px] left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] rounded-lg text-white transition-colors"
-          aria-label="Back to conversations overview"
+          className="md:hidden fixed top-[80px] left-4 z-50 p-2 bg-white/[0.1] hover:bg-white/[0.15] backdrop-blur-sm border border-white/[0.1] rounded-lg text-white transition-colors shadow-lg"
+          aria-label="Back to conversations"
         >
-          <Menu className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </button>
       )}
 
       {/* Sidebar - Conversation List */}
       {/* Mobile: Overlay sidebar that slides in */}
-      {/* Desktop: Always visible sidebar */}
-      <div
+      {/* Desktop: Always visible sidebar - FIXED WIDTH */}
+      <aside
         className={`
-          fixed md:static
-          top-[72px] left-0
           w-full md:w-80
-          h-[calc(100vh-72px)]
+          h-full
           flex-shrink-0
           bg-[#0B0D13] border-r border-white/[0.1]
-          z-40
-          transition-transform duration-300 ease-in-out
+          overflow-hidden
+          flex flex-col
           ${
             isMobile 
-              ? (isSidebarOpen || !selectedConversationId ? 'translate-x-0' : '-translate-x-full')
-              : 'translate-x-0'
+              ? `fixed top-[72px] left-0 z-40 transition-transform duration-300 ease-in-out ${
+                  isSidebarOpen || !selectedConversationId ? 'translate-x-0' : '-translate-x-full'
+                }`
+              : ''
           }
-          overflow-hidden
         `}
         >
         <ConversationList
           selectedConversationId={selectedConversationId}
           onSelectConversation={handleSelectConversation}
         />
-      </div>
+      </aside>
 
       {/* Mobile: Overlay backdrop when sidebar is open */}
-      {isSidebarOpen && (
+      {isSidebarOpen && isMobile && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/50 z-30 top-[72px]"
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
         />
       )}
 
-      {/* Main - Message Thread */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden w-full md:w-auto">
+      {/* Main - Message Thread - TAKES REMAINING SPACE */}
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0">
         {selectedConversationId ? (
           <>
-            {/* Message Thread - Scrollable */}
-            <div className="flex-1 min-h-0 overflow-hidden">
+            {/* Conversation Header - Fixed at top */}
+            <div className="flex-shrink-0 bg-[#0B0D13] z-10">
+              <ConversationHeader conversationId={selectedConversationId} />
+            </div>
+            {/* Content Tabs (Tasks, Images, Files) - Fixed below header */}
+            <div className="flex-shrink-0 bg-[#0B0D13]">
+              <ConversationContentTabs conversationId={selectedConversationId} />
+            </div>
+            {/* Message Thread - Scrollable, takes remaining space */}
+            <div className="flex-1 min-h-0 overflow-y-auto">
               <MessageThread 
                 conversationId={selectedConversationId}
                 messagesHook={messagesHook}
@@ -151,7 +161,7 @@ export function Messaging() {
               />
             </div>
             {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 bg-[#0B0D13] border-t border-white/[0.06]">
               <MessageInput
                 conversationId={selectedConversationId}
                 sendMessage={messagesHook.sendMessage}
@@ -184,8 +194,7 @@ export function Messaging() {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
-

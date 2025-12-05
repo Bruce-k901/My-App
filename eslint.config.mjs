@@ -12,7 +12,7 @@ export default [
   // Main app code
   {
     files: ["src/**/*.{ts,tsx,js,jsx}"],
-    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "*.d.ts", "next-env.d.ts"],
+    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "*.d.ts", "next-env.d.ts", "**/types/supabase.ts"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -86,6 +86,7 @@ export default [
       "*.config.ts",
       "temp_*.tsx",
       "*.test.ts",
+      "**/types/supabase.ts", // Generated Supabase types file
     ],
   },
 

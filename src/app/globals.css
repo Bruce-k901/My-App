@@ -4,34 +4,45 @@
 
 /* iOS Safari Sticky Header Fix */
 .ios-sticky-header {
-  position: -webkit-sticky; /* Safari fallback */
-  position: sticky;
+  position: fixed; /* Fixed positioning for mobile app-like feel */
   top: 0;
-  z-index: 50;
+  z-index: 60; /* Higher than sidebar (z-50) to ensure header is on top */
   /* Force hardware acceleration for iOS */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   will-change: transform;
   /* Ensure background is opaque */
   background-color: #0b0d13 !important;
+  /* Prevent header from being scrollable */
+  width: 100%;
+}
+
+/* On desktop, header starts after sidebar */
+@media (min-width: 1024px) {
+  .ios-sticky-header {
+    left: 5rem; /* 80px - matches sidebar width */
+    width: calc(100% - 5rem);
+  }
 }
 
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
   .ios-sticky-header {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed; /* Keep fixed on iOS for app-like feel */
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
 
-  /* Ensure parent containers don't break sticky */
+  /* Prevent page-level scrolling on mobile */
   .dashboard-page {
-    overflow: visible;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
   }
 
   .dashboard-page > div {
-    overflow: visible;
+    overflow: hidden;
+    height: 100%;
   }
 }
 
@@ -68,8 +79,7 @@
 
   /* iOS PWA sticky header fix */
   .ios-sticky-header {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed; /* Keep fixed for app-like feel */
     top: 0;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -276,6 +286,33 @@ html {
   overflow-y: auto;
 }
 
+/* Prevent body scrolling on dashboard pages - app-like experience */
+body:has(.dashboard-page) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  position: fixed;
+  width: 100%;
+  touch-action: none; /* Prevent pull-to-refresh and overscroll on mobile */
+}
+
+/* Ensure html doesn't scroll when dashboard is active */
+html:has(body:has(.dashboard-page)) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Fallback for browsers that don't support :has() - add .no-scroll class manually if needed */
+body.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  position: fixed;
+  width: 100%;
+  touch-action: none;
+}
+
 /* Hide scrollbar track in WebKit browsers while preserving wheel scroll */
 body::-webkit-scrollbar {
   width: 0px;
@@ -453,6 +490,30 @@ body:has(.marketing-page) .global-footer {
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* Dashboard content area - smooth scrolling for app-like feel */
+.dashboard-page main {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Custom scrollbar for dashboard content (optional - can be hidden) */
+.dashboard-page main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-page main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-page main::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.3);
+  border-radius: 3px;
+}
+
+.dashboard-page main::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.5);
 }
 
 /* ----------------------------- */

@@ -213,8 +213,13 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
   }, []);
 
   useEffect(() => {
-    setTitle(currentPage?.type === 'content' ? currentPage.title : undefined);
-  }, [currentModule?.manifest.id, pageIndex, currentPage?.type, currentPage?.title]);
+    // Type guard: only access title when page type is 'content'
+    if (currentPage?.type === 'content') {
+      setTitle(currentPage.title);
+    } else {
+      setTitle(undefined);
+    }
+  }, [currentModule?.manifest.id, pageIndex, currentPage]);
 
   const completeCourse = useCallback(async () => {
     const snapshot = useAttemptStore.getState();

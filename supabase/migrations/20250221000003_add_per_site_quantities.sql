@@ -18,6 +18,11 @@ CREATE INDEX IF NOT EXISTS idx_addon_site_quantities_site_id ON public.company_a
 -- RLS Policies
 ALTER TABLE public.company_addon_site_quantities ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (to allow recreation)
+DROP POLICY IF EXISTS addon_site_quantities_select_own_company ON public.company_addon_site_quantities;
+DROP POLICY IF EXISTS addon_site_quantities_insert_own_company ON public.company_addon_site_quantities;
+DROP POLICY IF EXISTS addon_site_quantities_update_own_company ON public.company_addon_site_quantities;
+
 CREATE POLICY addon_site_quantities_select_own_company
   ON public.company_addon_site_quantities
   FOR SELECT
