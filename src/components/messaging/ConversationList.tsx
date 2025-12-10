@@ -39,6 +39,11 @@ export function ConversationList({
   });
   const [userChannelIds, setUserChannelIds] = useState<string[]>([]);
 
+  // Debug: Track modal state changes
+  useEffect(() => {
+    console.log('Start Conversation Modal state changed:', isStartModalOpen);
+  }, [isStartModalOpen]);
+
   // Get user's channel IDs
   useEffect(() => {
     const fetchUserChannels = async () => {
@@ -283,8 +288,20 @@ export function ConversationList({
         {/* Header with Start Button - Fixed at top with exact height */}
         <div className="flex-shrink-0 p-4 border-b border-white/[0.1] bg-white/[0.03] h-[140px] flex flex-col justify-between">
           <button
-            onClick={() => setIsStartModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[40px]"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Start Conversation button clicked, current state:', isStartModalOpen);
+              setIsStartModalOpen(true);
+              console.log('Set modal open to true');
+            }}
+            onMouseDown={(e) => {
+              // Prevent any potential form submission or other default behavior
+              e.preventDefault();
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[40px] cursor-pointer pointer-events-auto"
+            type="button"
+            aria-label="Start a new conversation"
           >
             <Plus className="w-4 h-4" />
             Start Conversation
@@ -448,7 +465,9 @@ export function ConversationList({
       {/* Start Conversation Modal */}
       <StartConversationModal
         isOpen={isStartModalOpen}
-        onClose={() => setIsStartModalOpen(false)}
+        onClose={() => {
+          setIsStartModalOpen(false);
+        }}
         onConversationCreated={async (conversationId) => {
           setIsStartModalOpen(false);
           // Refresh the conversation list to show the new conversation

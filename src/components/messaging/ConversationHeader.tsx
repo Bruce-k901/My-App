@@ -41,20 +41,30 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
           setConversation(conv);
 
           // Load participants
+          // First get member user IDs
           const { data: membersData, error: membersError } = await supabase
             .from('messaging_channel_members')
-            .select(`
-              user_id,
-              profiles:user_id (
-                id,
-                full_name,
-                email
-              )
-            `)
-            .eq('channel_id', conversationId);
+            .select('user_id')
+            .eq('channel_id', conversationId)
+            .is('left_at', null);
+          
+          // Then fetch profiles separately
+          let participants: any[] = [];
+          if (!membersError && membersData && membersData.length > 0) {
+            const userIds = membersData.map((m: any) => m.user_id);
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', userIds);
+            
+            participants = (profilesData || []).map(profile => ({
+              user_id: profile.id,
+              profiles: profile
+            }));
+          }
 
-          if (!membersError && membersData) {
-            setParticipants(membersData.map((m: any) => ({
+          if (!membersError) {
+            setParticipants(participants.map((m: any) => ({
               id: m.user_id,
               ...m.profiles,
             })));

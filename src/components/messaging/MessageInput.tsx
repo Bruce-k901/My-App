@@ -52,25 +52,28 @@ export function MessageInput({
         // Load conversation participants
         const { data: participantsData } = await supabase
           .from('messaging_channel_members')
-          .select(`
-            user_id,
-            profiles:user_id (
-              id,
-              full_name,
-              email
-            )
-          `)
+          .select('user_id')
           .eq('channel_id', conversationId)
           .is('left_at', null);
 
-        const participants: MentionUser[] = (participantsData || [])
-          .map((m: any) => ({
-            id: m.user_id,
-            full_name: m.profiles?.full_name || null,
-            email: m.profiles?.email || null,
-            isParticipant: true,
-          }))
-          .filter((p: MentionUser) => p.id !== user?.id); // Exclude current user
+        // Fetch profiles for participants
+        let participants: MentionUser[] = [];
+        if (participantsData && participantsData.length > 0) {
+          const userIds = participantsData.map((m: any) => m.user_id);
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, full_name, email')
+            .in('id', userIds);
+          
+          participants = (profilesData || [])
+            .map((p: any) => ({
+              id: p.id,
+              full_name: p.full_name || null,
+              email: p.email || null,
+              isParticipant: true,
+            }))
+            .filter((p: MentionUser) => p.id !== user?.id); // Exclude current user
+        }
 
         // Load organization users
         const { data: orgUsersData } = await supabase

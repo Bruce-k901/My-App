@@ -480,6 +480,17 @@ export function useConversations({
         company_id_from_context: companyId,
       });
 
+      console.log("🔍 Attempting to insert conversation:", {
+        table: "messaging_channels",
+        data: conversationData,
+        companyId,
+        userId: user.id,
+        userObject: user,
+        created_by_value: conversationData.created_by,
+        company_id_value: conversationData.company_id,
+        channel_type_value: conversationData.channel_type,
+      });
+
       const { data: conversation, error: createError } = await supabase
         .from("messaging_channels")
         .insert(conversationData)
@@ -507,20 +518,49 @@ export function useConversations({
           JSON.stringify(createError, Object.getOwnPropertyNames(createError)),
         );
         
-        throw createError;
+        // Re-throw with more context
+        const enhancedError = new Error(
+          `Failed to create conversation: ${createError.message || createError.code || 'Unknown error'}. ` +
+          `Details: ${createError.details || 'None'}. ` +
+          `Hint: ${createError.hint || 'None'}`
+        ) as any;
+        enhancedError.originalError = createError;
+        enhancedError.code = createError.code;
+        enhancedError.details = createError.details;
+        enhancedError.hint = createError.hint;
+        throw enhancedError;
       }
 
-      // Add participants
-      const allParticipantIds = [user.id, ...participantIds];
+      if (!conversation) {
+        console.error("❌ Insert succeeded but no conversation returned");
+        throw new Error("Conversation insert succeeded but returned no data");
+      }
+
+      // Add participants - deduplicate to avoid conflicts
+      const allParticipantIds = [...new Set([user.id, ...participantIds])];
       const participants = allParticipantIds.map((userId, index) => ({
         channel_id: conversation.id,
         user_id: userId,
         member_role: index === 0 ? "admin" : "member" as const,
       }));
 
-      const { error: participantsError } = await supabase
+      // Check if participants already exist to avoid conflicts
+      const { data: existingMembers } = await supabase
         .from("messaging_channel_members")
-        .insert(participants);
+        .select("user_id")
+        .eq("channel_id", conversation.id)
+        .in("user_id", allParticipantIds);
+
+      const existingUserIds = new Set((existingMembers || []).map((m: any) => m.user_id));
+      const newParticipants = participants.filter((p) => !existingUserIds.has(p.user_id));
+
+      let participantsError: any = null;
+      if (newParticipants.length > 0) {
+        const result = await supabase
+          .from("messaging_channel_members")
+          .insert(newParticipants);
+        participantsError = result.error;
+      }
 
       if (participantsError) {
         const errorInfo = {
@@ -551,20 +591,27 @@ export function useConversations({
       return conversation as Conversation;
     } catch (err: any) {
       // Better error logging
-      const errorMessage = err?.message || err?.error?.message || String(err) ||
+      const errorMessage = err?.message || err?.originalError?.message || err?.error?.message || String(err) ||
         "Failed to create conversation";
-      const errorCode = err?.code || err?.error?.code || "UNKNOWN";
+      const errorCode = err?.code || err?.originalError?.code || err?.error?.code || "UNKNOWN";
+      const errorDetails = err?.details || err?.originalError?.details || err?.error?.details;
+      const errorHint = err?.hint || err?.originalError?.hint || err?.error?.hint;
       
-      console.error("Error creating conversation:", {
+      console.error("❌ Error creating conversation (caught):", {
         message: errorMessage,
         code: errorCode,
-        details: err?.details || err?.error?.details,
-        hint: err?.hint || err?.error?.hint,
+        details: errorDetails,
+        hint: errorHint,
         fullError: err,
+        originalError: err?.originalError,
         errorStringified: JSON.stringify(err, Object.getOwnPropertyNames(err)),
+        companyId,
+        type,
+        participantIds,
+        name,
       });
       
-      setError(errorMessage);
+      setError(`${errorMessage}${errorDetails ? ` (${errorDetails})` : ''}${errorHint ? ` Hint: ${errorHint}` : ''}`);
       return null;
     }
   }, [companyId, siteId, loadConversations]);

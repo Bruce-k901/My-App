@@ -24,7 +24,7 @@ export function StartConversationModal({
   onClose,
   onConversationCreated,
 }: StartConversationModalProps) {
-  const { createConversation } = useConversations({ autoLoad: false });
+  const { createConversation, error: hookError } = useConversations({ autoLoad: false });
   const { companyId, siteId } = useAppContext();
   const [conversationType, setConversationType] = useState<'direct' | 'group'>('direct');
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,50 +112,67 @@ export function StartConversationModal({
     if (selectedUsers.length === 0) return;
     if (conversationType === 'group' && !groupName.trim()) return;
 
+    // Validate required fields
+    if (!companyId) {
+      alert('Error: Company ID is missing. Please refresh the page and try again.');
+      console.error('Company ID is missing');
+      return;
+    }
+
     setCreating(true);
     try {
-      // Create conversation with topic data
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const conversationData: any = {
-        channel_type: conversationType,
-        company_id: companyId,
-        created_by: user.id,
-      };
+      // Use the hook's createConversation function which handles everything properly
+      const allParticipantIds = [...selectedUsers];
+      const conversationName = conversationType === 'group' ? groupName.trim() : undefined;
+      
+      console.log('Creating conversation via hook:', {
+        type: conversationType,
+        participantIds: allParticipantIds,
+        name: conversationName,
+        companyId,
+      });
 
-      if (conversationType === 'group' && groupName.trim()) {
-        conversationData.name = groupName.trim();
+      const conversation = await createConversation(
+        conversationType,
+        allParticipantIds,
+        conversationName
+      );
+
+      if (!conversation) {
+        // Check if there's an error state in the hook
+        const errorMsg = hookError || 'Unknown error';
+        console.error('createConversation returned null. Possible reasons:');
+        console.error('- companyId is missing:', companyId);
+        console.error('- Hook error:', hookError);
+        console.error('- An error occurred (check console above for details)');
+        console.error('- RLS policy prevented the insert');
+        throw new Error(`Failed to create conversation: ${errorMsg}. Check browser console for details.`);
       }
 
-      const { data: conversation, error: createError } = await supabase
-        .from('messaging_channels')
-        .insert(conversationData)
-        .select()
-        .single();
-
-      if (createError) throw createError;
-
-      // Add participants
-      const allParticipantIds = [user.id, ...selectedUsers];
-      const participants = allParticipantIds.map((userId, index) => ({
-        channel_id: conversation.id,
-        user_id: userId,
-        member_role: index === 0 ? 'admin' : 'member' as const,
-      }));
-
-      const { error: participantsError } = await supabase
-        .from('messaging_channel_members')
-        .insert(participants);
-
-      if (participantsError) {
-        console.error('Error inserting participants:', participantsError);
-      }
-
+      console.log('Conversation created successfully:', conversation);
       onConversationCreated(conversation.id);
       handleClose();
-    } catch (error) {
-      console.error('Error creating conversation:', error);
+    } catch (error: any) {
+      console.error('Error creating conversation:', {
+        error,
+        errorMessage: error?.message,
+        errorCode: error?.code,
+        errorDetails: error?.details,
+        errorHint: error?.hint,
+        errorString: String(error),
+        errorJSON: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        companyId,
+        conversationType,
+        selectedUsers,
+        groupName,
+      });
+      
+      // Show user-friendly error message
+      const errorMsg = error?.message || error?.details || error?.hint || String(error) || 'Unknown error';
+      alert(`Failed to create conversation: ${errorMsg}`);
     } finally {
       setCreating(false);
     }
@@ -169,11 +186,34 @@ export function StartConversationModal({
     onClose();
   };
 
+  // Debug: Log when modal should render
+  useEffect(() => {
+    if (isOpen) {
+      console.log('StartConversationModal: Modal is open, rendering...');
+    } else {
+      console.log('StartConversationModal: Modal is closed');
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-[#141823] border border-white/[0.1] rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col">
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={(e) => {
+        // Close modal when clicking backdrop
+        if (e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+    >
+      <div 
+        className="bg-[#141823] border border-white/[0.1] rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col"
+        onClick={(e) => {
+          // Prevent clicks inside modal from closing it
+          e.stopPropagation();
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/[0.1]">
           <h2 className="text-xl font-semibold text-white">Start a Conversation</h2>
