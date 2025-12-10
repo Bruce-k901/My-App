@@ -272,14 +272,29 @@ Deno.serve(async (req) => {
             continue;
           }
 
+          // Ensure we have an assigned user - try site GM, then company admin
+          let finalAssignedUserId = assignedToUserId;
+          if (!finalAssignedUserId) {
+            // Try to get company admin/owner
+            const { data: adminUser } = await supabase
+              .from("profiles")
+              .select("id")
+              .eq("company_id", asset.company_id)
+              .in("app_role", ["Admin", "Owner"])
+              .limit(1)
+              .single();
+            finalAssignedUserId = adminUser?.id || null;
+          }
+
           const { error } = await supabase.from("checklist_tasks").insert({
             template_id: ppmTemplate?.id || null,
             company_id: asset.company_id,
             site_id: asset.site_id,
-            custom_name: `PPM Service Due: ${asset.name}`,
+            custom_name: `PPM Required: ${asset.name}`, // Changed to match your format
             due_date: todayString,
             daypart: "anytime",
-            assigned_to_user_id: assignedToUserId, // Assign to site GM
+            due_time: "09:00", // Add default due_time
+            assigned_to_user_id: finalAssignedUserId, // Always assign to someone
             status: "pending",
             priority: "high",
             generated_at: today.toISOString(),

@@ -154,3 +154,4 @@ SELECT
 FROM public.profiles
 WHERE company_id = public.get_user_company_id()
 ORDER BY full_name;
+

@@ -127,3 +127,4 @@ BEGIN
   RAISE NOTICE 'Fix complete! Assets feature should now be visible for temp monitoring templates.';
   RAISE NOTICE '============================================================================';
 END $$;
+

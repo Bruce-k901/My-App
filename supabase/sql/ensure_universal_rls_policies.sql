@@ -366,3 +366,4 @@ COMMIT;
 -- 2. Include in database migrations for new deployments
 -- 3. Verify role-based restrictions work in application layer
 -- ============================================================================
+

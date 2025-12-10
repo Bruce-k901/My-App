@@ -61,3 +61,4 @@ SELECT
 FROM public.profiles
 WHERE email = 'lee@e-a-g.co'
 ORDER BY created_at DESC;
+

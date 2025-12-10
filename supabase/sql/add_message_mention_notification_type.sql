@@ -24,3 +24,4 @@ CHECK (type IN (
 CREATE INDEX IF NOT EXISTS idx_notifications_message_mention 
 ON public.notifications(user_id, type, created_at DESC) 
 WHERE type = 'message_mention' AND read = false;
+

@@ -78,3 +78,4 @@ SELECT
 FROM public.profiles
 WHERE company_id = 'fae1b377-859d-4ba6-bce2-d8aaf0044517'
 ORDER BY full_name;
+

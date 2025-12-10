@@ -106,3 +106,4 @@ SELECT
 --   -- DELETE FROM sites WHERE name = 'TEST SITE - DELETE ME';
 --   -- Then ROLLBACK; or COMMIT;
 -- ROLLBACK;
+

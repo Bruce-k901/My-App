@@ -365,3 +365,4 @@ COMMIT;
 -- 5. Test viewing business page
 -- 6. Verify role-based restrictions work in UI
 -- ============================================================================
+

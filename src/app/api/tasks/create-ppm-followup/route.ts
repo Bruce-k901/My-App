@@ -21,6 +21,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if asset is archived - don't create tasks for archived assets
+    const { data: asset, error: assetError } = await supabase
+      .from('assets')
+      .select('id, archived, name')
+      .eq('id', assetId)
+      .single()
+
+    if (assetError || !asset) {
+      return NextResponse.json(
+        { error: 'Asset not found' },
+        { status: 404 }
+      )
+    }
+
+    if (asset.archived) {
+      console.log(`Skipping follow-up task creation for archived asset: ${asset.name || assetId}`)
+      return NextResponse.json(
+        { 
+          success: false,
+          message: 'Asset is archived - follow-up task not created',
+          skipped: true
+        },
+        { status: 200 }
+      )
+    }
+
     // Get the ppm-update-generic template (or create a generic one)
     const { data: template } = await supabase
       .from('task_templates')

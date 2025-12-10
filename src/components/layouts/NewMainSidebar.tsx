@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { isRestricted, type AppRole } from "@/lib/accessControl";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
@@ -28,6 +28,11 @@ import {
   MessageSquare,
   Clock,
   Shield,
+  Warehouse,
+  FileX,
+  Receipt,
+  ClipboardList,
+  ChefHat,
 } from "lucide-react";
 
 // Section with hover popup
@@ -57,8 +62,8 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
   const pathname = usePathname();
   const { role: contextRole, signOut, profile } = useAppContext();
   
-  // Build dynamic sections with courses and libraries
-  const sections: SidebarSection[] = [
+  // Build dynamic sections with courses and libraries - memoized to prevent hydration issues
+  const sections: SidebarSection[] = useMemo(() => [
   {
     label: "Organization",
     icon: Building2,
@@ -141,7 +146,23 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       { label: "Attendance Register", href: "/dashboard/logs/attendance" },
     ],
   },
-];
+  {
+    label: "Stockly",
+    icon: Warehouse,
+    items: [
+      { label: "Dashboard", href: "/dashboard/stockly" },
+      { label: "Recipes", href: "/dashboard/stockly/recipes" },
+      { label: "Stock Items", href: "/dashboard/stockly/stock-items" },
+      { label: "Deliveries", href: "/dashboard/stockly/deliveries" },
+      { label: "Suppliers", href: "/dashboard/stockly/suppliers" },
+      { label: "Storage Areas", href: "/dashboard/stockly/storage-areas" },
+      { label: "Stock Counts", href: "/dashboard/stockly/stock-counts", icon: ClipboardList },
+      { label: "Sales", href: "/dashboard/stockly/sales", icon: Receipt },
+      { label: "Credit Notes", href: "/dashboard/stockly/credit-notes" },
+      { label: "Reports", href: "/dashboard/stockly/reports", icon: BarChart3 },
+    ],
+  },
+], []);
 
 const directLinks: SidebarLink[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
@@ -184,6 +205,7 @@ const directLinks: SidebarLink[] = [
   const assetsRef = useRef<HTMLDivElement>(null);
   const coursesRef = useRef<HTMLDivElement>(null);
   const logsRef = useRef<HTMLDivElement>(null);
+  const stocklyRef = useRef<HTMLDivElement>(null);
   
   // Map section labels to refs
   const buttonRefs: { [key: string]: React.RefObject<HTMLDivElement> } = {
@@ -194,6 +216,7 @@ const directLinks: SidebarLink[] = [
     "Assets": assetsRef,
     "Courses": coursesRef,
     "Logs": logsRef,
+    "Stockly": stocklyRef,
   };
 
   // Handle hover with delay

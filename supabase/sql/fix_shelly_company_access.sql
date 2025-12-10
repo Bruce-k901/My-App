@@ -172,3 +172,4 @@ COMMIT;
 -- 3. If company is empty, you may need to populate it via the UI (as Admin)
 -- 4. Test Shelly's login again
 -- ============================================================================
+

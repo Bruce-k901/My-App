@@ -83,3 +83,4 @@ ORDER BY policyname;
 -- Test query (run as a specific user to verify)
 -- Replace USER_ID with actual user ID to test
 -- SELECT * FROM public.profiles WHERE id = 'USER_ID';
+

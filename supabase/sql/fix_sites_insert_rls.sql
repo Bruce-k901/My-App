@@ -159,3 +159,4 @@ SELECT
   public.get_user_company_id() AS user_company_id,
   public.is_user_admin_or_manager() AS is_admin_or_manager,
   public.is_user_owner_or_admin() AS is_owner_or_admin;
+

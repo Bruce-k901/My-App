@@ -206,3 +206,4 @@ COMMIT;
 -- 2. Verify Shelly appears in "ALL USERS IN CHECKLY TEST CO" list
 -- 3. Have Shelly log in again - business page should now work
 -- ============================================================================
+

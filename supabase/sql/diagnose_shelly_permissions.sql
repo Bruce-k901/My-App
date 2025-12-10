@@ -207,3 +207,4 @@ COMMIT;
 -- - RLS policy is blocking access
 -- - Profile and company mismatch
 -- ============================================================================
+

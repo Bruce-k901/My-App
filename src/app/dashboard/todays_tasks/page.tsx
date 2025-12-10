@@ -395,6 +395,35 @@ export default function DailyChecklistPage() {
         }
       }
       
+      // Fetch assets to check which ones are archived
+      // Collect all unique asset_ids from templates
+      const assetIds = [...new Set(
+        Object.values(templatesMap)
+          .map((t: any) => t.asset_id)
+          .filter((id): id is string => id !== null && id !== undefined)
+      )]
+      
+      // Fetch assets to check archived status
+      let archivedAssetIds = new Set<string>()
+      if (assetIds.length > 0) {
+        const { data: assets, error: assetsError } = await supabase
+          .from('assets')
+          .select('id, archived, name')
+          .in('id', assetIds)
+        
+        if (assetsError) {
+          console.error('❌ Error fetching assets for archived check:', assetsError)
+        } else if (assets) {
+          // Build set of archived asset IDs
+          assets.forEach(asset => {
+            if (asset.archived) {
+              archivedAssetIds.add(asset.id)
+              console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
+            }
+          })
+        }
+      }
+      
       // Map tasks with templates
       const tasksWithTemplates = data.map((task: any) => ({
         ...task,
@@ -404,6 +433,7 @@ export default function DailyChecklistPage() {
       // Filter out tasks with missing templates (orphaned tasks)
       // NOTE: We're temporarily showing orphaned tasks with a warning instead of hiding them
       // This helps diagnose why templates aren't being found (RLS issue, missing templates, etc.)
+      // Also filter out tasks linked to archived assets
       const validTasks = tasksWithTemplates.filter(task => {
         if (task.template_id && !task.template) {
           console.warn(`⚠️ Task has template_id but template not found: task_id=${task.id}, template_id=${task.template_id}`);
@@ -411,6 +441,13 @@ export default function DailyChecklistPage() {
           // TODO: Once templates are loading correctly, change this back to `return false`
           return true; // Include orphaned tasks for now
         }
+        
+        // Exclude tasks linked to archived assets
+        if (task.template?.asset_id && archivedAssetIds.has(task.template.asset_id)) {
+          console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          return false
+        }
+        
         return true;
       });
       

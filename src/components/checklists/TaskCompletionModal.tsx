@@ -2524,14 +2524,41 @@ export default function TaskCompletionModal({
             
             if (alertError) {
               // Better error logging - serialize the error object properly
-              const errorDetails = {
-                message: alertError.message,
-                details: alertError.details,
-                hint: alertError.hint,
-                code: alertError.code,
-                error: alertError
+              const errorMessage = alertError.message || 'Unknown error';
+              const errorCode = alertError.code || 'NO_CODE';
+              const errorDetails = alertError.details || null;
+              const errorHint = alertError.hint || null;
+              
+              // Build a meaningful error message
+              let fullErrorMessage = `Error creating late completion alert: ${errorMessage}`;
+              if (errorCode !== 'NO_CODE') {
+                fullErrorMessage += ` (code: ${errorCode})`;
               }
-              console.error('Error creating late completion alert:', errorDetails)
+              if (errorDetails) {
+                fullErrorMessage += ` - Details: ${errorDetails}`;
+              }
+              if (errorHint) {
+                fullErrorMessage += ` - Hint: ${errorHint}`;
+              }
+              
+              // Log the error with proper serialization
+              let serializedError = 'Unable to serialize error';
+              try {
+                // Try to serialize the error object, including all own properties
+                const errorKeys = Object.getOwnPropertyNames(alertError);
+                serializedError = JSON.stringify(alertError, errorKeys.length > 0 ? errorKeys : undefined);
+              } catch (serializeErr) {
+                // Fallback: create a simple object representation
+                serializedError = `{message: "${errorMessage}", code: "${errorCode}"}`;
+              }
+              
+              console.error(fullErrorMessage, {
+                message: errorMessage,
+                code: errorCode,
+                details: errorDetails,
+                hint: errorHint,
+                fullError: serializedError
+              });
             } else {
               console.log('✅ Late completion alert created', data)
             }
@@ -2540,9 +2567,9 @@ export default function TaskCompletionModal({
             const errorMessage = alertErr instanceof Error 
               ? alertErr.message 
               : typeof alertErr === 'object' && alertErr !== null
-              ? JSON.stringify(alertErr, null, 2)
+              ? JSON.stringify(alertErr, Object.getOwnPropertyNames(alertErr), 2)
               : String(alertErr)
-            console.error('Error creating late completion alert:', errorMessage, alertErr)
+            console.error('Error creating late completion alert (unexpected error):', errorMessage, alertErr)
           }
         } else {
           console.warn('⚠️ Cannot create late completion alert: companyId is missing')

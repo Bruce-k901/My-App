@@ -87,7 +87,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     (msg.includes('preload') && (msg.includes('svg') || msg.includes('css') || msg.includes('media') || msg.includes('static') || msg.includes('_next'))) ||
                     (msg.includes('preload') && msg.includes('.css')) ||
                     (msg.includes('_next/static/css') && msg.includes('preload')) ||
-                    (msg.includes('app/layout.css') || (msg.includes('app/dashboard') && msg.includes('.css')))
+                    msg.includes('app/layout.css') ||
+                    (msg.includes('app/dashboard') && msg.includes('.css'))
                   );
                 }
 
@@ -181,7 +182,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                         if (
                           name.includes('_next/static/css') ||
                           name.includes('app/layout.css') ||
-                          name.includes('app/dashboard') && name.includes('.css') ||
+                          (name.includes('app/dashboard') && name.includes('.css')) ||
                           name.includes('checkly_logo_touching_blocks') ||
                           (name.includes('_next/static/media') && name.includes('.svg'))
                         ) {

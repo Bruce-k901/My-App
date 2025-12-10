@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import type { Conversation } from "@/types/messaging";
@@ -631,9 +631,22 @@ export function useConversations({
     [],
   );
 
+  // Track if we've attempted to load conversations to prevent loops
+  const hasAttemptedLoadRef = useRef(false);
+  const lastCompanyIdRef = useRef<string | null>(null);
+
+  // Reset attempt flag when companyId changes
+  useEffect(() => {
+    if (companyId !== lastCompanyIdRef.current) {
+      hasAttemptedLoadRef.current = false;
+      lastCompanyIdRef.current = companyId;
+    }
+  }, [companyId]);
+
   // Initial load - wait for AppContext to finish loading before loading conversations
   useEffect(() => {
-    if (autoLoad && !contextLoading && companyId) {
+    if (autoLoad && !contextLoading && companyId && !hasAttemptedLoadRef.current) {
+      hasAttemptedLoadRef.current = true;
       loadConversations();
     } else if (autoLoad && !contextLoading && !companyId) {
       // Context finished loading but no companyId - set loading to false
@@ -642,15 +655,6 @@ export function useConversations({
     }
      
   }, [autoLoad, contextLoading, companyId]); // Removed loadConversations to prevent loops
-
-  // Retry loading when companyId becomes available after initial load
-  useEffect(() => {
-    if (autoLoad && !contextLoading && companyId && conversations.length === 0 && !loading) {
-      // CompanyId became available after initial load, retry loading conversations
-      loadConversations();
-    }
-     
-  }, [autoLoad, contextLoading, companyId, conversations.length, loading]); // Removed loadConversations to prevent loops
 
   // Real-time subscription for conversation updates
   useEffect(() => {
