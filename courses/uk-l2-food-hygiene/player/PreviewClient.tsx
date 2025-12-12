@@ -26,7 +26,6 @@ export function PreviewClient({ moduleId, pages }: { moduleId: string; pages: Pa
                 title: moduleId,
                 isActive: true,
                 isComplete: false,
-                percentage: 0,
               },
             ]}
           />

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -57,7 +58,7 @@ interface CalendarEvent {
 
 export default function ManagerCalendarPage() {
   const { companyId, siteId, userProfile } = useAppContext();
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -93,6 +94,16 @@ export default function ManagerCalendarPage() {
     message: "",
     urgent: false,
   });
+
+  // Initialize currentDate on client mount to avoid hydration mismatch
+  useEffect(() => {
+    if (currentDate === null) {
+      setCurrentDate(new Date());
+    }
+  }, [currentDate]);
+
+  // Helper to get current date with fallback (prevents null errors during initial render)
+  const getCurrentDate = () => currentDate || new Date();
 
   // Load users and templates
   useEffect(() => {
@@ -135,87 +146,145 @@ export default function ManagerCalendarPage() {
   }, [companyId]);
 
   // Load calendar data
-  useEffect(() => {
-    const load = async () => {
-      if (!companyId) return;
+  const loadCalendarData = useCallback(async () => {
+    if (!companyId) return;
+    
+    try {
+      // Load ALL handover data (not just current month) so tasks/reminders from widget appear regardless of date
+      // Tasks and reminders have their own dueDate/date properties, so we need all data to show them correctly
+      const { data } = await supabase
+        .from("profile_settings")
+        .select("key,value")
+        .eq("company_id", companyId)
+        .like("key", "handover:%")
+        .order("key", { ascending: false });
       
-      try {
-        // Load all handover data for the current month
-        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split("T")[0];
-        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split("T")[0];
+      if (data) {
+        const allNotes: Record<string, string> = {};
+        const allTasks: TaskItem[] = [];
+        const allReminders: ReminderItem[] = [];
+        const allMessages: MessageItem[] = [];
         
-        const { data } = await supabase
-          .from("profile_settings")
-          .select("key,value")
-          .eq("company_id", companyId)
-          .like("key", "handover:%")
-          .gte("key", `handover:${startOfMonth}`)
-          .lte("key", `handover:${endOfMonth}`);
-        
-        if (data) {
-          const allNotes: Record<string, string> = {};
-          const allTasks: TaskItem[] = [];
-          const allReminders: ReminderItem[] = [];
-          const allMessages: MessageItem[] = [];
-          
-          data.forEach((item) => {
+        data.forEach((item) => {
+          try {
             const handoverData = typeof item.value === "string" ? JSON.parse(item.value) : item.value;
             const dateKey = item.key.replace("handover:", "");
             
             if (handoverData.notes) {
               allNotes[dateKey] = handoverData.notes;
             }
-            if (handoverData.tasks) {
+            // Tasks have their own dueDate, so include all tasks regardless of which date they were created on
+            if (handoverData.tasks && Array.isArray(handoverData.tasks)) {
               allTasks.push(...handoverData.tasks);
             }
-            if (handoverData.reminders) {
+            // Reminders have their own date, so include all reminders regardless of which date they were created on
+            if (handoverData.reminders && Array.isArray(handoverData.reminders)) {
               allReminders.push(...handoverData.reminders);
             }
-            if (handoverData.messages) {
+            // Messages are global, include all
+            if (handoverData.messages && Array.isArray(handoverData.messages)) {
               allMessages.push(...handoverData.messages);
             }
-          });
-          
-          setNotes(allNotes);
-          setTasks(allTasks);
-          setReminders(allReminders);
-          setMessages(allMessages);
-        }
-
-        // Load sent messages
-        const { data: sentData } = await supabase
-          .from("notifications")
-          .select("*")
-          .eq("company_id", companyId)
-          .eq("type", "task")
-          .like("message", "%[Handover Message ID:%")
-          .order("created_at", { ascending: false })
-          .limit(20);
+          } catch (parseError) {
+            console.error("Error parsing handover data:", parseError, item);
+          }
+        });
         
-        if (sentData) {
-          const formatted = sentData.map((n: any) => {
-            const messageParts = n.message.split("\n\n---\n");
-            const originalMessage = messageParts[0] || n.message;
-            
-            return {
-              id: n.id,
-              recipient: n.recipient_role === "manager" ? "manager" : n.recipient_role === "admin" ? "owner" : "all_staff",
-              subject: n.title,
-              message: originalMessage,
-              urgent: n.severity === "critical" || n.priority === "urgent",
-              sent: true,
-              sentAt: n.created_at,
-            };
-          });
-          setSentMessages(formatted);
-        }
-      } catch (error: any) {
-        console.error("Failed to load calendar data:", error);
+        setNotes(allNotes);
+        setTasks(allTasks);
+        setReminders(allReminders);
+        setMessages(allMessages);
+      }
+
+      // Load sent messages
+      const { data: sentData } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("company_id", companyId)
+        .eq("type", "task")
+        .like("message", "%[Handover Message ID:%")
+        .order("created_at", { ascending: false })
+        .limit(20);
+      
+      if (sentData) {
+        const formatted = sentData.map((n: any) => {
+          const messageParts = n.message.split("\n\n---\n");
+          const originalMessage = messageParts[0] || n.message;
+          
+          return {
+            id: n.id,
+            recipient: n.recipient_role === "manager" ? "manager" : n.recipient_role === "admin" ? "owner" : "all_staff",
+            subject: n.title,
+            message: originalMessage,
+            urgent: n.severity === "critical" || n.priority === "urgent",
+            sent: true,
+            sentAt: n.created_at,
+          };
+        });
+        setSentMessages(formatted);
+      }
+    } catch (error: any) {
+      console.error("Failed to load calendar data:", error);
+    }
+  }, [companyId]);
+
+  useEffect(() => {
+    loadCalendarData();
+  }, [companyId, currentDate]);
+
+  // Add a refresh function that can be called manually
+  const refreshCalendar = useCallback(() => {
+    loadCalendarData();
+  }, [loadCalendarData]);
+
+  // Expose refresh function on window for debugging or external access
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).refreshCalendar = refreshCalendar;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).refreshCalendar;
       }
     };
-    
-    load();
-  }, [companyId, currentDate]);
+  }, [refreshCalendar]);
+
+  // Refresh data when page becomes visible (e.g., when navigating from widget)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        loadCalendarData();
+      }
+    };
+
+    const handleFocus = () => {
+      loadCalendarData();
+    };
+
+    // Listen for custom event dispatched from the widget when data is saved
+    const handleHandoverUpdate = () => {
+      loadCalendarData();
+    };
+
+    // Listen for storage changes (if widget uses localStorage to signal updates)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'handover_updated') {
+        loadCalendarData();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("handover-saved", handleHandoverUpdate);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("handover-saved", handleHandoverUpdate);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [companyId, loadCalendarData]);
 
   // Update form dates when selected date changes
   useEffect(() => {
@@ -388,8 +457,7 @@ export default function ManagerCalendarPage() {
         type: "task",
         title: `Reminder: ${reminder.title}`,
         message: reminderMessage,
-        severity: "info",
-        recipient_role: "staff",
+        severity: "info", // Required field - must be 'info', 'warning', or 'critical'
         status: "active",
         due_date: reminderDate, // This will be used to filter notifications by date
         priority: reminder.repeat === "daily" ? "high" : "medium", // Daily reminders get higher priority
@@ -476,8 +544,7 @@ export default function ManagerCalendarPage() {
         type: "task",
         title: message.subject,
         message: messageWithSender,
-        severity: message.urgent ? "critical" : "info",
-        recipient_role: recipientRole,
+        severity: message.urgent ? "critical" : "info", // Required field - must be 'info', 'warning', or 'critical'
         status: "active",
         priority: message.urgent ? "urgent" : "medium",
       }).select().single();
@@ -526,8 +593,9 @@ export default function ManagerCalendarPage() {
 
   // Calendar functions
   const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+    const date = getCurrentDate();
+    const year = date.getFullYear();
+    const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
@@ -570,7 +638,8 @@ export default function ManagerCalendarPage() {
   };
 
   const navigateMonth = (direction: "prev" | "next") => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + (direction === "next" ? 1 : -1), 1));
+    const date = getCurrentDate();
+    setCurrentDate(new Date(date.getFullYear(), date.getMonth() + (direction === "next" ? 1 : -1), 1));
   };
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -581,8 +650,8 @@ export default function ManagerCalendarPage() {
   const selectedDateNotes = selectedDate ? notes[selectedDate] || "" : "";
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+    <div className="w-full -mt-[72px] pt-[72px]">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -594,6 +663,13 @@ export default function ManagerCalendarPage() {
               <p className="text-sm text-slate-400">Plan, organize, and track tasks, reminders, and messages</p>
             </div>
           </div>
+          <Link
+            href="/dashboard/tasks/my-tasks"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            View My Tasks
+          </Link>
         </div>
 
         {/* Tabs */}
@@ -635,7 +711,7 @@ export default function ManagerCalendarPage() {
                 <ChevronLeft className="w-5 h-5 text-slate-400" />
               </button>
               <h2 className="text-xl font-semibold text-white">
-                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                {currentDate ? `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}` : ""}
               </h2>
               <button
                 onClick={() => navigateMonth("next")}

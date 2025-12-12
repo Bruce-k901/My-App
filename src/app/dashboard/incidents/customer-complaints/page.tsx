@@ -7,6 +7,8 @@ import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { CustomerComplaintModal } from '@/components/incidents/CustomerComplaintModal';
+import { IncidentReportViewer } from '@/components/incidents/IncidentReportViewer';
+import { downloadIncidentReportPDF } from '@/lib/incident-report-pdf';
 import Select from '@/components/ui/Select';
 
 interface CustomerComplaint {
@@ -31,6 +33,8 @@ export default function CustomerComplaintsPage() {
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [isIncidentModalOpen, setIsIncidentModalOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<CustomerComplaint | null>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewingComplaint, setViewingComplaint] = useState<CustomerComplaint | null>(null);
 
   useEffect(() => {
     fetchComplaints();
@@ -341,8 +345,8 @@ export default function CustomerComplaintsPage() {
                 <div className="flex items-center gap-2 pt-4 border-t border-white/10">
                   <Button
                     onClick={() => {
-                      setSelectedComplaint(complaint);
-                      toast.info('View complaint report feature coming soon');
+                      setViewingComplaint(complaint);
+                      setIsViewerOpen(true);
                     }}
                     variant="outline"
                     size="sm"
@@ -351,8 +355,14 @@ export default function CustomerComplaintsPage() {
                     View Report
                   </Button>
                   <Button
-                    onClick={() => {
-                      toast.info('Download report feature coming soon');
+                    onClick={async () => {
+                      try {
+                        await downloadIncidentReportPDF(complaint);
+                        toast.success('Report download started');
+                      } catch (error: any) {
+                        console.error('Error downloading report:', error);
+                        toast.error(error.message || 'Failed to download report');
+                      }
                     }}
                     variant="outline"
                     size="sm"
@@ -378,6 +388,25 @@ export default function CustomerComplaintsPage() {
           // Refresh complaints list
           fetchComplaints();
           toast.success('Customer complaint logged and follow-up tasks generated');
+        }}
+      />
+
+      {/* Incident Report Viewer */}
+      <IncidentReportViewer
+        incident={viewingComplaint}
+        isOpen={isViewerOpen}
+        onClose={() => {
+          setIsViewerOpen(false);
+          setViewingComplaint(null);
+        }}
+        onDownload={async (incident) => {
+          try {
+            await downloadIncidentReportPDF(incident);
+            toast.success('Report download started');
+          } catch (error: any) {
+            console.error('Error downloading report:', error);
+            toast.error(error.message || 'Failed to download report');
+          }
         }}
       />
     </div>

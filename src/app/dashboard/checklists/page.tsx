@@ -14,6 +14,7 @@ import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/tempera
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { buildTaskQueryFilter, isTaskDueNow } from '@/lib/shift-utils'
+import { calculateTaskTiming } from '@/utils/taskTiming'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -76,32 +77,72 @@ export default function DailyChecklistPage() {
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
-  useEffect(() => {
-    if (companyId) {
-      fetchTodaysTasks()
-      fetchUpcomingTasks()
-      loadBreachActions()
-    } else {
-      setLoading(false)
-      setTasks([])
+  // Define loadBreachActions first (needed by fetchTodaysTasks)
+  const loadBreachActions = useCallback(async () => {
+    if (!siteId) {
+      setBreachActions([])
+      return
     }
-  }, [siteId, companyId, fetchTodaysTasks])
 
-  // Listen for refresh events (e.g., after clock-in)
-  useEffect(() => {
-    const handleRefresh = () => {
-      console.log('🔄 Refreshing tasks after clock-in/out')
-      if (fetchTodaysTasksRef.current) {
-        fetchTodaysTasksRef.current()
-        fetchUpcomingTasks()
+    try {
+      setBreachLoading(true)
+      const today = new Date()
+      const weekAgo = new Date(today.getTime())
+      weekAgo.setDate(weekAgo.getDate() - 7)
+
+      let query = supabase
+        .from('temperature_breach_actions')
+        .select(
+          `
+            id,
+            action_type,
+            status,
+            due_at,
+            completed_at,
+            notes,
+            metadata,
+            created_at,
+            temperature_log:temperature_logs(
+              id,
+              recorded_at,
+              reading,
+              unit,
+              status,
+              meta
+            )
+          `
+        )
+        .in('status', ['pending', 'acknowledged'])
+        .gte('created_at', weekAgo.toISOString())
+        .order('created_at', { ascending: false })
+
+      if (siteId) {
+        query = query.eq('site_id', siteId)
       }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setBreachActions((data || []).map((row) => ({
+        id: row.id,
+        action_type: row.action_type,
+        status: row.status,
+        due_at: row.due_at,
+        completed_at: row.completed_at,
+        notes: row.notes,
+        metadata: row.metadata ?? {},
+        created_at: row.created_at,
+        temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
+      })))
+    } catch (error: any) {
+      console.error('Failed to load breach actions', error?.message ?? error)
+    } finally {
+      setBreachLoading(false)
     }
+  }, [siteId])
 
-    window.addEventListener('refresh-tasks', handleRefresh)
-    return () => window.removeEventListener('refresh-tasks', handleRefresh)
-  }, []) // Empty deps - use ref instead
-
-  async function fetchUpcomingTasks() {
+  // Define fetchUpcomingTasks (needed by useEffect)
+  const fetchUpcomingTasks = useCallback(async () => {
     try {
       // CRITICAL: Check companyId before fetching
       if (!companyId) {
@@ -136,8 +177,9 @@ export default function DailyChecklistPage() {
     } catch (error) {
       console.error('Failed to fetch upcoming tasks:', error)
     }
-  }
+  }, [companyId])
 
+  // Define fetchTodaysTasks (needed by useEffect) - must be defined before useEffect
   const fetchTodaysTasks = useCallback(async () => {
     try {
       console.log('🔄 fetchTodaysTasks called at:', new Date().toISOString())
@@ -269,12 +311,35 @@ export default function DailyChecklistPage() {
             `)
             .in('id', templateIds)
           
+          if (templatesError) {
+            console.error('❌ Error fetching templates:', {
+              error: templatesError,
+              message: templatesError.message,
+              code: templatesError.code,
+              details: templatesError.details,
+              templateIds: templateIds,
+              templateIdsCount: templateIds.length
+            })
+          }
+          
           if (!templatesError && templates) {
             templatesMap = templates.reduce((acc: Record<string, any>, template: any) => {
               const enriched = enrichTemplateWithDefinition(template)
               acc[enriched.id] = enriched
               return acc
             }, {})
+            
+            // Log if we didn't get all templates
+            const foundTemplateIds = new Set(templates.map((t: any) => t.id))
+            const missingTemplateIds = templateIds.filter(id => !foundTemplateIds.has(id))
+            if (missingTemplateIds.length > 0) {
+              console.warn('⚠️ Some templates not found:', {
+                requested: templateIds.length,
+                found: templates.length,
+                missing: missingTemplateIds,
+                missingCount: missingTemplateIds.length
+              })
+            }
           }
         }
       }
@@ -366,7 +431,7 @@ export default function DailyChecklistPage() {
       // (This handles edge cases where new templates were added between fetches)
       const filteredTemplateIds = [...new Set(data.map((t: any) => t.template_id).filter((id): id is string => id !== null && !templatesMap[id]))]
       if (filteredTemplateIds.length > 0) {
-        const { data: fullTemplates } = await supabase
+        const { data: fullTemplates, error: fullTemplatesError } = await supabase
           .from('task_templates')
           .select(`
             id, name, slug, description, category, frequency, compliance_standard, is_critical, 
@@ -376,9 +441,47 @@ export default function DailyChecklistPage() {
           `)
           .in('id', filteredTemplateIds)
         
+        if (fullTemplatesError) {
+          console.error('❌ Error fetching additional templates:', {
+            error: fullTemplatesError,
+            message: fullTemplatesError.message,
+            code: fullTemplatesError.code,
+            templateIds: filteredTemplateIds
+          })
+        }
+        
         if (fullTemplates) {
           fullTemplates.forEach(t => {
             templatesMap[t.id] = t
+          })
+        }
+      }
+      
+      // Fetch assets to check which ones are archived
+      // Collect all unique asset_ids from templates
+      const assetIds = [...new Set(
+        Object.values(templatesMap)
+          .map((t: any) => t.asset_id)
+          .filter((id): id is string => id !== null && id !== undefined)
+      )]
+      
+      // Fetch assets to check archived status
+      let archivedAssetIds = new Set<string>()
+      if (assetIds.length > 0) {
+        const { data: assets, error: assetsError } = await supabase
+          .from('assets')
+          .select('id, archived, name')
+          .in('id', assetIds)
+        
+        if (assetsError) {
+          console.error('❌ Error fetching assets for archived check:', assetsError)
+        } else if (assets) {
+          // Build set of archived asset IDs
+          assets.forEach(asset => {
+            if (asset.archived) {
+              archivedAssetIds.add(asset.id)
+              console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
+            }
           })
         }
       }
@@ -390,14 +493,23 @@ export default function DailyChecklistPage() {
       }))
       
       // Filter out tasks with missing templates (orphaned tasks)
+      // NOTE: We're temporarily showing orphaned tasks with a warning instead of hiding them
+      // This helps diagnose why templates aren't being found (RLS issue, missing templates, etc.)
+      // Also filter out tasks linked to archived assets
       const validTasks = tasksWithTemplates.filter(task => {
         if (task.template_id && !task.template) {
-          console.warn('⚠️ Task has template_id but template not found:', {
-            task_id: task.id,
-            template_id: task.template_id
-          });
-          return false; // Exclude orphaned tasks
+          console.warn(`⚠️ Task has template_id but template not found: task_id=${task.id}, template_id=${task.template_id}`);
+          // Temporarily include orphaned tasks so we can see them and diagnose the issue
+          // TODO: Once templates are loading correctly, change this back to `return false`
+          return true; // Include orphaned tasks for now
         }
+        
+        // Exclude tasks linked to archived assets
+        if (task.template?.asset_id && archivedAssetIds.has(task.template.asset_id)) {
+          console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          return false
+        }
+        
         return true;
       });
       
@@ -691,10 +803,13 @@ export default function DailyChecklistPage() {
       
       let profilesMap = new Map()
       if (completedByUserIds.length > 0) {
-        const { data: profiles } = await supabase
+        const uniqueUserIds = [...new Set(completedByUserIds)];
+        const query = supabase
           .from('profiles')
-          .select('id, full_name, email')
-          .in('id', [...new Set(completedByUserIds)])
+          .select('id, full_name, email');
+        const { data: profiles } = uniqueUserIds.length === 1
+          ? await query.eq('id', uniqueUserIds[0])
+          : await query.in('id', uniqueUserIds)
         
         if (profiles) {
           profilesMap = new Map(profiles.map(p => [p.id, p]))
@@ -754,7 +869,7 @@ export default function DailyChecklistPage() {
               completed_by: r.completed_by
             })))
           } else {
-            console.warn('⚠️ No completion records found after filtering')
+            // This is normal for pending tasks - only log if we expected records but they were filtered out
             if (completionRecords && completionRecords.length > 0) {
               console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
                 task_id: r.task_id,
@@ -984,75 +1099,38 @@ export default function DailyChecklistPage() {
     } finally {
       setLoading(false)
     }
-  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId, loadBreachActions]) // Dependencies for fetchTodaysTasks
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
     fetchTodaysTasksRef.current = fetchTodaysTasks
   }, [fetchTodaysTasks])
 
-  async function loadBreachActions() {
-    if (!siteId) {
-      setBreachActions([])
-      return
+  // Now define the useEffect that uses these functions
+  useEffect(() => {
+    if (companyId) {
+      fetchTodaysTasks()
+      fetchUpcomingTasks()
+      loadBreachActions()
+    } else {
+      setLoading(false)
+      setTasks([])
     }
+  }, [siteId, companyId, fetchTodaysTasks, fetchUpcomingTasks, loadBreachActions])
 
-    try {
-      setBreachLoading(true)
-      const today = new Date()
-      const weekAgo = new Date(today.getTime())
-      weekAgo.setDate(weekAgo.getDate() - 7)
-
-      let query = supabase
-        .from('temperature_breach_actions')
-        .select(
-          `
-            id,
-            action_type,
-            status,
-            due_at,
-            completed_at,
-            notes,
-            metadata,
-            created_at,
-            temperature_log:temperature_logs(
-              id,
-              recorded_at,
-              reading,
-              unit,
-              status,
-              meta
-            )
-          `
-        )
-        .in('status', ['pending', 'acknowledged'])
-        .gte('created_at', weekAgo.toISOString())
-        .order('created_at', { ascending: false })
-
-      if (siteId) {
-        query = query.eq('site_id', siteId)
+  // Listen for refresh events (e.g., after clock-in)
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('🔄 Refreshing tasks after clock-in/out')
+      if (fetchTodaysTasksRef.current) {
+        fetchTodaysTasksRef.current()
+        fetchUpcomingTasks()
       }
-
-      const { data, error } = await query
-
-      if (error) throw error
-      setBreachActions((data || []).map((row) => ({
-        id: row.id,
-        action_type: row.action_type,
-        status: row.status,
-        due_at: row.due_at,
-        completed_at: row.completed_at,
-        notes: row.notes,
-        metadata: row.metadata ?? {},
-        created_at: row.created_at,
-        temperature_log: row.temperature_log as TemperatureLogWithMeta | null,
-      })))
-    } catch (error: any) {
-      console.error('Failed to load breach actions', error?.message ?? error)
-    } finally {
-      setBreachLoading(false)
     }
-  }
+
+    window.addEventListener('refresh-tasks', handleRefresh)
+    return () => window.removeEventListener('refresh-tasks', handleRefresh)
+  }, [fetchUpcomingTasks]) // Include fetchUpcomingTasks in deps
 
   const getStatusColor = (task: ChecklistTaskWithTemplate) => {
     if (task.status === 'completed') {

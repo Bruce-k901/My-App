@@ -40,7 +40,7 @@ function parseTime(timeStr: string | null | undefined): { hour: number; minute: 
 }
 
 // Helper function to validate task data before processing
-function validateTask(task: any): { valid: boolean; reason?: string } {
+function validateTask(task: any): { valid: boolean; reason?: string; hasTime?: boolean } {
   if (!task) {
     return { valid: false, reason: 'Task is null or undefined' }
   }
@@ -53,16 +53,21 @@ function validateTask(task: any): { valid: boolean; reason?: string } {
     return { valid: false, reason: `Invalid company_id: ${task.company_id}` }
   }
   
-  if (!task.due_time) {
-    return { valid: false, reason: 'Missing due_time' }
+  // Check if task has due_time (in column or task_data)
+  const dueTime = task.due_time || task.task_data?.due_time || 
+                  (task.task_data?.daypart_times?.[0]?.due_time)
+  
+  if (!dueTime || dueTime === '') {
+    // Task without specific time - still valid, just needs date-based notification
+    return { valid: true, hasTime: false }
   }
   
-  const parsedTime = parseTime(task.due_time)
+  const parsedTime = parseTime(dueTime)
   if (!parsedTime) {
-    return { valid: false, reason: `Invalid due_time format: ${task.due_time}` }
+    return { valid: false, reason: `Invalid due_time format: ${dueTime}` }
   }
   
-  return { valid: true }
+  return { valid: true, hasTime: true }
 }
 
 serve(async (req) => {
@@ -137,7 +142,8 @@ serve(async (req) => {
         `)
         .in('status', ['pending', 'in_progress'])
         .eq('due_date', today)  // Tasks due TODAY
-        .not('due_time', 'is', null)  // Must have due_time for notifications
+        // Note: We'll handle tasks with and without due_time
+        // Tasks without due_time will get date-based notifications
 
       if (tasksError) {
         const errorMsg = `Database error fetching tasks: ${tasksError.message}`
@@ -247,11 +253,72 @@ serve(async (req) => {
           continue
         }
 
-        const parsedTime = parseTime(task.due_time)
+        // Get effective due_time (from column, task_data, or daypart_times)
+        const effectiveDueTime = task.due_time || 
+                                 task.task_data?.due_time || 
+                                 (task.task_data?.daypart_times?.[0]?.due_time)
+
+        const taskName = task.custom_name || 
+                        (task.task_templates as any)?.name || 
+                        task.task_data?.name || 
+                        'Task'
+
+        // If task doesn't have a specific due_time, create date-based notification
+        if (!effectiveDueTime || effectiveDueTime === '' || !validation.hasTime) {
+          // Task is due today but has no specific time - create a general notification
+          // Send to ALL clocked-in users at the site (not just assigned user)
+          if (!task.site_id || !isValidUUID(task.site_id)) {
+            metrics.warnings.push({ 
+              taskId: task.id, 
+              message: 'Task without due_time missing site_id' 
+            })
+            continue
+          }
+
+          try {
+            // Use the site-wide date-based notification function
+            const { data: notifications, error: notifyError } = await supabase.rpc(
+              'create_task_notification_for_date_range',
+              {
+                p_task_id: task.id,
+                p_company_id: task.company_id,
+                p_site_id: task.site_id,
+                p_task_name: taskName,
+                p_due_date: task.due_date,
+                p_notification_type: 'task'
+              }
+            )
+
+            if (notifyError) {
+              console.error(`[ERROR] Task ${task.id}: Failed to create date-based notification: ${notifyError.message}`)
+              metrics.errors.push({ 
+                taskId: task.id, 
+                error: notifyError.message, 
+                context: 'create_task_notification_for_date_range' 
+              })
+            } else if (notifications && Array.isArray(notifications) && notifications.length > 0) {
+              metrics.readyNotificationsCreated += notifications.length
+              console.log(`[SUCCESS] Created ${notifications.length} date-based notification(s) for task ${task.id} (site: ${task.site_id})`)
+            } else {
+              console.log(`[INFO] Task ${task.id} ready but no users clocked in at site ${task.site_id}`)
+            }
+          } catch (rpcError) {
+            console.error(`[ERROR] Task ${task.id}: Exception creating date-based notification:`, rpcError)
+            metrics.errors.push({ 
+              taskId: task.id, 
+              error: String(rpcError), 
+              context: 'create_task_notification_for_date_range (exception)' 
+            })
+          }
+          continue // Skip time-based processing for tasks without due_time
+        }
+
+        // Task has a specific due_time - process time-based notifications
+        const parsedTime = parseTime(effectiveDueTime)
         if (!parsedTime) {
           metrics.warnings.push({ 
             taskId: task.id, 
-            message: `Invalid time format: ${task.due_time}` 
+            message: `Invalid time format: ${effectiveDueTime}` 
           })
           continue
         }
@@ -261,36 +328,29 @@ serve(async (req) => {
         const windowStartMinutes = dueTimeMinutes - 60
         const windowEndMinutes = dueTimeMinutes + 60
 
-        const taskName = (task.task_templates as any)?.name || 'Task'
-
         // Check if task is in "ready" window (1 hour before due time)
         if (currentTimeMinutes >= windowStartMinutes && currentTimeMinutes < dueTimeMinutes) {
-          if (!task.assigned_to_user_id) {
+          // Send to ALL clocked-in users at the site (not just assigned user)
+          if (!task.site_id || !isValidUUID(task.site_id)) {
             metrics.warnings.push({ 
               taskId: task.id, 
-              message: 'Task in ready window but no assigned user' 
-            })
-            continue
-          }
-
-          if (!isValidUUID(task.assigned_to_user_id)) {
-            metrics.warnings.push({ 
-              taskId: task.id, 
-              message: `Invalid assigned_to_user_id: ${task.assigned_to_user_id}` 
+              message: 'Task in ready window but missing site_id' 
             })
             continue
           }
 
           try {
-            const { data: notificationId, error: notifyError } = await supabase.rpc(
-              'create_task_ready_notification',
+            // Use the site-wide notification function
+            const { data: notifications, error: notifyError } = await supabase.rpc(
+              'create_task_notification_for_site',
               {
                 p_task_id: task.id,
                 p_company_id: task.company_id,
                 p_site_id: task.site_id,
-                p_user_id: task.assigned_to_user_id,
                 p_task_name: taskName,
-                p_due_time: task.due_time
+                p_due_time: effectiveDueTime,
+                p_due_date: task.due_date,
+                p_notification_type: 'task_ready'
               }
             )
 
@@ -300,18 +360,18 @@ serve(async (req) => {
               metrics.errors.push({ 
                 taskId: task.id, 
                 error: errorMsg, 
-                context: 'create_task_ready_notification' 
+                context: 'create_task_notification_for_site' 
               })
               // Continue processing other tasks even if this one fails
               continue
             }
 
-            // notificationId can be null if user is not clocked in (this is expected)
-            if (notificationId) {
-              metrics.readyNotificationsCreated++
-              console.log(`[SUCCESS] Created ready notification for task ${task.id} (notification ID: ${notificationId})`)
+            // notifications is an array of {notification_id, user_id, user_name}
+            if (notifications && Array.isArray(notifications) && notifications.length > 0) {
+              metrics.readyNotificationsCreated += notifications.length
+              console.log(`[SUCCESS] Created ${notifications.length} ready notification(s) for task ${task.id} (site: ${task.site_id})`)
             } else {
-              console.log(`[INFO] Task ${task.id} ready but user not clocked in, skipping notification`)
+              console.log(`[INFO] Task ${task.id} ready but no users clocked in at site ${task.site_id}`)
             }
 
           } catch (rpcError) {
@@ -320,7 +380,7 @@ serve(async (req) => {
             metrics.errors.push({ 
               taskId: task.id, 
               error: errorMsg, 
-              context: 'create_task_ready_notification (exception)' 
+              context: 'create_task_notification_for_site (exception)' 
             })
             // Continue processing other tasks
             continue
@@ -329,32 +389,27 @@ serve(async (req) => {
 
         // Check if task is late (more than 1 hour after due time)
         if (currentTimeMinutes > windowEndMinutes) {
-          if (!task.assigned_to_user_id || !task.site_id) {
+          // Send to ALL clocked-in users at the site (not just assigned user)
+          if (!task.site_id || !isValidUUID(task.site_id)) {
             metrics.warnings.push({ 
               taskId: task.id, 
-              message: 'Task is late but missing assigned user or site' 
-            })
-            continue
-          }
-
-          if (!isValidUUID(task.site_id)) {
-            metrics.warnings.push({ 
-              taskId: task.id, 
-              message: `Invalid site_id: ${task.site_id}` 
+              message: 'Task is late but missing site_id' 
             })
             continue
           }
 
           try {
-            const { data: notificationCount, error: lateError } = await supabase.rpc(
-              'create_late_task_notification',
+            // Use the site-wide notification function
+            const { data: notifications, error: lateError } = await supabase.rpc(
+              'create_task_notification_for_site',
               {
                 p_task_id: task.id,
                 p_company_id: task.company_id,
                 p_site_id: task.site_id,
                 p_task_name: taskName,
-                p_due_time: task.due_time,
-                p_assigned_user_id: task.assigned_to_user_id
+                p_due_time: effectiveDueTime,
+                p_due_date: task.due_date,
+                p_notification_type: 'task_late'
               }
             )
 
@@ -364,18 +419,18 @@ serve(async (req) => {
               metrics.errors.push({ 
                 taskId: task.id, 
                 error: errorMsg, 
-                context: 'create_late_task_notification' 
+                context: 'create_task_notification_for_site (late)' 
               })
               // Continue processing other tasks
               continue
             }
 
-            // notificationCount can be 0 if no managers are on shift (this is expected)
-            if (notificationCount && notificationCount > 0) {
-              metrics.lateNotificationsCreated += notificationCount
-              console.log(`[SUCCESS] Created ${notificationCount} late notification(s) for task ${task.id}`)
+            // notifications is an array of {notification_id, user_id, user_name}
+            if (notifications && Array.isArray(notifications) && notifications.length > 0) {
+              metrics.lateNotificationsCreated += notifications.length
+              console.log(`[SUCCESS] Created ${notifications.length} late notification(s) for task ${task.id} (site: ${task.site_id})`)
             } else {
-              console.log(`[INFO] Task ${task.id} is late but no managers on shift, skipping notification`)
+              console.log(`[INFO] Task ${task.id} is late but no users clocked in at site ${task.site_id}`)
             }
 
           } catch (rpcError) {
@@ -384,7 +439,7 @@ serve(async (req) => {
             metrics.errors.push({ 
               taskId: task.id, 
               error: errorMsg, 
-              context: 'create_late_task_notification (exception)' 
+              context: 'create_task_notification_for_site (late exception)' 
             })
             // Continue processing other tasks
             continue

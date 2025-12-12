@@ -200,29 +200,17 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
   // Pre-populate company info if the user already has one
   useEffect(() => {
     async function fetchCompany(userId: string) {
-      // New primary: user_id (signup flow). Fallbacks: company_id, owner_id
-      const byUserId = await supabase
-        .from("companies")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-      const missingUserIdCol = (byUserId.error as any)?.code === "42703";
-      if (!missingUserIdCol && byUserId.data) return byUserId.data as any;
-
-      const byCompanyId = await supabase
-        .from("companies")
-        .select("*")
-        .eq("company_id", userId)
-        .maybeSingle();
-      const missingCompanyIdCol = (byCompanyId.error as any)?.code === "42703";
-      if (!missingCompanyIdCol && byCompanyId.data) return byCompanyId.data as any;
-
-      const byOwnerId = await supabase
-        .from("companies")
-        .select("*")
-        .eq("owner_id", userId)
-        .maybeSingle();
-      return byOwnerId.data as any;
+      // Use API route to bypass RLS
+      try {
+        const response = await fetch(`/api/company/get?userId=${userId}`);
+        if (response.ok) {
+          const companyData = await response.json();
+          return companyData;
+        }
+      } catch (error) {
+        console.error('Error fetching company via API:', error);
+      }
+      return null;
     }
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {

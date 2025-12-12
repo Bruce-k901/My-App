@@ -26,11 +26,23 @@ export default function AssetOverview() {
   useEffect(() => {
     if (companyId) {
       loadAssetSummary();
+    } else {
+      // If no companyId, stop loading state immediately
+      setLoading(false);
+      setAssetSummary({
+        total: 0,
+        needingService: 0,
+        underWarranty: 0,
+        overdue: 0
+      });
     }
-  }, [companyId]);
+  }, [companyId]); // Removed loadAssetSummary from deps to prevent infinite loop
 
-  const loadAssetSummary = async () => {
-    if (!companyId) return;
+  const loadAssetSummary = React.useCallback(async () => {
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -51,7 +63,14 @@ export default function AssetOverview() {
         overdue: 0
       };
 
-      assets?.forEach(asset => {
+      // If no assets, return immediately with zero summary
+      if (!assets || assets.length === 0) {
+        setAssetSummary(summary);
+        setLoading(false);
+        return;
+      }
+
+      assets.forEach(asset => {
         // Check if asset needs service soon (within 30 days)
         if (asset.next_service_date) {
           const serviceDate = new Date(asset.next_service_date);
@@ -95,7 +114,7 @@ export default function AssetOverview() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId]);
 
   if (loading) {
     return (

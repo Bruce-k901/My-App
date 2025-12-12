@@ -1,0 +1,14 @@
+{
+  "id": "uk-l2-health-and-safety",
+  "title": "Health and Safety Level 2 (UK)",
+  "description": "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction",
+      "description": "Introduction to Health and Safety.",
+      "lessons": []
+    }
+  ]
+}

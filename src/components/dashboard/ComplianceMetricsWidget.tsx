@@ -33,7 +33,7 @@ interface ComplianceTrend {
 }
 
 export default function ComplianceMetricsWidget() {
-  const { siteId, companyId } = useAppContext()
+  const { siteId, companyId, loading: contextLoading } = useAppContext()
   const [loading, setLoading] = useState(true)
   const [todayStats, setTodayStats] = useState<TodayStats | null>(null)
   const [recentCompletions, setRecentCompletions] = useState<RecentCompletion[]>([])
@@ -41,6 +41,9 @@ export default function ComplianceMetricsWidget() {
   const [error, setError] = useState<string | null>(null)
   const mountedRef = useRef(true)
   const loadingRef = useRef(false)
+  const lastLoadRef = useRef<{ siteId: string | null; companyId: string | null }>({ siteId: null, companyId: null })
+  const hasLoadedRef = useRef(false) // Track if we've successfully loaded at least once
+  const errorCountRef = useRef(0) // Track consecutive errors to prevent infinite retries
 
   // Cleanup on unmount
   useEffect(() => {
@@ -51,6 +54,7 @@ export default function ComplianceMetricsWidget() {
 
   const loadComplianceMetrics = useCallback(async () => {
     if (!siteId || !companyId) {
+      console.warn('⚠️ ComplianceMetricsWidget: Cannot load - missing siteId or companyId', { siteId, companyId })
       if (mountedRef.current) {
         setLoading(false)
         setTodayStats(null)
@@ -63,9 +67,11 @@ export default function ComplianceMetricsWidget() {
 
     // Prevent multiple simultaneous loads
     if (loadingRef.current) {
+      console.log('⏸️ ComplianceMetricsWidget: Load already in progress, skipping')
       return
     }
 
+    console.log('▶️ ComplianceMetricsWidget: Starting load', { siteId, companyId })
     loadingRef.current = true
     if (mountedRef.current) {
       setLoading(true)
@@ -91,7 +97,10 @@ export default function ComplianceMetricsWidget() {
         .eq('site_id', siteId)
         .eq('due_date', today)
 
-      if (tasksError) throw tasksError
+      if (tasksError) {
+        console.error('❌ ComplianceMetricsWidget: Error fetching tasks:', tasksError)
+        throw tasksError
+      }
 
       // Calculate today's stats
       const total = todayTasks?.length || 0
@@ -151,10 +160,16 @@ export default function ComplianceMetricsWidget() {
 
         // Fetch user profiles
         const userIds = [...new Set(recentData.map(r => r.completed_by).filter(Boolean))]
-        const { data: profilesData } = userIds.length > 0 ? await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', userIds) : { data: [] }
+        let profilesData = null;
+        if (userIds.length > 0) {
+          const query = supabase
+            .from('profiles')
+            .select('id, full_name');
+          const result = userIds.length === 1
+            ? await query.eq('id', userIds[0])
+            : await query.in('id', userIds);
+          profilesData = result.data;
+        }
 
         const tasksMap = new Map((tasksData || []).map((t: any) => [t.id, t]))
         const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p.full_name]))
@@ -214,66 +229,73 @@ export default function ComplianceMetricsWidget() {
         const trend: ComplianceTrend[] = []
         const today = new Date()
         
-        for (let i = 6; i >= 0; i--) {
-          const date = new Date(today)
-          date.setDate(date.getDate() - i)
-          const dateStr = date.toISOString().split('T')[0]
-          
-          // Calculate score for this date
-          const windowStart = new Date(date)
-          windowStart.setDate(windowStart.getDate() - 6)
-          
-          // Fetch data for this date
-          const [incidentsResult, overdueResult, missedResult, breachesResult] = await Promise.all([
-            // Critical incidents
-            supabase
-              .from('incidents')
-              .select('id')
-              .eq('site_id', siteId)
-              .in('severity', ['high', 'critical'])
-              .neq('status', 'closed'),
-            // Overdue tasks
-            supabase
-              .from('checklist_tasks')
-              .select('id')
-              .eq('site_id', siteId)
-              .in('status', ['pending', 'in_progress'])
-              .lt('due_date', dateStr),
-            // Missed tasks (yesterday's incomplete)
-            supabase
-              .from('checklist_tasks')
-              .select('id')
-              .eq('site_id', siteId)
-              .in('status', ['pending', 'in_progress'])
-              .eq('due_date', new Date(date.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]),
-            // Temperature breaches (last 7 days from this date)
-            supabase
-              .from('temperature_breach_actions')
-              .select('id')
-              .eq('site_id', siteId)
-              .in('status', ['pending', 'acknowledged'])
-              .gte('created_at', windowStart.toISOString())
-              .lt('created_at', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString())
-          ])
-          
-          const criticalIncidents = incidentsResult.data?.length || 0
-          const overdueTasks = overdueResult.data?.length || 0
-          const missedTasks = missedResult.data?.length || 0
-          const tempBreaches = breachesResult.data?.length || 0
-          
-          // Calculate score: 100 - 10*critical - 2*overdue - 1*missed - 0.5*breaches
-          const score = Math.max(0, Math.min(100, 
-            100 
-            - (10 * criticalIncidents)
-            - (2 * overdueTasks)
-            - (1 * missedTasks)
-            - (0.5 * tempBreaches)
-          ))
-          
-          trend.push({
-            date: dateStr,
-            score: Math.round(score * 100) / 100 // Round to 2 decimal places
-          })
+        // Limit to prevent excessive queries - only calculate if we don't have historical data
+        try {
+          for (let i = 6; i >= 0; i--) {
+            const date = new Date(today)
+            date.setDate(date.getDate() - i)
+            const dateStr = date.toISOString().split('T')[0]
+            
+            // Calculate score for this date
+            const windowStart = new Date(date)
+            windowStart.setDate(windowStart.getDate() - 6)
+            
+            // Fetch data for this date with error handling
+            const [incidentsResult, overdueResult, missedResult, breachesResult] = await Promise.allSettled([
+              // Critical incidents
+              supabase
+                .from('incidents')
+                .select('id')
+                .eq('site_id', siteId)
+                .in('severity', ['high', 'critical'])
+                .neq('status', 'closed'),
+              // Overdue tasks
+              supabase
+                .from('checklist_tasks')
+                .select('id')
+                .eq('site_id', siteId)
+                .in('status', ['pending', 'in_progress'])
+                .lt('due_date', dateStr),
+              // Missed tasks (yesterday's incomplete)
+              supabase
+                .from('checklist_tasks')
+                .select('id')
+                .eq('site_id', siteId)
+                .in('status', ['pending', 'in_progress'])
+                .eq('due_date', new Date(date.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]),
+              // Temperature breaches (last 7 days from this date)
+              supabase
+                .from('temperature_breach_actions')
+                .select('id')
+                .eq('site_id', siteId)
+                .in('status', ['pending', 'acknowledged'])
+                .gte('created_at', windowStart.toISOString())
+                .lt('created_at', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString())
+            ])
+            
+            // Extract data from settled promises, defaulting to empty arrays on error
+            const criticalIncidents = incidentsResult.status === 'fulfilled' ? (incidentsResult.value.data?.length || 0) : 0
+            const overdueTasks = overdueResult.status === 'fulfilled' ? (overdueResult.value.data?.length || 0) : 0
+            const missedTasks = missedResult.status === 'fulfilled' ? (missedResult.value.data?.length || 0) : 0
+            const tempBreaches = breachesResult.status === 'fulfilled' ? (breachesResult.value.data?.length || 0) : 0
+            
+            // Calculate score: 100 - 10*critical - 2*overdue - 1*missed - 0.5*breaches
+            const score = Math.max(0, Math.min(100, 
+              100 
+              - (10 * criticalIncidents)
+              - (2 * overdueTasks)
+              - (1 * missedTasks)
+              - (0.5 * tempBreaches)
+            ))
+            
+            trend.push({
+              date: dateStr,
+              score: Math.round(score * 100) / 100 // Round to 2 decimal places
+            })
+          }
+        } catch (trendError) {
+          console.warn('⚠️ ComplianceMetricsWidget: Error calculating trend, using empty trend', trendError)
+          // Continue with empty trend rather than failing completely
         }
         
         if (mountedRef.current) {
@@ -294,24 +316,103 @@ export default function ComplianceMetricsWidget() {
       }
 
     } catch (err: any) {
-      console.error('Error loading compliance metrics:', err)
+      errorCountRef.current += 1
+      console.error('❌ ComplianceMetricsWidget: Error loading compliance metrics:', err, `(Error count: ${errorCountRef.current})`)
       if (mountedRef.current) {
         setError(err.message || 'Failed to load compliance metrics')
+        // If we've had multiple consecutive errors, stop trying to prevent infinite loops
+        if (errorCountRef.current >= 3) {
+          console.error('🛑 ComplianceMetricsWidget: Too many consecutive errors, stopping retries')
+        }
       }
     } finally {
       loadingRef.current = false
+      hasLoadedRef.current = true // Mark as successfully attempted
       if (mountedRef.current) {
         setLoading(false)
+        console.log('✅ ComplianceMetricsWidget: Load complete')
       }
     }
   }, [siteId, companyId])
 
+  // Store the latest callback in a ref to avoid stale closures
+  const loadComplianceMetricsRef = useRef(loadComplianceMetrics)
   useEffect(() => {
-    // Reset loading ref when dependencies change
-    loadingRef.current = false
-    loadComplianceMetrics()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [siteId, companyId]) // Only depend on siteId and companyId, not the callback
+    loadComplianceMetricsRef.current = loadComplianceMetrics
+  }, [loadComplianceMetrics])
+
+  useEffect(() => {
+    // Don't try to load while AppContext is still loading
+    if (contextLoading) {
+      console.log('⏳ ComplianceMetricsWidget: Waiting for AppContext to finish loading')
+      return
+    }
+
+    // Don't trigger if a load is already in progress
+    if (loadingRef.current) {
+      console.log('⏸️ ComplianceMetricsWidget: Load in progress, skipping effect')
+      return
+    }
+
+    // Check if siteId or companyId have actually changed
+    const prevSiteId = lastLoadRef.current.siteId
+    const prevCompanyId = lastLoadRef.current.companyId
+    const hasChanged = prevSiteId !== siteId || prevCompanyId !== companyId
+    
+    // Only proceed if values have actually changed
+    if (!hasChanged) {
+      // Only log if we've loaded before (to reduce console spam)
+      if (hasLoadedRef.current) {
+        console.log('⏭️ ComplianceMetricsWidget: No change detected, skipping', { siteId, companyId })
+      }
+      return
+    }
+    
+    // Update the ref to track current values BEFORE loading
+    lastLoadRef.current = { siteId, companyId }
+    
+    // Only load if we have both siteId and companyId and haven't hit error limit
+    if (siteId && companyId && errorCountRef.current < 3) {
+      // Reset error count on successful change (new values might work)
+      if (hasChanged) {
+        errorCountRef.current = 0
+      }
+      console.log('🔄 ComplianceMetricsWidget: Values changed, loading metrics', { 
+        siteId, 
+        companyId, 
+        prevSiteId, 
+        prevCompanyId,
+        hasLoadedBefore: hasLoadedRef.current,
+        errorCount: errorCountRef.current
+      })
+      loadComplianceMetricsRef.current()
+    } else if (errorCountRef.current >= 3) {
+      console.warn('⚠️ ComplianceMetricsWidget: Skipping load due to error limit', { errorCount: errorCountRef.current })
+    } else {
+      // If missing required values, ensure loading state is cleared
+      if (mountedRef.current) {
+        console.log('⚠️ ComplianceMetricsWidget: Missing required values', { siteId, companyId, contextLoading })
+        setLoading(false)
+        setTodayStats(null)
+        setRecentCompletions([])
+        setComplianceTrend([])
+        setError(null)
+        hasLoadedRef.current = false // Reset since we didn't successfully load
+      }
+    }
+  }, [siteId, companyId, contextLoading]) // Include contextLoading to wait for AppContext to finish loading
+
+  // Show loading state while context is loading or while we're fetching data
+  if (contextLoading || (!siteId && !companyId)) {
+    return (
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400"></div>
+          <span className="ml-3 text-white/60">Loading...</span>
+        </div>
+      </div>
+    )
+  }
 
   if (!siteId) {
     return (
@@ -353,7 +454,7 @@ export default function ComplianceMetricsWidget() {
           <p className="text-sm text-white/60 mt-1">Today's performance overview</p>
         </div>
         <Link 
-          href="/dashboard/tasks/active"
+          href="/dashboard/my_tasks"
           className="text-sm text-pink-400 hover:text-pink-300 transition-colors"
         >
           View All Tasks →

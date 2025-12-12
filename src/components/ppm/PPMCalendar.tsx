@@ -15,22 +15,35 @@ interface PPMCalendarProps {
 }
 
 export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
-  const [currentDate, setCurrentDate] = React.useState(new Date());
+  const [currentDate, setCurrentDate] = React.useState<Date | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
 
+  // Initialize currentDate on client mount to avoid hydration mismatch
+  React.useEffect(() => {
+    if (currentDate === null) {
+      setCurrentDate(new Date());
+    }
+  }, [currentDate]);
+
+  // Helper to get current date with fallback (prevents null errors during initial render)
+  const getCurrentDate = () => currentDate || new Date();
+
   // Use optimized calendar data hook
-  const { assets, loading, error, refreshMonth } = usePPMCalendarData(currentDate);
+  const { assets, loading, error, refreshMonth } = usePPMCalendarData(getCurrentDate());
 
   // Debug: Log assets received
   React.useEffect(() => {
-    console.log(`[PPM Calendar] Received ${assets.length} assets for ${format(currentDate, 'yyyy-MM')}`, assets.slice(0, 3))
+    if (currentDate) {
+      console.log(`[PPM Calendar] Received ${assets.length} assets for ${format(currentDate, 'yyyy-MM')}`, assets.slice(0, 3))
+    }
   }, [assets, currentDate])
 
   // Get the first day of the current month
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const date = getCurrentDate();
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   
   // Get the first day of the week for the calendar grid
   const startDate = new Date(firstDayOfMonth);
@@ -88,7 +101,8 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
   };
 
   const isCurrentMonth = (date: Date) => {
-    return date.getMonth() === currentDate.getMonth();
+    const dateToCompare = getCurrentDate();
+    return date.getMonth() === dateToCompare.getMonth() && date.getFullYear() === dateToCompare.getFullYear();
   };
 
   const isToday = (date: Date) => {
@@ -126,7 +140,7 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-white flex items-center gap-2">
           <Calendar className="h-5 w-5 text-magenta-400" />
-          {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          {currentDate ? currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ""}
         </h2>
         
         <div className="flex items-center gap-2">

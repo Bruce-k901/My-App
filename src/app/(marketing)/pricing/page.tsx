@@ -10,12 +10,10 @@ export default function PricingPage() {
   return (
     <>
       {/* Single DarkVeil Background Container */}
-      <div className="relative overflow-hidden">
-        {/* Single DarkVeil Background - covers entire page */}
-        <div className="absolute inset-0 w-full h-full -z-0">
-          <div className="w-full h-full min-h-screen">
-            <DarkVeil />
-          </div>
+      <div className="relative overflow-hidden bg-[#0B0D13]">
+        {/* Single DarkVeil Background - covers viewport, container bg covers overflow */}
+        <div className="fixed inset-0 w-full h-full -z-0 pointer-events-none">
+          <DarkVeil />
         </div>
 
         {/* HERO */}
@@ -126,233 +124,505 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* SMART SENSOR BUNDLES - EXPANDED SECTION */}
-        <section className="relative px-3 sm:px-6 py-8 sm:py-12 text-gray-200">
+        {/* SMART TEMPERATURE SENSORS - OPTIONAL ADD-ON */}
+        <section className="relative px-3 sm:px-6 py-12 sm:py-16 md:py-20 text-gray-200">
           <div className="relative z-10 max-w-7xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
-                Smart Sensor Bundles
-              </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto px-2 sm:px-4">
-                Plug-and-play temperature monitoring for fridges, freezers, and prep areas. 
-                Stop worrying about compliance and start preventing stock losses.
-              </p>
+            {/* Visual Separator with Background */}
+            <div className="relative mb-12 sm:mb-16 md:mb-20">
+              {/* Background gradient for visual separation */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent -mx-4 sm:-mx-8 md:-mx-12"></div>
+              
+              {/* Divider */}
+              <div className="text-center mb-10 sm:mb-12 relative">
+                <div className="inline-block px-6 py-3 bg-gradient-to-r from-[#EC4899]/20 to-blue-500/20 rounded-full border-2 border-[#EC4899]/30 mb-8 shadow-lg">
+                  <span className="text-base sm:text-lg font-semibold text-white">Optional Add-ons</span>
+                </div>
+              </div>
+
+              <div className="text-center mb-12 sm:mb-16 relative">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white px-2 sm:px-4 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+                  Smart Temperature Sensors
+                </h2>
+                <p className="text-base sm:text-lg text-[#EC4899] mb-4 px-2 sm:px-4 font-medium">Optional Add-on</p>
+                <p className="text-base sm:text-lg text-gray-300 max-w-4xl mx-auto px-2 sm:px-4 mb-6 leading-relaxed">
+                  Plug-and-play temperature monitoring for fridges, freezers, and prep areas. Automatic logging, instant breach alerts, and EHO-ready compliance reports. Stop worrying about stock losses.
+                </p>
+                {/* How It Works - Combined */}
+                <div className="mt-8 max-w-3xl mx-auto px-2 sm:px-4">
+                  <div className="bg-gradient-to-r from-[#EC4899]/10 to-blue-500/10 rounded-xl p-6 border border-[#EC4899]/20 mb-6">
+                    <p className="text-base font-semibold text-white mb-2 text-center">How It Works:</p>
+                    <p className="text-sm text-gray-300 text-center">
+                      Choose <strong className="text-white">one hardware pack</strong> (physical sensors) + <strong className="text-white">one software tier</strong> (monitoring features). The hardware pack is a one-time purchase, and the software tier is billed monthly per site.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
-              {/* Tier 1 - Basic */}
-              <GlassCard className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Basic</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    For operators who want the bare minimum. "We'll sort the rest later."
-                  </p>
-                  <p className="text-3xl font-bold text-blue-400 mb-1">£35</p>
-                  <p className="text-sm text-gray-400">per site / month</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">What you get:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "Automatic hourly temperature logs",
-                      "Data stored in Checkly",
-                      "Daily compliance report",
-                      "EHO-ready export",
-                      "Basic alerting (email only)",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-xs text-gray-500 italic">
-                      Best for: Small cafés, bakeries trying to look compliant, or owners who say "we'll worry about it when something breaks."
-                    </p>
-                  </div>
-                </div>
-              </GlassCard>
 
-              {/* Tier 2 - Pro */}
-              <GlassCard className="flex flex-col relative border-magenta-400/50">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-3 py-1 rounded-full text-xs font-semibold">
-                  Most Popular
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Pro</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    The adult tier. Most people pick this one.
-                  </p>
-                  <p className="text-3xl font-bold text-magenta-400 mb-1">£60</p>
-                  <p className="text-sm text-gray-400">per site / month</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">Everything in Basic plus:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "SMS + push alerts",
-                      "Multi-threshold alarms",
-                      "24hr breach tracking",
-                      "Analytics (patterns, slow cooling, warm spots)",
-                      "Replacement hardware warranty",
-                      "Annual probe replacement",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-xs text-gray-500 italic">
-                      Best for: Anyone with more than 3 fridges and a pulse. Stops £800 stock losses.
-                    </p>
+            {/* SENSOR HARDWARE PACKS - One-time purchase */}
+            <div className="mb-16 sm:mb-20">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Step 1: Choose Your Hardware Pack</h3>
+                <p className="text-gray-400 text-sm sm:text-base">One-time purchase • Free replacement for faulty units within warranty period</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mb-8">
+                {/* Starter Pack */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Starter</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£250</p>
+                    <p className="text-base text-gray-400">one-time</p>
                   </div>
-                </div>
-              </GlassCard>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "2 wireless temperature sensors",
+                        "Monitors 1 fridge + 1 freezer",
+                        "WiFi connected, no wiring needed",
+                        "5-minute reading intervals",
+                        "Setup guide included",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Single fridge + freezer
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
 
-              {/* Tier 3 - Observatory */}
-              <GlassCard className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Observatory</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    "We look after everything and you never think about compliance again."
-                  </p>
-                  <p className="text-3xl font-bold text-blue-400 mb-1">£95–£120</p>
-                  <p className="text-sm text-gray-400">per site / month</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">Everything in Pro plus:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "Live monitoring dashboard",
-                      "Weekly health report",
-                      "Predictive failure warnings",
-                      "Engineer callout automation",
-                      "24/7 response escalation",
-                      "Multi-site group analytics",
-                      "Priority hardware replacement",
-                      "Multi-unit discount",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-xs text-gray-500 italic">
-                      Best for: Restaurant groups, hotels, dark kitchens, and anyone who loses their mind if a fridge goes above 8°C.
-                    </p>
+                {/* Standard Pack */}
+                <GlassCard className="flex flex-col relative border-magenta-400/50 min-h-[400px] sm:min-h-[450px]">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
                   </div>
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Standard</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-magenta-400 mb-2">£575</p>
+                    <p className="text-base text-gray-400">one-time</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "5 wireless temperature sensors",
+                        "Cover walk-in chiller, display fridges, freezer",
+                        "WiFi connected, no wiring needed",
+                        "5-minute reading intervals",
+                        "Setup guide + phone support",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Small kitchen setup
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+
+                {/* Professional Pack */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Professional</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£1,000</p>
+                    <p className="text-base text-gray-400">one-time</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "10 wireless temperature sensors",
+                        "Full kitchen & storage coverage",
+                        "WiFi connected, no wiring needed",
+                        "5-minute reading intervals",
+                        "On-site setup assistance available",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Full kitchen coverage
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+            </div>
+
+            {/* Connecting Arrow/Divider */}
+            <div className="flex items-center justify-center mb-12 sm:mb-16">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-gradient-to-r from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-24 sm:w-32"></div>
+                <div className="bg-[#EC4899]/20 border border-[#EC4899]/40 rounded-full px-4 py-2">
+                  <span className="text-sm font-semibold text-white">+</span>
                 </div>
-              </GlassCard>
+                <div className="h-px bg-gradient-to-l from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-24 sm:w-32"></div>
+              </div>
+            </div>
+
+            {/* MONITORING SOFTWARE TIERS - Monthly per site */}
+            <div className="mb-12 sm:mb-16">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h3>
+                <p className="text-gray-400 text-sm sm:text-base">Monthly per site • Cancel anytime • Works with any hardware pack</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+                {/* Essential */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Essential</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£25</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "Live temperature dashboard",
+                        "Automatic hourly logging",
+                        "Daily compliance report",
+                        "EHO-ready PDF export",
+                        "Basic email alerts",
+                        "30-day data history",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Small cafés, bakeries, or single-site operators who need basic compliance coverage.
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+
+                {/* Professional */}
+                <GlassCard className="flex flex-col relative border-magenta-400/50 min-h-[400px] sm:min-h-[450px]">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
+                  </div>
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Professional</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-magenta-400 mb-2">£35</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">Everything in Essential, plus:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "SMS + push notifications",
+                        "Multi-threshold alarms (warning + critical)",
+                        "24hr breach tracking & timeline",
+                        "Analytics (patterns, slow cooling, warm spots)",
+                        "Hardware warranty replacement",
+                        "90-day data history",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Busy kitchens with 3+ units who can't afford stock losses. Most popular choice.
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+
+                {/* Business */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Business</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£55</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">Everything in Professional, plus:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "Predictive failure warnings",
+                        "Automatic engineer callout integration",
+                        "24/7 response escalation",
+                        "Multi-site group dashboard",
+                        "Weekly health reports",
+                        "Unlimited data history",
+                        "Priority hardware replacement",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-xs text-gray-400">
+                        Best for: Restaurant groups, hotels, dark kitchens, and operators who need total peace of mind.
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* MAINTENANCE HARDWARE KIT - EXPANDED SECTION */}
-        <section className="relative px-3 sm:px-6 py-8 sm:py-12 text-gray-200">
+        {/* ASSET TAGS - OPTIONAL ADD-ON */}
+        <section className="relative px-3 sm:px-6 py-12 sm:py-16 md:py-20 text-gray-200">
           <div className="relative z-10 max-w-7xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
-                Maintenance Hardware Kit
-              </h2>
-              <p className="text-gray-400 max-w-3xl mx-auto px-2 sm:px-4 mb-4">
-                Give every asset a digital passport. Small physical tags (QR, NFC, or both) that staff scan 
-                to instantly access PPM schedules, fault history, callouts, instruction sheets, warranty details, 
-                and sensor feeds. No more chasing paperwork or forgotten serial numbers.
-              </p>
+            {/* Visual Separator with Background */}
+            <div className="relative mb-12 sm:mb-16 md:mb-20">
+              {/* Background gradient for visual separation */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent -mx-4 sm:-mx-8 md:-mx-12"></div>
+              
+              {/* Divider */}
+              <div className="text-center mb-10 sm:mb-12 relative">
+                <div className="inline-block px-6 py-3 bg-gradient-to-r from-[#EC4899]/20 to-blue-500/20 rounded-full border-2 border-[#EC4899]/30 mb-8 shadow-lg">
+                  <span className="text-base sm:text-lg font-semibold text-white">Optional Add-ons</span>
+                </div>
+              </div>
+
+              <div className="text-center mb-12 sm:mb-16 relative">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white px-2 sm:px-4 bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent">
+                  Asset Tags
+                </h2>
+                <p className="text-base sm:text-lg text-[#EC4899] mb-4 px-2 sm:px-4 font-medium">Optional Add-on</p>
+                <p className="text-base sm:text-lg text-gray-300 max-w-4xl mx-auto px-2 sm:px-4 mb-6 leading-relaxed">
+                  Give your equipment a digital passport. Physical tags that staff and contractors scan to access service history, report faults, and log maintenance visits. No more chasing paperwork or forgotten serial numbers.
+                </p>
+                {/* How It Works - Combined */}
+                <div className="mt-8 max-w-3xl mx-auto px-2 sm:px-4">
+                  <div className="bg-gradient-to-r from-[#EC4899]/10 to-blue-500/10 rounded-xl p-6 border border-[#EC4899]/20 mb-6">
+                    <p className="text-base font-semibold text-white mb-2 text-center">How It Works:</p>
+                    <p className="text-sm text-gray-300 text-center mb-4">
+                      Choose <strong className="text-white">one tag pack</strong> (physical tags) + <strong className="text-white">one software tier</strong> (scanning features). The tag pack is a one-time purchase, and the software tier is billed monthly per site.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+                      <div className="bg-white/8 rounded-lg p-3 border border-white/20">
+                        <p className="text-xs sm:text-sm font-semibold text-white mb-1">1. Choose</p>
+                        <p className="text-xs text-gray-300">Select tag pack & software tier</p>
+                      </div>
+                      <div className="bg-white/8 rounded-lg p-3 border border-white/20">
+                        <p className="text-xs sm:text-sm font-semibold text-white mb-1">2. Ship</p>
+                        <p className="text-xs text-gray-300">We send tags with setup guide</p>
+                      </div>
+                      <div className="bg-white/8 rounded-lg p-3 border border-white/20">
+                        <p className="text-xs sm:text-sm font-semibold text-white mb-1">3. Link</p>
+                        <p className="text-xs text-gray-300">Connect tags to assets in Checkly</p>
+                      </div>
+                      <div className="bg-white/8 rounded-lg p-3 border border-white/20">
+                        <p className="text-xs sm:text-sm font-semibold text-white mb-1">4. Scan</p>
+                        <p className="text-xs text-gray-300">Staff & contractors access everything</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
-              {/* Basic */}
-              <GlassCard className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Basic</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    QR tags only. Perfect for getting started.
-                  </p>
-                  <p className="text-3xl font-bold text-blue-400 mb-1">£35</p>
-                  <p className="text-sm text-gray-400">per site (one-time)</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">What's included:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "QR asset tags",
-                      "Setup guide",
-                      "Contractor scan instructions",
-                      "Replacement tag pack",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </GlassCard>
 
-              {/* Pro */}
-              <GlassCard className="flex flex-col relative border-magenta-400/50">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-3 py-1 rounded-full text-xs font-semibold">
-                  Most Popular
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Pro</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    QR + NFC tags. Better durability, contractors can tap with phone.
-                  </p>
-                  <p className="text-3xl font-bold text-magenta-400 mb-1">£75</p>
-                  <p className="text-sm text-gray-400">per site (one-time)</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">Everything in Basic plus:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "NFC tags (tap to scan)",
-                      "Waterproof fridge-safe variants",
-                      "Better durability",
-                      "Faster contractor check-ins",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </GlassCard>
+            {/* TAG PACKS - One-time purchase */}
+            <div className="mb-16 sm:mb-20">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Step 1: Choose Your Tag Pack</h3>
+                <p className="text-gray-400 text-sm sm:text-base">One-time purchase • Free replacement tags included</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
+                {/* Starter */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Starter</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£25</p>
+                    <p className="text-base text-gray-400">one-time</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "20 durable QR stickers",
+                        "Waterproof polyester material",
+                        "Setup guide included",
+                        "Free replacement tags",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
 
-              {/* Observatory */}
-              <GlassCard className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Observatory</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Premium metal tags. Multi-site bundles available.
-                  </p>
-                  <p className="text-3xl font-bold text-blue-400 mb-1">£125–£150</p>
-                  <p className="text-sm text-gray-400">per site (one-time)</p>
+                {/* Professional */}
+                <GlassCard className="flex flex-col relative border-magenta-400/50 min-h-[400px] sm:min-h-[450px]">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
+                  </div>
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Professional</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-magenta-400 mb-2">£50</p>
+                    <p className="text-base text-gray-400">one-time</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "20 NFC tags (tap to scan)",
+                        "Works on metal surfaces",
+                        "Better durability for high-use areas",
+                        "Free replacement tags",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
+
+                {/* Premium */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Premium</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£100</p>
+                    <p className="text-base text-gray-400">one-time</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "20 industrial-grade tags",
+                        "Chemical & heat resistant",
+                        "Screwable or adhesive mounting",
+                        "Lifetime free replacements",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
+              </div>
+            </div>
+
+            {/* Connecting Arrow/Divider */}
+            <div className="flex items-center justify-center mb-12 sm:mb-16">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-gradient-to-r from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-24 sm:w-32"></div>
+                <div className="bg-[#EC4899]/20 border border-[#EC4899]/40 rounded-full px-4 py-2">
+                  <span className="text-sm font-semibold text-white">+</span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white mb-3">Everything in Pro plus:</p>
-                  <ul className="space-y-2 mb-4">
-                    {[
-                      "Laser-etched metal tags",
-                      "Premium branding",
-                      "Multi-site pack bundles",
-                      "Replacement tags free for life",
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </GlassCard>
+                <div className="h-px bg-gradient-to-l from-transparent via-[#EC4899]/40 to-[#EC4899]/40 w-24 sm:w-32"></div>
+              </div>
+            </div>
+
+            {/* SOFTWARE TIERS - Monthly per site */}
+            <div className="mb-12 sm:mb-16">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h3>
+                <p className="text-gray-400 text-sm sm:text-base">Monthly per site • Cancel anytime • Works with any tag pack</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+                {/* Essential */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Essential</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£5</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "Scan to view asset details",
+                        "Service history timeline",
+                        "One-tap fault reporting",
+                        "Photo evidence upload",
+                        "Basic troubleshooting access",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
+
+                {/* Professional */}
+                <GlassCard className="flex flex-col relative border-magenta-400/50 min-h-[400px] sm:min-h-[450px]">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-magenta-400 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
+                  </div>
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Professional</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-magenta-400 mb-2">£10</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">Everything in Essential, plus:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "Scheduled scan tasks (e.g., monthly equipment audits)",
+                        "Contractor check-in portal",
+                        "Service reminder alerts",
+                        "PPM schedule integration",
+                        "Supplier & warranty info display",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
+
+                {/* Business */}
+                <GlassCard className="flex flex-col min-h-[400px] sm:min-h-[450px]">
+                  <div className="mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-white mb-3">Business</h3>
+                    <p className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">£20</p>
+                    <p className="text-base text-gray-400">per site / month</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white mb-3">Everything in Professional, plus:</p>
+                    <ul className="space-y-2 mb-4">
+                      {[
+                        "Full audit trail exports (PDF/CSV)",
+                        "Multi-site tag dashboard",
+                        "API access for integrations",
+                        "Priority support",
+                        "Custom branding on scan pages",
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </GlassCard>
+              </div>
             </div>
 
             {/* What the tags do */}
