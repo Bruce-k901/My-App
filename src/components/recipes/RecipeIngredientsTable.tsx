@@ -1528,7 +1528,7 @@ export function RecipeIngredientsTable({
                     <td className="px-2 py-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-[8%]">
                       {isEditingThis ? (
                         <Select
-                          value={editingId === ingredient.id ? (draft?.unit_id || '') : (ingredient.unit_id || '')}
+                          value={(editingId === ingredient.id ? (draft?.unit_id ?? '') : (ingredient.unit_id ?? '')) || ''}
                           onValueChange={(unitId) => {
                             // Batch state updates
                             setIngredients(prev => prev.map(ing =>

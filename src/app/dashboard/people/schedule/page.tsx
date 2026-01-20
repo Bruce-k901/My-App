@@ -4664,11 +4664,11 @@ export default function RotaBuilderPage() {
                           : `Target hours (${totalTargetHours.toFixed(0)}h) seems unusually high. Maximum recommended is ~168h per week (24h/day). Please check your forecast values in the Forecast modal.`
                       }
                     >
-                      / {totalTargetHours.toFixed(0)}h target ⚠️
+                      {' / '}{totalTargetHours.toFixed(0)}h target ⚠️
                     </span>
                   ) : (
                     <span className={totalHours >= totalTargetHours ? 'text-green-400' : 'text-amber-400'}>
-                      / {totalTargetHours.toFixed(1)}h target
+                      {' / '}{totalTargetHours.toFixed(1)}h target
                     </span>
                   )}
                 </>
