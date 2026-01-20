@@ -1,52 +1,76 @@
--- Fix: Add INSERT policy for messaging_channel_members table
--- This allows users to add themselves and others to channels they created or belong to
+-- ============================================================================
+-- FIX messaging_channel_members INSERT POLICY
+-- This adds the missing INSERT policy that allows users to add members to channels
+-- ============================================================================
 
-BEGIN;
-
--- Enable RLS if not already enabled
-ALTER TABLE messaging_channel_members ENABLE ROW LEVEL SECURITY;
-
--- Drop existing INSERT policies
-DROP POLICY IF EXISTS "Users can add members to channels" ON messaging_channel_members;
-DROP POLICY IF EXISTS "Users can insert channel members" ON messaging_channel_members;
-DROP POLICY IF EXISTS "messaging_channel_members_insert" ON messaging_channel_members;
-
--- Create INSERT policy that allows:
--- 1. Users to add themselves to channels in their company
--- 2. Channel creators/admins to add other users to their channels
-CREATE POLICY "Users can add members to channels" ON messaging_channel_members
-FOR INSERT
-WITH CHECK (
-  -- User can add themselves
-  (user_id = auth.uid())
-  AND
-  -- Channel must exist and user must belong to same company
-  EXISTS (
-    SELECT 1 
-    FROM messaging_channels mc
-    JOIN profiles p ON p.id = auth.uid()
-    WHERE mc.id = messaging_channel_members.channel_id
-    AND p.company_id = mc.company_id
-  )
-);
-
--- Grant necessary permissions
-GRANT INSERT ON messaging_channel_members TO authenticated;
-GRANT SELECT ON messaging_channel_members TO authenticated;
-GRANT SELECT ON messaging_channels TO authenticated;
-GRANT SELECT ON profiles TO authenticated;
-
--- Reload schema
-NOTIFY pgrst, 'reload schema';
-
-COMMIT;
-
--- Verification
-SELECT 
-  policyname,
-  cmd,
-  with_check
-FROM pg_policies
-WHERE tablename = 'messaging_channel_members'
-AND cmd = 'INSERT';
-
+DO $$
+BEGIN
+  -- Enable RLS if not already enabled
+  ALTER TABLE public.messaging_channel_members ENABLE ROW LEVEL SECURITY;
+  
+  -- Drop existing INSERT policies if they exist (for idempotency)
+  DROP POLICY IF EXISTS messaging_channel_members_insert_member ON public.messaging_channel_members;
+  DROP POLICY IF EXISTS "Users can add members to channels" ON public.messaging_channel_members;
+  DROP POLICY IF EXISTS "Users can insert channel members" ON public.messaging_channel_members;
+  
+  -- Check which column exists (profile_id or user_id)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'messaging_channel_members' 
+    AND column_name = 'profile_id'
+  ) THEN
+    -- Use profile_id (new column)
+    -- Allow users to add members to channels in their company
+    -- The member being added must also be in the same company
+    CREATE POLICY messaging_channel_members_insert_member
+      ON public.messaging_channel_members
+      FOR INSERT
+      WITH CHECK (
+        EXISTS (
+          SELECT 1 FROM public.messaging_channels mc
+          WHERE mc.id = messaging_channel_members.channel_id
+            AND mc.company_id IN (
+              SELECT company_id FROM public.profiles WHERE id = auth.uid()
+            )
+        )
+        AND EXISTS (
+          SELECT 1 FROM public.profiles p
+          WHERE p.id = messaging_channel_members.profile_id
+            AND p.company_id IN (
+              SELECT company_id FROM public.profiles WHERE id = auth.uid()
+            )
+        )
+      );
+    
+    RAISE NOTICE 'Created messaging_channel_members INSERT policy with profile_id';
+  ELSIF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'messaging_channel_members' 
+    AND column_name = 'user_id'
+  ) THEN
+    -- Use user_id (old column - backward compatibility)
+    CREATE POLICY messaging_channel_members_insert_member
+      ON public.messaging_channel_members
+      FOR INSERT
+      WITH CHECK (
+        EXISTS (
+          SELECT 1 FROM public.messaging_channels mc
+          WHERE mc.id = messaging_channel_members.channel_id
+            AND mc.company_id IN (
+              SELECT company_id FROM public.profiles WHERE id = auth.uid()
+            )
+        )
+        AND EXISTS (
+          SELECT 1 FROM public.profiles p
+          WHERE p.id = messaging_channel_members.user_id
+            AND p.company_id IN (
+              SELECT company_id FROM public.profiles WHERE id = auth.uid()
+            )
+        )
+      );
+    
+    RAISE NOTICE 'Created messaging_channel_members INSERT policy with user_id';
+  END IF;
+END $$;

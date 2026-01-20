@@ -988,6 +988,18 @@ export default function TaskCompletionModal({
         return
       }
 
+      // Get user profile to ensure we have profile ID
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile) {
+        console.error('User profile not found - cannot create notification')
+        return
+      }
+
       // Note: Manager profile fetching removed - email/SMS notifications disabled for now
       // Can be re-enabled later when email/SMS services are configured
 
@@ -1008,6 +1020,7 @@ export default function TaskCompletionModal({
       
       const notificationData: any = {
         company_id: companyId,
+        profile_id: profile.id, // Add profile_id - required field
         // site_id: siteId, // Omitted - foreign key constraint references sites_redundant, not sites
         type: 'temperature',
         title,
@@ -1515,15 +1528,33 @@ export default function TaskCompletionModal({
       return false
     }
     
-    const range = assetTempRanges.get(assetId)
+    // First, try to get range from asset card (primary source)
+    let range = assetTempRanges.get(assetId)
+    let rangeSource = 'asset_card'
+    
+    // Fallback: Check template temperature ranges from task_data.temperatures
+    if (!range || (range.min === null && range.max === null)) {
+      const taskData = task.task_data as any
+      const templateTemp = taskData?.temperatures?.find((t: any) => t.assetId === assetId)
+      
+      if (templateTemp && (templateTemp.temp_min !== undefined || templateTemp.temp_max !== undefined)) {
+        range = {
+          min: templateTemp.temp_min ?? null,
+          max: templateTemp.temp_max ?? null
+        }
+        rangeSource = 'template'
+        console.log(`🌡️ [TEMPERATURE RANGE CHECK] Using template range for asset ${assetId}: ${range.min ?? 'no min'}°C – ${range.max ?? 'no max'}°C`)
+      }
+    }
+    
     if (!range) {
-      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] No range loaded for asset ${assetId}`)
+      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] No range found (asset card or template) for asset ${assetId}`)
       return false
     }
     
     const { min, max } = range
     if (min === null && max === null) {
-      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] Range has no min or max for asset ${assetId}`)
+      console.warn(`⚠️ [TEMPERATURE RANGE CHECK] Range has no min or max for asset ${assetId} (source: ${rangeSource})`)
       return false
     }
     
@@ -1536,18 +1567,18 @@ export default function TaskCompletionModal({
       // Temperature is below minimum (works for both positive and negative)
       // Example: -22 < -20 (freezer too cold) OR -1 < 0 (fridge too cold)
       isOutOfRange = true
-      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${min}°C (out of range)`)
+      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${min}°C (out of range) [source: ${rangeSource}]`)
     }
     
     if (max !== null && temp > max) {
       // Temperature is above maximum (works for both positive and negative)
       // Example: -19 > -18 (freezer too warm) OR 10 > 5 (fridge too warm)
       isOutOfRange = true
-      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${max}°C (out of range)`)
+      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${max}°C (out of range) [source: ${rangeSource}]`)
     }
     
     if (!isOutOfRange) {
-      console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${min ?? 'no min'}, ${max ?? 'no max'}]`)
+      console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${min ?? 'no min'}, ${max ?? 'no max'}] [source: ${rangeSource}]`)
     }
     
     return isOutOfRange
@@ -2514,6 +2545,7 @@ export default function TaskCompletionModal({
               .from('notifications')
               .insert({
                 company_id: companyId,
+                profile_id: profile.id,
                 type: 'task',
                 title: 'Task Completed Late',
                 message: `Task "${task.template.name}" was completed late (after ${task.due_time || 'due time'} + 1 hour). Completed at ${completedAtDate.toLocaleString()}.`,

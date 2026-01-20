@@ -53,3 +53,15 @@ Always stop the dev server before clearing the cache:
 ## Service Worker Fix Applied
 
 The service worker now skips webpack HMR files, which should prevent the warning. After restarting the server, the warning should be gone.
+
+
+
+
+
+
+
+
+
+
+
+

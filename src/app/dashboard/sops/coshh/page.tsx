@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Upload, Download, FileText, X, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Search, Upload, Download, FileText, X, CheckCircle, AlertTriangle, RefreshCw, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 
 interface Chemical {
   id: string;
@@ -155,6 +156,12 @@ export default function COSHHPage() {
 
   const getCOSHHSheetForChemical = (chemicalId: string): COSHHSheet | undefined => {
     return coshhSheets.find(sheet => sheet.chemical_id === chemicalId);
+  };
+
+  const hasCOSHHSheet = (chemicalId: string): boolean => {
+    const sheet = getCOSHHSheetForChemical(chemicalId);
+    // Sheet exists AND has a file uploaded (file_url is not null)
+    return !!sheet && !!sheet.file_url;
   };
 
   const handleFileSelect = (chemicalId: string, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -346,14 +353,14 @@ export default function COSHHPage() {
 
   const stats = {
     total: chemicals.length,
-    withSheets: chemicals.filter(c => getCOSHHSheetForChemical(c.id)).length,
-    withoutSheets: chemicals.filter(c => !getCOSHHSheetForChemical(c.id)).length
+    withSheets: chemicals.filter(c => hasCOSHHSheet(c.id)).length,
+    withoutSheets: chemicals.filter(c => !hasCOSHHSheet(c.id)).length
   };
 
   if (loading || contextLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-neutral-400">Loading chemicals...</div>
+        <div className="text-gray-600 dark:text-neutral-400">Loading chemicals...</div>
       </div>
     );
   }
@@ -363,18 +370,18 @@ export default function COSHHPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">COSHH Data Sheets</h1>
-            <p className="text-neutral-400 text-sm mt-1">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">COSHH Data Sheets</h1>
+            <p className="text-gray-600 dark:text-neutral-400 text-sm mt-1">
               Manage COSHH data sheets for chemicals in your library
             </p>
           </div>
         </div>
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-6">
           <div className="flex items-center gap-3">
-            <AlertTriangle size={24} className="text-red-400" />
+            <AlertTriangle size={24} className="text-red-600 dark:text-red-400" />
             <div>
-              <h3 className="text-red-400 font-semibold">Error Loading Data</h3>
-              <p className="text-red-300 text-sm mt-1">{error}</p>
+              <h3 className="text-red-800 dark:text-red-400 font-semibold">Error Loading Data</h3>
+              <p className="text-red-700 dark:text-red-300 text-sm mt-1">{error}</p>
               <Button
                 variant="secondary"
                 onClick={loadData}
@@ -394,35 +401,46 @@ export default function COSHHPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">COSHH Data Sheets</h1>
-          <p className="text-neutral-400 text-sm mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">COSHH Data Sheets</h1>
+          <p className="text-gray-600 dark:text-neutral-400 text-sm mt-1">
             Manage COSHH data sheets for chemicals in your library
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={loadData}
-          className="h-9"
-          disabled={loading}
-        >
-          <RefreshCw size={14} className="mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/stockly/libraries/chemicals">
+            <Button
+              variant="outline"
+              className="h-9"
+            >
+              <ExternalLink size={14} className="mr-2" />
+              Manage Chemicals
+            </Button>
+          </Link>
+          <Button
+            variant="outline"
+            onClick={loadData}
+            className="h-9"
+            disabled={loading}
+          >
+            <RefreshCw size={14} className="mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06]">
-          <div className="text-neutral-400 text-sm">Total Chemicals</div>
-          <div className="text-2xl font-bold text-white mt-1">{stats.total}</div>
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06]">
+          <div className="text-gray-600 dark:text-neutral-400 text-sm">Total Chemicals</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.total}</div>
         </div>
-        <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06]">
-          <div className="text-neutral-400 text-sm">With COSHH Sheets</div>
-          <div className="text-2xl font-bold text-green-400 mt-1">{stats.withSheets}</div>
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06]">
+          <div className="text-gray-600 dark:text-neutral-400 text-sm">With COSHH Sheets</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.withSheets}</div>
         </div>
-        <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06]">
-          <div className="text-neutral-400 text-sm">Missing Sheets</div>
-          <div className={`text-2xl font-bold mt-1 ${stats.withoutSheets > 0 ? 'text-orange-400' : 'text-white'}`}>
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06]">
+          <div className="text-gray-600 dark:text-neutral-400 text-sm">Missing Sheets</div>
+          <div className={`text-2xl font-bold mt-1 ${stats.withoutSheets > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'}`}>
             {stats.withoutSheets}
           </div>
         </div>
@@ -430,13 +448,13 @@ export default function COSHHPage() {
 
       {/* Warning Banner for Missing Sheets */}
       {stats.withoutSheets > 0 && (
-        <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle size={20} className="text-orange-400" />
+        <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle size={20} className="text-orange-600 dark:text-orange-400" />
           <div className="flex-1">
-            <div className="text-orange-400 font-semibold">
+            <div className="text-orange-800 dark:text-orange-400 font-semibold">
               {stats.withoutSheets} chemical{stats.withoutSheets !== 1 ? 's' : ''} missing COSHH data sheets
             </div>
-            <div className="text-orange-300 text-sm">
+            <div className="text-orange-700 dark:text-orange-300 text-sm">
               Upload COSHH data sheets to ensure compliance and safety
             </div>
           </div>
@@ -445,37 +463,37 @@ export default function COSHHPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={20} />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search chemicals by name, manufacturer, or use case..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400 focus:outline-none focus:border-[#EC4899]/50 transition-colors"
+          className="w-full bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg pl-10 pr-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-[#EC4899]/50 transition-colors"
         />
       </div>
 
       {/* Chemicals List */}
       {filteredChemicals.length === 0 ? (
-        <div className="bg-white/[0.03] rounded-xl p-8 text-center border border-white/[0.06]">
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl p-8 text-center border border-gray-200 dark:border-white/[0.06]">
           {chemicals.length === 0 ? (
             <div className="space-y-4">
-              <FileText size={48} className="text-neutral-500 mx-auto" />
+              <FileText size={48} className="text-gray-400 dark:text-neutral-500 mx-auto" />
               <div>
-                <p className="text-neutral-300 font-semibold mb-2">No chemicals found in your library</p>
-                <p className="text-neutral-400 text-sm mb-4">
+                <p className="text-gray-700 dark:text-neutral-300 font-semibold mb-2">No chemicals found in your library</p>
+                <p className="text-gray-600 dark:text-neutral-400 text-sm mb-4">
                   Add chemicals to your library first, then you can upload COSHH data sheets for each one.
                 </p>
-                <Button
-                  variant="secondary"
-                  onClick={() => window.location.href = '/dashboard/libraries/chemicals'}
-                >
-                  Go to Chemicals Library
-                </Button>
+                <Link href="/dashboard/stockly/libraries/chemicals">
+                  <Button variant="secondary">
+                    <ExternalLink size={14} className="mr-2" />
+                    Go to Chemicals Library
+                  </Button>
+                </Link>
               </div>
             </div>
           ) : (
-            <p className="text-neutral-400">
+            <p className="text-gray-600 dark:text-neutral-400">
               No chemicals match your search. Try a different search term.
             </p>
           )}
@@ -484,7 +502,7 @@ export default function COSHHPage() {
         <div className="space-y-3">
           {filteredChemicals.map((chemical) => {
             const coshhSheet = getCOSHHSheetForChemical(chemical.id);
-            const hasSheet = !!coshhSheet;
+            const hasSheet = hasCOSHHSheet(chemical.id);
             const isUploading = uploadingForChemical === chemical.id;
             const isModalOpen = uploadModalOpen === chemical.id;
             const selectedFile = selectedFiles[chemical.id];
@@ -492,19 +510,19 @@ export default function COSHHPage() {
             return (
               <div
                 key={chemical.id}
-                className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06] hover:bg-white/[0.05] transition-colors"
+                className="bg-white dark:bg-white/[0.03] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">{chemical.product_name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{chemical.product_name}</h3>
                       {hasSheet ? (
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/40 rounded text-xs flex items-center gap-1">
+                        <span className="px-2 py-1 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/40 rounded text-xs flex items-center gap-1">
                           <CheckCircle size={12} />
                           COSHH Sheet Uploaded
                         </span>
                       ) : (
-                        <span className="px-2 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/40 rounded text-xs flex items-center gap-1">
+                        <span className="px-2 py-1 bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/40 rounded text-xs flex items-center gap-1">
                           <AlertTriangle size={12} />
                           Missing Sheet
                         </span>
@@ -512,17 +530,17 @@ export default function COSHHPage() {
                     </div>
                     
                     {chemical.manufacturer && (
-                      <p className="text-sm text-neutral-400 mb-1">Manufacturer: {chemical.manufacturer}</p>
+                      <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Manufacturer: {chemical.manufacturer}</p>
                     )}
                     {chemical.use_case && (
-                      <p className="text-sm text-neutral-400">Use Case: {chemical.use_case}</p>
+                      <p className="text-sm text-gray-600 dark:text-neutral-400">Use Case: {chemical.use_case}</p>
                     )}
                     
-                    {hasSheet && coshhSheet && (
+                    {hasSheet && coshhSheet && coshhSheet.file_url && (
                       <div className="mt-3 flex items-center gap-2">
-                        <FileText size={14} className="text-neutral-400" />
-                        <span className="text-xs text-neutral-400">
-                          {coshhSheet.file_name}
+                        <FileText size={14} className="text-gray-500 dark:text-neutral-400" />
+                        <span className="text-xs text-gray-600 dark:text-neutral-400">
+                          {coshhSheet.file_name || 'COSHH Data Sheet'}
                         </span>
                         <Button
                           variant="secondary"
@@ -549,31 +567,31 @@ export default function COSHHPage() {
                       </Button>
                     ) : (
                       <div className="flex flex-col gap-2 min-w-[300px]">
-                        <div className="border-2 border-dashed border-white/[0.1] rounded-lg p-4 text-center">
+                        <div className="border-2 border-dashed border-gray-300 dark:border-white/[0.1] rounded-lg p-4 text-center">
                           {selectedFile ? (
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-[#EC4899]" />
-                                <span className="text-sm text-white">{selectedFile.name}</span>
+                                <span className="text-sm text-gray-900 dark:text-white">{selectedFile.name}</span>
                               </div>
                               <button
                                 onClick={() => setSelectedFiles(prev => ({ ...prev, [chemical.id]: null }))}
-                                className="text-red-400 hover:text-red-300"
+                                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                               >
                                 <X size={16} />
                               </button>
                             </div>
                           ) : (
                             <div>
-                              <Upload size={24} className="text-neutral-400 mx-auto mb-2" />
-                              <p className="text-neutral-400 text-sm mb-2">Select a COSHH data sheet</p>
+                              <Upload size={24} className="text-gray-400 dark:text-neutral-400 mx-auto mb-2" />
+                              <p className="text-gray-600 dark:text-neutral-400 text-sm mb-2">Select a COSHH data sheet</p>
                               <button
                                 onClick={() => fileInputRefs.current[chemical.id]?.click()}
-                                className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-lg text-white text-sm"
+                                className="px-3 py-1.5 bg-white dark:bg-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.1] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm"
                               >
                                 Choose File
                               </button>
-                              <p className="text-neutral-500 text-xs mt-2">PDF, JPEG, PNG, WebP • Max 10MB</p>
+                              <p className="text-gray-500 dark:text-neutral-500 text-xs mt-2">PDF, JPEG, PNG, WebP • Max 10MB</p>
                             </div>
                           )}
                           <input

@@ -9,7 +9,7 @@ type Option = string | { label: string; value: string };
 type SelectProps = {
   label?: string;
   value?: string;
-  options: Option[];
+  options?: Option[]; // Made optional with default
   onValueChange: (val: string) => void;
   placeholder?: string;
   className?: string;
@@ -19,7 +19,7 @@ type SelectProps = {
 export default function Select({ 
   label, 
   value, 
-  options, 
+  options = [], 
   onValueChange, 
   placeholder = "Select...", 
   className, 
@@ -27,17 +27,29 @@ export default function Select({
 }: SelectProps) {
   const getLabel = (opt: Option) => (typeof opt === "string" ? opt : opt.label);
   const getValue = (opt: Option) => (typeof opt === "string" ? opt : opt.value);
+  
+  // Safety check: ensure options is always an array
+  const safeOptions = options || [];
 
-  // Always normalize to string to keep component controlled
-  // Empty string will show placeholder in Radix Select when it doesn't match any option
+  // Normalize value - use undefined for empty values to let Radix handle placeholder
+  // Radix UI Select doesn't allow empty string values for Select.Item
+  // IMPORTANT: value must be consistent - never switch between undefined and string
   const normalizedValue = React.useMemo(() => {
-    // Always return a string - never undefined - to keep component controlled
-    return value === undefined || value === null ? "" : String(value);
+    // If value was explicitly set, always return string (even if empty initially)
+    // This prevents controlled/uncontrolled switching
+    if (value === undefined || value === null) {
+      return undefined; // Only undefined if never set
+    }
+    // Always return string to maintain controlled state
+    const stringValue = String(value);
+    // Return undefined only for empty strings to show placeholder
+    // But maintain consistency - if it was set to "", keep it as undefined
+    return stringValue === '' ? undefined : stringValue;
   }, [value]);
   
   return (
     <div className={cn("relative", className)}>
-      {label && <label className="block text-xs text-slate-400 mb-1">{label}</label>}
+      {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-1">{label}</label>}
       
       <SelectPrimitive.Root 
         value={normalizedValue}
@@ -47,10 +59,10 @@ export default function Select({
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency
-            "w-full h-10 rounded-md px-4 text-left text-white relative",
-            "bg-white/[0.05] border border-white/[0.1]",
+            "w-full h-10 rounded-md px-4 text-left text-theme-primary dark:text-white relative",
+            "bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1]",
             "transition-all duration-150 ease-in-out",
-            "hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
+            "hover:border-theme-hover dark:hover:border-white/20 hover:bg-theme-button-hover dark:hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
             "focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none",
             "data-[state=open]:border-pink-500 data-[state=open]:shadow-[0_0_14px_rgba(236,72,153,0.4)]",
             disabled && "opacity-50 cursor-not-allowed",
@@ -60,31 +72,40 @@ export default function Select({
         >
           <SelectPrimitive.Value 
             placeholder={placeholder}
-            className={cn("text-sm", !value && "text-white/40")}
+            className={cn("text-sm", !value && "text-theme-tertiary dark:text-white/40")}
           />
           <SelectPrimitive.Icon>
-            <ChevronDown className="h-4 w-4 text-white/70" />
+            <ChevronDown className="h-4 w-4 text-theme-secondary dark:text-white/70" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
-            className="relative z-[10000] max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-white/[0.1] bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            className="relative z-[10000] max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-theme dark:border-white/[0.1] bg-[rgb(var(--surface-elevated))] dark:bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             position="popper"
             sideOffset={6}
           >
             <SelectPrimitive.Viewport className="p-1">
-              {options.map((opt) => {
-                const val = getValue(opt);
-                const lbl = getLabel(opt);
-                return (
-                  <SelectPrimitive.Item
-                    key={val}
-                    value={val}
+              {safeOptions
+                .filter((opt) => {
+                  // Filter out any options with empty string values
+                  // Radix UI Select doesn't allow empty string values for Select.Item
+                  const val = getValue(opt);
+                  return val !== undefined && val !== null && val !== "";
+                })
+                .map((opt, index) => {
+                  const val = getValue(opt);
+                  const lbl = getLabel(opt);
+                  // Use value as key, but fallback to index if value is undefined/null/empty
+                  const key = val || `option-${index}`;
+                  return (
+                    <SelectPrimitive.Item
+                      key={key}
+                      value={val}
                     className={cn(
                       "relative flex w-full cursor-default select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none",
-                      "text-white hover:bg-white/[0.06] focus:bg-white/[0.06]",
-                      "data-[state=checked]:bg-white/[0.08]"
+                      "text-theme-primary dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.06] focus:bg-black/[0.05] dark:focus:bg-white/[0.06]",
+                      "data-[state=checked]:bg-black/[0.08] dark:data-[state=checked]:bg-white/[0.08]"
                     )}
                   >
                     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">

@@ -11,11 +11,13 @@ import { useMessages } from '@/hooks/useMessages';
 import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
 import type { Message } from '@/types/messaging';
 import { supabase } from '@/lib/supabase';
+import { useAppContext } from '@/context/AppContext';
 
 export function Messaging() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAppContext();
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(
     searchParams.get('conversation') || null
   );
@@ -64,9 +66,30 @@ export function Messaging() {
     }
   }, [searchParams]); // Remove selectedConversationId from deps to avoid loops
 
+  // Mark channel as read when conversation is opened
+  const markChannelAsRead = async (channelId: string, userId: string) => {
+    const { error } = await supabase
+      .from('messaging_channel_members')
+      .update({
+        last_read_at: new Date().toISOString(),
+        unread_count: 0
+      })
+      .eq('channel_id', channelId)
+      .eq('profile_id', userId);
+    
+    if (error) {
+      console.error('Error marking channel as read:', error);
+    }
+  };
+
   // Handle conversation selection - update URL and state
-  const handleSelectConversation = (conversationId: string | null) => {
+  const handleSelectConversation = async (conversationId: string | null) => {
     setSelectedConversationId(conversationId);
+    
+    // Mark as read when opening conversation
+    if (conversationId && user?.id) {
+      await markChannelAsRead(conversationId, user.id);
+    }
     
     // On mobile, close sidebar when conversation is selected
     setIsSidebarOpen(false);

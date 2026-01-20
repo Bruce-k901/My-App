@@ -33,6 +33,7 @@ import {
   Receipt,
   ClipboardList,
   ChefHat,
+  Users,
 } from "lucide-react";
 
 // Section with hover popup
@@ -68,7 +69,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
     label: "Organization",
     icon: Building2,
     items: [
-      { label: "Onboarding", href: "/dashboard/organization/onboarding" }, // Always visible - no restrictions
+      { label: "Setup Guide", href: "/dashboard/organization/onboarding" }, // Always visible - no restrictions
       { label: "Business Details", href: "/dashboard/business" },
       { label: "Users", href: "/dashboard/users" },
       { label: "Sites", href: "/dashboard/sites" },
@@ -147,6 +148,23 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
     ],
   },
   {
+    label: "People",
+    icon: Users,
+    items: [
+      { label: "Directory", href: "/dashboard/people/directory" },
+      { label: "Attendance", href: "/dashboard/people/attendance" },
+      { label: "Leave", href: "/dashboard/people/leave" },
+      { label: "Schedule", href: "/dashboard/people/schedule" },
+      { label: "Onboarding: People", href: "/dashboard/people/onboarding" },
+      { label: "Onboarding: Docs", href: "/dashboard/people/onboarding/company-docs" },
+      { label: "Onboarding: Packs", href: "/dashboard/people/onboarding/packs" },
+      { label: "Onboarding: My Docs", href: "/dashboard/people/onboarding/my-docs" },
+      { label: "Training", href: "/dashboard/people/training" },
+      { label: "Performance", href: "/dashboard/people/reviews" },
+      { label: "Payroll", href: "/dashboard/people/payroll" },
+    ],
+  },
+  {
     label: "Stockly",
     icon: Warehouse,
     items: [
@@ -160,6 +178,12 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       { label: "Sales", href: "/dashboard/stockly/sales", icon: Receipt },
       { label: "Credit Notes", href: "/dashboard/stockly/credit-notes" },
       { label: "Reports", href: "/dashboard/stockly/reports", icon: BarChart3 },
+      { label: "Ingredients", href: "/dashboard/stockly/libraries/ingredients" },
+      { label: "PPE", href: "/dashboard/stockly/libraries/ppe" },
+      { label: "Chemicals", href: "/dashboard/stockly/libraries/chemicals" },
+      { label: "Disposables", href: "/dashboard/stockly/libraries/disposables" },
+      { label: "First Aid", href: "/dashboard/stockly/libraries/first-aid" },
+      { label: "Packaging", href: "/dashboard/stockly/libraries/packaging" },
     ],
   },
 ], []);
@@ -205,6 +229,7 @@ const directLinks: SidebarLink[] = [
   const assetsRef = useRef<HTMLDivElement>(null);
   const coursesRef = useRef<HTMLDivElement>(null);
   const logsRef = useRef<HTMLDivElement>(null);
+  const peopleRef = useRef<HTMLDivElement>(null);
   const stocklyRef = useRef<HTMLDivElement>(null);
   
   // Map section labels to refs
@@ -216,6 +241,7 @@ const directLinks: SidebarLink[] = [
     "Assets": assetsRef,
     "Courses": coursesRef,
     "Logs": logsRef,
+    "People": peopleRef,
     "Stockly": stocklyRef,
   };
 
@@ -349,7 +375,22 @@ const directLinks: SidebarLink[] = [
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[#0B0D13] border-r border-white/[0.1] flex-col items-center py-3 gap-1 z-50 overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[rgb(var(--surface))] dark:bg-[#0B0D13] border-r border-[rgb(var(--border))] dark:border-white/[0.1] flex-col items-center py-4 gap-2 z-50 overflow-y-auto overflow-x-hidden checkly-sidebar-scrollbar" suppressHydrationWarning>
+        {/* Checkly Logo - Show when on Checkly pages */}
+        {(pathname === "/dashboard" || pathname.startsWith("/dashboard/tasks") || pathname.startsWith("/dashboard/checklists") || pathname.startsWith("/dashboard/sops") || pathname.startsWith("/dashboard/incidents") || pathname.startsWith("/dashboard/assets") || pathname.startsWith("/dashboard/logs") || pathname.startsWith("/dashboard/compliance") || pathname.startsWith("/dashboard/eho-report") || pathname.startsWith("/dashboard/libraries") || pathname.startsWith("/dashboard/courses") || pathname.startsWith("/dashboard/ppm") || pathname.startsWith("/dashboard/todays_tasks")) && (
+          <Link
+            href="/dashboard"
+            className="mb-2 p-2 hover:opacity-80 transition-opacity"
+            title="Checkly"
+          >
+            <img
+              src="/assets/checkly_logo_touching_blocks.svg"
+              alt="Checkly"
+              className="h-8 w-auto"
+            />
+          </Link>
+        )}
+        
         {/* Dashboard Link at Top */}
         <SidebarDirectLink
           item={directLinks[0]}
@@ -357,7 +398,7 @@ const directLinks: SidebarLink[] = [
           isRestricted={false}
         />
 
-        <div className="w-12 h-px bg-white/[0.1] my-1" />
+        <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
 
         {/* Hover Sections */}
         {sections.map((section) => {
@@ -379,14 +420,14 @@ const directLinks: SidebarLink[] = [
         })}
 
         {/* Manager Calendar - Right after sections */}
-        <div className="w-12 h-px bg-white/[0.1] my-1" />
+        <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
         <SidebarDirectLink
           item={directLinks[1]}
           isActive={pathname.startsWith(directLinks[1].href)}
           isRestricted={false}
         />
 
-        <div className="w-12 h-px bg-white/[0.1] my-1" />
+        <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
 
         {/* Bottom Direct Links */}
         {directLinks.slice(2).map((link) => {
@@ -404,7 +445,7 @@ const directLinks: SidebarLink[] = [
         {/* Admin Portal Link - Only for platform admins */}
         {profile?.is_platform_admin && (
           <>
-            <div className="w-12 h-px bg-white/[0.1] my-1" />
+            <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
             <SidebarDirectLink
               item={{ label: "Admin Portal", href: "/admin", icon: Shield }}
               isActive={pathname.startsWith("/admin")}
@@ -625,16 +666,17 @@ function SidebarDirectLink({
   // Use static className to prevent hydration mismatches
   // CRITICAL: Must use static string, not template literal, to prevent hydration mismatch
   const staticClassName = isActive
-    ? "relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-pink-500/20 text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
-    : "relative group flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-white/60 hover:text-white hover:bg-white/[0.08]";
+    ? "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)] border border-[#EC4899]/30 dark:border-pink-500/30"
+    : "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/[0.08] hover:shadow-[0_0_8px_rgba(236,72,153,0.2)]";
   
   return (
     <Link
       href={item.href}
       className={staticClassName}
+      title={item.label}
     >
-      <Icon size={18} />
-      <div className="absolute left-full ml-4 px-3 py-2 bg-[#1a1c24] border border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+      <Icon size={20} />
+      <div className="absolute left-full ml-3 px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1c24] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg text-[rgb(var(--text-primary))] dark:text-white">
         {item.label}
       </div>
     </Link>
@@ -693,8 +735,8 @@ function SidebarSectionItem({
 
   // Use static className to prevent hydration mismatch
   const buttonClassName = (isActive || isHovered)
-    ? "relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-pink-500/20 text-pink-400"
-    : "relative flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-white/60 hover:text-white hover:bg-white/[0.08]";
+    ? "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border border-[#EC4899]/30 dark:border-pink-500/30 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
+    : "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/[0.08] hover:shadow-[0_0_8px_rgba(236,72,153,0.2)]";
   
   return (
     <div
@@ -703,8 +745,9 @@ function SidebarSectionItem({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onClick={handleClick}
+      title={section.label}
     >
-      <Icon size={18} />
+      <Icon size={20} />
     </div>
   );
 }
@@ -779,14 +822,15 @@ function SidebarPopup({
         }}
         onMouseLeave={onMouseLeave}
       >
-      <div className="pointer-events-auto bg-[#0f1119]/98 border border-pink-500/20 border-l-2 border-l-pink-500 rounded-r-xl backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[240px] py-3 animate-slideIn">
+      <div className="pointer-events-auto bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1119]/98 border border-[#EC4899]/30 dark:border-pink-500/20 border-l-2 border-l-[#EC4899] dark:border-l-pink-500 rounded-r-xl backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[260px] py-3 animate-slideIn">
         {/* Section Title */}
-        <div className="px-4 py-2 text-sm font-semibold text-pink-400 border-b border-white/[0.1] mb-2">
-          {section.label}
+        <div className="px-5 py-3 text-sm font-semibold text-[#EC4899] dark:text-pink-400 border-b border-[rgb(var(--border))] dark:border-white/[0.1] mb-2 flex items-center gap-2">
+          <section.icon size={16} />
+          <span>{section.label}</span>
         </div>
 
         {/* Items */}
-        <div className="space-y-1 px-2">
+        <div className="space-y-1 px-3">
           {section.items.map((item) => {
             const isExactMatch = pathname === item.href;
             const isChildRoute = pathname.startsWith(item.href + "/");
@@ -803,8 +847,8 @@ function SidebarPopup({
                 href={item.href}
                 className={
                   isActive
-                    ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
-                    : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08] hover:pl-5"
+                    ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-300 font-medium border-l-2 border-l-[#EC4899] dark:border-l-pink-400"
+                    : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/80 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface))] dark:hover:bg-white/[0.08] hover:pl-5"
                 }
               >
                 {item.label}

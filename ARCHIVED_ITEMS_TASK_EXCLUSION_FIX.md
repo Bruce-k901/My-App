@@ -93,3 +93,15 @@ Added filters to exclude archived items from all task-related queries across the
 - The SQL function `create_ppm_tasks()` in `supabase/sql/notifications.sql` already had the archived asset filter, so no changes were needed there.
 - The `generate-daily-tasks` function already filtered archived assets for PPM tasks, so only the asset dropdown queries needed fixing.
 - Archived users are handled automatically since they're moved to a separate table.
+
+
+
+
+
+
+
+
+
+
+
+

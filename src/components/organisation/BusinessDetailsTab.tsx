@@ -51,7 +51,10 @@ export default function BusinessDetailsTab() {
   console.log('🚀 BusinessDetailsTab component MOUNTED');
   
   const router = useRouter();
-  const { company: contextCompany, setCompany, profile, companyId, userId } = useAppContext();
+  const { company: contextCompany, setCompany, profile, companyId, userId, session, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId || profile?.company_id;
   
   console.log('📊 BusinessDetailsTab context values:', {
     hasContextCompany: !!contextCompany,
@@ -90,36 +93,61 @@ export default function BusinessDetailsTab() {
         formId: form?.id,
       });
 
-      // First priority: Use contextCompany if available and has data
+      // First priority: Use selected company from context (for multi-company support)
       // Check for id OR name (company might have id but name could be null initially)
-      if (contextCompany && contextCompany.id) {
-        console.log('✅ Using contextCompany directly:', contextCompany.name || contextCompany.id);
+      const selectedCompany = company || contextCompany;
+      if (selectedCompany && selectedCompany.id) {
+        console.log('✅ Using selected company from context:', selectedCompany.name || selectedCompany.id);
         // Ensure form has all fields, even if some are null
         setForm({
-          id: contextCompany.id,
-          name: contextCompany.name || "",
-          legal_name: contextCompany.legal_name || "",
-          industry: contextCompany.industry || "",
-          vat_number: contextCompany.vat_number || "",
-          company_number: contextCompany.company_number || "",
-          phone: contextCompany.phone || "",
-          website: contextCompany.website || "",
-          country: contextCompany.country || "",
-          contact_email: contextCompany.contact_email || contextCompany.email || profileRow?.email || "",
-          address_line1: contextCompany.address_line1 || "",
-          address_line2: contextCompany.address_line2 || "",
-          city: contextCompany.city || "",
-          postcode: contextCompany.postcode || "",
-          logo_url: contextCompany.logo_url || null,
+          id: selectedCompany.id,
+          name: selectedCompany.name || "",
+          legal_name: selectedCompany.legal_name || "",
+          industry: selectedCompany.industry || "",
+          vat_number: selectedCompany.vat_number || "",
+          company_number: selectedCompany.company_number || "",
+          phone: selectedCompany.phone || "",
+          website: selectedCompany.website || "",
+          country: selectedCompany.country || "",
+          contact_email: selectedCompany.contact_email || selectedCompany.email || profileRow?.email || "",
+          address_line1: selectedCompany.address_line1 || "",
+          address_line2: selectedCompany.address_line2 || "",
+          city: selectedCompany.city || "",
+          postcode: selectedCompany.postcode || "",
+          logo_url: selectedCompany.logo_url || null,
         });
         setHasInitialized(true);
         setLoading(false);
         return;
       }
-
-      // Wait for userId to be available
+      
+      // Fallback to effectiveCompanyId if no company object available
+      const targetCompanyId = effectiveCompanyId || companyId || profile?.company_id;
+      
+      if (!targetCompanyId) {
+        console.warn('⚠️ No company ID available yet');
+        setLoading(false);
+        return;
+      }
+      
+      // Wait for userId to be available (from user?.id in context)
+      // Also check if we have session but userId is still null (might be loading)
+      if (!userId && !session) {
+        // No session at all - user is logged out
+        console.debug('No session - user logged out');
+        setLoading(false);
+        return;
+      }
+      
+      if (!userId && session?.user?.id) {
+        // Session exists but userId not set in context yet - wait a bit
+        console.debug('Session exists but userId not in context yet, will retry');
+        return;
+      }
+      
       if (!userId) {
-        console.warn('⚠️ No userId yet, will retry when available');
+        // No userId and no session - wait for auth to initialize
+        console.debug('Waiting for userId to be available');
         return;
       }
 
@@ -315,7 +343,7 @@ export default function BusinessDetailsTab() {
     } else {
       console.log('⏭️ Skipping - already initialized with form ID:', form.id);
     }
-  }, [userId, companyId, contextCompany?.id, profile?.company_id]); // Depend on IDs only
+  }, [userId, companyId, contextCompany?.id, profile?.company_id, session]); // Include session to properly wait for auth
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -439,14 +467,17 @@ export default function BusinessDetailsTab() {
     console.log("📤 Complete payload:", payload);
 
     let result;
-    if (form.id) {
+    // Use the selected company ID (for multi-company support)
+    const targetCompanyId = form.id || effectiveCompanyId;
+    
+    if (targetCompanyId) {
       // Update existing company via API route (bypasses RLS)
       try {
         const response = await fetch("/api/company/update", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: form.id,
+            id: targetCompanyId,
             ...payload,
           }),
         });

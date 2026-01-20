@@ -417,7 +417,7 @@ export default function BillingPage() {
               </h3>
               <p className="text-white/80 mb-4">
                 {isTrialExpired
-                  ? 'Your 60-day free trial has ended. Please select a subscription plan to continue using Checkly. You can upgrade or modify your plan at any time.'
+                  ? 'Your 60-day free trial has ended. Please select a subscription plan to continue using Opsly. You can upgrade or modify your plan at any time.'
                   : 'Please select a subscription plan to continue. You can upgrade or modify your plan at any time.'}
               </p>
               <div className="flex flex-wrap gap-3">

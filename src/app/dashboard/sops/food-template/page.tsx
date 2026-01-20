@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2 } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SmartSearch from '@/components/SmartSearch';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { getVersioningInfo, createVersionPayload } from '@/lib/utils/sopVersioning';
 
 const COLOUR_CODES = [
@@ -58,6 +59,9 @@ function FoodSOPTemplatePageContent() {
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("Food Prep");
   const [isSubRecipe, setIsSubRecipe] = useState(false);
+  const [headerAllergens, setHeaderAllergens] = useState<string[]>([]); // Allergens in header section
+  const [linkedRecipeId, setLinkedRecipeId] = useState<string | null>(null); // Linked recipe ID
+  const [checkingRecipeLink, setCheckingRecipeLink] = useState(false); // Track if we're checking for recipe link
 
   // Ingredients state
   const [ingredients, setIngredients] = useState([
@@ -175,7 +179,7 @@ function FoodSOPTemplatePageContent() {
         
         const { data, error } = await supabase
           .from('ingredients_library')
-          .select('id, ingredient_name, unit, unit_cost, allergens, default_colour_code, category, supplier, linked_sop_id')
+          .select('id, ingredient_name, unit, unit_cost, pack_cost, pack_size, yield_percent, allergens, default_colour_code, category, supplier, linked_sop_id')
           .order('ingredient_name');
         
         if (error) {
@@ -261,7 +265,7 @@ function FoodSOPTemplatePageContent() {
         setLoading(true);
         const { data, error } = await supabase
           .from('sop_entries')
-          .select('*')
+          .select('*, linked_recipe_id')
           .eq('id', editId)
           .eq('company_id', companyId)
           .single();
@@ -280,6 +284,66 @@ function FoodSOPTemplatePageContent() {
         // Store original SOP for versioning
         setOriginalSOP(data);
 
+        // Store linked recipe ID - check both directions
+        let recipeId = data.linked_recipe_id || null;
+        console.log('SOP data - linked_recipe_id from DB:', recipeId);
+        
+        // If not found in SOP, check if recipe has this SOP linked
+        // Note: linked_sop_id is in stockly.recipes, but the 'recipes' view might not expose it
+        // or RLS might block it. We'll try the query but handle 400 errors gracefully.
+        // The browser will still log the network error, but we handle it in code.
+        if (!recipeId) {
+          // Use AbortController to potentially cancel if needed, but we'll let it complete
+          // and handle the error response instead
+          try {
+            const { data: recipeData, error: recipeError } = await supabase
+              .from('recipes')
+              .select('id')
+              .eq('linked_sop_id', editId)
+              .limit(1)
+              .maybeSingle();
+            
+            if (recipeError) {
+              // 400 Bad Request typically means column doesn't exist in view or RLS blocks it
+              // This is expected in some setups, so we silently handle it
+              // Note: Browser will still log the network error, but functionality continues
+              const isExpectedError = 
+                recipeError.code === 'PGRST116' || 
+                recipeError.code === '42703' || 
+                recipeError.code === '42P01' || 
+                recipeError.code === 'PGRST301' ||
+                (recipeError as any).status === 400 ||
+                recipeError.message?.includes('column') || 
+                recipeError.message?.includes('does not exist') ||
+                recipeError.message?.includes('undefined column') ||
+                recipeError.message?.includes('permission denied');
+              
+              // Only log if it's an unexpected error type
+              if (!isExpectedError) {
+                console.warn('Unexpected error checking recipe link:', recipeError);
+              }
+            } else if (recipeData) {
+              recipeId = recipeData.id;
+              console.log('Found recipe ID from recipes table:', recipeId);
+            }
+          } catch (e: any) {
+            // Catch any unexpected errors
+            const isExpectedError = 
+              e?.code === 'PGRST116' || 
+              e?.code === '42703' || 
+              e?.code === '42P01' ||
+              e?.code === 'PGRST301' ||
+              e?.status === 400;
+            
+            if (!isExpectedError) {
+              console.warn('Unexpected error checking recipe link:', e);
+            }
+          }
+        }
+        
+        setLinkedRecipeId(recipeId);
+        console.log('Final linkedRecipeId state set to:', recipeId);
+
         // Populate header fields
         setTitle(data.title || '');
         setRefCode(data.ref_code || '');
@@ -290,23 +354,132 @@ function FoodSOPTemplatePageContent() {
 
         // Populate SOP data
         const sopData = data.sop_data || {};
-        const header = sopData.header || {};
         
-        // Update header fields if they exist in sop_data
-        if (header.title) setTitle(header.title);
-        if (header.refCode) setRefCode(header.refCode);
-        if (header.version) setVersion(header.version);
-        if (header.status) setStatus(header.status);
-        if (header.author) setAuthor(header.author);
-        if (header.category) setCategory(header.category);
-        if (header.isSubRecipe !== undefined) setIsSubRecipe(header.isSubRecipe);
+        // Check if this is TipTap format (has content array) or simple format
+        const isTipTapFormat = sopData.content && Array.isArray(sopData.content);
+        
+        if (isTipTapFormat) {
+          // TipTap format: Extract from content nodes
+          const headerNode = sopData.content.find((n: any) => n.type === 'prepHeader');
+          const ingredientTableNode = sopData.content.find((n: any) => n.type === 'ingredientTable');
+          const equipmentListNode = sopData.content.find((n: any) => n.type === 'equipmentList');
+          const processStepsNode = sopData.content.find((n: any) => n.type === 'processSteps');
+          const storageInfoNode = sopData.content.find((n: any) => n.type === 'storageInfo');
+          
+          // Populate header from TipTap format
+          if (headerNode?.attrs) {
+            if (headerNode.attrs.title) setTitle(headerNode.attrs.title);
+            if (headerNode.attrs.ref_code) setRefCode(headerNode.attrs.ref_code);
+            if (headerNode.attrs.version) setVersion(headerNode.attrs.version);
+            if (headerNode.attrs.status) setStatus(headerNode.attrs.status);
+            if (headerNode.attrs.author) setAuthor(headerNode.attrs.author);
+            // Extract allergens from header attrs or safetyNotes
+            if (headerNode.attrs.allergens && Array.isArray(headerNode.attrs.allergens)) {
+              setHeaderAllergens(headerNode.attrs.allergens);
+            } else if (headerNode.attrs.safetyNotes) {
+              const allergenMatch = headerNode.attrs.safetyNotes.match(/This recipe contains: ([^\n]+)/);
+              if (allergenMatch) {
+                const allergens = allergenMatch[1].split(',').map((a: string) => a.trim()).filter(Boolean);
+                setHeaderAllergens(allergens);
+              }
+            }
+            // Category might not be in TipTap format, keep from DB
+          }
+          
+          // Populate ingredients from TipTap ingredientTable
+          if (ingredientTableNode?.attrs?.rows && Array.isArray(ingredientTableNode.attrs.rows)) {
+            const tipTapIngredients = ingredientTableNode.attrs.rows.map((row: any, idx: number) => {
+              // Try to find ingredient_id by matching name in ingredients library
+              const ingredientName = row.ingredient || '';
+              const matchedIngredient = ingredientsLibrary.find(
+                (lib: any) => lib.ingredient_name?.toLowerCase() === ingredientName.toLowerCase()
+              );
+              
+              return {
+                id: Date.now() + idx,
+                ingredient_id: matchedIngredient?.id || '', // Look up by name
+                ingredient_name: ingredientName,
+                quantity: parseFloat(row.quantity) || '',
+                unit: row.unit || '',
+                allergens: Array.isArray(row.allergen) ? row.allergen : (row.allergen ? [row.allergen] : []),
+                colour_code: row.colour_code || matchedIngredient?.default_colour_code || '',
+                supplier: row.supplier || matchedIngredient?.supplier || '',
+                prepState: row.prepState || '',
+                useByDate: row.useByDate || '',
+                costPerUnit: row.costPerUnit || ''
+              };
+            });
+            setIngredients(tipTapIngredients);
+            console.log('✅ Loaded', tipTapIngredients.length, 'ingredients from TipTap format');
+          } else {
+            console.log('⚠️ No ingredientTable node found in TipTap format');
+          }
+          
+          // Populate equipment from TipTap format
+          if (equipmentListNode?.attrs?.rows && Array.isArray(equipmentListNode.attrs.rows)) {
+            setEquipment(equipmentListNode.attrs.rows.map((eq: any, idx: number) => ({
+              ...eq,
+              id: eq.id || Date.now() + idx
+            })));
+          }
+          
+          // Populate process steps from TipTap format
+          if (processStepsNode?.attrs?.steps && Array.isArray(processStepsNode.attrs.steps)) {
+            setProcessSteps(processStepsNode.attrs.steps.map((step: any, idx: number) => ({
+              ...step,
+              id: step.id || Date.now() + idx
+            })));
+          }
+          
+          // Populate storage from TipTap format
+          if (storageInfoNode?.attrs) {
+            setStorageType(storageInfoNode.attrs.type || 'chilled');
+            setShelfLife(storageInfoNode.attrs.durationDays?.toString() || '');
+            setContainerType(storageInfoNode.attrs.storageNotes || '');
+          }
+        } else {
+          // Simple format: Direct properties
+          const header = sopData.header || {};
+          
+          // Update header fields if they exist in sop_data
+          if (header.title) setTitle(header.title);
+          if (header.refCode) setRefCode(header.refCode);
+          if (header.version) setVersion(header.version);
+          if (header.status) setStatus(header.status);
+          if (header.author) setAuthor(header.author);
+          if (header.category) setCategory(header.category);
+          if (header.isSubRecipe !== undefined) setIsSubRecipe(header.isSubRecipe);
 
-        // Populate ingredients
-        if (sopData.ingredients && Array.isArray(sopData.ingredients)) {
-          setIngredients(sopData.ingredients.map((ing: any) => ({
-            ...ing,
-            id: ing.id || Date.now() + Math.random()
-          })));
+          // Populate ingredients from simple format
+          if (sopData.ingredients && Array.isArray(sopData.ingredients)) {
+            setIngredients(sopData.ingredients.map((ing: any) => ({
+              ...ing,
+              id: ing.id || Date.now() + Math.random()
+            })));
+          }
+          
+          // Populate equipment from simple format
+          if (sopData.equipment && Array.isArray(sopData.equipment)) {
+            setEquipment(sopData.equipment.map((eq: any) => ({
+              ...eq,
+              id: eq.id || Date.now() + Math.random()
+            })));
+          }
+
+          // Populate process steps from simple format
+          if (sopData.processSteps && Array.isArray(sopData.processSteps)) {
+            setProcessSteps(sopData.processSteps.map((step: any) => ({
+              ...step,
+              id: step.id || Date.now() + Math.random()
+            })));
+          }
+
+          // Populate storage from simple format
+          if (sopData.storage) {
+            setStorageType(sopData.storage.storageType || 'chilled');
+            setShelfLife(sopData.storage.shelfLife || '');
+            setContainerType(sopData.storage.containerType || '');
+          }
         }
 
         // Populate equipment
@@ -354,8 +527,14 @@ function FoodSOPTemplatePageContent() {
       }
     };
 
-    loadSOP();
-  }, [editId, companyId, sopLoaded, router, showToast]);
+    // Only load SOP after ingredients library is loaded (for name matching)
+    if (dataLoaded && ingredientsLibrary.length > 0) {
+      loadSOP();
+    } else if (dataLoaded) {
+      // If data is loaded but no ingredients, still load SOP (might not need matching)
+      loadSOP();
+    }
+  }, [editId, companyId, sopLoaded, router, showToast, dataLoaded, ingredientsLibrary]);
 
   // Set default author from profile (only if not editing)
   useEffect(() => {
@@ -395,7 +574,28 @@ function FoodSOPTemplatePageContent() {
       if (libItem && ing.quantity) {
         // Convert quantity to match the ingredient library's unit
         const qtyInLibraryUnit = convertToUnit(ing.quantity, ing.unit, libItem.unit);
-        cost += (libItem.unit_cost || 0) * qtyInLibraryUnit;
+        
+        // Calculate unit cost - use unit_cost if available, otherwise calculate from pack_cost/pack_size
+        let unitCost = libItem.unit_cost || 0;
+        if (!unitCost || unitCost === 0) {
+          const packCost = parseFloat(libItem.pack_cost || 0);
+          const packSize = parseFloat(libItem.pack_size || 0);
+          if (packCost > 0 && packSize > 0) {
+            unitCost = packCost / packSize;
+          }
+        }
+        
+        // Calculate cost with yield_percent adjustment (same logic as recipe system)
+        // Formula: (unit_cost * quantity) / (yield_percent / 100)
+        const yieldPercent = parseFloat(libItem.yield_percent || 100);
+        let lineCost = 0;
+        if (yieldPercent > 0) {
+          lineCost = (unitCost * qtyInLibraryUnit) / (yieldPercent / 100);
+        } else {
+          lineCost = unitCost * qtyInLibraryUnit;
+        }
+        
+        cost += lineCost;
         
         // Convert all units to grams for consistent yield calculation
         const qtyInGrams = convertToGrams(ing.quantity, ing.unit);
@@ -415,6 +615,14 @@ function FoodSOPTemplatePageContent() {
 
   // Ingredient handlers
   const addIngredient = () => {
+    if (linkedRecipeId) {
+      showToast({
+        title: 'Cannot add ingredients',
+        description: 'This SOP is linked to a recipe. Please edit ingredients in the recipe, then update the SOP.',
+        type: 'warning'
+      });
+      return;
+    }
     setIngredients([...ingredients, { 
       id: Date.now(), 
       ingredient_id: "", 
@@ -449,6 +657,22 @@ function FoodSOPTemplatePageContent() {
   };
 
   const removeIngredient = (id) => {
+    if (linkedRecipeId) {
+      showToast({
+        title: 'Cannot remove ingredients',
+        description: 'This SOP is linked to a recipe. Please edit ingredients in the recipe, then update the SOP.',
+        type: 'warning'
+      });
+      return;
+    }
+    if (ingredients.length === 1) {
+      showToast({ 
+        title: 'Cannot remove', 
+        description: 'At least one ingredient is required', 
+        type: 'error' 
+      });
+      return;
+    }
     setIngredients(ingredients.filter(ing => ing.id !== id));
   };
 
@@ -631,7 +855,15 @@ function FoodSOPTemplatePageContent() {
     }
 
     const sopData = {
-      header: { title, refCode, version, status, author, category },
+      header: { 
+        title, 
+        refCode, 
+        version, 
+        status, 
+        author, 
+        category,
+        allergens: headerAllergens // Save allergens in header
+      },
       ingredients,
       equipment,
       processSteps,
@@ -669,6 +901,7 @@ function FoodSOPTemplatePageContent() {
           author,
           category,
           sop_data: sopData,
+          linked_recipe_id: linkedRecipeId || originalSOP.linked_recipe_id || null, // Preserve linked recipe
           created_by: profile?.id,
           updated_by: profile?.id
         };
@@ -688,6 +921,7 @@ function FoodSOPTemplatePageContent() {
         const baseData = {
           company_id: companyId,
           title,
+          linked_recipe_id: linkedRecipeId || null, // Include linked recipe if exists
           ref_code: refCode,
           status,
           author,
@@ -800,39 +1034,39 @@ function FoodSOPTemplatePageContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading ingredients library...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Loading ingredients library...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 min-h-screen">
       {/* Back Button */}
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
       <div className="bg-gradient-to-r from-magenta-600/20 to-blue-600/20 rounded-2xl p-6 border border-magenta-500/30">
-        <h1 className="text-2xl font-semibold mb-2">Food SOP Template</h1>
-        <p className="text-neutral-300 text-sm">
+        <h1 className="text-2xl font-semibold mb-2 text-[rgb(var(--text-primary))] dark:text-white">Food SOP Template</h1>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-300 text-sm">
           Form-based approach with auto-calculations and UK H&S compliance
         </p>
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-neutral-700">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
           All SOPs must include title, reference code, version, and author per UK Health & Safety requirements
         </p>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Category *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Category *</label>
             <select 
               value={category} 
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               <option value="Food Prep">Food Prep</option>
               <option value="Service (FOH)">Service (FOH)</option>
@@ -846,11 +1080,11 @@ function FoodSOPTemplatePageContent() {
           </div>
           
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -859,39 +1093,39 @@ function FoodSOPTemplatePageContent() {
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">SOP Title *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">SOP Title *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
               placeholder="e.g., Chocolate Brownie Production"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
               placeholder="Your name"
             />
           </div>
@@ -903,9 +1137,9 @@ function FoodSOPTemplatePageContent() {
                 type="checkbox"
                 checked={isSubRecipe}
                 onChange={(e) => setIsSubRecipe(e.target.checked)}
-                className="w-4 h-4 rounded border-neutral-600 bg-neutral-900 text-magenta-500 focus:ring-magenta-500"
+                className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900 text-magenta-500 focus:ring-magenta-500"
               />
-              <span className="text-sm text-neutral-300">
+              <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300">
                 Mark as Sub-Recipe (will be added to ingredients library on save)
               </span>
             </label>
@@ -922,16 +1156,16 @@ function FoodSOPTemplatePageContent() {
           <h3 className="text-sm font-semibold text-magenta-400 mb-2">Auto-Calculated Summary</h3>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-neutral-400">Yield:</span>
-              <span className="ml-2 text-white font-medium">{totalYield.toFixed(2)} kg</span>
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400">Yield:</span>
+              <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white font-medium">{totalYield.toFixed(2)} kg</span>
             </div>
             <div>
-              <span className="text-neutral-400">Cost:</span>
-              <span className="ml-2 text-white font-medium">£{totalCost.toFixed(2)}</span>
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400">Cost:</span>
+              <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white font-medium">£{totalCost.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-neutral-400">Tool Colours:</span>
-              <span className="ml-2 text-white font-medium">{toolColours.length}</span>
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400">Tool Colours:</span>
+              <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white font-medium">{toolColours.length}</span>
             </div>
           </div>
           {allergensList.length > 0 && (
@@ -948,17 +1182,17 @@ function FoodSOPTemplatePageContent() {
           )}
           {toolColours.length > 0 && (
             <div className="mt-2">
-              <span className="text-xs text-neutral-400">Tool colours used: </span>
-              <span className="text-xs text-neutral-300">{toolColours.join(', ')}</span>
+              <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400">Tool colours used: </span>
+              <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-neutral-300">{toolColours.join(', ')}</span>
             </div>
           )}
         </div>
       </section>
 
       {/* INGREDIENTS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-neutral-700">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Ingredients</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
           List all ingredients with quantities. Allergens are auto-flagged per UK Food Information Regulations 2014
         </p>
 
@@ -966,7 +1200,7 @@ function FoodSOPTemplatePageContent() {
           {ingredients.map((ing, index) => (
             <div key={ing.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Ingredient</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Ingredient</label>}
                 <SmartSearch
                   libraryTable="ingredients_library"
                   placeholder={ing.ingredient_id ? ingredientsLibrary.find(i => i.id === ing.ingredient_id)?.ingredient_name : "Search ingredient..."}
@@ -978,21 +1212,21 @@ function FoodSOPTemplatePageContent() {
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Quantity</label>}
                 <input
                   type="number"
                   step="0.01"
                   value={ing.quantity}
                   onChange={(e) => updateIngredient(ing.id, 'quantity', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Unit</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Unit</label>}
                 <select
                   value={ing.unit}
                   onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                 >
                   <option value="">Select unit...</option>
                   {UNIT_OPTIONS.map(unit => (
@@ -1001,19 +1235,20 @@ function FoodSOPTemplatePageContent() {
                 </select>
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Tool Colour</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Tool Colour</label>}
                 <input
                   value={ing.colour_code}
                   readOnly
-                  className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400 text-sm truncate"
+                  className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400 text-sm truncate"
                   title={ing.colour_code}
                 />
               </div>
               <div className="col-span-1">
                 <button
                   onClick={() => removeIngredient(ing.id)}
-                  disabled={ingredients.length === 1}
+                  disabled={ingredients.length === 1 || !!linkedRecipeId}
                   className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg p-2 text-red-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                  title={linkedRecipeId ? 'Cannot remove ingredients from linked SOP. Edit in recipe instead.' : ''}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -1022,19 +1257,30 @@ function FoodSOPTemplatePageContent() {
           ))}
         </div>
 
-        <button
-          onClick={addIngredient}
-          className="mt-3 flex items-center gap-2 px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 text-sm transition-colors"
-        >
-          <Plus size={16} />
-          Add Ingredient Row
-        </button>
+        {/* For Food Prep SOPs, always show View Linked Recipe button instead of Add Ingredient */}
+        {category === 'Food Prep' ? (
+          <Link
+            href={linkedRecipeId ? `/dashboard/stockly/recipes?recipe=${linkedRecipeId}` : '/dashboard/stockly/recipes'}
+            className="mt-3 flex items-center gap-2 px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 text-sm transition-colors"
+          >
+            <FileText size={16} />
+            {linkedRecipeId ? 'View Linked Recipe' : 'View Recipes'}
+          </Link>
+        ) : (
+          <button
+            onClick={addIngredient}
+            className="mt-3 flex items-center gap-2 px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 text-sm transition-colors"
+          >
+            <Plus size={16} />
+            Add Ingredient Row
+          </button>
+        )}
       </section>
 
       {/* EQUIPMENT SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-[rgb(var(--surface-elevated))] rounded-xl p-6 border border-[rgb(var(--border))]">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Equipment & Tools</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
           List all equipment with colour codes per Food Standards Agency guidance
         </p>
 
@@ -1042,7 +1288,7 @@ function FoodSOPTemplatePageContent() {
           {equipment.map((eq, index) => (
             <div key={eq.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Equipment Item</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Equipment Item</label>}
                 <SmartSearch
                   libraryTable="equipment_library"
                   placeholder={eq.item ? eq.item : "Search equipment..."}
@@ -1053,19 +1299,19 @@ function FoodSOPTemplatePageContent() {
                 />
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Colour Code</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Colour Code</label>}
                 {eq.item ? (
                   <input
                     value={eq.colour_code}
                     readOnly
-                    className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400 text-sm"
+                    className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400 text-sm"
                     title="Colour code set from equipment selection"
                   />
                 ) : (
                   <select
                     value={eq.colour_code}
                     onChange={(e) => updateEquipment(eq.id, 'colour_code', e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                   >
                     <option value="">Select...</option>
                     {COLOUR_CODES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -1073,11 +1319,11 @@ function FoodSOPTemplatePageContent() {
                 )}
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Sanitation Notes</label>}
+                {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Sanitation Notes</label>}
                 <input
                   value={eq.sanitation_notes}
                   onChange={(e) => updateEquipment(eq.id, 'sanitation_notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
                   placeholder="Cleaning method"
                 />
               </div>
@@ -1085,7 +1331,7 @@ function FoodSOPTemplatePageContent() {
                 <button
                   onClick={() => removeEquipment(eq.id)}
                   disabled={equipment.length === 1}
-                  className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg p-2 text-red-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg p-2 text-red-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500/20"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -1104,15 +1350,15 @@ function FoodSOPTemplatePageContent() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-neutral-700">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Process Steps</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
           Break down the process into clear, numbered steps. Include HACCP critical control points where applicable
         </p>
 
         <div className="space-y-3">
           {processSteps.map((step, index) => (
-            <div key={step.id} className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-600">
+            <div key={step.id} className="p-4 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-magenta-400">Step {index + 1}</span>
                 <button
@@ -1128,14 +1374,14 @@ function FoodSOPTemplatePageContent() {
                 <textarea
                   value={step.description}
                   onChange={(e) => updateProcessStep(step.id, 'description', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
                   placeholder="Describe this step in detail..."
                   rows={2}
                 />
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Temperature (°C)</label>
+                    <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Temperature (°C)</label>
                     <input
                       type="text"
                       inputMode="decimal"
@@ -1148,26 +1394,26 @@ function FoodSOPTemplatePageContent() {
                           updateProcessStep(step.id, 'temperature', value);
                         }
                       }}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
                       placeholder="Optional"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Duration</label>
+                    <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Duration</label>
                     <input
                       value={step.duration}
                       onChange={(e) => updateProcessStep(step.id, 'duration', e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
                       placeholder="e.g., 15 min"
                     />
                   </div>
                   <div className="flex items-end">
-                    <label className="flex items-center gap-2 text-sm text-neutral-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={step.is_ccp}
                         onChange={(e) => updateProcessStep(step.id, 'is_ccp', e.target.checked)}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-900"
+                        className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900"
                       />
                       Critical Control Point
                     </label>
@@ -1177,23 +1423,23 @@ function FoodSOPTemplatePageContent() {
                 <input
                   value={step.haccp_note}
                   onChange={(e) => updateProcessStep(step.id, 'haccp_note', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
                   placeholder="HACCP notes (optional)"
                 />
 
                 {/* Photo Upload Section */}
-                <div className="mt-3 pt-3 border-t border-neutral-700">
-                  <label className="block text-xs text-neutral-400 mb-2">Process Photo</label>
+                <div className="mt-3 pt-3 border-t border-[rgb(var(--border))] dark:border-neutral-700">
+                  <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-2">Process Photo</label>
                   {step.photo_url ? (
                     <div className="relative inline-block">
                       <img 
                         src={step.photo_url} 
                         alt="Process step photo" 
-                        className="w-32 h-32 object-cover rounded-lg border border-neutral-600"
+                        className="w-32 h-32 object-cover rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600"
                       />
                       <button
                         onClick={() => handleRemovePhoto(step.id, step.photo_url)}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white"
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-[rgb(var(--text-primary))] dark:text-white"
                       >
                         <X size={14} />
                       </button>
@@ -1213,7 +1459,7 @@ function FoodSOPTemplatePageContent() {
                       <button
                         onClick={() => photoInputRefs.current[step.id]?.click()}
                         disabled={uploadingPhotos[step.id]}
-                        className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white text-sm transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-primary))] text-sm transition-colors disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white"
                       >
                         {uploadingPhotos[step.id] ? (
                           <>
@@ -1227,7 +1473,7 @@ function FoodSOPTemplatePageContent() {
                           </>
                         )}
                       </button>
-                      <span className="text-xs text-neutral-500">Max 5MB, JPEG/PNG/WebP</span>
+                      <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500">Max 5MB, JPEG/PNG/WebP</span>
                     </div>
                   )}
                 </div>
@@ -1246,19 +1492,19 @@ function FoodSOPTemplatePageContent() {
       </section>
 
       {/* STORAGE SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-neutral-700">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Storage Information</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
           Specify storage conditions per Food Safety Act 1990 requirements
         </p>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Storage Type *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Storage Type *</label>
             <select 
               value={storageType}
               onChange={(e) => setStorageType(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               {STORAGE_TYPES.map(st => (
                 <option key={st.value} value={st.value}>{st.label}</option>
@@ -1267,21 +1513,21 @@ function FoodSOPTemplatePageContent() {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Shelf Life</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Shelf Life</label>
             <input
               value={shelfLife}
               onChange={(e) => setShelfLife(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
               placeholder="e.g., 3 days"
             />
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Container Type</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Container Type</label>
             <input
               value={containerType}
               onChange={(e) => setContainerType(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
               placeholder="e.g., Food-grade plastic container with lid"
             />
           </div>
@@ -1299,11 +1545,11 @@ function FoodSOPTemplatePageContent() {
           {saving ? 'Saving...' : 'Save SOP'}
         </button>
         <button
-          onClick={() => showToast({ title: 'Export', description: 'PDF export coming soon', type: 'info' })}
-          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
+          onClick={() => window.print()}
+          className="px-6 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-600 rounded-lg text-[rgb(var(--text-primary))] dark:text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
         >
           <Download size={20} />
-          Export PDF
+          Export PDF / Print
         </button>
       </div>
     </div>
@@ -1313,8 +1559,8 @@ function FoodSOPTemplatePageContent() {
 export default function FoodSOPTemplatePage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading food SOP template...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Loading food SOP template...</div>
       </div>
     }>
       <FoodSOPTemplatePageContent />

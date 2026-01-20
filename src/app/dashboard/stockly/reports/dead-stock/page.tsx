@@ -53,7 +53,8 @@ export default function DeadStockReportPage() {
         .eq('company_id', companyId)
         .order('value', { ascending: false });
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         viewQuery = viewQuery.eq('site_id', siteId);
       }
       
@@ -100,7 +101,8 @@ export default function DeadStockReportPage() {
         .eq('company_id', companyId)
         .gt('quantity', 0);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         stockQuery = stockQuery.eq('site_id', siteId);
       }
       
@@ -293,15 +295,15 @@ export default function DeadStockReportPage() {
   };
 
   const getDaysColor = (days: number) => {
-    if (days >= 90) return 'text-red-400 bg-red-500/10';
-    if (days >= 60) return 'text-orange-400 bg-orange-500/10';
-    return 'text-yellow-400 bg-yellow-500/10';
+    if (days >= 90) return 'text-red-600 dark:text-red-400 bg-red-500/10';
+    if (days >= 60) return 'text-orange-600 dark:text-orange-400 bg-orange-500/10';
+    return 'text-yellow-600 dark:text-yellow-400 bg-yellow-500/10';
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -313,7 +315,7 @@ export default function DeadStockReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -327,7 +329,7 @@ export default function DeadStockReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -362,7 +364,7 @@ export default function DeadStockReportPage() {
                 toast.error('Failed to export PDF file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -372,7 +374,7 @@ export default function DeadStockReportPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-yellow-500/10 rounded-lg">
               <Package className="w-5 h-5 text-yellow-400" />
@@ -382,17 +384,17 @@ export default function DeadStockReportPage() {
           <p className="text-3xl font-bold text-yellow-400">{formatCurrency(totalValue)}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-orange-500/10 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-orange-400" />
             </div>
             <span className="text-white/60 text-sm">Items Affected</span>
           </div>
-          <p className="text-3xl font-bold text-white">{deadStock.length}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{deadStock.length}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-red-500/10 rounded-lg">
               <Clock className="w-5 h-5 text-red-400" />
@@ -437,7 +439,7 @@ export default function DeadStockReportPage() {
               {deadStock.map((item) => (
                 <tr 
                   key={item.stock_item_id}
-                  className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                  className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                 >
                   <td className="px-4 py-3">
                     <span className="text-white font-medium">{item.item_name}</span>
@@ -463,32 +465,32 @@ export default function DeadStockReportPage() {
         
         {deadStock.length === 0 && (
           <div className="p-12 text-center">
-            <Package className="w-12 h-12 text-green-400/30 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No dead stock!</h3>
-            <p className="text-white/60">All stock items have had movement in the last 30 days.</p>
+            <Package className="w-12 h-12 text-green-500/30 dark:text-green-400/30 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[rgb(var(--text-primary))] dark:text-white mb-2">No dead stock!</h3>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">All stock items have had movement in the last 30 days.</p>
           </div>
         )}
       </div>
 
       {/* Recommendations */}
       {deadStock.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Recommendations</h2>
-          <ul className="space-y-3 text-white/80">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Recommendations</h2>
+          <ul className="space-y-3 text-[rgb(var(--text-primary))] dark:text-white/80">
             <li className="flex items-start gap-3">
-              <span className="text-[#EC4899]">•</span>
+              <span className="text-emerald-600 dark:text-[#EC4899]">•</span>
               <span>Review items over 90 days for potential write-off or clearance</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#EC4899]">•</span>
+              <span className="text-emerald-600 dark:text-[#EC4899]">•</span>
               <span>Consider menu specials to use slow-moving ingredients</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#EC4899]">•</span>
+              <span className="text-emerald-600 dark:text-[#EC4899]">•</span>
               <span>Contact suppliers about returns or exchanges where applicable</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#EC4899]">•</span>
+              <span className="text-emerald-600 dark:text-[#EC4899]">•</span>
               <span>Adjust par levels to prevent over-ordering of slow movers</span>
             </li>
           </ul>

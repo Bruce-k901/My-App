@@ -96,3 +96,12 @@ $env:SUPABASE_DB_PASSWORD = "your-password"
 # Run migrations
 supabase db push --include-all
 ```
+
+
+
+
+
+
+
+
+

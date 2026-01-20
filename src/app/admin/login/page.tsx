@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 mb-4">
             <Shield className="w-8 h-8 text-[#EC4899]" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Checkly Admin</h1>
+          <h1 className="text-2xl font-bold text-white">Opsly Admin</h1>
           <p className="text-white/60 mt-2">Platform Administration Portal</p>
         </div>
 
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40"
-              placeholder="admin@checkly.app"
+              placeholder="admin@opsly.app"
             />
           </div>
 
@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-center text-white/40 text-xs mt-6">
-          This portal is for authorized Checkly platform administrators only.
+          This portal is for authorized Opsly platform administrators only.
         </p>
       </div>
     </div>

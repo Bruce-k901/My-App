@@ -7,114 +7,169 @@ set check_function_bodies = off;
 
 -------------------------------------------------------------------------------
 -- Hierarchy tables
+-- Note: Table creation will be skipped if companies table doesn't exist yet
 -------------------------------------------------------------------------------
 
-create table if not exists public.company_regions (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies (id) on delete cascade,
-  name text not null,
-  code text,
-  description text,
-  created_at timestamptz not null default now(),
-  created_by uuid references auth.users (id)
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+    -- Create company_regions table without foreign key first
+    CREATE TABLE IF NOT EXISTS public.company_regions (
+      id uuid primary key default gen_random_uuid(),
+      company_id uuid not null,
+      name text not null,
+      code text,
+      description text,
+      created_at timestamptz not null default now(),
+      created_by uuid references auth.users (id)
+    );
 
-create index if not exists company_regions_company_idx
-  on public.company_regions (company_id, lower(name));
+    -- Add foreign key conditionally
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'company_regions_company_id_fkey') THEN
+      ALTER TABLE public.company_regions ADD CONSTRAINT company_regions_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies (id) ON DELETE CASCADE;
+    END IF;
 
-create table if not exists public.company_areas (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies (id) on delete cascade,
-  region_id uuid references public.company_regions (id) on delete set null,
-  name text not null,
-  code text,
-  description text,
-  created_at timestamptz not null default now(),
-  created_by uuid references auth.users (id)
-);
+    CREATE INDEX IF NOT EXISTS company_regions_company_idx ON public.company_regions (company_id, lower(name));
 
-create index if not exists company_areas_company_idx
-  on public.company_areas (company_id, lower(name));
+    -- Create company_areas table without foreign keys first
+    CREATE TABLE IF NOT EXISTS public.company_areas (
+      id uuid primary key default gen_random_uuid(),
+      company_id uuid not null,
+      region_id uuid,
+      name text not null,
+      code text,
+      description text,
+      created_at timestamptz not null default now(),
+      created_by uuid references auth.users (id)
+    );
 
-alter table public.sites
-  add column if not exists region_id uuid references public.company_regions (id) on delete set null,
-  add column if not exists area_id uuid references public.company_areas (id) on delete set null;
+    -- Add foreign keys conditionally
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'company_areas_company_id_fkey') THEN
+      ALTER TABLE public.company_areas ADD CONSTRAINT company_areas_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies (id) ON DELETE CASCADE;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'company_areas_region_id_fkey') THEN
+      ALTER TABLE public.company_areas ADD CONSTRAINT company_areas_region_id_fkey FOREIGN KEY (region_id) REFERENCES public.company_regions (id) ON DELETE SET NULL;
+    END IF;
+
+    CREATE INDEX IF NOT EXISTS company_areas_company_idx ON public.company_areas (company_id, lower(name));
+
+    -- Add columns to sites table (only if sites table exists)
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+      ALTER TABLE public.sites
+        ADD COLUMN IF NOT EXISTS region_id uuid,
+        ADD COLUMN IF NOT EXISTS area_id uuid;
+
+      -- Add foreign keys conditionally
+      IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'sites_region_id_fkey') THEN
+        ALTER TABLE public.sites ADD CONSTRAINT sites_region_id_fkey FOREIGN KEY (region_id) REFERENCES public.company_regions (id) ON DELETE SET NULL;
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'sites_area_id_fkey') THEN
+        ALTER TABLE public.sites ADD CONSTRAINT sites_area_id_fkey FOREIGN KEY (area_id) REFERENCES public.company_areas (id) ON DELETE SET NULL;
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Unified scope assignments
+-- Note: Table creation will be skipped if companies table doesn't exist yet
 -------------------------------------------------------------------------------
 
-create table if not exists public.user_scope_assignments (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies (id) on delete cascade,
-  scope_type text not null check (scope_type in ('tenant', 'region', 'area', 'site')),
-  scope_id uuid not null,
-  auth_user_id uuid not null references auth.users (id) on delete cascade,
-  profile_id uuid references public.profiles (id),
-  role text default 'member',
-  created_at timestamptz not null default now(),
-  created_by uuid references auth.users (id),
-  unique (auth_user_id, scope_type, scope_id)
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+    -- Create table without foreign keys first
+    CREATE TABLE IF NOT EXISTS public.user_scope_assignments (
+      id uuid primary key default gen_random_uuid(),
+      company_id uuid not null,
+      scope_type text not null check (scope_type in ('tenant', 'region', 'area', 'site')),
+      scope_id uuid not null,
+      auth_user_id uuid not null references auth.users (id) on delete cascade,
+      profile_id uuid,
+      role text default 'member',
+      created_at timestamptz not null default now(),
+      created_by uuid references auth.users (id),
+      unique (auth_user_id, scope_type, scope_id)
+    );
 
-create index if not exists user_scope_assignments_company_idx
-  on public.user_scope_assignments (company_id, scope_type, scope_id);
+    -- Add foreign keys conditionally
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_scope_assignments_company_id_fkey') THEN
+      ALTER TABLE public.user_scope_assignments ADD CONSTRAINT user_scope_assignments_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies (id) ON DELETE CASCADE;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_scope_assignments_profile_id_fkey') THEN
+      ALTER TABLE public.user_scope_assignments ADD CONSTRAINT user_scope_assignments_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles (id);
+    END IF;
 
-create index if not exists user_scope_assignments_user_idx
-  on public.user_scope_assignments (auth_user_id);
+    CREATE INDEX IF NOT EXISTS user_scope_assignments_company_idx ON public.user_scope_assignments (company_id, scope_type, scope_id);
+    CREATE INDEX IF NOT EXISTS user_scope_assignments_user_idx ON public.user_scope_assignments (auth_user_id);
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Backfill existing assignments
+-- Note: Backfill will be skipped if source tables don't exist yet
 -------------------------------------------------------------------------------
 
-insert into public.user_scope_assignments (
-  company_id,
-  scope_type,
-  scope_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  usa.company_id,
-  'site' as scope_type,
-  usa.site_id as scope_id,
-  usa.auth_user_id,
-  usa.profile_id,
-  coalesce(nullif(usa.role, ''), 'member') as role
-from public.user_site_access usa
-where usa.auth_user_id is not null
-  and usa.site_id is not null
-on conflict do nothing;
+DO $$
+BEGIN
+  -- Backfill from user_site_access
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_scope_assignments')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_site_access') THEN
+    INSERT INTO public.user_scope_assignments (
+      company_id,
+      scope_type,
+      scope_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      usa.company_id,
+      'site' as scope_type,
+      usa.site_id as scope_id,
+      usa.auth_user_id,
+      usa.profile_id,
+      COALESCE(NULLIF(usa.role, ''), 'member') as role
+    FROM public.user_site_access usa
+    WHERE usa.auth_user_id IS NOT NULL
+      AND usa.site_id IS NOT NULL
+    ON CONFLICT DO NOTHING;
+  END IF;
 
-insert into public.user_scope_assignments (
-  company_id,
-  scope_type,
-  scope_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  p.company_id,
-  'tenant' as scope_type,
-  p.company_id as scope_id,
-  coalesce(p.auth_user_id, p.id) as auth_user_id,
-  p.id as profile_id,
-  lower(coalesce(p.app_role::text, 'member')) as role
-from public.profiles p
-where p.company_id is not null
-  and coalesce(p.auth_user_id, p.id) is not null
-  and lower(coalesce(p.app_role::text, '')) in (
-    'owner',
-    'admin',
-    'area_manager',
-    'general_manager',
-    'ops_director',
-    'operations_director',
-    'regional_manager'
-  )
-on conflict do nothing;
+  -- Backfill from profiles
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_scope_assignments')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+    INSERT INTO public.user_scope_assignments (
+      company_id,
+      scope_type,
+      scope_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      p.company_id,
+      'tenant' as scope_type,
+      p.company_id as scope_id,
+      COALESCE(p.auth_user_id, p.id) as auth_user_id,
+      p.id as profile_id,
+      lower(COALESCE(p.app_role::text, 'member')) as role
+    FROM public.profiles p
+    WHERE p.company_id IS NOT NULL
+      AND COALESCE(p.auth_user_id, p.id) IS NOT NULL
+      AND lower(COALESCE(p.app_role::text, '')) IN (
+        'owner',
+        'admin',
+        'area_manager',
+        'general_manager',
+        'ops_director',
+        'operations_director',
+        'regional_manager'
+      )
+    ON CONFLICT DO NOTHING;
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Helper function update
@@ -189,48 +244,54 @@ $$;
 
 -------------------------------------------------------------------------------
 -- RLS for user_scope_assignments (read-only to scoped managers)
+-- Note: RLS setup will be skipped if table doesn't exist yet
 -------------------------------------------------------------------------------
 
-alter table public.user_scope_assignments enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_scope_assignments') THEN
+    ALTER TABLE public.user_scope_assignments ENABLE ROW LEVEL SECURITY;
 
-drop policy if exists tenant_select_user_scope_assignments on public.user_scope_assignments;
-create policy tenant_select_user_scope_assignments
-  on public.user_scope_assignments
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and (
-        auth.uid() = auth_user_id
-        or exists (
-          select 1
-          from public.profiles p
-          where matches_current_tenant(p.company_id)
-            and (
-              p.id = auth.uid()
-              or p.auth_user_id = auth.uid()
+    DROP POLICY IF EXISTS tenant_select_user_scope_assignments ON public.user_scope_assignments;
+    CREATE POLICY tenant_select_user_scope_assignments
+      ON public.user_scope_assignments
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND (
+            auth.uid() = auth_user_id
+            OR EXISTS (
+              SELECT 1
+              FROM public.profiles p
+              WHERE matches_current_tenant(p.company_id)
+                AND (
+                  p.id = auth.uid()
+                  OR p.auth_user_id = auth.uid()
+                )
+                AND lower(COALESCE(p.app_role::text, '')) IN (
+                  'owner',
+                  'admin',
+                  'area_manager',
+                  'general_manager',
+                  'ops_director',
+                  'operations_director',
+                  'regional_manager'
+                )
             )
-            and lower(coalesce(p.app_role::text, '')) in (
-              'owner',
-              'admin',
-              'area_manager',
-              'general_manager',
-              'ops_director',
-              'operations_director',
-              'regional_manager'
-            )
+          )
         )
-      )
-    )
-  );
+      );
 
-drop policy if exists tenant_modify_user_scope_assignments on public.user_scope_assignments;
-create policy tenant_modify_user_scope_assignments
-  on public.user_scope_assignments
-  for all
-  using (public.is_service_role())
-  with check (public.is_service_role());
+    DROP POLICY IF EXISTS tenant_modify_user_scope_assignments ON public.user_scope_assignments;
+    CREATE POLICY tenant_modify_user_scope_assignments
+      ON public.user_scope_assignments
+      FOR ALL
+      USING (public.is_service_role())
+      WITH CHECK (public.is_service_role());
+  END IF;
+END $$;
 
 -- End of migration -----------------------------------------------------------
 

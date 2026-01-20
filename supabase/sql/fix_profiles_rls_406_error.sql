@@ -84,3 +84,12 @@ ORDER BY policyname;
 -- Replace USER_ID with actual user ID to test
 -- SELECT * FROM public.profiles WHERE id = 'USER_ID';
 
+
+
+
+
+
+
+
+
+

@@ -118,7 +118,7 @@ export async function isUserClockedInToday(
   
   const { data, error } = await attendanceLogsGuard
     .select('id')
-    .eq('user_id', userId)
+    .eq('profile_id', userId)
     .eq('site_id', siteId)
     .eq('clock_in_date', targetDate) // ✅ Correct: uses clock_in_date
     .is('clock_out_at', null)

@@ -63,22 +63,44 @@ export function useConversations({
       }
 
       // Get conversations where user is a participant
-      // Query conversations directly with participant filter using RLS-friendly approach
-        const { data: conversationsData, error: conversationsError } =
-          await supabase
-            .from("messaging_channels")
-        .select(`
-          *,
-          participants:messaging_channel_members!inner(
-            user_id,
-            last_read_at,
-            last_read_message_id,
-            left_at
-          )
-        `)
-            .is("archived_at", null)
-            .order("last_message_at", { ascending: false, nullsFirst: false })
-            .order("created_at", { ascending: false });
+      // First, get channel IDs where user is a member
+      const { data: userChannels, error: userChannelsError } = await supabase
+        .from("messaging_channel_members")
+        .select("channel_id")
+        .eq("profile_id", user.id)
+        .is("left_at", null);
+
+      if (userChannelsError) {
+        console.error("Error fetching user channels:", userChannelsError);
+        setConversations([]);
+        if (!options?.silent) setLoading(false);
+        return;
+      }
+
+      const channelIds = (userChannels || []).map((c: any) => c.channel_id);
+      if (channelIds.length === 0) {
+        setConversations([]);
+        if (!options?.silent) setLoading(false);
+        return;
+      }
+
+      // Then get all conversations with ALL their participants
+      const { data: conversationsData, error: conversationsError } =
+        await supabase
+          .from("messaging_channels")
+          .select(`
+            *,
+            participants:messaging_channel_members(
+              profile_id,
+              last_read_at,
+              last_read_message_id,
+              left_at
+            )
+          `)
+          .in("id", channelIds)
+          .is("archived_at", null)
+          .order("last_message_at", { ascending: false, nullsFirst: false })
+          .order("created_at", { ascending: false });
 
       if (conversationsError) {
           const errorCode = conversationsError.code || "";
@@ -118,14 +140,42 @@ export function useConversations({
         return;
       }
 
-      // Filter to only conversations where user is a participant and hasn't left
-        const userConversations = (conversationsData || []).filter((
-          conv: any,
-        ) =>
-          conv.participants?.some((p: any) =>
-            p.user_id === user.id && !p.left_at
-          )
-      ) as Conversation[];
+      // Debug: Log raw query results BEFORE filtering
+      console.log('[useConversations] Raw query results:', {
+        conversationsCount: conversationsData?.length || 0,
+        currentUserId: user.id,
+        rawConversations: conversationsData?.map((conv: any) => ({
+          id: conv.id,
+          name: conv.name,
+          type: conv.channel_type || conv.type,
+          rawParticipantsCount: conv.participants?.length || 0,
+          rawParticipants: conv.participants?.map((p: any) => ({
+            profile_id: p.profile_id || p.user_id,
+            left_at: p.left_at,
+            isCurrentUser: (p.profile_id || p.user_id) === user.id,
+          })),
+          // Check if we're only seeing current user
+          onlyCurrentUser: conv.participants?.every((p: any) => (p.profile_id || p.user_id) === user.id),
+        })),
+      });
+
+      // Filter participants to only active ones (left_at IS NULL)
+      // But keep ALL participants (not just current user) for display names
+      const userConversations = (conversationsData || []).map((conv: any) => ({
+        ...conv,
+        participants: (conv.participants || []).filter((p: any) => !p.left_at),
+      })) as Conversation[];
+      
+      // Debug: Log AFTER filtering
+      console.log('[useConversations] After filtering participants:', {
+        conversationsCount: userConversations.length,
+        filteredConversations: userConversations.map((conv: any) => ({
+          id: conv.id,
+          name: conv.name,
+          participantsCount: conv.participants?.length || 0,
+          participantIds: conv.participants?.map((p: any) => p.profile_id || p.user_id),
+        })),
+      });
 
       // Enrich participant records with profile info in ONE batch to avoid RLS on nested joins
       try {
@@ -133,10 +183,11 @@ export function useConversations({
           new Set(
             (userConversations || [])
                 .flatMap((c: any) =>
-                  c.participants?.map((p: any) => p.user_id) || []
+                  c.participants?.map((p: any) => p.profile_id || p.user_id).filter(Boolean) || []
                 ),
             ),
         );
+        
         if (uniqueUserIds.length > 0) {
             const query = supabase
               .from("profiles")
@@ -145,34 +196,63 @@ export function useConversations({
               ? await query.eq("id", uniqueUserIds[0])
               : await query.in("id", uniqueUserIds);
             
-            // DEBUG: Log profile query results
-            console.log('Profile query result:', { 
-              data: profilesData, 
-              error: profilesError, 
-              userIds: uniqueUserIds,
-              queryType: uniqueUserIds.length === 1 ? 'single' : 'multiple'
-            });
-            
-          if (!profilesError && profilesData) {
-            const idToProfile: Record<string, any> = {};
-            for (const prof of profilesData) idToProfile[prof.id] = prof;
-            for (const conv of userConversations as any[]) {
-              conv.participants = (conv.participants || []).map((p: any) => ({
-                ...p,
-                user: idToProfile[p.user_id] || null,
-              }));
+            if (profilesError) {
+              console.error("Error fetching profiles for enrichment:", profilesError);
             }
-          }
+            
+            if (profilesData && profilesData.length > 0) {
+              const idToProfile: Record<string, any> = {};
+              for (const prof of profilesData) {
+                idToProfile[prof.id] = prof;
+              }
+              
+              // Enrich each conversation's participants
+              for (const conv of userConversations as any[]) {
+                conv.participants = (conv.participants || []).map((p: any) => {
+                  const participantId = p.profile_id || p.user_id;
+                  const profile = idToProfile[participantId];
+                  return {
+                    ...p,
+                    user: profile || null,
+                  };
+                });
+              }
+              
+              // Debug: Log enrichment results
+              console.log('[useConversations] Enriched participants:', {
+                uniqueUserIdsCount: uniqueUserIds.length,
+                uniqueUserIds: uniqueUserIds,
+                profilesFetched: profilesData.length,
+                profilesData: profilesData.map(p => ({ id: p.id, name: p.full_name })),
+                conversationsCount: userConversations.length,
+                allConversations: userConversations.map((conv: any) => ({
+                  id: conv.id,
+                  name: conv.name,
+                  type: conv.channel_type || conv.type,
+                  participantsCount: conv.participants?.length || 0,
+                  participants: conv.participants?.map((p: any) => ({
+                    profile_id: p.profile_id || p.user_id,
+                    hasUser: !!p.user,
+                    userName: p.user?.full_name,
+                    userEmail: p.user?.email,
+                  })),
+                })),
+              });
+            } else {
+              console.warn("No profile data returned for enrichment. UserIds:", uniqueUserIds);
+            }
+        } else {
+          console.warn("No unique user IDs found for enrichment");
         }
       } catch (enrichErr) {
         // Non-fatal; continue without profile enrichment
-          console.warn("Unable to enrich participant profiles:", enrichErr);
+          console.error("Unable to enrich participant profiles:", enrichErr);
       }
 
       // Extract participant data for unread count calculation
       const participantData = userConversations.map((conv: any) => {
         const participant = conv.participants?.find(
-            (p: any) => p.user_id === user.id && !p.left_at,
+            (p: any) => (p.profile_id || p.user_id) === user.id && !p.left_at,
         );
           return participant
             ? {
@@ -204,7 +284,7 @@ export function useConversations({
           content,
           created_at,
           edited_at,
-          sender_id,
+          sender_profile_id,
           channel_id,
           parent_message_id,
           message_type,
@@ -221,7 +301,7 @@ export function useConversations({
         // Fetch sender profiles separately to avoid relationship query issues
         let senderProfilesMap = new Map();
         if (allLastMessages && allLastMessages.length > 0) {
-          const senderIds = [...new Set(allLastMessages.map((msg: any) => msg.sender_id).filter(Boolean))];
+          const senderIds = [...new Set(allLastMessages.map((msg: any) => msg.sender_profile_id || msg.sender_id).filter(Boolean))];
           if (senderIds.length > 0) {
             const query = supabase
               .from("profiles")
@@ -244,9 +324,10 @@ export function useConversations({
             const channelId = msg.channel_id;
             if (!lastMessagesMap.has(channelId)) {
               // Enrich message with sender profile
+              const senderId = msg.sender_profile_id || msg.sender_id;
               const enrichedMessage = {
                 ...msg,
-                sender: senderProfilesMap.get(msg.sender_id) || null,
+                sender: senderProfilesMap.get(senderId) || null,
               };
               lastMessagesMap.set(channelId, enrichedMessage);
           }
@@ -267,10 +348,10 @@ export function useConversations({
       // We'll use RPC or a more efficient approach
       const unreadMessagesQuery = await supabase
           .from("messaging_messages")
-          .select("channel_id, created_at, sender_id")
+          .select("channel_id, created_at, sender_profile_id")
           .in("channel_id", conversationIds)
           .is("deleted_at", null)
-          .neq("sender_id", user.id)
+          .neq("sender_profile_id", user.id)
           .order("created_at", { ascending: false });
 
       if (unreadMessagesQuery.data) {
@@ -293,9 +374,10 @@ export function useConversations({
           if (!participant) {
             // No participant record - if there's a last message from someone else, count as 1
             const lastMessage = lastMessagesMap.get(conv.id);
+              const lastMessageSenderId = lastMessage?.sender_profile_id || lastMessage?.sender_id;
               unreadCountsMap.set(
                 conv.id,
-                (lastMessage && lastMessage.sender_id !== user.id) ? 1 : 0,
+                (lastMessage && lastMessageSenderId !== user.id) ? 1 : 0,
               );
             return;
           }
@@ -326,6 +408,7 @@ export function useConversations({
       }
 
       // Combine everything
+      // IMPORTANT: Preserve participants array that was enriched earlier
       const conversationsWithMessages = userConversations.map((conv) => {
           const channelId = conv.id;
           const lastMessage = lastMessagesMap.get(channelId) || null;
@@ -333,6 +416,7 @@ export function useConversations({
 
         return {
           ...conv,
+          participants: conv.participants || [], // Explicitly preserve participants
           last_message: lastMessage,
           unread_count: unreadCount,
         };
@@ -410,7 +494,7 @@ export function useConversations({
       if (type === "direct" && participantIds.length === 1) {
         const { data: existing } = await supabase
           .from("messaging_channels")
-          .select("id, participants:messaging_channel_members(user_id)")
+          .select("id, participants:messaging_channel_members(profile_id)")
           .eq("channel_type", "direct")
           .eq("company_id", companyId)
           .limit(10);
@@ -418,7 +502,7 @@ export function useConversations({
         if (existing) {
           for (const conv of existing) {
             const participantUserIds =
-              (conv.participants as any[])?.map((p: any) => p.user_id) || [];
+              (conv.participants as any[])?.map((p: any) => p.profile_id || p.user_id) || [];
             if (
               participantUserIds.includes(user.id) &&
               participantUserIds.includes(participantIds[0])
@@ -443,21 +527,15 @@ export function useConversations({
         conversationData.entity_type = "site";
       }
 
-      // For direct conversations, prefill name with other participant's name (for better UX)
-        if (type === "direct" && participantIds.length === 1 && !name) {
+      // For direct conversations, set name to the OTHER participant's name
+      // This is just for reference - the display logic will show the other person's name
+      if (type === "direct" && participantIds.length === 1 && !name) {
         try {
             const { data: otherProfile, error: profileError } = await supabase
               .from("profiles")
               .select("full_name, email")
               .eq("id", participantIds[0])
             .single();
-            
-            // DEBUG: Log profile query result
-            console.log('Profile query result (direct conversation):', { 
-              data: otherProfile, 
-              error: profileError, 
-              userId: participantIds[0]
-            });
             
           if (otherProfile?.full_name) {
             conversationData.name = otherProfile.full_name;
@@ -471,25 +549,7 @@ export function useConversations({
         conversationData.name = name;
       }
 
-      // Debug: Log what we're trying to insert
-      console.log("🔍 Creating conversation with data:", {
-        type: conversationData.type,
-        company_id: conversationData.company_id,
-        created_by: conversationData.created_by,
-        user_id_from_auth: user.id,
-        company_id_from_context: companyId,
-      });
-
-      console.log("🔍 Attempting to insert conversation:", {
-        table: "messaging_channels",
-        data: conversationData,
-        companyId,
-        userId: user.id,
-        userObject: user,
-        created_by_value: conversationData.created_by,
-        company_id_value: conversationData.company_id,
-        channel_type_value: conversationData.channel_type,
-      });
+      // Debug: Log what we're trying to insert (removed for production)
 
       const { data: conversation, error: createError } = await supabase
         .from("messaging_channels")
@@ -540,45 +600,50 @@ export function useConversations({
       const allParticipantIds = [...new Set([user.id, ...participantIds])];
       const participants = allParticipantIds.map((userId, index) => ({
         channel_id: conversation.id,
-        user_id: userId,
+        profile_id: userId,
         member_role: index === 0 ? "admin" : "member" as const,
       }));
 
       // Check if participants already exist to avoid conflicts
       const { data: existingMembers } = await supabase
         .from("messaging_channel_members")
-        .select("user_id")
+        .select("profile_id")
         .eq("channel_id", conversation.id)
-        .in("user_id", allParticipantIds);
+        .in("profile_id", allParticipantIds);
 
-      const existingUserIds = new Set((existingMembers || []).map((m: any) => m.user_id));
-      const newParticipants = participants.filter((p) => !existingUserIds.has(p.user_id));
+      const existingUserIds = new Set((existingMembers || []).map((m: any) => m.profile_id || m.user_id));
+      const newParticipants = participants.filter((p) => !existingUserIds.has(p.profile_id));
 
-      let participantsError: any = null;
+      // Add participants - use insert since we've already checked for existing members
       if (newParticipants.length > 0) {
-        const result = await supabase
+        const { error: participantsError } = await supabase
           .from("messaging_channel_members")
           .insert(newParticipants);
-        participantsError = result.error;
-      }
 
-      if (participantsError) {
-        const errorInfo = {
-          code: participantsError.code || "UNKNOWN",
-          message: participantsError.message || String(participantsError),
-          details: participantsError.details || null,
-          hint: participantsError.hint || null,
-          status: participantsError.status || null,
-          participants_attempted: participants,
-          fullError: participantsError,
-          errorStringified: JSON.stringify(
-            participantsError,
-            Object.getOwnPropertyNames(participantsError),
-          ),
-        };
-        console.error("Error inserting participants:", errorInfo);
-        console.error("Full participants error object:", participantsError);
-        // Don't throw - conversation is created, participants can be added later
+        if (participantsError) {
+          const errorInfo = {
+            code: participantsError.code || "UNKNOWN",
+            message: participantsError.message || String(participantsError),
+            details: participantsError.details || null,
+            hint: participantsError.hint || null,
+            status: participantsError.status || null,
+            participants_attempted: newParticipants,
+            fullError: participantsError,
+            errorStringified: JSON.stringify(
+              participantsError,
+              Object.getOwnPropertyNames(participantsError),
+            ),
+          };
+          console.error("❌ Error inserting participants:", errorInfo);
+          console.error("❌ Full participants error object:", participantsError);
+          
+          // This is critical - if participants aren't added, recipients won't see the conversation
+          // Throw error so the caller knows something went wrong
+          throw new Error(
+            `Failed to add participants to conversation: ${participantsError.message || participantsError.code || 'Unknown error'}. ` +
+            `The conversation was created but participants may not have been added.`
+          );
+        }
       }
 
       // Immediately refresh conversations list and return the new conversation

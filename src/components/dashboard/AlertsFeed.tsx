@@ -381,36 +381,36 @@ export default function AlertsFeed() {
     // Missed tasks - red
     if (alert.isMissed) {
       return {
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/40',
+        bg: 'bg-red-100 dark:bg-red-500/10',
+        border: 'border-red-300 dark:border-red-500/40',
         icon: AlertTriangle,
-        iconColor: 'text-red-400',
-        textColor: 'text-red-300',
-        labelColor: 'text-red-400'
+        iconColor: 'text-red-600 dark:text-red-400',
+        textColor: 'text-red-700 dark:text-red-300',
+        labelColor: 'text-red-600 dark:text-red-400'
       }
     }
     
     // Overdue tasks - red
     if (alert.isOverdue) {
       return {
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/40',
+        bg: 'bg-red-100 dark:bg-red-500/10',
+        border: 'border-red-300 dark:border-red-500/40',
         icon: AlertTriangle,
-        iconColor: 'text-red-400',
-        textColor: 'text-red-300',
-        labelColor: 'text-red-400'
+        iconColor: 'text-red-600 dark:text-red-400',
+        textColor: 'text-red-700 dark:text-red-300',
+        labelColor: 'text-red-600 dark:text-red-400'
       }
     }
     
     // Callouts - red
     if (alert.type === 'temp-breach' && alert.action_type === 'callout') {
       return {
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/40',
+        bg: 'bg-red-100 dark:bg-red-500/10',
+        border: 'border-red-300 dark:border-red-500/40',
         icon: Wrench,
-        iconColor: 'text-red-400',
-        textColor: 'text-red-300',
-        labelColor: 'text-red-400'
+        iconColor: 'text-red-600 dark:text-red-400',
+        textColor: 'text-red-700 dark:text-red-300',
+        labelColor: 'text-red-600 dark:text-red-400'
       }
     }
     
@@ -420,12 +420,12 @@ export default function AlertsFeed() {
       const now = new Date()
       if (dueTime < now && !alert.isOverdue && !alert.isMissed) {
         return {
-          bg: 'bg-yellow-500/10',
-          border: 'border-yellow-500/40',
+          bg: 'bg-amber-100 dark:bg-yellow-500/10',
+          border: 'border-amber-300 dark:border-yellow-500/40',
           icon: Clock,
-          iconColor: 'text-yellow-400',
-          textColor: 'text-yellow-300',
-          labelColor: 'text-yellow-400'
+          iconColor: 'text-amber-700 dark:text-yellow-400',
+          textColor: 'text-amber-800 dark:text-yellow-300',
+          labelColor: 'text-amber-700 dark:text-yellow-400'
         }
       }
     }
@@ -433,47 +433,47 @@ export default function AlertsFeed() {
     // Temperature breaches (monitor) - amber/yellow
     if (alert.type === 'temp-breach' && alert.action_type === 'monitor') {
       return {
-        bg: 'bg-yellow-500/10',
-        border: 'border-yellow-500/40',
+        bg: 'bg-amber-100 dark:bg-yellow-500/10',
+        border: 'border-amber-300 dark:border-yellow-500/40',
         icon: Thermometer,
-        iconColor: 'text-yellow-400',
-        textColor: 'text-yellow-300',
-        labelColor: 'text-yellow-400'
+        iconColor: 'text-amber-700 dark:text-yellow-400',
+        textColor: 'text-amber-800 dark:text-yellow-300',
+        labelColor: 'text-amber-700 dark:text-yellow-400'
       }
     }
     
     // Critical notifications - red
     if (alert.severity === 'critical') {
       return {
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/40',
+        bg: 'bg-red-100 dark:bg-red-500/10',
+        border: 'border-red-300 dark:border-red-500/40',
         icon: AlertTriangle,
-        iconColor: 'text-red-400',
-        textColor: 'text-red-300',
-        labelColor: 'text-red-400'
+        iconColor: 'text-red-600 dark:text-red-400',
+        textColor: 'text-red-700 dark:text-red-300',
+        labelColor: 'text-red-600 dark:text-red-400'
       }
     }
     
     // Warning notifications - amber/yellow
     if (alert.severity === 'warning') {
       return {
-        bg: 'bg-yellow-500/10',
-        border: 'border-yellow-500/40',
+        bg: 'bg-amber-100 dark:bg-yellow-500/10',
+        border: 'border-amber-300 dark:border-yellow-500/40',
         icon: AlertTriangle,
-        iconColor: 'text-yellow-400',
-        textColor: 'text-yellow-300',
-        labelColor: 'text-yellow-400'
+        iconColor: 'text-amber-700 dark:text-yellow-400',
+        textColor: 'text-amber-800 dark:text-yellow-400',
+        labelColor: 'text-amber-700 dark:text-yellow-400'
       }
     }
     
     // Default/info - blue/gray
     return {
-      bg: 'bg-white/[0.05]',
-      border: 'border-white/[0.1]',
+      bg: 'bg-blue-50 dark:bg-white/[0.05]',
+      border: 'border-blue-200 dark:border-white/[0.1]',
       icon: Bell,
-      iconColor: 'text-blue-400',
-      textColor: 'text-white/80',
-      labelColor: 'text-white/60'
+      iconColor: 'text-blue-600 dark:text-blue-400',
+      textColor: 'text-blue-800 dark:text-white/80',
+      labelColor: 'text-blue-600 dark:text-white/60'
     }
   }
 
@@ -482,12 +482,12 @@ export default function AlertsFeed() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Alerts Feed</h2>
-          <p className="text-sm text-white/60 mt-1">Active alerts and notifications</p>
+          <h2 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Alerts Feed</h2>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Active alerts and notifications</p>
         </div>
         {alerts.length > 0 && (
           <button
-            className="text-sm px-3 py-1.5 rounded-lg border border-white/20 text-white/60 hover:bg-white/10 transition-colors"
+            className="text-sm px-3 py-1.5 rounded-lg border border-[rgb(var(--border))] dark:border-white/20 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-black/[0.05] dark:hover:bg-white/10 transition-colors"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
           >
@@ -501,7 +501,7 @@ export default function AlertsFeed() {
           {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-400"></div>
-              <span className="ml-3 text-white/60 text-sm">Loading alerts...</span>
+              <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Loading alerts...</span>
             </div>
           )}
           
@@ -513,8 +513,8 @@ export default function AlertsFeed() {
           
           {!loading && alerts.length === 0 ? (
             <div className="text-center py-8">
-              <Bell className="w-8 h-8 text-white/20 mx-auto mb-2" />
-              <p className="text-sm text-white/60">No active alerts</p>
+              <Bell className="w-8 h-8 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-2" />
+              <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">No active alerts</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -558,8 +558,8 @@ export default function AlertsFeed() {
                                 {a.action_type && (
                                   <span className={`px-1.5 py-0.5 rounded ${
                                     a.action_type === 'callout' 
-                                      ? 'bg-red-500/20 text-red-400' 
-                                      : 'bg-yellow-500/20 text-yellow-400'
+                                      ? 'bg-red-200 dark:bg-red-500/20 text-red-700 dark:text-red-400' 
+                                      : 'bg-amber-200 dark:bg-yellow-500/20 text-amber-800 dark:text-yellow-400'
                                   }`}>
                                     {a.action_type === "monitor" ? "Monitor" : "Callout"}
                                   </span>
@@ -576,7 +576,7 @@ export default function AlertsFeed() {
               })}
               {alerts.length > 10 && (
                 <div className="text-center pt-2">
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
                     Showing 10 of {alerts.length} alerts
                   </p>
                 </div>

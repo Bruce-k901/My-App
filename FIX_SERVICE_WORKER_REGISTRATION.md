@@ -53,3 +53,15 @@ navigator.serviceWorker
 2. You should see only `sw.js` registered
 3. It should show "activated and is running" (green status)
 4. Navigate to `/admin` routes - they should work fine (handled by the main SW)
+
+
+
+
+
+
+
+
+
+
+
+

@@ -69,3 +69,12 @@ GRANT EXECUTE ON FUNCTION seed_stock_categories_for_company(UUID) TO authenticat
 COMMIT;
 
 
+
+
+
+
+
+
+
+
+

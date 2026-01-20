@@ -2,14 +2,14 @@
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { X, LayoutGrid, Building2, FileText, ClipboardList, Box, ShieldCheck, BarChart3, Settings, User, Lock, CreditCard, LogOut, Users, MapPin, Clock, Plug, AlertTriangle, UtensilsCrossed, MessageSquare, FileCheck, Calendar, CheckCircle, LayoutTemplate, BadgeCheck } from 'lucide-react'
+import { X, LayoutGrid, Building2, FileText, ClipboardList, Box, ShieldCheck, BarChart3, Settings, User, Lock, CreditCard, LogOut, Users, MapPin, Clock, Plug, AlertTriangle, UtensilsCrossed, MessageSquare, FileCheck, Calendar, CheckCircle, LayoutTemplate, BadgeCheck, Target, Bell, HelpCircle, GraduationCap, Warehouse, Package, Phone, CalendarDays, Archive, FileCode, FlaskConical, ShoppingBag, Briefcase, TrendingUp, ClipboardCheck } from 'lucide-react'
 import { useAppContext } from '@/context/AppContext'
-import { getMenuItemsByRole, COLORS } from './navigation'
+import { getMenuItemsByRole, COLORS, BURGER_MENU_SECTIONS } from './navigation'
 
 interface BurgerMenuProps {
   isOpen: boolean
   onClose: () => void
-  userRole: 'admin' | 'manager' | 'team'
+  userRole?: 'admin' | 'manager' | 'team' // Optional - will be calculated from profile if not provided
 }
 
 // Icon mapping for menu items
@@ -21,6 +21,11 @@ const iconMap: Record<string, any> = {
   assets: Box,
   'eho-readiness': ShieldCheck,
   reports: BarChart3,
+  checkly: LayoutGrid,
+  assetly: Box,
+  teamly: Users,
+  stockly: Package,
+  planly: CalendarDays,
   settings: Settings,
   profile: User,
   password: Lock,
@@ -38,6 +43,40 @@ const iconMap: Record<string, any> = {
   users: Users,
   'business-hours': Clock,
   integrations: Plug,
+  documents: FileText,
+  'business-setup': Target,
+  messages: MessageSquare,
+  reminders: Bell,
+  help: HelpCircle,
+  'setup-guide': Target,
+  'emergency-contacts': Phone,
+  'training-matrix': GraduationCap,
+  'my-templates': LayoutTemplate,
+  'todays-tasks': Calendar,
+  completed: CheckCircle,
+  'my-sops': FileText,
+  'archived-sops': Archive,
+  'sop-templates': FileCode,
+  'my-ras': FileCheck,
+  'archived-ras': Archive,
+  'ra-templates': FileCode,
+  'coshh-data': FlaskConical,
+  'ppm-schedule': Calendar,
+  'callout-logs': ClipboardCheck,
+  directory: Users,
+  attendance: Clock,
+  leave: Calendar,
+  schedule: CalendarDays,
+  training: GraduationCap,
+  performance: TrendingUp,
+  payroll: CreditCard,
+  'stockly-dashboard': Warehouse,
+  recipes: UtensilsCrossed,
+  'stock-items': Package,
+  deliveries: ShoppingBag,
+  suppliers: Briefcase,
+  'stock-counts': ClipboardList,
+  'manager-calendar': CalendarDays,
 }
 
 export function BurgerMenu({
@@ -47,8 +86,48 @@ export function BurgerMenu({
 }: BurgerMenuProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const { profile } = useAppContext()
-  const menuSections = getMenuItemsByRole(userRole)
+  const { profile, signOut, role } = useAppContext()
+  
+  // Calculate role from profile if not provided or if provided role is 'team' but profile says otherwise
+  // This ensures we use the most up-to-date role information
+  const effectiveRole = profile?.app_role || role || 'Staff';
+  const calculatedUserRole = (effectiveRole === 'Admin' || effectiveRole === 'Owner' ? 'admin' : effectiveRole === 'Manager' ? 'manager' : 'team') as 'admin' | 'manager' | 'team';
+  
+  // Use provided userRole if it's not 'team', otherwise use calculated role
+  // This allows DashboardHeader to override, but falls back to profile if timing is off
+  const finalUserRole = (userRole && userRole !== 'team') ? userRole : calculatedUserRole;
+  
+  const menuSections = getMenuItemsByRole(finalUserRole)
+  
+  // Debug: Log menu sections - ALWAYS log when menu opens
+  useEffect(() => {
+    if (isOpen) {
+      const orgSection = menuSections.find(s => s.id === 'organization');
+      const allOrgSection = BURGER_MENU_SECTIONS.find(s => s.id === 'organization');
+      
+      // Log individual values for easier debugging
+      console.log('🍔 [BurgerMenu] provided userRole:', userRole);
+      console.log('🍔 [BurgerMenu] profileRole:', profile?.app_role);
+      console.log('🍔 [BurgerMenu] contextRole:', role);
+      console.log('🍔 [BurgerMenu] effectiveRole:', effectiveRole);
+      console.log('🍔 [BurgerMenu] calculatedUserRole:', calculatedUserRole);
+      console.log('🍔 [BurgerMenu] finalUserRole:', finalUserRole);
+      console.log('🍔 [BurgerMenu] sectionsCount:', menuSections.length);
+      console.log('🍔 [BurgerMenu] sectionIds:', menuSections.map(s => s.id));
+      console.log('🍔 [BurgerMenu] orgSectionExists:', !!orgSection);
+      console.log('🍔 [BurgerMenu] orgItemsCount:', orgSection?.items.length || 0);
+      console.log('🍔 [BurgerMenu] orgItems:', orgSection?.items.map(i => ({ id: i.id, label: i.label })) || []);
+      console.log('🍔 [BurgerMenu] allOrgItemsCount:', allOrgSection?.items.length || 0);
+      console.log('🍔 [BurgerMenu] allOrgItems:', allOrgSection?.items.map(i => i.id) || []);
+      
+      // Also log the full org section for debugging
+      if (orgSection) {
+        console.log('🍔 [BurgerMenu] Organization section items:', orgSection.items);
+      } else {
+        console.warn('🍔 [BurgerMenu] Organization section NOT FOUND in menuSections!');
+      }
+    }
+  }, [isOpen, userRole, profile?.app_role, role, effectiveRole, calculatedUserRole, finalUserRole, menuSections]);
 
   // Close menu on escape key
   useEffect(() => {
@@ -79,9 +158,14 @@ export function BurgerMenu({
   }
 
   const handleSignOut = async () => {
-    // Handle sign out logic here if needed
-    router.push('/')
     onClose()
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Fallback: redirect to login
+      router.push('/login')
+    }
   }
 
   if (!isOpen) return null
@@ -92,13 +176,13 @@ export function BurgerMenu({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-200"
+        className="hidden lg:block fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-200"
         onClick={onClose}
       />
 
-      {/* Menu Panel */}
+      {/* Menu Panel - Desktop only */}
       <div
-        className="fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex flex-col"
+        className="hidden lg:flex fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex-col"
         style={{
           backgroundColor: '#09090B',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',

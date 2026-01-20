@@ -70,7 +70,8 @@ export interface Message {
   id: string;
   channel_id: string; // New schema field
   conversation_id?: string; // Backward compatibility
-  sender_id: string;
+  sender_profile_id: string;
+  sender_id?: string; // Backward compatibility
   sender_name?: string; // New field
   parent_message_id?: string | null; // New schema field (replaces reply_to_id)
   reply_to_id?: string | null; // Backward compatibility
@@ -144,7 +145,8 @@ export interface MessageMention {
 
 export interface TypingIndicator {
   channel_id: string;
-  user_id: string;
+  profile_id: string;
+  user_id?: string; // Backward compatibility
   is_typing: boolean;
   updated_at: string;
   // Relations

@@ -27,6 +27,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 
 # vercel
 .vercel
@@ -50,3 +51,9 @@ public/web-app-manifest-*.png
 
 # MCP configuration with sensitive credentials
 .cursor/mcp.json
+
+# Playwright test results and auth state
+test-results/
+playwright-report/
+tests/e2e/.auth/
+playwright/.cache/

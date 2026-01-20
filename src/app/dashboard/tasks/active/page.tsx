@@ -361,24 +361,24 @@ export default function ActiveTasksPage() {
   };
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Active Tasks</h1>
-        <p className="text-white/60">Master task registry - manually created tasks from compliance and templates pages only. Cron-generated tasks appear in Today's Tasks page.</p>
+        <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Active Tasks</h1>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Master task registry - manually created tasks from compliance and templates pages only. Cron-generated tasks appear in Today's Tasks page.</p>
       </div>
 
       {/* Loading State */}
       {loading ? (
         <div className="mt-8 text-center py-12">
           <Loader2 className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-spin" />
-          <p className="text-white/60">Loading tasks...</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading tasks...</p>
         </div>
       ) : tasks.length === 0 ? (
         <div className="mt-8 text-center py-12">
-          <AlertCircle className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60 mb-2">No active tasks yet</p>
-          <p className="text-white/40 text-sm">Tasks you create from templates will appear here</p>
+          <AlertCircle className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No active tasks yet</p>
+          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">Tasks you create from templates will appear here</p>
         </div>
       ) : (
         <div className="mt-6 space-y-3">
@@ -401,18 +401,18 @@ export default function ActiveTasksPage() {
               return (
                 <div
                   key={task.id}
-                  className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 hover:bg-white/[0.06] transition-colors"
+                  className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-lg p-5 hover:bg-theme-button-hover dark:hover:bg-white/[0.06] transition-colors"
                 >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                         {taskName}
                       </h3>
                       {/* Status and priority tags removed per user request */}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-white/50">
+                    <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50">
                       {task.template?.frequency && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
@@ -432,7 +432,7 @@ export default function ActiveTasksPage() {
                         <span>{task.site.name}</span>
                       )}
                       {task.template_id && !task.template && (
-                        <span className="text-orange-400/60">Template ID: {task.template_id.substring(0, 8)}...</span>
+                        <span className="text-orange-600 dark:text-orange-400/60">Template ID: {task.template_id.substring(0, 8)}...</span>
                       )}
                     </div>
                   </div>
@@ -440,20 +440,20 @@ export default function ActiveTasksPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditTask(task)}
-                      className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+                      className="p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
                       title="Edit Task"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      className="p-2 rounded-lg hover:bg-red-500/10 text-red-400"
+                      className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/10 text-red-600 dark:text-red-400 transition-colors"
                       title="Delete Task"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                     <button
-                      className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+                      className="p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
                       title="Complete Task"
                     >
                       <CheckCircle className="h-4 w-4" />

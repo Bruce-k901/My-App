@@ -33,7 +33,9 @@ import {
   GraduationCap,
   Edit,
 } from 'lucide-react';
-import type { EmergencyContact } from '@/types/peoplely';
+import type { EmergencyContact } from '@/types/teamly';
+import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
+import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 
 interface Employee {
   id: string;
@@ -50,6 +52,11 @@ interface Employee {
   start_date: string | null;
   app_role: string;
   reports_to_name?: string;
+  employee_number?: string | null;
+  contracted_hours?: number | null;
+  contracted_hours_per_week?: number | null;
+  probation_end_date?: string | null;
+  hourly_rate?: number | null;
 }
 
 export default function EmployeesPage() {
@@ -71,6 +78,9 @@ export default function EmployeesPage() {
   const [expandedEmployees, setExpandedEmployees] = useState<Set<string>>(new Set());
   const [expandedEmployeeData, setExpandedEmployeeData] = useState<Map<string, any>>(new Map());
   const [loadingExpandedData, setLoadingExpandedData] = useState<Set<string>>(new Set());
+  const [showSiteAssignmentsModal, setShowSiteAssignmentsModal] = useState(false);
+  const [siteAssignmentsEmployee, setSiteAssignmentsEmployee] = useState<Employee | null>(null);
+  const [showExecutiveModal, setShowExecutiveModal] = useState(false);
 
   useEffect(() => {
     if (profile?.company_id) {
@@ -176,6 +186,8 @@ export default function EmployeesPage() {
       // Log sample data if available
       if (Array.isArray(data) && data.length > 0) {
         console.log('✅ Sample employee from RPC:', data[0]);
+        console.log('🔍 Sample employee home_site:', data[0].home_site);
+        console.log('🔍 Sample employee keys:', Object.keys(data[0]));
       } else if (data && typeof data === 'object' && !Array.isArray(data)) {
         console.log('⚠️ Data is object, not array:', data);
       }
@@ -277,28 +289,125 @@ export default function EmployeesPage() {
       console.log('Employees fetched:', filteredData.length, 'of', data.length, 'total');
 
       // Get site names separately if needed
-      const siteIds = filteredData.filter((e: any) => e.home_site).map((e: any) => e.home_site);
-      let sitesMap = new Map();
+      const siteIds = filteredData
+        .filter((e: any) => e.home_site)
+        .map((e: any) => e.home_site)
+        .filter((id, index, self) => self.indexOf(id) === index) // Remove duplicates
+        .filter(Boolean); // Remove any null/undefined values
+      
+      console.log('🏢 Found site IDs from employees:', siteIds.length, siteIds);
+      
+      let sitesMap = new Map<string, string>();
       
       if (siteIds.length > 0) {
-        const { data: sitesData } = await supabase
+        console.log('📡 Fetching sites from Supabase...');
+        const { data: sitesData, error: sitesError } = await supabase
           .from('sites')
           .select('id, name')
           .in('id', siteIds);
         
-        sitesMap = new Map(sitesData?.map((s: any) => [s.id, s.name]) || []);
+        if (sitesError) {
+          console.error('❌ Error fetching sites:', sitesError);
+          console.error('Error details:', {
+            message: sitesError.message,
+            code: sitesError.code,
+            details: sitesError.details,
+            hint: sitesError.hint
+          });
+        } else {
+          console.log('✅ Fetched sites:', sitesData?.length || 0, sitesData);
+          if (sitesData && sitesData.length > 0) {
+            sitesMap = new Map(sitesData.map((s: any) => [String(s.id), s.name]));
+            console.log('🗺️ Sites map created with', sitesMap.size, 'entries:', Array.from(sitesMap.entries()));
+          } else {
+            console.warn('⚠️ Sites query returned empty array');
+            console.log('🔍 Site IDs we searched for:', siteIds);
+            // Try fetching all sites to see if RLS is blocking
+            console.log('🔍 Testing RLS - fetching all sites for company:', profile.company_id);
+            const { data: allSites, error: allSitesError } = await supabase
+              .from('sites')
+              .select('id, name, company_id')
+              .eq('company_id', profile.company_id);
+            console.log('🔍 All sites for company (RLS test):', allSites?.length || 0, allSitesError);
+            if (allSitesError) {
+              console.error('❌ RLS test error:', allSitesError);
+            } else if (allSites && allSites.length > 0) {
+              console.log('✅ Found sites via company_id filter:', allSites);
+              // If we found sites via company_id but not via .in('id', siteIds), there might be a UUID mismatch
+              // Try to match the siteIds with the found sites
+              const matchedSites = allSites.filter((s: any) => siteIds.includes(String(s.id)));
+              console.log('🔍 Matched sites:', matchedSites.length, matchedSites);
+              if (matchedSites.length > 0) {
+                // Use the matched sites to build the map
+                sitesMap = new Map(matchedSites.map((s: any) => [String(s.id), s.name]));
+                console.log('✅ Rebuilt sites map from company filter:', sitesMap.size);
+              }
+            }
+          }
+        }
+      } else {
+        console.log('⚠️ No site IDs found in employee data');
+        // Debug: Check if home_site exists in the data
+        const sampleEmployee = filteredData[0];
+        if (sampleEmployee) {
+          console.log('📋 Sample employee keys:', Object.keys(sampleEmployee));
+          console.log('📋 Sample employee home_site:', sampleEmployee.home_site, typeof sampleEmployee.home_site);
+        }
       }
 
-      const formatted = filteredData.map((emp: any) => ({
-        ...emp,
-        id: emp.profile_id || emp.id, // Handle both return formats
-        phone: emp.phone_number,
-        employment_type: emp.contract_type || emp.employment_type || 'permanent', // Map contract_type to employment_type
-        site_name: sitesMap.get(emp.home_site),
-        reports_to_name: undefined,
-      }));
+      const formatted = filteredData.map((emp: any, index: number) => {
+        const homeSiteId = emp.home_site ? String(emp.home_site) : null;
+        const siteName = homeSiteId ? sitesMap.get(homeSiteId) : null;
+        
+        // Debug for employees with home_site but no site_name
+        if (homeSiteId && !siteName) {
+          console.warn('⚠️ Employee has home_site but site_name not found:', {
+            employee: emp.full_name || emp.id,
+            home_site: homeSiteId,
+            home_site_type: typeof homeSiteId,
+            sitesMapSize: sitesMap.size,
+            sitesMapKeys: Array.from(sitesMap.keys()),
+            siteIdInMap: sitesMap.has(homeSiteId)
+          });
+        }
+        
+        // Debug: Log first few employees to see their data
+        if (index < 3) {
+          console.log(`🔍 Employee ${index} data:`, {
+            name: emp.full_name,
+            home_site: homeSiteId,
+            site_name: siteName,
+            hasHomeSite: !!homeSiteId,
+            hasSiteName: !!siteName
+          });
+        }
+        
+        return {
+          ...emp,
+          id: emp.profile_id || emp.id, // Handle both return formats
+          phone: emp.phone_number,
+          employment_type: emp.contract_type || emp.employment_type || 'permanent', // Map contract_type to employment_type
+          site_name: siteName,
+          reports_to_name: undefined,
+          // Ensure employee_number, start_date, contracted_hours_per_week, probation_end_date, and hourly_rate are preserved
+          employee_number: emp.employee_number || null,
+          start_date: emp.start_date || null,
+          contracted_hours_per_week: emp.contracted_hours_per_week || null,
+          contracted_hours: emp.contracted_hours_per_week || emp.contracted_hours || null, // Support both field names
+          probation_end_date: emp.probation_end_date || null,
+          hourly_rate: emp.hourly_rate ? emp.hourly_rate / 100 : null, // Convert from pence to pounds for display
+        };
+      });
       
-      console.log('Formatted employees:', formatted.length, 'sample:', formatted[0]);
+      console.log('Formatted employees:', formatted.length);
+      if (formatted.length > 0) {
+        console.log('📋 Sample formatted employee:', {
+          name: formatted[0].full_name,
+          home_site: formatted[0].home_site,
+          site_name: formatted[0].site_name,
+          hasSiteName: !!formatted[0].site_name
+        });
+      }
       setEmployees(formatted);
       
       // Update expanded employee data if any employees are currently expanded
@@ -865,12 +974,25 @@ export default function EmployeesPage() {
             <Download className="w-4 h-4" />
             Export
           </button>
+          
+          {/* Add Head Office / Executive Button */}
+          <button
+            onClick={() => setShowExecutiveModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+          >
+            <Briefcase className="w-5 h-5" />
+            <span className="hidden sm:inline">Add Head Office</span>
+            <span className="sm:hidden">Head Office</span>
+          </button>
+          
+          {/* Add Site Employee Button */}
           <Link
-            href="/dashboard/people/employees/new"
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#EC4899] to-blue-600 text-white rounded-lg hover:opacity-90"
+            href="/dashboard/people/directory/new"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
           >
             <Plus className="w-5 h-5" />
-            Add Employee
+            <span className="hidden sm:inline">Add Site Employee</span>
+            <span className="sm:hidden">Site Employee</span>
           </Link>
         </div>
       </div>
@@ -891,7 +1013,7 @@ export default function EmployeesPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white"
+          className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
@@ -904,7 +1026,7 @@ export default function EmployeesPage() {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white"
+            className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
           >
             <option value="">All Departments</option>
             {departments.map(dept => (
@@ -917,7 +1039,7 @@ export default function EmployeesPage() {
           <select
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
-            className="px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white"
+            className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
           >
             <option value="">All Sites</option>
             {siteNames.map(site => (
@@ -944,12 +1066,36 @@ export default function EmployeesPage() {
               key={employee.id}
               className={`bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-[#EC4899]/50 transition-colors group relative ${isExpanded ? 'md:col-span-2 lg:col-span-3' : ''}`}
             >
-              {/* Edit Button and Expand Button - Positioned absolutely */}
+              {/* Edit Button, Add to Rota Button, and Expand Button - Positioned absolutely */}
               {!editingEmployee && (
                 <div 
                   className="absolute top-2 right-2 z-10 flex items-center gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      if (!employee.home_site) {
+                        alert('Please set the employee\'s home site before adding them to the rota. You can edit the employee details to set the home site.');
+                        return;
+                      }
+                      const params = new URLSearchParams();
+                      params.set('site', employee.home_site);
+                      params.set('employee', employee.id);
+                      router.push(`/dashboard/people/schedule?${params.toString()}`);
+                    }}
+                    disabled={!employee.home_site}
+                    className={`p-1.5 rounded-lg transition-all cursor-pointer active:scale-95 shadow-lg ${
+                      employee.home_site
+                        ? 'bg-neutral-800 hover:bg-neutral-700 text-white hover:text-[#EC4899] hover:shadow-[0_0_8px_rgba(236,72,153,0.5)]'
+                        : 'bg-neutral-800/50 text-neutral-500 cursor-not-allowed'
+                    }`}
+                    title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
+                  >
+                    <Calendar className="w-4 h-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={(e) => {
@@ -1016,6 +1162,16 @@ export default function EmployeesPage() {
                         {employee.full_name}
                       </p>
                       {getStatusBadge(employee.status)}
+                      {employee.status === 'onboarding' && (
+                        <Link
+                          href={`/dashboard/people/onboarding?employeeId=${employee.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2 py-0.5 bg-[#EC4899]/15 text-[#EC4899] rounded text-xs hover:bg-[#EC4899]/25"
+                          title="Go to onboarding"
+                        >
+                          Go to onboarding
+                        </Link>
+                      )}
                     </div>
                     <p className="text-neutral-400 text-sm truncate">{employee.position_title || 'No title'}</p>
 
@@ -1026,18 +1182,41 @@ export default function EmployeesPage() {
                           {employee.department}
                         </span>
                       )}
-                      {employee.site_name && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {employee.site_name}
-                        </span>
-                      )}
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {employee.site_name || 'No home site set'}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {!isExpanded && (
                   <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (!employee.home_site) {
+                          alert('Please set the employee\'s home site before adding them to the rota. You can edit the employee details to set the home site.');
+                          return;
+                        }
+                        // Pass both site and employee ID so the schedule page can highlight the employee
+                        const params = new URLSearchParams();
+                        params.set('site', employee.home_site);
+                        params.set('employee', employee.id);
+                        router.push(`/dashboard/people/schedule?${params.toString()}`);
+                      }}
+                      disabled={!employee.home_site}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm transition-all border ${
+                        employee.home_site
+                          ? 'bg-[#EC4899]/20 hover:bg-[#EC4899]/30 text-[#EC4899] border-[#EC4899]/30'
+                          : 'bg-neutral-700/50 text-neutral-500 border-neutral-600/50 cursor-not-allowed'
+                      }`}
+                      title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Add to Rota
+                    </button>
                     <a
                       href={`mailto:${employee.email}`}
                       onClick={(e) => e.stopPropagation()}
@@ -1069,8 +1248,8 @@ export default function EmployeesPage() {
                       <span className="ml-2 text-neutral-400">Loading details...</span>
                     </div>
                   ) : fullData ? (
-                    <ExpandedEmployeeView 
-                      employee={fullData || employee} 
+                    <ExpandedEmployeeView
+                      employee={fullData || employee}
                       sites={sites}
                       managers={managers}
                       onEdit={() => {
@@ -1078,6 +1257,10 @@ export default function EmployeesPage() {
                         // Use fullData if available (expanded data), otherwise fall back to employee
                         const employeeToEdit = fullData || employee;
                         handleEdit(employeeToEdit);
+                      }}
+                      onOpenSiteAssignments={(emp) => {
+                        setSiteAssignmentsEmployee(emp);
+                        setShowSiteAssignmentsModal(true);
                       }}
                       onUpdate={async () => {
                         // Reload expanded employee data after inline update
@@ -1143,6 +1326,35 @@ export default function EmployeesPage() {
           }}
           onSave={handleSaveEdit}
           saving={saving}
+          onOpenSiteAssignments={(emp) => {
+            setSiteAssignmentsEmployee(emp);
+            setShowSiteAssignmentsModal(true);
+          }}
+        />
+      )}
+
+      {/* Site Assignments Modal */}
+      {showSiteAssignmentsModal && siteAssignmentsEmployee && company && (
+        <EmployeeSiteAssignmentsModal
+          isOpen={showSiteAssignmentsModal}
+          onClose={() => {
+            setShowSiteAssignmentsModal(false);
+            setSiteAssignmentsEmployee(null);
+          }}
+          employeeId={siteAssignmentsEmployee.id}
+          employeeName={siteAssignmentsEmployee.full_name}
+          homeSiteId={siteAssignmentsEmployee.home_site}
+          companyId={company.id}
+        />
+      )}
+
+      {/* Add Executive / Head Office Modal */}
+      {profile?.company_id && (
+        <AddExecutiveModal
+          open={showExecutiveModal}
+          onClose={() => setShowExecutiveModal(false)}
+          companyId={profile.company_id}
+          onRefresh={fetchEmployees}
         />
       )}
     </div>
@@ -1156,13 +1368,18 @@ function ExpandedEmployeeView({
   managers,
   onEdit,
   onUpdate,
+  onOpenSiteAssignments,
 }: {
   employee: any;
   sites: { id: string; name: string }[];
   managers: { id: string; full_name: string }[];
   onEdit: () => void;
   onUpdate: () => void;
+  onOpenSiteAssignments: (employee: any) => void;
 }) {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
+
   const getSiteName = (siteId: string | null) => {
     if (!siteId) return '—';
     return sites.find(s => s.id === siteId)?.name || siteId;
@@ -1196,254 +1413,365 @@ function ExpandedEmployeeView({
     : (employee.emergency_contacts ? [employee.emergency_contacts] : []);
 
   return (
-    <div className="space-y-6">
-      {/* Header with Edit button */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-white">Employee Details</h3>
-        <button
-          onClick={onEdit}
-          className="px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg text-sm transition-all"
-        >
-          <Pencil className="w-4 h-4 inline mr-1" />
-          Edit
-        </button>
+    <div className="space-y-4">
+      {/* Header with Edit button and Add to Rota */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-white">Employee Details</h3>
+          <p className="text-neutral-400 text-sm mt-1">{employee.full_name}</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              if (!employee.home_site) {
+                alert('Please set the employee\'s home site before adding them to the rota. Use the edit button to set the home site.');
+                return;
+              }
+              // Navigate to schedule page with the employee's home site and employee ID
+              const params = new URLSearchParams();
+              params.set('site', employee.home_site);
+              params.set('employee', employee.id);
+              router.push(`/dashboard/people/schedule?${params.toString()}`);
+            }}
+            disabled={!employee.home_site}
+            className={`px-3 py-1.5 bg-transparent border rounded-lg text-sm transition-all flex items-center gap-1 ${
+              employee.home_site
+                ? 'border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]'
+                : 'border-neutral-600 text-neutral-500 cursor-not-allowed opacity-50'
+            }`}
+            title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
+          >
+            <Calendar className="w-4 h-4" />
+            Add to Rota
+          </button>
+          <button
+            onClick={onEdit}
+            className="px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg text-sm transition-all"
+          >
+            <Pencil className="w-4 h-4 inline mr-1" />
+            Edit
+          </button>
+        </div>
       </div>
 
-      {/* Personal Information */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <User className="w-4 h-4 text-[#EC4899]" />
-          Personal Information
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Full Name" value={employee.full_name || '—'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Email" value={employee.email || '—'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Phone" value={employee.phone_number || employee.phone || '—'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || '—'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="Gender" value={employee.gender || '—'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'male', label: 'Male' },
-            { value: 'female', label: 'Female' },
-            { value: 'non_binary', label: 'Non-binary' },
-            { value: 'prefer_not_to_say', label: 'Prefer not to say' },
-            { value: 'other', label: 'Other' }
-          ]} />
-          <InfoRow label="Nationality" value={employee.nationality || '—'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
-        </div>
+      {/* Tabs - Matching Edit Modal */}
+      <div className="flex gap-2 border-b border-neutral-800 overflow-x-auto">
+        {[
+          { id: 'personal', label: 'Personal', icon: User },
+          { id: 'employment', label: 'Employment', icon: Briefcase },
+          { id: 'compliance', label: 'Compliance', icon: Shield },
+          { id: 'banking', label: 'Banking', icon: CreditCard },
+          { id: 'leave', label: 'Leave', icon: Calendar },
+          { id: 'pay', label: 'Pay & Tax', icon: CreditCard },
+          { id: 'training', label: 'Training', icon: GraduationCap },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-neutral-800 text-white border-b-2 border-[#EC4899]'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
-        {/* Address */}
-        <div className="mt-4 pt-4 border-t border-white/[0.1]">
-          <h5 className="text-sm font-medium text-white mb-3">Address</h5>
-          <div className="space-y-1">
-            <InfoRow label="Address Line 1" value={employee.address_line_1 || '—'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
-            <InfoRow label="Address Line 2" value={employee.address_line_2 || '—'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
-            <InfoRow label="City" value={employee.city || '—'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
-            <InfoRow label="County" value={employee.county || '—'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
-            <InfoRow label="Postcode" value={employee.postcode || '—'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
-            <InfoRow label="Country" value={employee.country || 'United Kingdom'} fieldName="country" employeeId={employee.id} onUpdate={onUpdate} />
-          </div>
-        </div>
+      {/* Tab Content */}
+      <div className="border border-white/[0.1] rounded-lg bg-white/[0.02]">
+        {activeTab === 'personal' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <User className="w-4 h-4 text-[#EC4899]" />
+              Personal Information
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Full Name" value={employee.full_name || '—'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Email" value={employee.email || '—'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Phone Number" value={employee.phone_number || employee.phone || '—'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || '—'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Gender" value={employee.gender || '—'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+                { value: 'non_binary', label: 'Non-binary' },
+                { value: 'prefer_not_to_say', label: 'Prefer not to say' },
+                { value: 'other', label: 'Other' }
+              ]} />
+              <InfoRow label="Nationality" value={employee.nationality || '—'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
+            </div>
+            
+            {/* Address */}
+            <div className="border-t border-white/[0.1] pt-4 mt-4">
+              <h5 className="text-sm font-medium text-white mb-3">Address</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <InfoRow label="Address Line 1" value={employee.address_line_1 || '—'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
+                </div>
+                <div className="md:col-span-2">
+                  <InfoRow label="Address Line 2" value={employee.address_line_2 || '—'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
+                </div>
+                <InfoRow label="City" value={employee.city || '—'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="County" value={employee.county || '—'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="Postcode" value={employee.postcode || '—'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="Country" value={employee.country || 'United Kingdom'} fieldName="country" employeeId={employee.id} onUpdate={onUpdate} />
+              </div>
+            </div>
 
-        {/* Emergency Contacts */}
-        {emergencyContacts.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-white/[0.1]">
-            <h5 className="text-sm font-medium text-white mb-3">Emergency Contacts</h5>
-            <div className="space-y-3">
-              {emergencyContacts.map((contact: any, idx: number) => (
-              <div key={idx} className="p-3 bg-white/[0.03] rounded">
-                <div className="space-y-1">
-                  <InfoRow label="Name" value={contact.name || '—'} />
-                  <InfoRow label="Relationship" value={contact.relationship || '—'} />
-                  <InfoRow label="Phone" value={contact.phone || '—'} />
-                  <InfoRow label="Email" value={contact.email || '—'} />
+            {/* Emergency Contacts */}
+            {emergencyContacts.length > 0 && (
+              <div className="border-t border-white/[0.1] pt-4 mt-4">
+                <h5 className="text-sm font-medium text-white mb-3">Emergency Contacts</h5>
+                <div className="space-y-3">
+                  {emergencyContacts.map((contact: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-white/[0.03] rounded">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InfoRow label="Name" value={contact.name || '—'} />
+                        <InfoRow label="Relationship" value={contact.relationship || '—'} />
+                        <InfoRow label="Phone" value={contact.phone || '—'} />
+                        <InfoRow label="Email" value={contact.email || '—'} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              ))}
+            )}
+          </div>
+        )}
+
+        {activeTab === 'employment' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-[#EC4899]" />
+              Employment Details
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Employee Number" value={employee.employee_number || '—'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Position / Job Title" value={employee.position_title || '—'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Department" value={employee.department || '—'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="App Role" value={employee.app_role || 'Staff'} fieldName="app_role" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'staff', label: 'Staff' },
+                { value: 'manager', label: 'Manager' },
+                { value: 'admin', label: 'Admin' },
+                { value: 'super_admin', label: 'Super Admin' }
+              ]} />
+              <InfoRow
+                label="Home Site"
+                value={employee.home_site ? getSiteName(employee.home_site) : 'Not set'}
+                fieldName="home_site"
+                employeeId={employee.id}
+                onUpdate={onUpdate}
+                type="select"
+                options={[{ value: '', label: 'Not set' }, ...sites.map(s => ({ value: s.id, label: s.name }))]}
+                actualValue={employee.home_site || ''}
+              />
+              {onOpenSiteAssignments && (
+                <div className="md:col-span-2 pt-4 border-t border-white/[0.1]">
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
+                    <p className="text-xs text-blue-300 mb-2">
+                      <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      console.log('Opening site assignments modal for:', employee);
+                      if (onOpenSiteAssignments) {
+                        onOpenSiteAssignments(employee);
+                      } else {
+                        console.error('onOpenSiteAssignments is not defined');
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+                  >
+                    <MapPin className="w-5 h-5" />
+                    Manage Site Assignments
+                  </button>
+                  <p className="text-xs text-neutral-500 mt-2 text-center">
+                    Allow this employee to work at other sites during specified date ranges
+                  </p>
+                </div>
+              )}
+              <InfoRow 
+                label="Reports To" 
+                value={employee.reports_to ? getManagerName(employee.reports_to) : 'Not set'} 
+                fieldName="reports_to" 
+                employeeId={employee.id} 
+                onUpdate={onUpdate} 
+                type="select" 
+                options={[{ value: '', label: 'Not set' }, ...managers.map(m => ({ value: m.id, label: m.full_name }))]}
+                actualValue={employee.reports_to || ''}
+              />
+              <InfoRow label="BOH / FOH" value={employee.boh_foh || 'FOH'} fieldName="boh_foh" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'FOH', label: 'FOH' },
+                { value: 'BOH', label: 'BOH' },
+                { value: 'BOTH', label: 'Both' }
+              ]} />
+              <InfoRow label="Start Date" value={formatDate(employee.start_date) || '—'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || '—'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Contract Type" value={employee.contract_type || 'permanent'} fieldName="contract_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'permanent', label: 'Permanent' },
+                { value: 'fixed_term', label: 'Fixed Term' },
+                { value: 'zero_hours', label: 'Zero Hours' },
+                { value: 'casual', label: 'Casual' },
+                { value: 'agency', label: 'Agency' },
+                { value: 'contractor', label: 'Contractor' },
+                { value: 'apprentice', label: 'Apprentice' }
+              ]} />
+              <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || '—'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate) : '—'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || '—'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Pay Frequency" value={employee.pay_frequency || 'monthly'} fieldName="pay_frequency" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'weekly', label: 'Weekly' },
+                { value: 'fortnightly', label: 'Fortnightly' },
+                { value: 'four_weekly', label: 'Four Weekly' },
+                { value: 'monthly', label: 'Monthly' }
+              ]} />
+              <InfoRow label="Notice Period (weeks)" value={employee.notice_period_weeks?.toString() || '1'} fieldName="notice_period_weeks" employeeId={employee.id} onUpdate={onUpdate} type="number" />
             </div>
           </div>
         )}
-      </div>
 
-      {/* Employment Details */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <Briefcase className="w-4 h-4 text-[#EC4899]" />
-          Employment Details
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Employee Number" value={employee.employee_number || '—'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Position / Job Title" value={employee.position_title || '—'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Department" value={employee.department || '—'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="App Role" value={employee.app_role || 'Staff'} fieldName="app_role" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'staff', label: 'Staff' },
-            { value: 'manager', label: 'Manager' },
-            { value: 'admin', label: 'Admin' },
-            { value: 'super_admin', label: 'Super Admin' }
-          ]} />
-          <InfoRow 
-            label="Home Site" 
-            value={employee.home_site ? getSiteName(employee.home_site) : 'Not set'} 
-            fieldName="home_site" 
-            employeeId={employee.id} 
-            onUpdate={onUpdate} 
-            type="select" 
-            options={[{ value: '', label: 'Not set' }, ...sites.map(s => ({ value: s.id, label: s.name }))]}
-            actualValue={employee.home_site || ''}
-          />
-          <InfoRow 
-            label="Reports To" 
-            value={employee.reports_to ? getManagerName(employee.reports_to) : 'Not set'} 
-            fieldName="reports_to" 
-            employeeId={employee.id} 
-            onUpdate={onUpdate} 
-            type="select" 
-            options={[{ value: '', label: 'Not set' }, ...managers.map(m => ({ value: m.id, label: m.full_name }))]}
-            actualValue={employee.reports_to || ''}
-          />
-          <InfoRow label="BOH / FOH" value={employee.boh_foh || 'FOH'} fieldName="boh_foh" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'FOH', label: 'FOH' },
-            { value: 'BOH', label: 'BOH' },
-            { value: 'BOTH', label: 'Both' }
-          ]} />
-          <InfoRow label="Start Date" value={formatDate(employee.start_date) || '—'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || '—'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="Contract Type" value={employee.contract_type || 'permanent'} fieldName="contract_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'permanent', label: 'Permanent' },
-            { value: 'fixed_term', label: 'Fixed Term' },
-            { value: 'zero_hours', label: 'Zero Hours' },
-            { value: 'casual', label: 'Casual' },
-            { value: 'agency', label: 'Agency' },
-            { value: 'contractor', label: 'Contractor' },
-            { value: 'apprentice', label: 'Apprentice' }
-          ]} />
-          <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || '—'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-          <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate) : '—'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-          <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || '—'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-          <InfoRow label="Pay Frequency" value={employee.pay_frequency || 'monthly'} fieldName="pay_frequency" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'weekly', label: 'Weekly' },
-            { value: 'fortnightly', label: 'Fortnightly' },
-            { value: 'four_weekly', label: 'Four Weekly' },
-            { value: 'monthly', label: 'Monthly' }
-          ]} />
-          <InfoRow label="Notice Period (weeks)" value={employee.notice_period_weeks?.toString() || '1'} fieldName="notice_period_weeks" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-        </div>
-      </div>
+        {activeTab === 'compliance' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-[#EC4899]" />
+              Compliance & Right to Work
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="National Insurance Number" value={employee.national_insurance_number || '—'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Right to Work Status" value={employee.right_to_work_status || 'pending'} fieldName="right_to_work_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'pending', label: 'Pending' },
+                { value: 'verified', label: 'Verified' },
+                { value: 'expired', label: 'Expired' },
+                { value: 'not_required', label: 'Not Required' }
+              ]} />
+              <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || '—'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: 'passport', label: 'Passport' },
+                { value: 'biometric_residence_permit', label: 'Biometric Residence Permit' },
+                { value: 'share_code', label: 'Share Code' },
+                { value: 'visa', label: 'Visa' },
+                { value: 'other', label: 'Other' }
+              ]} />
+              <InfoRow label="RTW Document Number" value={employee.right_to_work_document_number || '—'} fieldName="right_to_work_document_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || '—'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+            </div>
+            
+            {/* DBS Section */}
+            <div className="border-t border-white/[0.1] pt-4 mt-4">
+              <h5 className="text-sm font-medium text-white mb-3">DBS Check</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InfoRow label="DBS Status" value={employee.dbs_status || 'not_required'} fieldName="dbs_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                  { value: 'not_required', label: 'Not Required' },
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'clear', label: 'Clear' },
+                  { value: 'issues_found', label: 'Issues Found' }
+                ]} />
+                <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || '—'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || '—'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Compliance */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[#EC4899]" />
-          Compliance & Right to Work
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="National Insurance Number" value={employee.national_insurance_number || '—'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Right to Work Status" value={employee.right_to_work_status || 'pending'} fieldName="right_to_work_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'pending', label: 'Pending' },
-            { value: 'verified', label: 'Verified' },
-            { value: 'expired', label: 'Expired' },
-            { value: 'not_required', label: 'Not Required' }
-          ]} />
-          <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || '—'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'passport', label: 'Passport' },
-            { value: 'biometric_residence_permit', label: 'Biometric Residence Permit' },
-            { value: 'share_code', label: 'Share Code' },
-            { value: 'visa', label: 'Visa' },
-            { value: 'other', label: 'Other' }
-          ]} />
-          <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || '—'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="DBS Status" value={employee.dbs_status || 'not_required'} fieldName="dbs_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: 'not_required', label: 'Not Required' },
-            { value: 'pending', label: 'Pending' },
-            { value: 'clear', label: 'Clear' },
-            { value: 'issues_found', label: 'Issues Found' }
-          ]} />
-          <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || '—'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || '—'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-        </div>
-      </div>
+        {activeTab === 'banking' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#EC4899]" />
+              Bank Details
+            </h4>
+            <p className="text-sm text-neutral-400 mb-4">
+              Bank details are used for payroll export only and are stored securely.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Bank Name" value={employee.bank_name || '—'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Holder Name" value={employee.bank_account_name || '—'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Sort Code" value={employee.bank_sort_code || '—'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Number" value={employee.bank_account_number ? '••••' : '—'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
+            </div>
+          </div>
+        )}
 
-      {/* Banking */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-[#EC4899]" />
-          Bank Details
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Bank Name" value={employee.bank_name || '—'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Account Holder Name" value={employee.bank_account_name || '—'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Sort Code" value={employee.bank_sort_code || '—'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Account Number" value={employee.bank_account_number ? '••••' : '—'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
-        </div>
-      </div>
+        {activeTab === 'leave' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-[#EC4899]" />
+              Leave Allowance
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Annual Leave Allowance (days)" value={employee.annual_leave_allowance?.toString() || '28'} fieldName="annual_leave_allowance" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+            </div>
+            <p className="text-xs text-neutral-400 mt-2">UK statutory minimum is 28 days (including bank holidays)</p>
+          </div>
+        )}
 
-      {/* Leave */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-[#EC4899]" />
-          Leave Allowance
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Annual Leave Allowance (days)" value={employee.annual_leave_allowance?.toString() || '28'} fieldName="annual_leave_allowance" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-        </div>
-      </div>
+        {activeTab === 'pay' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#EC4899]" />
+              Pay & Tax Details
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Tax Code" value={employee.tax_code || '—'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Student Loan" value={employee.student_loan === true ? 'Yes' : (employee.student_loan === false ? 'No' : 'Not set')} fieldName="student_loan" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              {employee.student_loan && (
+                <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || '—'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                  { value: 'plan_1', label: 'Plan 1' },
+                  { value: 'plan_2', label: 'Plan 2' },
+                  { value: 'plan_4', label: 'Plan 4' },
+                  { value: 'plan_5', label: 'Plan 5' }
+                ]} />
+              )}
+              <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : '—')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              {employee.pension_enrolled && (
+                <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : '—'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              )}
+              <InfoRow label="P45 Received" value={employee.p45_received === true ? 'Yes' : (employee.p45_received === false ? 'No' : 'Not set')} fieldName="p45_received" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || '—'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="P45 Reference" value={employee.p45_reference || '—'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
+            </div>
+          </div>
+        )}
 
-      {/* Pay & Tax */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-[#EC4899]" />
-          Pay & Tax Details
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Tax Code" value={employee.tax_code || '—'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
-          <InfoRow label="Student Loan" value={employee.student_loan === true ? 'Yes' : (employee.student_loan === false ? 'No' : 'Not set')} fieldName="student_loan" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          {employee.student_loan && (
-            <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || '—'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-              { value: 'plan_1', label: 'Plan 1' },
-              { value: 'plan_2', label: 'Plan 2' },
-              { value: 'plan_4', label: 'Plan 4' },
-              { value: 'plan_5', label: 'Plan 5' }
-            ]} />
-          )}
-          <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : '—')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : '—'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-          <InfoRow label="P45 Received" value={employee.p45_received === true ? 'Yes' : (employee.p45_received === false ? 'No' : 'Not set')} fieldName="p45_received" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || '—'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="P45 Reference" value={employee.p45_reference || '—'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
-        </div>
-      </div>
-
-      {/* Training */}
-      <div className="border border-white/[0.1] rounded-lg p-4 bg-white/[0.02]">
-        <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-          <GraduationCap className="w-4 h-4 text-[#EC4899]" />
-          Training & Certifications
-        </h4>
-        <div className="space-y-1">
-          <InfoRow label="Food Safety Level" value={employee.food_safety_level ? `Level ${employee.food_safety_level}` : '—'} fieldName="food_safety_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: '2', label: 'Level 2' },
-            { value: '3', label: 'Level 3' },
-            { value: '4', label: 'Level 4' },
-            { value: '5', label: 'Level 5' }
-          ]} />
-          <InfoRow label="Food Safety Expiry" value={formatDate(employee.food_safety_expiry_date) || '—'} fieldName="food_safety_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="H&S Level" value={employee.h_and_s_level ? `Level ${employee.h_and_s_level}` : '—'} fieldName="h_and_s_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-            { value: '2', label: 'Level 2' },
-            { value: '3', label: 'Level 3' },
-            { value: '4', label: 'Level 4' }
-          ]} />
-          <InfoRow label="H&S Expiry" value={formatDate(employee.h_and_s_expiry_date) || '—'} fieldName="h_and_s_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          <InfoRow label="Fire Marshal Trained" value={employee.fire_marshal_trained ? 'Yes' : 'No'} fieldName="fire_marshal_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          {employee.fire_marshal_trained && (
-            <InfoRow label="Fire Marshal Expiry" value={formatDate(employee.fire_marshal_expiry_date) || '—'} fieldName="fire_marshal_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          )}
-          <InfoRow label="First Aid Trained" value={employee.first_aid_trained ? 'Yes' : 'No'} fieldName="first_aid_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          {employee.first_aid_trained && (
-            <InfoRow label="First Aid Expiry" value={formatDate(employee.first_aid_expiry_date) || '—'} fieldName="first_aid_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          )}
-          <InfoRow label="COSSH Trained" value={employee.cossh_trained ? 'Yes' : 'No'} fieldName="cossh_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-          {employee.cossh_trained && (
-            <InfoRow label="COSSH Expiry" value={formatDate(employee.cossh_expiry_date) || '—'} fieldName="cossh_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-          )}
-        </div>
+        {activeTab === 'training' && (
+          <div className="p-4 space-y-4">
+            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-[#EC4899]" />
+              Training & Certifications
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoRow label="Food Safety Level" value={employee.food_safety_level ? `Level ${employee.food_safety_level}` : '—'} fieldName="food_safety_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: '2', label: 'Level 2' },
+                { value: '3', label: 'Level 3' },
+                { value: '4', label: 'Level 4' },
+                { value: '5', label: 'Level 5' }
+              ]} />
+              <InfoRow label="Food Safety Expiry" value={formatDate(employee.food_safety_expiry_date) || '—'} fieldName="food_safety_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="H&S Level" value={employee.h_and_s_level ? `Level ${employee.h_and_s_level}` : '—'} fieldName="h_and_s_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                { value: '2', label: 'Level 2' },
+                { value: '3', label: 'Level 3' },
+                { value: '4', label: 'Level 4' }
+              ]} />
+              <InfoRow label="H&S Expiry" value={formatDate(employee.h_and_s_expiry_date) || '—'} fieldName="h_and_s_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Fire Marshal Trained" value={employee.fire_marshal_trained ? 'Yes' : 'No'} fieldName="fire_marshal_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              {employee.fire_marshal_trained && (
+                <InfoRow label="Fire Marshal Expiry" value={formatDate(employee.fire_marshal_expiry_date) || '—'} fieldName="fire_marshal_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              )}
+              <InfoRow label="First Aid Trained" value={employee.first_aid_trained ? 'Yes' : 'No'} fieldName="first_aid_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              {employee.first_aid_trained && (
+                <InfoRow label="First Aid Expiry" value={formatDate(employee.first_aid_expiry_date) || '—'} fieldName="first_aid_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              )}
+              <InfoRow label="COSSH Trained" value={employee.cossh_trained ? 'Yes' : 'No'} fieldName="cossh_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              {employee.cossh_trained && (
+                <InfoRow label="COSSH Expiry" value={formatDate(employee.cossh_expiry_date) || '—'} fieldName="cossh_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1618,7 +1946,7 @@ function InfoRow({
               <select
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1630,7 +1958,7 @@ function InfoRow({
               <select
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1642,7 +1970,7 @@ function InfoRow({
                 type="date"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               />
             ) : type === 'number' ? (
@@ -1650,14 +1978,14 @@ function InfoRow({
                 type="number"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               />
             ) : type === 'textarea' ? (
               <textarea
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 rows={2}
                 autoFocus
               />
@@ -1666,7 +1994,7 @@ function InfoRow({
                 type="text"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -1724,7 +2052,8 @@ function EditEmployeeModal({
   managers,
   onClose,
   onSave,
-  saving
+  saving,
+  onOpenSiteAssignments,
 }: {
   employee: Employee;
   formData: any;
@@ -1736,6 +2065,7 @@ function EditEmployeeModal({
   onClose: () => void;
   onSave: () => void;
   saving: boolean;
+  onOpenSiteAssignments: (employee: Employee) => void;
 }) {
   const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
 
@@ -2160,6 +2490,20 @@ function EditEmployeeModal({
                   </select>
                 </div>
                 
+                <div className="md:col-span-2 pt-4 border-t border-neutral-700">
+                  <button
+                    onClick={() => onOpenSiteAssignments(employee)}
+                    type="button"
+                    className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Manage Site Assignments
+                  </button>
+                  <p className="text-xs text-neutral-500 mt-2">
+                    Allow this employee to work at other sites during specified date ranges
+                  </p>
+                </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-neutral-300 mb-1">
                     Reports To
@@ -2371,6 +2715,20 @@ function EditEmployeeModal({
                     <option value="visa">Visa</option>
                     <option value="other">Other</option>
                   </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    RTW Document Number
+                  </label>
+                  <input
+                    type="text"
+                    name="right_to_work_document_number"
+                    value={formData.right_to_work_document_number || ''}
+                    onChange={handleChange}
+                    placeholder="e.g., passport number, share code"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                  />
                 </div>
                 
                 <div>

@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Button, Input, Select } from "@/components/ui";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Eye, EyeOff } from "lucide-react";
+import { useAppContext } from "@/context/AppContext";
 
 interface AddUserModalProps {
   open: boolean;
@@ -16,6 +17,7 @@ interface AddUserModalProps {
 }
 
 export default function AddUserModal({ open, onClose, companyId, siteId, selectedSiteId, onRefresh }: AddUserModalProps) {
+  const { profile } = useAppContext();
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -44,6 +46,75 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
   type Site = { id: string; name: string };
   const [sites, setSites] = useState<Site[]>([]);
   const [loadingSites, setLoadingSites] = useState(false);
+
+  type OnboardingPack = {
+    id: string;
+    name: string;
+    boh_foh: "FOH" | "BOH" | "BOTH";
+    pay_type: "hourly" | "salaried";
+    is_active?: boolean | null;
+    is_base?: boolean | null;
+  };
+  const [onboardingPacks, setOnboardingPacks] = useState<OnboardingPack[]>([]);
+  const [loadingPacks, setLoadingPacks] = useState(false);
+
+  const [startOnboarding, setStartOnboarding] = useState(true);
+  const [onboardingPackId, setOnboardingPackId] = useState<string>("");
+  const [onboardingMessage, setOnboardingMessage] = useState<string>("Please complete these onboarding documents before your first shift.");
+
+  // Load onboarding packs
+  useEffect(() => {
+    let mounted = true;
+    async function loadPacks() {
+      if (!open || !companyId) return;
+      try {
+        setLoadingPacks(true);
+        const baseSelect = "id,name,boh_foh,pay_type";
+        const selectWithFlags = `${baseSelect},is_active,is_base`;
+        let { data, error } = await supabase
+          .from("company_onboarding_packs")
+          .select(selectWithFlags)
+          .eq("company_id", companyId)
+          .order("name", { ascending: true });
+
+        // Fallback for older schemas missing is_active/is_base
+        if (error && (error as any)?.code === "42703") {
+          const retry = await supabase
+            .from("company_onboarding_packs")
+            .select(baseSelect)
+            .eq("company_id", companyId)
+            .order("name", { ascending: true });
+          data = retry.data as any;
+          error = retry.error as any;
+        }
+
+        if (error) throw error;
+        const list = (data || []) as OnboardingPack[];
+        const active = list.filter((p) => (p as any)?.is_active !== false);
+        if (!mounted) return;
+        setOnboardingPacks(active);
+      } catch (e) {
+        console.error("Failed to load onboarding packs", e);
+        if (mounted) setOnboardingPacks([]);
+      } finally {
+        if (mounted) setLoadingPacks(false);
+      }
+    }
+    loadPacks();
+    return () => {
+      mounted = false;
+    };
+  }, [open, companyId]);
+
+  // Pick a sensible default pack based on BOH/FOH
+  useEffect(() => {
+    if (!open) return;
+    if (onboardingPackId) return;
+    if (!onboardingPacks.length) return;
+    const target = (form.boh_foh || "FOH") as "FOH" | "BOH";
+    const match = onboardingPacks.find((p) => p.boh_foh === target) || onboardingPacks.find((p) => p.boh_foh === "BOTH") || onboardingPacks[0];
+    if (match?.id) setOnboardingPackId(match.id);
+  }, [open, form.boh_foh, onboardingPacks, onboardingPackId]);
 
   // Load sites for the company and optionally preselect
   // If only one site exists, preselect it automatically
@@ -188,6 +259,46 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         return;
       }
       showToast({ title: "User invited", description: `Profile created and invite sent to ${form.email}.`, type: "success" });
+
+      // Optionally start onboarding immediately (so they appear in onboarding page)
+      if (startOnboarding && onboardingPackId && json?.id) {
+        try {
+          let { error: assignErr } = await supabase.from("employee_onboarding_assignments").insert({
+            company_id: companyId,
+            profile_id: json.id,
+            pack_id: onboardingPackId,
+            sent_by: profile?.id || null,
+            message: onboardingMessage?.trim() || null,
+          } as any);
+
+          // Fallback if older schema missing sent_by
+          if (assignErr && (assignErr as any)?.code === "42703") {
+            const retry = await supabase.from("employee_onboarding_assignments").insert({
+              company_id: companyId,
+              profile_id: json.id,
+              pack_id: onboardingPackId,
+              message: onboardingMessage?.trim() || null,
+            } as any);
+            assignErr = retry.error as any;
+          }
+
+          if (assignErr) {
+            console.warn("Onboarding assignment failed:", assignErr);
+            showToast({
+              title: "Onboarding not assigned",
+              description: "User was created, but we couldn't assign an onboarding pack. You can assign it from People → Onboarding.",
+              type: "warning",
+            });
+          }
+        } catch (assignErr) {
+          console.warn("Onboarding assignment exception:", assignErr);
+          showToast({
+            title: "Onboarding not assigned",
+            description: "User was created, but onboarding assignment failed. You can assign it from People → Onboarding.",
+            type: "warning",
+          });
+        }
+      }
       
       // Refresh the user list BEFORE closing the modal to ensure the new user appears
       // Add a small delay to ensure database transaction has committed
@@ -235,6 +346,9 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         cossh_trained: false,
         cossh_expiry_date: null,
       });
+      setStartOnboarding(true);
+      setOnboardingPackId("");
+      setOnboardingMessage("Please complete these onboarding documents before your first shift.");
       setSaving(false);
     } catch (err: any) {
       setError(err?.message || "Failed to create user profile.");
@@ -250,7 +364,21 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
   const [showPin, setShowPin] = useState(false);
 
-  const roleOptions = ["Staff", "Manager", "Admin", "Owner"];
+  const roleOptions = [
+    "Staff",
+    "Manager", 
+    "Admin",
+    "Owner",
+    "CEO",
+    "Managing Director",
+    "COO",
+    "CFO",
+    "HR Manager",
+    "Operations Manager",
+    "Finance Manager",
+    "Regional Manager",
+    "Area Manager"
+  ];
 
   const normRole = (v?: string | null) => {
     if (!v) return null;
@@ -260,6 +388,18 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
       case "manager": return "Manager";
       case "admin": return "Admin";
       case "owner": return "Owner";
+      case "ceo": return "CEO";
+      case "managing director": 
+      case "md": return "Managing Director";
+      case "coo": 
+      case "chief operating officer": return "COO";
+      case "cfo": 
+      case "chief financial officer": return "CFO";
+      case "hr manager": return "HR Manager";
+      case "operations manager": return "Operations Manager";
+      case "finance manager": return "Finance Manager";
+      case "regional manager": return "Regional Manager";
+      case "area manager": return "Area Manager";
       default: return null;
     }
   };
@@ -373,6 +513,50 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                 onValueChange={(val) => updateForm({ site_id: val })}
                 placeholder="Select site…"
               />
+            </div>
+
+            {/* Start onboarding */}
+            <div className="col-span-2">
+              <div className="flex items-center justify-between gap-3">
+                <label className="text-xs text-neutral-400">Onboarding</label>
+                <label className="flex items-center gap-2 text-xs text-white/70 select-none">
+                  <input
+                    type="checkbox"
+                    checked={startOnboarding}
+                    onChange={(e) => setStartOnboarding(e.target.checked)}
+                    className="accent-pink-500"
+                  />
+                  Start onboarding now
+                </label>
+              </div>
+              <div className="text-xs text-white/50 mt-1">
+                Recommended: assign docs now, then add them to rota once complete.
+              </div>
+              {startOnboarding && (
+                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-neutral-400">Onboarding pack</label>
+                    <Select
+                      value={onboardingPackId}
+                      options={onboardingPacks.map((p) => ({
+                        label: `${p.name} (${p.boh_foh}/${p.pay_type})`,
+                        value: p.id,
+                      }))}
+                      onValueChange={(v) => setOnboardingPackId(v)}
+                      placeholder={loadingPacks ? "Loading packs…" : "Select pack…"}
+                      disabled={loadingPacks || onboardingPacks.length === 0}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-neutral-400">Message (optional)</label>
+                    <Input
+                      value={onboardingMessage}
+                      onChange={(e) => setOnboardingMessage(e.target.value)}
+                      placeholder="e.g. Please complete before your first shift"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* PIN Code */}

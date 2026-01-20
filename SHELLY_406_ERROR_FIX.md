@@ -125,3 +125,12 @@ The code now has a fallback that uses the API route (`/api/profile/get`) when RL
 2. **Have Shelly log out and log back in**
 3. **Check browser console** for 406 errors
 4. **If still getting errors**, check the verification queries above
+
+
+
+
+
+
+
+
+

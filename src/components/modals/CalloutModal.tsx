@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { useToast } from '@/components/ui/ToastProvider';
 import { supabase } from '@/lib/supabase';
@@ -1823,7 +1823,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               )}
               <div className="flex justify-between">
                 <span className="text-neutral-400">Priority:</span>
-                <span className="text-white font-medium text-red-400">Urgent</span>
+                <span className="font-medium text-red-400">Urgent</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-400">Contractor:</span>

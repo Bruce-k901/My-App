@@ -24,7 +24,7 @@ export default function PricingPage() {
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 px-2 sm:px-4">
               Keep your sites compliant, your teams organised, and your fridges under control. Try
-              Checkly free for 14 days — no credit card needed.
+              Opsly free for 14 days — no credit card needed.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 sm:px-4 mb-4 sm:mb-0">
               <Link href="/signup">
@@ -426,7 +426,7 @@ export default function PricingPage() {
                       </div>
                       <div className="bg-white/8 rounded-lg p-3 border border-white/20">
                         <p className="text-xs sm:text-sm font-semibold text-white mb-1">3. Link</p>
-                        <p className="text-xs text-gray-300">Connect tags to assets in Checkly</p>
+                        <p className="text-xs text-gray-300">Connect tags to assets in Opsly</p>
                       </div>
                       <div className="bg-white/8 rounded-lg p-3 border border-white/20">
                         <p className="text-xs sm:text-sm font-semibold text-white mb-1">4. Scan</p>
@@ -685,7 +685,7 @@ export default function PricingPage() {
             <div className="rounded-2xl bg-white/5 backdrop-blur-md p-6 border border-white/10">
               <h4 className="text-lg font-semibold text-magenta-400 mb-2">Personalized Onboarding</h4>
               <p className="text-gray-400 mb-3">
-                Checkly team handles your complete onboarding, including site setup, template configuration, and staff training.
+                Opsly team handles your complete onboarding, including site setup, template configuration, and staff training.
               </p>
               <p className="text-xl font-bold text-white">£200</p>
               <p className="text-sm text-gray-400">per site (one-time)</p>
@@ -709,7 +709,7 @@ export default function PricingPage() {
               Ready to take your operation digital?
             </h2>
             <p className="text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto px-2 sm:px-4 text-sm sm:text-base">
-              Start with a free 14-day trial or speak to our team about rolling Checkly out across your
+              Start with a free 14-day trial or speak to our team about rolling Opsly out across your
               group.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 sm:px-4">

@@ -83,3 +83,15 @@ useEffect(() => {
 - ✅ Responsive behavior works correctly
 - ✅ Time updates smoothly every second
 - ✅ No console warnings
+
+
+
+
+
+
+
+
+
+
+
+

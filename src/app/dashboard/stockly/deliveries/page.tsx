@@ -145,11 +145,11 @@ export default function DeliveriesPage() {
 
   function getStatusBadge(status: string) {
     const styles = {
-      draft: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-      pending_review: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      confirmed: 'bg-green-500/20 text-green-400 border-green-500/30',
-      disputed: 'bg-red-500/20 text-red-400 border-red-500/30',
-      cancelled: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+      draft: 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
+      pending_review: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30',
+      confirmed: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
+      disputed: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
+      cancelled: 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
     };
 
     const labels = {
@@ -210,55 +210,57 @@ export default function DeliveriesPage() {
 
   if (loading && deliveries.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading deliveries...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600 dark:text-white">Loading deliveries...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Deliveries</h1>
-              <p className="text-slate-400 text-sm">Manage delivery receipts and invoices</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+                <Calendar className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                Deliveries
+              </h1>
+              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
+                Manage delivery receipts and invoices
+              </p>
             </div>
           </div>
           <div className="flex gap-3">
-            <Button
+            <button
               onClick={() => setIsManualModalOpen(true)}
-              variant="outline"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
             >
-              <Plus size={18} />
+              <Plus className="w-5 h-5" />
               Add Delivery
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => setIsUploadModalOpen(true)}
-              variant="secondary"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
             >
-              <Plus size={18} />
+              <Plus className="w-5 h-5" />
               Upload Invoice
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={18} />
             <Input
               type="text"
               placeholder="Search invoices..."
@@ -295,78 +297,82 @@ export default function DeliveriesPage() {
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
+          </div>
         </div>
 
         {/* Deliveries Table */}
         {filteredDeliveries.length === 0 ? (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-12 text-center">
-            <FileText className="mx-auto text-slate-400 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-white mb-2">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+            <FileText className="mx-auto text-gray-300 dark:text-white/20 mb-4" size={48} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
                 ? 'No deliveries found'
                 : 'No deliveries yet'}
             </h3>
-            <p className="text-slate-400 mb-6">
+            <p className="text-gray-600 dark:text-white/60 mb-6">
               {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
                 ? 'Try adjusting your filters'
                 : 'Get started by uploading your first invoice'}
             </p>
             {!searchTerm && statusFilter === 'all' && supplierFilter === 'all' && !startDate && !endDate && (
-              <Button onClick={() => setIsUploadModalOpen(true)} variant="secondary">
-                <Plus size={18} className="mr-2" />
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              >
+                <Plus className="w-4 h-4" />
                 Upload Invoice
-              </Button>
+              </button>
             )}
           </div>
         ) : (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/[0.05] border-b border-neutral-800">
+                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Supplier
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Invoice #
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Items
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-800">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
                   {filteredDeliveries.map((delivery) => (
                     <tr
                       key={delivery.id}
-                      className="hover:bg-white/[0.05] transition-colors cursor-pointer"
+                      className="hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors cursor-pointer"
                       onClick={() => router.push(`/dashboard/stockly/deliveries/${delivery.id}`)}
                     >
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {formatDate(delivery.delivery_date)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {delivery.supplier?.name || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-300">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white/80">
                         {delivery.invoice_number || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-300">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white/80">
                         {delivery.lines?.[0]?.count || 0} items
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-medium">
                         {formatCurrency(delivery.total)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -378,7 +384,7 @@ export default function DeliveriesPage() {
                             e.stopPropagation();
                             router.push(`/dashboard/stockly/deliveries/${delivery.id}`);
                           }}
-                          className="text-[#EC4899] hover:text-[#EC4899]/80 transition-colors"
+                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                         >
                           <Eye size={18} />
                         </button>

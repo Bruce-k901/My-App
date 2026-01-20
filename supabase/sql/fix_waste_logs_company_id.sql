@@ -61,3 +61,12 @@ WHERE table_schema = 'public'
 AND table_name = 'waste_logs' 
 AND column_name = 'company_id';
 
+
+
+
+
+
+
+
+
+

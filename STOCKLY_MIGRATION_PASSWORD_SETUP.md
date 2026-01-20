@@ -94,3 +94,12 @@ supabase db push --include-all
 ```
 
 The migration should proceed without getting stuck on "Initialising login role..."
+
+
+
+
+
+
+
+
+

@@ -512,7 +512,7 @@ export default function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Platform Overview</h1>
-          <p className="text-white/60">Monitor all Checkly customers and platform health</p>
+          <p className="text-white/60">Monitor all Opsly customers and platform health</p>
           {lastFetch && (
             <p className="text-xs text-white/40 mt-1">
               Last updated: {lastFetch.toLocaleTimeString()}

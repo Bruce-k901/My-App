@@ -212,9 +212,22 @@ Deno.serve(async (req) => {
     // Generates tasks for PPMs due TODAY.
 
     try {
+      // Query ppm_schedule and join with assets to filter archived assets
       const { data: ppmTasks, error: ppmError } = await supabase
         .from("ppm_schedule")
-        .select("id, asset_id, next_service_date, status")
+        .select(`
+          id, 
+          asset_id, 
+          next_service_date, 
+          status,
+          assets!inner (
+            id,
+            name,
+            site_id,
+            company_id,
+            archived
+          )
+        `)
         .eq("next_service_date", todayString)
         .eq("status", "upcoming"); // Only upcoming tasks
 
@@ -228,18 +241,21 @@ Deno.serve(async (req) => {
           .eq("slug", "ppm-service-generic")
           .single();
 
-        // Need asset details - exclude archived assets
-        const assetIds = ppmTasks.map((t) => t.asset_id);
-        const { data: assets } = await supabase
-          .from("assets")
-          .select("id, name, site_id, company_id, archived")
-          .in("id", assetIds)
-          .eq("archived", false); // Exclude archived assets
+        // Filter out archived assets - extract assets from joined data and filter
+        const assets = ppmTasks
+          .map((t: any) => t.assets)
+          .filter((a: any) => a && !a.archived);
+        
+        // Filter ppmTasks to only include those with non-archived assets
+        const filteredPpmTasks = ppmTasks.filter((ppm: any) => {
+          const asset = ppm.assets;
+          return asset && !asset.archived;
+        });
 
-        const assetMap = new Map(assets?.map((a) => [a.id, a]));
+        const assetMap = new Map(assets.map((a: any) => [a.id, a]));
 
         // Get site GM assignments for PPM tasks
-        const ppmSiteIds = [...new Set(assets?.map((a) => a.site_id))];
+        const ppmSiteIds = [...new Set(assets.map((a: any) => a.site_id))];
         const { data: ppmSites } = await supabase
           .from("sites")
           .select("id, gm_user_id")
@@ -248,10 +264,12 @@ Deno.serve(async (req) => {
           ppmSites?.map((s) => [s.id, s.gm_user_id]),
         );
 
-        for (const ppm of ppmTasks) {
-          const asset = assetMap.get(ppm.asset_id);
-          // Skip if asset not found or is archived
-          if (!asset || asset.archived) continue;
+        // Process only filtered PPM tasks (non-archived assets)
+        for (const ppm of filteredPpmTasks) {
+          // Asset is now nested in the ppm object from the join
+          const asset = (ppm as any).assets;
+          // Skip if asset not found (shouldn't happen due to filter, but double-check)
+          if (!asset) continue;
 
           // Get site GM for assignment
           const assignedToUserId = ppmSiteGmMap.get(asset.site_id) || null;

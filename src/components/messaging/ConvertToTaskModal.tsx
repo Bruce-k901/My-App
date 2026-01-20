@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckSquare, X, Calendar } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -25,9 +25,10 @@ export default function ConvertToTaskModal({
 }: ConvertToTaskModalProps) {
   const { companyId, siteId: userSiteId, userId } = useAppContext();
   const [loading, setLoading] = useState(false);
+  const [sites, setSites] = useState<Array<{ id: string; name: string | null }>>([]);
   const [taskData, setTaskData] = useState({
-    name: message.content.substring(0, 100), // First 100 chars as name
-    notes: message.content,
+    title: (message.content || '').substring(0, 100), // First 100 chars as title
+    description: message.content || '',
     assigned_to: '',
     due_date: '',
     priority: 'medium' as 'low' | 'medium' | 'high',
@@ -35,9 +36,42 @@ export default function ConvertToTaskModal({
     asset_id: conversationContext?.asset_id || ''
   });
 
+  // Fetch sites for the company
+  useEffect(() => {
+    const fetchSites = async () => {
+      if (!companyId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('sites')
+          .select('id, name')
+          .eq('company_id', companyId)
+          .order('name');
+        
+        if (error) throw error;
+        setSites(data || []);
+        
+        // If no site_id is set and we have sites, set the first one as default
+        if ((!conversationContext?.site_id && !userSiteId) && data && data.length > 0) {
+          setTaskData(prev => {
+            // Only update if site_id is still empty
+            if (!prev.site_id) {
+              return { ...prev, site_id: data[0].id };
+            }
+            return prev;
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching sites:', error);
+      }
+    };
+    
+    fetchSites();
+  }, [companyId, conversationContext?.site_id, userSiteId]);
+
   const handleCreate = async () => {
-    if (!taskData.name.trim()) {
-      toast.error('Please enter a task name');
+    if (!taskData.title?.trim()) {
+      toast.error('Please enter a task title');
       return;
     }
 
@@ -54,19 +88,31 @@ export default function ConvertToTaskModal({
     setLoading(true);
     try {
       // 1. Create the task in the tasks table
+      const taskInsert: any = {
+        title: taskData.title,
+        description: taskData.description,
+        due_date: taskData.due_date || new Date().toISOString().split('T')[0],
+        status: 'todo',
+        company_id: companyId,
+        site_id: taskData.site_id,
+        created_by: userId,
+        created_from_message_id: message.id,
+      };
+
+      // Only add optional fields if they have values
+      if (taskData.assigned_to && taskData.assigned_to.trim() !== '') {
+        taskInsert.assigned_to = taskData.assigned_to;
+      }
+      if (taskData.asset_id && taskData.asset_id.trim() !== '') {
+        taskInsert.linked_asset_id = taskData.asset_id;
+      }
+      if (taskData.priority) {
+        taskInsert.priority = taskData.priority;
+      }
+
       const { data: task, error: taskError } = await supabase
         .from('tasks')
-        .insert({
-          name: taskData.name,
-          notes: taskData.notes,
-          assigned_to: taskData.assigned_to || null,
-          due_date: taskData.due_date || new Date().toISOString().split('T')[0],
-          status: 'pending',
-          company_id: companyId,
-          site_id: taskData.site_id,
-          linked_asset_id: taskData.asset_id || null,
-          created_at: new Date().toISOString(),
-        })
+        .insert(taskInsert)
         .select()
         .single();
 
@@ -92,24 +138,25 @@ export default function ConvertToTaskModal({
       // 3. Add a system message to the conversation
       if (userId) {
         const { data: { user } } = await supabase.auth.getUser();
+        const senderName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'System';
         await supabase.from('messaging_messages').insert({
           channel_id: message.channel_id,
-          sender_id: userId,
-          sender_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'System',
-          content: `Created task: "${taskData.name}"`,
-          message_type: 'system',
-          is_system: true,
-          attachments: [],
+          sender_profile_id: userId,
+          content: `Created task: "${taskData.title}"`,
+          message_type: 'text',
           metadata: {
             type: 'task_created',
             task_id: task.id,
-            original_message_id: message.id
+            original_message_id: message.id,
+            sender_name: senderName,
+            sender_email: user?.email,
           }
         });
       }
 
       toast.success('Task created successfully');
       onSuccess(task.id);
+      onClose();
     } catch (error: any) {
       console.error('Error creating task:', error);
       toast.error(error?.message || 'Failed to create task. Please try again.');
@@ -148,33 +195,62 @@ export default function ConvertToTaskModal({
             <p className="text-sm text-white/80 line-clamp-3">{message.content}</p>
           </div>
 
-          {/* Task Name */}
+          {/* Task Title */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
-              Task Name *
+              Task Title *
             </label>
             <input
               type="text"
-              value={taskData.name}
-              onChange={(e) => setTaskData({ ...taskData, name: e.target.value })}
+              value={taskData.title}
+              onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
               className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#EC4899] transition-colors"
-              placeholder="Enter task name..."
+              placeholder="Enter task title..."
               maxLength={200}
             />
           </div>
 
-          {/* Task Notes */}
+          {/* Task Description */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
-              Notes
+              Description
             </label>
             <textarea
-              value={taskData.notes}
-              onChange={(e) => setTaskData({ ...taskData, notes: e.target.value })}
+              value={taskData.description}
+              onChange={(e) => setTaskData({ ...taskData, description: e.target.value })}
               rows={4}
               className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#EC4899] transition-colors resize-none"
               placeholder="Add more details..."
             />
+          </div>
+
+          {/* Site Selection */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Site *
+            </label>
+            <select
+              value={taskData.site_id}
+              onChange={(e) => setTaskData({ ...taskData, site_id: e.target.value })}
+              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899] transition-colors appearance-none cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 0.75rem center',
+                paddingRight: '2.5rem',
+              }}
+              required
+            >
+              <option value="" className="bg-[#0B0D13] text-white">Select a site...</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id} className="bg-[#0B0D13] text-white">
+                  {site.name || 'Unnamed Site'}
+                </option>
+              ))}
+            </select>
+            {sites.length === 0 && (
+              <p className="text-xs text-white/50 mt-1">No sites available. Please create a site first.</p>
+            )}
           </div>
 
           {/* Due Date */}
@@ -203,7 +279,7 @@ export default function ConvertToTaskModal({
           </button>
           <button
             onClick={handleCreate}
-            disabled={loading || !taskData.name.trim()}
+            disabled={loading || !taskData.title.trim() || !taskData.site_id}
             className="px-6 py-2.5 bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg font-medium hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Create Task'}

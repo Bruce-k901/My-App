@@ -4,6 +4,7 @@
 -- This file seeds sample Risk Assessments based on the General and COSHH templates
 -- Uses the first company_id from the companies table automatically
 -- Works whether or not version_number columns exist
+-- Note: This migration will be skipped if required tables don't exist yet
 
 DO $$
 DECLARE
@@ -15,33 +16,42 @@ DECLARE
     has_version_columns BOOLEAN := FALSE;
     insert_sql TEXT;
 BEGIN
-    -- Get the first company_id
-    SELECT id INTO company_uuid FROM companies LIMIT 1;
-    
-    IF company_uuid IS NULL THEN
-        RAISE EXCEPTION 'No company found in companies table. Please create a company first.';
-    END IF;
-    
-    -- Get the first site_id (optional)
-    SELECT id INTO site_uuid FROM sites WHERE company_id = company_uuid LIMIT 1;
-    
-    -- Note: created_by references auth.users(id), not profiles(id)
-    -- For seed data, we'll set created_by to NULL since we don't have auth.users context
-    assessor_uuid := NULL;
-    
-    -- Check if version_number column exists
-    SELECT EXISTS (
-        SELECT 1 
-        FROM information_schema.columns 
-        WHERE table_schema = 'public' 
-        AND table_name = 'risk_assessments' 
-        AND column_name = 'version_number'
-    ) INTO has_version_columns;
-    
-    RAISE NOTICE 'Using company_id: %', company_uuid;
-    RAISE NOTICE 'Using site_id: %', site_uuid;
-    RAISE NOTICE 'created_by will be NULL (seed data)';
-    RAISE NOTICE 'Version columns exist: %', has_version_columns;
+    -- Only proceed if required tables exist
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies')
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'risk_assessments') THEN
+
+        -- Get the first company_id
+        SELECT id INTO company_uuid FROM companies LIMIT 1;
+        
+        IF company_uuid IS NULL THEN
+            RAISE NOTICE '⚠️ No company found in companies table - skipping risk assessment seed data';
+            RETURN;
+        END IF;
+        
+        -- Get the first site_id (optional)
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+            SELECT id INTO site_uuid FROM sites WHERE company_id = company_uuid LIMIT 1;
+        ELSE
+            site_uuid := NULL;
+        END IF;
+        
+        -- Note: created_by references auth.users(id), not profiles(id)
+        -- For seed data, we'll set created_by to NULL since we don't have auth.users context
+        assessor_uuid := NULL;
+        
+        -- Check if version_number column exists
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_schema = 'public' 
+            AND table_name = 'risk_assessments' 
+            AND column_name = 'version_number'
+        ) INTO has_version_columns;
+        
+        RAISE NOTICE 'Using company_id: %', company_uuid;
+        RAISE NOTICE 'Using site_id: %', site_uuid;
+        RAISE NOTICE 'created_by will be NULL (seed data)';
+        RAISE NOTICE 'Version columns exist: %', has_version_columns;
     
     -- ============================================
     -- GENERAL RISK ASSESSMENT SEED DATA
@@ -255,10 +265,14 @@ BEGIN
         END IF;
     END IF;
     
-    RAISE NOTICE 'Risk Assessment seed data inserted successfully';
+        RAISE NOTICE 'Risk Assessment seed data inserted successfully';
+        
+    ELSE
+        RAISE NOTICE '⚠️ Required tables (companies, risk_assessments) do not exist yet - skipping risk assessment seed data';
+    END IF;
     
 EXCEPTION
     WHEN OTHERS THEN
         RAISE NOTICE 'Error seeding Risk Assessments: %', SQLERRM;
-        RAISE;
+        -- Don't re-raise, just log the error
 END $$;

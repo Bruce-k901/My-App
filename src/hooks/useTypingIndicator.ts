@@ -36,35 +36,49 @@ export function useTypingIndicator({
     if (isTyping) {
       isTypingRef.current = true;
 
-      // Update typing indicator
-      await supabase
-        .from("typing_indicators")
-        .upsert({
-          channel_id: conversationId,
-          user_id: user.id,
-          is_typing: true,
-          updated_at: new Date().toISOString(),
-        });
+      // Update typing indicator (table uses profile_id)
+      // Wrap in try-catch to suppress errors (typing indicators are non-critical)
+      try {
+        await supabase
+          .from("typing_indicators")
+          .upsert({
+            channel_id: conversationId,
+            profile_id: user.id,
+            is_typing: true,
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'channel_id,profile_id'
+          });
+      } catch (error) {
+        // Silently ignore typing indicator errors (non-critical feature)
+      }
 
       // Auto-clear after debounce period
       typingTimeoutRef.current = setTimeout(async () => {
-        await supabase
-          .from("typing_indicators")
-          .delete()
-          .eq("channel_id", conversationId)
-          .eq("user_id", user.id);
-
+        try {
+          await supabase
+            .from("typing_indicators")
+            .delete()
+            .eq("channel_id", conversationId)
+            .eq("profile_id", user.id);
+        } catch (error) {
+          // Silently ignore
+        }
         isTypingRef.current = false;
       }, debounceMs);
     } else {
       isTypingRef.current = false;
 
       // Clear typing indicator immediately
-      await supabase
-        .from("typing_indicators")
-        .delete()
-        .eq("channel_id", conversationId)
-        .eq("user_id", user.id);
+      try {
+        await supabase
+          .from("typing_indicators")
+          .delete()
+          .eq("channel_id", conversationId)
+          .eq("profile_id", user.id);
+      } catch (error) {
+        // Silently ignore
+      }
     }
   }, [conversationId, debounceMs]);
 

@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { Calendar, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
 import { toast } from "sonner";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface TaskItem {
   id: string;
@@ -215,21 +216,16 @@ export default function EnhancedShiftHandover() {
         const todayEndISO = todayEnd.toISOString();
 
         // Query messages where current user is mentioned (check metadata.mentions array)
-        // Join through messaging_channels to filter by company_id
+        // Fetch messages and channels separately to avoid relationship query issues
         const { data: messagesData, error } = await supabase
           .from("messaging_messages")
           .select(`
             id,
             content,
-            sender_id,
+            sender_profile_id,
             channel_id,
             created_at,
-            metadata,
-            messaging_channels:channel_id (
-              name,
-              channel_type,
-              company_id
-            )
+            metadata
           `)
           .gte("created_at", todayStart)
           .lte("created_at", todayEndISO)
@@ -239,26 +235,50 @@ export default function EnhancedShiftHandover() {
 
         if (error) throw error;
 
+        if (!messagesData || messagesData.length === 0) {
+          setMentionedMessages([]);
+          return;
+        }
+
+        // Fetch channels separately to get company_id and filter by company
+        const channelIds = [...new Set(messagesData.map((msg: any) => msg.channel_id).filter(Boolean))];
+        const { data: channelsData } = await supabase
+          .from("messaging_channels")
+          .select("id, name, channel_type, company_id")
+          .in("id", channelIds)
+          .eq("company_id", companyId); // Filter by company_id at query level
+
+        if (!channelsData || channelsData.length === 0) {
+          setMentionedMessages([]);
+          return;
+        }
+
+        // Create channel map for quick lookup
+        const channelsMap = new Map(channelsData.map((ch: any) => [ch.id, ch]));
+
         // Filter messages where user is mentioned AND belong to user's company
-        const mentioned = (messagesData || [])
+        const mentioned = messagesData
           .filter((msg: any) => {
-            // Check if message belongs to user's company
-            if (msg.messaging_channels?.company_id !== companyId) return false;
+            // Check if message belongs to user's company (channel must be in channelsData)
+            if (!channelsMap.has(msg.channel_id)) return false;
             // Check if user is mentioned
             const mentions = msg.metadata?.mentions || [];
             return Array.isArray(mentions) && mentions.includes(userId);
           })
-          .map((msg: any) => ({
-            id: msg.id,
-            content: msg.content,
-            sender_name: msg.metadata?.sender_name || "Unknown",
-            sender_id: msg.sender_id,
-            channel_id: msg.channel_id,
-            conversation_name: msg.messaging_channels?.name || 
-              (msg.messaging_channels?.channel_type === 'direct' ? 'Direct Message' : 'Group Chat'),
-            created_at: msg.created_at,
-            channel_type: msg.messaging_channels?.channel_type,
-          }));
+          .map((msg: any) => {
+            const channel = channelsMap.get(msg.channel_id);
+            return {
+              id: msg.id,
+              content: msg.content,
+              sender_name: msg.metadata?.sender_name || "Unknown",
+              sender_id: msg.sender_profile_id || msg.sender_id, // Backward compatibility
+              channel_id: msg.channel_id,
+              conversation_name: channel?.name || 
+                (channel?.channel_type === 'direct' ? 'Direct Message' : 'Group Chat'),
+              created_at: msg.created_at,
+              channel_type: channel?.channel_type,
+            };
+          });
 
         setMentionedMessages(mentioned);
       } catch (error: any) {
@@ -794,11 +814,10 @@ export default function EnhancedShiftHandover() {
                   onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
                   className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                 />
-                <input
-                  type="time"
+                <TimePicker
                   value={newTask.dueTime}
-                  onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
-                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                  onChange={(value) => setNewTask({ ...newTask, dueTime: value })}
+                  className="w-full"
                 />
               </div>
               <select
@@ -936,11 +955,10 @@ export default function EnhancedShiftHandover() {
                   onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
                   className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                 />
-                <input
-                  type="time"
+                <TimePicker
                   value={newReminder.time}
-                  onChange={(e) => setNewReminder({ ...newReminder, time: e.target.value })}
-                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                  onChange={(value) => setNewReminder({ ...newReminder, time: value })}
+                  className="w-full"
                 />
               </div>
               <select

@@ -133,7 +133,10 @@ function StatusBadge({ status, children }: { status: TrainingStatus; children: R
 }
 
 function TrainingMatrixPageContent() {
-  const { loading: authLoading, companyId, siteId, profile: currentUserProfile } = useAppContext();
+  const { loading: authLoading, companyId, siteId, profile: currentUserProfile, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId;
   const router = useRouter();
   const searchParams = useSearchParams();
   const siteParam = useMemo(() => searchParams?.get("site"), [searchParams]);
@@ -198,13 +201,13 @@ function TrainingMatrixPageContent() {
   }, [siteParam, siteId]);
 
   useEffect(() => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     const fetchSites = async () => {
       const { data, error: sitesError } = await supabase
         .from("sites")
         .select("id,name")
-        .eq("company_id", companyId)
+        .eq("company_id", effectiveCompanyId)
         .order("name");
 
       if (sitesError) {
@@ -216,10 +219,10 @@ function TrainingMatrixPageContent() {
     };
 
     fetchSites();
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   const fetchMatrixData = useCallback(async () => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     setLoading(true);
     setError(null);
@@ -248,7 +251,7 @@ function TrainingMatrixPageContent() {
       let query = supabase
         .from("profiles")
         .select(baseColumns)
-        .eq("company_id", companyId)
+        .eq("company_id", effectiveCompanyId)
         .order("full_name", { ascending: true });
 
       if (selectedSite === "home" && siteId) {
@@ -299,7 +302,7 @@ function TrainingMatrixPageContent() {
     } finally {
       setLoading(false);
     }
-  }, [companyId, selectedSite, siteId]);
+  }, [effectiveCompanyId, selectedSite, siteId]);
 
   useEffect(() => {
     fetchMatrixData();
@@ -693,7 +696,7 @@ function TrainingMatrixPageContent() {
   const handleSaveBooking = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       toast.error("Missing company context");
       return;
     }
@@ -716,7 +719,7 @@ function TrainingMatrixPageContent() {
 
     try {
       const { error: bookingError } = await supabase.from("training_bookings").insert({
-        company_id: companyId,
+        company_id: effectiveCompanyId,
         user_id: bookingForm.userId,
         site_id: resolvedSiteId,
         course: courseName,
@@ -851,7 +854,7 @@ function TrainingMatrixPageContent() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       toast.error("Missing company context");
       event.target.value = "";
       return;
@@ -862,7 +865,7 @@ function TrainingMatrixPageContent() {
     try {
       const fileExt = file.name.split(".").pop();
       const random = Math.random().toString(36).slice(2, 8);
-      const filePath = `${companyId}/training-certificates/${Date.now()}-${random}.${fileExt}`;
+      const filePath = `${effectiveCompanyId}/training-certificates/${Date.now()}-${random}.${fileExt}`;
 
       const uploadToBucket = async (bucket: string) =>
         supabase.storage.from(bucket).upload(filePath, file, {

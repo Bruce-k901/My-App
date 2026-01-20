@@ -13,27 +13,34 @@
 --            after their home site's closing time for the current day
 -- ============================================================================
 
-BEGIN;
+-- Note: This migration will be skipped if required tables don't exist yet
 
--- Enable pg_cron extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+DO $$
+BEGIN
+  -- Only proceed if required tables exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'staff_attendance')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
 
--- ============================================================================
--- Step 1: Create function to auto clock-out users after site closing
--- ============================================================================
+    -- Enable pg_cron extension if not already enabled
+    CREATE EXTENSION IF NOT EXISTS pg_cron;
 
-CREATE OR REPLACE FUNCTION public.auto_clock_out_after_closing()
-RETURNS TABLE(
-  user_id UUID,
-  site_id UUID,
-  clocked_out_at TIMESTAMPTZ,
-  closing_time TIMESTAMPTZ,
-  hours_after_closing DECIMAL
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
+    -- ============================================================================
+    -- Step 1: Create function to auto clock-out users after site closing
+    -- ============================================================================
+
+    CREATE OR REPLACE FUNCTION public.auto_clock_out_after_closing()
+    RETURNS TABLE(
+      user_id UUID,
+      site_id UUID,
+      clocked_out_at TIMESTAMPTZ,
+      closing_time TIMESTAMPTZ,
+      hours_after_closing DECIMAL
+    )
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    SET search_path = public
+    AS $function$
 DECLARE
   v_attendance_record RECORD;
   v_site_record RECORD;
@@ -150,58 +157,61 @@ BEGIN
   
   -- Log summary
   RAISE NOTICE 'Auto clock-out completed: % user(s) clocked out', v_clocked_out_count;
+  
+  RETURN;
 END;
-$$;
+$function$;
 
-COMMENT ON FUNCTION public.auto_clock_out_after_closing() IS 
-'Auto clocks out users who are still clocked in 2+ hours after their home site''s closing time.
+    COMMENT ON FUNCTION public.auto_clock_out_after_closing() IS 
+    'Auto clocks out users who are still clocked in 2+ hours after their home site''s closing time.
 Checks each user''s home site (from profiles.site_id) and uses the operating_schedule to determine
 today''s closing time. If current time is 2+ hours after closing, automatically clocks them out.
 
 Returns a table with details of each user that was auto clocked out.';
 
--- ============================================================================
--- Step 2: Schedule the cron job to run every hour
--- ============================================================================
+    -- ============================================================================
+    -- Step 2: Schedule the cron job to run every hour
+    -- ============================================================================
 
--- Drop existing cron job if it exists (to avoid duplicates)
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'auto-clock-out-after-closing') THEN
-    PERFORM cron.unschedule('auto-clock-out-after-closing');
-  END IF;
-END $$;
+    -- Drop existing cron job if it exists (to avoid duplicates)
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'cron' AND table_name = 'job') THEN
+      IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'auto-clock-out-after-closing') THEN
+        PERFORM cron.unschedule('auto-clock-out-after-closing');
+      END IF;
 
--- Schedule the cron job to run every hour at minute 0
--- Cron expression: minute hour day month dayofweek
--- 0 * * * * = Every hour at minute 0
-SELECT cron.schedule(
-  'auto-clock-out-after-closing',
-  '0 * * * *', -- Every hour at minute 0
-  $$SELECT auto_clock_out_after_closing()$$
-);
+      -- Schedule the cron job to run every hour at minute 0
+      -- Cron expression: minute hour day month dayofweek
+      -- 0 * * * * = Every hour at minute 0
+      PERFORM cron.schedule(
+        'auto-clock-out-after-closing',
+        '0 * * * *', -- Every hour at minute 0
+        $cron$SELECT auto_clock_out_after_closing()$cron$
+      );
 
--- Verify the cron job was created
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'auto-clock-out-after-closing') THEN
-    RAISE NOTICE '✅ Cron job "auto-clock-out-after-closing" scheduled successfully to run every hour';
+      -- Verify the cron job was created
+      IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'auto-clock-out-after-closing') THEN
+        RAISE NOTICE '✅ Cron job "auto-clock-out-after-closing" scheduled successfully to run every hour';
+      ELSE
+        RAISE NOTICE '⚠️ Cron job creation may have failed. Please check manually.';
+      END IF;
+    END IF;
+
+    -- ============================================================================
+    -- Step 3: Grant permissions
+    -- ============================================================================
+
+    -- Grant execute permission to service_role (for cron)
+    GRANT EXECUTE ON FUNCTION public.auto_clock_out_after_closing() TO service_role;
+
+    -- Grant execute permission to authenticated users (for manual testing)
+    GRANT EXECUTE ON FUNCTION public.auto_clock_out_after_closing() TO authenticated;
+
+    RAISE NOTICE 'Created auto_clock_out_after_closing function and scheduled cron job';
+
   ELSE
-    RAISE WARNING '⚠️ Cron job creation may have failed. Please check manually.';
+    RAISE NOTICE '⚠️ Required tables (staff_attendance, profiles, sites) do not exist yet - skipping auto clock-out setup';
   END IF;
 END $$;
-
--- ============================================================================
--- Step 3: Grant permissions
--- ============================================================================
-
--- Grant execute permission to service_role (for cron)
-GRANT EXECUTE ON FUNCTION public.auto_clock_out_after_closing() TO service_role;
-
--- Grant execute permission to authenticated users (for manual testing)
-GRANT EXECUTE ON FUNCTION public.auto_clock_out_after_closing() TO authenticated;
-
-COMMIT;
 
 -- ============================================================================
 -- VERIFICATION

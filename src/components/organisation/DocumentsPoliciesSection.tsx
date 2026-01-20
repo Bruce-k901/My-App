@@ -18,18 +18,25 @@ type GlobalDoc = {
   version?: string | null;
   expiry_date?: string | null;
   notes?: string | null;
-  file_path: string;
+  file_path: string | null;
   created_at?: string;
   is_archived?: boolean;
+  is_placeholder?: boolean | null;
+  doc_key?: string | null;
 };
 
 export default function DocumentsPoliciesSection() {
-  const { companyId } = useAppContext();
+  const { companyId, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId;
+  
   const router = useRouter();
   const searchParams = useSearchParams();
   const documentIdParam = searchParams?.get('document_id');
   const showArchived = searchParams?.get('archived') === 'true';
   const [open, setOpen] = useState(false);
+  const [replaceDoc, setReplaceDoc] = useState<GlobalDoc | null>(null);
   const [docs, setDocs] = useState<GlobalDoc[]>([]);
   const [latestDoc, setLatestDoc] = useState<GlobalDoc | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,8 +47,14 @@ export default function DocumentsPoliciesSection() {
   const [selectedDocument, setSelectedDocument] = useState<GlobalDoc | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
+  const isPlaceholderFilePath = (filePath: unknown): boolean => {
+    if (!filePath) return true;
+    if (typeof filePath !== "string") return true;
+    return filePath.includes("/_onboarding_placeholders/");
+  };
+
   const load = useCallback(async () => {
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       setLoading(false);
       setDocs([]);
       setLatestDoc(null);
@@ -53,10 +66,15 @@ export default function DocumentsPoliciesSection() {
     try {
       // Build query - handle is_archived column gracefully
       // First try with is_archived filter, fallback to without if column doesn't exist
+      const baseSelect = "id,category,name,version,expiry_date,notes,file_path,created_at";
+      const selectWithAll = `${baseSelect},is_archived,is_placeholder,doc_key`;
+      const selectNoArchive = `${baseSelect},is_placeholder,doc_key`;
+      const selectLegacy = baseSelect;
+
       let query = supabase
         .from("global_documents")
-        .select("id,category,name,version,expiry_date,notes,file_path,created_at,is_archived")
-        .eq("company_id", companyId);
+        .select(selectWithAll)
+        .eq("company_id", effectiveCompanyId);
       
       // Try to filter by is_archived
       if (showArchived) {
@@ -75,13 +93,26 @@ export default function DocumentsPoliciesSection() {
         console.log('is_archived column not found, querying without filter');
         query = supabase
           .from("global_documents")
-          .select("id,category,name,version,expiry_date,notes,file_path,created_at")
-          .eq("company_id", companyId)
+          .select(selectNoArchive)
+          .eq("company_id", effectiveCompanyId)
           .order("created_at", { ascending: false });
         
         const retryResult = await query;
         data = retryResult.data;
         error = retryResult.error;
+      }
+
+      // If error is about newer columns not existing (is_placeholder/doc_key), retry legacy select
+      if (error && (String((error as any)?.message || '').includes('is_placeholder') || String((error as any)?.message || '').includes('doc_key') || (error as any)?.code === 'PGRST204')) {
+        query = supabase
+          .from("global_documents")
+          .select(selectLegacy)
+          .eq("company_id", effectiveCompanyId)
+          .order("created_at", { ascending: false });
+
+        const retryLegacy = await query;
+        data = retryLegacy.data;
+        error = retryLegacy.error;
       }
         
       if (error) {
@@ -110,7 +141,7 @@ export default function DocumentsPoliciesSection() {
     } finally {
       setLoading(false);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
     // Load (or reload) whenever company context changes
@@ -119,7 +150,7 @@ export default function DocumentsPoliciesSection() {
 
   // Live updates: re-fetch when global_documents changes for this company
   useEffect(() => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
     
     // Debounce realtime updates to prevent infinite loops
     let debounceTimeout: NodeJS.Timeout;
@@ -134,7 +165,7 @@ export default function DocumentsPoliciesSection() {
       .channel("global_documents_updates")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "global_documents", filter: `company_id=eq.${companyId}` },
+        { event: "*", schema: "public", table: "global_documents", filter: `company_id=eq.${effectiveCompanyId}` },
         debouncedLoad
       )
       .subscribe();
@@ -143,7 +174,7 @@ export default function DocumentsPoliciesSection() {
       clearTimeout(debounceTimeout);
       supabase.removeChannel(channel);
     };
-  }, [companyId, load]);
+  }, [effectiveCompanyId, load]);
   // Fade the highlight after 20 seconds
   useEffect(() => {
     if (!highlightId) return;
@@ -174,10 +205,11 @@ export default function DocumentsPoliciesSection() {
     }
   }, [documentIdParam, docs]);
 
-  const getPublicUrl = (path: string) => {
-    // Paths are stored company-scoped: `${companyId}/folder/filename`
+  const getPublicUrl = (path: string | null) => {
+    // Paths are stored company-scoped: `${effectiveCompanyId}/folder/filename`
+    if (!path || isPlaceholderFilePath(path)) return null;
     const { data } = supabase.storage.from("global_docs").getPublicUrl(path);
-    return data.publicUrl;
+    return data.publicUrl || null;
   };
 
   const handleArchive = async (doc: GlobalDoc) => {
@@ -316,7 +348,7 @@ export default function DocumentsPoliciesSection() {
             </Button>
           )}
           {!showArchived && (
-            <Button onClick={() => setOpen(true)}>Upload Document</Button>
+            <Button onClick={() => { setReplaceDoc(null); setOpen(true); }}>Upload Document</Button>
           )}
         </div>
       </div>
@@ -389,19 +421,40 @@ export default function DocumentsPoliciesSection() {
                       {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
                     </div>
                     {latestDoc.notes && <div className="text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
+                    {(!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path) || latestDoc.is_placeholder) && (
+                      <div className="text-amber-300 text-xs mt-2">
+                        Placeholder document (no file uploaded yet)
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedDocument(latestDoc);
-                        setShowReviewModal(true);
-                      }}
-                      className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
-                      title="Edit document - update expiry date or upload new version"
-                    >
-                      <Edit className="w-5 h-5" />
-                    </button>
+                    {(!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path) || latestDoc.is_placeholder) && !showArchived ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReplaceDoc(latestDoc);
+                          setOpen(true);
+                        }}
+                        className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                        title="Upload file for this placeholder document"
+                      >
+                        <FileText className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)) return;
+                          setSelectedDocument(latestDoc);
+                          setShowReviewModal(true);
+                        }}
+                        className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                        title="Edit document - update expiry date or upload new version"
+                        disabled={!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)}
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+                    )}
                     {!showArchived && (
                       <button
                         onClick={(e) => {
@@ -455,9 +508,9 @@ export default function DocumentsPoliciesSection() {
           
           <ul className="space-y-2">
             {docs.filter((d) => d.id !== latestDoc?.id).map((d) => {
-              const url = getPublicUrl(d.file_path);
               const isNew = d.id === highlightId;
               const isEHORequired = expectedDocuments.find(ed => ed.name === d.name)
+              const needsUpload = !d.file_path || isPlaceholderFilePath(d.file_path) || d.is_placeholder
               
               return (
                 <li
@@ -478,6 +531,11 @@ export default function DocumentsPoliciesSection() {
                               {isEHORequired && (
                                 <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">EHO</span>
                               )}
+                              {needsUpload && (
+                                <span className="text-xs px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded">
+                                  Placeholder
+                                </span>
+                              )}
                             </div>
                             <div className="text-slate-400 text-sm">
                               {d.category} · {d.version || "v1"}
@@ -487,14 +545,29 @@ export default function DocumentsPoliciesSection() {
                             {d.notes && <div className="text-slate-400 text-sm mt-1">{d.notes}</div>}
                           </div>
                           <div className="flex items-center gap-3">
+                            {!showArchived && needsUpload && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setReplaceDoc(d);
+                                  setOpen(true);
+                                }}
+                                className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                                title="Upload file for this placeholder document"
+                              >
+                                <FileText className="w-5 h-5" />
+                              </button>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
+                                if (!d.file_path || isPlaceholderFilePath(d.file_path)) return;
                                 setSelectedDocument(d);
                                 setShowReviewModal(true);
                               }}
                               className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
                               title="Edit document - update expiry date or upload new version"
+                              disabled={!d.file_path || isPlaceholderFilePath(d.file_path)}
                             >
                               <Edit className="w-5 h-5" />
                             </button>
@@ -538,9 +611,14 @@ export default function DocumentsPoliciesSection() {
       {open && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <UploadGlobalDocModal
-            onClose={() => setOpen(false)}
+            existingDocumentId={replaceDoc?.id}
+            initialCategory={replaceDoc?.category}
+            initialName={replaceDoc?.name}
+            initialNotes={replaceDoc?.notes || ''}
+            onClose={() => { setOpen(false); setReplaceDoc(null); }}
             onSuccess={(newId) => {
               setOpen(false);
+              setReplaceDoc(null);
               setHighlightId(newId || null);
               load();
             }}
@@ -548,7 +626,7 @@ export default function DocumentsPoliciesSection() {
         </div>
       )}
 
-      {selectedDocument && (
+      {selectedDocument && selectedDocument.file_path && !isPlaceholderFilePath(selectedDocument.file_path) && (
         <DocumentReviewModal
           isOpen={showReviewModal}
           onClose={() => {

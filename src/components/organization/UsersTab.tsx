@@ -22,6 +22,7 @@ interface User {
   phone_number: string | null;
   pin_code: string | null;
   last_login: string | null;
+  status?: string | null; // onboarding, active, inactive, on_leave
   // Training certificate fields
   food_safety_level?: number | null;
   food_safety_expiry_date?: string | null;
@@ -41,7 +42,11 @@ interface Site {
 }
 
 export default function UsersTab() {
-  const { companyId, role } = useAppContext();
+  const { companyId, role, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId;
+  
   const [users, setUsers] = useState<User[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +59,7 @@ export default function UsersTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchUsers = useCallback(async () => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     try {
       if (viewArchived) {
@@ -62,7 +67,7 @@ export default function UsersTab() {
         const { data, error } = await supabase
           .from("archived_users")
           .select("id, original_id, full_name, email, app_role, position, site_id, archived_at")
-          .eq("company_id", companyId)
+          .eq("company_id", effectiveCompanyId)
           .order("archived_at", { ascending: false });
 
         if (error) {
@@ -90,13 +95,90 @@ export default function UsersTab() {
         return;
       }
 
-      // First try to fetch with all columns including training certificates
-      // If migration hasn't been run, fall back to base columns
-      let { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
-        .eq("company_id", companyId)
-        .order("full_name");
+      // Use RPC function to bypass RLS and get all company profiles
+      // This function is SECURITY DEFINER and explicitly bypasses RLS
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_company_profiles', {
+        p_company_id: effectiveCompanyId
+      });
+
+      let data: any[] = [];
+      let error: any = null;
+
+      if (rpcError) {
+        console.error("❌ RPC function error:", rpcError);
+        // Fallback to direct query (will only work if RLS policy allows)
+        const fallbackResult = await supabase
+          .from("profiles")
+          .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
+          .eq("company_id", effectiveCompanyId)
+          .order("full_name");
+        
+        data = fallbackResult.data || [];
+        error = fallbackResult.error;
+      } else if (rpcData) {
+        // Map RPC result to expected format
+        // RPC returns: profile_id, full_name, email, phone_number, avatar_url, position_title, department, home_site, status, start_date, app_role, company_id
+        data = rpcData.map((p: any) => ({
+          id: p.profile_id,
+          full_name: p.full_name,
+          email: p.email,
+          app_role: p.app_role,
+          position_title: p.position_title,
+          site_id: p.home_site,
+          home_site: p.home_site,
+          phone_number: p.phone_number,
+          pin_code: null, // Not returned by RPC function
+          last_login: null, // Not returned by RPC function
+          food_safety_level: null,
+          food_safety_expiry_date: null,
+          h_and_s_level: null,
+          h_and_s_expiry_date: null,
+          fire_marshal_trained: false,
+          fire_marshal_expiry_date: null,
+          first_aid_trained: false,
+          first_aid_expiry_date: null,
+          cossh_trained: false,
+          cossh_expiry_date: null,
+        }));
+        
+        // Try to fetch additional fields for current user (pin_code, last_login, training certs)
+        // This will only work for the current user due to RLS
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user?.id) {
+            const { data: ownProfile } = await supabase
+              .from("profiles")
+              .select("id, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
+              .eq("id", user.id)
+              .maybeSingle();
+            
+            // Merge additional fields if found
+            if (ownProfile) {
+              const ownIndex = data.findIndex((u: any) => u.id === ownProfile.id);
+              if (ownIndex >= 0) {
+                data[ownIndex] = {
+                  ...data[ownIndex],
+                  pin_code: ownProfile.pin_code,
+                  last_login: ownProfile.last_login,
+                  food_safety_level: ownProfile.food_safety_level,
+                  food_safety_expiry_date: ownProfile.food_safety_expiry_date,
+                  h_and_s_level: ownProfile.h_and_s_level,
+                  h_and_s_expiry_date: ownProfile.h_and_s_expiry_date,
+                  fire_marshal_trained: ownProfile.fire_marshal_trained,
+                  fire_marshal_expiry_date: ownProfile.fire_marshal_expiry_date,
+                  first_aid_trained: ownProfile.first_aid_trained,
+                  first_aid_expiry_date: ownProfile.first_aid_expiry_date,
+                  cossh_trained: ownProfile.cossh_trained,
+                  cossh_expiry_date: ownProfile.cossh_expiry_date,
+                };
+              }
+            }
+          }
+        } catch (mergeError) {
+          console.warn("Could not merge additional profile fields:", mergeError);
+          // Continue without additional fields
+        }
+      }
 
       // If error suggests missing columns (training certificates), try with base columns only
       if (error && (error.message?.includes('column') || error.code === 'PGRST116' || error.message?.includes('does not exist'))) {
@@ -112,7 +194,7 @@ export default function UsersTab() {
           const baseResult = await supabase
             .from("profiles")
             .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login")
-            .eq("company_id", companyId)
+            .eq("company_id", effectiveCompanyId)
             .order("full_name");
           
           data = baseResult.data;
@@ -158,7 +240,7 @@ export default function UsersTab() {
       }
 
       if (data) {
-        console.log(`✅ Fetched ${data.length} users for company ${companyId}`, {
+        console.log(`✅ Fetched ${data.length} users for company ${effectiveCompanyId}`, {
           userIds: data.map(u => u.id),
           emails: data.map(u => u.email),
         });
@@ -175,16 +257,16 @@ export default function UsersTab() {
       setUsers([]);
       setLoading(false);
     }
-  }, [companyId, viewArchived]);
+  }, [effectiveCompanyId, viewArchived]);
 
   const fetchSites = useCallback(async () => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     try {
       const { data, error } = await supabase
         .from("sites")
         .select("id, name")
-        .eq("company_id", companyId)
+        .eq("company_id", effectiveCompanyId)
         .order("name");
 
       if (error) throw error;
@@ -192,7 +274,7 @@ export default function UsersTab() {
     } catch (error: any) {
       console.error("Failed to fetch sites:", error);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -207,6 +289,23 @@ export default function UsersTab() {
   const handleUserUpdate = async (userId: string, updates: Partial<User>) => {
     try {
       const dbUpdates: any = { ...updates };
+
+      // CRITICAL: Keep site_id and home_site in sync
+      // If home_site is being updated, also update site_id (for org chart)
+      if (dbUpdates.home_site !== undefined) {
+        dbUpdates.site_id = dbUpdates.home_site;
+      }
+      // If site_id is being updated, also update home_site (for consistency)
+      if (dbUpdates.site_id !== undefined && dbUpdates.home_site === undefined) {
+        dbUpdates.home_site = dbUpdates.site_id;
+      }
+      
+      // Handle explicit null values (moving to head office)
+      // This ensures both fields are properly set to null when moving someone to head office
+      if (dbUpdates.site_id === null || dbUpdates.home_site === null) {
+        dbUpdates.site_id = null;
+        dbUpdates.home_site = null;
+      }
 
       // Try to update with all fields
       let { error } = await supabase
@@ -225,7 +324,7 @@ export default function UsersTab() {
         
         if (isTrainingCertError) {
           console.warn("Training certificate columns not found. Saving base fields only.");
-          const baseFields = ['full_name', 'email', 'app_role', 'position_title', 'site_id', 'home_site', 'phone_number', 'pin_code', 'boh_foh'];
+          const baseFields = ['full_name', 'email', 'app_role', 'position_title', 'site_id', 'home_site', 'phone_number', 'pin_code', 'boh_foh', 'status'];
           const filteredUpdates: any = {};
           Object.keys(dbUpdates).forEach(key => {
             if (baseFields.includes(key)) {
@@ -485,7 +584,7 @@ export default function UsersTab() {
 
   const handleImport = async (rows: any[]) => {
     try {
-      if (!companyId) {
+      if (!effectiveCompanyId) {
         alert("Upload failed: Company not loaded yet.");
         return;
       }
@@ -506,7 +605,7 @@ export default function UsersTab() {
       const { data: existingUsers } = await supabase
         .from("profiles")
         .select("email")
-        .eq("company_id", companyId)
+        .eq("company_id", effectiveCompanyId)
         .in("email", emails);
 
       const existingEmails = new Set(
@@ -591,7 +690,7 @@ export default function UsersTab() {
                     const { data, error } = await supabase
                       .from("archived_users")
                       .select("id, original_id, full_name, email, app_role, position, site_id, archived_at")
-                      .eq("company_id", companyId)
+                      .eq("company_id", effectiveCompanyId)
                       .order("archived_at", { ascending: false });
 
                     if (error) {
@@ -619,7 +718,7 @@ export default function UsersTab() {
                     let { data, error } = await supabase
                       .from("profiles")
                       .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
-                      .eq("company_id", companyId)
+                      .eq("company_id", effectiveCompanyId)
                       .order("full_name");
 
                     // Handle training certificate columns fallback
@@ -634,7 +733,7 @@ export default function UsersTab() {
                         const baseResult = await supabase
                           .from("profiles")
                           .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login")
-                          .eq("company_id", companyId)
+                          .eq("company_id", effectiveCompanyId)
                           .order("full_name");
                         
                         data = baseResult.data;
@@ -768,9 +867,19 @@ export default function UsersTab() {
                   }));
                 }}
                 roleOptions={[
-                  { label: "Admin", value: "Admin" },
+                  { label: "Staff", value: "Staff" },
                   { label: "Manager", value: "Manager" },
-                  { label: "Staff", value: "Staff" }
+                  { label: "Admin", value: "Admin" },
+                  { label: "Owner", value: "Owner" },
+                  { label: "CEO", value: "CEO" },
+                  { label: "Managing Director", value: "Managing Director" },
+                  { label: "COO", value: "COO" },
+                  { label: "CFO", value: "CFO" },
+                  { label: "HR Manager", value: "HR Manager" },
+                  { label: "Operations Manager", value: "Operations Manager" },
+                  { label: "Finance Manager", value: "Finance Manager" },
+                  { label: "Regional Manager", value: "Regional Manager" },
+                  { label: "Area Manager", value: "Area Manager" }
                 ]}
                 onRoleChange={(userId: string, role: string) => {
                   setEditForms(prev => ({
@@ -826,7 +935,7 @@ export default function UsersTab() {
         <AddUserModal
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
-          companyId={companyId}
+          companyId={effectiveCompanyId}
           onRefresh={fetchUsers}
         />
       )}

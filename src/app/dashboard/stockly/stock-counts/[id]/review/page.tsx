@@ -1,507 +1,1825 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle2, AlertCircle, RefreshCw, FileDown } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useAppContext } from '@/context/AppContext';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { 
+  ArrowLeft, 
+  Loader2,
+  Search,
+  Package,
+  Box,
+  Coffee,
+  Heart,
+  Save,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Filter,
+  X,
+  Check
+} from 'lucide-react';
 import Select from '@/components/ui/Select';
+import { StockCountItem, LibraryType } from '@/lib/types/stockly';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { getCurrentUserId } from '@/lib/stock-counts';
+import { XCircle, CheckCircle2 } from 'lucide-react';
 
-interface StockItem {
-  id: string;
-  name: string;
-  base_unit?: { code: string; name: string };
-}
+// Map library types to table names and name columns
+const libraryTableMap: Record<string, string> = {
+  ingredients: 'ingredients_library',
+  packaging: 'packaging_library',
+  disposables: 'disposables_library',
+  drinks: 'drinks_library',
+  ppe: 'ppe_library',
+  chemicals: 'chemicals_library',
+  glassware: 'glassware_library',
+  first_aid: 'first_aid_supplies_library',
+  first_aid_supplies: 'first_aid_supplies_library',
+  firstaid: 'first_aid_supplies_library',
+  foh: 'disposables_library',
+  'first_aid_supplies_library': 'first_aid_supplies_library',
+};
 
-interface StockCountLine {
-  id: string;
-  stock_count_section_id: string;
-  stock_item_id: string;
-  storage_area_id: string;
-  expected_quantity: number;
-  expected_value: number;
-  counted_quantity?: number;
-  counted_value?: number;
-  variance_quantity: number;
-  variance_value: number;
-  variance_percent: number;
-  is_counted: boolean;
-  needs_recount: boolean;
-  notes?: string;
-  stock_item?: StockItem;
-}
+const nameColumnMap: Record<string, string> = {
+  ingredients_library: 'ingredient_name',
+  packaging_library: 'item_name',
+  disposables_library: 'item_name',
+  drinks_library: 'item_name',
+  ppe_library: 'item_name',
+  chemicals_library: 'product_name',
+  glassware_library: 'item_name',
+  first_aid_supplies_library: 'item_name',
+};
 
-interface StockCountSection {
-  id: string;
-  storage_area_id: string;
-  storage_area?: { id: string; name: string };
-}
+// Map which columns each library table has (for supplier/pack_size)
+const libraryColumnsMap: Record<string, string[]> = {
+  ingredients_library: ['supplier', 'pack_size'],
+  packaging_library: ['supplier', 'pack_size'],
+  disposables_library: ['supplier', 'pack_size'],
+  chemicals_library: ['supplier', 'pack_size'],
+  ppe_library: ['supplier'], // PPE doesn't have pack_size
+  drinks_library: ['supplier', 'pack_size'],
+  glassware_library: ['supplier', 'pack_size'],
+  first_aid_supplies_library: ['supplier', 'pack_size'],
+};
 
-interface StockCount {
-  id: string;
-  company_id: string;
-  site_id: string;
-  count_number: string;
-  count_date: string;
-  count_type: string;
-  status: string;
-  total_items: number;
-  counted_items: number;
-  variance_count: number;
-  variance_value: number;
-  sections?: StockCountSection[];
-}
+// Helper functions for library names and icons
+const getLibraryIcon = (type: LibraryType) => {
+  switch (type) {
+    case 'ingredients': return Package;
+    case 'packaging': return Box;
+    case 'foh': return Coffee;
+    case 'first_aid': return Heart;
+    default: return Package;
+  }
+};
 
-const FILTER_OPTIONS = [
-  { label: 'All Items', value: 'all' },
-  { label: 'Variances Only', value: 'variances' },
-  { label: 'Positive Variances', value: 'positive' },
-  { label: 'Negative Variances', value: 'negative' },
-];
+const getLibraryName = (type: LibraryType) => {
+  switch (type) {
+    case 'ingredients': return 'Ingredients';
+    case 'packaging': return 'Packaging';
+    case 'foh': return 'FOH Items';
+    case 'first_aid': return 'First Aid';
+    case 'disposables': return 'Disposables';
+    case 'drinks': return 'Drinks';
+    case 'ppe': return 'PPE';
+    case 'chemicals': return 'Chemicals';
+    case 'glassware': return 'Glassware';
+    default: return type;
+  }
+};
 
-export default function StockCountReviewPage() {
-  const router = useRouter();
+export default function ReviewCountItemsPage() {
   const params = useParams();
-  const countId = params.id as string;
-  const { companyId, siteId, userId } = useAppContext();
-
-  const [stockCount, setStockCount] = useState<StockCount | null>(null);
-  const [lines, setLines] = useState<StockCountLine[]>([]);
-  const [filter, setFilter] = useState<string>('variances');
-  const [reviewNotes, setReviewNotes] = useState('');
+  const router = useRouter();
+  const [count, setCount] = useState<any>(null);
+  const [items, setItems] = useState<StockCountItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchScope, setSearchScope] = useState<'all' | 'item' | 'supplier' | 'comments'>('all');
+  const [selectedLibrary, setSelectedLibrary] = useState<LibraryType | 'all'>('all');
+  
+  // Column filters state - enhanced with filter types
+  const [columnFilters, setColumnFilters] = useState<Record<string, { type?: string; value?: string; min?: string; max?: string; selectedValues?: string[] }>>({});
+  
+  // Filter dropdown state (Excel-like)
+  const [openFilterDropdown, setOpenFilterDropdown] = useState<string | null>(null);
+  
+  // Sorting state
+  const [sortConfig, setSortConfig] = useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
+  
+  // Summary table state
+  const [showSummary, setShowSummary] = useState<boolean>(true);
+  
+  // Editing state
+  const [editingValues, setEditingValues] = useState<Record<string, { closingStock?: number; comments?: string; reviewerComment?: string }>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [processing, setProcessing] = useState(false);
+
+  // Scroll synchronization refs for split table (per library)
+  const scrollRefs = useRef<Record<string, { frozen: HTMLDivElement | null; scrollable: HTMLDivElement | null }>>({});
+  const syncingScroll = useRef(false);
 
   useEffect(() => {
-    if (countId && companyId) {
-      fetchStockCount();
-      fetchLines();
+    if (params.id) {
+      fetchData();
     }
-  }, [countId, companyId]);
+  }, [params.id]);
 
-  async function fetchStockCount() {
+
+  const fetchData = async () => {
+    setLoading(true);
+
     try {
-      const { data, error } = await supabase
+      // Fetch count
+      const { data: countData, error: countError } = await supabase
         .from('stock_counts')
-        .select(`
-          *,
-          sections:stock_count_sections(
-            id,
-            storage_area_id,
-            storage_area:storage_areas(id, name)
-          )
-        `)
-        .eq('id', countId)
+        .select('*')
+        .eq('id', params.id)
         .single();
 
-      if (error) throw error;
-      setStockCount(data as StockCount);
-    } catch (error: any) {
-      console.error('Error fetching stock count:', error);
-      toast.error('Failed to load stock count');
-    }
-  }
+      if (countError) throw countError;
+      setCount(countData);
 
-  async function fetchLines() {
-    try {
-      setLoading(true);
+      // Fetch items (reviewer_comment column will be available after migration is applied)
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('stock_count_items')
+        .select('*')
+        .eq('stock_count_id', params.id);
 
-      const sectionIds = stockCount?.sections?.map(s => s.id) || [];
-      if (sectionIds.length === 0) {
-        // Get sections first if not loaded
-        const { data: sections } = await supabase
-          .from('stock_count_sections')
-          .select('id')
-          .eq('stock_count_id', countId);
+      if (itemsError) throw itemsError;
 
-        if (sections) {
-          sectionIds.push(...sections.map(s => s.id));
+      // Fetch item names from library tables
+      const itemsWithNames: StockCountItem[] = [];
+      
+      if (itemsData) {
+        // Group items by library type
+        const itemsByLibrary: Record<string, typeof itemsData> = {};
+        itemsData.forEach((item: any) => {
+          const libType = item.library_type;
+          if (!itemsByLibrary[libType]) {
+            itemsByLibrary[libType] = [];
+          }
+          itemsByLibrary[libType].push(item);
+        });
+
+        // Fetch names and supplier for each library type
+        for (const [libType, libItems] of Object.entries(itemsByLibrary)) {
+          const tableName = libraryTableMap[libType];
+          const nameColumn = nameColumnMap[tableName] || 'item_name';
+          
+          if (!tableName || libItems.length === 0) continue;
+
+          const itemIds = libItems.map((item: any) => item.ingredient_id);
+          
+          try {
+            // Fetch name, supplier, and pack_size for review report
+            const additionalColumns = libraryColumnsMap[tableName] || ['supplier', 'pack_size'];
+            const selectColumns = ['id', nameColumn, ...additionalColumns].join(', ');
+            const { data: libraryItems, error: fetchError } = await supabase
+              .from(tableName)
+              .select(selectColumns)
+              .in('id', itemIds);
+
+            if (fetchError) {
+              console.warn(`Error fetching ${tableName} items with supplier:`, fetchError);
+              // Fallback: try without supplier/pack_size
+              const { data: fallbackItems } = await supabase
+                .from(tableName)
+                .select(`id, ${nameColumn}`)
+                .in('id', itemIds);
+              
+              if (fallbackItems) {
+                // Create map with just names
+                const libraryItemMap = new Map(
+                  fallbackItems.map((libItem: any) => [
+                    libItem.id,
+                    {
+                      name: libItem[nameColumn] || 'Unknown',
+                      supplier: null,
+                      pack_size: null,
+                    }
+                  ])
+                );
+
+                libItems.forEach((item: any) => {
+                  const libItemData = libraryItemMap.get(item.ingredient_id) || {
+                    name: 'Unknown',
+                    supplier: null,
+                    pack_size: null,
+                  };
+                  itemsWithNames.push({
+                    ...item,
+                    ingredient: {
+                      id: item.ingredient_id,
+                      name: libItemData.name,
+                      ingredient_name: libItemData.name,
+                      supplier: libItemData.supplier,
+                      pack_size: libItemData.pack_size,
+                    } as any,
+                  });
+                });
+              }
+              continue;
+            }
+
+            // Create a map of id -> library item data
+            const libraryItemMap = new Map(
+              (libraryItems || []).map((libItem: any) => [
+                libItem.id,
+                {
+                  name: libItem[nameColumn] || 'Unknown',
+                  supplier: libItem.supplier || null,
+                  pack_size: libItem.pack_size || null,
+                }
+              ])
+            );
+
+            // Add names and supplier to items
+            libItems.forEach((item: any) => {
+              const libItemData = libraryItemMap.get(item.ingredient_id) || {
+                name: 'Unknown',
+                supplier: null,
+                pack_size: null,
+              };
+              itemsWithNames.push({
+                ...item,
+                ingredient: {
+                  id: item.ingredient_id,
+                  name: libItemData.name,
+                  ingredient_name: libItemData.name,
+                  supplier: libItemData.supplier,
+                  pack_size: libItemData.pack_size,
+                } as any,
+              });
+            });
+          } catch (err) {
+            console.error(`Error processing ${libType}:`, err);
+            // Add items without names as fallback
+            libItems.forEach((item: any) => {
+              itemsWithNames.push({
+                ...item,
+                ingredient: {
+                  id: item.ingredient_id,
+                  name: 'Unknown',
+                  supplier: null,
+                  pack_size: null,
+                } as any,
+              });
+            });
+          }
         }
       }
 
-      if (sectionIds.length === 0) {
-        setLines([]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('stock_count_lines')
-        .select(`
-          *,
-          stock_item:stock_items(
-            id, name,
-            base_unit:uom!base_unit_id(code, name)
-          )
-        `)
-        .in('stock_count_section_id', sectionIds)
-        .order('variance_quantity', { ascending: false });
-
-      if (error) throw error;
-      setLines((data || []) as StockCountLine[]);
+      setItems(itemsWithNames);
     } catch (error: any) {
-      console.error('Error fetching lines:', error);
-      toast.error('Failed to load count lines');
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function markForRecount(lineId: string) {
-    try {
-      await supabase
-        .from('stock_count_lines')
-        .update({ needs_recount: true })
-        .eq('id', lineId);
+  // Helper function to format numbers
+  const formatNumber = (value: number | null | undefined, decimals: number = 2): string => {
+    if (value === null || value === undefined) return '—';
+    return value.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
 
-      toast.success('Marked for recount');
-      await fetchLines();
-    } catch (error: any) {
-      console.error('Error marking for recount:', error);
-      toast.error('Failed to mark for recount');
+  // Helper function to calculate % variance in cost
+  const calculateVarianceCostPercent = (theoreticalClosing: number | null, unitCost: number | null, varianceValue: number | null): number | null => {
+    if (!theoreticalClosing || !unitCost || theoreticalClosing === 0) return null;
+    const theoreticalValue = theoreticalClosing * unitCost;
+    if (theoreticalValue === 0) return null;
+    return (varianceValue || 0) / theoreticalValue * 100;
+  };
+
+  // Get available libraries from actual items
+  const availableLibraries = Array.from(new Set(items.map(item => item.library_type).filter(Boolean))) as LibraryType[];
+
+  // Sort items: apply user sort if set, otherwise by library then alphabetically
+  const sortedItems = [...items].sort((a, b) => {
+    // Apply user-defined sort if set
+    if (sortConfig) {
+      const { field, direction } = sortConfig;
+      let aValue: any;
+      let bValue: any;
+
+      switch (field) {
+        case 'item':
+          aValue = a.ingredient?.name || '';
+          bValue = b.ingredient?.name || '';
+          break;
+        case 'supplier':
+          aValue = (a.ingredient as any)?.supplier || '';
+          bValue = (b.ingredient as any)?.supplier || '';
+          break;
+        case 'measurement':
+          aValue = a.unit_of_measurement || '';
+          bValue = b.unit_of_measurement || '';
+          break;
+        case 'openingStock':
+          aValue = a.opening_stock || 0;
+          bValue = b.opening_stock || 0;
+          break;
+        case 'purchases':
+          aValue = a.stock_in || 0;
+          bValue = b.stock_in || 0;
+          break;
+        case 'production':
+          aValue = a.transfers_in || 0;
+          bValue = b.transfers_in || 0;
+          break;
+        case 'sales':
+          aValue = a.sales || 0;
+          bValue = b.sales || 0;
+          break;
+        case 'waste':
+          aValue = a.waste || 0;
+          bValue = b.waste || 0;
+          break;
+        case 'closingStock':
+          aValue = a.counted_quantity || 0;
+          bValue = b.counted_quantity || 0;
+          break;
+        case 'varianceUnits':
+          aValue = a.variance_quantity || 0;
+          bValue = b.variance_quantity || 0;
+          break;
+        case 'varianceCost':
+          aValue = a.variance_value || 0;
+          bValue = b.variance_value || 0;
+          break;
+        case 'variancePercentUnits':
+          aValue = a.variance_percentage || 0;
+          bValue = b.variance_percentage || 0;
+          break;
+        case 'variancePercentCost':
+          aValue = calculateVarianceCostPercent(a.theoretical_closing, a.unit_cost, a.variance_value) || 0;
+          bValue = calculateVarianceCostPercent(b.theoretical_closing, b.unit_cost, b.variance_value) || 0;
+          break;
+        case 'comments':
+          aValue = a.notes || '';
+          bValue = b.notes || '';
+          break;
+        default:
+          return 0;
+      }
+
+      // Handle string vs number comparison
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const result = aValue.localeCompare(bValue);
+        return direction === 'asc' ? result : -result;
+      } else {
+        const result = (aValue as number) - (bValue as number);
+        return direction === 'asc' ? result : -result;
+      }
     }
-  }
 
-  async function approveAndAdjust() {
-    if (!stockCount || !companyId || !siteId || !userId) {
-      toast.error('Missing required information');
+    // Default sort: by library type, then alphabetically
+    const aLib = a.library_type || '';
+    const bLib = b.library_type || '';
+    if (aLib !== bLib) return aLib.localeCompare(bLib);
+    
+    const aName = a.ingredient?.name || '';
+    const bName = b.ingredient?.name || '';
+    return aName.localeCompare(bName);
+  });
+
+  // Handle column header sort click
+  const handleSort = (field: string) => {
+    setSortConfig(prev => {
+      if (prev?.field === field) {
+        // Toggle direction if same field
+        return { field, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      // New field, default to ascending
+      return { field, direction: 'asc' };
+    });
+  };
+
+  // Enhanced filter function with dynamic filter types
+  const applyFilter = (value: any, filter: { type?: string; value?: string; min?: string; max?: string; selectedValues?: string[] } | undefined): boolean => {
+    if (!filter || (!filter.value && !filter.min && !filter.max && !filter.selectedValues?.length)) return true;
+
+    // Handle selectedValues (checkbox list for text columns)
+    if (filter.selectedValues && filter.selectedValues.length > 0) {
+      const strValue = String(value || '').toLowerCase();
+      return filter.selectedValues.some(selected => strValue.includes(selected.toLowerCase()));
+    }
+
+    const numValue = typeof value === 'number' ? value : parseFloat(String(value || 0));
+    const strValue = String(value || '').toLowerCase();
+
+    if (filter.type === 'range' && (filter.min || filter.max)) {
+      const min = filter.min ? parseFloat(filter.min) : -Infinity;
+      const max = filter.max ? parseFloat(filter.max) : Infinity;
+      return numValue >= min && numValue <= max;
+    } else if (filter.type === 'greater') {
+      const threshold = filter.value ? parseFloat(filter.value) : 0;
+      return numValue > threshold;
+    } else if (filter.type === 'less') {
+      const threshold = filter.value ? parseFloat(filter.value) : 0;
+      return numValue < threshold;
+    } else if (filter.type === 'equals') {
+      const target = filter.value ? parseFloat(filter.value) : 0;
+      return Math.abs(numValue - target) < 0.01; // Allow small floating point differences
+    } else if (filter.type === 'positive') {
+      return numValue > 0;
+    } else if (filter.type === 'negative') {
+      return numValue < 0;
+    } else if (filter.type === 'zero') {
+      return Math.abs(numValue) < 0.01;
+    } else {
+      // Default: text contains
+      const filterValue = (filter.value || '').toLowerCase();
+      return strValue.includes(filterValue);
+    }
+  };
+
+  // Get unique values for a column (for Excel-like checkbox filters)
+  // Use sortedItems instead of filteredItems to avoid circular dependency
+  const getUniqueValues = (columnKey: string, maxItems: number = 100): string[] => {
+    const values = new Set<string>();
+    sortedItems.forEach(item => {
+      let value: any;
+      switch (columnKey) {
+        case 'item':
+          value = item.ingredient?.name;
+          break;
+        case 'supplier':
+          value = (item.ingredient as any)?.supplier;
+          break;
+        case 'measurement':
+          value = item.unit_of_measurement;
+          break;
+        case 'comments':
+          value = item.notes;
+          break;
+        default:
+          return;
+      }
+      if (value && String(value).trim()) {
+        values.add(String(value));
+      }
+    });
+    return Array.from(values).sort().slice(0, maxItems);
+  };
+
+  // Filter items with enhanced column filters
+  const filteredItems = sortedItems.filter(item => {
+    // Library filter
+    const matchesLibrary = selectedLibrary === 'all' || item.library_type === selectedLibrary;
+    
+    // Enhanced search filter with scope
+    const matchesSearch = !searchTerm || (() => {
+      const searchLower = searchTerm.toLowerCase();
+      if (searchScope === 'all') {
+        return (
+          (item.ingredient?.name || '').toLowerCase().includes(searchLower) ||
+          ((item.ingredient as any)?.supplier || '').toLowerCase().includes(searchLower) ||
+          (item.notes || '').toLowerCase().includes(searchLower)
+        );
+      } else if (searchScope === 'item') {
+        return (item.ingredient?.name || '').toLowerCase().includes(searchLower);
+      } else if (searchScope === 'supplier') {
+        return ((item.ingredient as any)?.supplier || '').toLowerCase().includes(searchLower);
+      } else if (searchScope === 'comments') {
+        return (item.notes || '').toLowerCase().includes(searchLower);
+      }
+      return true;
+    })();
+    
+    // Enhanced column filters
+    const matchesItem = applyFilter(item.ingredient?.name || '', columnFilters.item);
+    const matchesSupplier = applyFilter((item.ingredient as any)?.supplier || '', columnFilters.supplier);
+    const matchesMeasurement = applyFilter(item.unit_of_measurement || '', columnFilters.measurement);
+    const matchesOpeningStock = applyFilter(item.opening_stock || 0, columnFilters.openingStock);
+    const matchesPurchases = applyFilter(item.stock_in || 0, columnFilters.purchases);
+    const matchesProduction = applyFilter(item.transfers_in || 0, columnFilters.production);
+    const matchesSales = applyFilter(item.sales || 0, columnFilters.sales);
+    const matchesWaste = applyFilter(item.waste || 0, columnFilters.waste);
+    const matchesClosingStock = applyFilter(item.counted_quantity || 0, columnFilters.closingStock);
+    const matchesVarianceUnits = applyFilter(item.variance_quantity || 0, columnFilters.varianceUnits);
+    const matchesVarianceCost = applyFilter(item.variance_value || 0, columnFilters.varianceCost);
+    const matchesVariancePercentUnits = applyFilter(item.variance_percentage || 0, columnFilters.variancePercentUnits);
+    const varianceCostPercent = calculateVarianceCostPercent(item.theoretical_closing, item.unit_cost, item.variance_value);
+    const matchesVariancePercentCost = applyFilter(varianceCostPercent || 0, columnFilters.variancePercentCost);
+    const matchesComments = applyFilter(item.notes || '', columnFilters.comments);
+    
+    return matchesLibrary && matchesSearch && matchesItem && matchesSupplier && 
+           matchesMeasurement && matchesOpeningStock && matchesPurchases && 
+           matchesProduction && matchesSales && matchesWaste && matchesClosingStock &&
+           matchesVarianceUnits && matchesVarianceCost && matchesVariancePercentUnits &&
+           matchesVariancePercentCost && matchesComments;
+  });
+
+  // Group items by library
+  const itemsByLibrary = filteredItems.reduce((acc, item) => {
+    const libType = item.library_type || 'unknown';
+    if (!acc[libType]) {
+      acc[libType] = [];
+    }
+    acc[libType].push(item);
+    return acc;
+  }, {} as Record<string, StockCountItem[]>);
+
+  // Calculate summary statistics
+  const calculateSummary = (items: StockCountItem[]) => {
+    const totals = items.reduce((acc, item) => {
+      acc.openingStock += item.opening_stock || 0;
+      acc.purchases += item.stock_in || 0;
+      acc.production += item.transfers_in || 0;
+      acc.sales += item.sales || 0;
+      acc.waste += item.waste || 0;
+      acc.closingStock += item.counted_quantity || 0;
+      acc.varianceUnits += item.variance_quantity || 0;
+      acc.varianceCost += item.variance_value || 0;
+      
+      // For percentages, we'll calculate weighted average
+      if (item.variance_percentage !== null && item.variance_percentage !== undefined) {
+        acc.variancePercentUnitsSum += item.variance_percentage;
+        acc.variancePercentUnitsCount++;
+      }
+      
+      const costPercent = calculateVarianceCostPercent(item.theoretical_closing, item.unit_cost, item.variance_value);
+      if (costPercent !== null) {
+        acc.variancePercentCostSum += costPercent;
+        acc.variancePercentCostCount++;
+      }
+      
+      return acc;
+    }, {
+      openingStock: 0,
+      purchases: 0,
+      production: 0,
+      sales: 0,
+      waste: 0,
+      closingStock: 0,
+      varianceUnits: 0,
+      varianceCost: 0,
+      variancePercentUnitsSum: 0,
+      variancePercentUnitsCount: 0,
+      variancePercentCostSum: 0,
+      variancePercentCostCount: 0,
+    });
+
+    return {
+      ...totals,
+      avgVariancePercentUnits: totals.variancePercentUnitsCount > 0 
+        ? totals.variancePercentUnitsSum / totals.variancePercentUnitsCount 
+        : null,
+      avgVariancePercentCost: totals.variancePercentCostCount > 0 
+        ? totals.variancePercentCostSum / totals.variancePercentCostCount 
+        : null,
+    };
+  };
+
+  // Overall summary (all filtered items)
+  const overallSummary = calculateSummary(filteredItems);
+
+  // Per-library summaries
+  const librarySummaries = Object.entries(itemsByLibrary).map(([libType, libItems]) => ({
+    libraryType: libType,
+    libraryName: getLibraryName(libType as LibraryType),
+    summary: calculateSummary(libItems),
+    itemCount: libItems.length,
+  }));
+
+
+  // Handle saving closing stock and comments
+  const handleSaveItem = async (item: StockCountItem) => {
+    const editingValue = editingValues[item.id];
+    if (!editingValue) return;
+
+    setSaving(item.id);
+
+    try {
+      const closingStock = editingValue.closingStock !== undefined 
+        ? editingValue.closingStock 
+        : item.counted_quantity;
+      const comments = editingValue.comments !== undefined 
+        ? editingValue.comments 
+        : item.notes;
+
+      // Recalculate variances
+      const theoreticalClosing = item.theoretical_closing || 0;
+      const varianceQuantity = closingStock !== null ? closingStock - theoreticalClosing : null;
+      const variancePercentage = theoreticalClosing !== 0 && varianceQuantity !== null
+        ? (varianceQuantity / theoreticalClosing) * 100
+        : null;
+      const varianceValue = varianceQuantity !== null && item.unit_cost
+        ? varianceQuantity * item.unit_cost
+        : null;
+
+      const { error } = await supabase
+        .from('stock_count_items')
+        .update({
+          counted_quantity: closingStock,
+          variance_quantity: varianceQuantity,
+          variance_percentage: variancePercentage,
+          variance_value: varianceValue,
+          notes: comments || null,
+          status: closingStock !== null ? 'counted' : item.status,
+          counted_at: closingStock !== null ? new Date().toISOString() : item.counted_at,
+        })
+        .eq('id', item.id);
+
+      if (error) {
+        console.error('Error saving item:', error);
+        alert('Error saving item. Please try again.');
+      } else {
+        // Clear editing value
+        setEditingValues(prev => {
+          const newValues = { ...prev };
+          delete newValues[item.id];
+          return newValues;
+        });
+        // Refresh data
+        fetchData();
+      }
+    } catch (error) {
+      console.error('Error saving item:', error);
+      alert('Error saving item. Please try again.');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  // Handle closing stock change
+  const handleClosingStockChange = (itemId: string, value: string) => {
+    const numValue = value === '' ? null : parseFloat(value);
+    setEditingValues(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        closingStock: isNaN(numValue as number) ? undefined : numValue,
+      },
+    }));
+  };
+
+  // Handle comments change
+  const handleCommentsChange = (itemId: string, value: string) => {
+    setEditingValues(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        comments: value,
+      },
+    }));
+  };
+
+  // Handle reviewer comment change
+  const handleReviewerCommentChange = (itemId: string, value: string) => {
+    setEditingValues(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        reviewerComment: value,
+      },
+    }));
+  };
+
+  // Handle approval
+  const handleApprove = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    setProcessing(true);
+    try {
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('You must be logged in to approve counts');
+        return;
+      }
+
+      const response = await fetch(`/api/stock-counts/approve/${countId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to approve count');
+      }
+
+      toast.success('Stock count approved and stock levels updated');
+      fetchData();
+    } catch (error: any) {
+      console.error('Error approving count:', error);
+      toast.error(error.message || 'Failed to approve count');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Handle rejection
+  const handleReject = () => {
+    setShowRejectionModal(true);
+  };
+
+  const handleConfirmReject = async () => {
+    if (!count || !params.id || !rejectionReason.trim()) {
+      toast.error('Please provide a rejection reason');
+      return;
+    }
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      toast.error('Unable to identify current user');
       return;
     }
 
+    setProcessing(true);
     try {
-      setSaving(true);
+      // Save reviewer comments on items first (only if column exists after migration)
+      const itemsToUpdate = Object.entries(editingValues)
+        .filter(([_, values]) => values.reviewerComment !== undefined)
+        .map(([itemId, values]) => ({
+          id: itemId,
+          reviewer_comment: values.reviewerComment || null,
+        }));
 
-      // Get all lines with variance
-      const sectionIds = stockCount.sections?.map(s => s.id) || [];
-      if (sectionIds.length === 0) {
-        const { data: sections } = await supabase
-          .from('stock_count_sections')
-          .select('id')
-          .eq('stock_count_id', countId);
-
-        if (sections) {
-          sectionIds.push(...sections.map(s => s.id));
+      if (itemsToUpdate.length > 0) {
+        for (const item of itemsToUpdate) {
+          try {
+            await supabase
+              .from('stock_count_items')
+              .update({ reviewer_comment: item.reviewer_comment })
+              .eq('id', item.id);
+          } catch (err: any) {
+            // Column might not exist if migration hasn't been applied yet
+            if (err?.message?.includes('column') || err?.code === '42703') {
+              console.warn('reviewer_comment column not found - migration may not be applied yet');
+            } else {
+              throw err;
+            }
+          }
         }
       }
 
-      const { data: varianceLines, error: linesError } = await supabase
-        .from('stock_count_lines')
-        .select('*')
-        .in('stock_count_section_id', sectionIds)
-        .neq('variance_quantity', 0);
-
-      if (linesError) throw linesError;
-
-      // Create stock movements for each variance
-      for (const line of varianceLines || []) {
-        // Create adjustment movement
-        const { error: movementError } = await supabase
-          .from('stock_movements')
-          .insert({
-            company_id: companyId,
-            site_id: siteId,
-            stock_item_id: line.stock_item_id,
-            storage_area_id: line.storage_area_id,
-            movement_type: 'adjustment',
-            quantity: line.variance_quantity, // Positive or negative
-            reference_type: 'stock_count',
-            reference_id: countId,
-            notes: `Stock count adjustment: ${stockCount.count_number}`,
-            created_by: userId,
-          });
-
-        if (movementError) {
-          console.error('Error creating movement:', movementError);
-          // Continue with other items
-        }
-
-        // Update stock level using RPC function if available, otherwise direct update
-        const { data: currentLevel } = await supabase
-          .from('stock_levels')
-          .select('quantity')
-          .eq('site_id', siteId)
-          .eq('storage_area_id', line.storage_area_id)
-          .eq('stock_item_id', line.stock_item_id)
-          .single();
-
-        if (currentLevel) {
-          const newQuantity = (currentLevel.quantity || 0) + line.variance_quantity;
-          await supabase
-            .from('stock_levels')
-            .update({ quantity: newQuantity })
-            .eq('site_id', siteId)
-            .eq('storage_area_id', line.storage_area_id)
-            .eq('stock_item_id', line.stock_item_id);
-        } else {
-          // Create new stock level if doesn't exist
-          await supabase
-            .from('stock_levels')
-            .insert({
-              company_id: companyId,
-              site_id: siteId,
-              storage_area_id: line.storage_area_id,
-              stock_item_id: line.stock_item_id,
-              quantity: line.variance_quantity,
-            });
-        }
-      }
-
-      // Mark count as completed
-      await supabase
+      // Update count status
+      const { error } = await supabase
         .from('stock_counts')
         .update({
-          status: 'completed',
-          reviewed_by: userId,
-          reviewed_at: new Date().toISOString(),
+          status: 'rejected',
+          rejection_reason: rejectionReason.trim(),
+          rejected_by: userId,
+          rejected_at: new Date().toISOString(),
         })
         .eq('id', countId);
 
-      toast.success('Stock levels adjusted successfully');
-      router.push('/dashboard/stockly/stock-counts');
+      if (error) throw error;
+
+      toast.success('Stock count rejected');
+      setShowRejectionModal(false);
+      setRejectionReason('');
+      fetchData();
     } catch (error: any) {
-      console.error('Error approving and adjusting:', error);
-      toast.error(error.message || 'Failed to approve and adjust stock');
+      console.error('Error rejecting count:', error);
+      toast.error(error.message || 'Failed to reject count');
     } finally {
-      setSaving(false);
+      setProcessing(false);
     }
-  }
+  };
 
-  function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-    }).format(amount);
-  }
+  // Excel-like filter dropdown component
+  const renderFilterDropdown = (columnKey: string, isNumeric: boolean = false, isVariance: boolean = false) => {
+    const filter = columnFilters[columnKey] || {};
+    const isOpen = openFilterDropdown === columnKey;
+    const hasFilter = filter.value || filter.min || filter.max || filter.selectedValues?.length || filter.type;
+    const uniqueValues = !isNumeric && !isVariance ? getUniqueValues(columnKey) : [];
 
-  const filteredLines = lines.filter(line => {
-    if (filter === 'all') return true;
-    if (filter === 'variances') return line.variance_quantity !== 0;
-    if (filter === 'positive') return line.variance_quantity > 0;
-    if (filter === 'negative') return line.variance_quantity < 0;
-    return true;
-  });
+    return (
+      <div className="relative">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenFilterDropdown(isOpen ? null : columnKey);
+          }}
+          className={`w-full h-6 flex items-center justify-center rounded border ${
+            hasFilter 
+              ? 'bg-emerald-100 dark:bg-emerald-600/20 border-emerald-300 dark:border-emerald-500' 
+              : 'bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06]'
+          } hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-colors`}
+        >
+          <Filter className={`h-3 w-3 ${hasFilter ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`} />
+        </button>
 
-  const summary = {
-    totalItems: stockCount?.total_items || 0,
-    withVariance: stockCount?.variance_count || 0,
-    totalValue: lines.reduce((sum, l) => sum + (l.expected_value || 0), 0),
-    netVariance: stockCount?.variance_value || 0,
+        {isOpen && (
+          <>
+            <div 
+              className="fixed inset-0 z-40" 
+              onMouseDown={(e) => {
+                // Don't close if clicking on Select portal content or inside the dropdown
+                const target = e.target as HTMLElement;
+                const isInPortal = target.closest('[data-radix-portal]') || 
+                                  target.closest('[data-radix-select-content]') ||
+                                  target.closest('[data-radix-select-viewport]') ||
+                                  target.closest('[data-radix-select-item]');
+                const isInDropdown = target.closest('.filter-dropdown-content');
+                if (isInPortal || isInDropdown) {
+                  return;
+                }
+                setOpenFilterDropdown(null);
+              }}
+            />
+            <div 
+              className="filter-dropdown-content absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-lg z-[100] max-h-96 overflow-y-auto"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-3 space-y-3" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+                {isNumeric || isVariance ? (
+                  // Number filters
+                  <>
+                    <div className="space-y-2">
+                      <Select
+                        label="Filter Type"
+                        value={filter.type || ''}
+                        onValueChange={(v) => setColumnFilters(prev => ({
+                          ...prev,
+                          [columnKey]: { ...prev[columnKey], type: v || undefined }
+                        }))}
+                        options={
+                          isVariance
+                            ? [
+                                { label: 'All', value: '' },
+                                { label: 'Positive', value: 'positive' },
+                                { label: 'Negative', value: 'negative' },
+                                { label: 'Zero', value: 'zero' },
+                                { label: 'Equals', value: 'equals' },
+                                { label: 'Greater Than', value: 'greater' },
+                                { label: 'Less Than', value: 'less' },
+                                { label: 'Between', value: 'range' },
+                              ]
+                            : [
+                                { label: 'All', value: '' },
+                                { label: 'Equals', value: 'equals' },
+                                { label: 'Greater Than', value: 'greater' },
+                                { label: 'Less Than', value: 'less' },
+                                { label: 'Between', value: 'range' },
+                              ]
+                        }
+                        className="w-full"
+                      />
+                      {filter.type === 'range' ? (
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            placeholder="Min"
+                            value={filter.min || ''}
+                            onChange={(e) => setColumnFilters(prev => ({
+                              ...prev,
+                              [columnKey]: { ...prev[columnKey], min: e.target.value }
+                            }))}
+                            className="flex-1"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Max"
+                            value={filter.max || ''}
+                            onChange={(e) => setColumnFilters(prev => ({
+                              ...prev,
+                              [columnKey]: { ...prev[columnKey], max: e.target.value }
+                            }))}
+                            className="flex-1"
+                          />
+                        </div>
+                      ) : filter.type && filter.type !== 'positive' && filter.type !== 'negative' && filter.type !== 'zero' ? (
+                        <Input
+                          type="number"
+                          placeholder="Value"
+                          value={filter.value || ''}
+                          onChange={(e) => setColumnFilters(prev => ({
+                            ...prev,
+                            [columnKey]: { ...prev[columnKey], value: e.target.value }
+                          }))}
+                          className="w-full"
+                        />
+                      ) : null}
+                    </div>
+                  </>
+                ) : (
+                  // Text filters with checkbox list
+                  <>
+                    <div>
+                      <Input
+                        type="text"
+                        placeholder="Search..."
+                        value={filter.value || ''}
+                        onChange={(e) => setColumnFilters(prev => ({
+                          ...prev,
+                          [columnKey]: { ...prev[columnKey], value: e.target.value }
+                        }))}
+                        className="w-full mb-2"
+                      />
+                    </div>
+                    <div className="max-h-48 overflow-y-auto space-y-1">
+                      {uniqueValues.map((value) => {
+                        const isSelected = filter.selectedValues?.includes(value) || false;
+                        return (
+                          <label
+                            key={value}
+                            className="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 dark:hover:bg-white/[0.05] cursor-pointer rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                const current = filter.selectedValues || [];
+                                const newValues = e.target.checked
+                                  ? [...current, value]
+                                  : current.filter(v => v !== value);
+                                setColumnFilters(prev => ({
+                                  ...prev,
+                                  [columnKey]: { ...prev[columnKey], selectedValues: newValues.length > 0 ? newValues : undefined }
+                                }));
+                              }}
+                              className="rounded border-gray-300 dark:border-white/[0.2]"
+                            />
+                            <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 truncate">{value}</span>
+                          </label>
+                        );
+                      })}
+                      {uniqueValues.length === 0 && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 px-2">No values found</p>
+                      )}
+                    </div>
+                  </>
+                )}
+                <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-white/[0.06]">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setColumnFilters(prev => {
+                        const newFilters = { ...prev };
+                        delete newFilters[columnKey];
+                        return newFilters;
+                      });
+                      setOpenFilterDropdown(null);
+                    }}
+                    className="flex-1"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Clear
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setOpenFilterDropdown(null)}
+                    className="flex-1"
+                  >
+                    OK
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  // Helper to render sortable header with filter button below
+  const renderSortableHeader = (field: string, label: string, align: 'left' | 'right' = 'left', isNumeric: boolean = false, isVariance: boolean = false, isSticky: boolean = false) => {
+    const isSorted = sortConfig?.field === field;
+    const sortDirection = isSorted ? sortConfig.direction : null;
+    
+    return (
+      <th 
+        className={`px-2 py-2 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider ${
+          isSticky ? 'sticky left-0 z-[3] bg-gray-50 dark:bg-white/[0.05] shadow-[4px_0_6px_rgba(0,0,0,0.15)] min-w-[150px] border-r-2 border-gray-200 dark:border-white/[0.1]' : 'z-[1]'
+        }`}
+      >
+        <div className="flex flex-col items-center gap-1">
+          {/* Heading with sort icon */}
+          <div 
+            className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] px-1 py-0.5 rounded transition-colors w-full justify-center"
+            onClick={() => handleSort(field)}
+          >
+            <span className="truncate">{label}</span>
+            {isSorted ? (
+              sortDirection === 'asc' ? (
+                <ArrowUp className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+              ) : (
+                <ArrowDown className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+              )
+            ) : (
+              <ArrowUpDown className="h-2.5 w-2.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+            )}
+          </div>
+          {/* Filter button below */}
+          <div className="flex-shrink-0">
+            {renderFilterDropdown(field, isNumeric, isVariance)}
+          </div>
+        </div>
+      </th>
+    );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading...</div>
-        </div>
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-[#0B0D13]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
       </div>
     );
   }
 
-  if (!stockCount) {
+  if (!count) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Stock count not found</div>
+      <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+        <div className="container mx-auto py-8 px-4 max-w-7xl">
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400">Stock count not found</p>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard/stockly/stock-counts')}
+              className="mt-4 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Back to Counts
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <button
-            onClick={() => router.push(`/dashboard/stockly/stock-counts/${countId}`)}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-4 transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to Count
-          </button>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                {stockCount.count_number} Review
-              </h1>
-              <p className="text-slate-400 text-sm">
-                {stockCount.count_type.charAt(0).toUpperCase() + stockCount.count_type.slice(1)} Count -{' '}
-                {new Date(stockCount.count_date).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            </div>
+    <div 
+      className="w-full h-screen flex flex-col overflow-hidden"
+      style={{
+        maxWidth: '100%',
+        position: 'relative'
+      }}
+    >
+      {/* FIXED HEADER - Never scrolls */}
+      <div className="flex-shrink-0 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-white/[0.06] px-6 py-4 space-y-4">
+        {/* Back button, title, and action buttons */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <Button
-              onClick={approveAndAdjust}
-              disabled={saving || stockCount.status === 'completed'}
-              variant="secondary"
+              variant="ghost"
+              onClick={() => router.push('/dashboard/stockly/stock-counts')}
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex-shrink-0"
             >
-              Approve & Adjust Stock
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back
             </Button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white flex-shrink-0 min-w-0 truncate">
+              {count?.name}
+            </h1>
+            {count?.status === 'rejected' && count?.rejection_reason && (
+              <div className="flex-1 min-w-0">
+                <div className="p-2 bg-red-50 dark:bg-red-600/10 border border-red-200 dark:border-red-600/30 rounded text-sm">
+                  <p className="font-semibold text-red-800 dark:text-red-400">Rejected:</p>
+                  <p className="text-red-700 dark:text-red-300 truncate">{count.rejection_reason}</p>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">Total Items</div>
-            <div className="text-2xl font-bold text-white">{summary.totalItems}</div>
-          </div>
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">With Variance</div>
-            <div className="text-2xl font-bold text-white">{summary.withVariance}</div>
-          </div>
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">Total Value</div>
-            <div className="text-2xl font-bold text-white">{formatCurrency(summary.totalValue)}</div>
-          </div>
-          <div className={`bg-white/[0.03] border rounded-xl p-4 ${
-            summary.netVariance < 0 ? 'border-red-500/30' : summary.netVariance > 0 ? 'border-green-500/30' : 'border-neutral-800'
-          }`}>
-            <div className="text-sm text-slate-400 mb-1">Net Variance</div>
-            <div className={`text-2xl font-bold ${
-              summary.netVariance < 0 ? 'text-red-400' : summary.netVariance > 0 ? 'text-green-400' : 'text-white'
-            }`}>
-              {summary.netVariance > 0 ? '+' : ''}{formatCurrency(summary.netVariance)}
+          
+          {/* Approval/Rejection buttons - only show if pending review */}
+          {count?.status === 'pending_review' && (
+            <div className="flex gap-2 flex-shrink-0">
+              <Button
+                onClick={handleReject}
+                disabled={processing}
+                variant="outline"
+                className="border-red-600/50 text-red-400 hover:bg-red-600/10 hover:border-red-600"
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Reject
+              </Button>
+              <Button
+                onClick={handleApprove}
+                disabled={processing}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                {processing ? 'Processing...' : 'Approve'}
+              </Button>
             </div>
+          )}
+        </div>
+
+        {/* Search and filters */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Search Bar */}
+          <div className="flex-1 flex gap-2 min-w-0 max-w-md">
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search..."
+                className="pl-8 h-9 text-sm bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
+            </div>
+            <Select
+              label=""
+              value={searchScope}
+              onValueChange={(v) => setSearchScope(v as 'all' | 'item' | 'supplier' | 'comments')}
+              options={[
+                { label: 'All', value: 'all' },
+                { label: 'Item', value: 'item' },
+                { label: 'Supplier', value: 'supplier' },
+                { label: 'Comments', value: 'comments' },
+              ]}
+              className="w-28 h-9 text-sm"
+            />
           </div>
-        </div>
 
-        {/* Filter */}
-        <div className="mb-4">
-          <Select
-            value={filter}
-            onValueChange={setFilter}
-            options={FILTER_OPTIONS}
-            placeholder="Filter items"
-          />
-        </div>
-
-        {/* Variance Table */}
-        <div className="bg-white/[0.03] border border-neutral-800 rounded-xl overflow-hidden mb-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white/[0.05] border-b border-neutral-800">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Item
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Expected
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Counted
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Variance
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Value
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800">
-                {filteredLines.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
-                      No items found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredLines.map((line) => {
-                    const unit = line.stock_item?.base_unit?.code || '';
-                    const hasVariance = line.variance_quantity !== 0;
-
-                    return (
-                      <tr
-                        key={line.id}
-                        className={`hover:bg-white/[0.05] transition-colors ${
-                          hasVariance ? 'bg-amber-500/5' : ''
-                        }`}
-                      >
-                        <td className="px-4 py-4 text-sm text-white">
-                          {line.stock_item?.name || 'Unknown Item'}
-                        </td>
-                        <td className="px-4 py-4 text-sm text-slate-300 text-right">
-                          {line.expected_quantity} {unit}
-                        </td>
-                        <td className="px-4 py-4 text-sm text-slate-300 text-right">
-                          {line.counted_quantity ?? '—'} {line.counted_quantity !== null && unit}
-                        </td>
-                        <td className={`px-4 py-4 text-sm font-medium text-right ${
-                          line.variance_quantity > 0 ? 'text-green-400' : line.variance_quantity < 0 ? 'text-red-400' : 'text-slate-300'
-                        }`}>
-                          {hasVariance ? (
-                            <>
-                              {line.variance_quantity > 0 ? '+' : ''}
-                              {line.variance_quantity} {unit}
-                            </>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                        <td className={`px-4 py-4 text-sm font-medium text-right ${
-                          line.variance_value > 0 ? 'text-green-400' : line.variance_value < 0 ? 'text-red-400' : 'text-slate-300'
-                        }`}>
-                          {hasVariance ? formatCurrency(line.variance_value) : '—'}
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          {hasVariance && (
-                            <button
-                              onClick={() => markForRecount(line.id)}
-                              className="text-[#EC4899] hover:text-[#EC4899]/80 transition-colors text-sm"
-                            >
-                              Recount
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+          {/* Library Filter */}
+          <div className="relative">
+            <Select
+              label=""
+              value={selectedLibrary}
+              onValueChange={(v) => setSelectedLibrary(v as LibraryType | 'all')}
+              options={[
+                { label: 'All Libraries', value: 'all' },
+                ...availableLibraries.map((lib) => ({
+                  label: getLibraryName(lib),
+                  value: lib,
+                }))
+              ]}
+              placeholder="Library..."
+              className="w-40 h-9 text-sm"
+            />
           </div>
-        </div>
 
-        {/* Review Notes */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-slate-300 mb-2">Review Notes</label>
-          <textarea
-            value={reviewNotes}
-            onChange={(e) => setReviewNotes(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40"
-            placeholder="Add notes about this review..."
-          />
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-3">
+          {/* Clear All Button */}
           <Button
             variant="outline"
-            onClick={() => router.push('/dashboard/stockly/stock-counts')}
+            size="sm"
+            onClick={() => {
+              setColumnFilters({});
+              setSearchTerm('');
+              setSortConfig(null);
+            }}
+            className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 h-9 flex-shrink-0"
           >
-            Cancel
-          </Button>
-          <Button
-            onClick={approveAndAdjust}
-            disabled={saving || stockCount.status === 'completed'}
-            variant="secondary"
-          >
-            {saving ? 'Processing...' : 'Approve & Adjust Stock'}
+            Clear
           </Button>
         </div>
       </div>
+
+      {/* SCROLLABLE CONTENT */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-[#0B0D13]">
+        <div className="p-6">
+        
+        {/* Variance Summary Cards */}
+        {count && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Total Variance</p>
+              <p className={`text-2xl font-bold mt-1 ${
+                overallSummary.varianceCost < 0 
+                  ? 'text-red-600 dark:text-red-400' 
+                  : overallSummary.varianceCost > 0
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-gray-900 dark:text-white'
+              }`}>
+                {overallSummary.varianceCost < 0 ? '-' : overallSummary.varianceCost > 0 ? '+' : ''}
+                £{Math.abs(overallSummary.varianceCost || 0).toFixed(2)}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Shrinkage</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
+                £{Math.abs(Math.min(overallSummary.varianceCost || 0, 0)).toFixed(2)}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {filteredItems.filter(i => (i.variance_value || 0) < 0).length} items
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Overage</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                +£{Math.max(overallSummary.varianceCost || 0, 0).toFixed(2)}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {filteredItems.filter(i => (i.variance_value || 0) > 0).length} items
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Items with Variance</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {filteredItems.filter(i => Math.abs(i.variance_quantity || 0) > 0.001).length}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                of {filteredItems.length} total
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Collapsible Summary Table */}
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg mb-6 overflow-hidden">
+          <button
+            onClick={() => setShowSummary(!showSummary)}
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Summary Statistics</h2>
+            {showSummary ? (
+              <ChevronUp className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            )}
+          </button>
+
+          {showSummary && (
+            <div className="border-t border-gray-200 dark:border-white/[0.06]">
+              <div className="overflow-x-auto">
+                {/* Overall Totals */}
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-600/10">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Overall Totals</h3>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-white/[0.06]">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Metric</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Opening Stock</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Purchases</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Production</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Sales</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Waste</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Closing Stock</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Units</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Cost</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Units</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Cost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-gray-200 dark:border-white/[0.06]">
+                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">Total</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.openingStock)}</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.purchases)}</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.production)}</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.sales)}</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.waste)}</td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.closingStock)}</td>
+                        <td className={`px-4 py-2 text-right font-medium ${
+                          overallSummary.varianceUnits < 0 ? 'text-red-600 dark:text-red-400' : 
+                          overallSummary.varianceUnits > 0 ? 'text-green-600 dark:text-green-400' : 
+                          'text-gray-900 dark:text-white'
+                        }`}>
+                          {formatNumber(overallSummary.varianceUnits)}
+                        </td>
+                        <td className={`px-4 py-2 text-right font-medium ${
+                          overallSummary.varianceCost < 0 ? 'text-red-600 dark:text-red-400' : 
+                          overallSummary.varianceCost > 0 ? 'text-green-600 dark:text-green-400' : 
+                          'text-gray-900 dark:text-white'
+                        }`}>
+                          {formatNumber(overallSummary.varianceCost)}
+                        </td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                          {overallSummary.avgVariancePercentUnits !== null ? `${formatNumber(overallSummary.avgVariancePercentUnits, 2)}%` : '—'}
+                        </td>
+                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                          {overallSummary.avgVariancePercentCost !== null ? `${formatNumber(overallSummary.avgVariancePercentCost, 2)}%` : '—'}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Per-Library Summaries */}
+                {librarySummaries.length > 0 && (
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Per-Library Summaries</h3>
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-white/[0.06]">
+                          <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Library</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Items</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Opening Stock</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Purchases</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Production</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Sales</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Waste</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Closing Stock</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Units</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Cost</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Units</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Cost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {librarySummaries.map((libSummary) => {
+                          const Icon = getLibraryIcon(libSummary.libraryType as LibraryType);
+                          return (
+                            <tr key={libSummary.libraryType} className="border-b border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                              <td className="px-4 py-2">
+                                <div className="flex items-center gap-2">
+                                  <Icon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                  <span className="font-medium text-gray-900 dark:text-white">{libSummary.libraryName}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-400">{libSummary.itemCount}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.openingStock)}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.purchases)}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.production)}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.sales)}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.waste)}</td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.closingStock)}</td>
+                              <td className={`px-4 py-2 text-right font-medium ${
+                                libSummary.summary.varianceUnits < 0 ? 'text-red-600 dark:text-red-400' : 
+                                libSummary.summary.varianceUnits > 0 ? 'text-green-600 dark:text-green-400' : 
+                                'text-gray-900 dark:text-white'
+                              }`}>
+                                {formatNumber(libSummary.summary.varianceUnits)}
+                              </td>
+                              <td className={`px-4 py-2 text-right font-medium ${
+                                libSummary.summary.varianceCost < 0 ? 'text-red-600 dark:text-red-400' : 
+                                libSummary.summary.varianceCost > 0 ? 'text-green-600 dark:text-green-400' : 
+                                'text-gray-900 dark:text-white'
+                              }`}>
+                                {formatNumber(libSummary.summary.varianceCost)}
+                              </td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                                {libSummary.summary.avgVariancePercentUnits !== null ? `${formatNumber(libSummary.summary.avgVariancePercentUnits, 2)}%` : '—'}
+                              </td>
+                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                                {libSummary.summary.avgVariancePercentCost !== null ? `${formatNumber(libSummary.summary.avgVariancePercentCost, 2)}%` : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Review Report Table - Grouped by Library */}
+        {Object.entries(itemsByLibrary).length === 0 ? (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400">No items found</p>
+          </div>
+        ) : (
+          Object.entries(itemsByLibrary).map(([libraryType, libraryItems]) => {
+            const Icon = getLibraryIcon(libraryType as LibraryType);
+            const libraryName = getLibraryName(libraryType as LibraryType);
+
+            return (
+              <div key={libraryType} className="mb-8">
+                {/* Library Header */}
+                <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-t-lg px-6 py-4 flex items-center gap-3">
+                  <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {libraryName} ({libraryItems.length} items)
+                  </h2>
+                </div>
+
+                {/* Split table container */}
+                <div className="flex bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] border-t-0 rounded-b-lg">
+                  
+                  {/* FROZEN ITEM COLUMN */}
+                  <div 
+                    ref={(el) => {
+                      if (!scrollRefs.current[libraryType]) {
+                        scrollRefs.current[libraryType] = { frozen: null, scrollable: null };
+                      }
+                      scrollRefs.current[libraryType].frozen = el;
+                    }}
+                    onScroll={(e) => {
+                      if (syncingScroll.current) return;
+                      syncingScroll.current = true;
+                      
+                      const scrollableDiv = scrollRefs.current[libraryType]?.scrollable;
+                      if (scrollableDiv) {
+                        scrollableDiv.scrollTop = e.currentTarget.scrollTop;
+                      }
+                      
+                      requestAnimationFrame(() => {
+                        syncingScroll.current = false;
+                      });
+                    }}
+                    className="flex-shrink-0 border-r-2 border-gray-200 dark:border-white/[0.1] [&::-webkit-scrollbar]:hidden"
+                    style={{
+                      width: '200px',
+                      height: '600px',
+                      overflowY: 'auto',
+                      overflowX: 'hidden',
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none'
+                    }}
+                  >
+                    <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+                      <thead className="sticky top-0 bg-gray-50 dark:bg-white/[0.05] z-10">
+                        <tr>
+                          <th className="px-3 py-3 text-left text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-white/[0.06]">
+                            <div className="flex flex-col items-center gap-1">
+                              {/* Heading with sort icon */}
+                              <div 
+                                className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] px-1 py-0.5 rounded transition-colors w-full justify-center"
+                                onClick={() => handleSort('item')}
+                              >
+                                <span className="truncate">Item</span>
+                                {sortConfig?.field === 'item' ? (
+                                  sortConfig.direction === 'asc' ? (
+                                    <ArrowUp className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                  ) : (
+                                    <ArrowDown className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                  )
+                                ) : (
+                                  <ArrowUpDown className="h-2.5 w-2.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                                )}
+                              </div>
+                              {/* Filter button below */}
+                              <div className="flex-shrink-0">
+                                {renderFilterDropdown('item', false, false)}
+                              </div>
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {libraryItems.map((item) => {
+                          const editingValue = editingValues[item.id];
+                          const isEditing = editingValue !== undefined;
+
+                          return (
+                            <tr
+                              key={item.id}
+                              className={`border-b border-gray-200 dark:border-white/[0.06] ${
+                                isEditing
+                                  ? 'bg-blue-50 dark:bg-blue-500/10'
+                                  : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                              }`}
+                            >
+                              <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-white font-medium" style={{ height: '45px' }}>
+                                <div className="line-clamp-2 leading-tight">
+                                  {item.ingredient?.name || 'Unknown'}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* SCROLLABLE COLUMNS */}
+                  <div 
+                    ref={(el) => {
+                      if (!scrollRefs.current[libraryType]) {
+                        scrollRefs.current[libraryType] = { frozen: null, scrollable: null };
+                      }
+                      scrollRefs.current[libraryType].scrollable = el;
+                    }}
+                    onScroll={(e) => {
+                      if (syncingScroll.current) return;
+                      syncingScroll.current = true;
+                      
+                      const frozenDiv = scrollRefs.current[libraryType]?.frozen;
+                      if (frozenDiv) {
+                        frozenDiv.scrollTop = e.currentTarget.scrollTop;
+                      }
+                      
+                      requestAnimationFrame(() => {
+                        syncingScroll.current = false;
+                      });
+                    }}
+                    className="flex-1"
+                    style={{
+                      height: '600px',
+                      overflowY: 'auto',
+                      overflowX: 'auto'
+                    }}
+                  >
+                    <table style={{ width: '100%', minWidth: 'max-content', tableLayout: 'auto', borderCollapse: 'collapse' }}>
+                      <thead className="sticky top-0 bg-gray-50 dark:bg-white/[0.05] z-10">
+                        <tr className="border-b border-gray-200 dark:border-white/[0.06]">
+                          {renderSortableHeader('supplier', 'Supplier', 'left', false, false, false)}
+                          {renderSortableHeader('measurement', 'Measurement', 'left', false, false, false)}
+                          {renderSortableHeader('openingStock', 'Opening', 'right', true, false, false)}
+                          {renderSortableHeader('purchases', 'Purchases', 'right', true, false, false)}
+                          {renderSortableHeader('production', 'Production', 'right', true, false, false)}
+                          {renderSortableHeader('sales', 'Sales', 'right', true, false, false)}
+                          {renderSortableHeader('waste', 'Waste', 'right', true, false, false)}
+                          {renderSortableHeader('closingStock', 'Closing', 'right', true, false, false)}
+                          {renderSortableHeader('varianceUnits', 'Var Units', 'right', true, true, false)}
+                          {renderSortableHeader('varianceCost', 'Var Cost', 'right', true, true, false)}
+                          {renderSortableHeader('variancePercentUnits', '% Var Units', 'right', true, false, false)}
+                          {renderSortableHeader('variancePercentCost', '% Var Cost', 'right', true, false, false)}
+                          {renderSortableHeader('comments', 'Comments', 'left', false, false, false)}
+                          {count?.status === 'pending_review' && (
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[120px]">
+                              <div className="flex flex-col items-center gap-1">
+                                <span>Reviewer Comment</span>
+                              </div>
+                            </th>
+                          )}
+                          <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[80px]">
+                            <div className="flex flex-col items-center gap-1">
+                              <span>Actions</span>
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {libraryItems.map((item) => {
+                          const editingValue = editingValues[item.id];
+                          const currentClosingStock = editingValue?.closingStock !== undefined 
+                            ? editingValue.closingStock 
+                            : item.counted_quantity;
+                          const currentComments = editingValue?.comments !== undefined 
+                            ? editingValue.comments 
+                            : item.notes;
+                          const currentReviewerComment = editingValue?.reviewerComment !== undefined
+                            ? editingValue.reviewerComment
+                            : (item as any).reviewer_comment || '';
+                          
+                          // Calculate variances based on current editing value
+                          const theoreticalClosing = item.theoretical_closing || 0;
+                          const varianceQuantity = currentClosingStock !== null 
+                            ? currentClosingStock - theoreticalClosing 
+                            : item.variance_quantity;
+                          const variancePercentage = theoreticalClosing !== 0 && varianceQuantity !== null
+                            ? (varianceQuantity / theoreticalClosing) * 100
+                            : item.variance_percentage;
+                          const varianceValue = varianceQuantity !== null && item.unit_cost
+                            ? varianceQuantity * item.unit_cost
+                            : item.variance_value;
+                          const varianceCostPercent = calculateVarianceCostPercent(
+                            theoreticalClosing,
+                            item.unit_cost,
+                            varianceValue
+                          );
+
+                          const isEditing = editingValue !== undefined;
+          const hasChanges = isEditing && (
+            editingValue.closingStock !== item.counted_quantity ||
+            editingValue.comments !== item.notes ||
+            editingValue.reviewerComment !== ((item as any).reviewer_comment || '')
+          );
+
+                          return (
+                            <tr
+                              key={item.id}
+                              className={`border-b border-gray-200 dark:border-white/[0.06] ${
+                                isEditing
+                                  ? 'bg-blue-50 dark:bg-blue-500/10'
+                                  : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                              }`}
+                            >
+                              {/* Supplier */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-left" style={{ height: '45px' }}>
+                                {(item.ingredient as any)?.supplier || '—'}
+                              </td>
+
+                              {/* Measurement */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {item.unit_of_measurement || '—'}
+                              </td>
+
+                              {/* Opening Stock */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {formatNumber(item.opening_stock)}
+                              </td>
+
+                              {/* Purchases */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {formatNumber(item.stock_in)}
+                              </td>
+
+                              {/* Production */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {formatNumber(item.transfers_in)}
+                              </td>
+
+                              {/* Sales */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {formatNumber(item.sales)}
+                              </td>
+
+                              {/* Waste */}
+                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                                {formatNumber(item.waste)}
+                              </td>
+
+                              {/* Closing Stock - EDITABLE */}
+                              <td 
+                                className="px-2 py-2.5 text-xs text-center whitespace-nowrap"
+                                style={{ height: '45px' }}
+                              >
+                                <div className="flex justify-center">
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={currentClosingStock !== null ? currentClosingStock : ''}
+                                    onChange={(e) => handleClosingStockChange(item.id, e.target.value)}
+                                    onFocus={(e) => {
+                                      if (!editingValue) {
+                                        setEditingValues(prev => ({
+                                          ...prev,
+                                          [item.id]: {
+                                            closingStock: item.counted_quantity || undefined,
+                                            comments: item.notes || undefined,
+                                          },
+                                        }));
+                                      }
+                                    }}
+                                    className="w-20 h-7 text-xs bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500/50"
+                                    placeholder="0.00"
+                                  />
+                                </div>
+                              </td>
+
+                              {/* Variance Units */}
+                              <td className={`px-2 py-2.5 text-xs text-center font-medium ${
+                                varianceQuantity !== null && varianceQuantity < 0 
+                                  ? 'text-red-600 dark:text-red-400' 
+                                  : varianceQuantity !== null && varianceQuantity > 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-900 dark:text-white'
+                              }`} style={{ height: '45px' }}>
+                                {formatNumber(varianceQuantity)}
+                              </td>
+
+                              {/* Variance Cost */}
+                              <td className={`px-2 py-2.5 text-xs text-center font-medium ${
+                                varianceValue !== null && varianceValue < 0 
+                                  ? 'text-red-600 dark:text-red-400' 
+                                  : varianceValue !== null && varianceValue > 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-900 dark:text-white'
+                              }`} style={{ height: '45px' }}>
+                                {formatNumber(varianceValue)}
+                              </td>
+
+                              {/* Variance Percentage */}
+                              <td className={`px-2 py-2.5 text-xs text-center font-medium ${
+                                variancePercentage !== null && variancePercentage < 0 
+                                  ? 'text-red-600 dark:text-red-400' 
+                                  : variancePercentage !== null && variancePercentage > 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-900 dark:text-white'
+                              }`} style={{ height: '45px' }}>
+                                {variancePercentage !== null ? `${formatNumber(variancePercentage, 2)}%` : '—'}
+                              </td>
+
+                              {/* Variance Cost Percent */}
+                              <td className={`px-2 py-2.5 text-xs text-center font-medium ${
+                                varianceCostPercent !== null && varianceCostPercent < 0 
+                                  ? 'text-red-600 dark:text-red-400' 
+                                  : varianceCostPercent !== null && varianceCostPercent > 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-900 dark:text-white'
+                              }`} style={{ height: '45px' }}>
+                                {varianceCostPercent !== null ? `${formatNumber(varianceCostPercent, 2)}%` : '—'}
+                              </td>
+
+                              {/* Comments - EDITABLE */}
+                              <td 
+                                className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
+                                style={{ height: '45px' }}
+                              >
+                                <div className="flex justify-center">
+                                  <Input
+                                    type="text"
+                                    value={currentComments || ''}
+                                    onChange={(e) => handleCommentsChange(item.id, e.target.value)}
+                                    onFocus={(e) => {
+                                      if (!editingValue) {
+                                        setEditingValues(prev => ({
+                                          ...prev,
+                                          [item.id]: {
+                                            closingStock: item.counted_quantity || undefined,
+                                            comments: item.notes || undefined,
+                                            reviewerComment: (item as any).reviewer_comment || undefined,
+                                          },
+                                        }));
+                                      }
+                                    }}
+                                    className="w-24 h-7 text-xs bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500/50"
+                                    placeholder="Comment..."
+                                  />
+                                </div>
+                              </td>
+
+                              {/* Reviewer Comment - Only show if pending review */}
+                              {count?.status === 'pending_review' && (
+                                <td 
+                                  className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
+                                  style={{ height: '45px' }}
+                                >
+                                  <div className="flex justify-center">
+                                    <Input
+                                      type="text"
+                                      value={currentReviewerComment}
+                                      onChange={(e) => handleReviewerCommentChange(item.id, e.target.value)}
+                                      onFocus={(e) => {
+                                        if (!editingValue) {
+                                          setEditingValues(prev => ({
+                                            ...prev,
+                                            [item.id]: {
+                                              closingStock: item.counted_quantity || undefined,
+                                              comments: item.notes || undefined,
+                                              reviewerComment: (item as any).reviewer_comment || undefined,
+                                            },
+                                          }));
+                                        }
+                                      }}
+                                      className="w-32 h-7 text-xs bg-amber-50 dark:bg-amber-600/10 border-amber-200 dark:border-amber-600/30 text-gray-900 dark:text-white focus:ring-1 focus:ring-amber-500/50"
+                                      placeholder="Reviewer note..."
+                                    />
+                                  </div>
+                                </td>
+                              )}
+
+                              {/* Actions */}
+                              <td className="px-2 py-2.5 text-center" style={{ height: '45px' }}>
+                                {hasChanges && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleSaveItem(item)}
+                                    disabled={saving === item.id}
+                                    loading={saving === item.id}
+                                    className="h-6 px-2"
+                                  >
+                                    {saving === item.id ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <Save className="h-3 w-3" />
+                                    )}
+                                  </Button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+        </div>
+      </div>
+
+      {/* Rejection Modal */}
+      {showRejectionModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Reject Stock Count
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Please provide a reason for rejecting this stock count. This will allow the count to be corrected and resubmitted.
+            </p>
+            <textarea
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="Enter rejection reason..."
+              className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+            />
+            <div className="flex gap-2 mt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowRejectionModal(false);
+                  setRejectionReason('');
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmReject}
+                disabled={!rejectionReason.trim() || processing}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                {processing ? 'Rejecting...' : 'Reject Count'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

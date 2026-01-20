@@ -130,3 +130,12 @@ After fixes, when you create/update Shelly:
 1. **Check terminal logs** when creating Shelly - look for email-related messages
 2. **Check Inbucket** at http://localhost:54324
 3. **Report what you see** - this will help identify the exact issue
+
+
+
+
+
+
+
+
+

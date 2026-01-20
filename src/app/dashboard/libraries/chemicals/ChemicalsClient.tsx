@@ -204,7 +204,14 @@ export default function ChemicalsClient() {
       pack_size: item.pack_size || '',
       storage_requirements: item.storage_requirements || '',
       linked_risks: item.linked_risks || [],
-      notes: item.notes || ''
+      notes: item.notes || '',
+      // Stockly fields
+      track_stock: item.track_stock ?? false,
+      current_stock: item.current_stock ?? '',
+      par_level: item.par_level ?? '',
+      reorder_point: item.reorder_point ?? '',
+      reorder_qty: item.reorder_qty ?? '',
+      sku: item.sku || ''
     });
     // Ensure row is expanded while editing
     setExpandedRows(prev => new Set(prev).add(item.id));
@@ -219,10 +226,61 @@ export default function ChemicalsClient() {
     if (!rowDraft) return;
     try {
       setLoading(true);
+      const unitCostRaw = rowDraft.unit_cost;
+      const unitCostVal = unitCostRaw === '' || unitCostRaw === null || unitCostRaw === undefined
+        ? null
+        : parseFloat(String(unitCostRaw));
+      if (unitCostVal !== null && Number.isNaN(unitCostVal)) { console.error('Validation error: Unit cost must be a number'); return; }
+
+      const currentStockRaw = rowDraft.current_stock;
+      const currentStockVal = currentStockRaw === '' || currentStockRaw === null || currentStockRaw === undefined
+        ? 0
+        : parseFloat(String(currentStockRaw));
+      const parLevelRaw = rowDraft.par_level;
+      const parLevelVal = parLevelRaw === '' || parLevelRaw === null || parLevelRaw === undefined
+        ? null
+        : parseFloat(String(parLevelRaw));
+      const reorderPointRaw = rowDraft.reorder_point;
+      const reorderPointVal = reorderPointRaw === '' || reorderPointRaw === null || reorderPointRaw === undefined
+        ? null
+        : parseFloat(String(reorderPointRaw));
+      const reorderQtyRaw = rowDraft.reorder_qty;
+      const reorderQtyVal = reorderQtyRaw === '' || reorderQtyRaw === null || reorderQtyRaw === undefined
+        ? null
+        : parseFloat(String(reorderQtyRaw));
+
+      const hazardSymbolsVal = Array.isArray(rowDraft.hazard_symbols)
+        ? rowDraft.hazard_symbols.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+      const requiredPPEVal = Array.isArray(rowDraft.required_ppe)
+        ? rowDraft.required_ppe.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+      const linkedRisksVal = Array.isArray(rowDraft.linked_risks)
+        ? rowDraft.linked_risks.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+
       const payload: any = {
-        ...rowDraft,
-        company_id: companyId,
-        unit_cost: rowDraft.unit_cost === '' ? null : parseFloat(rowDraft.unit_cost)
+        product_name: rowDraft.product_name?.trim() || null,
+        manufacturer: rowDraft.manufacturer?.trim() || null,
+        use_case: rowDraft.use_case?.trim() || null,
+        hazard_symbols: hazardSymbolsVal,
+        dilution_ratio: rowDraft.dilution_ratio?.trim() || null,
+        contact_time: rowDraft.contact_time?.trim() || null,
+        required_ppe: requiredPPEVal,
+        supplier: rowDraft.supplier?.trim() || null,
+        unit_cost: unitCostVal,
+        pack_size: rowDraft.pack_size?.trim() || null,
+        storage_requirements: rowDraft.storage_requirements?.trim() || null,
+        linked_risks: linkedRisksVal,
+        notes: rowDraft.notes?.trim() || null,
+        // Stockly fields
+        track_stock: rowDraft.track_stock ?? false,
+        current_stock: currentStockVal,
+        par_level: parLevelVal,
+        reorder_point: reorderPointVal,
+        reorder_qty: reorderQtyVal,
+        sku: rowDraft.sku?.trim() || null,
+        company_id: companyId
       };
       if (newRowIds.has(id)) {
         // Insert new
@@ -299,6 +357,12 @@ export default function ChemicalsClient() {
     'linked_risks',
     'first_aid_instructions',
     'environmental_info',
+    'track_stock',
+    'current_stock',
+    'par_level',
+    'reorder_point',
+    'reorder_qty',
+    'sku',
     'notes'
   ];
 
@@ -408,6 +472,18 @@ export default function ChemicalsClient() {
         const productName = rowsRow[headerIndex['product_name']] ?? '';
         if (!productName || !productName.trim()) continue; // skip empty rows
         const unitCostRaw = rowsRow[headerIndex['unit_cost']];
+        const unitCostVal = unitCostRaw && unitCostRaw.trim() !== '' ? Number(unitCostRaw) : null;
+        const trackStockRaw = rowsRow[headerIndex['track_stock']];
+        const trackStockVal = trackStockRaw && (trackStockRaw.trim().toLowerCase() === 'true' || trackStockRaw.trim() === '1');
+        const currentStockRaw = rowsRow[headerIndex['current_stock']];
+        const currentStockVal = currentStockRaw && currentStockRaw.trim() !== '' ? Number(currentStockRaw) : 0;
+        const parLevelRaw = rowsRow[headerIndex['par_level']];
+        const parLevelVal = parLevelRaw && parLevelRaw.trim() !== '' ? Number(parLevelRaw) : null;
+        const reorderPointRaw = rowsRow[headerIndex['reorder_point']];
+        const reorderPointVal = reorderPointRaw && reorderPointRaw.trim() !== '' ? Number(reorderPointRaw) : null;
+        const reorderQtyRaw = rowsRow[headerIndex['reorder_qty']];
+        const reorderQtyVal = reorderQtyRaw && reorderQtyRaw.trim() !== '' ? Number(reorderQtyRaw) : null;
+        
         prepared.push({
           company_id: companyId,
           product_name: productName.trim(),
@@ -419,12 +495,18 @@ export default function ChemicalsClient() {
           required_ppe: normaliseArrayCell(rowsRow[headerIndex['required_ppe']]).length ? normaliseArrayCell(rowsRow[headerIndex['required_ppe']]) : null,
           coshh_sheet_url: rowsRow[headerIndex['coshh_sheet_url']] ?? null,
           supplier: rowsRow[headerIndex['supplier']] ?? null,
-          unit_cost: unitCostRaw && unitCostRaw.trim() !== '' ? Number(unitCostRaw) : null,
+          unit_cost: unitCostVal,
           pack_size: rowsRow[headerIndex['pack_size']] ?? null,
           storage_requirements: rowsRow[headerIndex['storage_requirements']] ?? null,
           linked_risks: normaliseArrayCell(rowsRow[headerIndex['linked_risks']]).length ? normaliseArrayCell(rowsRow[headerIndex['linked_risks']]) : null,
           first_aid_instructions: rowsRow[headerIndex['first_aid_instructions']] ?? null,
           environmental_info: rowsRow[headerIndex['environmental_info']] ?? null,
+          track_stock: trackStockVal,
+          current_stock: currentStockVal,
+          par_level: parLevelVal,
+          reorder_point: reorderPointVal,
+          reorder_qty: reorderQtyVal,
+          sku: rowsRow[headerIndex['sku']]?.trim() || null,
           notes: rowsRow[headerIndex['notes']] ?? null,
         });
       }
@@ -463,7 +545,7 @@ export default function ChemicalsClient() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-red-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">Chemicals Library</h1>
               <p className="text-sm text-neutral-400">Manage cleaning chemicals and COSHH data</p>
@@ -588,7 +670,12 @@ export default function ChemicalsClient() {
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, product_name: e.target.value }))}
                           />
                         ) : (
-                          item.product_name
+                          <div className="flex items-center gap-2">
+                            <span>{item.product_name}</span>
+                            {item.supplier && (
+                              <span className="text-neutral-400 text-sm">• {item.supplier}</span>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
@@ -756,6 +843,74 @@ export default function ChemicalsClient() {
                                 <div className="text-sm text-white">{(item.linked_risks || []).join(', ') || '-'}</div>
                               )}
                             </div>
+                            
+                            {/* Stockly Fields Section */}
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-neutral-300 mb-2 uppercase">Stock Management</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div className="flex items-center gap-2">
+                                  {editingRowId === item.id ? (
+                                    <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-magenta-500 focus:ring-magenta-500" />
+                                  ) : (
+                                    <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-neutral-600 bg-neutral-800" />
+                                  )}
+                                  <label className="text-xs text-neutral-400">Track Stock</label>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">SKU</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.sku || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Current Stock</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.current_stock != null ? item.current_stock : '0'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Par Level</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.par_level != null ? item.par_level : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Reorder Point</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Reorder Qty</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                              )}
+                            </div>
+                            {item.low_stock_alert && (
+                              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                                <div className="text-xs text-red-400 font-semibold">⚠️ Low Stock Alert</div>
+                              </div>
+                            )}
+                            {item.stock_value != null && item.stock_value > 0 && (
+                              <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                                <div className="text-xs text-neutral-400">Stock Value</div>
+                                <div className="text-sm text-white">£{item.stock_value.toFixed(2)}</div>
+                              </div>
+                            )}
+                            
                             <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
                               <div className="text-xs text-neutral-400">Notes</div>
                               {editingRowId === item.id ? (

@@ -140,18 +140,24 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
     try {
       let query = supabase
         .from('product_variants')
-        .select('id, supplier_code, product_name, stock_item_id, current_price, stock_item:stock_items(id, name)')
-        .eq('supplier_id', supplierId);
+        .select('id, supplier_code, supplier_description, stock_item_id, unit_cost, unit_price, stock_item:stock_items(id, name)')
+        .eq('supplier_id', supplierId)
+        .eq('is_active', true);
 
       if (search) {
-        query = query.or(`product_name.ilike.%${search}%,supplier_code.ilike.%${search}%`);
+        query = query.or(`supplier_description.ilike.%${search}%,supplier_code.ilike.%${search}%`);
       }
 
       query = query.limit(50);
 
       const { data, error } = await query;
       if (error) throw error;
-      setProductVariants((data || []) as ProductVariant[]);
+      // Map unit_cost/unit_price to current_price for compatibility, and supplier_description to product_name
+      setProductVariants((data || []).map((v: any) => ({ 
+        ...v, 
+        current_price: v.unit_cost || v.unit_price || 0,
+        product_name: v.supplier_description || v.stock_item?.name || ''
+      })) as ProductVariant[]);
     } catch (error: any) {
       console.error('Error fetching product variants:', error);
     }
@@ -693,4 +699,13 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
     </Dialog>
   );
 }
+
+
+
+
+
+
+
+
+
 

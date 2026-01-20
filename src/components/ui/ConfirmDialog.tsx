@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle } from 'lucide-react';
@@ -9,7 +10,7 @@ interface ConfirmDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   confirmText?: string;
   cancelText?: string;
   variant?: 'default' | 'destructive';
@@ -41,7 +42,11 @@ export default function ConfirmDialog({
         </DialogHeader>
         
         <div className="py-4">
-          <p className="text-neutral-300">{description}</p>
+          {typeof description === 'string' ? (
+            <p className="text-neutral-300">{description}</p>
+          ) : (
+            <div className="text-neutral-300">{description}</div>
+          )}
         </div>
         
         <div className="flex justify-end gap-3">

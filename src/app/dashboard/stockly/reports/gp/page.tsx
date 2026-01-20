@@ -103,7 +103,8 @@ export default function GPReportPage() {
         .order('week_start', { ascending: false })
         .limit(12);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
       
@@ -188,7 +189,8 @@ export default function GPReportPage() {
         .order('month_start', { ascending: false })
         .limit(12);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
       
@@ -251,7 +253,8 @@ export default function GPReportPage() {
         .eq('company_id', companyId)
         .eq('month_start', currentMonth);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
       
@@ -399,7 +402,7 @@ export default function GPReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -414,13 +417,13 @@ export default function GPReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Gross Profit Report</h1>
-            <p className="text-white/60 text-sm mt-1">Revenue vs Cost of Goods analysis</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Gross Profit Report</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Revenue vs Cost of Goods analysis</p>
           </div>
         </div>
         
@@ -428,20 +431,20 @@ export default function GPReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
           <button 
             onClick={handleExportExcel}
-            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 hover:bg-green-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 dark:bg-green-500/10 border border-green-500/30 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-500/20 dark:hover:bg-green-500/20 transition-colors text-sm"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Excel
           </button>
           <button 
             onClick={handleExportPdf}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -451,16 +454,16 @@ export default function GPReportPage() {
 
       {/* No Data State */}
       {weeklyData.length === 0 && monthlyData.length === 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Receipt className="w-16 h-16 text-white/20 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">No GP Data Available</h3>
-          <p className="text-white/60 max-w-md mx-auto mb-6">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Receipt className="w-16 h-16 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No GP Data Available</h3>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto mb-6">
             Import sales data from your POS system to calculate Gross Profit. 
             GP is calculated from Revenue minus Cost of Goods (deliveries).
           </p>
           <Link 
             href="/dashboard/stockly/sales"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#EC4899] hover:bg-emerald-700 dark:hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
           >
             <DollarSign className="w-4 h-4" />
             Import Sales Data
@@ -472,39 +475,39 @@ export default function GPReportPage() {
         <>
           {/* KPI Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+            <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-green-500/10 rounded-lg">
-                  <DollarSign className="w-5 h-5 text-green-400" />
+                  <DollarSign className="w-5 h-5 text-green-500 dark:text-green-400" />
                 </div>
-                <span className="text-white/60 text-sm">Revenue (4 wk)</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Revenue (4 wk)</span>
               </div>
-              <p className="text-2xl font-bold text-white">{formatCurrency(summary.totalRevenue)}</p>
+              <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(summary.totalRevenue)}</p>
             </div>
             
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+            <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-blue-400" />
+                  <TrendingUp className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 </div>
-                <span className="text-white/60 text-sm">Gross Profit</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Gross Profit</span>
               </div>
-              <p className="text-2xl font-bold text-white">{formatCurrency(summary.totalProfit)}</p>
+              <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(summary.totalProfit)}</p>
             </div>
             
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+            <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-[#EC4899]/10 rounded-lg">
-                  <Percent className="w-5 h-5 text-[#EC4899]" />
+                <div className="p-2 bg-emerald-500/10 dark:bg-[#EC4899]/10 rounded-lg">
+                  <Percent className="w-5 h-5 text-emerald-600 dark:text-[#EC4899]" />
                 </div>
-                <span className="text-white/60 text-sm">Average GP %</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Average GP %</span>
               </div>
               <div className="flex items-center gap-2">
                 <p className={`text-2xl font-bold ${getGpColor(summary.avgGP)}`}>
                   {summary.avgGP.toFixed(1)}%
                 </p>
                 {summary.gpTrend !== 0 && (
-                  <span className={`text-sm flex items-center ${summary.gpTrend > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className={`text-sm flex items-center ${summary.gpTrend > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {summary.gpTrend > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                     {Math.abs(summary.gpTrend).toFixed(1)}%
                   </span>
@@ -512,25 +515,25 @@ export default function GPReportPage() {
               </div>
             </div>
             
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+            <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Users className="w-5 h-5 text-purple-400" />
+                  <Users className="w-5 h-5 text-purple-500 dark:text-purple-400" />
                 </div>
-                <span className="text-white/60 text-sm">Avg Per Cover</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Avg Per Cover</span>
               </div>
-              <p className="text-2xl font-bold text-white">{formatCurrency(summary.avgPerCover)}</p>
+              <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(summary.avgPerCover)}</p>
             </div>
           </div>
 
           {/* GP Target Indicator */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+          <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-white/60" />
-                <span className="text-white font-medium">GP Target: {summary.targetGP}%</span>
+                <Target className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+                <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">GP Target: {summary.targetGP}%</span>
               </div>
-              <span className={`flex items-center gap-1 ${summary.avgGP >= summary.targetGP ? 'text-green-400' : 'text-red-400'}`}>
+              <span className={`flex items-center gap-1 ${summary.avgGP >= summary.targetGP ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {summary.avgGP >= summary.targetGP ? (
                   <><CheckCircle2 className="w-4 h-4" /> On Target</>
                 ) : (
@@ -538,17 +541,17 @@ export default function GPReportPage() {
                 )}
               </span>
             </div>
-            <div className="relative h-4 bg-white/10 rounded-full overflow-hidden">
+            <div className="relative h-4 bg-theme-button dark:bg-white/10 rounded-full overflow-hidden">
               <div 
                 className={`absolute left-0 top-0 h-full rounded-full transition-all ${getGpBgColor(summary.avgGP)}`}
                 style={{ width: `${Math.min(summary.avgGP, 100)}%` }}
               />
               <div 
-                className="absolute top-0 w-0.5 h-full bg-white/60"
+                className="absolute top-0 w-0.5 h-full bg-[rgb(var(--text-secondary))] dark:bg-white/60"
                 style={{ left: `${summary.targetGP}%` }}
               />
             </div>
-            <div className="flex justify-between mt-1 text-xs text-white/40">
+            <div className="flex justify-between mt-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
               <span>0%</span>
               <span>50%</span>
               <span>100%</span>
@@ -556,15 +559,15 @@ export default function GPReportPage() {
           </div>
 
           {/* View Toggle */}
-          <div className="flex bg-white/5 rounded-lg p-1 w-fit">
+          <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1 w-fit">
             {(['weekly', 'monthly'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   viewMode === mode
-                    ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                    : 'text-white/60 hover:text-white'
+                    ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                 }`}
               >
                 {mode === 'weekly' ? 'Weekly' : 'Monthly'}
@@ -573,13 +576,13 @@ export default function GPReportPage() {
           </div>
 
           {/* Trend Chart */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">
+          <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">
               {viewMode === 'weekly' ? 'Weekly' : 'Monthly'} GP Trend
             </h2>
             
             {displayData.length === 0 ? (
-              <div className="text-center py-8 text-white/40">
+              <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
                 No data available for this period
               </div>
             ) : (
@@ -610,7 +613,7 @@ export default function GPReportPage() {
                             title={`COGS: ${formatCurrency(item.cost_of_goods)}`}
                           />
                         </div>
-                        <span className="text-xs text-white/40 mt-1">{label}</span>
+                        <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">{label}</span>
                       </div>
                     );
                   })}
@@ -620,11 +623,11 @@ export default function GPReportPage() {
                 <div className="flex items-center justify-center gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-green-500/80" />
-                    <span className="text-white/60">Gross Profit</span>
+                    <span className="text-[rgb(var(--text-secondary))] dark:text-white/60">Gross Profit</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-red-500/60" />
-                    <span className="text-white/60">Cost of Goods</span>
+                    <span className="text-[rgb(var(--text-secondary))] dark:text-white/60">Cost of Goods</span>
                   </div>
                 </div>
               </div>
@@ -632,43 +635,43 @@ export default function GPReportPage() {
           </div>
 
           {/* Data Table */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/[0.06]">
-              <h2 className="text-lg font-semibold text-white">
+          <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-theme dark:border-white/[0.06]">
+              <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                 {viewMode === 'weekly' ? 'Weekly' : 'Monthly'} Breakdown
               </h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-white/60">
+                  <tr className="border-b border-theme dark:border-white/[0.06]">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
                       {viewMode === 'weekly' ? 'Week Starting' : 'Month'}
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Revenue</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">COGS</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Gross Profit</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">GP %</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Covers</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Avg/Cover</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Revenue</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">COGS</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Gross Profit</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">GP %</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Covers</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Avg/Cover</th>
                   </tr>
                 </thead>
                 <tbody>
                   {displayData.slice().reverse().map((item, index) => (
-                    <tr key={index} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                      <td className="px-4 py-3 text-white font-medium">
+                    <tr key={index} className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]">
+                      <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white font-medium">
                         {viewMode === 'weekly' 
                           ? formatDate(item.week_start)
                           : (item as MonthlyGP).month_name
                         }
                       </td>
-                      <td className="px-4 py-3 text-right text-white">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white">
                         {formatCurrency(item.revenue)}
                       </td>
-                      <td className="px-4 py-3 text-right text-white/70">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/70">
                         {formatCurrency(item.cost_of_goods)}
                       </td>
-                      <td className="px-4 py-3 text-right text-white">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white">
                         {formatCurrency(item.gross_profit)}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -676,10 +679,10 @@ export default function GPReportPage() {
                           {item.gp_percentage.toFixed(1)}%
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right text-white/70">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/70">
                         {item.total_covers.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-right text-white/70">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/70">
                         {formatCurrency(item.revenue_per_cover)}
                       </td>
                     </tr>
@@ -691,35 +694,35 @@ export default function GPReportPage() {
 
           {/* Category Breakdown */}
           {categoryData.length > 0 && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/[0.06]">
-                <h2 className="text-lg font-semibold text-white">GP by Category (This Month)</h2>
+            <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-theme dark:border-white/[0.06]">
+                <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">GP by Category (This Month)</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Revenue</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Cost</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">GP</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">GP %</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Items Sold</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Revenue</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Cost</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">GP</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">GP %</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items Sold</th>
                     </tr>
                   </thead>
                   <tbody>
                     {categoryData.map((cat, index) => (
-                      <tr key={index} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                        <td className="px-4 py-3 text-white font-medium">
+                      <tr key={index} className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]">
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white font-medium">
                           {cat.category_name || 'Uncategorised'}
                         </td>
-                        <td className="px-4 py-3 text-right text-white">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white">
                           {formatCurrency(cat.revenue)}
                         </td>
-                        <td className="px-4 py-3 text-right text-white/70">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/70">
                           {formatCurrency(cat.cost || 0)}
                         </td>
-                        <td className="px-4 py-3 text-right text-white">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white">
                           {formatCurrency(cat.gross_profit)}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -727,7 +730,7 @@ export default function GPReportPage() {
                             {cat.gp_percentage.toFixed(1)}%
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right text-white/70">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/70">
                           {cat.items_sold.toLocaleString()}
                         </td>
                       </tr>

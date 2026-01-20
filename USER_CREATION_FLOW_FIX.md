@@ -102,3 +102,15 @@ This ensures:
 
 1. `supabase/sql/rls_policies_authoritative.sql` - Updated profiles RLS policies
 2. `src/components/users/AddUserModal.tsx` - Improved refresh flow and form reset
+
+
+
+
+
+
+
+
+
+
+
+

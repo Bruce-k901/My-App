@@ -95,10 +95,11 @@ export default function VarianceReportPage() {
         .from('stock_counts')
         .select('*')
         .eq('company_id', companyId)
-        .in('status', ['approved', 'pending_approval'])
+        .in('status', ['approved', 'pending_approval', 'completed', 'finalized', 'finalised', 'locked'])
         .order('completed_at', { ascending: false });
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
       
@@ -164,18 +165,63 @@ export default function VarianceReportPage() {
     if (!companyId) return;
     
     try {
-      // Fetch stock count items (views don't support foreign key relationships)
-      let query = supabase
+      // First, get stock counts filtered by company_id and site_id (respects RLS)
+      let stockCountsQuery = supabase
+        .from('stock_counts')
+        .select('id, company_id, site_id, status')
+        .eq('company_id', companyId)
+        .in('status', ['approved', 'pending_approval', 'completed', 'finalized', 'finalised', 'locked']);
+      
+      if (siteId) {
+        stockCountsQuery = stockCountsQuery.eq('site_id', siteId);
+      }
+      
+      const { data: stockCountsData, error: countsError } = await stockCountsQuery;
+      
+      if (countsError) {
+        const errorDetails: any = {
+          query: 'stock_counts (for variance)',
+          companyId: companyId,
+          siteId: siteId,
+          message: countsError?.message || 'No message',
+          code: countsError?.code || 'NO_CODE',
+          details: countsError?.details || 'No details',
+          hint: countsError?.hint || 'No hint',
+        };
+        
+        try {
+          errorDetails.fullError = JSON.stringify(countsError, Object.getOwnPropertyNames(countsError));
+        } catch (e) {
+          errorDetails.fullError = 'Could not serialize error';
+        }
+        
+        console.error('Error fetching stock counts:', errorDetails);
+        toast.error(countsError?.message || 'Failed to load stock counts');
+        setVarianceItems([]);
+        return;
+      }
+
+      if (!stockCountsData || stockCountsData.length === 0) {
+        setVarianceItems([]);
+        return;
+      }
+
+      // Get stock count IDs
+      const stockCountIds = stockCountsData.map(sc => sc.id);
+      const stockCountsMap = new Map(stockCountsData.map(sc => [sc.id, sc]));
+
+      // Now fetch stock count items for those stock count IDs
+      const { data: itemsData, error: itemsError } = await supabase
         .from('stock_count_items')
         .select('*')
+        .in('stock_count_id', stockCountIds)
         .eq('is_counted', true)
         .neq('variance_quantity', 0);
-      
-      const { data: itemsData, error: itemsError } = await query;
       
       if (itemsError) {
         const errorDetails: any = {
           query: 'stock_count_items',
+          stockCountIds: stockCountIds.length,
           message: itemsError?.message || 'No message',
           code: itemsError?.code || 'NO_CODE',
           details: itemsError?.details || 'No details',
@@ -199,49 +245,8 @@ export default function VarianceReportPage() {
         return;
       }
 
-      // Fetch stock counts
-      const stockCountIds = [...new Set(itemsData.map(item => item.stock_count_id).filter(Boolean))];
-      let stockCountsData: any[] = [];
-      if (stockCountIds.length > 0) {
-        const { data, error: countsError } = await supabase
-          .from('stock_counts')
-          .select('*')
-          .in('id', stockCountIds)
-          .eq('company_id', companyId);
-        
-        if (countsError) {
-          const errorDetails: any = {
-            query: 'stock_counts (for variance)',
-            companyId: companyId,
-            message: countsError?.message || 'No message',
-            code: countsError?.code || 'NO_CODE',
-            details: countsError?.details || 'No details',
-            hint: countsError?.hint || 'No hint',
-          };
-          
-          try {
-            errorDetails.fullError = JSON.stringify(countsError, Object.getOwnPropertyNames(countsError));
-          } catch (e) {
-            errorDetails.fullError = 'Could not serialize error';
-          }
-          
-          console.error('Error fetching stock counts:', errorDetails);
-          throw countsError;
-        }
-        stockCountsData = data || [];
-      }
-      
-      const stockCountsMap = new Map(stockCountsData.map(sc => [sc.id, sc]));
-
-      // Filter items by stock count company_id and site_id
-      const filteredItems = itemsData.filter(item => {
-        const count = stockCountsMap.get(item.stock_count_id);
-        if (!count) return false;
-        if (count.company_id !== companyId) return false;
-        if (siteId && count.site_id !== siteId) return false;
-        if (!['approved', 'pending_approval'].includes(count.status)) return false;
-        return true;
-      });
+      // Items are already filtered by stock count IDs, so they're valid
+      const filteredItems = itemsData;
 
       if (filteredItems.length === 0) {
         setVarianceItems([]);
@@ -480,7 +485,7 @@ export default function VarianceReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -492,13 +497,13 @@ export default function VarianceReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Variance Analysis</h1>
-            <p className="text-white/60 text-sm mt-1">Stock count variances and shrinkage</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Variance Analysis</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Stock count variances and shrinkage</p>
           </div>
         </div>
         
@@ -506,7 +511,7 @@ export default function VarianceReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -519,7 +524,7 @@ export default function VarianceReportPage() {
           </button>
           <button 
             onClick={handleExportPdf}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -530,9 +535,9 @@ export default function VarianceReportPage() {
       {/* No Data State */}
       {stockCounts.length === 0 && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <ClipboardList className="w-16 h-16 text-white/20 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">No Stock Counts Completed</h3>
-          <p className="text-white/60 max-w-md mx-auto mb-6">
+          <ClipboardList className="w-16 h-16 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No Stock Counts Completed</h3>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto mb-6">
             Complete and approve a stock count to see variance analysis. 
             Variances show the difference between expected and actual stock levels.
           </p>
@@ -555,7 +560,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-orange-500/10 rounded-lg">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
                 </div>
-                <span className="text-white/60 text-sm">Total Variance</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Total Variance</span>
               </div>
               <p className={`text-2xl font-bold ${summary.totalVariance < 0 ? 'text-red-400' : summary.totalVariance > 0 ? 'text-green-400' : 'text-white'}`}>
                 {formatCurrency(summary.totalVariance)}
@@ -567,7 +572,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-red-500/10 rounded-lg">
                   <TrendingDown className="w-5 h-5 text-red-400" />
                 </div>
-                <span className="text-white/60 text-sm">Shrinkage</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Shrinkage</span>
               </div>
               <p className="text-2xl font-bold text-red-400">
                 {formatCurrency(summary.negativeVariance)}
@@ -579,7 +584,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-green-500/10 rounded-lg">
                   <TrendingUp className="w-5 h-5 text-green-400" />
                 </div>
-                <span className="text-white/60 text-sm">Overage</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Overage</span>
               </div>
               <p className="text-2xl font-bold text-green-400">
                 {formatCurrency(summary.positiveVariance)}
@@ -591,9 +596,9 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-purple-500/10 rounded-lg">
                   <Package className="w-5 h-5 text-purple-400" />
                 </div>
-                <span className="text-white/60 text-sm">Items w/ Variance</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Items w/ Variance</span>
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
                 {summary.itemsWithVariance}
               </p>
             </div>
@@ -604,7 +609,7 @@ export default function VarianceReportPage() {
             <select
               value={selectedCount}
               onChange={(e) => setSelectedCount(e.target.value)}
-              className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+              className="px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
             >
               <option value="all">All Stock Counts</option>
               {stockCounts.map(count => (
@@ -621,8 +626,8 @@ export default function VarianceReportPage() {
                   onClick={() => setViewMode(mode)}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     viewMode === mode
-                      ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                      : 'text-white/60 hover:text-white'
+                    ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                   }`}
                 >
                   {mode === 'items' ? 'By Item' : mode === 'categories' ? 'By Category' : 'By Count'}
@@ -637,13 +642,13 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Item</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Expected</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Counted</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Variance</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60">Item</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Expected</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Counted</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Variance</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -652,11 +657,11 @@ export default function VarianceReportPage() {
                         <td className="px-4 py-3">
                           <div>
                             <span className="text-white font-medium">{item.item_name}</span>
-                            <span className="text-white/40 text-xs ml-2">{item.count_number}</span>
+                            <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-xs ml-2">{item.count_number}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-white/70">{item.category_name}</td>
-                        <td className="px-4 py-3 text-right text-white/70">
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{item.category_name}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">
                           {item.expected_quantity} {item.unit}
                         </td>
                         <td className="px-4 py-3 text-right text-white">
@@ -691,7 +696,7 @@ export default function VarianceReportPage() {
                 <div className="p-12 text-center">
                   <Package className="w-12 h-12 text-green-400/30 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-white mb-2">No Variances</h3>
-                  <p className="text-white/60">All counted items matched expected quantities</p>
+                  <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">All counted items matched expected quantities</p>
                 </div>
               )}
             </div>
@@ -703,19 +708,19 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Items</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Shrinkage</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Overage</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Net Variance</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Shrinkage</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Overage</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Net Variance</th>
                     </tr>
                   </thead>
                   <tbody>
                     {categoryVariance.map((cat) => (
                       <tr key={cat.category_name} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                        <td className="px-4 py-3 text-white font-medium">{cat.category_name}</td>
-                        <td className="px-4 py-3 text-right text-white/70">{cat.item_count}</td>
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white font-medium">{cat.category_name}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{cat.item_count}</td>
                         <td className="px-4 py-3 text-right text-red-400">{cat.negative_count}</td>
                         <td className="px-4 py-3 text-right text-green-400">{cat.positive_count}</td>
                         <td className="px-4 py-3 text-right">
@@ -740,13 +745,13 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Count #</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Type</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Completed</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Items</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Variance</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Status</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Count #</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Type</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Completed</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Variance</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -760,9 +765,9 @@ export default function VarianceReportPage() {
                             {count.count_number}
                           </Link>
                         </td>
-                        <td className="px-4 py-3 text-white/70 capitalize">{count.count_type}</td>
-                        <td className="px-4 py-3 text-white/70">{formatDate(count.completed_at || '')}</td>
-                        <td className="px-4 py-3 text-right text-white/70">
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70 capitalize">{count.count_type}</td>
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{formatDate(count.completed_at || '')}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">
                           {count.items_counted}/{count.total_items}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -775,11 +780,15 @@ export default function VarianceReportPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            count.status === 'approved' 
-                              ? 'bg-green-500/10 text-green-400' 
-                              : 'bg-orange-500/10 text-orange-400'
+                            ['approved', 'completed', 'finalized', 'finalised', 'locked'].includes(count.status)
+                              ? 'bg-green-500/10 text-green-600 dark:text-green-400' 
+                              : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
                           }`}>
-                            {count.status === 'approved' ? 'Approved' : 'Pending'}
+                            {count.status === 'approved' ? 'Approved' : 
+                             count.status === 'completed' ? 'Completed' :
+                             count.status === 'finalized' || count.status === 'finalised' ? 'Finalized' :
+                             count.status === 'locked' ? 'Locked' :
+                             'Pending'}
                           </span>
                         </td>
                       </tr>

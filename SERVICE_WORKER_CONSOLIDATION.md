@@ -39,3 +39,15 @@ The main `sw.js` already handles admin routes (it caches `/admin/*` paths). We c
 3. Update `src/components/pwa/PWAProvider.tsx` to register on all routes
 4. Remove `AdminPWAProvider` from `src/app/admin/layout.tsx` and `src/app/admin/login/page.tsx`
 5. Update `sw.js` to ensure it properly handles admin routes
+
+
+
+
+
+
+
+
+
+
+
+

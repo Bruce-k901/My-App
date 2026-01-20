@@ -52,14 +52,14 @@ export function MessageInput({
         // Load conversation participants
         const { data: participantsData } = await supabase
           .from('messaging_channel_members')
-          .select('user_id')
+          .select('profile_id')
           .eq('channel_id', conversationId)
           .is('left_at', null);
 
         // Fetch profiles for participants
         let participants: MentionUser[] = [];
         if (participantsData && participantsData.length > 0) {
-          const userIds = participantsData.map((m: any) => m.user_id);
+          const userIds = participantsData.map((m: any) => m.profile_id || m.user_id);
           const { data: profilesData } = await supabase
             .from('profiles')
             .select('id, full_name, email')

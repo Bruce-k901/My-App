@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { exportWastageReport } from '@/lib/export-excel';
+import { exportWastagePdf } from '@/lib/export-pdf';
 
 interface WastageByReason {
   reason: string;
@@ -103,11 +105,44 @@ export default function WastageReportPage() {
           startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       }
 
-      // Get wastage records (views don't support foreign key relationships, fetch separately)
+      // Get wastage records - need to filter through waste_logs for RLS
+      // First get waste logs for the company and date range (with all needed fields)
+      let wasteLogsQuery = supabase
+        .from('waste_logs')
+        .select('id, company_id, site_id, waste_date, waste_reason, notes, total_cost, created_at')
+        .eq('company_id', companyId)
+        .gte('waste_date', startDate.toISOString().split('T')[0]);
+      
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
+        wasteLogsQuery = wasteLogsQuery.eq('site_id', siteId);
+      }
+      
+      const { data: wasteLogsData, error: logsError } = await wasteLogsQuery;
+      
+      if (logsError) {
+        console.error('Error fetching waste logs:', logsError);
+        toast.error('Failed to load waste logs');
+        setLoading(false);
+        return;
+      }
+      
+      if (!wasteLogsData || wasteLogsData.length === 0) {
+        setTotalWastage(0);
+        setTotalIncidents(0);
+        setByReason([]);
+        setByCategory([]);
+        setWastageItems([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Now get waste_log_lines for those waste_log_ids
+      const logIds = wasteLogsData.map(wl => wl.id);
       let query = supabase
         .from('waste_log_lines')
         .select('*')
-        .order('created_at', { ascending: false });
+        .in('waste_log_id', logIds);
       
       const { data: linesData, error: linesError } = await query;
       
@@ -172,47 +207,11 @@ export default function WastageReportPage() {
         return;
       }
 
-      // Fetch waste logs
-      const wasteLogIds = [...new Set(linesData.map(l => l.waste_log_id).filter(Boolean))];
-      let wasteLogsData: any[] = [];
-      if (wasteLogIds.length > 0) {
-        const { data, error: logsError } = await supabase
-          .from('waste_logs')
-          .select('*')
-          .in('id', wasteLogIds)
-          .eq('company_id', companyId)
-          .gte('waste_date', startDate.toISOString().split('T')[0]);
-        
-        if (logsError) {
-          const errorDetails: any = {
-            query: 'waste_logs',
-            message: logsError?.message || 'No message',
-            code: logsError?.code || 'NO_CODE',
-            details: logsError?.details || 'No details',
-            hint: logsError?.hint || 'No hint',
-          };
-          
-          try {
-            errorDetails.fullError = JSON.stringify(logsError, Object.getOwnPropertyNames(logsError));
-          } catch (e) {
-            errorDetails.fullError = 'Could not serialize error';
-          }
-          
-          console.error('Error fetching waste logs:', errorDetails);
-          throw logsError;
-        }
-        wasteLogsData = data || [];
-      }
-      
+      // We already have waste logs data from the first query
       const wasteLogsMap = new Map(wasteLogsData.map(wl => [wl.id, wl]));
       
-      // Filter lines by waste log company_id and date
-      const filteredLines = linesData.filter(line => {
-        const wasteLog = wasteLogsMap.get(line.waste_log_id);
-        if (!wasteLog) return false;
-        if (siteId && wasteLog.site_id !== siteId) return false;
-        return true;
-      });
+      // Lines are already filtered by waste_log_ids, so use them directly
+      const filteredLines = linesData || [];
 
       if (filteredLines.length === 0) {
         setTotalWastage(0);
@@ -444,7 +443,7 @@ export default function WastageReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -456,27 +455,36 @@ export default function WastageReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Wastage Report</h1>
-            <p className="text-white/60 text-sm mt-1">Stock wastage analysis by reason and category</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Wastage Report</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Stock wastage analysis by reason and category</p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/stockly/waste"
+            className="flex items-center gap-2 px-3 py-2 bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white transition-colors text-sm"
+          >
+            <Trash2 className="w-4 h-4" />
+            View Waste Log
+          </Link>
+          
+          <div className="flex items-center gap-3">
           {/* Date Range Selector */}
-          <div className="flex bg-white/5 rounded-lg p-1">
+          <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1">
             {(['week', 'month', 'quarter'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   dateRange === range
-                    ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                    : 'text-white/60 hover:text-white'
+                    ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                 }`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -487,7 +495,7 @@ export default function WastageReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -504,7 +512,7 @@ export default function WastageReportPage() {
                 toast.error('Failed to export Excel file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 hover:bg-green-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 dark:bg-green-500/10 border border-green-500/30 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-500/20 dark:hover:bg-green-500/20 transition-colors text-sm"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Excel
@@ -519,59 +527,60 @@ export default function WastageReportPage() {
                 toast.error('Failed to export PDF file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
           </button>
+          </div>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-red-500/10 rounded-lg">
-              <Trash2 className="w-5 h-5 text-red-400" />
+              <Trash2 className="w-5 h-5 text-red-500 dark:text-red-400" />
             </div>
-            <span className="text-white/60 text-sm">Total Wastage</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Total Wastage</span>
           </div>
-          <p className="text-3xl font-bold text-red-400">{formatCurrency(totalWastage)}</p>
+          <p className="text-3xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totalWastage)}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-orange-500/10 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-orange-400" />
+              <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400" />
             </div>
-            <span className="text-white/60 text-sm">Incidents</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Incidents</span>
           </div>
-          <p className="text-3xl font-bold text-white">{totalIncidents}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{totalIncidents}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-yellow-500/10 rounded-lg">
-              <Calendar className="w-5 h-5 text-yellow-400" />
+              <Calendar className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />
             </div>
-            <span className="text-white/60 text-sm">Avg Per Incident</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Avg Per Incident</span>
           </div>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {formatCurrency(totalIncidents > 0 ? totalWastage / totalIncidents : 0)}
           </p>
         </div>
       </div>
 
       {/* View Toggle */}
-      <div className="flex bg-white/5 rounded-lg p-1 w-fit">
+      <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1 w-fit">
         {(['reason', 'category', 'items'] as const).map((mode) => (
           <button
             key={mode}
             onClick={() => setViewMode(mode)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               viewMode === mode
-                ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                : 'text-white/60 hover:text-white'
+                ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
             }`}
           >
             {mode === 'reason' ? 'By Reason' : mode === 'category' ? 'By Category' : 'All Items'}
@@ -581,21 +590,21 @@ export default function WastageReportPage() {
 
       {/* Data Tables */}
       {viewMode === 'reason' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Reason</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Incidents</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">% of Total</th>
+                <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Reason</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Incidents</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">% of Total</th>
                 </tr>
               </thead>
               <tbody>
                 {byReason.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-white/40">
+                    <td colSpan={4} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40">
                       No wastage data available
                     </td>
                   </tr>
@@ -606,26 +615,26 @@ export default function WastageReportPage() {
                     return (
                       <tr 
                         key={row.reason}
-                        className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                        className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                       >
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${REASON_COLORS[row.reason] || REASON_COLORS['other']}`}>
                             {REASON_LABELS[row.reason] || row.reason}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right text-white/80">{row.count}</td>
-                        <td className="px-4 py-3 text-right text-red-400 font-medium">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">{row.count}</td>
+                        <td className="px-4 py-3 text-right text-red-600 dark:text-red-400 font-medium">
                           {formatCurrency(row.total_value)}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="w-20 h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className="w-20 h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
                               <div 
-                                className="h-full bg-red-500 rounded-full"
+                                className="h-full bg-red-500 dark:bg-red-500 rounded-full"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
-                            <span className="text-white/60 text-sm w-12">
+                            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-12">
                               {percentage.toFixed(1)}%
                             </span>
                           </div>
@@ -637,13 +646,13 @@ export default function WastageReportPage() {
               </tbody>
               {byReason.length > 0 && (
                 <tfoot>
-                  <tr className="bg-white/[0.03]">
-                    <td className="px-4 py-3 font-semibold text-white">Total</td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">{totalIncidents}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-red-400">
+                  <tr className="bg-theme-surface-elevated dark:bg-white/[0.03]">
+                    <td className="px-4 py-3 font-semibold text-[rgb(var(--text-primary))] dark:text-white">Total</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">{totalIncidents}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-red-600 dark:text-red-400">
                       {formatCurrency(totalWastage)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">100%</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">100%</td>
                   </tr>
                 </tfoot>
               )}
@@ -653,21 +662,21 @@ export default function WastageReportPage() {
       )}
 
       {viewMode === 'category' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Incidents</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">% of Total</th>
+                <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Incidents</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">% of Total</th>
                 </tr>
               </thead>
               <tbody>
                 {byCategory.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-white/40">
+                    <td colSpan={4} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40">
                       No category data available
                     </td>
                   </tr>
@@ -678,24 +687,24 @@ export default function WastageReportPage() {
                     return (
                       <tr 
                         key={row.category_name}
-                        className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                        className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                       >
                         <td className="px-4 py-3">
-                          <span className="text-white font-medium">{row.category_name}</span>
+                          <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{row.category_name}</span>
                         </td>
-                        <td className="px-4 py-3 text-right text-white/80">{row.count}</td>
-                        <td className="px-4 py-3 text-right text-red-400 font-medium">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">{row.count}</td>
+                        <td className="px-4 py-3 text-right text-red-600 dark:text-red-400 font-medium">
                           {formatCurrency(row.total_value)}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="w-20 h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className="w-20 h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-orange-500 rounded-full"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
-                            <span className="text-white/60 text-sm w-12">
+                            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-12">
                               {percentage.toFixed(1)}%
                             </span>
                           </div>
@@ -707,13 +716,13 @@ export default function WastageReportPage() {
               </tbody>
               {byCategory.length > 0 && (
                 <tfoot>
-                  <tr className="bg-white/[0.03]">
-                    <td className="px-4 py-3 font-semibold text-white">Total</td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">{totalIncidents}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-red-400">
+                  <tr className="bg-theme-surface-elevated dark:bg-white/[0.03]">
+                    <td className="px-4 py-3 font-semibold text-[rgb(var(--text-primary))] dark:text-white">Total</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">{totalIncidents}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-red-600 dark:text-red-400">
                       {formatCurrency(totalWastage)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">100%</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">100%</td>
                   </tr>
                 </tfoot>
               )}
@@ -723,23 +732,23 @@ export default function WastageReportPage() {
       )}
 
       {viewMode === 'items' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Item</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Reason</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Qty</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
+                <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Date</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Item</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Reason</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Qty</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
                 </tr>
               </thead>
               <tbody>
                 {wastageItems.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-white/40">
+                    <td colSpan={6} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40">
                       No wastage items available
                     </td>
                   </tr>
@@ -747,27 +756,27 @@ export default function WastageReportPage() {
                   wastageItems.slice(0, 50).map((item) => (
                     <tr 
                       key={item.id}
-                      className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                      className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                     >
-                      <td className="px-4 py-3 text-white/60 text-sm">
+                      <td className="px-4 py-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">
                         {formatDate(item.wastage_date)}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-white font-medium">{item.item_name}</span>
+                        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{item.item_name}</span>
                         {item.notes && (
-                          <p className="text-white/40 text-xs mt-0.5 truncate max-w-xs">{item.notes}</p>
+                          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-xs mt-0.5 truncate max-w-xs">{item.notes}</p>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-white/70">{item.category_name}</td>
+                      <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white/70">{item.category_name}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${REASON_COLORS[item.reason] || REASON_COLORS['other']}`}>
                           {REASON_LABELS[item.reason] || item.reason}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right text-white/80">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">
                         {item.quantity} {item.unit}
                       </td>
-                      <td className="px-4 py-3 text-right text-red-400 font-medium">
+                      <td className="px-4 py-3 text-right text-red-600 dark:text-red-400 font-medium">
                         {formatCurrency(item.total_value)}
                       </td>
                     </tr>
@@ -777,7 +786,7 @@ export default function WastageReportPage() {
               {wastageItems.length > 50 && (
                 <tfoot>
                   <tr>
-                    <td colSpan={6} className="px-4 py-3 text-center text-white/40 text-sm">
+                    <td colSpan={6} className="px-4 py-3 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
                       Showing 50 of {wastageItems.length} items. Export to see all.
                     </td>
                   </tr>
@@ -790,10 +799,10 @@ export default function WastageReportPage() {
 
       {/* No Data State */}
       {totalIncidents === 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Trash2 className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No wastage recorded</h3>
-          <p className="text-white/60">No wastage incidents found for this period</p>
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Trash2 className="w-12 h-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-[rgb(var(--text-primary))] dark:text-white mb-2">No wastage recorded</h3>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">No wastage incidents found for this period</p>
         </div>
       )}
     </div>

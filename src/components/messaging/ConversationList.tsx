@@ -39,10 +39,10 @@ export function ConversationList({
   });
   const [userChannelIds, setUserChannelIds] = useState<string[]>([]);
 
-  // Debug: Track modal state changes
-  useEffect(() => {
-    console.log('Start Conversation Modal state changed:', isStartModalOpen);
-  }, [isStartModalOpen]);
+  // Debug: Track modal state changes (removed for production)
+  // useEffect(() => {
+  //   console.log('Start Conversation Modal state changed:', isStartModalOpen);
+  // }, [isStartModalOpen]);
 
   // Get user's channel IDs
   useEffect(() => {
@@ -52,7 +52,7 @@ export function ConversationList({
       const { data } = await supabase
         .from('messaging_channel_members')
         .select('channel_id')
-        .eq('user_id', user.id);
+        .eq('profile_id', user.id);
       
       if (data) {
         setUserChannelIds(data.map(m => m.channel_id));
@@ -70,12 +70,17 @@ export function ConversationList({
     }
 
     try {
+      // Only count topics from recent messages (last 30 days) to keep query efficient
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
       const { data } = await supabase
         .from('messaging_messages')
         .select('topic, channel_id')
         .in('channel_id', userChannelIds)
         .not('topic', 'is', null)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .gte('created_at', thirtyDaysAgo.toISOString());
 
       // Update only topic counts, conversation counts updated separately
       setTopicCounts((prev) => {
@@ -147,7 +152,6 @@ export function ConversationList({
         },
         (payload) => {
           // Refresh topic counts when any message topic changes
-          console.log('Message topic changed, refreshing counts:', payload);
           fetchTopicCounts();
         }
       )
@@ -258,20 +262,52 @@ export function ConversationList({
   };
 
   const getConversationName = (conversation: Conversation) => {
-    if (conversation.name) return conversation.name;
-    if (conversation.type === 'direct') {
-      // Prefer showing the other user's name relative to current user
-      const currentUserId = user?.id || conversation.created_by;
+    // For direct messages, always show the OTHER person's name (not the channel name)
+    if (conversation.type === 'direct' || conversation.channel_type === 'direct') {
+      const currentUserId = user?.id;
+      if (!currentUserId) {
+        return conversation.name || 'Direct Message';
+      }
+      
+      // Find the other participant (not the current user)
+      // Check both profile_id and user_id for compatibility
       const otherParticipant = conversation.participants?.find(
-        (p: any) => p.user_id && p.user_id !== currentUserId
+        (p: any) => {
+          const participantId = p.profile_id || p.user_id;
+          return participantId && participantId !== currentUserId && !p.left_at;
+        }
       );
-      return (
-        otherParticipant?.user?.full_name ||
-        otherParticipant?.user?.email ||
-        'Direct Message'
-      );
+      
+      if (otherParticipant) {
+        // Try to get name from enriched user object (from useConversations enrichment)
+        if (otherParticipant.user?.full_name) {
+          return otherParticipant.user.full_name;
+        }
+        if (otherParticipant.user?.email) {
+          return otherParticipant.user.email.split('@')[0];
+        }
+        // Fallback to direct properties (if enrichment didn't work)
+        if (otherParticipant.full_name) {
+          return otherParticipant.full_name;
+        }
+        if (otherParticipant.email) {
+          return otherParticipant.email.split('@')[0];
+        }
+      }
+      
+      // Fallback: use channel name if it's not the current user's info
+      if (conversation.name && 
+          conversation.name !== user?.email && 
+          conversation.name !== user?.id &&
+          conversation.name !== user?.email?.split('@')[0]) {
+        return conversation.name;
+      }
+      
+      return 'Direct Message';
     }
-    return 'Unnamed Conversation';
+    
+    // For group/site/team channels, use the channel name
+    return conversation.name || 'Unnamed Conversation';
   };
 
   if (loading) {
@@ -291,9 +327,7 @@ export function ConversationList({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Start Conversation button clicked, current state:', isStartModalOpen);
               setIsStartModalOpen(true);
-              console.log('Set modal open to true');
             }}
             onMouseDown={(e) => {
               // Prevent any potential form submission or other default behavior
@@ -361,7 +395,7 @@ export function ConversationList({
         </div>
       ) : (
         /* Conversations List - Scrollable */
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#EC4899]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-white/20 mb-4" />

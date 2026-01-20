@@ -239,3 +239,12 @@ FROM auth.users au
 LEFT JOIN public.profiles p ON p.id = au.id
 WHERE au.email = 'lee@e-a-g.co';
 
+
+
+
+
+
+
+
+
+

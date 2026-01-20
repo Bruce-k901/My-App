@@ -94,19 +94,7 @@ export function StartConversationModal({
     selectedUsers.length === 0 ||
     (conversationType === 'group' && !groupName.trim());
 
-  // Debug logging
-  useEffect(() => {
-    if (isOpen) {
-      console.log('Modal state:', {
-        selectedUsers,
-        selectedUsersLength: selectedUsers.length,
-        conversationType,
-        groupName: groupName.trim(),
-        isButtonDisabled,
-        usersCount: users.length,
-      });
-    }
-  }, [isOpen, selectedUsers, conversationType, groupName, isButtonDisabled, users.length]);
+  // Debug logging (removed for production)
 
   const handleCreate = async () => {
     if (selectedUsers.length === 0) return;
@@ -128,12 +116,7 @@ export function StartConversationModal({
       const allParticipantIds = [...selectedUsers];
       const conversationName = conversationType === 'group' ? groupName.trim() : undefined;
       
-      console.log('Creating conversation via hook:', {
-        type: conversationType,
-        participantIds: allParticipantIds,
-        name: conversationName,
-        companyId,
-      });
+      // Creating conversation via hook
 
       const conversation = await createConversation(
         conversationType,
@@ -152,7 +135,7 @@ export function StartConversationModal({
         throw new Error(`Failed to create conversation: ${errorMsg}. Check browser console for details.`);
       }
 
-      console.log('Conversation created successfully:', conversation);
+      // Conversation created successfully
       onConversationCreated(conversation.id);
       handleClose();
     } catch (error: any) {
@@ -186,14 +169,14 @@ export function StartConversationModal({
     onClose();
   };
 
-  // Debug: Log when modal should render
-  useEffect(() => {
-    if (isOpen) {
-      console.log('StartConversationModal: Modal is open, rendering...');
-    } else {
-      console.log('StartConversationModal: Modal is closed');
-    }
-  }, [isOpen]);
+  // Debug: Log when modal should render (removed for production)
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     console.log('StartConversationModal: Modal is open, rendering...');
+  //   } else {
+  //     console.log('StartConversationModal: Modal is closed');
+  //   }
+  // }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -343,7 +326,7 @@ export function StartConversationModal({
                       key={user.id}
                       type="button"
                       onClick={() => {
-                        console.log('Toggling user:', user.id, 'Current selected:', selectedUsers);
+                        // Toggling user selection
                         handleUserToggle(user.id);
                       }}
                       className={`w-full p-3 rounded-lg text-left transition-colors ${

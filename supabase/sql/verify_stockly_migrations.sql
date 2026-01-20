@@ -111,3 +111,12 @@ SELECT
     '=== SUMMARY ===' as summary,
     'Run all checks above to verify Stockly migrations' as instructions;
 
+
+
+
+
+
+
+
+
+

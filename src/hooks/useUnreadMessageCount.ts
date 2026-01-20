@@ -35,7 +35,7 @@ export function useUnreadMessageCount() {
         const { data: participantData } = await supabase
           .from("messaging_channel_members")
           .select("channel_id, last_read_at, last_read_message_id")
-          .eq("user_id", user.id)
+          .eq("profile_id", user.id)
           .is("left_at", null);
 
         if (!participantData || participantData.length === 0) {
@@ -52,10 +52,10 @@ export function useUnreadMessageCount() {
         // Fetch all messages in conversations where user is a participant
         const { data: allMessages } = await supabase
           .from("messaging_messages")
-          .select("channel_id, created_at, sender_id")
+          .select("channel_id, created_at, sender_profile_id")
           .in("channel_id", channelIds)
           .is("deleted_at", null)
-          .neq("sender_id", user.id);
+          .neq("sender_profile_id", user.id);
 
         // Calculate unread count per conversation
         let totalUnread = 0;

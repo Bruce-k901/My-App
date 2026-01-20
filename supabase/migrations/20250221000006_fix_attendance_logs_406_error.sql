@@ -3,8 +3,7 @@
 -- Description: Ensures attendance_logs table uses clock_in_date column
 --              and removes any direct casting attempts
 -- ============================================================================
-
-BEGIN;
+-- Note: This migration will be skipped if attendance_logs table doesn't exist yet
 
 -- Step 1: Check if attendance_logs table exists
 DO $$
@@ -38,12 +37,12 @@ BEGIN
     CREATE OR REPLACE FUNCTION update_attendance_logs_date()
     RETURNS TRIGGER
     LANGUAGE plpgsql
-    AS $$
+    AS $function$
     BEGIN
       NEW.clock_in_date := (NEW.clock_in_at AT TIME ZONE 'UTC')::date;
       RETURN NEW;
     END;
-    $$;
+    $function$;
 
     -- Step 4: Drop and recreate trigger
     DROP TRIGGER IF EXISTS trg_update_attendance_logs_date ON public.attendance_logs;
@@ -72,11 +71,9 @@ BEGIN
 
     RAISE NOTICE 'Fixed attendance_logs table for REST API compatibility';
   ELSE
-    RAISE NOTICE 'attendance_logs table does not exist - migration not needed';
+    RAISE NOTICE '⚠️ attendance_logs table does not exist - migration not needed';
   END IF;
 END $$;
-
-COMMIT;
 
 -- ============================================================================
 -- Usage Notes:

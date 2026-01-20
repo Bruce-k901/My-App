@@ -8,29 +8,43 @@ import { useEffect } from "react";
  */
 export function SuppressConsoleWarnings() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "development") return;
-
+    // Apply in both dev and production to suppress these expected errors
+    
     // Suppress preload warnings (harmless - resources are loaded when components render)
     const originalWarn = console.warn;
     const originalError = console.error;
     
+    // Store original fetch to detect message delivery 409s
+    const originalFetch = window.fetch;
+    
     const shouldSuppress = (message: string, args: any[]) => {
       const msg = message.toLowerCase();
+      
       // Check if it's an object/error with code 23503
       const isPushSubscriptionError = 
         (typeof args[0] === 'object' && args[0] !== null && (args[0] as any).code === '23503') ||
         (args.some(arg => typeof arg === 'object' && arg !== null && (arg as any).code === '23503'));
       
-      return (
+      // Comprehensive preload warning patterns
+      const isPreloadWarning = (
         msg.includes("was preloaded using link preload but not used") ||
         msg.includes("preloaded using link preload") ||
         msg.includes("preload but not used") ||
-        msg.includes("checkly_logo_touching_blocks") ||
+        msg.includes("preload") && msg.includes("not used within a few seconds") ||
+        msg.includes("preload") && msg.includes("window's load event") ||
+        msg.includes("preload") && msg.includes("appropriate") && msg.includes("as value") ||
         (msg.includes("resource") && msg.includes("preload") && msg.includes("not used")) ||
-        (msg.includes("preload") && (msg.includes("svg") || msg.includes("css"))) ||
+        (msg.includes("preload") && (msg.includes("svg") || msg.includes("css") || msg.includes("png") || msg.includes("jpg") || msg.includes("jpeg") || msg.includes("webp"))) ||
         (msg.includes("preload") && msg.includes(".css")) ||
         (msg.includes("_next/static/css") && msg.includes("preload")) ||
+        (msg.includes("_next/static/media") && msg.includes("preload")) ||
+        (msg.includes("_next/static") && msg.includes("preload")) ||
         (msg.includes("app/layout.css") || (msg.includes("app/dashboard") && msg.includes(".css"))) ||
+        msg.includes("checkly_logo_touching_blocks")
+      );
+      
+      return (
+        isPreloadWarning ||
         // Suppress push subscription errors (expected when table doesn't exist or profile missing)
         msg.includes("error saving push subscription") ||
         msg.includes("error registering push subscription") ||
@@ -78,6 +92,7 @@ export function SuppressConsoleWarnings() {
       } else {
         message = String(firstArg || "");
       }
+      
       
       // Check if this is a push subscription error that should be suppressed
       // Also check the second argument which might contain the error message
@@ -135,24 +150,45 @@ export function SuppressConsoleWarnings() {
     if (typeof window !== "undefined" && "PerformanceObserver" in window) {
       try {
         const observer = new PerformanceObserver((list) => {
-          // Filter out preload-related entries (CSS, SVG, etc.)
+          // Filter out preload-related entries (CSS, SVG, images, etc.)
           for (const entry of list.getEntries()) {
-            const entryName = entry.name.toLowerCase();
-            if (
+            const entryName = (entry.name || "").toLowerCase();
+            const entryType = (entry as any).initiatorType || "";
+            
+            // Check for preload-related entries
+            const isPreloadEntry = (
+              entryType === "link" ||
               entryName.includes("checkly_logo_touching_blocks") ||
-              (entryName.includes("_next/static/media") && entryName.includes(".svg")) ||
+              (entryName.includes("_next/static/media") && (entryName.includes(".svg") || entryName.includes(".png") || entryName.includes(".jpg") || entryName.includes(".jpeg") || entryName.includes(".webp"))) ||
               (entryName.includes("_next/static/css") && entryName.includes(".css")) ||
-              (entryName.includes("app/layout.css") || entryName.includes("app/dashboard") && entryName.includes(".css"))
-            ) {
-              // Suppress by not logging these entries
+              (entryName.includes("_next/static") && (entryName.includes(".css") || entryName.includes(".svg") || entryName.includes(".png") || entryName.includes(".jpg") || entryName.includes(".jpeg") || entryName.includes(".webp"))) ||
+              (entryName.includes("app/layout.css") || (entryName.includes("app/dashboard") && entryName.includes(".css"))) ||
+              entryName.includes(".css") ||
+              entryName.includes(".svg") ||
+              entryName.includes(".png") ||
+              entryName.includes(".jpg") ||
+              entryName.includes(".jpeg") ||
+              entryName.includes(".webp")
+            );
+            
+            if (isPreloadEntry) {
+              // Suppress by not processing these entries
+              // This helps prevent warnings from being logged
               return;
             }
           }
         });
         
-        // Only observe resource timing if available
-        if ("observe" in observer) {
-          observer.observe({ entryTypes: ["resource"] });
+        // Observe resource timing entries to catch preload warnings early
+        try {
+          observer.observe({ entryTypes: ["resource", "navigation"] });
+        } catch (e) {
+          // Some browsers may not support all entry types, try just resource
+          try {
+            observer.observe({ entryTypes: ["resource"] });
+          } catch (e2) {
+            // PerformanceObserver might not be available or supported
+          }
         }
       } catch (e) {
         // PerformanceObserver might not support all entry types, ignore

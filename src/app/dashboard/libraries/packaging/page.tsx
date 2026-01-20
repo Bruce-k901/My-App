@@ -89,6 +89,23 @@ export default function PackagingLibraryPage() {
         : parseInt(String(reorderLevelRaw), 10);
       if (reorderLevelVal !== null && Number.isNaN(reorderLevelVal)) { console.error('Validation error: Reorder level must be a number'); return; }
 
+      const currentStockRaw = rowDraft.current_stock;
+      const currentStockVal = currentStockRaw === '' || currentStockRaw === null || currentStockRaw === undefined
+        ? 0
+        : parseFloat(String(currentStockRaw));
+      const parLevelRaw = rowDraft.par_level;
+      const parLevelVal = parLevelRaw === '' || parLevelRaw === null || parLevelRaw === undefined
+        ? null
+        : parseFloat(String(parLevelRaw));
+      const reorderPointRaw = rowDraft.reorder_point;
+      const reorderPointVal = reorderPointRaw === '' || reorderPointRaw === null || reorderPointRaw === undefined
+        ? null
+        : parseFloat(String(reorderPointRaw));
+      const reorderQtyRaw = rowDraft.reorder_qty;
+      const reorderQtyVal = reorderQtyRaw === '' || reorderQtyRaw === null || reorderQtyRaw === undefined
+        ? null
+        : parseFloat(String(reorderQtyRaw));
+
       const payload: any = {
         item_name: trimmedName,
         category: rowDraft.category ?? null,
@@ -108,6 +125,13 @@ export default function PackagingLibraryPage() {
         usage_context: rowDraft.usage_context ?? null,
         reorder_level: reorderLevelVal,
         notes: rowDraft.notes ?? null,
+        // Stockly fields (may not exist in DB yet, but adding for consistency)
+        track_stock: rowDraft.track_stock ?? false,
+        current_stock: currentStockVal,
+        par_level: parLevelVal,
+        reorder_point: reorderPointVal,
+        reorder_qty: reorderQtyVal,
+        sku: rowDraft.sku?.trim() || null,
         company_id: companyId,
       };
 
@@ -195,7 +219,14 @@ export default function PackagingLibraryPage() {
       dimensions: item.dimensions || '',
       usage_context: item.usage_context || '',
       reorder_level: item.reorder_level ?? '',
-      notes: item.notes || ''
+      notes: item.notes || '',
+      // Stockly fields (may not exist in DB yet, but adding for consistency)
+      track_stock: item.track_stock ?? false,
+      current_stock: item.current_stock ?? '',
+      par_level: item.par_level ?? '',
+      reorder_point: item.reorder_point ?? '',
+      reorder_qty: item.reorder_qty ?? '',
+      sku: item.sku || ''
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
   };
@@ -234,6 +265,12 @@ export default function PackagingLibraryPage() {
     'supplier',
     'pack_cost',
     'pack_size',
+    'track_stock',
+    'current_stock',
+    'par_level',
+    'reorder_point',
+    'reorder_qty',
+    'sku',
     'dimensions',
     'usage_context',
     'reorder_level',
@@ -267,6 +304,12 @@ export default function PackagingLibraryPage() {
         supplier: r.supplier ?? '',
         pack_cost: r.pack_cost ?? r.unit_cost ?? '', // fallback for existing data
         pack_size: r.pack_size ?? '',
+        track_stock: r.track_stock ? 'true' : 'false',
+        current_stock: r.current_stock ?? 0,
+        par_level: r.par_level ?? '',
+        reorder_point: r.reorder_point ?? '',
+        reorder_qty: r.reorder_qty ?? '',
+        sku: r.sku ?? '',
         dimensions: r.dimensions ?? '',
         usage_context: r.usage_context ?? '',
         reorder_level: r.reorder_level ?? '',
@@ -359,6 +402,12 @@ export default function PackagingLibraryPage() {
           dimensions: row[headerIndex['dimensions']] ?? null,
           usage_context: row[headerIndex['usage_context']] ?? null,
           reorder_level: reorderLevelRaw && reorderLevelRaw.trim() !== '' ? Number(reorderLevelRaw) : null,
+          track_stock: row[headerIndex['track_stock']] && (row[headerIndex['track_stock']].trim().toLowerCase() === 'true' || row[headerIndex['track_stock']].trim() === '1'),
+          current_stock: row[headerIndex['current_stock']] && row[headerIndex['current_stock']].trim() !== '' ? Number(row[headerIndex['current_stock']]) : 0,
+          par_level: row[headerIndex['par_level']] && row[headerIndex['par_level']].trim() !== '' ? Number(row[headerIndex['par_level']]) : null,
+          reorder_point: row[headerIndex['reorder_point']] && row[headerIndex['reorder_point']].trim() !== '' ? Number(row[headerIndex['reorder_point']]) : null,
+          reorder_qty: row[headerIndex['reorder_qty']] && row[headerIndex['reorder_qty']].trim() !== '' ? Number(row[headerIndex['reorder_qty']]) : null,
+          sku: row[headerIndex['sku']]?.trim() || null,
           notes: row[headerIndex['notes']] ?? null,
         });
       }
@@ -394,7 +443,7 @@ export default function PackagingLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">Packaging Library</h1>
               <p className="text-sm text-neutral-400">Manage packaging materials, sizes, and suppliers</p>
@@ -433,12 +482,18 @@ export default function PackagingLibraryPage() {
                 dimensions: '',
                 usage_context: '',
                 reorder_level: null,
-                notes: ''
+                notes: '',
+                track_stock: false,
+                current_stock: 0,
+                par_level: null,
+                reorder_point: null,
+                reorder_qty: null,
+                sku: ''
               };
               setPackaging(prev => [empty, ...prev]);
               setExpandedRows(prev => new Set(prev).add(tempId));
               setEditingRowId(tempId);
-              setRowDraft({ ...empty, pack_cost: '', pack_size: '', reorder_level: '', id: undefined });
+              setRowDraft({ ...empty, pack_cost: '', pack_size: '', reorder_level: '', current_stock: '', par_level: '', reorder_point: '', reorder_qty: '', id: undefined });
               setNewRowIds(prev => new Set(prev).add(tempId));
             }}
             aria-label="Add Packaging"
@@ -505,7 +560,12 @@ export default function PackagingLibraryPage() {
                         {editingRowId === item.id ? (
                           <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.item_name ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, item_name: e.target.value }))} />
                         ) : (
-                          item.item_name
+                          <div className="flex items-center gap-2">
+                            <span>{item.item_name}</span>
+                            {item.supplier && (
+                              <span className="text-neutral-400 text-sm">• {item.supplier}</span>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
@@ -737,6 +797,74 @@ export default function PackagingLibraryPage() {
                                 <div className="text-sm text-white">{item.usage_context || '-'}</div>
                               )}
                             </div>
+                            
+                            {/* Stockly Fields Section */}
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-neutral-300 mb-2 uppercase">Stock Management</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div className="flex items-center gap-2">
+                                  {editingRowId === item.id ? (
+                                    <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-magenta-500 focus:ring-magenta-500" />
+                                  ) : (
+                                    <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-neutral-600 bg-neutral-800" />
+                                  )}
+                                  <label className="text-xs text-neutral-400">Track Stock</label>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">SKU</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.sku || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Current Stock</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.current_stock != null ? item.current_stock : '0'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Par Level</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.par_level != null ? item.par_level : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Reorder Point</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                              <div className="text-xs text-neutral-400">Reorder Qty</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-white">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                              )}
+                            </div>
+                            {item.low_stock_alert && (
+                              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                                <div className="text-xs text-red-400 font-semibold">⚠️ Low Stock Alert</div>
+                              </div>
+                            )}
+                            {item.stock_value != null && item.stock_value > 0 && (
+                              <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
+                                <div className="text-xs text-neutral-400">Stock Value</div>
+                                <div className="text-sm text-white">£{item.stock_value.toFixed(2)}</div>
+                              </div>
+                            )}
+                            
                             <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
                               <div className="text-xs text-neutral-400">Notes</div>
                               {editingRowId === item.id ? (

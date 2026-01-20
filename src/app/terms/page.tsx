@@ -13,7 +13,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">1. Acceptance</h2>
           <p className="text-gray-300">
-            By using Checkly ("the Service"), you agree to these Terms of Use. If you don’t agree,
+            By using Opsly ("the Service"), you agree to these Terms of Use. If you don’t agree,
             don’t use the platform.
           </p>
         </div>
@@ -22,8 +22,8 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">2. Service Description</h2>
           <p className="text-gray-300">
-            Checkly provides cloud-based compliance, maintenance, and task-management tools for
-            hospitality and food-service operations.
+            Opsly provides cloud-based operations management tools for
+            hospitality, retail, and manufacturing businesses.
           </p>
           <p className="text-gray-300">
             We may update or improve the Service at any time, but we’ll avoid breaking changes
@@ -58,7 +58,7 @@ export default function TermsPage() {
           </p>
           <p className="text-gray-300 mb-3">
             <strong className="text-white">Cancellation:</strong> To cancel your subscription, you must provide 60 days 
-            written notice via email to billing@checkly.app. Your subscription will remain active during the notice period, 
+            written notice via email to billing@opsly.app. Your subscription will remain active during the notice period, 
             and you will be invoiced for this period.
           </p>
           <p className="text-gray-300">
@@ -85,7 +85,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">6. Intellectual Property</h2>
           <p className="text-gray-300">
-            All Checkly trademarks, code, and design assets belong to us. You keep ownership of any
+            All Opsly trademarks, code, and design assets belong to us. You keep ownership of any
             content or data you upload, but grant us a licence to store and process it solely for
             operating the Service.
           </p>
@@ -95,7 +95,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">7. Data Protection</h2>
           <p className="text-gray-300">
-            Use of Checkly is also governed by our Privacy Policy. By using the Service, you consent
+            Use of Opsly is also governed by our Privacy Policy. By using the Service, you consent
             to the collection and processing described there.
           </p>
         </div>
@@ -111,7 +111,7 @@ export default function TermsPage() {
           <p className="text-gray-300 mb-3">
             <strong className="text-white">Data Export:</strong> Upon cancellation or termination, you may request a 
             full export of your data. We will provide your data in JSON format within 30 days of your request. 
-            Data export requests can be made through your billing dashboard or by emailing support@checkly.app.
+            Data export requests can be made through your billing dashboard or by emailing support@opsly.app.
           </p>
           <p className="text-gray-300">
             We may terminate access if you breach these Terms or misuse the platform. Upon termination, your access 
@@ -123,7 +123,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">9. Disclaimer</h2>
           <p className="text-gray-300">
-            Checkly is provided “as is.” We make no guarantees that the Service will be error-free or
+            Opsly is provided “as is.” We make no guarantees that the Service will be error-free or
             uninterrupted. We’re not liable for loss of profits, data, or business arising from your
             use of the Service.
           </p>
@@ -152,8 +152,8 @@ export default function TermsPage() {
           <h2 className="text-xl font-semibold mb-2">12. Contact</h2>
           <p className="text-gray-300">
             For legal notices or questions: {" "}
-            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:legal@checkly.app">
-              legal@checkly.app
+            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:legal@opsly.app">
+              legal@opsly.app
             </a>
           </p>
         </div>

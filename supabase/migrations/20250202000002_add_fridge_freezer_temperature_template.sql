@@ -1,47 +1,52 @@
 -- Migration: Add Fridge/Freezer Temperature Check compliance template
 -- This template is pre-populated and ships with the app
 -- Users can personalize it with their assets, timings, libraries, SOPs, RAs, etc.
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 
 -- Insert Fridge/Freezer Temperature Check template (global template - company_id = NULL)
-INSERT INTO public.task_templates (
-  company_id,
-  name,
-  slug,
-  description,
-  category,
-  audit_category,
-  frequency,
-  time_of_day,
-  dayparts,
-  assigned_to_role,
-  compliance_standard,
-  is_critical,
-  is_template_library,
-  is_active,
-  repeatable_field_name,
-  asset_type,
-  evidence_types,
-  instructions,
-  triggers_contractor_on_failure
-) VALUES (
-  NULL, -- Global template available to all companies
-  'Fridge/Freezer Temperature Check',
-  'fridge-freezer-temperature-check',
-  'Daily temperature monitoring for all refrigeration assets',
-  'food_safety',
-  'Handling & Storage',
-  'daily',
-  'before_open',
-  ARRAY['before_open', 'during_service', 'after_service'],
-  'kitchen_manager',
-  'Food Safety Act / HACCP',
-  TRUE, -- This is a critical compliance task
-  TRUE, -- This is a compliance template library template
-  TRUE,
-  'asset_name', -- Repeatable field for multiple assets
-  'refrigeration_equipment', -- Asset type enables asset dropdown feature
-  ARRAY['temperature', 'checklist'], -- Temperature logs and checklist
-  '**What (Purpose):** Ensure chilled and frozen storage units are maintaining safe holding temperatures.
+-- Only insert if task_templates table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    INSERT INTO public.task_templates (
+      company_id,
+      name,
+      slug,
+      description,
+      category,
+      audit_category,
+      frequency,
+      time_of_day,
+      dayparts,
+      assigned_to_role,
+      compliance_standard,
+      is_critical,
+      is_template_library,
+      is_active,
+      repeatable_field_name,
+      asset_type,
+      evidence_types,
+      instructions,
+      triggers_contractor_on_failure
+    ) VALUES (
+      NULL, -- Global template available to all companies
+      'Fridge/Freezer Temperature Check',
+      'fridge-freezer-temperature-check',
+      'Daily temperature monitoring for all refrigeration assets',
+      'food_safety',
+      'Handling & Storage',
+      'daily',
+      'before_open',
+      ARRAY['before_open', 'during_service', 'after_service'],
+      'kitchen_manager',
+      'Food Safety Act / HACCP',
+      TRUE, -- This is a critical compliance task
+      TRUE, -- This is a compliance template library template
+      TRUE,
+      'asset_name', -- Repeatable field for multiple assets
+      'refrigeration_equipment', -- Asset type enables asset dropdown feature
+      ARRAY['temperature', 'checklist'], -- Temperature logs and checklist
+      '**What (Purpose):** Ensure chilled and frozen storage units are maintaining safe holding temperatures.
 
 **Why (Importance):** Failure to maintain proper storage temperatures allows bacterial growth, breaching EHO standards.
 
@@ -54,14 +59,21 @@ INSERT INTO public.task_templates (
 3. Record readings in the temperature log.
 
 4. Tag any unit outside limits for monitoring and recheck in 1 hour.',
-  TRUE -- Triggers monitor/callout on out-of-range temperatures
-) 
-ON CONFLICT (company_id, slug) DO UPDATE SET
-  asset_type = EXCLUDED.asset_type; -- Update asset_type if template already exists
+      TRUE -- Triggers monitor/callout on out-of-range temperatures
+    ) 
+    ON CONFLICT (company_id, slug) DO UPDATE SET
+      asset_type = EXCLUDED.asset_type; -- Update asset_type if template already exists
+  END IF;
+END $$;
 
 -- Insert template fields for Fridge/Freezer Temperature Check
 -- Field 1: Asset Selection (dropdown)
-INSERT INTO public.template_fields (
+-- Only insert if both tables exist
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+    INSERT INTO public.template_fields (
   template_id,
   field_name,
   field_type,
@@ -78,16 +90,16 @@ SELECT
   TRUE,
   1,
   'Select the refrigeration asset being checked (fridge or freezer)'
-FROM public.task_templates t
-WHERE t.slug = 'fridge-freezer-temperature-check'
-  AND t.company_id IS NULL -- Ensure we're matching the global template
-  AND NOT EXISTS (
-    SELECT 1 FROM public.template_fields tf 
-    WHERE tf.template_id = t.id AND tf.field_name = 'asset_name'
-  );
+    FROM public.task_templates t
+    WHERE t.slug = 'fridge-freezer-temperature-check'
+      AND t.company_id IS NULL -- Ensure we're matching the global template
+      AND NOT EXISTS (
+        SELECT 1 FROM public.template_fields tf 
+        WHERE tf.template_id = t.id AND tf.field_name = 'asset_name'
+      );
 
--- Field 2: Temperature Reading
-INSERT INTO public.template_fields (
+    -- Field 2: Temperature Reading
+    INSERT INTO public.template_fields (
   template_id,
   field_name,
   field_type,
@@ -108,20 +120,20 @@ SELECT
   10, -- Maximum for fridges
   2,
   'Record the temperature reading. Fridges should be ≤5°C, freezers should be ≤-18°C'
-FROM public.task_templates t
-WHERE t.slug = 'fridge-freezer-temperature-check'
-  AND t.company_id IS NULL -- Ensure we're matching the global template
-  AND NOT EXISTS (
-    SELECT 1 FROM public.template_fields tf 
-    WHERE tf.template_id = t.id AND tf.field_name = 'temperature'
-  );
+    FROM public.task_templates t
+    WHERE t.slug = 'fridge-freezer-temperature-check'
+      AND t.company_id IS NULL -- Ensure we're matching the global template
+      AND NOT EXISTS (
+        SELECT 1 FROM public.template_fields tf 
+        WHERE tf.template_id = t.id AND tf.field_name = 'temperature'
+      );
 
--- Field 3: Checklist Items (as repeatable records)
--- Note: The checklist items will be stored as part of the task_data in the checklist_tasks table
--- This field is for the repeatable asset selection structure
+    -- Field 3: Checklist Items (as repeatable records)
+    -- Note: The checklist items will be stored as part of the task_data in the checklist_tasks table
+    -- This field is for the repeatable asset selection structure
 
--- Since checklist items are stored in task_data, we'll add a text field for notes/initials
-INSERT INTO public.template_fields (
+    -- Since checklist items are stored in task_data, we'll add a text field for notes/initials
+    INSERT INTO public.template_fields (
   template_id,
   field_name,
   field_type,
@@ -138,13 +150,15 @@ SELECT
   TRUE,
   3,
   'Enter your initials to confirm the check'
-FROM public.task_templates t
-WHERE t.slug = 'fridge-freezer-temperature-check'
-  AND t.company_id IS NULL -- Ensure we're matching the global template
-  AND NOT EXISTS (
-    SELECT 1 FROM public.template_fields tf 
-    WHERE tf.template_id = t.id AND tf.field_name = 'initials'
-  );
+    FROM public.task_templates t
+    WHERE t.slug = 'fridge-freezer-temperature-check'
+      AND t.company_id IS NULL -- Ensure we're matching the global template
+      AND NOT EXISTS (
+        SELECT 1 FROM public.template_fields tf 
+        WHERE tf.template_id = t.id AND tf.field_name = 'initials'
+      );
+  END IF;
+END $$;
 
 
 

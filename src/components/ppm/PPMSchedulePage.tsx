@@ -10,6 +10,7 @@ import { getPPMStatus } from '@/utils/ppmHelpers';
 import { usePPMRealtime } from '@/hooks/usePPMRealtime';
 import { fetchAllAssets, AssetRecord } from '@/lib/fetchAssets';
 import { useAppContext } from '@/context/AppContext';
+import { useSiteFilter } from '@/hooks/useSiteFilter';
 import { PPMAsset } from '@/types/ppm';
 import { nullifyUndefined } from '@/lib/utils';
 import { generatePPMSchedulesForAllAssets } from '@/lib/ppm/generateSchedules';
@@ -38,6 +39,7 @@ export default function PPMSchedulePage() {
   const [highlightedAssetId, setHighlightedAssetId] = useState<string | null>(null);
   
   const { profile } = useAppContext();
+  const { selectedSiteId, isAllSites } = useSiteFilter();
   const [generatingSchedules, setGeneratingSchedules] = useState(false);
 
   const handleGenerateSchedules = async () => {
@@ -83,7 +85,13 @@ export default function PPMSchedulePage() {
       console.log("PPM Debug - Company ID:", profile.company_id);
 
       // Fetch assets using the new fetchAllAssets function
-      const assetsData = await fetchAllAssets(profile.company_id);
+      // Note: fetchAllAssets doesn't support site filtering yet, so we filter after fetching
+      let assetsData = await fetchAllAssets(profile.company_id);
+      
+      // Apply site filter if not viewing all sites
+      if (!isAllSites && selectedSiteId && selectedSiteId !== 'all') {
+        assetsData = assetsData.filter(asset => asset.site_id === selectedSiteId);
+      }
 
       console.log("PPM Debug - Assets query result:", assetsData);
 
@@ -137,7 +145,7 @@ export default function PPMSchedulePage() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.company_id]);
+  }, [profile?.company_id, selectedSiteId, isAllSites]);
 
   // Debounced version for realtime updates
   const debouncedFetchPPMData = useCallback(() => {

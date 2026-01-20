@@ -80,7 +80,8 @@ export default function SupplierSpendReportPage() {
         .eq('company_id', companyId)
         .gte('week', startDate.toISOString().split('T')[0]);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         spendQuery = spendQuery.eq('site_id', siteId);
       }
       
@@ -103,7 +104,8 @@ export default function SupplierSpendReportPage() {
           .eq('status', 'confirmed')
           .gte('delivery_date', startDate.toISOString().split('T')[0]);
         
-        if (siteId) {
+        // Only filter by site_id if it's a valid UUID (not "all")
+        if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
         }
         
@@ -302,7 +304,7 @@ export default function SupplierSpendReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -316,19 +318,19 @@ export default function SupplierSpendReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Supplier Spend Report</h1>
-            <p className="text-white/60 text-sm mt-1">Spend analysis by supplier with trends</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Supplier Spend Report</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Spend analysis by supplier with trends</p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
           {/* Date Range Selector */}
-          <div className="flex bg-white/5 rounded-lg p-1">
+          <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1">
             {(['month', 'quarter', 'year'] as const).map((range) => (
               <button
                 key={range}
@@ -336,7 +338,7 @@ export default function SupplierSpendReportPage() {
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   dateRange === range
                     ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                 }`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -347,7 +349,7 @@ export default function SupplierSpendReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -376,7 +378,7 @@ export default function SupplierSpendReportPage() {
                 toast.error('Failed to export PDF file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -386,34 +388,34 @@ export default function SupplierSpendReportPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-green-500/10 rounded-lg">
-              <Truck className="w-5 h-5 text-green-400" />
+              <Truck className="w-5 h-5 text-green-500 dark:text-green-400" />
             </div>
-            <span className="text-white/60 text-sm">Total Spend</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Total Spend</span>
           </div>
-          <p className="text-3xl font-bold text-white">{formatCurrency(totalSpend)}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(totalSpend)}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Calendar className="w-5 h-5 text-blue-400" />
+              <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             </div>
-            <span className="text-white/60 text-sm">Deliveries</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Deliveries</span>
           </div>
-          <p className="text-3xl font-bold text-white">{totalDeliveries}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{totalDeliveries}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-purple-500/10 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-purple-400" />
+              <TrendingUp className="w-5 h-5 text-purple-500 dark:text-purple-400" />
             </div>
-            <span className="text-white/60 text-sm">Avg Per Delivery</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Avg Per Delivery</span>
           </div>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {formatCurrency(totalDeliveries > 0 ? totalSpend / totalDeliveries : 0)}
           </p>
         </div>
@@ -421,15 +423,15 @@ export default function SupplierSpendReportPage() {
 
       {/* Monthly Trend Chart */}
       {monthlyTrend.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Monthly Trend</h2>
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Monthly Trend</h2>
           <div className="flex items-end gap-2 h-40">
             {monthlyTrend.map((month) => {
               const heightPercent = (month.total / maxMonthlySpend) * 100;
               return (
                 <div key={month.month} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full flex flex-col items-center justify-end h-32">
-                    <span className="text-xs text-white/60 mb-1">
+                    <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
                       {formatCurrency(month.total)}
                     </span>
                     <div 
@@ -437,7 +439,7 @@ export default function SupplierSpendReportPage() {
                       style={{ height: `${Math.max(heightPercent, 5)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-white/40">{formatMonth(month.month)}</span>
+                  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">{formatMonth(month.month)}</span>
                 </div>
               );
             })}
@@ -447,7 +449,7 @@ export default function SupplierSpendReportPage() {
 
       {/* Supplier Table */}
       {supplierData.length > 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-white/[0.06]">
             <h2 className="text-lg font-semibold text-white">Spend by Supplier</h2>
           </div>
@@ -532,10 +534,10 @@ export default function SupplierSpendReportPage() {
         </div>
       ) : (
         /* No Data State */
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Truck className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No spend data</h3>
-          <p className="text-white/60">No confirmed deliveries found for this period</p>
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-12 text-center">
+              <Truck className="w-12 h-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-[rgb(var(--text-primary))] dark:text-white mb-2">No spend data</h3>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">No confirmed deliveries found for this period</p>
         </div>
       )}
     </div>

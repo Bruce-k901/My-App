@@ -10,6 +10,7 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useToast } from "@/components/ui/ToastProvider";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import { useSiteFilter } from "@/hooks/useSiteFilter";
 
 type Contractor = {
   id: string;
@@ -29,6 +30,7 @@ type Contractor = {
 export default function ContractorsPage() {
   // const router = useRouter();
   const { companyId, loading: authLoading } = useAppContext();
+  const { applySiteFilter, isAllSites } = useSiteFilter();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,32 +47,33 @@ export default function ContractorsPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data: contractors, error } = await supabase
-        .from('contractors')
-        .select(`
-          id,
-          name,
-          contact_name,
-          email,
-          phone,
-          ooh_phone,
-          address,
-          region,
-          website,
-          callout_fee,
-          hourly_rate,
-          postcode,
-          category,
-          site_id,
-          type,
-          contract_start,
-          contract_expiry,
-          contract_file,
-          contractor_categories ( name, description )
-        `)
-        .eq('is_active', true)
-        .eq('company_id', companyId)
-        .order('name', { ascending: true });
+      const { data: contractors, error } = await applySiteFilter(
+        supabase
+          .from('contractors')
+          .select(`
+            id,
+            name,
+            contact_name,
+            email,
+            phone,
+            ooh_phone,
+            address,
+            region,
+            website,
+            callout_fee,
+            hourly_rate,
+            postcode,
+            category,
+            site_id,
+            type,
+            contract_start,
+            contract_expiry,
+            contract_file,
+            contractor_categories ( name, description )
+          `)
+          .eq('is_active', true)
+          .eq('company_id', companyId)
+      ).order('name', { ascending: true });
 
       if (error) throw error;
 

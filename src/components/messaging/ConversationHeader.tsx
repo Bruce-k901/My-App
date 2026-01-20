@@ -44,28 +44,29 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
           // First get member user IDs
           const { data: membersData, error: membersError } = await supabase
             .from('messaging_channel_members')
-            .select('user_id')
+            .select('profile_id')
             .eq('channel_id', conversationId)
             .is('left_at', null);
           
           // Then fetch profiles separately
           let participants: any[] = [];
           if (!membersError && membersData && membersData.length > 0) {
-            const userIds = membersData.map((m: any) => m.user_id);
+            const userIds = membersData.map((m: any) => m.profile_id || m.user_id);
             const { data: profilesData } = await supabase
               .from('profiles')
               .select('id, full_name, email')
               .in('id', userIds);
             
             participants = (profilesData || []).map(profile => ({
-              user_id: profile.id,
+              user_id: profile.id, // Keep for backward compatibility
+              profile_id: profile.id,
               profiles: profile
             }));
           }
 
           if (!membersError) {
             setParticipants(participants.map((m: any) => ({
-              id: m.user_id,
+              id: m.profile_id || m.user_id,
               ...m.profiles,
             })));
           }
@@ -116,11 +117,22 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
   };
 
   const getConversationName = () => {
-    if (conversation?.name) return conversation.name;
+    // For direct messages, always show the OTHER person's name (not the channel name)
     if (conversation?.type === 'direct' && participants.length > 0) {
       const otherParticipant = participants.find(p => p.id !== user?.id);
-      return otherParticipant?.full_name || otherParticipant?.email?.split('@')[0] || 'Direct Message';
+      if (otherParticipant) {
+        return otherParticipant.full_name || otherParticipant.email?.split('@')[0] || 'Direct Message';
+      }
+      // Fallback: if we can't find the other participant, use channel name
+      // but only if it's not the current user's name
+      if (conversation?.name && conversation.name !== user?.email) {
+        return conversation.name;
+      }
+      return 'Direct Message';
     }
+    
+    // For group/site/team channels, use the channel name or participant list
+    if (conversation?.name) return conversation.name;
     if (participants.length > 0) {
       return participants.map(p => p.full_name || p.email?.split('@')[0]).join(', ');
     }

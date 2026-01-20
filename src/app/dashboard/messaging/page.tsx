@@ -26,11 +26,11 @@ export default function MessagingPage() {
       style={{ 
         margin: 0,
         padding: 0,
-        top: '72px', // Dashboard header height
+        top: '112px', // Header (64px) + ModuleBar (56px) - 8px border overlap = 112px
         left: isDesktop ? '80px' : '0', // Sidebar width on desktop
         right: 0,
         width: isDesktop ? 'calc(100vw - 80px)' : '100vw', // Full width minus sidebar on desktop
-        height: 'calc(100vh - 72px)', // Full height minus header only
+        height: 'calc(100vh - 112px)', // Full height minus header (112px)
         zIndex: 10
       }}
     >

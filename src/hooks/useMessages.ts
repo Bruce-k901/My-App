@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Message } from "@/types/messaging";
 
@@ -34,6 +34,10 @@ export function useMessages({
   const [hasMore, setHasMore] = useState(true);
   const [oldestMessageId, setOldestMessageId] = useState<string | null>(null);
 
+  // Track message IDs to prevent duplicates (better than checking state)
+  const processedMessageIdsRef = useRef<Set<string>>(new Set());
+  const isInitialLoadingRef = useRef(false);
+
   const loadMessages = useCallback(async (beforeId?: string | null) => {
     if (!conversationId) {
       setLoading(false);
@@ -51,7 +55,7 @@ export function useMessages({
           content,
           created_at,
           edited_at,
-          sender_id,
+          sender_profile_id,
           channel_id,
           parent_message_id,
           message_type,
@@ -89,9 +93,6 @@ export function useMessages({
       // Skip profiles query - use metadata stored in messages instead
       // This avoids RLS issues and is more reliable
       let profilesMap = new Map();
-      console.log(
-        "📝 Using sender info from message metadata (skipping profiles query)",
-      );
 
       // Get current user info for own messages (from login/auth)
       const { data: { user: currentUser } } = await supabase.auth.getUser();
@@ -107,7 +108,7 @@ export function useMessages({
             .select(`
               id,
               content,
-              sender_id,
+              sender_profile_id,
               created_at,
               message_type,
               file_name,
@@ -136,7 +137,7 @@ export function useMessages({
           // Fetch deliveries
           const { data: deliveries } = await supabase
             .from("message_deliveries")
-            .select("message_id, user_id")
+            .select("message_id, profile_id")
             .in("message_id", messageIds);
 
           if (deliveries) {
@@ -144,14 +145,14 @@ export function useMessages({
               if (!deliveriesMap.has(d.message_id)) {
                 deliveriesMap.set(d.message_id, []);
               }
-              deliveriesMap.get(d.message_id)!.push(d.user_id);
+              deliveriesMap.get(d.message_id)!.push(d.profile_id);
             });
           }
 
           // Fetch reads
           const { data: reads } = await supabase
             .from("message_reads")
-            .select("message_id, user_id")
+            .select("message_id, profile_id")
             .in("message_id", messageIds);
 
           if (reads) {
@@ -159,7 +160,7 @@ export function useMessages({
               if (!readsMap.has(r.message_id)) {
                 readsMap.set(r.message_id, []);
               }
-              readsMap.get(r.message_id)!.push(r.user_id);
+              readsMap.get(r.message_id)!.push(r.profile_id);
             });
           }
         } catch (err) {
@@ -172,12 +173,12 @@ export function useMessages({
       try {
         const { data: participants } = await supabase
           .from("messaging_channel_members")
-          .select("user_id")
+          .select("profile_id")
           .eq("channel_id", conversationId)
           .is("left_at", null);
 
         if (participants) {
-          participantIds = participants.map((p: any) => p.user_id).filter((
+          participantIds = participants.map((p: any) => p.profile_id).filter((
             id: string,
           ) => id !== currentUser?.id);
         }
@@ -188,16 +189,18 @@ export function useMessages({
       // Enrich messages with sender information and receipt status
       const enrichedMessages = data.map((msg: any) => {
         let sender = null;
+        // Get sender ID (handle both old and new column names)
+        const senderId = msg.sender_profile_id || msg.sender_id;
 
         // First try: sender name from metadata (stored at creation time)
         if (msg.metadata?.sender_name) {
           sender = {
-            id: msg.sender_id,
+            id: senderId,
             full_name: msg.metadata.sender_name,
             email: msg.metadata.sender_email || null,
           };
         } // Second try: current user's message - use auth user info
-        else if (currentUser && msg.sender_id === currentUser.id) {
+        else if (currentUser && senderId === currentUser.id) {
           sender = {
             id: currentUser.id,
             full_name: currentUser.user_metadata?.full_name ||
@@ -207,14 +210,14 @@ export function useMessages({
           };
         } // Third try: use profile from map (for other users)
         else {
-          sender = profilesMap.get(msg.sender_id);
+          sender = profilesMap.get(senderId);
         }
 
         // Ensure sender is never null - if we have a sender_id, we should have sender info
         // If sender is still null, it means profile fetch failed - log for debugging
-        if (!sender && msg.sender_id) {
+        if (!sender && senderId) {
           console.warn(
-            `⚠️ No sender info found for sender_id: ${msg.sender_id}`,
+            `⚠️ No sender info found for sender_id: ${senderId}`,
           );
           // Don't create empty sender - let it be null so UI can handle gracefully
         }
@@ -223,7 +226,7 @@ export function useMessages({
         let receipt_status: "sent" | "delivered" | "read" | undefined =
           undefined;
         if (
-          currentUser && msg.sender_id === currentUser.id &&
+          currentUser && senderId === currentUser.id &&
           participantIds.length > 0
         ) {
           const deliveredTo = deliveriesMap.get(msg.id) || [];
@@ -253,20 +256,23 @@ export function useMessages({
             // Get sender info for parent message
             let replySender = null;
             
+            // Get parent sender ID (handle both old and new column names)
+            const parentSenderId = parentMessage.sender_profile_id || parentMessage.sender_id;
+            
             // Try metadata first (stored at creation time)
             if (parentMessage.metadata?.sender_name) {
               replySender = {
-                id: parentMessage.sender_id,
+                id: parentSenderId,
                 full_name: parentMessage.metadata.sender_name,
                 email: parentMessage.metadata.sender_email || null,
               };
             }
             // Try profilesMap (if we loaded profiles)
-            else if (profilesMap.has(parentMessage.sender_id)) {
-              replySender = profilesMap.get(parentMessage.sender_id);
+            else if (profilesMap.has(parentSenderId)) {
+              replySender = profilesMap.get(parentSenderId);
             }
             // If it's current user, use auth info
-            else if (currentUser && parentMessage.sender_id === currentUser.id) {
+            else if (currentUser && parentSenderId === currentUser.id) {
               replySender = {
                 id: currentUser.id,
                 full_name: currentUser.user_metadata?.full_name ||
@@ -277,9 +283,9 @@ export function useMessages({
             }
             // Fallback: create a basic sender object with just the ID
             // We'll show "Unknown" in the UI if we don't have sender info
-            if (!replySender && parentMessage.sender_id) {
+            if (!replySender && parentSenderId) {
               replySender = {
-                id: parentMessage.sender_id,
+                id: parentSenderId,
                 full_name: null,
                 email: null,
               };
@@ -288,7 +294,8 @@ export function useMessages({
             replyTo = {
               id: parentMessage.id,
               content: parentMessage.content,
-              sender_id: parentMessage.sender_id,
+              sender_profile_id: parentSenderId,
+              sender_id: parentSenderId, // Backward compatibility
               created_at: parentMessage.created_at,
               message_type: parentMessage.message_type,
               file_name: parentMessage.file_name,
@@ -300,6 +307,8 @@ export function useMessages({
 
         return {
           ...msg,
+          sender_profile_id: senderId, // Ensure sender_profile_id is set
+          sender_id: senderId, // Backward compatibility
           sender: sender,
           reply_to: replyTo,
           delivered_to: deliveriesMap.get(msg.id) || [],
@@ -310,6 +319,11 @@ export function useMessages({
 
       // Reverse to show oldest first, then newest
       const newMessages = [...enrichedMessages].reverse() as Message[];
+
+      // Track loaded message IDs to prevent duplicates from real-time subscription
+      newMessages.forEach((msg) => {
+        processedMessageIdsRef.current.add(msg.id);
+      });
 
       if (beforeId) {
         // Loading more (older messages)
@@ -373,10 +387,12 @@ export function useMessages({
         // Find the parent message in current messages
         const parentMsg = messages.find((m) => m.id === replyToId);
         if (parentMsg) {
+          const parentSenderId = parentMsg.sender_profile_id || parentMsg.sender_id;
           replyToMessage = {
             id: parentMsg.id,
             content: parentMsg.content,
-            sender_id: parentMsg.sender_id,
+            sender_profile_id: parentSenderId,
+            sender_id: parentSenderId, // Backward compatibility
             created_at: parentMsg.created_at,
             message_type: parentMsg.message_type,
             file_name: parentMsg.file_name,
@@ -392,7 +408,8 @@ export function useMessages({
         id: tempId,
         channel_id: conversationId, // Keep for backward compatibility
         conversation_id: conversationId, // Keep for backward compatibility in types
-        sender_id: user.id,
+        sender_profile_id: user.id,
+        sender_id: user.id, // Backward compatibility
         content: content.trim(),
         parent_message_id: replyToId || null,
         reply_to_id: replyToId || null, // Keep for backward compatibility
@@ -478,7 +495,7 @@ export function useMessages({
         .from("messaging_messages")
         .insert({
           channel_id: conversationId,
-          sender_id: user.id,
+          sender_profile_id: user.id,
           content: content.trim(),
           parent_message_id: replyToId || null,
           message_type: "text",
@@ -498,7 +515,8 @@ export function useMessages({
           id: insertResult.id,
           channel_id: conversationId, // Keep for backward compatibility
           conversation_id: conversationId, // Keep for backward compatibility
-          sender_id: user.id,
+          sender_profile_id: user.id,
+          sender_id: user.id, // Backward compatibility
           sender_name: senderName,
           content: content.trim(),
           parent_message_id: replyToId || null,
@@ -550,7 +568,7 @@ export function useMessages({
               // Try message_mention type first, fallback to 'task' if constraint not updated yet
               const result = await supabase.from("notifications").insert({
                 company_id: conversationData.company_id,
-                user_id: mentionedUserId,
+                profile_id: mentionedUserId, // Use profile_id instead of user_id
                 type: "message_mention" as any, // Type assertion - will fail gracefully if constraint not updated
                 title: `${senderName} mentioned you`,
                 message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}\n\nMessage ID: ${insertResult.id}\nChannel: ${conversationId}`,
@@ -562,7 +580,7 @@ export function useMessages({
                 console.warn('message_mention type not available, using task type');
                 return await supabase.from("notifications").insert({
                   company_id: conversationData.company_id,
-                  user_id: mentionedUserId,
+                  profile_id: mentionedUserId, // Use profile_id instead of user_id
                   type: "task",
                   title: `@${senderName} mentioned you`,
                   message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}`,
@@ -579,7 +597,7 @@ export function useMessages({
 
           const results = await Promise.all(notificationPromises);
           const successCount = results.filter(r => !r.error).length;
-          console.log(`✅ Created ${successCount}/${mentionedUserIds.length} mention notification(s)`);
+          // Created mention notification(s)
         } catch (notifError) {
           console.error("Error creating mention notifications:", notifError);
           // Don't fail message send if notifications fail
@@ -601,10 +619,12 @@ export function useMessages({
             m.id === replyToId
           );
           if (repliedToMessage) {
+            const replySenderId = repliedToMessage.sender_profile_id || repliedToMessage.sender_id;
             enrichedMessage.reply_to = {
               id: repliedToMessage.id,
               content: repliedToMessage.content,
-              sender_id: repliedToMessage.sender_id,
+              sender_profile_id: replySenderId,
+              sender_id: replySenderId, // Backward compatibility
               created_at: repliedToMessage.created_at,
               message_type: repliedToMessage.message_type,
               file_name: repliedToMessage.file_name,
@@ -700,20 +720,122 @@ export function useMessages({
   const markAsDelivered = useCallback(async (messageIds: string[]) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || messageIds.length === 0) return;
+
+      // First, validate that all message IDs exist in messaging_messages (including soft-deleted)
+      // Check with deleted_at to see if messages are soft-deleted
+      const { data: validMessages } = await supabase
+        .from("messaging_messages")
+        .select("id, deleted_at")
+        .in("id", messageIds);
+
+      const validMessageIds = new Set(validMessages?.map((m) => m.id) || []);
+      const invalidMessageIds = messageIds.filter((id) => !validMessageIds.has(id));
+      
+      // Check for soft-deleted messages - these will fail FK constraint even though they exist
+      const softDeletedIds = validMessages?.filter((m) => m.deleted_at !== null).map((m) => m.id) || [];
+      const softDeletedDetails = validMessages?.filter((m) => m.deleted_at !== null).map((m) => ({
+        id: m.id,
+        deleted_at: m.deleted_at,
+      })) || [];
+
+
+      // Only process valid, non-deleted message IDs
+      const validIdsToProcess = messageIds.filter((id) => 
+        validMessageIds.has(id) && !softDeletedIds.includes(id)
+      );
+      
+      if (validIdsToProcess.length === 0) {
+        return;
+      }
+
+      // First, check which messages are already marked as delivered to avoid redundant upserts
+      const { data: existingDeliveries } = await supabase
+        .from("message_deliveries")
+        .select("message_id")
+        .in("message_id", validIdsToProcess)
+        .eq("profile_id", user.id);
+
+      const existingMessageIds = new Set(
+        existingDeliveries?.map((d) => d.message_id) || []
+      );
+
+      // Only upsert messages that aren't already delivered
+      const newMessageIds = validIdsToProcess.filter((id) => !existingMessageIds.has(id));
+
+      if (newMessageIds.length === 0) {
+        return;
+      }
 
       // Mark messages as delivered (seen in UI)
-      await supabase
+      // Use insert with conflict handling - if record exists, it's fine, we'll catch and ignore
+      const insertData = newMessageIds.map((messageId) => ({
+        message_id: messageId,
+        profile_id: user.id,
+        delivered_at: new Date().toISOString(),
+      }));
+
+      const { error, data } = await supabase
         .from("message_deliveries")
-        .insert(
-          messageIds.map((messageId) => ({
-            message_id: messageId,
-            user_id: user.id,
-          })),
-        )
-        .select();
+        .insert(insertData);
+
+      if (error) {
+        // Check if it's a foreign key violation (message_id doesn't exist)
+        if (error.code === '23503' || error.message?.includes('foreign key constraint')) {
+          // Don't throw - just return silently
+          return;
+        }
+
+        const isExpectedConflict = 
+          error.code === '23505' || // unique_violation
+          error.code === 'PGRST116' || // PostgREST conflict
+          error.code === '409' || // HTTP conflict
+          error.code === 'PGRST301' || // Precondition failed
+          error.message?.includes('duplicate') ||
+          error.message?.includes('already exists');
+
+        if (!isExpectedConflict) {
+          // Check if it's a column error (column doesn't exist) - try fallback
+          if (error.code === '42703' || (error.message?.includes('column') && error.message?.includes('does not exist'))) {
+            // Try with user_id as fallback (old schema)
+            const { error: fallbackError } = await supabase
+              .from("message_deliveries")
+              .insert(
+                messageIds.map((messageId) => ({
+                  message_id: messageId,
+                  user_id: user.id, // Old column name
+                  delivered_at: new Date().toISOString(),
+                }))
+              );
+            
+            // Only log if it's not an expected conflict
+            if (fallbackError && !(
+              fallbackError.code === '23505' || 
+              fallbackError.code === 'PGRST116' || 
+              fallbackError.code === '409' || 
+              fallbackError.code === 'PGRST301'
+            )) {
+              console.error("Error marking as delivered (fallback):", fallbackError);
+            }
+          } else {
+            // Only log unexpected errors
+            console.error("Error marking as delivered:", error);
+          }
+        }
+        // Expected conflicts are silently ignored - record already exists
+      }
     } catch (err: any) {
-      console.error("Error marking as delivered:", err);
+      // Ignore expected conflicts - message already marked as delivered
+      const isExpectedConflict = 
+        err?.code === '23505' || 
+        err?.code === 'PGRST116' || 
+        err?.code === '409' ||
+        err?.message?.includes('duplicate') ||
+        err?.message?.includes('already exists');
+        
+      if (!isExpectedConflict) {
+        console.error("Error marking as delivered:", err);
+      }
     }
   }, []);
 
@@ -725,16 +847,222 @@ export function useMessages({
       // First mark as delivered (if not already)
       await markAsDelivered(messageIds);
 
-      // Insert read receipts
-      await supabase
+      // First, validate that all message IDs exist in messaging_messages (including soft-deleted)
+      const { data: validMessages } = await supabase
+        .from("messaging_messages")
+        .select("id, deleted_at")
+        .in("id", messageIds);
+
+      const validMessageIds = new Set(validMessages?.map((m) => m.id) || []);
+      const invalidMessageIds = messageIds.filter((id) => !validMessageIds.has(id));
+      const softDeletedIds = validMessages?.filter((m) => m.deleted_at !== null).map((m) => m.id) || [];
+      const softDeletedDetails = validMessages?.filter((m) => m.deleted_at !== null).map((m) => ({
+        id: m.id,
+        deleted_at: m.deleted_at,
+      })) || [];
+
+      console.log('[DEBUG markAsRead] Message status breakdown:', {
+        totalRequested: messageIds.length,
+        foundInDB: validMessageIds.size,
+        invalid: invalidMessageIds,
+        softDeleted: softDeletedIds,
+        softDeletedDetails,
+        activeMessages: validMessages?.filter((m) => m.deleted_at === null).map((m) => m.id) || [],
+        allRequestedIds: messageIds,
+        allFoundIds: Array.from(validMessageIds),
+        foundMessagesDetails: validMessages,
+      });
+
+      if (invalidMessageIds.length > 0) {
+        console.warn('[DEBUG markAsRead] Invalid message IDs (not in messaging_messages):', {
+          invalidIds: invalidMessageIds,
+        });
+      }
+
+      if (softDeletedIds.length > 0) {
+        console.warn('[DEBUG markAsRead] ⚠️ SOFT-DELETED message IDs (will fail FK constraint):', {
+          softDeletedIds,
+          softDeletedDetails,
+          note: 'Foreign key constraints don\'t respect soft deletes - these will fail on insert',
+        });
+      }
+
+      // Only process valid, non-deleted message IDs
+      const validIdsToProcess = messageIds.filter((id) => 
+        validMessageIds.has(id) && !softDeletedIds.includes(id)
+      );
+
+      if (validIdsToProcess.length === 0) {
+        console.warn('[DEBUG markAsRead] ❌ No valid message IDs to process:', {
+          allInvalid: invalidMessageIds.length === messageIds.length,
+          allSoftDeleted: softDeletedIds.length === messageIds.length,
+          invalidIds: invalidMessageIds,
+          softDeletedIds: softDeletedIds,
+          reason: invalidMessageIds.length === messageIds.length 
+            ? 'All messages are invalid (not in DB)'
+            : 'All messages are soft-deleted',
+        });
+        return;
+      }
+
+      console.log('[DEBUG markAsRead] ✅ Proceeding with valid message IDs:', {
+        validIdsToProcess,
+        count: validIdsToProcess.length,
+      });
+
+      // Check which messages are already marked as read to avoid redundant upserts
+      const { data: existingReads, error: checkReadError } = await supabase
         .from("message_reads")
-        .insert(
-          messageIds.map((messageId) => ({
-            message_id: messageId,
-            user_id: user.id,
-          })),
-        )
-        .select();
+        .select("message_id")
+        .in("message_id", validIdsToProcess)
+        .eq("profile_id", user.id);
+
+      if (checkReadError) {
+        console.error('[DEBUG markAsRead] Error checking existing reads:', checkReadError);
+      }
+
+      console.log('[DEBUG markAsRead] Existing reads check:', {
+        existingCount: existingReads?.length || 0,
+        existingIds: existingReads?.map((r) => r.message_id).slice(0, 5),
+      });
+
+      const existingReadMessageIds = new Set(
+        existingReads?.map((r) => r.message_id) || []
+      );
+
+      // Only upsert messages that aren't already read
+      const newReadMessageIds = validIdsToProcess.filter((id) => !existingReadMessageIds.has(id));
+
+      console.log('[DEBUG markAsRead] After filtering:', {
+        newReadMessageIdsCount: newReadMessageIds.length,
+        newReadMessageIds: newReadMessageIds.slice(0, 5),
+        skippedCount: messageIds.length - newReadMessageIds.length,
+      });
+
+      if (newReadMessageIds.length === 0) {
+        console.log('[DEBUG markAsRead] All messages already read, skipping insert');
+        return;
+      }
+
+      // Insert read receipts - if record exists, it's fine, we'll catch and ignore
+      // Don't use upsert/select to avoid columns parameter issues with PostgREST
+      const insertReadData = newReadMessageIds.map((messageId) => ({
+        message_id: messageId,
+        profile_id: user.id,
+        read_at: new Date().toISOString(),
+      }));
+
+      console.log('[DEBUG markAsRead] Attempting insert:', {
+        insertCount: insertReadData.length,
+        insertData: insertReadData, // Show all data
+        messageIdsBeingInserted: newReadMessageIds,
+        firstInsertItem: insertReadData[0],
+      });
+
+      const { error: readError, data: readData } = await supabase
+        .from("message_reads")
+        .insert(insertReadData);
+
+      console.log('[DEBUG markAsRead] Insert result:', {
+        error: readError ? {
+          code: readError.code,
+          message: readError.message,
+          details: readError.details,
+          hint: readError.hint,
+          fullError: JSON.stringify(readError, null, 2),
+        } : null,
+        dataCount: readData?.length || 0,
+        attemptedMessageId: newReadMessageIds[0],
+        insertDataFirstItem: insertReadData[0],
+      });
+
+      // Log all errors for debugging - don't suppress anything
+      if (readError) {
+        console.error('[DEBUG markAsRead] INSERT ERROR:', {
+          code: readError.code,
+          message: readError.message,
+          details: readError.details,
+          hint: readError.hint,
+          fullError: readError,
+          attemptedMessageIds: newReadMessageIds,
+          insertData: insertReadData,
+        });
+
+        // Check if it's a foreign key violation (message_id doesn't exist)
+        if (readError.code === '23503' || readError.message?.includes('foreign key constraint')) {
+          const messageId = newReadMessageIds[0];
+          console.error('[DEBUG markAsRead] 🔴 FOREIGN KEY VIOLATION:', {
+            attemptedMessageId: messageId,
+            errorCode: readError.code,
+            errorMessage: readError.message,
+            errorDetails: readError.details,
+            errorHint: readError.hint,
+            insertData: insertReadData[0],
+          });
+          
+          // Double-check: Query the message directly by ID to see if it exists
+          const { data: directMessage, error: directError } = await supabase
+            .from("messaging_messages")
+            .select("id, deleted_at, channel_id, sender_profile_id")
+            .eq("id", messageId)
+            .maybeSingle();
+          
+          console.error('[DEBUG markAsRead] Direct message query:', {
+            messageId,
+            found: !!directMessage,
+            message: directMessage,
+            queryError: directError,
+            note: 'If message is null, it truly doesn\'t exist. If it exists but FK fails, there may be an RLS or schema issue.',
+          });
+          
+          // Don't throw - just log and continue
+          return;
+        }
+
+        const isExpectedConflict = 
+          readError.code === '23505' || // unique_violation
+          readError.code === 'PGRST116' || // PostgREST conflict
+          readError.code === '409' || // HTTP conflict
+          readError.code === 'PGRST301' || // Precondition failed
+          readError.message?.includes('duplicate') ||
+          readError.message?.includes('already exists');
+
+        console.log('[DEBUG markAsRead] Conflict analysis:', {
+          isExpectedConflict,
+          errorCode: readError.code,
+          errorMessage: readError.message,
+        });
+
+        if (!isExpectedConflict) {
+          // Check if it's a column error (column doesn't exist) - try fallback
+          if (readError.code === '42703' || (readError.message?.includes('column') && readError.message?.includes('does not exist'))) {
+            // Try with user_id as fallback (old schema)
+            const { error: fallbackError } = await supabase
+              .from("message_reads")
+              .insert(
+                messageIds.map((messageId) => ({
+                  message_id: messageId,
+                  user_id: user.id, // Old column name
+                  read_at: new Date().toISOString(),
+                }))
+              );
+            
+            // Only throw if it's not an expected conflict
+            if (fallbackError && !(
+              fallbackError.code === '23505' || 
+              fallbackError.code === 'PGRST116' || 
+              fallbackError.code === '409' || 
+              fallbackError.code === 'PGRST301'
+            )) {
+              throw fallbackError;
+            }
+          } else {
+            // Only throw unexpected errors
+            throw readError;
+          }
+        }
+        // Expected conflicts are silently ignored - record already exists
+      }
 
       // Update participant's last_read_at
       const latestMessageId = messageIds[messageIds.length - 1];
@@ -745,9 +1073,19 @@ export function useMessages({
           last_read_message_id: latestMessageId,
         })
         .eq("channel_id", conversationId)
-        .eq("user_id", user.id);
+        .eq("profile_id", user.id);
     } catch (err: any) {
-      console.error("Error marking as read:", err);
+      // Ignore expected conflicts - message already marked as read
+      const isExpectedConflict = 
+        err?.code === '23505' || 
+        err?.code === 'PGRST116' || 
+        err?.code === '409' ||
+        err?.message?.includes('duplicate') ||
+        err?.message?.includes('already exists');
+        
+      if (!isExpectedConflict) {
+        console.error("Error marking as read:", err);
+      }
     }
   }, [conversationId, markAsDelivered]);
 
@@ -756,6 +1094,8 @@ export function useMessages({
     if (!conversationId) {
       setMessages([]);
       setLoading(false);
+      processedMessageIdsRef.current.clear();
+      isInitialLoadingRef.current = false;
       return;
     }
 
@@ -765,11 +1105,20 @@ export function useMessages({
     setHasMore(true);
     setOldestMessageId(null);
     setMessages([]); // Clear messages when switching conversations
+    processedMessageIdsRef.current.clear(); // Clear processed IDs
+    isInitialLoadingRef.current = true; // Mark as initial loading
 
     if (autoLoad && conversationId) {
-      loadMessages();
+      loadMessages().finally(() => {
+        // Allow subscription to process new messages after initial load completes
+        // Small delay to ensure state has been updated
+        setTimeout(() => {
+          isInitialLoadingRef.current = false;
+        }, 100);
+      });
     } else {
       setLoading(false);
+      isInitialLoadingRef.current = false;
     }
      
   }, [conversationId, autoLoad]); // Reload whenever conversationId changes
@@ -777,15 +1126,23 @@ export function useMessages({
   // Real-time subscription
   useEffect(() => {
     if (!conversationId) {
-      console.log("⚠️ No conversationId, skipping real-time subscription");
       return;
     }
 
-    console.log(
-      `🔌 Setting up real-time subscription for conversation: ${conversationId}`,
-    );
+    // Validate conversationId format (should be UUID)
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(conversationId)) {
+      console.warn("⚠️ Invalid conversationId format, skipping real-time subscription:", conversationId);
+      return;
+    }
 
-    const channel = supabase
+    // Setting up real-time subscription for conversation
+
+    let channel: ReturnType<typeof supabase.channel>;
+    let deliveryChannel: ReturnType<typeof supabase.channel>;
+    let readChannel: ReturnType<typeof supabase.channel>;
+    
+    try {
+      channel = supabase
       .channel(`messages:${conversationId}`)
       .on(
         "postgres_changes",
@@ -796,12 +1153,21 @@ export function useMessages({
           filter: `channel_id=eq.${conversationId}`,
         },
         async (payload) => {
-          console.log(
-            "🔔 Real-time message INSERT event received:",
-            payload.new,
-          );
           const messageId = payload.new.id;
-          const senderId = payload.new.sender_id;
+          
+          // CRITICAL: Skip if we're still loading initial messages or already processed
+          if (isInitialLoadingRef.current) {
+            return;
+          }
+
+          // CRITICAL: Check if already processed (atomic check)
+          if (processedMessageIdsRef.current.has(messageId)) {
+            return;
+          }
+
+          // Mark as processed immediately to prevent race conditions
+          processedMessageIdsRef.current.add(messageId);
+          const senderId = payload.new.sender_profile_id || payload.new.sender_id;
 
           // Check if this is a message we just sent (we already have sender info)
           const { data: { user: currentUser } } = await supabase.auth.getUser();
@@ -821,6 +1187,8 @@ export function useMessages({
                 "Error fetching new message in subscription:",
                 fetchError,
               );
+              // Remove from processed set so it can be retried
+              processedMessageIdsRef.current.delete(messageId);
               // Fallback: use payload data if fetch fails
               const fallbackMessage: Message = {
                 ...payload.new,
@@ -828,8 +1196,12 @@ export function useMessages({
                 reply_to: null,
               };
               setMessages((prev) => {
+                // Double-check for duplicates in state (safety net)
                 const exists = prev.some((msg) => msg.id === messageId);
-                if (exists) return prev;
+                if (exists) {
+                  processedMessageIdsRef.current.delete(messageId);
+                  return prev;
+                }
                 return [...prev, fallbackMessage as Message].sort((a, b) =>
                   new Date(a.created_at).getTime() -
                   new Date(b.created_at).getTime()
@@ -841,15 +1213,6 @@ export function useMessages({
             // SIMPLE: Get sender info from message metadata (stored at creation)
             // Fallback to existing sender or auth user info
             let sender = null;
-            let existingSender = null;
-
-            setMessages((prev) => {
-              const existingMsg = prev.find((msg) => msg.id === messageId);
-              if (existingMsg?.sender) {
-                existingSender = existingMsg.sender;
-              }
-              return prev; // Don't update yet, just read
-            });
 
             // First: Use sender name from metadata (stored when message was created)
             if (messageData.metadata?.sender_name) {
@@ -858,9 +1221,6 @@ export function useMessages({
                 full_name: messageData.metadata.sender_name,
                 email: messageData.metadata.sender_email || null,
               };
-            } // Second: Use existing sender if we have it
-            else if (existingSender) {
-              sender = existingSender;
             } // Third: For own messages, use auth user info
             else if (isOwnMessage && currentUser) {
               sender = {
@@ -875,29 +1235,27 @@ export function useMessages({
             // Handle reply_to for real-time updates - will be resolved in setMessages callback
             const enrichedMessage: Message = {
               ...messageData,
-              sender: sender || existingSender, // Use fetched sender or fall back to existing
+              sender: sender,
               reply_to: null, // Will be set in setMessages callback
             } as Message;
 
             setMessages((prev) => {
-              // CRITICAL: Check for duplicates first - prevent duplicate messages
+              // CRITICAL: Double-check for duplicates in state (safety net)
               const existingMsg = prev.find((msg) => msg.id === messageId);
               if (existingMsg) {
-                // Message already exists - update it with latest data
-                console.log(
-                  "🔄 Updating existing message in real-time:",
-                  messageId,
-                );
+                // Message already exists - don't add again, but update if needed
                 
                 // Handle reply_to for existing message update
                 let replyToMessage: Message | null = null;
                 if (messageData.parent_message_id) {
                   const parentMsg = prev.find((m: Message) => m.id === messageData.parent_message_id);
                   if (parentMsg) {
+                    const parentSenderId = parentMsg.sender_profile_id || parentMsg.sender_id;
                     replyToMessage = {
                       id: parentMsg.id,
                       content: parentMsg.content,
-                      sender_id: parentMsg.sender_id,
+                      sender_profile_id: parentSenderId,
+                      sender_id: parentSenderId, // Backward compatibility
                       created_at: parentMsg.created_at,
                       message_type: parentMsg.message_type,
                       file_name: parentMsg.file_name,
@@ -907,21 +1265,20 @@ export function useMessages({
                   }
                 }
                 
+                // Update only if we have new information
                 return prev.map((msg) =>
                   msg.id === messageId
                     ? {
+                      ...msg,
                       ...enrichedMessage,
-                      sender: existingMsg.sender || enrichedMessage.sender,
-                      reply_to: replyToMessage || existingMsg.reply_to,
+                      sender: msg.sender || enrichedMessage.sender,
+                      reply_to: replyToMessage || msg.reply_to,
                     }
                     : msg
                 );
               }
 
-              console.log(
-                "✅ Adding new message from real-time subscription:",
-                messageId,
-              );
+              // Adding new message from real-time subscription
 
               // Handle reply_to - find in existing messages (fast lookup only)
               // IMPORTANT: Only set finalReplyTo if parent_message_id actually exists
@@ -932,10 +1289,12 @@ export function useMessages({
                   m.id === replyToId
                 );
                 if (repliedToMessage && repliedToMessage.id) {
+                  const replySenderId = repliedToMessage.sender_profile_id || repliedToMessage.sender_id;
                   finalReplyTo = {
                     id: repliedToMessage.id,
                     content: repliedToMessage.content,
-                    sender_id: repliedToMessage.sender_id,
+                    sender_profile_id: replySenderId,
+                    sender_id: replySenderId, // Backward compatibility
                     created_at: repliedToMessage.created_at,
                     message_type: repliedToMessage.message_type,
                     file_name: repliedToMessage.file_name,
@@ -954,19 +1313,20 @@ export function useMessages({
                 new Date(b.created_at).getTime()
               );
 
-              console.log(
-                `📊 Message count: ${prev.length} → ${updated.length}`,
-              );
+              // Message count updated
               return updated;
             });
 
             // Auto-mark as read if user is viewing
             const { data: { user } } = await supabase.auth.getUser();
-            if (user && enrichedMessage.sender_id !== user.id) {
+            const enrichedSenderId = enrichedMessage.sender_profile_id || enrichedMessage.sender_id;
+            if (user && enrichedSenderId !== user.id) {
               markAsRead([enrichedMessage.id]);
             }
           } catch (err) {
             console.error("Error in message subscription handler:", err);
+            // Remove from processed set so it can be retried
+            processedMessageIdsRef.current.delete(messageId);
           }
         },
       )
@@ -979,10 +1339,7 @@ export function useMessages({
           filter: `channel_id=eq.${conversationId}`,
         },
         (payload) => {
-          console.log(
-            "🔄 Real-time message UPDATE event received:",
-            payload.new,
-          );
+          // Real-time message UPDATE event received
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === payload.new.id
@@ -992,21 +1349,30 @@ export function useMessages({
           );
         },
       )
-      .subscribe((status) => {
+      .subscribe((status, err) => {
         // Only log important status changes, not CLOSED (expected when switching conversations)
         if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to real-time messages");
+          // Successfully subscribed to real-time messages
         } else if (status === "CHANNEL_ERROR") {
-          console.error("❌ Error subscribing to real-time messages");
+          // Only log if there's an actual error object, not just connection close
+          if (err && err.message && !err.message.includes('connection') && !err.message.includes('close')) {
+            console.error("❌ Error subscribing to real-time messages:", err.message);
+          } else {
+            // Connection issues are normal - don't log as errors
+            console.log("⚠️ Channel connection issue (this is normal):", status);
+          }
         } else if (status === "TIMED_OUT") {
           console.warn("⏱️ Real-time subscription timed out, retrying...");
+        } else if (status === "CLOSED") {
+          // CLOSED status is expected when switching conversations - no need to log
+          // Only log if we're not cleaning up (i.e., unexpected close)
+          // Channel closed (expected during cleanup)
         }
-        // CLOSED status is expected when switching conversations - no need to log
       });
 
     // Subscribe to delivery and read updates to refresh receipt status
     // Note: We'll reload messages when deliveries/reads change to get updated status
-    const deliveryChannel = supabase
+    deliveryChannel = supabase
       .channel(`message_deliveries:${conversationId}`)
       .on(
         "postgres_changes",
@@ -1016,15 +1382,19 @@ export function useMessages({
           table: "message_deliveries",
         },
         (payload) => {
-          const { message_id, user_id } = payload.new as any;
+          const { message_id, profile_id } = payload.new as any;
+          // Handle backward compatibility - check both profile_id and user_id
+          const userId = profile_id || (payload.new as any).user_id;
+
+          if (!userId) return;
 
           // Update delivered_to array for the message
           setMessages((prev) => {
             return prev.map((msg) => {
               if (
-                msg.id === message_id && !msg.delivered_to?.includes(user_id)
+                msg.id === message_id && !msg.delivered_to?.includes(userId)
               ) {
-                const newDeliveredTo = [...(msg.delivered_to || []), user_id];
+                const newDeliveredTo = [...(msg.delivered_to || []), userId];
                 // Simple status update - if all participants delivered, mark as delivered
                 let receipt_status = msg.receipt_status;
                 if (msg.receipt_status === "sent") {
@@ -1043,7 +1413,7 @@ export function useMessages({
       )
       .subscribe();
 
-    const readChannel = supabase
+    readChannel = supabase
       .channel(`message_reads:${conversationId}`)
       .on(
         "postgres_changes",
@@ -1053,13 +1423,17 @@ export function useMessages({
           table: "message_reads",
         },
         (payload) => {
-          const { message_id, user_id } = payload.new as any;
+          const { message_id, profile_id } = payload.new as any;
+          // Handle backward compatibility - check both profile_id and user_id
+          const userId = profile_id || (payload.new as any).user_id;
+
+          if (!userId) return;
 
           // Update read_by array for the message
           setMessages((prev) => {
             return prev.map((msg) => {
-              if (msg.id === message_id && !msg.read_by?.includes(user_id)) {
-                const newReadBy = [...(msg.read_by || []), user_id];
+              if (msg.id === message_id && !msg.read_by?.includes(userId)) {
+                const newReadBy = [...(msg.read_by || []), userId];
                 // Update receipt status to read
                 return {
                   ...msg,
@@ -1073,13 +1447,46 @@ export function useMessages({
         },
       )
       .subscribe();
+      
+    } catch (error) {
+      console.error("Error setting up real-time subscriptions:", error);
+      // Don't proceed if channel setup fails - return cleanup function anyway
+      return () => {
+        // No-op cleanup if setup failed
+      };
+    }
 
+    // CRITICAL: Proper cleanup - unsubscribe first, then remove channel
     return () => {
-      supabase.removeChannel(channel);
-      supabase.removeChannel(deliveryChannel);
-      supabase.removeChannel(readChannel);
+      // Cleaning up subscriptions for conversation
+      
+      // Unsubscribe from all channels (non-blocking)
+      Promise.allSettled([
+        channel?.unsubscribe().catch(() => {}), // Ignore unsubscribe errors
+        deliveryChannel?.unsubscribe().catch(() => {}),
+        readChannel?.unsubscribe().catch(() => {}),
+      ]).then(() => {
+        // Remove channels after unsubscribing
+        try {
+          if (channel) supabase.removeChannel(channel);
+        } catch (e) {
+          // Channel might already be removed - ignore
+        }
+        try {
+          if (deliveryChannel) supabase.removeChannel(deliveryChannel);
+        } catch (e) {
+          // Channel might already be removed - ignore
+        }
+        try {
+          if (readChannel) supabase.removeChannel(readChannel);
+        } catch (e) {
+          // Channel might already be removed - ignore
+        }
+      }).catch(() => {
+        // Cleanup errors are not critical - just continue
+      });
     };
-  }, [conversationId, markAsRead]);
+  }, [conversationId, markAsRead]); // Removed loadMessages from deps to prevent unnecessary re-subscriptions
 
   const refetchMessages = useCallback(async () => {
     setOldestMessageId(null);

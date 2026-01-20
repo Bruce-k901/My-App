@@ -95,7 +95,6 @@ export default function SmartOrderSuggestions({
         // Fall back to basic query
         // Get stock items that have product variants for this supplier
         const { data: variantData } = await supabase
-          .schema('stockly')
           .from('product_variants')
           .select('stock_item_id, unit_price')
           .eq('supplier_id', supplierId)
@@ -109,7 +108,6 @@ export default function SmartOrderSuggestions({
         }
         
         const { data: basicData } = await supabase
-          .schema('stockly')
           .from('stock_items')
           .select(`
             id, name, stock_unit, shelf_life_days, is_perishable,

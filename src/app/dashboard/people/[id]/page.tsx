@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
@@ -27,9 +27,12 @@ import {
   CreditCard as CreditCardIcon,
   Loader2,
   Trash2,
-  Plus
+  Plus,
+  CheckCircle2,
+  CalendarCheck
 } from 'lucide-react';
-import type { EmergencyContact } from '@/types/peoplely';
+import type { EmergencyContact } from '@/types/teamly';
+import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 
 type TabType = 'overview' | 'documents' | 'leave' | 'training' | 'attendance' | 'notes' | 'pay';
 
@@ -68,6 +71,9 @@ interface Employee {
   pay_frequency: string | null;
   notice_period_weeks: number | null;
   reports_to: string | null;
+  home_site: string | null;
+  sites?: { name: string } | null;
+  manager?: { full_name: string } | null;
   
   // Compliance
   national_insurance_number: string | null;
@@ -107,6 +113,7 @@ interface Employee {
   cossh_expiry_date: string | null;
   
   // Relations
+  home_site?: string | null;
   sites?: { name: string } | null;
   manager?: { full_name: string } | null;
 }
@@ -126,12 +133,29 @@ export default function EmployeeProfilePage() {
   const [saving, setSaving] = useState(false);
   const [sites, setSites] = useState<{ id: string; name: string }[]>([]);
   const [managers, setManagers] = useState<{ id: string; full_name: string }[]>([]);
+  const [showSiteAssignmentsModal, setShowSiteAssignmentsModal] = useState(false);
+  const [siteAssignmentsEmployee, setSiteAssignmentsEmployee] = useState<Employee | null>(null);
   
   useEffect(() => {
     if (employeeId) {
       fetchEmployee();
     }
   }, [employeeId]);
+
+  // Fetch sites and managers when currentUser is available
+  useEffect(() => {
+    console.log('🔍 Checking for currentUser:', { 
+      hasCurrentUser: !!currentUser, 
+      companyId: currentUser?.company_id 
+    });
+    if (currentUser?.company_id) {
+      console.log('✅ Fetching sites and managers for company:', currentUser.company_id);
+      fetchSites();
+      fetchManagers();
+    } else {
+      console.log('⚠️ Cannot fetch sites/managers: no currentUser or company_id');
+    }
+  }, [currentUser?.company_id]);
 
   // Refresh employee data when window regains focus or when employee is updated
   useEffect(() => {
@@ -303,15 +327,45 @@ export default function EmployeeProfilePage() {
   };
 
   const fetchSites = async () => {
-    if (!currentUser?.company_id) return;
+    console.log('🔍 fetchSites called, currentUser:', { 
+      hasCurrentUser: !!currentUser, 
+      companyId: currentUser?.company_id 
+    });
     
-    const { data } = await supabase
-      .from('sites')
-      .select('id, name')
-      .eq('company_id', currentUser.company_id)
-      .order('name');
+    if (!currentUser?.company_id) {
+      console.log('⚠️ Cannot fetch sites: no company_id');
+      return;
+    }
     
-    setSites(data || []);
+    try {
+      console.log('📡 Fetching sites from Supabase for company:', currentUser.company_id);
+      const { data, error } = await supabase
+        .from('sites')
+        .select('id, name')
+        .eq('company_id', currentUser.company_id)
+        .order('name');
+      
+      if (error) {
+        console.error('❌ Error fetching sites:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        setSites([]);
+      } else {
+        console.log('✅ Fetched sites:', data?.length || 0, data);
+        setSites(data || []);
+      }
+    } catch (err: any) {
+      console.error('❌ Exception fetching sites:', err);
+      console.error('Exception details:', {
+        message: err?.message,
+        stack: err?.stack
+      });
+      setSites([]);
+    }
   };
 
   const fetchManagers = async () => {
@@ -388,8 +442,6 @@ export default function EmployeeProfilePage() {
     if (!employee) return;
     
     console.log('handleEdit called for:', employee.full_name, employee.id);
-    setEditingEmployee(employee);
-    setEditFormData(employee);
     
     if (!currentUser?.company_id) {
       setEmergencyContacts([]);
@@ -397,6 +449,13 @@ export default function EmployeeProfilePage() {
     }
     
     try {
+      // Ensure dropdown data is loaded before opening the modal
+      await Promise.all([fetchSites(), fetchManagers()]);
+
+      // Open modal with base employee info immediately after dropdowns are ready
+      setEditingEmployee(employee);
+      setEditFormData(employee);
+
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -828,7 +887,16 @@ export default function EmployeeProfilePage() {
       {/* Tab Content */}
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-lg p-6">
         {activeTab === 'overview' && (
-          <OverviewTab employee={employee} tenure={calculateTenure()} onUpdate={fetchEmployee} />
+          <OverviewTab 
+            employee={employee} 
+            tenure={calculateTenure()} 
+            onUpdate={fetchEmployee} 
+            sites={sites}
+            onOpenSiteAssignments={(emp) => {
+              setSiteAssignmentsEmployee(emp);
+              setShowSiteAssignmentsModal(true);
+            }}
+          />
         )}
         {activeTab === 'documents' && (
           <DocumentsTab employeeId={employee.id} />
@@ -873,6 +941,25 @@ export default function EmployeeProfilePage() {
           }}
           onSave={handleSaveEdit}
           saving={saving}
+          onOpenSiteAssignments={(emp) => {
+            setSiteAssignmentsEmployee(emp);
+            setShowSiteAssignmentsModal(true);
+          }}
+        />
+      )}
+
+      {/* Site Assignments Modal */}
+      {showSiteAssignmentsModal && siteAssignmentsEmployee && company && (
+        <EmployeeSiteAssignmentsModal
+          isOpen={showSiteAssignmentsModal}
+          onClose={() => {
+            setShowSiteAssignmentsModal(false);
+            setSiteAssignmentsEmployee(null);
+          }}
+          employeeId={siteAssignmentsEmployee.id}
+          employeeName={siteAssignmentsEmployee.full_name}
+          homeSiteId={siteAssignmentsEmployee.home_site}
+          companyId={company.id}
         />
       )}
     </div>
@@ -880,34 +967,171 @@ export default function EmployeeProfilePage() {
 }
 
 // Overview Tab Component
-function OverviewTab({ employee, tenure, onUpdate }: { employee: Employee; tenure: string | null; onUpdate: () => void }) {
+function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments }: { employee: Employee; tenure: string | null; onUpdate: () => void; sites: { id: string; name: string }[]; onOpenSiteAssignments?: (employee: Employee) => void }) {
+  const [probationReviews, setProbationReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
+  // Debug: Log sites when they change
+  useEffect(() => {
+    console.log('📍 OverviewTab received sites:', sites.length, sites);
+  }, [sites]);
+
+  useEffect(() => {
+    const fetchProbationReviews = async () => {
+      try {
+        setLoadingReviews(true);
+        // First get all schedules for this employee
+        const { data: allSchedules, error } = await supabase
+          .from('employee_review_schedules')
+          .select(`
+            *,
+            template:review_templates (
+              id,
+              name,
+              template_type
+            ),
+            manager:profiles!employee_review_schedules_manager_id_fkey (
+              id,
+              full_name
+            )
+          `)
+          .eq('employee_id', employee.id)
+          .order('scheduled_date', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching probation reviews:', error);
+          console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+        } else {
+          // Filter to only probation reviews
+          const probation = (allSchedules || []).filter((schedule: any) => 
+            schedule.template?.template_type === 'probation_review'
+          );
+          setProbationReviews(probation);
+        }
+      } catch (error: any) {
+        console.error('Error fetching probation reviews:', error);
+        console.error('Error details:', {
+          message: error?.message,
+          stack: error?.stack
+        });
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    if (employee?.id) {
+      fetchProbationReviews();
+    }
+  }, [employee?.id]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Personal Information */}
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <User className="w-5 h-5 text-[#EC4899]" />
-          Personal Information
-        </h3>
-        <div className="space-y-3">
-          <InfoRow label="Date of Birth" value={employee.date_of_birth ? new Date(employee.date_of_birth).toLocaleDateString('en-GB') : 'Not set'} />
-          <InfoRow label="Gender" value={employee.gender || 'Not set'} />
-          <InfoRow label="Nationality" value={employee.nationality || 'Not set'} />
-          <InfoRow label="Phone" value={employee.phone_number || 'Not set'} />
-          <InfoRow label="Address" value={
-            [employee.address_line_1, employee.city, employee.postcode]
-              .filter(Boolean).join(', ') || 'Not set'
-          } />
-          <InfoRow label="Emergency Contact" value={
-            employee.emergency_contacts?.[0]?.name 
-              ? `${employee.emergency_contacts[0].name} (${employee.emergency_contacts[0].relationship}) - ${employee.emergency_contacts[0].phone}`
-              : 'Not set'
-          } />
+      {/* Left Column */}
+      <div className="space-y-6">
+        {/* Personal Information */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-[#EC4899]" />
+            Personal Information
+          </h3>
+          <div className="space-y-3">
+            <InfoRow label="Date of Birth" value={employee.date_of_birth ? new Date(employee.date_of_birth).toLocaleDateString('en-GB') : 'Not set'} />
+            <InfoRow label="Gender" value={employee.gender || 'Not set'} />
+            <InfoRow label="Nationality" value={employee.nationality || 'Not set'} />
+            <InfoRow label="Phone" value={employee.phone_number || 'Not set'} />
+            <InfoRow label="Address" value={
+              [employee.address_line_1, employee.city, employee.postcode]
+                .filter(Boolean).join(', ') || 'Not set'
+            } />
+            <InfoRow label="Emergency Contact" value={
+              employee.emergency_contacts?.[0]?.name 
+                ? `${employee.emergency_contacts[0].name} (${employee.emergency_contacts[0].relationship}) - ${employee.emergency_contacts[0].phone}`
+                : 'Not set'
+            } />
+          </div>
+        </div>
+
+        {/* Compliance */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-[#EC4899]" />
+            Compliance
+          </h3>
+          <div className="space-y-3">
+            <InfoRow 
+              label="Right to Work" 
+              value={employee.right_to_work_status?.replace('_', ' ') || 'Not verified'}
+              status={employee.right_to_work_status === 'verified' ? 'success' : employee.right_to_work_status === 'expired' ? 'error' : 'warning'}
+              fieldName="right_to_work_status"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+              type="select"
+              options={[
+                { value: 'verified', label: 'Verified' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'expired', label: 'Expired' },
+                { value: 'not_verified', label: 'Not Verified' }
+              ]}
+            />
+            <InfoRow 
+              label="RTW Expiry" 
+              value={employee.right_to_work_expiry ? new Date(employee.right_to_work_expiry).toLocaleDateString('en-GB') : 'No expiry'}
+              actualValue={employee.right_to_work_expiry}
+              fieldName="right_to_work_expiry"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+              type="date"
+            />
+            <InfoRow 
+              label="DBS Check" 
+              value={employee.dbs_status?.replace('_', ' ') || 'Not checked'}
+              status={employee.dbs_status === 'clear' ? 'success' : employee.dbs_status === 'pending' ? 'warning' : undefined}
+              fieldName="dbs_status"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+              type="select"
+              options={[
+                { value: 'clear', label: 'Clear' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'not_checked', label: 'Not Checked' }
+              ]}
+            />
+            <InfoRow 
+              label="DBS Date" 
+              value={employee.dbs_check_date ? new Date(employee.dbs_check_date).toLocaleDateString('en-GB') : 'N/A'}
+              actualValue={employee.dbs_check_date}
+              fieldName="dbs_check_date"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+              type="date"
+            />
+            <InfoRow 
+              label="DBS Certificate Number" 
+              value={employee.dbs_certificate_number || 'Not set'}
+              fieldName="dbs_certificate_number"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+            <InfoRow 
+              label="NI Number" 
+              value={employee.national_insurance_number || 'Not set'}
+              fieldName="national_insurance_number"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Employment Details */}
-      <div>
+      {/* Right Column */}
+      <div className="space-y-6">
+        {/* Employment Details */}
+        <div>
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-[#EC4899]" />
           Employment Details
@@ -921,8 +1145,86 @@ function OverviewTab({ employee, tenure, onUpdate }: { employee: Employee; tenur
             onUpdate={onUpdate}
           />
           <InfoRow 
+            label="Position / Job Title" 
+            value={employee.position_title || 'Not set'}
+            fieldName="position_title"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+          />
+          <InfoRow 
+            label="Department" 
+            value={employee.department || 'Not set'}
+            fieldName="department"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+          />
+          <InfoRow 
+            label="App Role" 
+            value={employee.app_role || 'Not set'}
+            fieldName="app_role"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+            type="select"
+            options={[
+              { value: 'Staff', label: 'Staff' },
+              { value: 'Manager', label: 'Manager' },
+              { value: 'Admin', label: 'Admin' },
+              { value: 'Owner', label: 'Owner' }
+            ]}
+          />
+          <InfoRow 
+            label="FOH/BOH" 
+            value={employee.boh_foh || 'Not set'}
+            fieldName="boh_foh"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+            type="select"
+            options={[
+              { value: 'FOH', label: 'FOH' },
+              { value: 'BOH', label: 'BOH' },
+              { value: 'BOTH', label: 'Both' }
+            ]}
+          />
+          <InfoRow 
+            label="Home Site" 
+            value={employee.sites?.name || 'Not set'}
+            actualValue={employee.home_site || (employee as any).home_site}
+            fieldName="home_site"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+            type="select"
+            options={sites.map(site => ({ value: site.id, label: site.name }))}
+          />
+          {onOpenSiteAssignments && (
+            <div className="pt-3 border-t border-white/[0.1]">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
+                <p className="text-xs text-blue-300">
+                  <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
+                </p>
+              </div>
+              <button
+                onClick={() => onOpenSiteAssignments(employee)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+              >
+                <MapPin className="w-5 h-5" />
+                Manage Site Assignments
+              </button>
+              <p className="text-xs text-neutral-500 mt-2 text-center">
+                Allow this employee to work at other sites during specified date ranges
+              </p>
+            </div>
+          )}
+          <InfoRow 
+            label="Line Manager" 
+            value={employee.manager?.full_name || 'Not set'}
+            fieldName="reports_to"
+            employeeId={employee.id}
+            onUpdate={onUpdate}
+          />
+          <InfoRow 
             label="Start Date" 
             value={employee.start_date ? new Date(employee.start_date).toLocaleDateString('en-GB') : 'Not set'}
+            actualValue={employee.start_date}
             fieldName="start_date"
             employeeId={employee.id}
             onUpdate={onUpdate}
@@ -969,6 +1271,7 @@ function OverviewTab({ employee, tenure, onUpdate }: { employee: Employee; tenur
           <InfoRow 
             label="Probation End" 
             value={employee.probation_end_date ? new Date(employee.probation_end_date).toLocaleDateString('en-GB') : 'N/A'}
+            actualValue={employee.probation_end_date}
             fieldName="probation_end_date"
             employeeId={employee.id}
             onUpdate={onUpdate}
@@ -983,113 +1286,197 @@ function OverviewTab({ employee, tenure, onUpdate }: { employee: Employee; tenur
             type="number"
           />
         </div>
-      </div>
+        </div>
 
-      {/* Compliance */}
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#EC4899]" />
-          Compliance
-        </h3>
-        <div className="space-y-3">
-          <InfoRow 
-            label="Right to Work" 
-            value={employee.right_to_work_status?.replace('_', ' ') || 'Not verified'}
-            status={employee.right_to_work_status === 'verified' ? 'success' : employee.right_to_work_status === 'expired' ? 'error' : 'warning'}
-            fieldName="right_to_work_status"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-            type="select"
-            options={[
-              { value: 'verified', label: 'Verified' },
-              { value: 'pending', label: 'Pending' },
-              { value: 'expired', label: 'Expired' },
-              { value: 'not_verified', label: 'Not Verified' }
-            ]}
-          />
-          <InfoRow 
-            label="RTW Expiry" 
-            value={employee.right_to_work_expiry ? new Date(employee.right_to_work_expiry).toLocaleDateString('en-GB') : 'No expiry'}
-            fieldName="right_to_work_expiry"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-            type="date"
-          />
-          <InfoRow 
-            label="DBS Check" 
-            value={employee.dbs_status?.replace('_', ' ') || 'Not checked'}
-            status={employee.dbs_status === 'clear' ? 'success' : employee.dbs_status === 'pending' ? 'warning' : undefined}
-            fieldName="dbs_status"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-            type="select"
-            options={[
-              { value: 'clear', label: 'Clear' },
-              { value: 'pending', label: 'Pending' },
-              { value: 'not_checked', label: 'Not Checked' }
-            ]}
-          />
-          <InfoRow 
-            label="DBS Date" 
-            value={employee.dbs_check_date ? new Date(employee.dbs_check_date).toLocaleDateString('en-GB') : 'N/A'}
-            fieldName="dbs_check_date"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-            type="date"
-          />
-          <InfoRow 
-            label="DBS Certificate Number" 
-            value={employee.dbs_certificate_number || 'Not set'}
-            fieldName="dbs_certificate_number"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
-          <InfoRow 
-            label="NI Number" 
-            value={employee.national_insurance_number || 'Not set'}
-            fieldName="national_insurance_number"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
+        {/* Banking */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-[#EC4899]" />
+            Bank Details
+          </h3>
+          <div className="space-y-3">
+            <InfoRow 
+              label="Bank" 
+              value={employee.bank_name || 'Not set'}
+              fieldName="bank_name"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+            <InfoRow 
+              label="Account Name" 
+              value={employee.bank_account_name || 'Not set'}
+              fieldName="bank_account_name"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+            <InfoRow 
+              label="Sort Code" 
+              value={employee.bank_sort_code || 'Not set'}
+              fieldName="bank_sort_code"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+            <InfoRow 
+              label="Account Number" 
+              value={employee.bank_account_number ? '••••••••' : 'Not set'}
+              fieldName="bank_account_number"
+              employeeId={employee.id}
+              onUpdate={onUpdate}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Banking */}
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-[#EC4899]" />
-          Bank Details
-        </h3>
-        <div className="space-y-3">
-          <InfoRow 
-            label="Bank" 
-            value={employee.bank_name || 'Not set'}
-            fieldName="bank_name"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
-          <InfoRow 
-            label="Account Name" 
-            value={employee.bank_account_name || 'Not set'}
-            fieldName="bank_account_name"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
-          <InfoRow 
-            label="Sort Code" 
-            value={employee.bank_sort_code || 'Not set'}
-            fieldName="bank_sort_code"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
-          <InfoRow 
-            label="Account Number" 
-            value={employee.bank_account_number ? '••••••••' : 'Not set'}
-            fieldName="bank_account_number"
-            employeeId={employee.id}
-            onUpdate={onUpdate}
-          />
-        </div>
+      {/* Probation Reviews - Full Width */}
+      <div className="md:col-span-2">
+        <ProbationReviewsSection employeeId={employee.id} startDate={employee.start_date} />
+      </div>
+    </div>
+  );
+}
+
+// Probation Reviews Section Component
+function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string; startDate: string | null }) {
+  const [probationReviews, setProbationReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
+  useEffect(() => {
+    const fetchProbationReviews = async () => {
+      try {
+        setLoadingReviews(true);
+        // First get all schedules for this employee
+        const { data: allSchedules, error } = await supabase
+          .from('employee_review_schedules')
+          .select(`
+            *,
+            template:review_templates (
+              id,
+              name,
+              template_type
+            ),
+            manager:profiles!employee_review_schedules_manager_id_fkey (
+              id,
+              full_name
+            )
+          `)
+          .eq('employee_id', employeeId)
+          .order('scheduled_date', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching probation reviews:', error);
+        } else {
+          // Filter to only probation reviews
+          const probation = (allSchedules || []).filter((schedule: any) => 
+            schedule.template?.template_type === 'probation_review'
+          );
+          setProbationReviews(probation);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    if (employeeId) {
+      fetchProbationReviews();
+    }
+  }, [employeeId]);
+
+  return (
+    <div>
+      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <CalendarCheck className="w-5 h-5 text-[#EC4899]" />
+        Probation Reviews
+      </h3>
+      <div className="space-y-3">
+        {loadingReviews ? (
+          <div className="flex items-center justify-center py-4">
+            <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
+          </div>
+        ) : probationReviews.length === 0 ? (
+          <div className="text-sm text-neutral-400 py-2">
+            {startDate 
+              ? 'No probation review scheduled yet'
+              : 'Set start date to auto-schedule probation review'}
+          </div>
+        ) : (
+          probationReviews.map((schedule: any) => {
+            const scheduledDate = schedule.scheduled_date 
+              ? new Date(schedule.scheduled_date).toLocaleDateString('en-GB', { 
+                  day: 'numeric', 
+                  month: 'short', 
+                  year: 'numeric' 
+                })
+              : 'Not scheduled';
+            
+            const daysUntil = schedule.scheduled_date 
+              ? Math.ceil((new Date(schedule.scheduled_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+              : null;
+
+            const statusColors: Record<string, string> = {
+              scheduled: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+              invitation_sent: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+              in_progress: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+              pending_manager: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+              pending_employee: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+              completed: 'bg-green-500/10 text-green-400 border-green-500/30',
+              cancelled: 'bg-red-500/10 text-red-400 border-red-500/30',
+            };
+
+            return (
+              <div 
+                key={schedule.id}
+                className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.1] transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="text-white font-medium">
+                        {schedule.template?.name || 'Probation Review'}
+                      </h4>
+                      <span className={`px-2 py-0.5 rounded text-xs border ${statusColors[schedule.status] || 'bg-neutral-500/10 text-neutral-400 border-neutral-500/30'}`}>
+                        {schedule.status?.replace('_', ' ') || 'Unknown'}
+                      </span>
+                    </div>
+                    <div className="text-sm text-neutral-400 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3 w-3" />
+                        <span>Scheduled: {scheduledDate}</span>
+                        {daysUntil !== null && (
+                          <span className={daysUntil < 0 ? 'text-red-400' : daysUntil <= 7 ? 'text-yellow-400' : 'text-neutral-500'}>
+                            ({daysUntil < 0 ? `${Math.abs(daysUntil)} days overdue` : daysUntil === 0 ? 'Today' : `${daysUntil} days away`})
+                          </span>
+                        )}
+                      </div>
+                      {schedule.manager?.full_name && (
+                        <div className="flex items-center gap-2">
+                          <User className="h-3 w-3" />
+                          <span>Manager: {schedule.manager.full_name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {schedule.review_id ? (
+                    <Link
+                      href={`/dashboard/people/reviews/${schedule.review_id}`}
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] rounded text-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
+                    >
+                      View Review
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/dashboard/people/reviews/schedule`}
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] rounded text-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
+                    >
+                      Start Review
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
@@ -1098,6 +1485,7 @@ function OverviewTab({ employee, tenure, onUpdate }: { employee: Employee; tenur
 function InfoRow({ 
   label, 
   value, 
+  actualValue,
   status,
   fieldName,
   employeeId,
@@ -1107,6 +1495,7 @@ function InfoRow({
 }: { 
   label: string; 
   value: string; 
+  actualValue?: unknown;
   status?: 'success' | 'warning' | 'error';
   fieldName?: string;
   employeeId?: string;
@@ -1115,24 +1504,97 @@ function InfoRow({
   options?: { value: string; label: string }[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(() => {
-    // Convert date display value back to ISO format for editing
-    if (type === 'date' && value && value !== 'Not set' && value !== 'N/A' && value !== 'No expiry') {
-      try {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          return date.toISOString().split('T')[0];
-        }
-      } catch (e) {
-        // Invalid date, return as is
+
+  const originalEditValue = useMemo(() => {
+    const isPlaceholder = (v: unknown) =>
+      v === null ||
+      v === undefined ||
+      v === '' ||
+      v === 'Not set' ||
+      v === 'N/A' ||
+      v === 'No expiry';
+
+    const toIsoDate = (v: unknown): string | null => {
+      if (v === null || v === undefined) return null;
+      const s = String(v).trim();
+      if (!s) return null;
+
+      // Already ISO date or datetime
+      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (isoMatch) return isoMatch[1];
+
+      // en-GB formatted date: DD/MM/YYYY (browser parsing is unreliable)
+      const gbMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (gbMatch) {
+        const dd = gbMatch[1].padStart(2, '0');
+        const mm = gbMatch[2].padStart(2, '0');
+        const yyyy = gbMatch[3];
+        return `${yyyy}-${mm}-${dd}`;
       }
+
+      // Best-effort fallback for other formats
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+      return null;
+    };
+
+    const toNumberString = (v: unknown): string => {
+      if (v === null || v === undefined) return '';
+      if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+      const s = String(v);
+      const cleaned = s.replace(/[^0-9.-]/g, '');
+      const n = cleaned ? Number.parseFloat(cleaned) : NaN;
+      return Number.isFinite(n) ? String(n) : '';
+    };
+
+    if (type === 'date') {
+      if (!isPlaceholder(actualValue)) {
+        const iso = toIsoDate(actualValue);
+        return iso || '';
+      }
+      if (isPlaceholder(value)) return '';
+      const iso = toIsoDate(value);
+      return iso || '';
     }
-    return value;
-  });
+
+    if (type === 'number') {
+      if (!isPlaceholder(actualValue)) return toNumberString(actualValue);
+      if (isPlaceholder(value)) return '';
+      return toNumberString(value);
+    }
+
+    if (type === 'boolean') {
+      if (typeof actualValue === 'boolean') return actualValue ? 'true' : 'false';
+      if (value === 'Yes') return 'true';
+      if (value === 'No') return 'false';
+      if (value === 'true' || value === 'false') return value;
+      return '';
+    }
+
+    if (type === 'select' && options) {
+      const actual = actualValue === null || actualValue === undefined ? '' : String(actualValue);
+      if (actual && options.some((o) => o.value === actual)) return actual;
+
+      const labelStr = value === null || value === undefined ? '' : String(value).trim().toLowerCase();
+      const matched = options.find(
+        (o) => o.value === value || o.label.trim().toLowerCase() === labelStr
+      );
+      return matched?.value || '';
+    }
+
+    return isPlaceholder(value) ? '' : value;
+  }, [type, value, actualValue, options]);
+
+  const [editValue, setEditValue] = useState(originalEditValue);
+
+  // Keep edit state in sync when the backing value changes (e.g. after refresh)
+  useEffect(() => {
+    if (!isEditing) setEditValue(originalEditValue);
+  }, [originalEditValue, isEditing]);
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!fieldName || !employeeId || editValue === value) {
+    if (!fieldName || !employeeId || editValue === originalEditValue) {
       setIsEditing(false);
       return;
     }
@@ -1155,6 +1617,16 @@ function InfoRow({
         updateData[fieldName] = editValue === 'true' || editValue === 'Yes';
       } else if (type === 'date') {
         updateData[fieldName] = editValue || null;
+      } else if (type === 'select') {
+        // For select fields, preserve empty string as null, but don't clear if value is actually selected
+        // If editValue is empty string and field is home_site or reports_to (UUID fields), set to null
+        if (editValue === '' && (fieldName === 'home_site' || fieldName === 'reports_to')) {
+          updateData[fieldName] = null;
+        } else if (editValue === '') {
+          updateData[fieldName] = null;
+        } else {
+          updateData[fieldName] = editValue;
+        }
       } else {
         updateData[fieldName] = editValue || null;
       }
@@ -1177,37 +1649,35 @@ function InfoRow({
   };
 
   const handleCancel = () => {
-    // Reset to original value format
-    if (type === 'date' && value && value !== 'Not set' && value !== 'N/A' && value !== 'No expiry') {
-      try {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          setEditValue(date.toISOString().split('T')[0]);
-        } else {
-          setEditValue(value);
-        }
-      } catch (e) {
-        setEditValue(value);
-      }
-    } else {
-      setEditValue(value);
-    }
+    setEditValue(originalEditValue);
     setIsEditing(false);
   };
 
   if (!fieldName || !employeeId) {
-    // Non-editable row
+    // Non-editable row - but maintain alignment with editable rows
     return (
-      <div className="flex justify-between py-2 border-b border-neutral-700">
+      <div className="flex justify-between items-center py-2 border-b border-neutral-700 group">
         <span className="text-neutral-400">{label}</span>
-        <span className={`text-right ${
-          status === 'success' ? 'text-green-400' :
-          status === 'warning' ? 'text-amber-400' :
-          status === 'error' ? 'text-red-400' :
-          'text-white'
-        }`}>
-          {value}
-        </span>
+        <div className="flex items-center gap-2 flex-1 justify-end">
+          <span className={`text-right ${
+            status === 'success' ? 'text-green-400' :
+            status === 'warning' ? 'text-amber-400' :
+            status === 'error' ? 'text-red-400' :
+            'text-white'
+          }`}>
+            {value}
+          </span>
+          {/* Placeholder for edit button to maintain alignment - matches exact button structure */}
+          <button
+            disabled
+            className="opacity-0 px-2 py-1 pointer-events-none"
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{ visibility: 'hidden' }}
+          >
+            <Edit className="w-3 h-3" />
+          </button>
+        </div>
       </div>
     );
   }
@@ -1220,21 +1690,26 @@ function InfoRow({
           <>
             {type === 'select' && options ? (
               <select
-                value={editValue}
+                value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
+                disabled={options.length === 0}
               >
                 <option value="">Not set</option>
-                {options.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
+                {options.length > 0 ? (
+                  options.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))
+                ) : (
+                  <option value="" disabled>Loading options...</option>
+                )}
               </select>
             ) : type === 'boolean' ? (
               <select
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1246,7 +1721,7 @@ function InfoRow({
                 type="date"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               />
             ) : type === 'number' ? (
@@ -1254,14 +1729,14 @@ function InfoRow({
                 type="number"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
               />
             ) : type === 'textarea' ? (
               <textarea
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 rows={2}
                 autoFocus
               />
@@ -1270,7 +1745,7 @@ function InfoRow({
                 type="text"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -1560,9 +2035,58 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
     if (error) {
       console.error('Failed to load pack docs:', error);
       setPackDocs([]);
-      return;
+      return [];
     }
     setPackDocs(data || []);
+    return data || [];
+  };
+
+  const applySuggestedPackSelection = () => {
+    // Heuristic: match global docs by name keywords. This makes the builder feel guided
+    // even when companies have their own naming conventions.
+    const baseKeywords = [
+      'handbook',
+      'health & safety',
+      'health and safety',
+      'h&s',
+      'fire safety',
+      'allergen',
+      'data protection',
+      'gdpr',
+      'disciplinary',
+      'grievance',
+      'equal opportunities',
+      'safeguarding',
+    ];
+    const bohKeywords = ['food safety', 'haccp', 'coshh', 'cleaning', 'temperature', 'pest'];
+    const fohKeywords = ['service', 'customer', 'cash', 'till', 'alcohol', 'licensing', 'challenge 25'];
+    const hourlyKeywords = ['time', 'clock', 'rota', 'lateness', 'absence'];
+    const salariedKeywords = ['performance', 'management', 'expenses', 'bonus'];
+    const contractKeywords = ['offer', 'employment contract', 'contract'];
+
+    const keywords: string[] = [...baseKeywords, ...contractKeywords];
+    if (bohFoh === 'BOH') keywords.push(...bohKeywords);
+    if (bohFoh === 'FOH') keywords.push(...fohKeywords);
+    if (bohFoh === 'BOTH') keywords.push(...bohKeywords, ...fohKeywords);
+    if (payType === 'hourly') keywords.push(...hourlyKeywords);
+    if (payType === 'salaried') keywords.push(...salariedKeywords);
+
+    const normalize = (s: string) => s.toLowerCase();
+    const selected = new Set<string>();
+    globalDocs.forEach((d: any) => {
+      const name = normalize(d?.name || '');
+      if (!name) return;
+      if (keywords.some((k) => name.includes(k))) selected.add(d.id);
+    });
+
+    if (selected.size === 0) {
+      alert(
+        "No obvious matches found in your Global Documents. Tip: name docs like 'Staff Handbook', 'Health & Safety Policy', 'Employment Contract', etc. and try again."
+      );
+      return;
+    }
+
+    setNewPackDocIds(selected);
   };
 
   const toggleNewPackDoc = (docId: string) => {
@@ -1656,16 +2180,15 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         .single();
       if (assignErr) throw assignErr;
 
-      // Load docs for email
-      await fetchPackDocs(packId);
-      const docsForEmail = packDocs.length ? packDocs : [];
+      // Load docs for email (do not rely on React state timing)
+      const docsForEmail = await fetchPackDocs(packId);
       const docLines = docsForEmail
         .map((d: any) => `• ${d.global_documents?.name || 'Document'}`)
         .join('\n');
 
       const subject = 'Your onboarding documents';
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
-      const link = `${appUrl}/dashboard/onboarding`;
+      const link = `${appUrl}/dashboard/people/onboarding`;
       const body = `Hi ${emp.full_name || ''}\n\nPlease review the following onboarding documents:\n${docLines}\n\nYou can review and acknowledge them here:\n${link}\n\nThanks`;
 
       const resp = await fetch('/api/send-email', {
@@ -2103,7 +2626,16 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
             </div>
 
             <div className="mt-3">
-              <div className="text-xs text-white/60 mb-2">Select global documents to include:</div>
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <div className="text-xs text-white/60">Select global documents to include:</div>
+                <button
+                  onClick={applySuggestedPackSelection}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-white"
+                  type="button"
+                >
+                  Use suggested pack
+                </button>
+              </div>
               <div className="max-h-56 overflow-auto space-y-1">
                 {globalDocs.map((d: any) => (
                   <label key={d.id} className="flex items-center gap-2 text-sm text-white/80 p-2 rounded bg-white/[0.02] border border-white/[0.06]">
@@ -2259,7 +2791,7 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
         *,
         sites:site_id(name)
       `)
-      .eq('user_id', employeeId)
+      .eq('profile_id', employeeId)
       .order('clock_in_time', { ascending: false })
       .limit(20);
 
@@ -2331,7 +2863,8 @@ function EditEmployeeModal({
   managers,
   onClose,
   onSave,
-  saving
+  saving,
+  onOpenSiteAssignments,
 }: {
   employee: Employee;
   formData: any;
@@ -2343,6 +2876,7 @@ function EditEmployeeModal({
   onClose: () => void;
   onSave: () => void;
   saving: boolean;
+  onOpenSiteAssignments?: (employee: Employee) => void;
 }) {
   const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
 
@@ -2747,11 +3281,36 @@ function EditEmployeeModal({
                     className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
                   >
                     <option value="">Select site...</option>
-                    {sites.map(site => (
-                      <option key={site.id} value={site.id}>{site.name}</option>
-                    ))}
+                    {sites && sites.length > 0 ? (
+                      sites.map(site => (
+                        <option key={site.id} value={site.id}>{site.name}</option>
+                      ))
+                    ) : (
+                      <option value="" disabled>Loading sites...</option>
+                    )}
                   </select>
                 </div>
+
+                {onOpenSiteAssignments && (
+                  <div className="md:col-span-2 pt-4 border-t border-neutral-700">
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
+                      <p className="text-xs text-blue-300">
+                        <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => onOpenSiteAssignments(employee)}
+                      type="button"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+                    >
+                      <MapPin className="w-5 h-5" />
+                      Manage Site Assignments
+                    </button>
+                    <p className="text-xs text-neutral-500 mt-2 text-center">
+                      Allow this employee to work at other sites during specified date ranges
+                    </p>
+                  </div>
+                )}
                 
                 <div>
                   <label className="block text-sm font-medium text-neutral-300 mb-1">

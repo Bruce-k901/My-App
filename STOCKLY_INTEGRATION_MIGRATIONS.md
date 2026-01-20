@@ -296,3 +296,12 @@ SELECT COUNT(*) FROM stock_levels;
 - See `stockly-checkly-integration.md` for full integration plan
 - Check existing Checkly schema in `supabase/sql/` directory
 - Review RLS patterns in existing migrations
+
+
+
+
+
+
+
+
+

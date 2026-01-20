@@ -47,3 +47,15 @@ if ((method === 'POST' || method === 'PATCH' || method === 'PUT' || method === '
 - [ ] Verify notifications can be created without errors
 - [ ] Verify late completion alerts work correctly
 - [ ] Verify attendance_logs redirect still works if needed (shouldn't be needed if triggers are removed)
+
+
+
+
+
+
+
+
+
+
+
+

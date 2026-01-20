@@ -18,12 +18,9 @@ export default function MarketingHeader() {
         </>
       }
     >
-            {/* Center navigation: Checkly Features, Why Checkly, Pricing */}
-            <Link key="checkly-features" href="/checkly-features" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
-              Checkly Features
-            </Link>
-            <Link key="why-checkly" href="/why-checkly" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
-              Why Checkly
+            {/* Center navigation: Product, Pricing */}
+            <Link key="product" href="/product" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
+              Product
             </Link>
             <Link key="pricing" href="/pricing" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
               Pricing

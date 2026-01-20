@@ -182,7 +182,7 @@ export default function DailyChecklistPage() {
   // Define fetchTodaysTasks (needed by useEffect) - must be defined before useEffect
   const fetchTodaysTasks = useCallback(async () => {
     try {
-      console.log('🔄 fetchTodaysTasks called at:', new Date().toISOString())
+      // console.log('🔄 fetchTodaysTasks called at:', new Date().toISOString())
       
       // CRITICAL: Check companyId before fetching
       if (!companyId) {
@@ -196,15 +196,15 @@ export default function DailyChecklistPage() {
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0]
       
-      console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
+      // console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
       
       // Apply shift-based filtering
       const shiftFilter = await buildTaskQueryFilter()
-      console.log('🕐 Shift filter applied:', shiftFilter)
+      // console.log('🕐 Shift filter applied:', shiftFilter)
       
       // If staff is not on shift, return empty tasks array
       if (!shiftFilter.showAll && !shiftFilter.siteId) {
-        console.log('⏸️ Staff not on shift - no tasks to show')
+        // console.log('⏸️ Staff not on shift - no tasks to show')
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
@@ -248,8 +248,8 @@ export default function DailyChecklistPage() {
       // Apply shift-based site filtering
       // Managers/admins see all sites, staff only see their current site when on shift
       if (shiftFilter.showAll) {
-        // Managers/admins: filter by siteId from context if available, otherwise show all
-        if (siteId) {
+        // Managers/admins: filter by siteId from context if available and valid, otherwise show all
+        if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId)
         }
       } else {
@@ -289,10 +289,10 @@ export default function DailyChecklistPage() {
         throw error
       }
       
-      console.log('📥 Raw tasks from database:', {
-        total: allTasks?.length || 0,
-        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
-      })
+      // console.log('📥 Raw tasks from database:', {
+      //   total: allTasks?.length || 0,
+      //   tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
+      // })
       
       // Fetch templates separately if we have tasks
       // CRITICAL: Load ALL required fields needed by TaskCompletionModal
@@ -356,7 +356,7 @@ export default function DailyChecklistPage() {
         if (!shiftFilter.showAll && shiftFilter.siteId) {
           const isDueNow = isTaskDueNow(task)
           if (!isDueNow) {
-            console.log(`⏰ Task ${task.id} filtered: not due now (due_time: ${task.due_time})`)
+            // console.log(`⏰ Task ${task.id} filtered: not due now (due_time: ${task.due_time})`)
             return false
           }
         }
@@ -372,13 +372,13 @@ export default function DailyChecklistPage() {
         // Daily tasks: Always show (they're due every day)
         // But only if template exists - if no template, fall back to due_date check
         if (frequency === 'daily' && template) {
-          console.log(`✅ Daily task showing: ${task.id} (template: ${template.name}, due_date: ${task.due_date})`)
+          // console.log(`✅ Daily task showing: ${task.id} (template: ${template.name}, due_date: ${task.due_date})`)
           return true
         }
         
         // Debug: Log why tasks are being filtered
         if (!template && (task as any).template_id) {
-          console.log(`⚠️ Task ${task.id} has template_id ${(task as any).template_id} but template not found in map`)
+          // console.log(`⚠️ Task ${task.id} has template_id ${(task as any).template_id} but template not found in map`)
         }
         
         // Get visibility settings (from task_data if stored there, otherwise from template)
@@ -408,19 +408,19 @@ export default function DailyChecklistPage() {
         if (visibilityBefore === 0 && visibilityAfter === 0) {
           const matches = task.due_date === todayStr
           if (!matches) {
-            console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr} (no visibility window)`)
+            // console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr} (no visibility window)`)
           }
           return matches
         }
         
         if (!isVisible) {
-          console.log(`❌ Task ${task.id} filtered: not in visibility window (due_date: ${task.due_date}, window: ${windowStart.toISOString().split('T')[0]} to ${windowEnd.toISOString().split('T')[0]})`)
+          // console.log(`❌ Task ${task.id} filtered: not in visibility window (due_date: ${task.due_date}, window: ${windowStart.toISOString().split('T')[0]} to ${windowEnd.toISOString().split('T')[0]})`)
         }
         return isVisible
       })
       
       if (!data || data.length === 0) {
-        console.log('⚠️ No tasks found for today')
+        // console.log('⚠️ No tasks found for today')
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
@@ -458,20 +458,31 @@ export default function DailyChecklistPage() {
       }
       
       // Fetch assets to check which ones are archived
-      // Collect all unique asset_ids from templates
-      const assetIds = [...new Set(
+      // Collect all unique asset_ids from:
+      // 1. Templates (template.asset_id)
+      // 2. Task data (task_data.asset_id - for PPM tasks, etc.)
+      const assetIdsFromTemplates = [...new Set(
         Object.values(templatesMap)
           .map((t: any) => t.asset_id)
           .filter((id): id is string => id !== null && id !== undefined)
       )]
       
+      const assetIdsFromTaskData = [...new Set(
+        data
+          .map((task: any) => task.task_data?.asset_id)
+          .filter((id): id is string => id !== null && id !== undefined)
+      )]
+      
+      // Combine all asset IDs
+      const allAssetIds = [...new Set([...assetIdsFromTemplates, ...assetIdsFromTaskData])]
+      
       // Fetch assets to check archived status
       let archivedAssetIds = new Set<string>()
-      if (assetIds.length > 0) {
+      if (allAssetIds.length > 0) {
         const { data: assets, error: assetsError } = await supabase
           .from('assets')
           .select('id, archived, name')
-          .in('id', assetIds)
+          .in('id', allAssetIds)
         
         if (assetsError) {
           console.error('❌ Error fetching assets for archived check:', assetsError)
@@ -480,7 +491,7 @@ export default function DailyChecklistPage() {
           assets.forEach(asset => {
             if (asset.archived) {
               archivedAssetIds.add(asset.id)
-              console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
+              // console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
             }
           })
         }
@@ -504,21 +515,27 @@ export default function DailyChecklistPage() {
           return true; // Include orphaned tasks for now
         }
         
-        // Exclude tasks linked to archived assets
+        // Exclude tasks linked to archived assets (check both template.asset_id and task_data.asset_id)
         if (task.template?.asset_id && archivedAssetIds.has(task.template.asset_id)) {
-          console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          // console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          return false
+        }
+        
+        // Also check task_data.asset_id (for PPM tasks, etc.)
+        if (task.task_data?.asset_id && archivedAssetIds.has(task.task_data.asset_id)) {
+          // console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.task_data.asset_id}`)
           return false
         }
         
         return true;
       });
       
-      console.log('📦 Tasks with templates:', {
-        total: tasksWithTemplates.length,
-        valid: validTasks.length,
-        orphaned: tasksWithTemplates.length - validTasks.length,
-        tasks: validTasks.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, template_id: t.template_id }))
-      })
+      // console.log('📦 Tasks with templates:', {
+      //   total: tasksWithTemplates.length,
+      //   valid: validTasks.length,
+      //   orphaned: tasksWithTemplates.length - validTasks.length,
+      //   tasks: validTasks.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, template_id: t.template_id }))
+      // })
       
       // CRITICAL: Handle tasks with multiple dayparts
       // IMPORTANT: The cron job already creates separate task records for each daypart.
@@ -595,38 +612,38 @@ export default function DailyChecklistPage() {
         let daypartsInData: any[] = []
         
         // DEBUG: Log task data to see what we're working with
-        console.log('🔍 Checking task for expansion:', {
-          taskId: task.id,
-          taskName: task.custom_name || task.template?.name,
-          daypartField: task.daypart,
-          due_time: task.due_time,
-          taskDataKeys: Object.keys(taskData),
-          taskDataDayparts: taskData.dayparts,
-          taskDataDaypartsType: typeof taskData.dayparts,
-          taskDataDaypartsIsArray: Array.isArray(taskData.dayparts)
-        })
+        // console.log('🔍 Checking task for expansion:', {
+        //   taskId: task.id,
+        //   taskName: task.custom_name || task.template?.name,
+        //   daypartField: task.daypart,
+        //   due_time: task.due_time,
+        //   taskDataKeys: Object.keys(taskData),
+        //   taskDataDayparts: taskData.dayparts,
+        //   taskDataDaypartsType: typeof taskData.dayparts,
+        //   taskDataDaypartsIsArray: Array.isArray(taskData.dayparts)
+        // })
         
         // Check task_data for dayparts array (could be array of strings or array of objects with daypart/due_time)
         if (taskData.dayparts && Array.isArray(taskData.dayparts)) {
           daypartsInData = taskData.dayparts
-          console.log('✅ Found dayparts array in task_data:', {
-            count: daypartsInData.length,
-            dayparts: daypartsInData
-          })
+          // console.log('✅ Found dayparts array in task_data:', {
+          //   count: daypartsInData.length,
+          //   dayparts: daypartsInData
+          // })
         } else {
-          console.log('⚠️ No dayparts array found in task_data or not an array')
+          // console.log('⚠️ No dayparts array found in task_data or not an array')
         }
         
         // If task has multiple dayparts in task_data, expand it even if daypart field is set
         // This handles manually created tasks that have daypart set to first daypart but multiple dayparts in task_data
         if (daypartsInData.length > 1) {
-          console.log('🔄 Expanding task with multiple dayparts in task_data:', {
-            taskId: task.id,
-            taskName: task.custom_name || task.template?.name,
-            daypartField: task.daypart,
-            daypartsInData: daypartsInData.length,
-            dayparts: daypartsInData
-          })
+          // console.log('🔄 Expanding task with multiple dayparts in task_data:', {
+          //   taskId: task.id,
+          //   taskName: task.custom_name || task.template?.name,
+          //   daypartField: task.daypart,
+          //   daypartsInData: daypartsInData.length,
+          //   dayparts: daypartsInData
+          // })
           
           // Expand into multiple instances, one per daypart
           daypartsInData.forEach((dp: any, index: number) => {
@@ -639,11 +656,11 @@ export default function DailyChecklistPage() {
             // Use daypart-specific time if provided, otherwise calculate
             const finalTime = daypartTime || getDaypartTime(normalizedDaypart, templateTime, task.due_time)
             
-            console.log(`  → Creating instance ${index + 1}:`, {
-              daypart: normalizedDaypart,
-              due_time: finalTime,
-              originalDaypartTime: daypartTime
-            })
+            // console.log(`  → Creating instance ${index + 1}:`, {
+            //   daypart: normalizedDaypart,
+            //   due_time: finalTime,
+            //   originalDaypartTime: daypartTime
+            // })
             
             expandedTasks.push({
               ...task,
@@ -652,13 +669,13 @@ export default function DailyChecklistPage() {
               _expandedKey: `${task.id}_${normalizedDaypart}_${index}`
             })
           })
-          console.log(`✅ Expanded task into ${daypartsInData.length} instances`)
+          // console.log(`✅ Expanded task into ${daypartsInData.length} instances`)
           return // Skip further processing for this task
         } else if (daypartsInData.length === 1) {
-          console.log('ℹ️ Task has only 1 daypart in task_data, not expanding:', {
-            taskId: task.id,
-            daypart: daypartsInData[0]
-          })
+          // console.log('ℹ️ Task has only 1 daypart in task_data, not expanding:', {
+          //   taskId: task.id,
+          //   daypart: daypartsInData[0]
+          // })
         }
         
         // If task already has a daypart set and no multiple dayparts in task_data,
@@ -670,15 +687,15 @@ export default function DailyChecklistPage() {
           // Preserve existing time if set, otherwise calculate based on daypart
           const daypartTime = getDaypartTime(daypartStr, templateTime, task.due_time)
           
-          console.log('🕐 Setting daypart time:', {
-            taskId: task.id,
-            originalDaypart: task.daypart,
-            normalizedDaypart: daypartStr,
-            originalTime: task.due_time,
-            templateTime: templateTime,
-            calculatedTime: daypartTime,
-            preservingTime: task.due_time ? 'yes' : 'no'
-          })
+          // console.log('🕐 Setting daypart time:', {
+          //   taskId: task.id,
+          //   originalDaypart: task.daypart,
+          //   normalizedDaypart: daypartStr,
+          //   originalTime: task.due_time,
+          //   templateTime: templateTime,
+          //   calculatedTime: daypartTime,
+          //   preservingTime: task.due_time ? 'yes' : 'no'
+          // })
           
           // Preserve existing time if task has one, otherwise use daypart-based time
           expandedTasks.push({
@@ -730,18 +747,18 @@ export default function DailyChecklistPage() {
         })
       })
       
-      console.log('🔄 Before deduplication:', {
-        count: expandedTasks.length,
-        tasks: expandedTasks.map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          daypart: t.daypart, 
-          due_time: t.due_time,
-          due_date: t.due_date,
-          template_id: t.template_id,
-          _expandedKey: (t as any)._expandedKey
-        }))
-      })
+      // console.log('🔄 Before deduplication:', {
+      //   count: expandedTasks.length,
+      //   tasks: expandedTasks.map(t => ({ 
+      //     id: t.id, 
+      //     status: t.status, 
+      //     daypart: t.daypart, 
+      //     due_time: t.due_time,
+      //     due_date: t.due_date,
+      //     template_id: t.template_id,
+      //     _expandedKey: (t as any)._expandedKey
+      //   }))
+      // })
       
       // CRITICAL: Deduplicate tasks to prevent duplicates from cron or expansion
       // Use a composite key: template_id + site_id + daypart + due_time + due_date
@@ -760,34 +777,34 @@ export default function DailyChecklistPage() {
         
         if (seen.has(key)) {
           // Already seen this exact task pattern - skip it (true duplicate)
-          console.log('⚠️ Duplicate task filtered:', { 
-            key, 
-            compositeKey,
-            taskId: task.id, 
-            daypart: task.daypart,
-            due_time: task.due_time,
-            due_date: task.due_date,
-            template_id: task.template_id,
-            status: task.status 
-          })
+          // console.log('⚠️ Duplicate task filtered:', { 
+          //   key, 
+          //   compositeKey,
+          //   taskId: task.id, 
+          //   daypart: task.daypart,
+          //   due_time: task.due_time,
+          //   due_date: task.due_date,
+          //   template_id: task.template_id,
+          //   status: task.status 
+          // })
           return false
         }
         seen.set(key, task)
         return true
       })
       
-      console.log('🔄 After deduplication:', {
-        count: deduplicatedTasks.length,
-        tasks: deduplicatedTasks.map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          daypart: t.daypart, 
-          due_time: t.due_time,
-          due_date: t.due_date,
-          template_id: t.template_id,
-          _expandedKey: (t as any)._expandedKey
-        }))
-      })
+      // console.log('🔄 After deduplication:', {
+      //   count: deduplicatedTasks.length,
+      //   tasks: deduplicatedTasks.map(t => ({ 
+      //     id: t.id, 
+      //     status: t.status, 
+      //     daypart: t.daypart, 
+      //     due_time: t.due_time,
+      //     due_date: t.due_date,
+      //     template_id: t.template_id,
+      //     _expandedKey: (t as any)._expandedKey
+      //   }))
+      // })
       
       // Sort deduplicated tasks chronologically by daypart, then by due_time
       // We'll do a final sort after all processing to ensure correct order
@@ -827,60 +844,95 @@ export default function DailyChecklistPage() {
       let allCompletionRecords: any[] = []
       
       if (allTaskIds.length > 0) {
-        console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
+        // console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
         
-        // Try fetching WITHOUT site_id filter first to see if that's the issue
-        let completionQuery = supabase
-          .from('task_completion_records')
-          .select('*')
-          .in('task_id', allTaskIds)
-          .order('completed_at', { ascending: false })
+        // Batch queries if there are too many task IDs to avoid URL length limits
+        // Supabase/PostgREST has limits on URL length, so we'll batch in chunks of 100
+        const BATCH_SIZE = 100
+        let allCompletionRecords: any[] = []
+        let hasError = false
         
-        // Filter by site_id if available (matches how we filter tasks)
-        // BUT: Also try without site_id filter if we get no results, in case site_id doesn't match
-        const { data: completionRecords, error: completionError } = await completionQuery
-        
-        if (completionError) {
-          console.error('❌ Error fetching completion records:', completionError)
-          console.error('Error details:', JSON.stringify(completionError, null, 2))
-        } else {
-          console.log('✅ Fetched completion records:', completionRecords?.length || 0)
+        for (let i = 0; i < allTaskIds.length; i += BATCH_SIZE) {
+          const batch = allTaskIds.slice(i, i + BATCH_SIZE)
           
-          // Filter by site_id in JavaScript if needed (more permissive)
-          let filteredRecords = completionRecords || []
-          if (siteId && completionRecords) {
-            // Filter by site_id in JS, but also include records with null site_id
-            filteredRecords = completionRecords.filter(r => !r.site_id || r.site_id === siteId)
-            console.log('🔍 Filtered by site_id:', {
-              before: completionRecords.length,
-              after: filteredRecords.length,
-              siteId
-            })
-          }
-          
-          if (filteredRecords.length > 0) {
-            allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
-              id: r.id,
-              task_id: r.task_id,
-              completed_at: r.completed_at,
-              company_id: r.company_id,
-              site_id: r.site_id,
-              completed_by: r.completed_by
-            })))
-          } else {
-            // This is normal for pending tasks - only log if we expected records but they were filtered out
-            if (completionRecords && completionRecords.length > 0) {
-              console.warn('⚠️ Records exist but were filtered out:', completionRecords.map(r => ({
-                task_id: r.task_id,
-                site_id: r.site_id,
-                expected_site_id: siteId
-              })))
+          try {
+            const { data: batchRecords, error: batchError } = await supabase
+              .from('task_completion_records')
+              .select('*')
+              .in('task_id', batch)
+              .order('completed_at', { ascending: false })
+            
+            if (batchError) {
+              // Check if it's an empty error object or a known schema/RLS error
+              const errorStr = JSON.stringify(batchError).toLowerCase();
+              const errorCode = batchError.code || '';
+              const errorMessage = (batchError.message || '').toLowerCase();
+              const isEmptyError = Object.keys(batchError).length === 0 || errorStr === '{}';
+              
+              // Check for PostgreSQL schema errors or RLS errors
+              const isSchemaError = errorCode === '42703' || // undefined_column
+                                   errorCode === '42883' || // undefined_function
+                                   errorCode === '42P01' ||  // undefined_table
+                                   errorCode === '42501' ||  // insufficient_privilege (RLS)
+                                   errorCode === 'PGRST204' || // PostgREST bad request
+                                   errorMessage.includes('does not exist') ||
+                                   errorMessage.includes('permission denied') ||
+                                   errorMessage.includes('row-level security') ||
+                                   errorMessage.includes('bad request') ||
+                                   errorMessage === 'bad request';
+              
+              // Silently handle empty error objects and known schema/RLS issues
+              // Don't log these errors to avoid console spam
+              if (!isEmptyError && !isSchemaError) {
+                console.error(`❌ Error fetching completion records (batch ${Math.floor(i / BATCH_SIZE) + 1}):`, batchError)
+              }
+              
+              // Mark that we had an error but continue with other batches
+              hasError = true
+            } else {
+              if (batchRecords) {
+                allCompletionRecords = [...allCompletionRecords, ...batchRecords]
+              }
             }
+          } catch (err: any) {
+            // Silently handle errors in batching
+            hasError = true
           }
         }
+        
+        // If we had errors but got some records, continue with what we have
+        // If we had errors and no records, set to empty array
+        if (hasError && allCompletionRecords.length === 0) {
+          allCompletionRecords = []
+        }
+        
+        // Filter by site_id in JavaScript if needed (more permissive)
+        let filteredRecords = allCompletionRecords
+        if (siteId && allCompletionRecords.length > 0) {
+          // Filter by site_id in JS, but also include records with null site_id
+          filteredRecords = allCompletionRecords.filter(r => !r.site_id || r.site_id === siteId)
+          // console.log('🔍 Filtered by site_id:', {
+          //   before: allCompletionRecords.length,
+          //   after: filteredRecords.length,
+          //   siteId
+          // })
+        }
+        
+        if (filteredRecords.length > 0) {
+          allCompletionRecords = filteredRecords
+          // console.log('📝 Completion records details:', filteredRecords.map(r => ({
+          //   id: r.id,
+          //   task_id: r.task_id,
+          //   completed_at: r.completed_at,
+          //   company_id: r.company_id,
+          //   site_id: r.site_id,
+          //   completed_by: r.completed_by
+          // })).slice(0, 3))
+        } else {
+          allCompletionRecords = []
+        }
       } else {
-        console.warn('⚠️ No task IDs to fetch completion records for')
+        allCompletionRecords = []
       }
       
       // Build a map of completed dayparts per task
@@ -897,49 +949,49 @@ export default function DailyChecklistPage() {
           }
           const normalizedDaypart = normalizeDaypart(completedDaypart)
           completedDaypartsMap.get(taskId)!.add(normalizedDaypart)
-          console.log('📝 Mapped completion:', {
-            taskId,
-            completedDaypart,
-            normalizedDaypart,
-            allCompletedDayparts: Array.from(completedDaypartsMap.get(taskId)!)
-          })
+          // console.log('📝 Mapped completion:', {
+          //   taskId,
+          //   completedDaypart,
+          //   normalizedDaypart,
+          //   allCompletedDayparts: Array.from(completedDaypartsMap.get(taskId)!)
+          // })
         }
       })
       
-      console.log('📊 Completed dayparts map:', {
-        totalTasks: completedDaypartsMap.size,
-        details: Array.from(completedDaypartsMap.entries()).map(([taskId, dayparts]) => ({
-          taskId,
-          completedDayparts: Array.from(dayparts)
-        }))
-      })
+      // console.log('📊 Completed dayparts map:', {
+      //   totalTasks: completedDaypartsMap.size,
+      //   details: Array.from(completedDaypartsMap.entries()).map(([taskId, dayparts]) => ({
+      //     taskId,
+      //     completedDayparts: Array.from(dayparts)
+      //   }))
+      // })
       
       // Build a set of task IDs that have completion records
       const tasksWithCompletionRecords = new Set(allCompletionRecords.map(r => r.task_id))
       
-      console.log('🔍 Filtering tasks:', {
-        totalTasks: tasksWithProfiles.length,
-        completionRecordsFound: allCompletionRecords.length,
-        tasksWithCompletionRecords: Array.from(tasksWithCompletionRecords),
-        completedDaypartsMapSize: completedDaypartsMap.size,
-        sampleTaskChecks: tasksWithProfiles.slice(0, 5).map(t => {
-          const taskData = t.task_data || {}
-          const daypartsInData = taskData.dayparts || []
-          const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
-          const completedDayparts = completedDaypartsMap.get(t.id)
-          return { 
-            id: t.id, 
-            status: t.status,
-            daypart: t.daypart,
-            hasRecord: tasksWithCompletionRecords.has(t.id),
-            hasMultipleDayparts,
-            completedDayparts: completedDayparts ? Array.from(completedDayparts) : null,
-            willBeFiltered: hasMultipleDayparts && completedDayparts && t.daypart 
-              ? completedDayparts.has(normalizeDaypart(t.daypart))
-              : tasksWithCompletionRecords.has(t.id)
-          }
-        })
-      })
+      // console.log('🔍 Filtering tasks:', {
+      //   totalTasks: tasksWithProfiles.length,
+      //   completionRecordsFound: allCompletionRecords.length,
+      //   tasksWithCompletionRecords: Array.from(tasksWithCompletionRecords),
+      //   completedDaypartsMapSize: completedDaypartsMap.size,
+      //   sampleTaskChecks: tasksWithProfiles.slice(0, 5).map(t => {
+      //     const taskData = t.task_data || {}
+      //     const daypartsInData = taskData.dayparts || []
+      //     const hasMultipleDayparts = Array.isArray(daypartsInData) && daypartsInData.length > 1
+      //     const completedDayparts = completedDaypartsMap.get(t.id)
+      //     return { 
+      //       id: t.id, 
+      //       status: t.status,
+      //       daypart: t.daypart,
+      //       hasRecord: tasksWithCompletionRecords.has(t.id),
+      //       hasMultipleDayparts,
+      //       completedDayparts: completedDayparts ? Array.from(completedDayparts) : null,
+      //       willBeFiltered: hasMultipleDayparts && completedDayparts && t.daypart 
+      //         ? completedDayparts.has(normalizeDaypart(t.daypart))
+      //         : tasksWithCompletionRecords.has(t.id)
+      //     }
+      //   })
+      // })
       
       // Filter out completed tasks from active tasks
       // CRITICAL: For multi-daypart tasks, we need to check per-daypart completion
@@ -980,11 +1032,11 @@ export default function DailyChecklistPage() {
         return true
       })
       
-      console.log('✅ Filtered tasks:', {
-        before: tasksWithProfiles.length,
-        after: activeTasks.length,
-        filteredOut: tasksWithProfiles.length - activeTasks.length
-      })
+      // console.log('✅ Filtered tasks:', {
+      //   before: tasksWithProfiles.length,
+      //   after: activeTasks.length,
+      //   filteredOut: tasksWithProfiles.length - activeTasks.length
+      // })
       
       // Create one entry per completion record (not just one per task)
       // This ensures all completion records are shown, even for multi-daypart tasks
@@ -1026,40 +1078,40 @@ export default function DailyChecklistPage() {
       activeTasks.sort(sortChronologically)
       completedTasksWithRecords.sort(sortChronologically)
       
-      console.log('📋 Tasks Debug:', {
-        totalTasks: tasksWithProfiles.length,
-        activeTasks: activeTasks.length,
-        completedTasks: completedTasksWithRecords.length,
-        allCompletionRecordsCount: allCompletionRecords.length,
-        tasksWithCompletionRecordsCount: tasksWithCompletionRecords.size,
-        taskStatuses: tasksWithProfiles.map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          daypart: t.daypart, 
-          due_time: t.due_time,
-          templateId: t.template_id,
-          templateName: t.template?.name,
-          hasCompletionRecord: tasksWithCompletionRecords.has(t.id)
-        })),
-        completionRecords: allCompletionRecords.map(r => ({
-          id: r.id,
-          task_id: r.task_id,
-          completed_at: r.completed_at,
-          completed_daypart: r.completion_data?.completed_daypart
-        }))
-      })
+      // console.log('📋 Tasks Debug:', {
+      //   totalTasks: tasksWithProfiles.length,
+      //   activeTasks: activeTasks.length,
+      //   completedTasks: completedTasksWithRecords.length,
+      //   allCompletionRecordsCount: allCompletionRecords.length,
+      //   tasksWithCompletionRecordsCount: tasksWithCompletionRecords.size,
+      //   taskStatuses: tasksWithProfiles.map(t => ({ 
+      //     id: t.id, 
+      //     status: t.status, 
+      //     daypart: t.daypart, 
+      //     due_time: t.due_time,
+      //     templateId: t.template_id,
+      //     templateName: t.template?.name,
+      //     hasCompletionRecord: tasksWithCompletionRecords.has(t.id)
+      //   })),
+      //   completionRecords: allCompletionRecords.map(r => ({
+      //     id: r.id,
+      //     task_id: r.task_id,
+      //     completed_at: r.completed_at,
+      //     completed_daypart: r.completion_data?.completed_daypart
+      //   }))
+      // })
       
-      console.log('✅ Setting tasks (sorted chronologically):', {
-        activeTasksCount: activeTasks.length,
-        completedTasksCount: completedTasksWithRecords.length,
-        activeTasks: activeTasks.slice(0, 5).map(t => ({ 
-          id: t.id, 
-          status: t.status, 
-          daypart: t.daypart, 
-          due_time: t.due_time,
-          name: t.template?.name || 'Unknown'
-        }))
-      })
+      // console.log('✅ Setting tasks (sorted chronologically):', {
+      //   activeTasksCount: activeTasks.length,
+      //   completedTasksCount: completedTasksWithRecords.length,
+      //   activeTasks: activeTasks.slice(0, 5).map(t => ({ 
+      //     id: t.id, 
+      //     status: t.status, 
+      //     daypart: t.daypart, 
+      //     due_time: t.due_time,
+      //     name: t.template?.name || 'Unknown'
+      //   }))
+      // })
       
       setTasks(activeTasks)
       setCompletedTasks(completedTasksWithRecords)
@@ -1121,7 +1173,7 @@ export default function DailyChecklistPage() {
   // Listen for refresh events (e.g., after clock-in)
   useEffect(() => {
     const handleRefresh = () => {
-      console.log('🔄 Refreshing tasks after clock-in/out')
+      // console.log('🔄 Refreshing tasks after clock-in/out')
       if (fetchTodaysTasksRef.current) {
         fetchTodaysTasksRef.current()
         fetchUpcomingTasks()
@@ -1215,7 +1267,7 @@ export default function DailyChecklistPage() {
         </div>
         <button
           onClick={() => {
-            console.log('🔄 Manual refresh clicked')
+            // console.log('🔄 Manual refresh clicked')
             fetchTodaysTasks()
             fetchUpcomingTasks()
           }}
@@ -1431,18 +1483,18 @@ export default function DailyChecklistPage() {
             setSelectedTask(null)
           }}
           onComplete={async () => {
-            console.log('🔄 onComplete called - refreshing tasks...')
+            // console.log('🔄 onComplete called - refreshing tasks...')
             setShowCompletion(false)
             setSelectedTask(null)
             // Force a longer delay to ensure database updates have propagated
             // Also force a cache-busting refresh
             await new Promise(resolve => setTimeout(resolve, 2000))
-            console.log('🔄 Calling fetchTodaysTasks after delay...')
+            // console.log('🔄 Calling fetchTodaysTasks after delay...')
             // Force refresh by clearing state first
             setTasks([])
             setCompletedTasks([])
             await fetchTodaysTasks() // Refresh tasks to show completed task
-            console.log('✅ fetchTodaysTasks completed')
+            // console.log('✅ fetchTodaysTasks completed')
             await loadBreachActions() // Refresh breach actions after task completion
           }}
           onMonitoringTaskCreated={() => {

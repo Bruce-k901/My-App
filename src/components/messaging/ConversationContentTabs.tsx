@@ -21,22 +21,66 @@ export default function ConversationContentTabs({ conversationId }: Conversation
   useEffect(() => {
     if (!conversationId) return;
 
+    // Load tasks created from messages in this conversation
+    const loadTasks = async () => {
+      try {
+        // Get message IDs from this conversation - increase limit to ensure we capture all tasks
+        // Tasks can be created from any message in the conversation, so we need a wider range
+        const { data: conversationMessages } = await supabase
+          .from('messaging_messages')
+          .select('id')
+          .eq('channel_id', conversationId)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false })
+          .limit(1000); // Increased from 500 to capture more messages
+
+        if (!conversationMessages || conversationMessages.length === 0) {
+          setTasks([]);
+          return;
+        }
+
+        const messageIds = conversationMessages.map(m => m.id);
+
+        // Fetch tasks that were created from these messages
+        // Also check if created_from_message_id is not null to ensure we only get message-created tasks
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .in('created_from_message_id', messageIds)
+          .not('created_from_message_id', 'is', null)
+          .order('created_at', { ascending: false });
+
+        if (tasksError) {
+          console.error('Error loading tasks:', tasksError);
+          setTasks([]);
+          return;
+        }
+
+        setTasks(tasksData || []);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+        setTasks([]);
+      }
+    };
+
     const loadMessages = async () => {
       setLoading(true);
       try {
-        // Load messages
+        // Load messages - limit to prevent loading too many at once
+        // For tabs view, we only need recent messages to show counts
         const { data: messagesData, error } = await supabase
           .from('messaging_messages')
           .select('*')
           .eq('channel_id', conversationId)
           .is('deleted_at', null)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(200);
 
         if (error) throw error;
 
         // Fetch sender profiles separately
         if (messagesData && messagesData.length > 0) {
-          const senderIds = [...new Set(messagesData.map(m => m.sender_id).filter(Boolean))];
+          const senderIds = [...new Set(messagesData.map(m => m.sender_profile_id || m.sender_id).filter(Boolean))];
           if (senderIds.length > 0) {
             const query = supabase.from('profiles').select('id, full_name, email');
             const { data: profiles } = senderIds.length === 1
@@ -46,11 +90,14 @@ export default function ConversationContentTabs({ conversationId }: Conversation
             if (profiles) {
               const profilesMap = new Map(profiles.map(p => [p.id, p]));
               // Enrich messages with sender data
-              const enrichedMessages = messagesData.map(msg => ({
-                ...msg,
-                sender: profilesMap.get(msg.sender_id) || null,
-                sender_name: profilesMap.get(msg.sender_id)?.full_name || null,
-              }));
+              const enrichedMessages = messagesData.map(msg => {
+                const senderId = msg.sender_profile_id || msg.sender_id;
+                return {
+                  ...msg,
+                  sender: profilesMap.get(senderId) || null,
+                  sender_name: profilesMap.get(senderId)?.full_name || null,
+                };
+              });
               setMessages(enrichedMessages);
             } else {
               setMessages(messagesData);
@@ -70,47 +117,9 @@ export default function ConversationContentTabs({ conversationId }: Conversation
     };
 
     loadMessages();
-
-    // Load tasks created from messages in this conversation
-    const loadTasks = async () => {
-      try {
-        // Get all message IDs from this conversation
-        const { data: conversationMessages } = await supabase
-          .from('messaging_messages')
-          .select('id')
-          .eq('channel_id', conversationId)
-          .is('deleted_at', null);
-
-        if (!conversationMessages || conversationMessages.length === 0) {
-          setTasks([]);
-          return;
-        }
-
-        const messageIds = conversationMessages.map(m => m.id);
-
-        // Fetch tasks that were created from these messages
-        const { data: tasksData, error: tasksError } = await supabase
-          .from('tasks')
-          .select('*')
-          .in('created_from_message_id', messageIds)
-          .order('created_at', { ascending: false });
-
-        if (tasksError) {
-          console.error('Error loading tasks:', tasksError);
-          setTasks([]);
-          return;
-        }
-
-        setTasks(tasksData || []);
-      } catch (error) {
-        console.error('Error loading tasks:', error);
-        setTasks([]);
-      }
-    };
-
     loadTasks();
 
-    // Subscribe to new messages
+    // Subscribe to new messages and task changes
     const channel = supabase
       .channel(`conversation-${conversationId}`)
       .on(
@@ -124,7 +133,10 @@ export default function ConversationContentTabs({ conversationId }: Conversation
         (payload) => {
           setMessages((prev) => [payload.new as Message, ...prev]);
           // Reload tasks in case a new task was created from this message
-          loadTasks();
+          // Use setTimeout to ensure the task has been created in the database
+          setTimeout(() => {
+            loadTasks();
+          }, 500);
         }
       )
       .on(
@@ -134,9 +146,12 @@ export default function ConversationContentTabs({ conversationId }: Conversation
           schema: 'public',
           table: 'tasks',
         },
-        () => {
+        (payload) => {
           // Reload tasks when tasks table changes
-          loadTasks();
+          // Only reload if the task has a created_from_message_id that might be in this conversation
+          if (payload.new?.created_from_message_id) {
+            loadTasks();
+          }
         }
       )
       .subscribe();

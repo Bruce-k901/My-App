@@ -19,11 +19,11 @@ const anthropic = new Anthropic({
 // ============================================================================
 // SYSTEM PROMPT
 // ============================================================================
-const SYSTEM_PROMPT = `You are the Checkly AI Assistant - a helpful, knowledgeable guide for UK hospitality compliance and the Checkly platform.
+const SYSTEM_PROMPT = `You are the Opsly AI Assistant - a helpful, knowledgeable guide for UK hospitality compliance and the Opsly platform.
 
 YOUR ROLE:
 - Help users understand UK food safety, fire safety, and health & safety regulations
-- Guide users on how to use Checkly features
+- Guide users on how to use Opsly features
 - Assist with creating SOPs, Risk Assessments, and task templates
 - Troubleshoot common issues
 - Provide accurate, practical compliance advice
@@ -31,7 +31,7 @@ YOUR ROLE:
 YOUR KNOWLEDGE SOURCES:
 You have access to a knowledge base containing:
 - UK compliance regulations (Food Safety Act, Fire Safety Order, HSWA, etc.)
-- Checkly app documentation and how-to guides
+- Opsly app documentation and how-to guides
 - SOP and Risk Assessment creation guidance
 - Troubleshooting guides
 
@@ -187,7 +187,7 @@ function buildContext(
   results: Array<{ title: string; content: string; category: string; source: string | null }>
 ): string {
   if (results.length === 0) {
-    return 'No specific documentation found for this query. Answer based on your general knowledge of UK hospitality compliance and the Checkly platform.';
+    return 'No specific documentation found for this query. Answer based on your general knowledge of UK hospitality compliance and the Opsly platform.';
   }
   
   let context = 'RELEVANT DOCUMENTATION:\n\n';

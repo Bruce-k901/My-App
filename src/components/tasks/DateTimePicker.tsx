@@ -1,0 +1,113 @@
+"use client";
+
+import React from 'react';
+import { Calendar, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import TimePicker from '../ui/TimePicker';
+
+interface DateTimePickerProps {
+  value: {
+    date: Date | null;
+    time: string;
+    timezone: string;
+  };
+  onChange: (value: { date: Date | null; time: string; timezone: string }) => void;
+  label?: string;
+  required?: boolean;
+}
+
+export default function DateTimePicker({
+  value,
+  onChange,
+  label = 'Date & Time',
+  required = false
+}: DateTimePickerProps) {
+  const userTimezone = value.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  const dateValue = value.date 
+    ? format(value.date, 'yyyy-MM-dd')
+    : '';
+  
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      // Parse date string in local timezone to avoid timezone shift issues
+      const [year, month, day] = e.target.value.split('-').map(Number);
+      const newDate = new Date(year, month - 1, day);
+      onChange({
+        ...value,
+        date: newDate,
+      });
+    } else {
+      onChange({
+        ...value,
+        date: null,
+      });
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = e.target.value;
+    onChange({
+      ...value,
+      time: newTime || '',
+    });
+  };
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-white/80">
+        {label} {required && <span className="text-[#EC4899]">*</span>}
+      </label>
+
+      <div className="grid grid-cols-2 gap-4">
+        {/* Date Picker */}
+        <div>
+          <label className="flex items-center gap-1 text-xs text-white/60 mb-1.5">
+            <Calendar className="w-3.5 h-3.5" />
+            Date
+          </label>
+          <input
+            type="date"
+            value={dateValue}
+            onChange={(e) => {
+              e.stopPropagation();
+              handleDateChange(e);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onInput={(e) => {
+              e.stopPropagation();
+            }}
+            min={format(new Date(), 'yyyy-MM-dd')}
+            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 cursor-pointer [color-scheme:dark]"
+            required={required}
+          />
+        </div>
+
+        {/* Time Picker */}
+        <div>
+          <label className="flex items-center gap-1 text-xs text-white/60 mb-1.5">
+            <Clock className="w-3.5 h-3.5" />
+            Time
+          </label>
+          <TimePicker
+            value={value.time || ''}
+            onChange={(newTime) => {
+              onChange({
+                ...value,
+                time: newTime,
+              });
+            }}
+            className="w-full"
+            required={required}
+          />
+        </div>
+      </div>
+
+      {/* Timezone Display */}
+      <p className="text-xs text-white/40 mt-1">
+        Timezone: {userTimezone}
+      </p>
+    </div>
+  );
+}

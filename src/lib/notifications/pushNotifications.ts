@@ -134,40 +134,75 @@ export async function registerPushSubscription(): Promise<boolean> {
     }
 
     // Save subscription to database
-    // Use upsert with onConflict to handle duplicates gracefully
-    const { error } = await supabase
-      .from('push_subscriptions')
-      .upsert({
-        user_id: user.id,
-        endpoint: subscription.endpoint,
-        p256dh: subscriptionData.keys.p256dh,
-        auth: subscriptionData.keys.auth,
-        user_agent: navigator.userAgent,
-        device_info: deviceInfo,
-        is_active: true,
-        last_used_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,endpoint',
-        ignoreDuplicates: false // Update if exists
-      })
+    // Try insert first, then update if duplicate (avoids problematic GET query with long endpoint URLs)
+    const subscriptionKeys = subscriptionData.keys;
+    
+    const subscriptionPayload = {
+      user_id: user.id,
+      endpoint: subscription.endpoint,
+      p256dh: subscriptionKeys.p256dh,
+      auth: subscriptionKeys.auth,
+      user_agent: navigator.userAgent,
+      device_info: deviceInfo,
+      is_active: true,
+      last_used_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    // Try insert first - this is the most common case
+    // Wrap in try-catch to handle network-level errors (400, 406, etc.)
+    let error: any = null;
+    try {
+      const result = await supabase
+        .from('push_subscriptions')
+        .insert(subscriptionPayload);
+      error = result.error;
+    } catch (networkError: any) {
+      // Network-level errors (400, 406, etc.) - suppress and return false
+      // Note: Browser will still log "Fetch failed loading" but we handle it gracefully
+      const status = networkError?.status || networkError?.response?.status || (networkError as any)?.code;
+      if (status === 400 || status === 406 || !status) {
+        // Table/RLS issue or network error - suppress completely (non-fatal)
+        return false;
+      }
+      error = networkError;
+    }
+    
+    // If insert fails with unique constraint violation (23505), subscription already exists
+    if (error && (error as any).code === '23505') {
+      // Subscription already exists - this is fine, just return success
+      return true;
+    }
 
     // ⚠️ ERROR HANDLING FIX - DO NOT REMOVE SUPPRESSION
-    // 406/409 errors are expected when push_subscriptions table doesn't exist or RLS blocks.
+    // 400/406/409 errors are expected when push_subscriptions table doesn't exist or RLS blocks.
     // These should be suppressed silently to prevent console noise.
     // Test: tests/error-handling-improvements.spec.ts
     if (error) {
+      // Check if this is a 400 error first (before other checks)
+      const status = (error as any).status;
+      if (status === 400 || status === 406) {
+        // Table/RLS issue - suppress completely and return false (non-fatal)
+        return false;
+      }
       // Suppress common errors silently (table doesn't exist, RLS issues, conflicts)
       const isSuppressedError = 
         (error as any).code === '23505' || // Unique constraint violation (duplicate)
         (error as any).code === 'PGRST116' || // No rows returned
         (error as any).code === '23503' || // Foreign key violation
+        (error as any).code === 'PGRST301' || // Not found
+        (error as any).status === 400 || // Bad Request (table/RLS/query issue)
         (error as any).status === 406 || // Not Acceptable (table/RLS issue)
         (error as any).status === 409 || // Conflict (duplicate)
         error.message?.includes('foreign key') ||
         error.message?.includes('profiles') ||
         error.message?.includes('does not exist') ||
         error.message?.includes('relation') ||
-        error.message?.includes('permission denied');
+        error.message?.includes('permission denied') ||
+        error.message?.includes('on_conflict') ||
+        error.message?.includes('conflict target') ||
+        error.message?.includes('row-level security') ||
+        error.message?.includes('RLS');
       
       if (!isSuppressedError) {
         // Extract error message properly - avoid logging empty objects
@@ -236,7 +271,7 @@ export async function unregisterPushSubscription(): Promise<boolean> {
         await supabase
           .from('push_subscriptions')
           .update({ is_active: false })
-          .eq('user_id', user.id)
+          .eq('profile_id', user.id)
           .eq('endpoint', subscription.endpoint)
       }
 
@@ -285,7 +320,7 @@ export async function hasActivePushSubscription(): Promise<boolean> {
     const { data, error } = await supabase
       .from('push_subscriptions')
       .select('is_active')
-      .eq('user_id', user.id)
+      .eq('profile_id', user.id)
       .eq('endpoint', subscription.endpoint)
       .eq('is_active', true)
       .maybeSingle()

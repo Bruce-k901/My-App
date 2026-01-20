@@ -70,7 +70,7 @@ export default function DailyChecklistPage() {
   const [showCompleted, setShowCompleted] = useState(false)
   const [showUpcoming, setShowUpcoming] = useState(false)
   const [upcomingTasks, setUpcomingTasks] = useState<ChecklistTaskWithTemplate[]>([])
-  const { siteId, companyId } = useAppContext()
+  const { siteId, companyId, selectedSiteId } = useAppContext()
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
   // Use ref to store latest fetchTodaysTasks function
@@ -234,9 +234,14 @@ export default function DailyChecklistPage() {
       // Apply shift-based site filtering
       // Managers/admins see all sites, staff only see their current site when on shift
       if (shiftFilter.showAll) {
-        // Managers/admins: filter by siteId from context if available, otherwise show all
-        if (siteId) {
-          query = query.eq('site_id', siteId)
+        // Managers/admins: filter by selectedSiteId from header dropdown if set
+        // If selectedSiteId is null (All Sites selected), show all tasks for the company
+        // If selectedSiteId is set (specific site selected), filter by that site
+        if (selectedSiteId) {
+          console.log('🔍 Filtering tasks by selected site:', selectedSiteId)
+          query = query.eq('site_id', selectedSiteId)
+        } else {
+          console.log('🔍 No site selected (All Sites) - showing all company tasks')
         }
       } else {
         // Staff on shift: only show tasks for their current site
@@ -396,24 +401,154 @@ export default function DailyChecklistPage() {
       }
       
       // Fetch assets to check which ones are archived
-      // Collect all unique asset_ids from templates
-      const assetIds = [...new Set(
+      // Collect all unique asset_ids from:
+      // 1. Templates (template.asset_id)
+      // 2. Task data (task_data.asset_id - for PPM tasks, etc.)
+      console.log('🔍 Checking for archived assets in tasks...')
+      const assetIdsFromTemplates = [...new Set(
         Object.values(templatesMap)
           .map((t: any) => t.asset_id)
           .filter((id): id is string => id !== null && id !== undefined)
       )]
       
+      // Extract asset IDs from task_data - handle multiple formats:
+      // 1. Direct asset_id (for PPM tasks, etc.)
+      // 2. From ppm_id (look up asset from ppm_schedule)
+      // 3. From callout_id (look up asset from callouts)
+      const assetIdsFromTaskData = new Set<string>()
+      const ppmIdsToLookup = new Set<string>()
+      const calloutIdsToLookup = new Set<string>()
+      
+      data.forEach((task: any) => {
+        const taskData = task.task_data || {}
+        
+        // Direct asset_id (if present)
+        if (taskData.asset_id) {
+          assetIdsFromTaskData.add(taskData.asset_id)
+        }
+        
+        // PPM overdue tasks: source_id IS the asset_id directly
+        // (From TaskCompletionModal: "PPM tasks use source_id (not asset_id) - this is the asset ID")
+        if (taskData.source_type === 'ppm_overdue' && taskData.source_id) {
+          assetIdsFromTaskData.add(taskData.source_id)
+        }
+        
+        // PPM service tasks (from cron job): look up asset from ppm_schedule using ppm_id
+        if (taskData.source_type === 'ppm_service' && taskData.ppm_id) {
+          ppmIdsToLookup.add(taskData.ppm_id)
+        }
+        if (taskData.source_type === 'ppm_service' && taskData.source_id) {
+          ppmIdsToLookup.add(taskData.source_id)
+        }
+        
+        // Callout follow-up tasks: source_id is the callout_id, need to look up asset from callouts
+        if (taskData.source_type === 'callout_followup' && taskData.source_id) {
+          calloutIdsToLookup.add(taskData.source_id)
+        }
+        
+        // Also check for direct callout_id (if present)
+        if (taskData.callout_id) {
+          calloutIdsToLookup.add(taskData.callout_id)
+        }
+      })
+      
+      // Log detailed task_data for PPM and callout tasks
+      const ppmTasks = data.filter((t: any) => t.task_data?.source_type === 'ppm_service' || t.custom_name?.includes('PPM Required'))
+      const calloutTasks = data.filter((t: any) => t.task_data?.callout_id || t.custom_name?.includes('Follow up'))
+      
+      console.log('📋 Asset IDs found (initial):', {
+        fromTemplates: assetIdsFromTemplates.length,
+        fromTaskDataDirect: assetIdsFromTaskData.size,
+        ppmIdsToLookup: ppmIdsToLookup.size,
+        calloutIdsToLookup: calloutIdsToLookup.size,
+        ppmTasksCount: ppmTasks.length,
+        calloutTasksCount: calloutTasks.length,
+        samplePPMTasks: ppmTasks.slice(0, 2).map((t: any) => ({
+          id: t.id,
+          name: t.custom_name,
+          source_type: t.task_data?.source_type,
+          task_data_asset_id: t.task_data?.asset_id,
+          task_data_ppm_id: t.task_data?.ppm_id,
+          full_task_data: JSON.stringify(t.task_data, null, 2)
+        })),
+        sampleCalloutTasks: calloutTasks.slice(0, 2).map((t: any) => ({
+          id: t.id,
+          name: t.custom_name,
+          task_data_callout_id: t.task_data?.callout_id,
+          full_task_data: JSON.stringify(t.task_data, null, 2)
+        })),
+        allTaskDataKeys: [...new Set(data.flatMap((t: any) => Object.keys(t.task_data || {})))]
+      })
+      
+      // Look up asset_ids from ppm_schedule for PPM tasks
+      if (ppmIdsToLookup.size > 0) {
+        console.log(`🔍 Looking up ${ppmIdsToLookup.size} PPM schedules to find asset_ids...`)
+        const { data: ppmSchedules, error: ppmError } = await supabase
+          .from('ppm_schedule')
+          .select('id, asset_id')
+          .in('id', Array.from(ppmIdsToLookup))
+        
+        if (ppmError) {
+          console.error('❌ Error fetching PPM schedules:', ppmError)
+        } else if (ppmSchedules) {
+          ppmSchedules.forEach((ppm: any) => {
+            if (ppm.asset_id) {
+              assetIdsFromTaskData.add(ppm.asset_id)
+              console.log(`✅ Found asset_id ${ppm.asset_id} for PPM ${ppm.id}`)
+            }
+          })
+        }
+      }
+      
+      // Look up asset_ids from callouts for callout follow-up tasks
+      // Also create a mapping of callout_id -> asset_id for filtering (needed for filter step)
+      const calloutToAssetMap = new Map<string, string>()
+      
+      if (calloutIdsToLookup.size > 0) {
+        console.log(`🔍 Looking up ${calloutIdsToLookup.size} callouts to find asset_ids...`)
+        const { data: callouts, error: calloutError } = await supabase
+          .from('callouts')
+          .select('id, asset_id')
+          .in('id', Array.from(calloutIdsToLookup))
+        
+        if (calloutError) {
+          console.error('❌ Error fetching callouts:', calloutError)
+        } else if (callouts) {
+          callouts.forEach((callout: any) => {
+            if (callout.asset_id) {
+              assetIdsFromTaskData.add(callout.asset_id)
+              calloutToAssetMap.set(callout.id, callout.asset_id)
+              console.log(`✅ Found asset_id ${callout.asset_id} for callout ${callout.id}`)
+            }
+          })
+        }
+      }
+      
+      const allAssetIdsFromTaskData = Array.from(assetIdsFromTaskData)
+      
+      console.log('📋 Asset IDs found (after lookups):', {
+        fromTemplates: assetIdsFromTemplates.length,
+        fromTaskData: allAssetIdsFromTaskData.length,
+        templateIds: assetIdsFromTemplates,
+        taskDataIds: allAssetIdsFromTaskData
+      })
+      
+      // Combine all asset IDs
+      const allAssetIds = [...new Set([...assetIdsFromTemplates, ...allAssetIdsFromTaskData])]
+      
       // Fetch assets to check archived status
       let archivedAssetIds = new Set<string>()
-      if (assetIds.length > 0) {
+      if (allAssetIds.length > 0) {
+        console.log(`🔍 Fetching ${allAssetIds.length} assets to check archived status...`, { assetIds: allAssetIds })
         const { data: assets, error: assetsError } = await supabase
           .from('assets')
           .select('id, archived, name')
-          .in('id', assetIds)
+          .in('id', allAssetIds)
         
         if (assetsError) {
           console.error('❌ Error fetching assets for archived check:', assetsError)
         } else if (assets) {
+          console.log(`✅ Fetched ${assets.length} assets for archived check`)
           // Build set of archived asset IDs
           assets.forEach(asset => {
             if (asset.archived) {
@@ -421,7 +556,12 @@ export default function DailyChecklistPage() {
               console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
             }
           })
+          console.log(`📊 Archived assets found: ${archivedAssetIds.size} out of ${assets.length} total`)
+        } else {
+          console.warn('⚠️ No assets returned from query (might be RLS issue)')
         }
+      } else {
+        console.log('ℹ️ No asset IDs found in tasks - skipping archived asset check')
       }
       
       // Map tasks with templates
@@ -434,6 +574,13 @@ export default function DailyChecklistPage() {
       // NOTE: We're temporarily showing orphaned tasks with a warning instead of hiding them
       // This helps diagnose why templates aren't being found (RLS issue, missing templates, etc.)
       // Also filter out tasks linked to archived assets
+      console.log('🔍 Starting task filtering with archived assets:', {
+        archivedAssetIdsCount: archivedAssetIds.size,
+        archivedAssetIds: Array.from(archivedAssetIds),
+        calloutToAssetMapSize: calloutToAssetMap.size,
+        calloutToAssetMapEntries: Array.from(calloutToAssetMap.entries())
+      })
+      
       const validTasks = tasksWithTemplates.filter(task => {
         if (task.template_id && !task.template) {
           console.warn(`⚠️ Task has template_id but template not found: task_id=${task.id}, template_id=${task.template_id}`);
@@ -442,10 +589,41 @@ export default function DailyChecklistPage() {
           return true; // Include orphaned tasks for now
         }
         
-        // Exclude tasks linked to archived assets
+        // Exclude tasks linked to archived assets (check multiple sources)
+        // 1. Template asset_id
         if (task.template?.asset_id && archivedAssetIds.has(task.template.asset_id)) {
-          console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.template.asset_id} (from template)`)
           return false
+        }
+        
+        // 2. task_data.asset_id (direct asset reference)
+        if (task.task_data?.asset_id && archivedAssetIds.has(task.task_data.asset_id)) {
+          console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.task_data.asset_id} (from task_data.asset_id)`)
+          return false
+        }
+        
+        // 3. task_data.source_id for PPM overdue tasks (source_id IS the asset_id for ppm_overdue)
+        if (task.task_data?.source_type === 'ppm_overdue' && task.task_data?.source_id) {
+          const isArchived = archivedAssetIds.has(task.task_data.source_id)
+          console.log(`🔍 Checking PPM overdue task ${task.id}: source_id=${task.task_data.source_id}, isArchived=${isArchived}, archivedAssetIds has it: ${archivedAssetIds.has(task.task_data.source_id)}`)
+          if (isArchived) {
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.task_data.source_id} (from task_data.source_id for ppm_overdue)`)
+            return false
+          }
+        }
+        
+        // 4. For callout follow-up tasks, check if the callout's asset is archived
+        // Use the calloutToAssetMap to get the asset_id from the callout_id (source_id)
+        if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
+          const calloutAssetId = calloutToAssetMap.get(task.task_data.source_id)
+          if (calloutAssetId) {
+            const isArchived = archivedAssetIds.has(calloutAssetId)
+            console.log(`🔍 Checking callout task ${task.id}: callout_id=${task.task_data.source_id}, asset_id=${calloutAssetId}, isArchived=${isArchived}`)
+            if (isArchived) {
+              console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${task.task_data.source_id})`)
+              return false
+            }
+          }
         }
         
         return true;
@@ -1144,10 +1322,10 @@ export default function DailyChecklistPage() {
       {/* Simple Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
           {currentDate}
         </p>
         </div>
@@ -1157,7 +1335,7 @@ export default function DailyChecklistPage() {
             fetchTodaysTasks()
             fetchUpcomingTasks()
           }}
-          className="px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/50 text-magenta-400 rounded-lg transition-colors text-sm"
+          className="px-4 py-2 bg-[#EC4899]/10 dark:bg-magenta-500/20 hover:bg-[#EC4899]/20 dark:hover:bg-magenta-500/30 border border-[#EC4899]/50 dark:border-magenta-500/50 text-[#EC4899] dark:text-magenta-400 rounded-lg transition-colors text-sm"
         >
           🔄 Refresh Tasks
         </button>
@@ -1172,16 +1350,16 @@ export default function DailyChecklistPage() {
               }}
               className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
                 showUpcoming
-                  ? 'bg-orange-500/10 border-orange-500/50 text-orange-400'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                  ? 'bg-orange-500/10 border-orange-500/50 text-orange-600 dark:text-orange-400'
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
               }`}
             >
-              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-400' : 'text-white/60'}`} />
+              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-600 dark:text-orange-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
               {showUpcoming ? 'Hide' : 'Show'} Upcoming
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showUpcoming 
-                  ? 'bg-orange-500/20 text-orange-300' 
-                  : 'bg-white/10 text-white/80'
+                  ? 'bg-orange-500/20 text-orange-700 dark:text-orange-300' 
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
               }`}>
                 {upcomingTasks.length}
               </span>
@@ -1191,18 +1369,18 @@ export default function DailyChecklistPage() {
             onClick={() => setShowCompleted(!showCompleted)}
             className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
               showCompleted
-                ? 'bg-green-500/10 border-green-500/50 text-green-400'
-                : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                ? 'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400'
+                : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
             } ${completedTasks.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={completedTasks.length === 0}
           >
-            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-400' : 'text-white/60'}`} />
+            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-600 dark:text-green-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
             {showCompleted ? 'Hide' : 'Show'} Completed
             {completedTasks.length > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showCompleted 
-                  ? 'bg-green-500/20 text-green-300' 
-                  : 'bg-white/10 text-white/80'
+                  ? 'bg-green-500/20 text-green-700 dark:text-green-300' 
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
               }`}>
                 {completedTasks.length}
               </span>
@@ -1214,37 +1392,37 @@ export default function DailyChecklistPage() {
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
-            <Clock className="w-8 h-8 text-pink-400 animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
+            <Clock className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Loading tasks...</h3>
+          <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading tasks...</h3>
         </div>
       ) : tasks.length === 0 && completedTasks.length > 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-400" />
+              <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">All done for now! 🎉</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">All done for now! 🎉</h2>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
               You've completed all your tasks for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
               Check back later for new tasks or create a template to add more.
             </p>
           </div>
         </div>
       ) : tasks.length === 0 && completedTasks.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/10 mb-6">
-              <Calendar className="w-10 h-10 text-blue-400" />
+              <Calendar className="w-10 h-10 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">No tasks for today</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">No tasks for today</h2>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
               There are no tasks scheduled for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
               Check back later or create a template to add tasks.
             </p>
           </div>
@@ -1276,7 +1454,7 @@ export default function DailyChecklistPage() {
       {/* Upcoming Callout Follow-up Tasks Section */}
       {showUpcoming && upcomingTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Upcoming Callout Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Upcoming Callout Follow-ups</h2>
           <div className="space-y-3">
             {upcomingTasks.map((task, index) => {
               // Use task.id + index for unique keys (callout follow-up tasks)
@@ -1299,7 +1477,7 @@ export default function DailyChecklistPage() {
       {/* Completed Tasks Section */}
       {showCompleted && completedTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Completed Tasks</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Completed Tasks</h2>
           <div className="space-y-3">
             {completedTasks.map((task) => {
               // Use completion_record.id as key if available, otherwise use task.id + completion_record.id
@@ -1322,35 +1500,35 @@ export default function DailyChecklistPage() {
       {/* Temperature Breach Follow-up Section */}
       {breachActions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Temperature Breach Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Temperature Breach Follow-ups</h2>
           <div className="space-y-3">
             {breachActions.map((action) => {
               const log = action.temperature_log
               const evaluation = log?.meta?.evaluation
               return (
-                <div key={action.id} className="border border-white/10 rounded-lg p-3 text-sm text-white/70">
+                <div key={action.id} className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/10 rounded-lg p-3 text-sm text-[rgb(var(--text-secondary))] dark:text-white/70">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="font-semibold text-white">
+                    <div className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                       {action.action_type === 'monitor' ? 'Monitor temperature' : 'Callout contractor'}
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50">
                       Created {new Date(action.created_at).toLocaleString()}
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-white/60 space-x-3">
-                    <span>Status: <span className="text-white/80">{action.status}</span></span>
+                  <div className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 space-x-3">
+                    <span>Status: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{action.status}</span></span>
                     {action.due_at && (
-                      <span>Due: <span className="text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
+                      <span>Due: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
                     )}
                     {log?.recorded_at && (
-                      <span>Reading taken: <span className="text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
+                      <span>Reading taken: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
                     )}
                   </div>
                   {evaluation?.reason && (
-                    <p className="mt-2 text-xs text-white/60">Reason: {evaluation.reason}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Reason: {evaluation.reason}</p>
                   )}
                   {action.notes && (
-                    <p className="mt-2 text-xs text-white/60">Notes: {action.notes}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Notes: {action.notes}</p>
                   )}
                 </div>
               )

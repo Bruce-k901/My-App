@@ -33,9 +33,9 @@ type TempLog = {
 
 function StatusBadge({ status }: { status: TempLog["status"] }) {
   const config = {
-    ok: { color: "text-green-400", bg: "bg-green-500/20", border: "border-green-500/30", icon: "✅", label: "OK" },
-    warning: { color: "text-amber-400", bg: "bg-amber-500/20", border: "border-amber-500/30", icon: "⚠️", label: "Warning" },
-    failed: { color: "text-red-400", bg: "bg-red-500/20", border: "border-red-500/30", icon: "❌", label: "Failed" },
+    ok: { color: "text-green-700 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/20", border: "border-green-200 dark:border-green-500/30", icon: "✅", label: "OK" },
+    warning: { color: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/20", border: "border-amber-200 dark:border-amber-500/30", icon: "⚠️", label: "Warning" },
+    failed: { color: "text-red-700 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/20", border: "border-red-200 dark:border-red-500/30", icon: "❌", label: "Failed" },
   };
   const { color, bg, border, icon, label } = config[status];
   return (
@@ -50,7 +50,7 @@ function LineChart({ points }: { points: { x: number; y: number }[] }) {
   const height = 150;
   if (!points.length) {
     return (
-      <div className="w-full h-[150px] bg-white/[0.03] border border-white/[0.06] rounded-lg flex items-center justify-center text-white/60 text-sm">
+      <div className="w-full h-[150px] bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg flex items-center justify-center text-gray-600 dark:text-white/60 text-sm">
         No data to display
       </div>
     );
@@ -71,7 +71,7 @@ function LineChart({ points }: { points: { x: number; y: number }[] }) {
     .join(" ");
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+    <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
       <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -89,7 +89,8 @@ function LineChart({ points }: { points: { x: number; y: number }[] }) {
               y1={y}
               x2={width - 20}
               y2={y}
-              stroke="rgba(255,255,255,0.05)"
+              stroke="rgba(0,0,0,0.05)"
+              className="dark:stroke-white/5"
               strokeWidth={1}
             />
           );
@@ -675,49 +676,49 @@ export default function TemperatureLogsPage() {
   }, [filteredLogs]);
 
   return (
-    <div className="min-h-screen bg-[#0B0D13]">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Thermometer className="w-8 h-8 text-[#EC4899]" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Temperature Logs</h1>
+            <Thermometer className="w-8 h-8 text-red-600 dark:text-[#EC4899]" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Temperature Logs</h1>
           </div>
-          <p className="text-white/60 text-sm sm:text-base">
+          <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
             Historical log of all temperature readings collected by your business
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-            <div className="text-white/60 text-sm mb-1">Total Readings</div>
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Total Readings</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-            <div className="text-white/60 text-sm mb-1">OK</div>
-            <div className="text-2xl font-bold text-green-400">{stats.ok}</div>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">OK</div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.ok}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-            <div className="text-white/60 text-sm mb-1">Warnings</div>
-            <div className="text-2xl font-bold text-amber-400">{stats.warning}</div>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Warnings</div>
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.warning}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-            <div className="text-white/60 text-sm mb-1">Failed</div>
-            <div className="text-2xl font-bold text-red-400">{stats.failed}</div>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Failed</div>
+            <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.failed}</div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-[#EC4899]" />
-              <h2 className="text-lg font-semibold text-white">Filters</h2>
+              <Filter className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="text-white/60 hover:text-white transition-colors text-sm"
+              className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
             >
               {showFilters ? "Hide" : "Show"} Filters
             </button>
@@ -728,15 +729,15 @@ export default function TemperatureLogsPage() {
               {/* Site Filter - Show if company has more than 1 site */}
               {sites.length > 1 && (
                 <div>
-                  <label className="block text-sm text-white/80 mb-2">Site</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Site</label>
                   <select
                     value={filterSite}
                     onChange={(e) => setFilterSite(e.target.value)}
-                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-[#0B0D13]">All Sites</option>
+                    <option value="" className="bg-white dark:bg-[#0B0D13]">All Sites</option>
                     {sites.map((site) => (
-                      <option key={site.id} value={site.id} className="bg-[#0B0D13]">
+                      <option key={site.id} value={site.id} className="bg-white dark:bg-[#0B0D13]">
                         {site.name}
                       </option>
                     ))}
@@ -746,15 +747,15 @@ export default function TemperatureLogsPage() {
 
               {/* Asset Filter */}
               <div>
-                <label className="block text-sm text-white/80 mb-2">Asset</label>
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Asset</label>
                 <select
                   value={filterAsset}
                   onChange={(e) => setFilterAsset(e.target.value)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-[#0B0D13]">All Assets</option>
+                  <option value="" className="bg-white dark:bg-[#0B0D13]">All Assets</option>
                   {assets.map((a) => (
-                    <option key={a.id} value={a.id} className="bg-[#0B0D13]">
+                    <option key={a.id} value={a.id} className="bg-white dark:bg-[#0B0D13]">
                       {a.name}
                     </option>
                   ))}
@@ -764,15 +765,15 @@ export default function TemperatureLogsPage() {
               {/* Asset Type Filter */}
               {assetTypes.length > 0 && (
                 <div>
-                  <label className="block text-sm text-white/80 mb-2">Asset Type</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Asset Type</label>
                   <select
                     value={filterAssetType}
                     onChange={(e) => setFilterAssetType(e.target.value)}
-                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-[#0B0D13]">All Types</option>
+                    <option value="" className="bg-white dark:bg-[#0B0D13]">All Types</option>
                     {assetTypes.map((type) => (
-                      <option key={type} value={type} className="bg-[#0B0D13]">
+                      <option key={type} value={type} className="bg-white dark:bg-[#0B0D13]">
                         {type}
                       </option>
                     ))}
@@ -782,31 +783,31 @@ export default function TemperatureLogsPage() {
 
               {/* Status Filter */}
               <div>
-                <label className="block text-sm text-white/80 mb-2">Status</label>
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Status</label>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-[#0B0D13]">All Statuses</option>
-                  <option value="ok" className="bg-[#0B0D13]">OK</option>
-                  <option value="warning" className="bg-[#0B0D13]">Warning</option>
-                  <option value="failed" className="bg-[#0B0D13]">Failed</option>
+                  <option value="" className="bg-white dark:bg-[#0B0D13]">All Statuses</option>
+                  <option value="ok" className="bg-white dark:bg-[#0B0D13]">OK</option>
+                  <option value="warning" className="bg-white dark:bg-[#0B0D13]">Warning</option>
+                  <option value="failed" className="bg-white dark:bg-[#0B0D13]">Failed</option>
                 </select>
               </div>
 
               {/* Day Part Filter */}
               {dayParts.length > 0 && (
                 <div>
-                  <label className="block text-sm text-white/80 mb-2">Day Part</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Day Part</label>
                   <select
                     value={filterDayPart}
                     onChange={(e) => setFilterDayPart(e.target.value)}
-                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-[#0B0D13]">All</option>
+                    <option value="" className="bg-white dark:bg-[#0B0D13]">All</option>
                     {dayParts.map((dp) => (
-                      <option key={dp} value={dp} className="bg-[#0B0D13]">
+                      <option key={dp} value={dp} className="bg-white dark:bg-[#0B0D13]">
                         {dp}
                       </option>
                     ))}
@@ -816,23 +817,23 @@ export default function TemperatureLogsPage() {
 
               {/* Date Range Start */}
               <div>
-                <label className="block text-sm text-white/80 mb-2">Date From</label>
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Date From</label>
                 <input
                   type="date"
                   value={dateRangeStart}
                   onChange={(e) => setDateRangeStart(e.target.value)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
               {/* Date Range End */}
               <div>
-                <label className="block text-sm text-white/80 mb-2">Date To</label>
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Date To</label>
                 <input
                   type="date"
                   value={dateRangeEnd}
                   onChange={(e) => setDateRangeEnd(e.target.value)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
@@ -848,7 +849,7 @@ export default function TemperatureLogsPage() {
                     setDateRangeStart("");
                     setDateRangeEnd("");
                   }}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] text-white/80 rounded-lg px-4 py-2 hover:bg-white/[0.1] transition-all text-sm flex items-center justify-center gap-2"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] text-gray-700 dark:text-white/80 rounded-lg px-4 py-2 hover:bg-gray-50 dark:hover:bg-white/[0.1] transition-all text-sm flex items-center justify-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Clear Filters
@@ -859,33 +860,33 @@ export default function TemperatureLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden mb-6">
-          <div className="p-4 sm:p-6 border-b border-white/[0.06] flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Recent Readings</h2>
-            <span className="text-white/60 text-sm">{filteredLogs.length} records</span>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden mb-6">
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Readings</h2>
+            <span className="text-gray-600 dark:text-white/60 text-sm">{filteredLogs.length} records</span>
           </div>
           {loading ? (
             <div className="p-12 text-center">
               <div className="inline-block w-8 h-8 border-4 border-[#EC4899] border-t-transparent rounded-full animate-spin" />
-              <p className="mt-4 text-white/60">Loading temperature logs...</p>
+              <p className="mt-4 text-gray-600 dark:text-white/60">Loading temperature logs...</p>
             </div>
           ) : filteredLogs.length === 0 ? (
-            <div className="p-12 text-center text-white/60">
+            <div className="p-12 text-center text-gray-600 dark:text-white/60">
               <Thermometer className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No temperature logs found</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/[0.05] border-b border-white/[0.06]">
+                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
                   <tr>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Date & Time</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Asset</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Reading</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Recorded By</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Day Part</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Notes</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Date & Time</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Asset</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Reading</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Status</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Recorded By</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Day Part</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Notes</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -894,29 +895,29 @@ export default function TemperatureLogsPage() {
                     return (
                       <tr
                         key={l.id}
-                        className="border-b border-white/[0.05] hover:bg-white/[0.05] transition-colors"
+                        className="border-b border-gray-100 dark:border-white/[0.05] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
                       >
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-gray-700 dark:text-white/80 text-sm">
                           {formatDate(new Date(l.recorded_at), "d MMM yyyy, HH:mm")}
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-gray-700 dark:text-white/80 text-sm">
                           {asset ? asset.name : l.asset_id}
                           {(asset?.type || asset?.category) && (
-                            <span className="text-white/40 ml-1">({asset.type || asset.category})</span>
+                            <span className="text-gray-500 dark:text-white/40 ml-1">({asset.type || asset.category})</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm font-mono">
+                        <td className="py-3 px-4 text-gray-700 dark:text-white/80 text-sm font-mono">
                           {l.reading}
                           {l.unit}
                         </td>
                         <td className="py-3 px-4">
                           <StatusBadge status={l.status} />
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-gray-700 dark:text-white/80 text-sm">
                           {l.profiles?.full_name || l.profiles?.email || "Unknown"}
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm">{l.day_part || "—"}</td>
-                        <td className="py-3 px-4 text-white/60 text-sm max-w-xs truncate">{l.notes || "—"}</td>
+                        <td className="py-3 px-4 text-gray-700 dark:text-white/80 text-sm">{l.day_part || "—"}</td>
+                        <td className="py-3 px-4 text-gray-600 dark:text-white/60 text-sm max-w-xs truncate">{l.notes || "—"}</td>
                       </tr>
                     );
                   })}
@@ -927,28 +928,28 @@ export default function TemperatureLogsPage() {
         </div>
 
         {/* Manager Tools */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Download className="w-5 h-5 text-[#EC4899]" />
-            <h2 className="text-lg font-semibold text-white">Export & Analytics</h2>
+            <Download className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export & Analytics</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="block text-sm text-white/80 mb-2">Export Start Date</label>
+              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export Start Date</label>
               <input
                 type="date"
                 value={exportStart}
                 onChange={(e) => setExportStart(e.target.value)}
-                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div>
-              <label className="block text-sm text-white/80 mb-2">Export End Date</label>
+              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export End Date</label>
               <input
                 type="date"
                 value={exportEnd}
                 onChange={(e) => setExportEnd(e.target.value)}
-                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div className="flex items-end">
@@ -965,7 +966,7 @@ export default function TemperatureLogsPage() {
 
           {/* Chart */}
           <div>
-            <h3 className="text-sm font-semibold text-white/80 mb-3">Temperature Trend (Last 50 Readings)</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80 mb-3">Temperature Trend (Last 50 Readings)</h3>
             <LineChart
               points={filteredLogs
                 .slice(0, 50)

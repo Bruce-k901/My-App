@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Phone, Mail, Building2, Calendar, X, ArrowLeft } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Phone, Mail, Building2, Calendar, Clock, X, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -10,6 +10,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface Supplier {
   id: string;
@@ -33,8 +34,9 @@ interface Supplier {
   };
   payment_terms_days?: number;
   minimum_order_value?: number;
-  delivery_days?: number[];
+  delivery_days?: string[];
   lead_time_days?: number;
+  order_cutoff_time?: string; // TIME format (HH:MM)
   account_number?: string;
   is_active: boolean;
   is_approved: boolean;
@@ -85,6 +87,7 @@ export default function SuppliersPage() {
     minimum_order_value: '',
     delivery_days: [] as number[],
     lead_time_days: 1,
+    order_cutoff_time: '14:00',
     account_number: '',
   });
 
@@ -136,13 +139,33 @@ export default function SuppliersPage() {
       minimum_order_value: '',
       delivery_days: [],
       lead_time_days: 1,
+      order_cutoff_time: '14:00',
       account_number: '',
     });
     setIsModalOpen(true);
   }
 
+  function roundTimeToNearest15Minutes(timeStr: string): string {
+    if (!timeStr) return '14:00';
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const roundedMinutes = Math.round(minutes / 15) * 15;
+    const finalHours = hours + Math.floor(roundedMinutes / 60);
+    const finalMinutes = roundedMinutes % 60;
+    return `${String(finalHours).padStart(2, '0')}:${String(finalMinutes).padStart(2, '0')}`;
+  }
+
   function openEditModal(supplier: Supplier) {
     setEditingSupplier(supplier);
+    
+    // Convert delivery_days from text array to number array
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const deliveryDaysNumbers = supplier.delivery_days && supplier.delivery_days.length > 0
+      ? supplier.delivery_days.map(day => dayNames.indexOf(day.toLowerCase())).filter(day => day !== -1)
+      : [];
+    
+    // Round cutoff time to nearest 15 minutes
+    const cutoffTime = roundTimeToNearest15Minutes(supplier.order_cutoff_time || '14:00');
+    
     setFormData({
       name: supplier.name || '',
       code: supplier.code || '',
@@ -159,8 +182,9 @@ export default function SuppliersPage() {
       rep_name: supplier.ordering_config?.rep_name || '',
       payment_terms_days: supplier.payment_terms_days || 30,
       minimum_order_value: supplier.minimum_order_value?.toString() || '',
-      delivery_days: supplier.delivery_days || [],
+      delivery_days: deliveryDaysNumbers,
       lead_time_days: supplier.lead_time_days || 1,
+      order_cutoff_time: cutoffTime,
       account_number: supplier.account_number || '',
     });
     setIsModalOpen(true);
@@ -207,6 +231,12 @@ export default function SuppliersPage() {
         ordering_config.rep_name = formData.rep_name;
       }
 
+      // Convert delivery_days from number array to text array
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const deliveryDaysText = formData.delivery_days.length > 0 
+        ? formData.delivery_days.map(day => dayNames[day])
+        : null;
+
       const supplierData: any = {
         company_id: companyId,
         name: formData.name.trim(),
@@ -219,8 +249,9 @@ export default function SuppliersPage() {
         ordering_config: Object.keys(ordering_config).length > 0 ? ordering_config : null,
         payment_terms_days: formData.payment_terms_days || null,
         minimum_order_value: formData.minimum_order_value ? parseFloat(formData.minimum_order_value) : null,
-        delivery_days: formData.delivery_days.length > 0 ? formData.delivery_days : null,
+        delivery_days: deliveryDaysText,
         lead_time_days: formData.lead_time_days || null,
+        order_cutoff_time: formData.order_cutoff_time || '14:00',
         account_number: formData.account_number.trim() || null,
       };
 
@@ -275,10 +306,20 @@ export default function SuppliersPage() {
     }
   }
 
-  function formatDeliveryDays(days: number[] | null | undefined): string {
+  function formatDeliveryDays(days: string[] | number[] | null | undefined): string {
     if (!days || days.length === 0) return '—';
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return days.map(d => dayNames[d]).join(', ');
+    const dayNamesFull = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    
+    // Handle both string array (from DB) and number array (from form)
+    if (typeof days[0] === 'string') {
+      return (days as string[]).map(d => {
+        const index = dayNamesFull.indexOf(d.toLowerCase());
+        return index !== -1 ? dayNames[index] : d;
+      }).join(', ');
+    } else {
+      return (days as number[]).map(d => dayNames[d]).join(', ');
+    }
   }
 
   function getOrderingMethodLabel(method: string | null | undefined): string {
@@ -295,45 +336,45 @@ export default function SuppliersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading suppliers...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600 dark:text-white">Loading suppliers...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
-              href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
+                href="/dashboard/stockly"
+                className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Suppliers</h1>
-              <p className="text-slate-400 text-sm">Manage your supplier contacts and ordering information</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+                <Building2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                Suppliers
+              </h1>
+              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">Manage your supplier contacts and ordering information</p>
             </div>
           </div>
-          <Button
+          <button
             onClick={openAddModal}
-            variant="secondary"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
           >
-            <Plus size={18} />
+            <Plus className="w-5 h-5" />
             Add Supplier
-          </Button>
+          </button>
         </div>
 
         {/* Search */}
-        <div className="mb-6">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={18} />
             <Input
               type="text"
               placeholder="Search suppliers..."
@@ -346,48 +387,51 @@ export default function SuppliersPage() {
 
         {/* Suppliers List */}
         {filteredSuppliers.length === 0 ? (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-12 text-center">
-            <Building2 className="mx-auto text-slate-400 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {searchTerm ? 'No suppliers found' : 'No suppliers yet'}
-            </h3>
-            <p className="text-slate-400 mb-6">
-              {searchTerm
-                ? 'Try adjusting your search terms'
-                : 'Get started by adding your first supplier'}
-            </p>
-            {!searchTerm && (
-              <Button onClick={openAddModal} variant="secondary">
-                <Plus size={18} className="mr-2" />
-                Add Supplier
-              </Button>
-            )}
-          </div>
-        ) : (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Building2 className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-gray-900 dark:text-white font-medium mb-2">
+            {searchTerm ? 'No suppliers found' : 'No suppliers yet'}
+          </h3>
+          <p className="text-gray-600 dark:text-white/60 text-sm mb-4">
+            {searchTerm
+              ? 'Try adjusting your search terms'
+              : 'Get started by adding your first supplier'}
+          </p>
+          {!searchTerm && (
+            <button
+              onClick={openAddModal}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+            >
+              <Plus className="w-4 h-4" />
+              Add Supplier
+            </button>
+          )}
+        </div>
+      ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSuppliers.map((supplier) => (
               <div
                 key={supplier.id}
-                className="bg-white/[0.03] border border-neutral-800 rounded-xl p-5 hover:border-neutral-700 transition-colors"
+                className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1">{supplier.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{supplier.name}</h3>
                     {supplier.code && (
-                      <p className="text-xs text-slate-400 mb-2">Code: {supplier.code}</p>
+                      <p className="text-xs text-gray-500 dark:text-white/40 mb-2">Code: {supplier.code}</p>
                     )}
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEditModal(supplier)}
-                      className="p-2 text-slate-400 hover:text-[#EC4899] transition-colors"
+                      className="p-2 text-gray-500 dark:text-white/40 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                       aria-label="Edit supplier"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(supplier)}
-                      className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                      className="p-2 text-gray-500 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                       aria-label="Delete supplier"
                     >
                       <Trash2 size={16} />
@@ -397,38 +441,44 @@ export default function SuppliersPage() {
 
                 <div className="space-y-2 text-sm">
                   {supplier.contact_name && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <span className="text-slate-500">Contact:</span>
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <span className="text-gray-500 dark:text-white/50">Contact:</span>
                       <span>{supplier.contact_name}</span>
                     </div>
                   )}
                   {supplier.phone && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <Phone size={14} className="text-slate-500" />
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <Phone size={14} className="text-gray-500 dark:text-white/50" />
                       <span>{supplier.phone}</span>
                     </div>
                   )}
                   {supplier.email && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <Mail size={14} className="text-slate-500" />
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <Mail size={14} className="text-gray-500 dark:text-white/50" />
                       <span className="truncate">{supplier.email}</span>
                     </div>
                   )}
                   {supplier.ordering_method && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <span className="text-slate-500">Ordering:</span>
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <span className="text-gray-500 dark:text-white/50">Ordering:</span>
                       <span>{getOrderingMethodLabel(supplier.ordering_method)}</span>
                     </div>
                   )}
                   {supplier.delivery_days && supplier.delivery_days.length > 0 && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <Calendar size={14} className="text-slate-500" />
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <Calendar size={14} className="text-gray-500 dark:text-white/50" />
                       <span>{formatDeliveryDays(supplier.delivery_days)}</span>
                     </div>
                   )}
                   {supplier.payment_terms_days && (
-                    <div className="text-slate-400 text-xs">
+                    <div className="text-gray-500 dark:text-white/40 text-xs">
                       Payment terms: {supplier.payment_terms_days} days
+                    </div>
+                  )}
+                  {supplier.order_cutoff_time && (
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
+                      <Clock size={14} className="text-gray-500 dark:text-white/50" />
+                      <span className="text-xs">Order cutoff: {supplier.order_cutoff_time}</span>
                     </div>
                   )}
                 </div>
@@ -441,7 +491,7 @@ export default function SuppliersPage() {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-white">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
                 {editingSupplier ? 'Edit Supplier' : 'Add Supplier'}
               </DialogTitle>
             </DialogHeader>
@@ -450,7 +500,7 @@ export default function SuppliersPage() {
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-slate-300 mb-1">Supplier Name *</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Supplier Name *</label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -458,7 +508,7 @@ export default function SuppliersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-300 mb-1">Supplier Code</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Supplier Code</label>
                   <Input
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -470,7 +520,7 @@ export default function SuppliersPage() {
               {/* Contact Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-slate-300 mb-1">Contact Name</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Contact Name</label>
                   <Input
                     value={formData.contact_name}
                     onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
@@ -478,7 +528,7 @@ export default function SuppliersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-300 mb-1">Phone</label>
+                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Phone</label>
                   <Input
                     type="tel"
                     value={formData.phone}
@@ -489,7 +539,7 @@ export default function SuppliersPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-slate-300 mb-1">Email</label>
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Email</label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -499,8 +549,8 @@ export default function SuppliersPage() {
               </div>
 
               {/* Address */}
-              <div className="border-t border-neutral-800 pt-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Address</h3>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Address</h3>
                 <div className="space-y-3">
                   <Input
                     value={formData.address_line1}
@@ -528,11 +578,11 @@ export default function SuppliersPage() {
               </div>
 
               {/* Ordering Method */}
-              <div className="border-t border-neutral-800 pt-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Ordering</h3>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Ordering</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm text-slate-300 mb-1">Ordering Method</label>
+                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Ordering Method</label>
                     <Select
                       value={formData.ordering_method}
                       onValueChange={(val) => setFormData({ ...formData, ordering_method: val })}
@@ -568,8 +618,8 @@ export default function SuppliersPage() {
               </div>
 
               {/* Delivery Days */}
-              <div className="border-t border-neutral-800 pt-4">
-                <label className="block text-sm text-slate-300 mb-2">Delivery Days</label>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Delivery Days</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {DAYS_OF_WEEK.map((day) => (
                     <button
@@ -578,8 +628,8 @@ export default function SuppliersPage() {
                       onClick={() => toggleDeliveryDay(day.value)}
                       className={`p-2 rounded text-sm transition-colors ${
                         formData.delivery_days.includes(day.value)
-                          ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
-                          : 'bg-white/[0.06] text-slate-300 border border-neutral-800 hover:border-neutral-700'
+                          ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500'
+                          : 'bg-white dark:bg-white/[0.06] text-gray-700 dark:text-white/80 border border-gray-200 dark:border-white/10 hover:border-emerald-500/50 dark:hover:border-emerald-500/50'
                       }`}
                     >
                       {day.label}
@@ -589,11 +639,11 @@ export default function SuppliersPage() {
               </div>
 
               {/* Payment & Terms */}
-              <div className="border-t border-neutral-800 pt-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Payment & Terms</h3>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Payment & Terms</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-slate-300 mb-1">Payment Terms (days)</label>
+                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Payment Terms (days)</label>
                     <Input
                       type="number"
                       value={formData.payment_terms_days}
@@ -602,7 +652,7 @@ export default function SuppliersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-slate-300 mb-1">Min Order Value</label>
+                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Min Order Value</label>
                     <Input
                       type="number"
                       step="0.01"
@@ -612,7 +662,7 @@ export default function SuppliersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-slate-300 mb-1">Lead Time (days)</label>
+                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Lead Time (days)</label>
                     <Input
                       type="number"
                       value={formData.lead_time_days}
@@ -621,18 +671,31 @@ export default function SuppliersPage() {
                     />
                   </div>
                 </div>
-                <div className="mt-3">
-                  <label className="block text-sm text-slate-300 mb-1">Account Number</label>
-                  <Input
-                    value={formData.account_number}
-                    onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
-                    placeholder="Your account number with supplier"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <label htmlFor="order-cutoff-time" className="block text-sm text-gray-700 dark:text-white/80 mb-1">Order Cutoff Time</label>
+                    <TimePicker
+                      id="order-cutoff-time"
+                      name="order_cutoff_time"
+                      value={formData.order_cutoff_time}
+                      onChange={(value) => setFormData({ ...formData, order_cutoff_time: value })}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-white/40 mt-1">Time by which orders must be placed (15-minute intervals)</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Account Number</label>
+                    <Input
+                      value={formData.account_number}
+                      onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
+                      placeholder="Your account number with supplier"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-neutral-800">
+              <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
                 <Button
                   onClick={handleSave}
                   disabled={saving || !formData.name.trim()}

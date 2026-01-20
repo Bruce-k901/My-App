@@ -171,7 +171,7 @@ export default function SmartSearch({
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm placeholder-neutral-400 focus:outline-none transition-colors"
+          className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-400 focus:outline-none transition-colors"
         />
         {searchQuery && (
           <button
@@ -179,7 +179,7 @@ export default function SmartSearch({
               setSearchQuery("");
               setIsOpen(false);
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-white"
           >
             <X size={18} />
           </button>
@@ -222,26 +222,26 @@ export default function SmartSearch({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-neutral-800 border border-neutral-600 rounded-lg shadow-xl max-h-96 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg shadow-xl max-h-96 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center text-neutral-400">Loading...</div>
+            <div className="p-4 text-center text-[rgb(var(--text-tertiary))] dark:text-neutral-400">Loading...</div>
           ) : filteredResults.length === 0 ? (
-            <div className="p-4 text-center text-neutral-400">
+            <div className="p-4 text-center text-[rgb(var(--text-tertiary))] dark:text-neutral-400">
               No results found for "{searchQuery}"
             </div>
           ) : (
             <>
               {/* Recent Items */}
               {recentItems.length > 0 && searchQuery === "" && (
-                <div className="p-2 border-b border-neutral-700">
-                  <div className="text-xs text-neutral-400 px-2 mb-1">Recently Used</div>
+                <div className="p-2 border-b border-[rgb(var(--border))] dark:border-neutral-700">
+                  <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 px-2 mb-1">Recently Used</div>
                   {recentItems.slice(0, 5).map((item) => (
                     <button
                       key={item.id}
                       onClick={() => handleSelect(item)}
-                      className="w-full text-left px-3 py-2 hover:bg-neutral-700 rounded text-sm"
+                      className="w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-700 rounded text-sm"
                     >
-                      <span className="text-white">{getDisplayName(item)}</span>
+                      <span className="text-[rgb(var(--text-primary))] dark:text-white">{getDisplayName(item)}</span>
                     </button>
                   ))}
                 </div>
@@ -256,12 +256,12 @@ export default function SmartSearch({
                   <button
                     key={item.id}
                     onClick={() => handleSelect(item)}
-                    className={`w-full text-left px-3 py-2 hover:bg-neutral-700 rounded transition-colors ${
-                      isHighlighted ? 'bg-neutral-700' : ''
+                    className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-700 rounded transition-colors ${
+                      isHighlighted ? 'bg-[rgb(var(--surface))] dark:bg-neutral-700' : ''
                     } ${isSelected ? 'opacity-50' : ''}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-white truncate">
+                      <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                         {getDisplayName(item)}
                       </span>
                       {isSelected && (

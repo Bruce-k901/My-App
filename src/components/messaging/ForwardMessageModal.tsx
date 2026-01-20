@@ -79,28 +79,61 @@ export default function ForwardMessageModal({
 
       console.time('step2-prepare-data');
       const senderName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User';
-      const forwardContent = `Forwarded message:\n"${message.content}"\n- ${message.sender?.full_name || 'Unknown'}`;
+      const originalSenderName = message.sender?.full_name || 'Unknown';
+      
+      // Prepare forward content - preserve original for images/files, add forward prefix for text
+      let forwardContent: string;
+      if (message.message_type === 'image' || message.message_type === 'file') {
+        // For images/files, keep original content (usually filename) but add forward context
+        forwardContent = message.content || (message.message_type === 'image' ? 'Image' : 'File');
+      } else {
+        // For text messages, add forward prefix
+        forwardContent = `Forwarded message:\n"${message.content}"\n- ${originalSenderName}`;
+      }
+      
+      // Prepare the base message insert object
+      const baseMessageInsert: any = {
+        channel_id: '',
+        sender_profile_id: currentUser.id,
+        content: forwardContent,
+        message_type: message.message_type, // Preserve original type (image/file/text)
+        metadata: {
+          forwarded_from_message_id: message.id,
+          forwarded_from_channel_id: message.channel_id,
+          forwarded_at: new Date().toISOString(),
+          forwarded_from_sender: originalSenderName,
+          sender_name: senderName,
+          sender_email: currentUser.email,
+        },
+      };
+      
+      // Preserve file/image attachment information if present
+      if (message.message_type === 'image' || message.message_type === 'file') {
+        if (message.file_url) {
+          baseMessageInsert.file_url = message.file_url;
+        }
+        if (message.file_name) {
+          baseMessageInsert.file_name = message.file_name;
+        }
+        if (message.file_size) {
+          baseMessageInsert.file_size = message.file_size;
+        }
+        if (message.file_type) {
+          baseMessageInsert.file_type = message.file_type;
+        }
+      }
+      
       console.timeEnd('step2-prepare-data');
 
       console.time('step3-insert-messages');
       // ✅ PARALLEL INSERT - All inserts happen at once
-      const insertPromises = Array.from(selectedChannels).map((channelId) =>
-        supabase.from('messaging_messages').insert({
+      const insertPromises = Array.from(selectedChannels).map((channelId) => {
+        const messageInsert = {
+          ...baseMessageInsert,
           channel_id: channelId,
-          sender_id: currentUser.id,
-          sender_name: senderName,
-          content: forwardContent,
-          message_type: 'text',
-          attachments: [],
-          metadata: {
-            forwarded_from_message_id: message.id,
-            forwarded_from_channel_id: message.channel_id,
-            forwarded_at: new Date().toISOString(),
-            sender_name: senderName,
-            sender_email: currentUser.email,
-          },
-        })
-      );
+        };
+        return supabase.from('messaging_messages').insert(messageInsert);
+      });
 
       const results = await Promise.all(insertPromises);
       console.timeEnd('step3-insert-messages');
@@ -170,7 +203,7 @@ export default function ForwardMessageModal({
               const name =
                 conv.name ||
                 (conv.type === 'direct'
-                  ? conv.participants?.find((p: any) => p.user_id !== user?.id)?.user?.full_name ||
+                  ? conv.participants?.find((p: any) => (p.profile_id || p.user_id) !== user?.id)?.user?.full_name ||
                     'Direct Message'
                   : 'Group Chat') ||
                 'Conversation';

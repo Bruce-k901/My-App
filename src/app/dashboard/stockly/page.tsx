@@ -176,11 +176,41 @@ export default function StocklyDashboard() {
         .in('stock_item_id', itemIds);
       
       // Get product variants with prices (preferred variant or first one)
-      const { data: productVariants } = await supabase
-        .from('product_variants')
-        .select('stock_item_id, current_price, is_preferred')
-        .in('stock_item_id', itemIds)
-        .eq('is_discontinued', false);
+      // Handle errors gracefully if product_variants table doesn't exist or isn't accessible
+      let productVariants: any[] = [];
+      try {
+        // Use unit_cost or unit_price (actual columns in the table)
+        const { data, error } = await supabase
+          .from('product_variants')
+          .select('stock_item_id, unit_cost, unit_price, is_preferred')
+          .in('stock_item_id', itemIds)
+          .eq('is_active', true);
+        
+        if (error) {
+          // Log error for debugging (only in development)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('product_variants query error:', {
+              message: error.message,
+              code: error.code,
+              details: error.details,
+              hint: error.hint
+            });
+          }
+          productVariants = [];
+        } else if (data) {
+          // Map unit_cost/unit_price to current_price for compatibility
+          productVariants = data.map((v: any) => ({
+            ...v,
+            current_price: v.unit_cost || v.unit_price || 0
+          }));
+        }
+      } catch (error: any) {
+        // Log error for debugging (only in development)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('product_variants query exception:', error);
+        }
+        productVariants = [];
+      }
       
       let stockValue = 0;
       (stockData || []).forEach(sl => {
@@ -252,12 +282,41 @@ export default function StocklyDashboard() {
       if (items && items.length > 0) {
         const itemIds = items.map(item => item.id);
         
-        // Query product_variants separately
-        const { data: variants } = await supabase
-          .from('product_variants')
-          .select('stock_item_id, current_price, is_preferred')
-          .in('stock_item_id', itemIds)
-          .eq('is_discontinued', false);
+        // Query product_variants separately (handle errors gracefully)
+        let variants: any[] = [];
+        try {
+          // Use unit_cost or unit_price (actual columns in the table)
+          const { data: variantData, error: variantError } = await supabase
+            .from('product_variants')
+            .select('stock_item_id, unit_cost, unit_price, is_preferred')
+            .in('stock_item_id', itemIds)
+            .eq('is_active', true);
+          
+          if (variantError) {
+            // Log error for debugging (only in development)
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('product_variants search query error:', {
+                message: variantError.message,
+                code: variantError.code,
+                details: variantError.details,
+                hint: variantError.hint
+              });
+            }
+            variants = [];
+          } else if (variantData) {
+            // Map unit_cost/unit_price to current_price for compatibility
+            variants = variantData.map((v: any) => ({
+              ...v,
+              current_price: v.unit_cost || v.unit_price || 0
+            }));
+          }
+        } catch (error: any) {
+          // Log error for debugging (only in development)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('product_variants search query exception:', error);
+          }
+          variants = [];
+        }
         
         // Join variants to items manually
         const results = items.map(item => {
@@ -301,9 +360,9 @@ export default function StocklyDashboard() {
       title: 'New Order',
       description: 'Create purchase order',
       icon: FileText,
-      color: 'from-magenta-500/20 to-magenta-600/20',
-      iconColor: 'text-magenta-400',
-      borderColor: 'border-magenta-500/30',
+      color: 'from-emerald-500/20 to-emerald-600/20',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      borderColor: 'border-emerald-500/30',
       href: '/dashboard/stockly/orders/new'
     },
     {
@@ -359,26 +418,30 @@ export default function StocklyDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-magenta-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Stockly</h1>
-          <p className="text-white/50 text-sm flex items-center gap-2 mt-1">
-            <Clock className="w-4 h-4" />
-            {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-5xl mx-auto p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              Stockly
+            </h1>
+            <p className="text-gray-600 dark:text-white/60 text-sm flex items-center gap-2 mt-1">
+              <Clock className="w-4 h-4" />
+              {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {quickActions.map((action) => {
           const Component = action.href ? Link : 'button';
           const props = action.href 
@@ -389,210 +452,211 @@ export default function StocklyDashboard() {
             <Component
               key={action.id}
               {...props}
-              className={`relative overflow-hidden bg-gradient-to-br ${action.color} border ${action.borderColor} rounded-xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-lg group`}
+              className={`relative overflow-hidden bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-lg hover:bg-gray-50 dark:hover:bg-white/[0.05] group`}
             >
               <action.icon className={`w-8 h-8 ${action.iconColor} mb-3`} />
-              <h3 className="text-white font-semibold">{action.title}</h3>
-              <p className="text-white/50 text-sm">{action.description}</p>
-              <ArrowRight className="absolute bottom-4 right-4 w-5 h-5 text-white/20 group-hover:text-white/40 transition-colors" />
+              <h3 className="text-gray-900 dark:text-white font-semibold">{action.title}</h3>
+              <p className="text-gray-600 dark:text-white/60 text-sm">{action.description}</p>
+              <ArrowRight className="absolute bottom-4 right-4 w-5 h-5 text-gray-400 dark:text-white/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
             </Component>
           );
         })}
-      </div>
+        </div>
 
-      {/* Alerts */}
-      {alerts.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-medium text-white">Alerts</span>
-            <span className="text-xs text-white/40">({alerts.length})</span>
+        {/* Alerts */}
+        {alerts.length > 0 && (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-white/[0.06] flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">Alerts</span>
+            <span className="text-xs text-gray-500 dark:text-white/40">({alerts.length})</span>
           </div>
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-gray-200 dark:divide-white/[0.03]">
             {alerts.map((alert) => (
               <Link
                 key={alert.id}
                 href={alert.link || '#'}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
               >
                 <div className={`w-2 h-2 rounded-full ${
                   alert.severity === 'danger' ? 'bg-red-500' :
-                  alert.severity === 'warning' ? 'bg-yellow-500' :
+                  alert.severity === 'warning' ? 'bg-amber-500' :
                   'bg-blue-500'
                 }`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium">{alert.title}</p>
-                  <p className="text-white/40 text-xs truncate">{alert.description}</p>
+                  <p className="text-gray-900 dark:text-white text-sm font-medium">{alert.title}</p>
+                  <p className="text-gray-500 dark:text-white/40 text-xs truncate">{alert.description}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-white/20" />
+                <ArrowRight className="w-4 h-4 text-gray-400 dark:text-white/20" />
               </Link>
             ))}
           </div>
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Today's Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Today's Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link
           href="/dashboard/stockly/stock-items"
-          className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] hover:border-white/20 transition-all cursor-pointer group"
+          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-white/40 group-hover:text-magenta-400 transition-colors" />
-            <span className="text-white/60 text-xs">Stock Value</span>
+            <Package className="w-4 h-4 text-gray-500 dark:text-white/40 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
+            <span className="text-gray-600 dark:text-white/60 text-xs">Stock Value</span>
           </div>
-          <p className="text-xl font-bold text-white group-hover:text-magenta-400 transition-colors">{formatCurrency(stats.stockValue)}</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{formatCurrency(stats.stockValue)}</p>
         </Link>
         
         <Link
           href="/dashboard/stockly/deliveries"
-          className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] hover:border-white/20 transition-all cursor-pointer group"
+          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Truck className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
-            <span className="text-white/60 text-xs">Deliveries Today</span>
+            <Truck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors" />
+            <span className="text-gray-600 dark:text-white/60 text-xs">Deliveries Today</span>
           </div>
-          <p className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">{formatCurrency(stats.deliveriesToday)}</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">{formatCurrency(stats.deliveriesToday)}</p>
         </Link>
         
         <Link
           href="/dashboard/stockly/reports/wastage"
-          className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] hover:border-white/20 transition-all cursor-pointer group"
+          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-red-500/50 dark:hover:border-red-500/50 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Trash2 className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
-            <span className="text-white/60 text-xs">Wastage Today</span>
+            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors" />
+            <span className="text-gray-600 dark:text-white/60 text-xs">Wastage Today</span>
           </div>
-          <p className="text-xl font-bold text-red-400 group-hover:text-red-300 transition-colors">
+          <p className="text-xl font-bold text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">
             {stats.wastageToday > 0 ? `-${formatCurrency(stats.wastageToday)}` : '£0'}
           </p>
         </Link>
         
         <Link
           href="/dashboard/stockly/reports/gp"
-          className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] hover:border-white/20 transition-all cursor-pointer group"
+          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
             <TrendingDown className={`w-4 h-4 transition-colors ${
-              stats.gpPercent && stats.gpPercent >= 70 ? 'text-green-400 group-hover:text-green-300' : 'text-yellow-400 group-hover:text-yellow-300'
+              stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 'text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300'
             }`} />
-            <span className="text-white/60 text-xs">Latest GP</span>
+            <span className="text-gray-600 dark:text-white/60 text-xs">Latest GP</span>
           </div>
           <p className={`text-xl font-bold transition-colors ${
-            stats.gpPercent && stats.gpPercent >= 70 ? 'text-green-400 group-hover:text-green-300' : 
-            stats.gpPercent ? 'text-yellow-400 group-hover:text-yellow-300' : 'text-white/40'
+            stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 
+            stats.gpPercent ? 'text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300' : 'text-gray-500 dark:text-white/40'
           }`}>
             {stats.gpPercent ? `${stats.gpPercent}%` : '-'}
           </p>
         </Link>
-      </div>
+        </div>
 
-      {/* Quick Search */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+        {/* Quick Search */}
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Quick search stock items..."
-            className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-magenta-500"
+            className="w-full pl-10 pr-4 py-3 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
           />
           {searching && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 animate-spin" />
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40 animate-spin" />
           )}
         </div>
         
         {searchResults.length > 0 && (
-          <div className="mt-3 divide-y divide-white/[0.06]">
+          <div className="mt-3 divide-y divide-gray-200 dark:divide-white/[0.06]">
             {searchResults.map((item) => (
               <Link
                 key={item.id}
                 href={`/dashboard/stockly/stock-items/${item.id}`}
-                className="flex items-center justify-between py-2 hover:bg-white/[0.02] px-2 rounded -mx-2"
+                className="flex items-center justify-between py-2 hover:bg-gray-50 dark:hover:bg-white/[0.02] px-2 rounded -mx-2"
               >
                 <div>
-                  <span className="text-white">{item.name}</span>
-                  <span className="text-white/40 text-sm ml-2">
+                  <span className="text-gray-900 dark:text-white">{item.name}</span>
+                  <span className="text-gray-500 dark:text-white/40 text-sm ml-2">
                     {item.stock_levels?.[0]?.quantity || 0} {item.stock_unit}
                   </span>
                 </div>
-                <span className="text-white/40 text-sm">
+                <span className="text-gray-500 dark:text-white/40 text-sm">
                   £{item.product_variants?.[0]?.unit_price?.toFixed(2) || '0.00'}
                 </span>
               </Link>
             ))}
           </div>
         )}
-      </div>
+        </div>
 
-      {/* Setup Links */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Setup Links */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {setupLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center gap-3 px-4 py-3 bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] rounded-lg transition-colors group"
+            className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-white/[0.02] hover:bg-gray-50 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg transition-colors group"
           >
-            <link.icon className="w-5 h-5 text-white/40 group-hover:text-magenta-400 transition-colors" />
-            <span className="text-white/80 group-hover:text-white text-sm font-medium">{link.name}</span>
-            <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-magenta-400 ml-auto transition-colors" />
+            <link.icon className="w-5 h-5 text-gray-500 dark:text-white/40 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
+            <span className="text-gray-700 dark:text-white/80 group-hover:text-gray-900 dark:group-hover:text-white text-sm font-medium">{link.name}</span>
+            <ArrowRight className="w-4 h-4 text-gray-400 dark:text-white/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 ml-auto transition-colors" />
           </Link>
         ))}
+        </div>
+
+        {/* Slide Out Panels */}
+        <SlideOutPanel
+          isOpen={activePanel === 'delivery'}
+          onClose={() => setActivePanel(null)}
+          title="Receive Delivery"
+          subtitle="Log incoming stock from supplier"
+          width="lg"
+        >
+          <QuickDeliveryPanel 
+            onComplete={handlePanelComplete}
+            onCancel={() => setActivePanel(null)}
+          />
+        </SlideOutPanel>
+
+        <SlideOutPanel
+          isOpen={activePanel === 'waste'}
+          onClose={() => setActivePanel(null)}
+          title="Record Waste"
+          subtitle="Log wastage, spoilage, or loss"
+          width="lg"
+        >
+          <QuickWastePanel 
+            onComplete={handlePanelComplete}
+            onCancel={() => setActivePanel(null)}
+          />
+        </SlideOutPanel>
+
+        <SlideOutPanel
+          isOpen={activePanel === 'staff'}
+          onClose={() => setActivePanel(null)}
+          title="Staff Purchase"
+          subtitle="Sell items to team members"
+          width="lg"
+        >
+          <QuickStaffPurchasePanel 
+            onComplete={handlePanelComplete}
+            onCancel={() => setActivePanel(null)}
+          />
+        </SlideOutPanel>
+
+        <SlideOutPanel
+          isOpen={activePanel === 'count'}
+          onClose={() => setActivePanel(null)}
+          title="Quick Stock Count"
+          subtitle="Spot check specific items"
+          width="lg"
+        >
+          <QuickStockCountPanel 
+            onComplete={handlePanelComplete}
+            onCancel={() => setActivePanel(null)}
+          />
+        </SlideOutPanel>
       </div>
-
-      {/* Slide Out Panels */}
-      <SlideOutPanel
-        isOpen={activePanel === 'delivery'}
-        onClose={() => setActivePanel(null)}
-        title="Receive Delivery"
-        subtitle="Log incoming stock from supplier"
-        width="lg"
-      >
-        <QuickDeliveryPanel 
-          onComplete={handlePanelComplete}
-          onCancel={() => setActivePanel(null)}
-        />
-      </SlideOutPanel>
-
-      <SlideOutPanel
-        isOpen={activePanel === 'waste'}
-        onClose={() => setActivePanel(null)}
-        title="Record Waste"
-        subtitle="Log wastage, spoilage, or loss"
-        width="lg"
-      >
-        <QuickWastePanel 
-          onComplete={handlePanelComplete}
-          onCancel={() => setActivePanel(null)}
-        />
-      </SlideOutPanel>
-
-      <SlideOutPanel
-        isOpen={activePanel === 'staff'}
-        onClose={() => setActivePanel(null)}
-        title="Staff Purchase"
-        subtitle="Sell items to team members"
-        width="lg"
-      >
-        <QuickStaffPurchasePanel 
-          onComplete={handlePanelComplete}
-          onCancel={() => setActivePanel(null)}
-        />
-      </SlideOutPanel>
-
-      <SlideOutPanel
-        isOpen={activePanel === 'count'}
-        onClose={() => setActivePanel(null)}
-        title="Quick Stock Count"
-        subtitle="Spot check specific items"
-        width="lg"
-      >
-        <QuickStockCountPanel 
-          onComplete={handlePanelComplete}
-          onCancel={() => setActivePanel(null)}
-        />
-      </SlideOutPanel>
     </div>
   );
 }

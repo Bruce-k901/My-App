@@ -138,3 +138,15 @@ const mobileBackdrop = mounted && isMobileOpen ? createPortal(
 - [ ] Mobile: Route change → sidebar closes automatically
 - [ ] No hydration warnings in console
 - [ ] No layout shift when resizing window
+
+
+
+
+
+
+
+
+
+
+
+

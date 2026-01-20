@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -706,16 +707,16 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-[#0f1220] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-pink-500/20 flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-white/[0.1] shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-white/10 flex-shrink-0">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-pink-500 mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {editingTemplate ? 'Edit Template Configuration' : 'Template Builder'}
               </h1>
-              <p className="text-gray-400 text-sm sm:text-base">
+              <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
                 {editingTemplate 
                   ? 'Modify template features and configuration. This will affect all future tasks created from this template.'
                   : 'Create comprehensive compliance task templates with all required elements'
@@ -724,7 +725,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-gray-400 flex-shrink-0"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 flex-shrink-0 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -732,7 +733,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         </div>
 
         {/* Content - Scrollable area */}
-        <div className="flex-1 overflow-y-auto bg-[#141823] min-h-0">
+        <div className="flex-1 overflow-y-auto bg-white dark:bg-[#14161c] min-h-0">
           <div className="p-4 sm:p-6">
           {/* Template Configuration */}
           <div className="mb-6 pb-6 border-b border-white/10">
@@ -777,7 +778,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               >
                 <option value="Daily">Daily</option>
                 <option value="Weekly">Weekly</option>
@@ -921,7 +922,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                  className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                 />
                 <p className="text-xs text-slate-400 mt-2">
                   Tasks will be automatically scheduled for this date {templateConfig.frequency === 'Annually' ? 'each year' : templateConfig.frequency === 'Bi-Annually' ? 'every 6 months' : 'each quarter'}
@@ -999,7 +1000,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setAnnualDate('');
                         }
                       }}
-                      className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                     />
                   </div>
                 </div>
@@ -1043,11 +1044,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       <label className="block text-xs text-slate-400 mb-1 capitalize">
                         {dayPart.replace('_', ' ')}
                       </label>
-                      <input
-                        type="time"
+                      <TimePicker
                         value={daypartTimes[dayPart] || ''}
-                        onChange={(e) => setDaypartTime(dayPart, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent [color-scheme:dark]"
+                        onChange={(value) => setDaypartTime(dayPart, value)}
+                        className="w-full"
                       />
                     </div>
                   ))}
@@ -1085,17 +1085,17 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-white/10 bg-[#0f1220] flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#14161c] flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors font-medium"
+            className="w-full sm:w-auto px-5 py-2 border border-gray-300 dark:border-white/10 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full sm:w-auto px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+            className="w-full sm:w-auto px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
             {isSaving 
               ? (editingTemplate ? 'Updating...' : 'Creating...')

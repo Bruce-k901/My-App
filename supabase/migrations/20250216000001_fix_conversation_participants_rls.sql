@@ -1,9 +1,8 @@
 -- ============================================================================
 -- Migration: Fix Conversation Participants RLS Infinite Recursion
 -- Description: Fixes infinite recursion in conversation_participants RLS policy
+-- Note: This migration will be skipped if conversation_participants table doesn't exist yet
 -- ============================================================================
-
-BEGIN;
 
 -- Create a security definer function to check if user is a participant
 -- This bypasses RLS to avoid infinite recursion
@@ -12,7 +11,8 @@ RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
 STABLE
-AS $$
+SET search_path = public
+AS $function$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.conversation_participants
@@ -21,18 +21,26 @@ BEGIN
       AND left_at IS NULL
   );
 END;
-$$;
+$function$;
 
--- Drop the problematic policy
-DROP POLICY IF EXISTS participants_select_conversation_member ON public.conversation_participants;
+DO $$
+BEGIN
+  -- Only proceed if conversation_participants table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversation_participants') THEN
+    -- Drop the problematic policy
+    DROP POLICY IF EXISTS participants_select_conversation_member ON public.conversation_participants;
 
--- Recreate with fixed logic using the security definer function
-CREATE POLICY participants_select_conversation_member
-  ON public.conversation_participants
-  FOR SELECT
-  USING (
-    public.is_conversation_participant(conversation_id, auth.uid())
-  );
+    -- Recreate with fixed logic using the security definer function
+    CREATE POLICY participants_select_conversation_member
+      ON public.conversation_participants
+      FOR SELECT
+      USING (
+        public.is_conversation_participant(conversation_id, auth.uid())
+      );
+  ELSE
+    RAISE NOTICE '⚠️ conversation_participants table does not exist yet - skipping policy update';
+  END IF;
+END $$;
 
 -- Fix conversations INSERT policy
 -- Use a security definer function to check company membership
@@ -41,7 +49,8 @@ RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
 STABLE
-AS $$
+SET search_path = public
+AS $function$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.profiles
@@ -49,14 +58,15 @@ BEGIN
       AND company_id = comp_id
   );
 END;
-$$;
+$function$;
 
 CREATE OR REPLACE FUNCTION public.user_belongs_to_site(user_uuid UUID, site_uuid UUID)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
 STABLE
-AS $$
+SET search_path = public
+AS $function$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.profiles
@@ -64,9 +74,7 @@ BEGIN
       AND site_id = site_uuid
   );
 END;
-$$;
-
-DROP POLICY IF EXISTS conversations_insert_company ON public.conversations;
+$function$;
 
 -- Use security definer function to check company membership (bypasses RLS on profiles)
 CREATE OR REPLACE FUNCTION public.check_user_company_match(user_uuid UUID, comp_id UUID)
@@ -75,7 +83,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 STABLE
 SET search_path = public
-AS $$
+AS $function$
 DECLARE
   user_company_id UUID;
   profile_exists BOOLEAN;
@@ -106,16 +114,26 @@ BEGIN
   -- Allow if company matches
   RETURN (user_company_id = comp_id);
 END;
-$$;
+$function$;
 
--- Simplified policy using security definer function
-CREATE POLICY conversations_insert_company
-  ON public.conversations
-  FOR INSERT
-  WITH CHECK (
-    created_by = auth.uid()
-    AND public.check_user_company_match(auth.uid(), company_id)
-  );
+DO $$
+BEGIN
+  -- Only proceed if conversations table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversations') THEN
+    DROP POLICY IF EXISTS conversations_insert_company ON public.conversations;
+
+    -- Simplified policy using security definer function
+    CREATE POLICY conversations_insert_company
+      ON public.conversations
+      FOR INSERT
+      WITH CHECK (
+        created_by = auth.uid()
+        AND public.check_user_company_match(auth.uid(), company_id)
+      );
+  ELSE
+    RAISE NOTICE '⚠️ conversations table does not exist yet - skipping policy update';
+  END IF;
+END $$;
 
 -- TEMPORARY: Very permissive policy for debugging
 -- Uncomment this to test if the issue is with the function or policy logic
@@ -125,13 +143,24 @@ CREATE POLICY conversations_insert_company
 --   FOR INSERT
 --   WITH CHECK (created_by = auth.uid());
 
--- Ensure function has proper permissions
-ALTER FUNCTION public.check_user_company_match(UUID, UUID) OWNER TO postgres;
-ALTER FUNCTION public.is_conversation_participant(UUID, UUID) OWNER TO postgres;
+-- Ensure function has proper permissions (only if functions exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'check_user_company_match' AND pronamespace = 'public'::regnamespace) THEN
+    ALTER FUNCTION public.check_user_company_match(UUID, UUID) OWNER TO postgres;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'is_conversation_participant' AND pronamespace = 'public'::regnamespace) THEN
+    ALTER FUNCTION public.is_conversation_participant(UUID, UUID) OWNER TO postgres;
+  END IF;
+END $$;
 
--- Also grant necessary permissions (if not already granted)
-GRANT INSERT ON public.conversations TO authenticated;
-GRANT SELECT ON public.conversations TO authenticated;
-
-COMMIT;
+-- Also grant necessary permissions (if not already granted, only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversations') THEN
+    GRANT INSERT ON public.conversations TO authenticated;
+    GRANT SELECT ON public.conversations TO authenticated;
+  END IF;
+END $$;
 

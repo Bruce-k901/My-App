@@ -9,8 +9,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import type { Message, Conversation, TopicCategory } from '@/types/messaging';
-import ConvertToTaskModal from './ConvertToTaskModal';
-import CreateTaskModal from './CreateTaskModal';
+import CreateTaskModal, { type ModalContext } from '@/components/tasks/CreateTaskModal';
 import ConvertToCalloutModal from './ConvertToCalloutModal';
 import ForwardMessageModal from './ForwardMessageModal';
 import TopicTagModal from './TopicTagModal';
@@ -115,6 +114,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   const [dismissedActions, setDismissedActions] = useState<Set<string>>(new Set());
   const [topicTagMessage, setTopicTagMessage] = useState<Message | null>(null);
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  // Track which messages we've already tried to mark as read to avoid redundant upserts
+  const processedReadMessageIds = useRef<Set<string>>(new Set());
 
   // Fetch conversation details for context
   useEffect(() => {
@@ -155,18 +156,66 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
     if (messages.length > 0 && user?.id) {
       // Get unread messages (messages not sent by current user)
       const unreadMessageIds = messages
-        .filter((msg) => msg.sender_id !== user.id)
+        .filter((msg) => {
+          const senderId = msg.sender_profile_id || msg.sender_id;
+          return senderId !== user.id;
+        })
         .map((msg) => msg.id);
 
-      if (unreadMessageIds.length > 0) {
+      console.log('[DEBUG MessageThread] Extracting message IDs:', {
+        totalMessages: messages.length,
+        unreadMessageIds,
+        messageDetails: messages
+          .filter((msg) => {
+            const senderId = msg.sender_profile_id || msg.sender_id;
+            return senderId !== user.id;
+          })
+          .map((msg) => ({
+            id: msg.id,
+            sender_id: msg.sender_profile_id || msg.sender_id,
+            content: msg.content?.substring(0, 50),
+            created_at: msg.created_at,
+          })),
+      });
+
+      // Filter out messages we've already processed to avoid redundant upserts
+      const newUnreadMessageIds = unreadMessageIds.filter(
+        (id) => !processedReadMessageIds.current.has(id)
+      );
+
+      if (newUnreadMessageIds.length > 0) {
+        console.log('[DEBUG MessageThread] Calling markAsRead with:', {
+          messageIds: newUnreadMessageIds,
+          count: newUnreadMessageIds.length,
+        });
+
+        // Mark these messages as processed
+        newUnreadMessageIds.forEach((id) => {
+          processedReadMessageIds.current.add(id);
+        });
+
         // Mark as delivered first (when message appears in UI)
         // Then mark as read (when user actually views it)
-        markAsRead(unreadMessageIds);
+        markAsRead(newUnreadMessageIds).catch((err) => {
+          console.error('[DEBUG MessageThread] markAsRead failed:', err);
+          // If marking as read fails, remove from processed set so we can retry
+          newUnreadMessageIds.forEach((id) => {
+            processedReadMessageIds.current.delete(id);
+          });
+        });
       }
     }
   }, [messages, user, markAsRead]);
 
-  const isOwnMessage = (message: Message) => message.sender_id === user?.id;
+  // Reset processed messages when conversation changes
+  useEffect(() => {
+    processedReadMessageIds.current.clear();
+  }, [conversationId]);
+
+  const isOwnMessage = (message: Message) => {
+    const senderId = message.sender_profile_id || message.sender_id;
+    return senderId === user?.id;
+  };
 
 
   // Close menu when clicking outside
@@ -245,6 +294,9 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   };
 
   const handleQuickAction = (message: Message, actionType: 'callout' | 'task') => {
+    // Dismiss the suggestion immediately when user clicks "Create Task" or "Create Callout"
+    handleDismissAction(message.id);
+    
     if (actionType === 'callout') {
       setCalloutModalMessage(message);
     } else {
@@ -304,19 +356,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 new Date(prevMessage.created_at).getTime() >
                 300000; // 5 minutes
 
-            // Debug logging for tags (remove after debugging)
-            if (isOwn && (showAvatar || message.reply_to)) {
-              console.log('🔍 TAG DEBUG for message:', {
-                messageId: message.id,
-                showAvatar,
-                hasReplyTo: !!message.reply_to,
-                replyToId: message.reply_to?.id,
-                prevMessageSenderId: prevMessage?.sender_id,
-                currentSenderId: message.sender_id,
-                timeDiff: prevMessage ? new Date(message.created_at).getTime() - new Date(prevMessage.created_at).getTime() : 'N/A',
-                senderName: message.sender?.full_name || message.sender?.email,
-              });
-            }
+            // Debug logging for tags (removed for production)
 
             return (
               <div
@@ -377,6 +417,16 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                           message.reply_to.content || 'Message'
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Forwarded message indicator */}
+                  {message.metadata?.forwarded_from_message_id && (
+                    <div className="flex items-center gap-2 mb-2 text-xs text-white/50">
+                      <Forward className="w-3 h-3 text-pink-400 flex-shrink-0" />
+                      <span>
+                        Forwarded from {message.metadata?.forwarded_from_sender || 'Unknown'}
+                      </span>
                     </div>
                   )}
 
@@ -620,34 +670,84 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Create Task Modal */}
+      {/* Unified Create Task/Meeting Modal */}
       {createTaskModalMessage && (
         <CreateTaskModal
-          message={createTaskModalMessage}
-          conversationContext={{
-            site_id: conversation?.site_id || undefined,
-            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
-          }}
+          isOpen={!!createTaskModalMessage}
           onClose={() => setCreateTaskModalMessage(null)}
-          onSuccess={(taskId) => {
+          context={{
+            source: 'message',
+            messageId: createTaskModalMessage.id,
+            messageContent: createTaskModalMessage.content,
+            channelId: conversationId,
+            preSelectedParticipants: conversation?.type === 'direct' && conversation?.participants
+              ? conversation.participants
+                  .filter(p => (p.profile_id || p.user_id) !== user?.id)
+                  .map(p => p.profile_id || p.user_id || '')
+                  .filter(Boolean)
+              : undefined,
+          }}
+          onTaskCreated={(task) => {
+            // Dismiss any action prompt for this message
+            handleDismissAction(createTaskModalMessage.id);
             setCreateTaskModalMessage(null);
             toast.success('Task created successfully!');
           }}
         />
       )}
 
-      {/* Convert to Task Modal */}
+      {/* Unified Create Task/Meeting Modal (Convert to Task) */}
       {taskModalMessage && (
-        <ConvertToTaskModal
-          message={taskModalMessage}
-          conversationContext={{
-            site_id: conversation?.site_id || undefined,
-            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
-          }}
+        <CreateTaskModal
+          isOpen={!!taskModalMessage}
           onClose={() => setTaskModalMessage(null)}
-          onSuccess={(taskId) => {
+          context={{
+            source: 'message',
+            messageId: taskModalMessage.id,
+            messageContent: taskModalMessage.content,
+            channelId: conversationId,
+            preSelectedParticipants: conversation?.type === 'direct' && conversation?.participants
+              ? conversation.participants
+                  .filter(p => (p.profile_id || p.user_id) !== user?.id)
+                  .map(p => p.profile_id || p.user_id || '')
+                  .filter(Boolean)
+              : undefined,
+          }}
+          onTaskCreated={(task) => {
+            // Update the message to mark it as converted to task
+            supabase
+              .from('messaging_messages')
+              .update({
+                metadata: {
+                  ...taskModalMessage.metadata,
+                  is_task: true,
+                  task_id: task.id,
+                  action_taken: true,
+                  action_type: 'task_created',
+                  action_entity_id: task.id
+                }
+              })
+              .eq('id', taskModalMessage.id);
+
+            // Add a system message to the conversation
+            if (user?.id) {
+              supabase.from('messaging_messages').insert({
+                channel_id: taskModalMessage.channel_id,
+                sender_profile_id: user.id,
+                content: `Created task: "${task.title}"`,
+                message_type: 'text',
+                metadata: {
+                  type: 'task_created',
+                  task_id: task.id,
+                  original_message_id: taskModalMessage.id,
+                }
+              });
+            }
+
+            // Dismiss any action prompt for this message
+            handleDismissAction(taskModalMessage.id);
             setTaskModalMessage(null);
-            // Messages will update automatically via real-time subscription
+            toast.success('Message converted to task successfully!');
           }}
         />
       )}

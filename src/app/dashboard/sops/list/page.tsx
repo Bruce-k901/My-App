@@ -165,7 +165,15 @@ function SOPsListContent() {
     }
   }, [sopIdParam, sops]);
 
-  const handleEditSOP = (sop: any) => {
+  const handleViewSOP = (sop: any) => {
+    // Navigate to simplified view page
+    router.push(`/dashboard/sops/view/${sop.id}`);
+  };
+
+  const handleEditSOP = (sop: any, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation(); // Prevent triggering view
+    }
     // Determine which template to navigate to based on category
     // Support both old and new category names for backward compatibility
     const templateMap: Record<string, string> = {
@@ -276,9 +284,9 @@ function SOPsListContent() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20', text: 'text-green-400' },
-      'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-      'Archived': { icon: Archive, color: 'gray', bg: 'bg-neutral-700', text: 'text-neutral-400' }
+      'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400' },
+      'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400' },
+      'Archived': { icon: Archive, color: 'gray', bg: 'bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700', text: 'text-[rgb(var(--text-tertiary))] dark:text-neutral-400' }
     };
     return badges[status] || badges['Draft'];
   };
@@ -288,19 +296,19 @@ function SOPsListContent() {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={18} />
+          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" size={18} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search SOPs..."
-            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-white placeholder-neutral-400"
+            className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))] dark:placeholder-neutral-400"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"
+          className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
         >
           <option value="all">All Status</option>
           <option value="Published">Published</option>
@@ -308,7 +316,7 @@ function SOPsListContent() {
         </select>
         <button
           onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-3 sm:px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+          className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
         >
           <Archive size={16} />
           <span className="hidden sm:inline">Archived SOPs</span>
@@ -318,11 +326,11 @@ function SOPsListContent() {
 
       {/* SOPs List */}
       {loading ? (
-        <div className="text-neutral-400 text-center py-8">Loading SOPs...</div>
+        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 text-center py-8">Loading SOPs...</div>
       ) : filteredSOPs.length === 0 ? (
-        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-          <FileText size={48} className="text-neutral-600 mx-auto mb-3" />
-          <p className="text-neutral-400">No SOPs found.</p>
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-neutral-700">
+          <FileText size={48} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-600 mx-auto mb-3" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">No SOPs found.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -333,22 +341,22 @@ function SOPsListContent() {
             const Icon = isExpanded ? ChevronUp : ChevronDown;
             
             return (
-              <div key={key} className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+              <div key={key} className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl border border-[rgb(var(--border))] dark:border-neutral-700 overflow-hidden">
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(key)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors"
+                  className="w-full flex items-center justify-between p-4 hover:bg-black/[0.03] dark:hover:bg-neutral-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${group.bgColor}`}>
                       <FileText size={20} className={group.iconColor} />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-lg font-semibold text-white">{group.label}</h3>
-                      <p className="text-sm text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">{group.label}</h3>
+                      <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
-                  <Icon size={20} className="text-neutral-400" />
+                  <Icon size={20} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
                 </button>
 
                 {/* SOPs List */}
@@ -364,10 +372,11 @@ function SOPsListContent() {
                         <div
                           id={`sop-row-${sop.id}`}
                           key={sop.id}
-                          className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors ${
+                          onClick={() => handleViewSOP(sop)}
+                          className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors cursor-pointer ${
                             isHighlighted
-                              ? 'bg-blue-500/20 border-2 border-blue-500/60 shadow-lg shadow-blue-500/20 animate-pulse'
-                              : 'bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700'
+                              ? 'bg-blue-500/20 dark:bg-blue-500/20 border-2 border-blue-500/60 dark:border-blue-500/60 shadow-lg shadow-blue-500/20 dark:shadow-blue-500/20 animate-pulse'
+                              : 'bg-white dark:bg-neutral-900/50 hover:bg-gray-50 dark:hover:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-700'
                           }`}
                         >
                           <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -375,10 +384,10 @@ function SOPsListContent() {
                               <StatusIcon size={20} className={statusBadge.text} />
                             </div>
                             <div className="text-left flex-1 min-w-0">
-                              <h4 className="text-white font-medium group-hover:text-magenta-400 transition-colors break-words">
+                              <h4 className="text-[rgb(var(--text-primary))] dark:text-white font-medium group-hover:text-[#EC4899] dark:group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
-                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-neutral-400 mt-1">
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 mt-1">
                                 <span className="whitespace-nowrap">{sop.ref_code}</span>
                                 <span className="hidden sm:inline">•</span>
                                 <span className="break-words">{sop.category}</span>
@@ -387,20 +396,20 @@ function SOPsListContent() {
                                   {sop.status}
                                 </span>
                               </div>
-                              <div className="text-xs text-neutral-500 mt-1 sm:hidden">
+                              <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500 mt-1 sm:hidden">
                                 Created {new Date(sop.created_at).toLocaleDateString()} by {sop.author}
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
-                            <div className="text-right text-sm text-neutral-400 hidden sm:block">
+                            <div className="text-right text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 hidden sm:block">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
                               <div className="text-xs">by {sop.author}</div>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => handleEditSOP(sop)}
-                                className="px-2 sm:px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                                onClick={(e) => handleEditSOP(sop, e)}
+                                className="px-2 sm:px-3 py-2 bg-[#EC4899]/20 dark:bg-magenta-500/20 hover:bg-[#EC4899]/30 dark:hover:bg-magenta-500/30 border border-[#EC4899]/40 dark:border-magenta-500/40 rounded-lg text-[#EC4899] dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
                               >
                                 <Edit size={16} />
                                 <span className="hidden sm:inline">Edit</span>
@@ -408,7 +417,7 @@ function SOPsListContent() {
                               <button
                                 onClick={() => handleArchiveSOP(sop.id)}
                                 disabled={archivingId === sop.id}
-                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 dark:border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] dark:hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                                 title="Archive SOP"
                               >
                                 {archivingId === sop.id ? (

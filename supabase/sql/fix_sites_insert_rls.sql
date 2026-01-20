@@ -160,3 +160,12 @@ SELECT
   public.is_user_admin_or_manager() AS is_admin_or_manager,
   public.is_user_owner_or_admin() AS is_owner_or_admin;
 
+
+
+
+
+
+
+
+
+

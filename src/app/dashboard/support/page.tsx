@@ -57,7 +57,7 @@ export default function SupportPage() {
               <h3 className="text-lg font-medium text-white mb-2">Email Support</h3>
               <p className="text-gray-400 text-sm mb-4">Get help via email within 24 hours</p>
               <a 
-                href="mailto:support@checkly.com"
+                href="mailto:support@opsly.app"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-pink-500/20 border border-pink-500/40 rounded-lg text-pink-300 hover:bg-pink-500/30 transition-colors"
               >
                 <Mail className="w-4 h-4" />

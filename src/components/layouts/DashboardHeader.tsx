@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { getMenuItemsByRole } from "@/components/layout/navigation";
 import { format } from "date-fns";
 import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
 import { ClockInButton } from "@/components/notifications/ClockInButton";
+import SiteSelector from "@/components/ui/SiteSelector";
+import CompanySelector from "@/components/ui/CompanySelector";
+import { BurgerMenu } from "@/components/layout/BurgerMenu";
 
 // Menu items removed - now using BurgerMenu component
 
@@ -21,7 +22,7 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { company, role } = useAppContext();
+  const { company, role, profile } = useAppContext();
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [isIncidentsMenuOpen, setIsIncidentsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -35,12 +36,35 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   const incidentsButtonRef = useRef<HTMLButtonElement>(null);
   const incidentsMenuRef = useRef<HTMLDivElement>(null);
   const burgerMenuButtonRef = useRef<HTMLButtonElement>(null);
-  const burgerMenuRef = useRef<HTMLDivElement>(null);
-  const companyLogo = (company?.logo_url as string | undefined) || "/assets/logo.svg";
+  const companyLogo = (company?.logo_url as string | undefined) || "/favicon.svg";
   
-  // Map role to burger menu role format
-  const burgerMenuRole = (role === 'Admin' ? 'admin' : role === 'Manager' ? 'manager' : 'team') as 'admin' | 'manager' | 'team';
-  const burgerMenuSections = getMenuItemsByRole(burgerMenuRole);
+  // Map role to burger menu role format (Owner should have same access as Admin)
+  // Use profile?.app_role as the source of truth since it's more reliable than role from context
+  const effectiveRole = profile?.app_role || role || 'Staff';
+  const burgerMenuRole = (effectiveRole === 'Admin' || effectiveRole === 'Owner' ? 'admin' : effectiveRole === 'Manager' ? 'manager' : 'team') as 'admin' | 'manager' | 'team';
+  
+  // Debug: Log role mapping immediately (not in useEffect)
+  if (mounted && profile) {
+    console.log('🔐 [DashboardHeader] Role mapping (immediate):', {
+      profileAppRole: profile?.app_role,
+      contextRole: role,
+      effectiveRole: effectiveRole,
+      mappedRole: burgerMenuRole,
+      profileExists: !!profile
+    });
+  }
+  
+  // Debug: Log role mapping in useEffect for changes
+  useEffect(() => {
+    if (mounted && profile) {
+      console.log('🔐 [DashboardHeader] Role mapping (useEffect):', {
+        profileAppRole: profile?.app_role,
+        contextRole: role,
+        effectiveRole: effectiveRole,
+        mappedRole: burgerMenuRole
+      });
+    }
+  }, [mounted, role, profile?.app_role, effectiveRole, burgerMenuRole, profile]);
 
   // Set mounted flag and initialize time after client-side mount
   useEffect(() => {
@@ -80,6 +104,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
     contractor: Users,
     sites: MapPin,
     users: Users,
+    companies: Building2,
     'business-hours': Clock,
     integrations: Plug,
   };
@@ -129,14 +154,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
       const isIncidentsButton = incidentsButtonRef.current?.contains(target);
       const isIncidentsMenu = incidentsMenuRef.current?.contains(target);
       const isBurgerMenuButton = burgerMenuButtonRef.current?.contains(target);
-      const isBurgerMenu = burgerMenuRef.current?.contains(target);
+      
+      // Note: BurgerMenu handles its own click-outside behavior, so we don't need to check it here
       
       if (!isIncidentsButton && !isIncidentsMenu) {
         setIsIncidentsMenuOpen(false);
-      }
-      
-      if (!isBurgerMenuButton && !isBurgerMenu) {
-        setIsBurgerMenuOpen(false);
       }
     };
 
@@ -369,8 +391,30 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         </div>
       </div>
 
-      {/* Right: Messages, Clock and Menu */}
+      {/* Right: Company & Site Selectors, Messages, Clock and Menu */}
       <div className="flex items-center gap-2 sm:gap-3 md:gap-4" suppressHydrationWarning>
+        {/* Global Company Selector - Only show if user has access to multiple companies */}
+        {profile?.id && (
+          <div className="hidden md:block">
+            <CompanySelector
+              useGlobalContext={true}
+              placeholder="Select Company"
+              className="h-9 min-w-[140px] text-sm"
+            />
+          </div>
+        )}
+        
+        {/* Global Site Selector - Only show if user has access to multiple sites */}
+        {profile?.company_id && (
+          <div className="hidden md:block">
+            <SiteSelector
+              useGlobalContext={true}
+              placeholder="Select Site"
+              className="h-9 min-w-[140px] text-sm"
+            />
+          </div>
+        )}
+        
         {/* Messages Button - Quick access */}
         <Link
           href="/dashboard/messaging"
@@ -417,151 +461,22 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Dropdown Menu - Matching Incidents Dropdown Style */}
-          {isBurgerMenuOpen && (() => {
-            const buttonRect = burgerMenuButtonRef.current?.getBoundingClientRect();
-            const buttonTop = buttonRect?.top ?? 0;
-            const buttonRight = buttonRect?.right ?? 0;
-            
-            const backdrop = mounted ? createPortal(
-              <div
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-                style={{ 
-                  zIndex: 9998,
-                  pointerEvents: 'auto',
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: '100vw',
-                  height: '100vh'
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsBurgerMenuOpen(false);
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onMouseUp={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onTouchStart={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              />,
-              document.body
-            ) : null;
-
-            return (
-              <>
-                {backdrop}
-                
-                {/* Dropdown Menu */}
-                {mounted ? createPortal(
-                  <div
-                    ref={burgerMenuRef}
-                    data-burger-menu="true"
-                    className="fixed"
-                    style={{ 
-                      zIndex: 9999,
-                      top: `${buttonTop + (buttonRect?.height ?? 0) + 8}px`,
-                      right: typeof window !== 'undefined' ? `${window.innerWidth - buttonRight}px` : '24px',
-                      pointerEvents: 'auto',
-                      position: 'fixed',
-                      maxHeight: 'calc(100vh - 100px)',
-                      overflowY: 'auto'
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    onMouseDown={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                  <div className="bg-[#0f1119] border border-pink-500/20 border-t-2 border-t-pink-500 rounded-xl backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.6)] min-w-[280px] max-w-[320px] py-3" style={{ backgroundColor: 'rgba(15, 17, 25, 0.98)' }}>
-                    {/* Menu Sections */}
-                    {burgerMenuSections.map((section, sectionIndex) => (
-                      <div key={section.id}>
-                        {/* Section Title */}
-                        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400 border-b border-white/[0.1] mb-2">
-                          {section.label}
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="space-y-1 px-2 mb-3">
-                          {section.items.map((item) => {
-                            const Icon = iconMap[item.id] || FileText;
-                            const isExactMatch = pathname === item.path;
-                            const isChildRoute = pathname.startsWith(item.path + "/");
-                            const longerMatchExists = section.items.some((other) =>
-                              other.path !== item.path &&
-                              other.path.length > item.path.length &&
-                              (pathname === other.path || pathname.startsWith(other.path + "/"))
-                            );
-                            const isActive = (isExactMatch || isChildRoute) && !longerMatchExists;
-
-                            // Handle signout differently - use button instead of Link
-                            if (item.id === 'signout') {
-                              return (
-                                <button
-                                  key={item.id}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setIsBurgerMenuOpen(false);
-                                    handleLogout();
-                                  }}
-                                  className="w-full block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08] text-left"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <Icon size={18} className="text-white/60" />
-                                    {item.label}
-                                  </div>
-                                </button>
-                              );
-                            }
-
-                            return (
-                              <Link
-                                key={item.id}
-                                href={item.path}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setIsBurgerMenuOpen(false);
-                                }}
-                                className={
-                                  isActive
-                                    ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
-                                    : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
-                                }
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Icon size={18} className={isActive ? "text-pink-400" : "text-white/60"} />
-                                  {item.label}
-                                </div>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>,
-                document.body
-                ) : null}
-              </>
-            );
-          })()}
+          {/* Burger Menu Component */}
+          {mounted && (
+            <>
+              {console.log('🔐 [DashboardHeader] Passing to BurgerMenu:', {
+                burgerMenuRole,
+                profileAppRole: profile?.app_role,
+                effectiveRole,
+                profileExists: !!profile
+              })}
+              <BurgerMenu
+                isOpen={isBurgerMenuOpen}
+                onClose={() => setIsBurgerMenuOpen(false)}
+                userRole={burgerMenuRole}
+              />
+            </>
+          )}
         </div>
       </div>
     </header>

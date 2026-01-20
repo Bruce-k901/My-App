@@ -107,3 +107,12 @@ If you're still getting errors after running the SQL fix:
 2. **Check browser console** - Look for the detailed error logs I added
 3. **Verify your profile** - Make sure you have `company_id` and `app_role` set correctly
 4. **Check for multiple policies** - The diagnostic script will show all policies on the sites table
+
+
+
+
+
+
+
+
+

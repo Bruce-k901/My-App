@@ -108,3 +108,12 @@ WHERE schemaname = 'public' AND tablename = 'profiles';
 4. **If profile doesn't exist**, re-add Shelly to the company
 
 The code now has multiple fallbacks, so even if RLS blocks, it should work via the API route. But it's better to fix the root cause (RLS policies).
+
+
+
+
+
+
+
+
+

@@ -69,7 +69,7 @@ export default function FilteredMessagesView({
           .in('id', channelIds);
 
         // Fetch sender profiles
-        const senderIds = [...new Set(messagesData.map((m: any) => m.sender_id))];
+        const senderIds = [...new Set(messagesData.map((m: any) => m.sender_profile_id || m.sender_id).filter(Boolean))];
         const { data: profilesData } = await supabase
           .from('profiles')
           .select('id, full_name, email')
@@ -80,30 +80,37 @@ export default function FilteredMessagesView({
         const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
 
         // Transform the data to match Message type
-        const transformedMessages: Message[] = messagesData.map((msg: any) => ({
-          id: msg.id,
-          channel_id: msg.channel_id,
-          sender_id: msg.sender_id,
-          content: msg.content,
-          message_type: msg.message_type,
-          file_url: msg.file_url,
-          file_name: msg.file_name,
-          file_size: msg.file_size,
-          file_type: msg.file_type,
-          metadata: msg.metadata || {},
-          created_at: msg.created_at,
-          updated_at: msg.updated_at || msg.created_at,
-          edited_at: msg.edited_at,
-          deleted_at: msg.deleted_at,
-          topic: msg.topic,
-          sender: profilesMap.get(msg.sender_id) ? {
-            id: profilesMap.get(msg.sender_id)!.id,
-            full_name: profilesMap.get(msg.sender_id)!.full_name,
-            email: profilesMap.get(msg.sender_id)!.email,
-          } : undefined,
-          // Add channel info to metadata for display
-          channel: channelsMap.get(msg.channel_id) || undefined,
-        } as Message & { channel?: { id: string; name: string | null } }));
+        const transformedMessages: Message[] = messagesData.map((msg: any) => {
+          const senderId = msg.sender_profile_id || msg.sender_id; // Backward compatibility
+          const senderProfile = senderId ? profilesMap.get(senderId) : null;
+          
+          return {
+            id: msg.id,
+            channel_id: msg.channel_id,
+            sender_profile_id: senderId || '',
+            sender_id: senderId, // Backward compatibility
+            content: msg.content,
+            message_type: msg.message_type,
+            file_url: msg.file_url,
+            file_name: msg.file_name,
+            file_size: msg.file_size,
+            file_type: msg.file_type,
+            metadata: msg.metadata || {},
+            created_at: msg.created_at,
+            updated_at: msg.updated_at || msg.created_at,
+            edited_at: msg.edited_at,
+            deleted_at: msg.deleted_at,
+            topic: msg.topic,
+            sender: senderProfile ? {
+              id: senderProfile.id,
+              full_name: senderProfile.full_name,
+              email: senderProfile.email,
+            } : undefined,
+            sender_name: senderProfile?.full_name || msg.metadata?.sender_name,
+            // Add channel info to metadata for display
+            channel: channelsMap.get(msg.channel_id) || undefined,
+          } as Message & { channel?: { id: string; name: string | null } };
+        });
 
         setMessages(transformedMessages);
       } catch (error) {

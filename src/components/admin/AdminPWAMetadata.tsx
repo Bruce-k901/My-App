@@ -50,7 +50,7 @@ export function AdminPWAMetadata() {
       if (!appleTitle && document.head) {
         appleTitle = document.createElement('meta');
         appleTitle.setAttribute('name', 'apple-mobile-web-app-title');
-        appleTitle.setAttribute('content', 'Checkly Admin');
+        appleTitle.setAttribute('content', 'Opsly Admin');
         document.head.appendChild(appleTitle);
       }
     } catch (e) {

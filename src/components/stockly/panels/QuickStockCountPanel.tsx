@@ -81,7 +81,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
 
   async function loadStockItems() {
     const { data } = await supabase
-      .schema('stockly')
       .from('stock_items')
       .select(`
         id, name, stock_unit,
@@ -159,7 +158,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
 
       // Create stock count record
       const { data: stockCount, error: countError } = await supabase
-        .schema('stockly')
         .from('stock_counts')
         .insert({
           company_id: companyId,
@@ -195,7 +193,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
       }));
 
       await supabase
-        .schema('stockly')
         .from('stock_count_items')
         .insert(items);
 
@@ -204,7 +201,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
         if (line.variance !== 0) {
           // Update stock level to counted amount
           const { data: existing } = await supabase
-            .schema('stockly')
             .from('stock_levels')
             .select('id')
             .eq('stock_item_id', line.stock_item_id)
@@ -213,7 +209,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
 
           if (existing) {
             await supabase
-              .schema('stockly')
               .from('stock_levels')
               .update({ 
                 quantity: line.counted,
@@ -225,7 +220,6 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
 
           // Record adjustment movement
           await supabase
-            .schema('stockly')
             .from('stock_movements')
             .insert({
               company_id: companyId,

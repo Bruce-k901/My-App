@@ -35,3 +35,15 @@ supabase db reset
 - ✅ No more direct queries = no more permission errors
 
 The RLS fix is just an extra safety net in case any direct queries are added in the future.
+
+
+
+
+
+
+
+
+
+
+
+

@@ -64,3 +64,15 @@ After applying the SQL fix, test:
 4. Update company information
 
 All should work without permission errors.
+
+
+
+
+
+
+
+
+
+
+
+

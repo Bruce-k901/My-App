@@ -329,25 +329,25 @@ const photoPaths = completionRecord?.evidence_attachments ||
   const StatusIcon = statusVariant === 'green' ? CheckCircle2 : statusVariant === 'yellow' ? Clock : AlertTriangle
   const variantStyles = {
     green: {
-      cardBorder: 'border-green-500/20',
-      cardBg: 'bg-green-500/5',
-      headerHover: 'hover:bg-green-500/10',
-      badge: 'bg-green-500/10 text-green-400 border-green-500/20',
-      expanded: 'border-green-500/20 bg-green-500/5'
+      cardBorder: 'border-green-500/20 dark:border-green-500/20',
+      cardBg: 'bg-green-500/5 dark:bg-green-500/5',
+      headerHover: 'hover:bg-green-500/10 dark:hover:bg-green-500/10',
+      badge: 'bg-green-500/10 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 dark:border-green-500/20',
+      expanded: 'border-green-500/20 dark:border-green-500/20 bg-green-500/5 dark:bg-green-500/5'
     },
     yellow: {
-      cardBorder: 'border-yellow-500/30',
-      cardBg: 'bg-yellow-500/5',
-      headerHover: 'hover:bg-yellow-500/10',
-      badge: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-      expanded: 'border-yellow-500/20 bg-yellow-500/5'
+      cardBorder: 'border-yellow-500/30 dark:border-yellow-500/30',
+      cardBg: 'bg-yellow-500/5 dark:bg-yellow-500/5',
+      headerHover: 'hover:bg-yellow-500/10 dark:hover:bg-yellow-500/10',
+      badge: 'bg-yellow-500/10 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border-yellow-500/20 dark:border-yellow-500/20',
+      expanded: 'border-yellow-500/20 dark:border-yellow-500/20 bg-yellow-500/5 dark:bg-yellow-500/5'
     },
     red: {
-      cardBorder: 'border-red-500/30',
-      cardBg: 'bg-red-500/5',
-      headerHover: 'hover:bg-red-500/10',
-      badge: 'bg-red-500/10 text-red-400 border-red-500/20',
-      expanded: 'border-red-500/20 bg-red-500/5'
+      cardBorder: 'border-red-500/30 dark:border-red-500/30',
+      cardBg: 'bg-red-500/5 dark:bg-red-500/5',
+      headerHover: 'hover:bg-red-500/10 dark:hover:bg-red-500/10',
+      badge: 'bg-red-500/10 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 dark:border-red-500/20',
+      expanded: 'border-red-500/20 dark:border-red-500/20 bg-red-500/5 dark:bg-red-500/5'
     }
   } as const
   const variantStyle = variantStyles[statusVariant]
@@ -392,11 +392,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
       >
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
               {task.custom_name || task.template?.name || 'Untitled Task'}
             </h3>
             {task.status === 'missed' && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 bg-red-500/20 text-red-300 border-red-500/40">
+              <span className="px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 bg-red-500/20 dark:bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/40 dark:border-red-500/40">
                 <AlertTriangle className="w-3 h-3" />
                 Missed
               </span>
@@ -406,22 +406,22 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {statusLabel.toUpperCase()}
             </span>
             {task.template?.category && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium border border-white/20 bg-white/5 text-white/70">
+              <span className="px-2 py-1 rounded-full text-xs font-medium border border-[rgb(var(--border))] dark:border-white/20 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-white/70">
                 {task.template.category.replace('_', ' ').toUpperCase()}
               </span>
             )}
             {task.template?.frequency && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-300">
+              <span className="px-2 py-1 rounded-full text-xs font-medium border border-blue-500/30 dark:border-blue-500/30 bg-blue-500/10 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300">
                 {task.template.frequency.charAt(0).toUpperCase() + task.template.frequency.slice(1)}
               </span>
             )}
           </div>
           
-          <div className="flex items-center gap-4 text-sm text-white/60 mb-3">
+          <div className="flex items-center gap-4 text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-3">
             {task.completed_by_profile && (
               <div className="flex items-center gap-1">
                 <span>Completed by:</span>
-                <span className="text-white/80 font-medium">{task.completed_by_profile.full_name || task.completed_by_profile.email || 'Unknown'}</span>
+                <span className="text-[rgb(var(--text-primary))] dark:text-white/80 font-medium">{task.completed_by_profile.full_name || task.completed_by_profile.email || 'Unknown'}</span>
               </div>
             )}
             {(completionRecord?.completed_at || task.completed_at) && (
@@ -433,11 +433,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
           </div>
 
           {templateNote && (
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-100/90 text-sm p-4 flex gap-3 mb-4">
-              <Lightbulb className="w-5 h-5 shrink-0 text-amber-300" />
+            <div className="rounded-lg border border-amber-500/20 dark:border-amber-500/20 bg-amber-500/10 dark:bg-amber-500/10 text-amber-900 dark:text-amber-100/90 text-sm p-4 flex gap-3 mb-4">
+              <Lightbulb className="w-5 h-5 shrink-0 text-amber-700 dark:text-amber-300" />
               <div>
-                <p className="font-semibold text-amber-200">Template note</p>
-                <p className="whitespace-pre-wrap leading-relaxed text-amber-100/90">{templateNote}</p>
+                <p className="font-semibold text-amber-800 dark:text-amber-200">Template note</p>
+                <p className="whitespace-pre-wrap leading-relaxed text-amber-900 dark:text-amber-100/90">{templateNote}</p>
               </div>
             </div>
           )}
@@ -448,15 +448,15 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {/* Temperature preview */}
               {temperatures.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Thermometer className="w-4 h-4 text-orange-400" />
-                  <span className="text-white/80">
+                  <Thermometer className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
                     {previewTemps.map((t: any, i: number) => (
                       <span key={i}>
                         {t.equipment}: <span className="font-medium">{t.temp}°C</span>
                         {i < previewTemps.length - 1 || hasMoreTemps ? ', ' : ''}
                       </span>
                     ))}
-                    {hasMoreTemps && <span className="text-white/60">+{temperatures.length - 3} more</span>}
+                    {hasMoreTemps && <span className="text-[rgb(var(--text-secondary))] dark:text-white/60">+{temperatures.length - 3} more</span>}
                   </span>
                 </div>
               )}
@@ -464,8 +464,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {/* Checklist preview */}
               {checklistItems.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-white/80">
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
                     {completedChecklistCount} of {checklistItems.length} checklist items completed
                   </span>
                 </div>
@@ -474,8 +474,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {/* Yes/No checklist preview */}
               {yesNoChecklistItems.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-white/80">
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
                     {yesNoChecklistItems.length} yes/no question{yesNoChecklistItems.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -485,11 +485,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {passFailResult && (
                 <div className="flex items-center gap-2 text-sm">
                   {passFailResult === 'pass' ? (
-                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                   ) : (
-                    <X className="w-4 h-4 text-red-400" />
+                    <X className="w-4 h-4 text-red-600 dark:text-red-400" />
                   )}
-                  <span className="text-white/80 font-medium">Result: {passFailResult.toUpperCase()}</span>
+                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80 font-medium">Result: {passFailResult.toUpperCase()}</span>
                 </div>
               )}
             </div>
@@ -498,9 +498,9 @@ const photoPaths = completionRecord?.evidence_attachments ||
         
         <div className="ml-4 flex items-center">
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-white/60" />
+            <ChevronUp className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/60" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-white/60" />
+            <ChevronDown className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/60" />
           )}
         </div>
       </button>
@@ -512,7 +512,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
             {temperatures.length > 0 && (
               <div>
-                <h4 className="text-lg font-bold text-white mb-4">Assets Checked</h4>
+                <h4 className="text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Assets Checked</h4>
                 <div className="space-y-3">
                   {temperatures.map((temp: any, idx: number) => {
                     const statusColor = temp.status === 'failed' 

@@ -48,3 +48,12 @@ FROM pg_indexes
 WHERE schemaname = 'public'
 AND tablename = 'waste_logs';
 
+
+
+
+
+
+
+
+
+

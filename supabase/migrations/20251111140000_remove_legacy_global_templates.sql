@@ -3,6 +3,7 @@
 -- Description: Removes legacy global compliance templates that were seeded in
 --              the original prototype so the feature-module templates can take precedence.
 -- ============================================================================
+-- Note: This migration will be skipped if required tables don't exist yet
 
 DO $$
 DECLARE
@@ -19,18 +20,28 @@ DECLARE
     'waste_management_recycling_audit'
   ];
 BEGIN
-  -- Remove any template fields linked to the legacy templates first to maintain referential integrity
-  DELETE FROM public.template_fields
-  WHERE template_id IN (
-    SELECT id
-    FROM public.task_templates
-    WHERE company_id IS NULL
-      AND slug = ANY(legacy_slugs)
-  );
+  -- Only proceed if required tables exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
 
-  -- Remove the legacy template rows
-  DELETE FROM public.task_templates
-  WHERE company_id IS NULL
-    AND slug = ANY(legacy_slugs);
-END
-$$;
+    -- Remove any template fields linked to the legacy templates first to maintain referential integrity
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      DELETE FROM public.template_fields
+      WHERE template_id IN (
+        SELECT id
+        FROM public.task_templates
+        WHERE company_id IS NULL
+          AND slug = ANY(legacy_slugs)
+      );
+    END IF;
+
+    -- Remove the legacy template rows
+    DELETE FROM public.task_templates
+    WHERE company_id IS NULL
+      AND slug = ANY(legacy_slugs);
+
+    RAISE NOTICE 'Removed legacy global templates';
+
+  ELSE
+    RAISE NOTICE '⚠️ Required table (task_templates) does not exist yet - skipping legacy template removal';
+  END IF;
+END $$;

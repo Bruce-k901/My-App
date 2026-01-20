@@ -128,7 +128,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Shield className="w-5 h-5 text-[#EC4899]" />
             </div>
             <div>
-              <div className="text-white font-semibold">Checkly Admin</div>
+              <div className="text-white font-semibold">Opsly Admin</div>
               <div className="text-white/40 text-xs">Platform Control</div>
             </div>
           </div>

@@ -151,8 +151,8 @@ export default function CompletedTasksPage() {
         .eq('company_id', companyId)
         .in('status', ['completed', 'missed']);
 
-      // Filter by site if available
-      if (siteId) {
+      // Filter by site if available and valid (not "all")
+      if (siteId && siteId !== 'all') {
         console.log('🔍 Filtering by site:', siteId);
         query = query.eq('site_id', siteId);
       } else {
@@ -402,26 +402,26 @@ export default function CompletedTasksPage() {
   }
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Completed Tasks</h1>
-        <p className="text-white/60">View all completed and missed task records</p>
+        <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Completed Tasks</h1>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View all completed and missed task records</p>
         
         {/* Debug Info */}
         {debugInfo && (
-          <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-lg text-sm">
-            <p className="text-white/80 font-semibold mb-2">Debug Info:</p>
-            <ul className="space-y-1 text-white/60">
+          <div className="mt-4 p-4 bg-black/[0.05] dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-sm">
+            <p className="text-[rgb(var(--text-primary))] dark:text-white/80 font-semibold mb-2">Debug Info:</p>
+            <ul className="space-y-1 text-[rgb(var(--text-secondary))] dark:text-white/60">
               <li>Query Executed: {debugInfo.queryExecuted ? '✅ Yes' : '❌ No'}</li>
               <li>Tasks Found: {debugInfo.tasksFound}</li>
               <li>Company ID: {debugInfo.companyId || 'Not set'}</li>
               <li>Site ID: {debugInfo.siteId || 'All sites'}</li>
               {debugInfo.error && (
-                <li className="text-red-400">Error: {debugInfo.error}</li>
+                <li className="text-red-600 dark:text-red-400">Error: {debugInfo.error}</li>
               )}
             </ul>
-            <p className="text-white/40 text-xs mt-2">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-xs mt-2">
               Check browser console (F12) for detailed logs
             </p>
           </div>
@@ -432,13 +432,13 @@ export default function CompletedTasksPage() {
       {loading ? (
         <div className="mt-8 text-center py-12">
           <Loader2 className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-spin" />
-          <p className="text-white/60">Loading completed tasks...</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading completed tasks...</p>
         </div>
       ) : completedTasks.length === 0 ? (
         <div className="mt-8 text-center py-12">
-          <AlertCircle className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60 mb-2">No completed tasks yet</p>
-          <p className="text-white/40 text-sm">Completed and missed tasks will appear here</p>
+          <AlertCircle className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No completed tasks yet</p>
+          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">Completed and missed tasks will appear here</p>
         </div>
       ) : (
         <div className="mt-8 space-y-4">

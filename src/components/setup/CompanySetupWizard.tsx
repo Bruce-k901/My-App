@@ -251,7 +251,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
       const { data: existing } = await supabase
         .from("companies")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("profile_id", user.id)
         .maybeSingle();
       if (!existing) {
         showToast({ title: "No company found", description: "Please create your business on the signup page.", type: "error" });

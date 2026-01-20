@@ -17,6 +17,8 @@ type Notification = {
   severity: "info" | "warning" | "critical" | string;
   read: boolean;
   recipient_role: "staff" | "manager" | "admin" | string;
+  user_id?: string;
+  metadata?: any;
   created_at: string;
   status?: string;
 };
@@ -66,6 +68,7 @@ function NotificationsInner() {
   const { showToast } = useToast();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
   const limit = useMemo(() => 50, []);
 
   useEffect(() => {
@@ -117,6 +120,31 @@ function NotificationsInner() {
     await supabase.from("notifications").update({ read: true }).eq("id", id);
   };
 
+  const acceptOpenShift = async (note: Notification) => {
+    const meta = note?.metadata || {};
+    const isOffer = meta?.kind === "open_shift_offer" && typeof meta?.shift_id === "string";
+    if (!isOffer) return;
+
+    setAcceptingId(note.id);
+    try {
+      const { data, error } = await (supabase as any).rpc("claim_open_shift", {
+        p_shift_id: meta.shift_id,
+      });
+      if (error) throw error;
+
+      await markSeen(note.id);
+      showToast("Shift accepted and added to your rota.", "info");
+      // Optional: if the server returned details, you could display them
+      console.debug("claim_open_shift result:", data);
+    } catch (err: any) {
+      const msg = err?.message || "Failed to accept shift";
+      showToast(msg, "error");
+      console.error("Failed to accept open shift:", err);
+    } finally {
+      setAcceptingId(null);
+    }
+  };
+
   return (
     <section className="px-6 py-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -142,6 +170,16 @@ function NotificationsInner() {
                 </div>
                 <p className="text-sm text-slate-300 mt-1 whitespace-pre-line">{n.message}</p>
                 <div className="mt-2 flex items-center gap-3">
+                  {n?.metadata?.kind === "open_shift_offer" && typeof n?.metadata?.shift_id === "string" && (
+                    <button
+                      disabled={acceptingId === n.id}
+                      onClick={() => acceptOpenShift(n)}
+                      className="text-xs px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:hover:shadow-none"
+                      title="Accept this open shift"
+                    >
+                      {acceptingId === n.id ? "Accepting…" : "Accept shift"}
+                    </button>
+                  )}
                   {!n.read && (
                     <button onClick={() => markSeen(n.id)} className="text-xs text-slate-300 hover:text-white underline">
                       Mark as read

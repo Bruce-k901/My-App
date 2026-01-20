@@ -56,7 +56,7 @@ export async function getCurrentShiftStatus(): Promise<ShiftStatus> {
     const { data: activeShift } = await supabase
       .from('staff_attendance')
       .select('site_id, clock_in_time')
-      .eq('user_id', profile.id)
+      .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .order('clock_in_time', { ascending: false })
@@ -112,8 +112,8 @@ export async function shouldReceiveNotification(
     if (!profile) return false;
 
     // Managers and admins always receive notifications
-    const managerRoles = ['Manager', 'General Manager', 'Admin', 'Owner'];
-    if (profile.app_role && managerRoles.includes(profile.app_role)) {
+    const managerRoles = ['manager', 'general_manager', 'admin', 'owner'];
+    if (profile.app_role && managerRoles.includes(profile.app_role.toLowerCase())) {
       return true;
     }
 
@@ -121,7 +121,7 @@ export async function shouldReceiveNotification(
     const { data: activeShift } = await supabase
       .from('staff_attendance')
       .select('site_id')
-      .eq('user_id', userId)
+      .eq('profile_id', userId)
       .eq('shift_status', 'on_shift')
       .eq('site_id', siteId)
       .is('clock_out_time', null)
@@ -154,13 +154,13 @@ export async function getUsersToNotify(siteId: string): Promise<string[]> {
     // Get all staff currently on shift at this site
     const { data: staffOnShift } = await supabase
       .from('staff_attendance')
-      .select('user_id')
+      .select('profile_id')
       .eq('site_id', siteId)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null);
 
     if (staffOnShift) {
-      userIds.push(...staffOnShift.map(s => s.user_id));
+      userIds.push(...staffOnShift.map(s => s.profile_id));
     }
 
     // Get all managers/admins for the company (they always receive notifications)
@@ -209,8 +209,8 @@ export async function buildTaskQueryFilter(): Promise<TaskFilterParams> {
     }
 
     // Managers and admins see all tasks
-    const managerRoles = ['Manager', 'General Manager', 'Admin', 'Owner'];
-    if (profile.app_role && managerRoles.includes(profile.app_role)) {
+    const managerRoles = ['manager', 'general_manager', 'admin', 'owner'];
+    if (profile.app_role && managerRoles.includes(profile.app_role.toLowerCase())) {
       return { showAll: true };
     }
 
