@@ -8,9 +8,6 @@ import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Filter, Mail, Us
 import type { ComplianceMatrixEntry } from '@/types/teamly';
 import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 
-// Prevent static generation - this page must be rendered dynamically
-export const dynamic = 'force-dynamic';
-
 interface Employee {
   id: string;
   name: string;
@@ -31,6 +28,7 @@ function ComplianceMatrixPage() {
   const [loading, setLoading] = useState(true);
   const [showMandatoryOnly, setShowMandatoryOnly] = useState(true);
   const [viewError, setViewError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const [assignmentModal, setAssignmentModal] = useState<{
     isOpen: boolean;
     profileId: string;
@@ -40,6 +38,11 @@ function ComplianceMatrixPage() {
     siteId?: string | null;
     siteName?: string | null;
   } | null>(null);
+
+  // Prevent SSR hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (profile?.company_id && profile?.id) {
