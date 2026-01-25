@@ -10,7 +10,6 @@ import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 
 // Prevent static generation - this page must be rendered dynamically
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 interface Employee {
   id: string;
