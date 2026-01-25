@@ -8,6 +8,9 @@ import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Filter, Mail, Us
 import type { ComplianceMatrixEntry } from '@/types/teamly';
 import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 
+// Force dynamic rendering to avoid build issues
+export const dynamic = 'force-dynamic';
+
 interface Employee {
   id: string;
   name: string;
