@@ -9,7 +9,7 @@ import { GitBranch, Plus, Edit2, Trash2, X, MoveUp, MoveDown, ArrowLeft } from '
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-type WorkflowType = 'rota' | 'payroll' | 'leave' | 'expenses' | 'time_off' | 'other';
+type WorkflowType = 'rota' | 'payroll' | 'leave' | 'expenses' | 'time_off' | 'stock_count' | 'other';
 type ApprovalRole = 'Manager' | 'Area Manager' | 'Regional Manager' | 'Operations Manager' | 'Finance Manager' | 'HR Manager' | 'Owner' | 'Admin' | 'Super Admin';
 
 interface ApprovalWorkflow {
@@ -45,6 +45,11 @@ export default function ApprovalWorkflowsPage() {
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [workflowIsActive, setWorkflowIsActive] = useState(true);
   const [workflowSteps, setWorkflowSteps] = useState<Omit<ApprovalStep, 'id' | 'workflow_id' | 'step_order'>[]>([]);
+  
+  // Stock count approval settings
+  const [stockCountApprovalRole, setStockCountApprovalRole] = useState<ApprovalRole>('Regional Manager');
+  const [allowFallbackApproval, setAllowFallbackApproval] = useState(true);
+  const [loadingSettings, setLoadingSettings] = useState(false);
 
   const workflowTypes: { value: WorkflowType; label: string }[] = [
     { value: 'rota', label: 'Rota/Schedule' },
@@ -52,6 +57,7 @@ export default function ApprovalWorkflowsPage() {
     { value: 'leave', label: 'Leave Requests' },
     { value: 'expenses', label: 'Expenses' },
     { value: 'time_off', label: 'Time Off' },
+    { value: 'stock_count', label: 'Stock Counts' },
     { value: 'other', label: 'Other' },
   ];
 
@@ -70,8 +76,114 @@ export default function ApprovalWorkflowsPage() {
   useEffect(() => {
     if (profile?.company_id) {
       loadWorkflows();
+      loadStockCountSettings();
     }
   }, [profile]);
+
+  async function loadStockCountSettings() {
+    if (!profile?.company_id) return;
+
+    try {
+      setLoadingSettings(true);
+      
+      // Get stock count workflow if it exists
+      const { data: stockCountWorkflow } = await supabase
+        .from('approval_workflows')
+        .select('id, steps:approval_steps(*)')
+        .eq('company_id', profile.company_id)
+        .eq('type', 'stock_count')
+        .eq('is_active', true)
+        .single();
+
+      if (stockCountWorkflow && stockCountWorkflow.steps && stockCountWorkflow.steps.length > 0) {
+        const firstStep = (stockCountWorkflow.steps as any[])[0];
+        if (firstStep.approver_role) {
+          setStockCountApprovalRole(firstStep.approver_role as ApprovalRole);
+        }
+      }
+
+      // Load fallback setting from company settings or use default
+      // For now, default to true - can be stored in company_settings table later
+      setAllowFallbackApproval(true);
+    } catch (error) {
+      console.error('Error loading stock count settings:', error);
+    } finally {
+      setLoadingSettings(false);
+    }
+  }
+
+  async function saveStockCountSettings() {
+    if (!profile?.company_id) return;
+
+    try {
+      setLoadingSettings(true);
+
+      // Find or create stock count workflow
+      const { data: existingWorkflow } = await supabase
+        .from('approval_workflows')
+        .select('id')
+        .eq('company_id', profile.company_id)
+        .eq('type', 'stock_count')
+        .single();
+
+      let workflowId: string;
+
+      if (existingWorkflow) {
+        workflowId = existingWorkflow.id;
+        // Update workflow
+        await supabase
+          .from('approval_workflows')
+          .update({
+            is_active: true,
+          })
+          .eq('id', workflowId);
+
+        // Delete old steps
+        await supabase
+          .from('approval_steps')
+          .delete()
+          .eq('workflow_id', workflowId);
+      } else {
+        // Create new workflow
+        const { data: newWorkflow, error: createError } = await supabase
+          .from('approval_workflows')
+          .insert({
+            company_id: profile.company_id,
+            name: 'Stock Count Approval',
+            type: 'stock_count',
+            description: 'Approval workflow for stock counts',
+            is_active: true,
+          })
+          .select('id')
+          .single();
+
+        if (createError) throw createError;
+        workflowId = newWorkflow.id;
+      }
+
+      // Create approval step
+      await supabase
+        .from('approval_steps')
+        .insert({
+          workflow_id: workflowId,
+          step_order: 1,
+          step_name: 'Stock Count Approval',
+          approver_role: stockCountApprovalRole,
+          is_required: true,
+        });
+
+      // Save fallback setting (can be stored in company_settings table)
+      // For now, we'll use the workflow metadata or a separate settings table
+      // This is a placeholder - actual implementation may vary
+
+      toast.success('Stock count approval settings saved');
+    } catch (error: any) {
+      console.error('Error saving stock count settings:', error);
+      toast.error('Failed to save stock count approval settings');
+    } finally {
+      setLoadingSettings(false);
+    }
+  }
 
   async function loadWorkflows() {
     try {
@@ -707,6 +819,84 @@ export default function ApprovalWorkflowsPage() {
             </Button>
           </div>
         )}
+      </div>
+
+      {/* Stock Count Approval Settings */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Stock Count Approval Settings</h2>
+        <p className="text-sm text-neutral-400 mb-6">
+          Configure how stock counts are approved in your organization
+        </p>
+
+        <div className="space-y-6">
+          {/* Approval Hierarchy */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
+              Approval Hierarchy
+            </label>
+            <Select
+              value={stockCountApprovalRole}
+              onValueChange={(val) => setStockCountApprovalRole(val as ApprovalRole)}
+              options={[
+                { label: 'Regional Manager', value: 'Regional Manager' },
+                { label: 'Area Manager', value: 'Area Manager' },
+                { label: 'General Manager', value: 'Manager' },
+                { label: 'Site Manager', value: 'Manager' },
+              ]}
+              placeholder="Select approver role"
+            />
+            <p className="text-xs text-neutral-500 mt-2">
+              Stock counts will be sent to this role for approval based on your organizational hierarchy
+            </p>
+          </div>
+
+          {/* Fallback Behavior */}
+          <div>
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="allowFallback"
+                checked={allowFallbackApproval}
+                onChange={(e) => setAllowFallbackApproval(e.target.checked)}
+                className="w-4 h-4 mt-1"
+              />
+              <div className="flex-1">
+                <label htmlFor="allowFallback" className="block text-sm font-medium text-neutral-300 mb-1">
+                  Allow Counter or Site Manager to Approve
+                </label>
+                <p className="text-xs text-neutral-500">
+                  If no approver is found in the hierarchy, allow the counter (person who marked it ready) or site manager to approve the stock count. 
+                  If disabled, defaults to Owner/Admin.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Auto-Approve Timer */}
+          <div className="bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/30 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
+              Auto-Approve Timer
+            </h3>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mb-2">
+              <strong>24 hours</strong> - Stock counts will automatically approve after 24 hours if no human interaction has taken place.
+            </p>
+            <p className="text-xs text-amber-600 dark:text-amber-500">
+              This ensures stock on hand figures are updated promptly to maintain inventory accuracy. 
+              The counter will be notified when auto-approval occurs.
+            </p>
+          </div>
+
+          {/* Save Button */}
+          <div className="flex justify-end">
+            <Button 
+              onClick={saveStockCountSettings} 
+              disabled={loadingSettings}
+              className="min-w-[120px]"
+            >
+              {loadingSettings ? 'Saving...' : 'Save Settings'}
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Workflow Modal */}

@@ -7,6 +7,18 @@ DO $$
 DECLARE
   v_eag_company_id UUID;
 BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+  ) THEN
+    RAISE NOTICE 'companies or ingredients_library tables do not exist - skipping clear_eag_ingredients migration';
+    RETURN;
+  END IF;
+
   -- Find EAG company by name (case-insensitive)
   SELECT id INTO v_eag_company_id
   FROM public.companies

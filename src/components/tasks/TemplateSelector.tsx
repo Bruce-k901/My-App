@@ -123,7 +123,7 @@ export default function TemplateSelector({
 
   return (
     <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm font-medium text-white/80">
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white/80">
         <FileText className="w-4 h-4 text-[#EC4899]" />
         Teamly Meeting Template (Optional)
       </label>
@@ -135,28 +135,28 @@ export default function TemplateSelector({
           const template = templates.find(t => t.id === templateId);
           onChange(templateId, template?.name);
         }}
-        className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer"
+        className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'right 0.75rem center',
           paddingRight: '2.5rem',
         }}
       >
-        <option value="" className="bg-[#0B0D13] text-white">
+        <option value="" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">
           Select a template...
         </option>
         {loading ? (
-          <option disabled className="bg-[#0B0D13] text-white">
+          <option disabled className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">
             Loading templates...
           </option>
         ) : templates.length === 0 ? (
-          <option disabled className="bg-[#0B0D13] text-white">
+          <option disabled className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">
             No templates available
           </option>
         ) : (
           templates.map((template) => (
-            <option key={template.id} value={template.id} className="bg-[#0B0D13] text-white">
+            <option key={template.id} value={template.id} className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">
               {template.name}
             </option>
           ))
@@ -164,13 +164,13 @@ export default function TemplateSelector({
       </select>
 
       {selectedTemplate && selectedTemplate.description && (
-        <p className="text-xs text-white/50 mt-1">
+        <p className="text-xs text-gray-600 dark:text-white/50 mt-1">
           {selectedTemplate.description}
         </p>
       )}
 
       {selectedTemplate && (
-        <p className="text-xs text-white/40 mt-1 italic">
+        <p className="text-xs text-gray-500 dark:text-white/40 mt-1 italic">
           Pre-meeting sections will be available after creation
         </p>
       )}

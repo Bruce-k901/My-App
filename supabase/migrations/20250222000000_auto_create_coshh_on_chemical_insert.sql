@@ -31,55 +31,75 @@ BEGIN
 END $$;
 
 -- Step 2: Create function to auto-create COSHH data sheet entry
-CREATE OR REPLACE FUNCTION auto_create_coshh_for_chemical()
-RETURNS TRIGGER AS $$
+-- Only proceed if required tables exist
+DO $$
 BEGIN
-  -- Only create if one doesn't already exist for this chemical
+  -- Check if required tables exist
   IF NOT EXISTS (
-    SELECT 1 
-    FROM coshh_data_sheets 
-    WHERE chemical_id = NEW.id 
-      AND status = 'Active'
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'chemicals_library'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'coshh_data_sheets'
   ) THEN
-    INSERT INTO coshh_data_sheets (
-      company_id,
-      chemical_id,
-      product_name,
-      manufacturer,
-      document_type,
-      file_name,
-      file_url,
-      status,
-      verification_status,
-      created_at,
-      updated_at
-    ) VALUES (
-      NEW.company_id,
-      NEW.id,
-      NEW.product_name,
-      NEW.manufacturer,
-      'COSHH',
-      NULL, -- file_name will be set when user uploads
-      NULL, -- file_url will be set when user uploads
-      'Active',
-      'Pending',
-      NOW(),
-      NOW()
-    );
+    RAISE NOTICE 'chemicals_library or coshh_data_sheets tables do not exist - skipping auto_create_coshh_for_chemical function and trigger';
+    RETURN;
   END IF;
-  
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
--- Step 3: Create trigger on chemicals_library insert
-DROP TRIGGER IF EXISTS trg_auto_create_coshh_on_chemical_insert ON chemicals_library;
+  -- Create function using EXECUTE
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION auto_create_coshh_for_chemical()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      -- Only create if one doesn't already exist for this chemical
+      IF NOT EXISTS (
+        SELECT 1 
+        FROM coshh_data_sheets 
+        WHERE chemical_id = NEW.id 
+          AND status = 'Active'
+      ) THEN
+        INSERT INTO coshh_data_sheets (
+          company_id,
+          chemical_id,
+          product_name,
+          manufacturer,
+          document_type,
+          file_name,
+          file_url,
+          status,
+          verification_status,
+          created_at,
+          updated_at
+        ) VALUES (
+          NEW.company_id,
+          NEW.id,
+          NEW.product_name,
+          NEW.manufacturer,
+          'COSHH',
+          NULL, -- file_name will be set when user uploads
+          NULL, -- file_url will be set when user uploads
+          'Active',
+          'Pending',
+          NOW(),
+          NOW()
+        );
+      END IF;
+      
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func1$;
 
-CREATE TRIGGER trg_auto_create_coshh_on_chemical_insert
-  AFTER INSERT ON chemicals_library
-  FOR EACH ROW
-  EXECUTE FUNCTION auto_create_coshh_for_chemical();
+  -- Step 3: Create trigger on chemicals_library insert
+  DROP TRIGGER IF EXISTS trg_auto_create_coshh_on_chemical_insert ON chemicals_library;
 
--- Step 4: Add comment explaining the trigger
-COMMENT ON FUNCTION auto_create_coshh_for_chemical() IS 
-  'Automatically creates a placeholder COSHH data sheet entry when a chemical is added to the library. The user can then upload the actual data sheet file.';
+  CREATE TRIGGER trg_auto_create_coshh_on_chemical_insert
+    AFTER INSERT ON chemicals_library
+    FOR EACH ROW
+    EXECUTE FUNCTION auto_create_coshh_for_chemical();
+
+  -- Step 4: Add comment explaining the trigger
+  COMMENT ON FUNCTION auto_create_coshh_for_chemical() IS 
+    'Automatically creates a placeholder COSHH data sheet entry when a chemical is added to the library. The user can then upload the actual data sheet file.';
+
+END $$;

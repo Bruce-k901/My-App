@@ -21,7 +21,7 @@ export function ChecklyMobileNav({ onMoreClick }: MobileNavProps = {}) {
     {
       icon: CheckSquare,
       label: 'Tasks',
-      href: '/dashboard/tasks/active',
+      href: '/dashboard/tasks/my-tasks',
       active: pathname?.startsWith('/dashboard/tasks'),
     },
     {

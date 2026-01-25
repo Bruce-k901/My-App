@@ -64,7 +64,7 @@ function timeAgo(iso: string) {
 }
 
 function NotificationsInner() {
-  const { companyId, siteId, role } = useAppContext();
+  const { companyId, siteId, role, userId } = useAppContext();
   const { showToast } = useToast();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -88,6 +88,10 @@ function NotificationsInner() {
         .limit(limit);
       // For non-admin roles, prefer site-scoped view if available
       if (siteId && role !== "Admin") q = q.eq("site_id", siteId);
+      // Filter by user_id if available (show user-specific notifications)
+      if (userId) {
+        q = q.or(`user_id.eq.${userId},user_id.is.null`);
+      }
       const { data } = await q;
       if (!mounted) return;
       setItems((data || []) as Notification[]);
@@ -104,6 +108,8 @@ function NotificationsInner() {
         (payload) => {
           const note = payload.new as Notification;
           if (note.company_id !== companyId) return;
+          // Only show toast for notifications assigned to current user or unassigned
+          if (userId && note.user_id && note.user_id !== userId) return;
           setItems((prev) => [note, ...prev].slice(0, limit));
           showToast(`${note.title}: ${note.message}`, note.severity === "critical" ? "error" : note.severity === "warning" ? "warning" : "info");
         },
@@ -113,7 +119,7 @@ function NotificationsInner() {
       supabase.removeChannel(channel);
       mounted = false;
     };
-  }, [companyId, siteId, role, limit, showToast]);
+  }, [companyId, siteId, role, userId, limit, showToast]);
 
   const markSeen = async (id: string) => {
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));

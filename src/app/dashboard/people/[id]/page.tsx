@@ -734,7 +734,7 @@ export default function EmployeeProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     );
   }
@@ -742,11 +742,11 @@ export default function EmployeeProfilePage() {
   if (!employee) {
     return (
       <div className="text-center py-12">
-        <User className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">Employee not found</h3>
+        <User className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-theme-primary mb-2">Employee not found</h3>
         <Link
           href="/dashboard/people/employees"
-          className="text-[#EC4899] hover:text-[#EC4899]/80"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
         >
           Back to employees
         </Link>
@@ -759,17 +759,17 @@ export default function EmployeeProfilePage() {
       {/* Back Button */}
       <Link
         href="/dashboard/people/employees"
-        className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-theme-secondary hover:text-theme-primary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Employees
       </Link>
 
       {/* Header Card */}
-      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-button backdrop-blur-sm border border-theme rounded-lg p-6">
         <div className="flex flex-col md:flex-row md:items-start gap-6">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white text-2xl font-semibold flex-shrink-0">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-white text-2xl font-semibold flex-shrink-0">
             {employee.avatar_url ? (
               <img 
                 src={employee.avatar_url} 
@@ -784,7 +784,7 @@ export default function EmployeeProfilePage() {
           {/* Info */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-white">{employee.full_name}</h1>
+              <h1 className="text-2xl font-bold text-theme-primary">{employee.full_name}</h1>
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs rounded-full ${getRoleColor(employee.app_role)}`}>
                   {employee.app_role}
@@ -795,30 +795,30 @@ export default function EmployeeProfilePage() {
               </div>
             </div>
             
-            <p className="text-neutral-400 mb-1">{employee.position_title || 'No title'}</p>
+            <p className="text-theme-secondary mb-1">{employee.position_title || 'No title'}</p>
             {employee.department && (
-              <p className="text-neutral-500 text-sm">{employee.department}</p>
+              <p className="text-theme-tertiary text-sm">{employee.department}</p>
             )}
             
             <div className="flex flex-wrap gap-4 mt-4 text-sm">
-              <div className="flex items-center gap-2 text-neutral-400">
+              <div className="flex items-center gap-2 text-theme-secondary">
                 <Mail className="w-4 h-4" />
-                <a href={`mailto:${employee.email}`} className="hover:text-white">{employee.email}</a>
+                <a href={`mailto:${employee.email}`} className="hover:text-theme-primary">{employee.email}</a>
               </div>
               {employee.phone_number && (
-                <div className="flex items-center gap-2 text-neutral-400">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <Phone className="w-4 h-4" />
-                  <a href={`tel:${employee.phone_number}`} className="hover:text-white">{employee.phone_number}</a>
+                  <a href={`tel:${employee.phone_number}`} className="hover:text-theme-primary">{employee.phone_number}</a>
                 </div>
               )}
               {employee.sites?.name && (
-                <div className="flex items-center gap-2 text-neutral-400">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <MapPin className="w-4 h-4" />
                   <span>{employee.sites.name}</span>
                 </div>
               )}
               {employee.manager?.full_name && (
-                <div className="flex items-center gap-2 text-neutral-400">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <Briefcase className="w-4 h-4" />
                   <span>Reports to: {employee.manager.full_name}</span>
                 </div>
@@ -830,7 +830,7 @@ export default function EmployeeProfilePage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleEdit}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
             >
               <Edit className="w-4 h-4" />
               Edit Profile
@@ -872,8 +872,8 @@ export default function EmployeeProfilePage() {
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
-                  ? 'bg-gradient-to-r from-[#EC4899]/20 to-blue-600/20 text-white border border-[#EC4899]/30'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                  ? 'bg-blue-500/20 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 dark:border-blue-500/30'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
                 }
               `}
             >
@@ -885,7 +885,7 @@ export default function EmployeeProfilePage() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-button backdrop-blur-sm border border-theme rounded-lg p-6">
         {activeTab === 'overview' && (
           <OverviewTab 
             employee={employee} 
@@ -1035,8 +1035,8 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
       <div className="space-y-6">
         {/* Personal Information */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <User className="w-5 h-5 text-[#EC4899]" />
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Personal Information
           </h3>
           <div className="space-y-3">
@@ -1058,8 +1058,8 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
 
         {/* Compliance */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#EC4899]" />
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Compliance
           </h3>
           <div className="space-y-3">
@@ -1132,8 +1132,8 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
       <div className="space-y-6">
         {/* Employment Details */}
         <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-[#EC4899]" />
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
           Employment Details
         </h3>
         <div className="space-y-3">
@@ -1290,8 +1290,8 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
 
         {/* Banking */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-[#EC4899]" />
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Bank Details
           </h3>
           <div className="space-y-3">
@@ -1385,8 +1385,8 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        <CalendarCheck className="w-5 h-5 text-[#EC4899]" />
+      <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+        <CalendarCheck className="w-5 h-5 text-blue-500 dark:text-blue-400" />
         Probation Reviews
       </h3>
       <div className="space-y-3">
@@ -1460,14 +1460,14 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
                   {schedule.review_id ? (
                     <Link
                       href={`/dashboard/people/reviews/${schedule.review_id}`}
-                      className="ml-4 px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] rounded text-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded text-sm hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-all"
                     >
                       View Review
                     </Link>
                   ) : (
                     <Link
                       href={`/dashboard/people/reviews/schedule`}
-                      className="ml-4 px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] rounded text-sm hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all"
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded text-sm hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-all"
                     >
                       Start Review
                     </Link>
@@ -1780,7 +1780,7 @@ function InfoRow({
             </span>
             <button
               onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-[#EC4899] hover:text-[#EC4899]/80 text-xs transition-opacity"
+              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs transition-opacity"
               title="Edit"
             >
               <Edit className="w-3 h-3" />
@@ -1837,8 +1837,8 @@ function TrainingTab({ employee }: { employee: Employee }) {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        <GraduationCap className="w-5 h-5 text-[#EC4899]" />
+      <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+        <GraduationCap className="w-5 h-5 text-blue-500 dark:text-blue-400" />
         Training Certifications
       </h3>
       
@@ -2325,7 +2325,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         </div>
       )}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-white">Documents</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Documents</h3>
         <button
           onClick={() => setUploadOpen(true)}
           className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
@@ -2663,7 +2663,7 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Pay Details */}
       <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
           <CreditCard className="w-5 h-5 text-[#EC4899]" />
           Pay Details
         </h3>
@@ -2711,7 +2711,7 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
 
       {/* Tax & Deductions */}
       <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5 text-[#EC4899]" />
           Tax & Deductions
         </h3>
@@ -2816,7 +2816,7 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Recent Attendance</h3>
+      <h3 className="text-lg font-semibold text-theme-primary mb-4">Recent Attendance</h3>
       <div className="space-y-2">
         {attendance.map((record) => (
           <div key={record.id} className="flex items-center justify-between p-3 bg-neutral-700/50 rounded-lg">
@@ -2958,7 +2958,7 @@ function EditEmployeeModal({
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 'personal' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <User className="w-5 h-5 text-[#EC4899]" />
                 Personal Information
               </h2>
@@ -3207,7 +3207,7 @@ function EditEmployeeModal({
 
           {activeTab === 'employment' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-[#EC4899]" />
                 Employment Details
               </h2>
@@ -3469,7 +3469,7 @@ function EditEmployeeModal({
 
           {activeTab === 'compliance' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <Shield className="w-5 h-5 text-[#EC4899]" />
                 Compliance & Right to Work
               </h2>
@@ -3593,7 +3593,7 @@ function EditEmployeeModal({
 
           {activeTab === 'banking' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-[#EC4899]" />
                 Bank Details
               </h2>
@@ -3662,7 +3662,7 @@ function EditEmployeeModal({
 
           {activeTab === 'leave' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#EC4899]" />
                 Leave Allowance
               </h2>
@@ -3688,7 +3688,7 @@ function EditEmployeeModal({
 
           {activeTab === 'pay' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <CreditCardIcon className="w-5 h-5 text-[#EC4899]" />
                 Pay & Tax Details
               </h2>
@@ -3799,7 +3799,7 @@ function EditEmployeeModal({
 
           {activeTab === 'training' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-[#EC4899]" />
                 Training & Certifications
               </h2>

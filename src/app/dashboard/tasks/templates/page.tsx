@@ -208,7 +208,10 @@ export default function TemplatesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">My Task Templates</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Custom Task Builder</h1>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-6">
+            Create custom task templates for your sites
+          </p>
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">Custom task templates you've created</p>
         </div>
         <button

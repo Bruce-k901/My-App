@@ -183,7 +183,7 @@ export default function DashboardQuickStats() {
 
       {/* Pending Tasks */}
       <Link
-        href="/dashboard/tasks/active"
+        href="/dashboard/tasks/my-tasks"
         className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">

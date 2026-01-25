@@ -545,8 +545,47 @@ export function useConversations({
         } catch {}
       }
 
-      if (name) {
-        conversationData.name = name;
+      // For team/group conversations, require a name or generate one from participants
+      if ((type === "team" || type === "group") && !name) {
+        if (participantIds.length > 0) {
+          try {
+            // Fetch participant profiles to generate a name
+            const { data: profiles } = await supabase
+              .from("profiles")
+              .select("full_name, email")
+              .in("id", participantIds);
+            
+            if (profiles && profiles.length > 0) {
+              const names = profiles
+                .map(p => p.full_name || p.email?.split('@')[0])
+                .filter(Boolean)
+                .slice(0, 3); // Limit to 3 names for readability
+              
+              if (names.length > 0) {
+                conversationData.name = names.join(', ') + (profiles.length > 3 ? '...' : '');
+              } else {
+                throw new Error("Cannot create team/group conversation: Unable to generate name from participants");
+              }
+            } else {
+              throw new Error("Cannot create team/group conversation: No participants found");
+            }
+          } catch (error: any) {
+            console.error("Error generating conversation name:", error);
+            throw new Error("Cannot create team/group conversation without a name. Please provide a name or ensure participants are valid.");
+          }
+        } else {
+          throw new Error("Cannot create team/group conversation: No participants provided");
+        }
+      }
+
+      // Set provided name if given
+      if (name && name.trim()) {
+        conversationData.name = name.trim();
+      }
+
+      // Final validation: team/group conversations MUST have a name
+      if ((type === "team" || type === "group") && !conversationData.name) {
+        throw new Error("Team and group conversations require a name. Please provide a conversation name.");
       }
 
       // Debug: Log what we're trying to insert (removed for production)

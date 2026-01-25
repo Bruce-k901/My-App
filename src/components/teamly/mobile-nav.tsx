@@ -22,7 +22,7 @@ export function TeamlyMobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800 lg:hidden z-40">
+    <nav className="fixed bottom-0 left-0 right-0 bg-theme-surface border-t border-theme lg:hidden z-40">
       <div className="flex items-center justify-around">
         {mobileNavItems.map((item) => {
           const isActive = pathname === item.href || 
@@ -33,7 +33,7 @@ export function TeamlyMobileNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-1 py-3 px-4 ${
-                isActive ? 'text-[#EC4899]' : 'text-neutral-500'
+                isActive ? 'text-[#EC4899]' : 'text-theme-tertiary'
               }`}
             >
               <item.icon className="w-5 h-5" />

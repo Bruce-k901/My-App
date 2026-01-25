@@ -104,7 +104,7 @@ export default function AttendancePage() {
     if (status === 'active') return <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs border border-green-500/30">Working</span>;
     if (status === 'completed') return <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs border border-blue-500/30">Completed</span>;
     if (isLate) return <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs border border-red-500/30">Late</span>;
-    return <span className="px-2 py-0.5 bg-white/[0.05] text-neutral-400 rounded text-xs border border-white/[0.06]">Absent</span>;
+    return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs border border-theme">Absent</span>;
   };
 
   return (
@@ -112,18 +112,18 @@ export default function AttendancePage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Time & Attendance</h1>
-          <p className="text-neutral-400">Track working hours and attendance</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Time & Attendance</h1>
+          <p className="text-theme-secondary">Track working hours and attendance</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
+          <div className="flex rounded-lg overflow-hidden border border-theme">
             <button
               onClick={() => setViewMode('today')}
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'today' 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-                  : 'bg-white/[0.03] text-neutral-400 hover:text-white'
+                  : 'bg-theme-button text-theme-secondary hover:text-theme-primary'
               }`}
             >
               Today
@@ -133,7 +133,7 @@ export default function AttendancePage() {
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'week' 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-                  : 'bg-white/[0.03] text-neutral-400 hover:text-white'
+                  : 'bg-theme-button text-theme-secondary hover:text-theme-primary'
               }`}
             >
               Week
@@ -162,13 +162,13 @@ export default function AttendancePage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Date Navigation */}
-          <div className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-            <button onClick={prevDay} className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-              <ChevronLeft className="w-5 h-5 text-neutral-400" />
+          <div className="flex items-center justify-between bg-theme-button border border-theme rounded-lg p-4">
+            <button onClick={prevDay} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-theme-secondary" />
             </button>
             
             <div className="text-center">
-              <p className="text-lg font-semibold text-white">
+              <p className="text-lg font-semibold text-theme-primary">
                 {viewMode === 'today' 
                   ? selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
                   : `Week of ${getWeekStart(selectedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
@@ -176,51 +176,51 @@ export default function AttendancePage() {
               </p>
             </div>
             
-            <button onClick={nextDay} className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-              <ChevronRight className="w-5 h-5 text-neutral-400" />
+            <button onClick={nextDay} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+              <ChevronRight className="w-5 h-5 text-theme-secondary" />
             </button>
           </div>
 
           {/* Stats */}
           {viewMode === 'today' ? (
             <div className="grid grid-cols-4 gap-4">
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <CheckCircle className="w-5 h-5 text-green-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.present}</p>
-                <p className="text-xs text-neutral-400">Present</p>
+                <p className="text-2xl font-bold text-theme-primary">{stats.present}</p>
+                <p className="text-xs text-theme-secondary">Present</p>
               </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <AlertCircle className="w-5 h-5 text-red-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.absent}</p>
-                <p className="text-xs text-neutral-400">Absent</p>
+                <p className="text-2xl font-bold text-theme-primary">{stats.absent}</p>
+                <p className="text-xs text-theme-secondary">Absent</p>
               </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <Clock className="w-5 h-5 text-amber-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.late}</p>
-                <p className="text-xs text-neutral-400">Late</p>
+                <p className="text-2xl font-bold text-theme-primary">{stats.late}</p>
+                <p className="text-xs text-theme-secondary">Late</p>
               </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <Coffee className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.onBreak}</p>
-                <p className="text-xs text-neutral-400">On Break</p>
+                <p className="text-2xl font-bold text-theme-primary">{stats.onBreak}</p>
+                <p className="text-xs text-theme-secondary">On Break</p>
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <Clock className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{(stats as any).totalHours?.toFixed(1)}h</p>
-                <p className="text-xs text-neutral-400">Total Hours</p>
+                <p className="text-2xl font-bold text-theme-primary">{(stats as any).totalHours?.toFixed(1)}h</p>
+                <p className="text-xs text-theme-secondary">Total Hours</p>
               </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <TrendingUp className="w-5 h-5 text-amber-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{(stats as any).overtime?.toFixed(1)}h</p>
-                <p className="text-xs text-neutral-400">Overtime</p>
+                <p className="text-2xl font-bold text-theme-primary">{(stats as any).overtime?.toFixed(1)}h</p>
+                <p className="text-xs text-theme-secondary">Overtime</p>
               </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 text-center">
+              <div className="bg-theme-button border border-theme rounded-lg p-4 text-center">
                 <Users className="w-5 h-5 text-green-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{(stats as any).avgHours?.toFixed(1)}h</p>
-                <p className="text-xs text-neutral-400">Avg/Person</p>
+                <p className="text-2xl font-bold text-theme-primary">{(stats as any).avgHours?.toFixed(1)}h</p>
+                <p className="text-xs text-theme-secondary">Avg/Person</p>
               </div>
             </div>
           )}
@@ -231,31 +231,31 @@ export default function AttendancePage() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
             </div>
           ) : viewMode === 'today' ? (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+            <div className="bg-theme-button border border-theme rounded-lg overflow-hidden">
               <table className="w-full">
-                <thead className="bg-white/[0.05]">
+                <thead className="bg-theme-button-hover">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-neutral-400">Employee</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-neutral-400">Status</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-neutral-400">Clock In</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-neutral-400">Clock Out</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-neutral-400">Hours</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">Employee</th>
+                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-secondary">Status</th>
+                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-secondary">Clock In</th>
+                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-secondary">Clock Out</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">Hours</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.06]">
+                <tbody className="divide-y divide-theme">
                   {dailyData.map((row) => (
-                    <tr key={row.profile_id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={row.profile_id} className="hover:bg-theme-button-hover transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-white font-medium">{row.employee_name}</p>
-                        <p className="text-neutral-500 text-xs">{row.position_title}</p>
+                        <p className="text-theme-primary font-medium">{row.employee_name}</p>
+                        <p className="text-theme-tertiary text-xs">{row.position_title}</p>
                       </td>
                       <td className="px-4 py-3 text-center">
                         {getStatusBadge(row.status, row.is_late, row.is_on_break)}
                       </td>
-                      <td className="px-4 py-3 text-center text-neutral-300">
+                      <td className="px-4 py-3 text-center text-theme-secondary">
                         {formatTime(row.clock_in)}
                       </td>
-                      <td className="px-4 py-3 text-center text-neutral-300">
+                      <td className="px-4 py-3 text-center text-theme-secondary">
                         {formatTime(row.clock_out)}
                       </td>
                       <td className="px-4 py-3 text-right text-white font-medium">

@@ -12,6 +12,17 @@ DECLARE
   v_recipe_name TEXT;
   v_deleted_count INTEGER := 0;
 BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'recipes'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.recipes table does not exist - skipping remove_legacy_duplicate_recipes migration';
+    RETURN;
+  END IF;
+
   -- Find and remove legacy recipes that:
   -- 1. Have code pattern like REC-CXX-%, REC-XXX-%, or other placeholder patterns
   -- 2. Have duplicate names (case-insensitive) with proper recipes
@@ -49,12 +60,22 @@ BEGIN
           v_legacy_recipe_id::text, v_recipe_name, v_proper_recipe_id::text, v_ingredient_id::text;
         
         -- Update ingredient to point to proper recipe if it's pointing to legacy
-        UPDATE public.ingredients_library
-        SET linked_recipe_id = v_proper_recipe_id
-        WHERE linked_recipe_id = v_legacy_recipe_id;
+        IF EXISTS (
+          SELECT 1 FROM information_schema.tables 
+          WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+        ) THEN
+          UPDATE public.ingredients_library
+          SET linked_recipe_id = v_proper_recipe_id
+          WHERE linked_recipe_id = v_legacy_recipe_id;
+        END IF;
         
         -- Delete recipe ingredients for legacy recipe first (CASCADE should handle this, but being explicit)
-        DELETE FROM stockly.recipe_ingredients WHERE recipe_id = v_legacy_recipe_id;
+        IF EXISTS (
+          SELECT 1 FROM information_schema.tables 
+          WHERE table_schema = 'stockly' AND table_name = 'recipe_ingredients'
+        ) THEN
+          DELETE FROM stockly.recipe_ingredients WHERE recipe_id = v_legacy_recipe_id;
+        END IF;
         
         -- Delete the legacy recipe
         DELETE FROM stockly.recipes WHERE id = v_legacy_recipe_id;
@@ -85,14 +106,22 @@ BEGIN
         WHERE id = v_proper_recipe_id;
         
         -- Update ingredient to point to proper recipe if it's pointing to legacy
-        IF v_ingredient_id IS NOT NULL THEN
+        IF v_ingredient_id IS NOT NULL AND EXISTS (
+          SELECT 1 FROM information_schema.tables 
+          WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+        ) THEN
           UPDATE public.ingredients_library
           SET linked_recipe_id = v_proper_recipe_id
           WHERE linked_recipe_id = v_legacy_recipe_id;
         END IF;
         
         -- Delete recipe ingredients for legacy recipe
-        DELETE FROM stockly.recipe_ingredients WHERE recipe_id = v_legacy_recipe_id;
+        IF EXISTS (
+          SELECT 1 FROM information_schema.tables 
+          WHERE table_schema = 'stockly' AND table_name = 'recipe_ingredients'
+        ) THEN
+          DELETE FROM stockly.recipe_ingredients WHERE recipe_id = v_legacy_recipe_id;
+        END IF;
         
         -- Delete the legacy recipe
         DELETE FROM stockly.recipes WHERE id = v_legacy_recipe_id;

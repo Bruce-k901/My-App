@@ -1,14 +1,251 @@
 {
-  "id": "uk-l2-food-safety-v3",
+  "id": "uk-l2-food-safety",
   "title": "Food Safety Level 2 (UK)",
-  "description": "Self-study, mobile-friendly flow with interactive content, module quizzes, and a 30-question final assessment aligned to UK hygiene law.",
-  "version": "1.0.0",
+  "description": "Self-study, mobile-friendly flow with interactive content aligned to UK hygiene law.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-food-safety",
   "modules": [
     {
       "id": "m1",
-      "title": "Introduction",
-      "description": "Introduction to Food Safety.",
-      "lessons": []
+      "title": "Introduction and Legal Duties",
+      "description": "Why food safety law matters and who is responsible.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Food Safety Level 2 (UK)\n\nThis course covers the essentials of food safety: the law, your duties, hazards, and how to keep food safe.\n\n### What you'll learn\n- **The law** – Food Safety Act 1990, hygiene regulations, and who enforces them.\n- **Your duties** – As a food handler and as a manager.\n- **Due diligence** – Records that prove you took reasonable steps.\n- **Hazards** – Biological, chemical, physical – and how to control them.\n- **Safe practices** – Temperature, storage, cleaning, and personal hygiene.\n\nUse **Next** to move through the course."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "The Law and Legal Duties",
+          "slides": [
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "Why Food Safety Law Matters",
+              "content": "## UK Food Law\n\nUK food law is built around the **Food Safety Act 1990** and the **Food Hygiene Regulations**. They exist to protect consumers from illness and to keep businesses trading safely.\n\n### Everyone's responsibility\nRegulators expect everyone on shift to understand the basics: keep food safe, record what you do, and raise issues quickly. That duty applies whether you prep, cook, serve, or supervise."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Who Does What",
+              "content": "## Roles and Duties\n\n**Food handlers** must:\n- Follow documented safe methods every time.\n- Stay away from food prep if ill and report symptoms.\n- Keep equipment, surfaces, and storage clean and organised.\n\n**Managers** must ensure safe methods exist, staff are trained, and monitoring proves controls work.\n\n**Environmental Health Officers (EHOs)** inspect premises, behaviour, and records. They can issue enforcement notices, close businesses, or prosecute."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Due Diligence",
+              "content": "## Proving You Took Reasonable Steps\n\n**Due diligence** means being able to show you took all reasonable precautions. In practice:\n- Complete temperature and cleaning checks accurately.\n- Sign off corrective actions when something is out of spec.\n- Keep supplier and traceability paperwork so it can be produced quickly.\n\nIf something goes wrong, solid records show the business acted responsibly."
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Who Is Responsible?",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Who is responsible for recording fridge temperatures daily?",
+                    "options": [
+                      { "label": "Only the manager.", "nextNodeId": "wrong" },
+                      {
+                        "label": "The food handler doing the check (or whoever is assigned).",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Temperature checks are often done by food handlers. The manager ensures they happen and are recorded – but the person doing the check is responsible for completing it correctly.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** The person doing the check must record it accurately. Due diligence depends on reliable, signed records.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Food Hazards and Contamination",
+      "description": "Biological, chemical, and physical hazards.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Types of Hazards",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Biological Hazards",
+              "content": "## Bacteria, Viruses, Moulds\n\n**Bacteria** (e.g. Salmonella, E. coli, Listeria) grow in food when conditions allow. They need **food**, **moisture**, **warmth**, and **time**.\n\n**Viruses** (e.g. Norovirus) don't grow in food but can be spread by people and surfaces. Good personal hygiene and handwashing are vital.\n\n**Moulds** spoil food and some produce harmful toxins. Store food correctly and discard spoiled items."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Chemical and Physical Hazards",
+              "content": "## Chemical\nCleaning products, pesticides, or allergens can contaminate food. Store chemicals away from food, follow COSHH, and never use food containers for chemicals.\n\n## Physical\nForeign bodies: glass, plastic, metal, hair, pests. Control measures include good hygiene, pest control, and careful handling and packaging."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Cross-Contamination",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You've chopped raw chicken on a board. You need to prepare a salad. What do you do?",
+                    "options": [
+                      {
+                        "label": "Wipe the board and use it for the salad.",
+                        "nextNodeId": "wrong"
+                      },
+                      {
+                        "label": "Use a different, clean board (or wash and sanitise the board first).",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Raw meat can contain harmful bacteria. A quick wipe does not remove them. You must use a separate board or wash and sanitise thoroughly before re-use.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Separate equipment or proper cleaning and sanitising prevents cross-contamination from raw to ready-to-eat food.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Temperature, Storage, and Personal Hygiene",
+      "description": "Safe temperatures, storage, and hygiene practices.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Temperature and Storage",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "The Danger Zone",
+              "content": "## 8–63°C\n\nBacteria multiply quickly between **8°C and 63°C** (the danger zone). Keep cold food below 8°C and hot food above 63°C. Cool hot food quickly and store chilled.\n\n**Key temperatures:**\n- Fridge: 0–5°C (or follow your policy).\n- Freezer: -18°C or below.\n- Hot holding: 63°C or above.\n- Reheating: 82°C (or follow your policy)."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Personal Hygiene",
+              "content": "## Handwashing and Behaviour\n\n**Handwashing**: Before handling food, after raw meat, after breaks, after touching face or hair. Use soap and warm water; dry with disposable towels.\n\n**Illness**: Don't handle food if you have vomiting, diarrhoea, or certain infections. Report symptoms to your manager.\n\n**Clothing**: Clean protective clothing, no jewellery (or limited as per policy), hair tied back."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Cleaning and Due Diligence",
+      "description": "Cleaning, record-keeping, and inspections.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Cleaning and Records",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Cleaning Schedules",
+              "content": "## What, When, How\n\nCleaning schedules say **what** to clean, **when**, and **how**. Complete them as required and sign them off. This is due diligence evidence.\n\n**Clean then sanitise** for food contact surfaces. Store chemicals safely and use them according to instructions (COSHH)."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Inspections and Enforcement",
+              "content": "## When EHOs Visit\n\nThey inspect behaviour, records, and premises. They can:\n- Give advice and demand improvements.\n- Issue **enforcement notices** (legal requirements with deadlines).\n- **Close** unfit premises.\n- **Prosecute** businesses and individuals.\n\nGood records and consistent safe practices protect you and the business."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Final Assessment",
+      "description": "Knowledge check.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m5-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "Which authority inspects and enforces food safety in the UK?",
+        "options": ["Fire service", "Environmental Health Officers", "Police"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "What is the 'danger zone' for bacterial growth in food?",
+        "options": ["Below 0°C", "Between 8°C and 63°C", "Above 100°C"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "Due diligence records are used to:",
+        "options": [
+          "Replace training",
+          "Prove you took reasonable steps to keep food safe",
+          "Satisfy customers only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "After cutting raw chicken on a board, you should:",
+        "options": [
+          "Wipe it and use it for salad",
+          "Wash and sanitise it (or use a different board) before ready-to-eat food",
+          "Rinse it under cold water"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "Who must follow safe methods and keep records in a food business?",
+        "options": [
+          "Only managers",
+          "Only chefs",
+          "Everyone handling food, with managers ensuring it happens"
+        ],
+        "correctAnswer": 2
+      }
+    ]
+  }
 }

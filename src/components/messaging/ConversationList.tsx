@@ -313,16 +313,16 @@ export function ConversationList({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full p-8">
-        <div className="text-white/60">Loading conversations...</div>
+        <div className="text-gray-600 dark:text-white/60">Loading conversations...</div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white/[0.03] overflow-hidden">
+      <div className="flex flex-col h-full bg-white dark:bg-[#0B0D13] overflow-hidden">
         {/* Header with Start Button - Fixed at top with exact height */}
-        <div className="flex-shrink-0 p-4 border-b border-white/[0.1] bg-white/[0.03] h-[140px] flex flex-col justify-between">
+        <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#0B0D13] h-[140px] flex flex-col justify-between">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -341,35 +341,35 @@ export function ConversationList({
             Start Conversation
           </button>
           <div className="relative h-[40px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40 pointer-events-none" />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-full pl-10 pr-4 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full h-full pl-10 pr-4 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
             />
           </div>
         </div>
 
         {/* Topic Filter - Expandable */}
-        <div className="flex-shrink-0 border-b border-white/[0.06]">
+        <div className="flex-shrink-0 border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#0B0D13]">
           <button
             onClick={() => setIsTopicFilterExpanded(!isTopicFilterExpanded)}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition-colors"
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
           >
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium text-white/70">Filter by Topic</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-white/70">Filter by Topic</h3>
               {(filters.topicCategory || filters.isPinned) && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#EC4899]/30 text-[#EC4899]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-pink-100 dark:bg-[#EC4899]/30 text-pink-700 dark:text-[#EC4899]">
                   Active
                 </span>
               )}
             </div>
             {isTopicFilterExpanded ? (
-              <ChevronUp className="w-4 h-4 text-white/60" />
+              <ChevronUp className="w-4 h-4 text-gray-600 dark:text-white/60" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-white/60" />
+              <ChevronDown className="w-4 h-4 text-gray-600 dark:text-white/60" />
             )}
           </button>
           
@@ -398,13 +398,13 @@ export function ConversationList({
         <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#EC4899]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <MessageSquare className="w-12 h-12 text-white/20 mb-4" />
-            <p className="text-white/60 text-sm">
+            <MessageSquare className="w-12 h-12 text-gray-300 dark:text-white/20 mb-4" />
+            <p className="text-gray-600 dark:text-white/60 text-sm">
               {searchTerm ? 'No conversations found' : 'No conversations yet'}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.05]">
+          <div className="divide-y divide-gray-200 dark:divide-white/[0.05]">
             {filteredConversations.map((conversation) => {
               const Icon = getConversationIcon(conversation.type);
               const isSelected = conversation.id === selectedConversationId;
@@ -415,8 +415,8 @@ export function ConversationList({
                 <div
                   key={conversation.id}
                   onClick={() => onSelectConversation(conversation.id)}
-                  className={`w-full p-4 hover:bg-white/[0.05] transition-colors cursor-pointer relative ${
-                    isSelected ? 'bg-white/[0.05]' : ''
+                  className={`w-full p-4 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors cursor-pointer relative ${
+                    isSelected ? 'bg-gray-50 dark:bg-white/[0.03]' : ''
                   }`}
                 >
                   {/* Left border highlight for selected conversation */}
@@ -424,18 +424,18 @@ export function ConversationList({
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500 rounded-r" />
                   )}
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 p-2 bg-pink-500/10 rounded-lg">
-                      <Icon className="w-5 h-5 text-pink-400" />
+                    <div className="flex-shrink-0 p-2 bg-pink-50 dark:bg-pink-500/10 rounded-lg">
+                      <Icon className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className={`text-sm font-semibold truncate ${
-                          isSelected ? 'text-pink-300' : 'text-white'
+                          isSelected ? 'text-pink-600 dark:text-pink-300' : 'text-gray-900 dark:text-white'
                         }`}>
                           {name}
                         </h3>
                         {(conversation.last_message_at || conversation.last_message?.created_at) && (
-                          <span className="text-xs text-white/40 flex-shrink-0 ml-2">
+                          <span className="text-xs text-gray-500 dark:text-white/40 flex-shrink-0 ml-2">
                             {formatConversationTime(
                               conversation.last_message_at || conversation.last_message?.created_at
                             )}
@@ -443,7 +443,7 @@ export function ConversationList({
                         )}
                       </div>
                       {conversation.last_message && (
-                        <p className="text-xs text-white/60 truncate">
+                        <p className="text-xs text-gray-600 dark:text-white/60 truncate">
                           {conversation.last_message.sender?.full_name || 'You'}:{' '}
                           {conversation.last_message.content}
                         </p>
@@ -458,7 +458,7 @@ export function ConversationList({
                         </div>
                       )}
                       <button
-                        className="p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                        className="p-2 rounded hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
                         aria-label={conversation.is_pinned ? "Unpin conversation" : "Pin conversation"}
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -466,10 +466,10 @@ export function ConversationList({
                         }}
                         title={conversation.is_pinned ? "Unpin conversation" : "Pin conversation"}
                       >
-                        <Pin className={`w-4 h-4 ${conversation.is_pinned ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                        <Pin className={`w-4 h-4 ${conversation.is_pinned ? 'fill-yellow-500 dark:fill-yellow-400 text-yellow-500 dark:text-yellow-400' : ''}`} />
                       </button>
                       <button
-                        className="p-2 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                        className="p-2 rounded hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
                         aria-label="Delete conversation"
                         onClick={async (e) => {
                           e.stopPropagation();

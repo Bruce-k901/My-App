@@ -172,16 +172,28 @@ export default function ManagerCalendarPage() {
       const endDate = new Date(lastDay);
       endDate.setDate(endDate.getDate() + (6 - endDate.getDay())); // End of week
       
-      // Load ALL handover data (not just current month) so tasks/reminders from widget appear regardless of date
-      // Tasks and reminders have their own dueDate/date properties, so we need all data to show them correctly
-      const { data } = await supabase
+      // Load handover data from profile_settings
+      // Get all handover entries for the date range (tasks can have any dueDate)
+      console.log('📅 Starting to load handover data for company:', companyId);
+      const { data: handoverData, error: handoverError } = await supabase
         .from("profile_settings")
-        .select("key,value")
+        .select("key, value")
         .eq("company_id", companyId)
-        .like("key", "handover:%")
-        .order("key", { ascending: false });
+        .like("key", "handover:%");
       
-      if (data) {
+      if (handoverError) {
+        console.error("❌ Error loading handover data:", handoverError);
+      } else {
+        console.log('📅 Handover data query result:', {
+          found: handoverData?.length || 0,
+          keys: handoverData?.map((h: any) => h.key) || [],
+        });
+      }
+      
+      const data: any[] = handoverData || [];
+      console.log('📅 Processing handover data array, length:', data.length);
+      
+      if (data && data.length > 0) {
         const allNotes: Record<string, string> = {};
         const allTasks: TaskItem[] = [];
         const allReminders: ReminderItem[] = [];
@@ -196,8 +208,20 @@ export default function ManagerCalendarPage() {
               allNotes[dateKey] = handoverData.notes;
             }
             // Tasks have their own dueDate, so include all tasks regardless of which date they were created on
+            // Filter tasks by assignedTo to show only tasks assigned to current user (or unassigned if admin/manager)
             if (handoverData.tasks && Array.isArray(handoverData.tasks)) {
-              allTasks.push(...handoverData.tasks);
+              const userTasks = handoverData.tasks.filter((task: any) => {
+                // Show task if:
+                // 1. Assigned to current user
+                // 2. Not assigned (empty string or null)
+                // 3. User is admin/manager (show all)
+                if (!task.assignedTo || task.assignedTo === '') return true; // Unassigned tasks
+                if (task.assignedTo === userProfile?.id) return true; // Assigned to current user
+                // For admins/managers, show all tasks
+                const isAdminOrManager = userProfile?.app_role === 'admin' || userProfile?.app_role === 'manager';
+                return isAdminOrManager;
+              });
+              allTasks.push(...userTasks);
             }
             // Reminders have their own date, so include all reminders regardless of which date they were created on
             if (handoverData.reminders && Array.isArray(handoverData.reminders)) {
@@ -212,10 +236,32 @@ export default function ManagerCalendarPage() {
           }
         });
         
+        // Merge handover tasks with existing tasks (don't overwrite, append)
         setNotes(allNotes);
-        setTasks(allTasks);
+        setTasks(prevTasks => {
+          // Combine previous tasks with new handover tasks, avoiding duplicates
+          const combined = [...prevTasks];
+          allTasks.forEach(newTask => {
+            if (!combined.find(t => t.id === newTask.id)) {
+              combined.push(newTask);
+            }
+          });
+          return combined;
+        });
         setReminders(allReminders);
         setMessages(allMessages);
+        
+        console.log('📅✅ Loaded handover data:', {
+          notesCount: Object.keys(allNotes).length,
+          tasksCount: allTasks.length,
+          remindersCount: allReminders.length,
+          messagesCount: allMessages.length,
+          userProfileId: userProfile?.id,
+          filteredTasks: allTasks.filter(t => t.assignedTo === userProfile?.id).length,
+          allTaskIds: allTasks.map(t => ({ id: t.id, title: t.title, assignedTo: t.assignedTo })),
+        });
+      } else {
+        console.log('📅 No handover data found in profile_settings');
       }
 
       // Load tasks from tasks table

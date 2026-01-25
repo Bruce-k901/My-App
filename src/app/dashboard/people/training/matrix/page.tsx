@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Filter } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Filter, Mail, UserCheck } from 'lucide-react';
 import type { ComplianceMatrixEntry } from '@/types/teamly';
+import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 
 interface Employee {
   id: string;
@@ -27,6 +28,15 @@ export default function ComplianceMatrixPage() {
   const [loading, setLoading] = useState(true);
   const [showMandatoryOnly, setShowMandatoryOnly] = useState(true);
   const [viewError, setViewError] = useState<string | null>(null);
+  const [assignmentModal, setAssignmentModal] = useState<{
+    isOpen: boolean;
+    profileId: string;
+    profileName: string;
+    courseId: string;
+    courseName: string;
+    siteId?: string | null;
+    siteName?: string | null;
+  } | null>(null);
 
   useEffect(() => {
     if (profile?.company_id && profile?.id) {
@@ -180,18 +190,70 @@ export default function ComplianceMatrixPage() {
 
   const courses = showMandatoryOnly ? allCourses.filter(c => c.is_mandatory) : allCourses;
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, assignmentStatus?: string) => {
+    // Show assignment status if present
+    if (assignmentStatus === 'invited') {
+      return <Mail className="w-5 h-5 text-amber-400" title="Invited" />;
+    }
+    if (assignmentStatus === 'confirmed') {
+      return <UserCheck className="w-5 h-5 text-blue-400" title="Confirmed" />;
+    }
+    if (assignmentStatus === 'in_progress') {
+      return <Clock className="w-5 h-5 text-blue-400" title="In Progress" />;
+    }
+
+    // Otherwise show compliance status
     switch (status) {
-      case 'compliant':
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
+      case 'current':
+        return <CheckCircle className="w-5 h-5 text-green-400" title="Current" />;
       case 'expired':
-        return <AlertTriangle className="w-5 h-5 text-red-400" />;
+        return <AlertTriangle className="w-5 h-5 text-red-400" title="Expired" />;
+      case 'expiring_soon':
+        return <AlertTriangle className="w-5 h-5 text-amber-400" title="Expiring Soon" />;
       case 'in_progress':
-        return <Clock className="w-5 h-5 text-blue-400" />;
+        return <Clock className="w-5 h-5 text-blue-400" title="In Progress" />;
       case 'required':
-        return <XCircle className="w-5 h-5 text-red-400" />;
+        return <XCircle className="w-5 h-5 text-red-400" title="Required" />;
+      case 'invited':
+        return <Mail className="w-5 h-5 text-amber-400" title="Invited" />;
+      case 'assigned':
+        return <UserCheck className="w-5 h-5 text-blue-400" title="Assigned" />;
       default:
-        return <div className="w-5 h-5 rounded-full bg-white/[0.05]" />;
+        return <div className="w-5 h-5 rounded-full bg-white/[0.05]" title="Optional" />;
+    }
+  };
+
+  const canAssignCourse = (status: string): boolean => {
+    // Managers/admins can assign courses when status is not_trained, required, or optional
+    const isManager = profile?.app_role && ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes((profile.app_role || '').toLowerCase());
+    if (!isManager) return false;
+    
+    // Can assign if no training record exists or if it's required/optional
+    return status === 'not_trained' || status === 'required' || status === 'optional';
+  };
+
+  const handleCellClick = (employee: Employee, course: Course, status: string, entry?: ComplianceMatrixEntry) => {
+    const isManager = profile?.app_role && ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes((profile.app_role || '').toLowerCase());
+    
+    if (!isManager) {
+      // Non-managers can still click to view record page
+      return;
+    }
+
+    // If can assign, open assignment modal
+    if (canAssignCourse(status)) {
+      setAssignmentModal({
+        isOpen: true,
+        profileId: employee.id,
+        profileName: employee.name,
+        courseId: course.id,
+        courseName: course.name,
+        siteId: entry?.home_site || null,
+        siteName: employee.site || null,
+      });
+    } else {
+      // Otherwise navigate to record page
+      window.location.href = `/dashboard/people/training/record?employee=${employee.id}&course=${course.id}`;
     }
   };
 
@@ -366,6 +428,14 @@ export default function ComplianceMatrixPage() {
                 <div className="w-4 h-4 rounded-full bg-white/[0.05]" />
                 <span className="text-neutral-400">Optional - Training available but not required</span>
               </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-amber-400" />
+                <span className="text-neutral-400">Invited - Course assignment pending confirmation</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-blue-400" />
+                <span className="text-neutral-400">Assigned - Course confirmed, ready to start</span>
+              </div>
             </div>
           </div>
 
@@ -412,16 +482,33 @@ export default function ComplianceMatrixPage() {
                           </Link>
                         </td>
                         {courses.map((course) => {
-                          const status = getStatusForCell(employee.id, course.id);
+                          const entry = data.find(d => d.profile_id === employee.id && d.course_id === course.id);
+                          const status = entry?.compliance_status || 'optional';
+                          const assignmentStatus = entry?.assignment_status || null;
+                          const isClickable = canAssignCourse(status);
+                          
                           return (
-                            <td key={course.id} className="px-3 py-3 text-center">
-                              <Link 
-                                href={`/dashboard/people/training/record?employee=${employee.id}&course=${course.id}`}
-                                className="inline-block hover:scale-110 transition-transform"
-                                title={`${employee.name} - ${course.name}: ${status.replace('_', ' ')}`}
-                              >
-                                {getStatusIcon(status)}
-                              </Link>
+                            <td 
+                              key={course.id} 
+                              className="px-3 py-3 text-center"
+                            >
+                              {isClickable ? (
+                                <button
+                                  onClick={() => handleCellClick(employee, course, status, entry)}
+                                  className="inline-block hover:scale-110 transition-transform cursor-pointer"
+                                  title={`Click to assign ${course.name} to ${employee.name}`}
+                                >
+                                  {getStatusIcon(status, assignmentStatus || undefined)}
+                                </button>
+                              ) : (
+                                <Link 
+                                  href={`/dashboard/people/training/record?employee=${employee.id}&course=${course.id}`}
+                                  className="inline-block hover:scale-110 transition-transform"
+                                  title={`${employee.name} - ${course.name}: ${status.replace('_', ' ')}`}
+                                >
+                                  {getStatusIcon(status, assignmentStatus || undefined)}
+                                </Link>
+                              )}
                             </td>
                           );
                         })}
@@ -437,10 +524,33 @@ export default function ComplianceMatrixPage() {
           <div className="text-sm text-neutral-500 bg-white/[0.02] border border-white/[0.06] rounded-lg p-3">
             <p>
               <span className="text-red-400">*</span> Indicates required training. 
-              Click any cell to record or update training completion for that employee and course.
+              {profile?.app_role && ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes((profile.app_role || '').toLowerCase()) && (
+                <> Click empty cells to assign courses. Click other cells to view or update training records.</>
+              )}
+              {!['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes((profile?.app_role || '').toLowerCase()) && (
+                <> Click any cell to view training details.</>
+              )}
             </p>
           </div>
         </>
+      )}
+
+      {/* Assignment Modal */}
+      {assignmentModal && (
+        <AssignCourseModal
+          isOpen={assignmentModal.isOpen}
+          onClose={() => setAssignmentModal(null)}
+          profileId={assignmentModal.profileId}
+          profileName={assignmentModal.profileName}
+          courseId={assignmentModal.courseId}
+          courseName={assignmentModal.courseName}
+          siteId={assignmentModal.siteId}
+          siteName={assignmentModal.siteName}
+          onSuccess={() => {
+            fetchData();
+            setAssignmentModal(null);
+          }}
+        />
       )}
     </div>
   );

@@ -41,11 +41,16 @@ export function TaskFromTemplateModal({
   sourcePage
 }: TaskFromTemplateModalProps) {
   const router = useRouter();
-  const { companyId, siteId, selectedSiteId, profile, loading: contextLoading } = useAppContext();
+  const { companyId, siteId, selectedSiteId, profile, user, loading: contextLoading } = useAppContext();
   const [template, setTemplate] = useState<any>(providedTemplate || null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [templateFields, setTemplateFields] = useState<any[]>([]);
+  
+  // Site selection state for task creation
+  const [taskSiteId, setTaskSiteId] = useState<string>('');
+  const [availableSites, setAvailableSites] = useState<Array<{id: string, name: string}>>([]);
+  const [loadingSites, setLoadingSites] = useState(false);
 
   // Task form data - only fields for enabled features
   const [formData, setFormData] = useState({
@@ -146,6 +151,13 @@ export function TaskFromTemplateModal({
     if (isOpen && templateId) {
       // Reset form when modal opens
       setSelectedSiteFilter(''); // Reset site filter when modal opens
+      // Reset site selection state when modal opens
+      setTaskSiteId('');
+      setAvailableSites([]);
+      setLoadingSites(false);
+      
+      console.log('🔄 Modal opened, resetting site state. existingTask:', !!existingTask, 'existingSiteChecklist:', !!existingSiteChecklist);
+      
       if (existingTask) {
         // For editing, we'll initialize after template loads
         fetchTemplate();
@@ -167,6 +179,91 @@ export function TaskFromTemplateModal({
       loadAssets();
     }
   }, [selectedSiteId]);
+  
+  // Load sites based on user role for task creation
+  useEffect(() => {
+    const loadSites = async () => {
+      if (!isOpen || !companyId) {
+        console.log('🚫 Site loading skipped:', { isOpen, companyId });
+        setLoadingSites(false);
+        return;
+      }
+      
+      setLoadingSites(true);
+      
+      // Wait for profile to load if not available yet, but retry after a short delay
+      if (!profile) {
+        console.log('⏳ Waiting for profile to load...');
+        // Retry after profile loads
+        const checkProfile = setInterval(() => {
+          if (profile) {
+            clearInterval(checkProfile);
+            loadSites();
+          }
+        }, 100);
+        
+        // Clear interval after 5 seconds to avoid infinite loop
+        setTimeout(() => {
+          clearInterval(checkProfile);
+          setLoadingSites(false);
+        }, 5000);
+        return;
+      }
+      
+      try {
+        // Determine user role
+        const userRole = profile.app_role?.toLowerCase() || 'staff';
+        const isStaff = userRole === 'staff';
+        
+        console.log('🏢 Loading sites for role:', userRole, 'isStaff:', isStaff, 'profile:', profile);
+        
+        if (isStaff) {
+          // Staff: only their home site
+          const homeSiteId = profile.home_site || profile.site_id;
+          if (homeSiteId) {
+            const { data: site, error } = await supabase
+              .from('sites')
+              .select('id, name')
+              .eq('id', homeSiteId)
+              .single();
+            
+            if (site && !error) {
+              console.log('✅ Loaded staff home site:', site);
+              setAvailableSites([site]);
+              setTaskSiteId(site.id);
+            } else {
+              console.error('❌ Error loading staff site:', error);
+            }
+          } else {
+            console.warn('⚠️ Staff member has no home_site assigned');
+          }
+        } else {
+          // Managers, Admins, Owners: all sites in company
+          const { data: sites, error } = await supabase
+            .from('sites')
+            .select('id, name')
+            .eq('company_id', companyId)
+            .order('name');
+          
+          if (sites && !error) {
+            console.log(`✅ Loaded ${sites.length} sites for manager/admin:`, sites.map(s => s.name));
+            setAvailableSites(sites);
+            // Default to home site or first site or selectedSiteId from header
+            const defaultSiteId = profile.home_site || selectedSiteId || sites[0]?.id || '';
+            setTaskSiteId(defaultSiteId);
+          } else {
+            console.error('❌ Error loading sites:', error);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Exception loading sites:', error);
+      } finally {
+        setLoadingSites(false);
+      }
+    };
+    
+    loadSites();
+  }, [isOpen, companyId, profile?.id, profile?.app_role, profile?.home_site, selectedSiteId]);
   
   // Load library data for dropdowns
   async function loadLibraryData() {
@@ -256,7 +353,12 @@ export function TaskFromTemplateModal({
   
   // Load assets for dropdown - filter by selected site from header unless user is admin/owner
   async function loadAssets() {
-    if (!companyId) return;
+    if (!companyId) {
+      console.log('🚫 Asset loading skipped: no companyId');
+      return;
+    }
+    
+    console.log('📦 Loading assets...', { companyId, selectedSiteId, siteId, profileRole: profile?.app_role });
     
     try {
       // Check if user is admin or owner - they can see all assets or filter by selected site
@@ -273,40 +375,56 @@ export function TaskFromTemplateModal({
         .eq('archived', false);
       
       // Filter by selected site from header (admins/owners can still filter, but see all if no site selected)
-      if (effectiveSiteId) {
+      if (effectiveSiteId && effectiveSiteId !== 'all') {
         query = query.eq('site_id', effectiveSiteId);
+        console.log('🔍 Filtering assets by site:', effectiveSiteId);
+      } else {
+        console.log('🔍 Loading all assets (no site filter)');
       }
       
       const { data, error } = await query.order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error loading assets with join:', error);
+        throw error;
+      }
+      
+      console.log(`✅ Loaded ${data?.length || 0} assets`);
+      
       // Transform data to include site name
-        const assetsWithSite = (data || []).map((asset: any) => ({
-          ...asset,
-          site_name: asset.sites?.name || 'No site assigned'
-        }));
-        setAllAssets(assetsWithSite);
-        setAssets(assetsWithSite); // Initially show all assets
+      const assetsWithSite = (data || []).map((asset: any) => ({
+        ...asset,
+        site_name: asset.sites?.name || 'No site assigned'
+      }));
+      setAllAssets(assetsWithSite);
+      setAssets(assetsWithSite); // Initially show all assets
+      
+      // Load unique sites from assets for filter dropdown
+      const uniqueSiteIds = [...new Set(assetsWithSite.map((a: any) => a.site_id).filter(Boolean))];
+      if (uniqueSiteIds.length > 0) {
+        const { data: sitesData } = await supabase
+          .from('sites')
+          .select('id, name')
+          .in('id', uniqueSiteIds)
+          .eq('company_id', companyId);
         
-        // Load unique sites from assets for filter dropdown
-        const uniqueSiteIds = [...new Set(assetsWithSite.map((a: any) => a.site_id).filter(Boolean))];
-        if (uniqueSiteIds.length > 0) {
-          const { data: sitesData } = await supabase
-            .from('sites')
-            .select('id, name')
-            .in('id', uniqueSiteIds)
-            .eq('company_id', companyId);
-          
-          if (sitesData) {
-            setSites(sitesData);
-          }
+        if (sitesData) {
+          console.log(`✅ Loaded ${sitesData.length} sites from assets`);
+          setSites(sitesData);
         }
+      } else {
+        console.log('⚠️ No sites found from assets');
+        setSites([]);
+      }
     } catch (error) {
-      console.error('Error loading assets:', error);
+      console.error('❌ Error loading assets:', error);
       // Fallback: try without inner join if sites relationship fails
       try {
         const userRole = profile?.app_role?.toLowerCase() || '';
         const isAdminOrOwner = userRole === 'admin' || userRole === 'owner';
+        
+        // Use selectedSiteId from header if available, otherwise fall back to siteId
+        const effectiveSiteId = selectedSiteId || siteId;
         
         let query = supabase
           .from('assets')
@@ -314,13 +432,20 @@ export function TaskFromTemplateModal({
           .eq('company_id', companyId)
           .eq('archived', false);
         
-        if (!isAdminOrOwner && siteId) {
-          query = query.eq('site_id', siteId);
+        // Filter by site if specified (for all users, not just non-admins)
+        if (effectiveSiteId && effectiveSiteId !== 'all') {
+          query = query.eq('site_id', effectiveSiteId);
         }
         
         const { data, error } = await query.order('name');
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error in fallback asset loading:', error);
+          throw error;
+        }
+        
+        console.log(`✅ Fallback: Loaded ${data?.length || 0} assets`);
+        
         // If we have site_ids, fetch site names separately
         const siteIds = [...new Set((data || []).map((a: any) => a.site_id).filter(Boolean))];
         let sitesMap: Record<string, string> = {};
@@ -358,10 +483,14 @@ export function TaskFromTemplateModal({
           if (sitesData) {
             setSites(sitesData);
           }
+        } else {
+          setSites([]);
         }
       } catch (fallbackError) {
-        console.error('Error in fallback asset loading:', fallbackError);
+        console.error('❌ Error in fallback asset loading:', fallbackError);
         setAssets([]);
+        setAllAssets([]);
+        setSites([]);
       }
     }
   }
@@ -963,7 +1092,7 @@ export function TaskFromTemplateModal({
       });
     }
     // Only run when template or modal state changes, not on every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [template?.id, isOpen, allAssets.length]);
 
   // Debug logging and ensure formData is initialized when template loads
@@ -1476,10 +1605,17 @@ export function TaskFromTemplateModal({
         const frequency = template?.frequency || 'daily';
         
         // Build site_checklist configuration
+        // Use taskSiteId for new tasks, or existing site_id for editing
+        const effectiveSiteId = existingSiteChecklist 
+          ? existingSiteChecklist.site_id 
+          : (existingTask 
+            ? existingTask.site_id 
+            : taskSiteId || siteId);
+        
         const siteChecklistData: any = {
           template_id: templateId,
           company_id: companyId,
-          site_id: siteId,
+          site_id: effectiveSiteId,
           name: formData.custom_name.trim() || template?.name || 'Task Configuration',
           frequency: frequency,
           active: true
@@ -1505,7 +1641,7 @@ export function TaskFromTemplateModal({
           siteChecklistData.anniversary_date = formData.anniversary_date;
         }
         
-        // Check if editing existing site_checklist
+        // Check if editing existing site_checklist (passed as prop)
         if (existingSiteChecklist) {
           // Update existing configuration
           const { error } = await supabase
@@ -1521,15 +1657,53 @@ export function TaskFromTemplateModal({
           onClose();
           return;
         } else {
-          // Create new configuration
-          const { data, error } = await supabase
+          // Check if a site_checklist already exists for this site_id and template_id combination
+          const { data: existingChecklist, error: checkError } = await supabase
             .from('site_checklists')
-            .insert(siteChecklistData)
-            .select()
-            .single();
+            .select('id')
+            .eq('site_id', effectiveSiteId)
+            .eq('template_id', templateId)
+            .maybeSingle();
+          
+          if (checkError) {
+            console.error('Error checking for existing site_checklist:', checkError);
+            throw checkError;
+          }
+          
+          // Fetch site name for toast message
+          let siteName = 'the selected site';
+          if (effectiveSiteId) {
+            const { data: siteData } = await supabase
+              .from('sites')
+              .select('name')
+              .eq('id', effectiveSiteId)
+              .single();
+            if (siteData?.name) {
+              siteName = siteData.name;
+            }
+          }
+          
+          if (existingChecklist) {
+            // Update existing configuration instead of creating duplicate
+            console.log('🔄 Found existing site_checklist, updating instead of creating:', existingChecklist.id);
+            const { error: updateError } = await supabase
+              .from('site_checklists')
+              .update(siteChecklistData)
+              .eq('id', existingChecklist.id);
+            
+            if (updateError) throw updateError;
+            toast.success(`Task configuration updated successfully for ${siteName}!`);
+          } else {
+            // Create new configuration
+            const { data, error } = await supabase
+              .from('site_checklists')
+              .insert(siteChecklistData)
+              .select()
+              .single();
 
-          if (error) throw error;
-          toast.success('Task configuration created successfully!');
+            if (error) throw error;
+            toast.success(`Task configuration created successfully for ${siteName}!`);
+          }
           
           // Redirect based on source page - go back to where user came from
           // If from compliance page, go back to compliance. If from templates, go back to templates.
@@ -1651,6 +1825,59 @@ export function TaskFromTemplateModal({
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Current: {existingTask.custom_name}</p>
                 )}
               </div>
+
+              {/* Site Selector - Only show when creating new task (not editing) */}
+              {(() => {
+                const shouldShow = !existingTask && !existingSiteChecklist;
+                console.log('🔍 Site selector render check:', { 
+                  shouldShow, 
+                  existingTask: !!existingTask, 
+                  existingSiteChecklist: !!existingSiteChecklist,
+                  availableSitesCount: availableSites.length,
+                  loadingSites,
+                  taskSiteId
+                });
+                
+                if (!shouldShow) return null;
+                
+                return (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Site <span className="text-red-500">*</span>
+                    </label>
+                    {loadingSites ? (
+                      <div className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-500 dark:text-gray-400">
+                        Loading sites...
+                      </div>
+                    ) : availableSites.length === 0 ? (
+                      <div className="w-full px-4 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-300 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-sm">
+                        No sites available. Please ensure you have sites configured for your company.
+                      </div>
+                    ) : (
+                      <>
+                        <select
+                          value={taskSiteId}
+                          onChange={(e) => setTaskSiteId(e.target.value)}
+                          required
+                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                        >
+                          <option value="">Select a site</option>
+                          {availableSites.map(site => (
+                            <option key={site.id} value={site.id}>
+                              {site.name}
+                            </option>
+                          ))}
+                        </select>
+                        {taskSiteId && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            This task will be visible to all {availableSites.find(s => s.id === taskSiteId)?.name || ''} staff in My Tasks
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Instructions - Expandable Section */}
               <div className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
@@ -1867,20 +2094,33 @@ export function TaskFromTemplateModal({
               </div>
             </div>
 
-            {/* Asset Selection - Only show if template has repeatable_field_name (asset/equipment fields) */}
-            {allAssets.length > 0 && enabledFeatures.assetSelection && (
-              <AssetSelectionFeature
-                selectedAssets={formData.selectedAssets}
-                assets={assets}
-                sites={sites}
-                onChange={(selected) => {
-                  setFormData({ ...formData, selectedAssets: selected });
-                  // Also update tempAssetSelection to match
-                  setTempAssetSelection(selected);
-                }}
-                isExpanded={isAssetSelectionExpanded}
-                onExpandedChange={setIsAssetSelectionExpanded}
-              />
+            {/* Asset Selection - Only show if template has asset selection feature enabled */}
+            {enabledFeatures.assetSelection && (
+              <>
+                {allAssets.length > 0 ? (
+                  <AssetSelectionFeature
+                    selectedAssets={formData.selectedAssets}
+                    assets={assets}
+                    sites={sites}
+                    onChange={(selected) => {
+                      setFormData({ ...formData, selectedAssets: selected });
+                      // Also update tempAssetSelection to match
+                      setTempAssetSelection(selected);
+                    }}
+                    isExpanded={isAssetSelectionExpanded}
+                    onExpandedChange={setIsAssetSelectionExpanded}
+                  />
+                ) : (
+                  <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Asset Selection</h2>
+                    <div className="p-4 rounded-lg border border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.03]">
+                      <p className="text-sm text-gray-600 dark:text-white/60">
+                        {loading ? 'Loading assets...' : 'No assets found. Please ensure assets are configured for your company.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Call Point Management - Only show if template has fire_alarm_call_point field */}
@@ -2135,8 +2375,8 @@ export function TaskFromTemplateModal({
             )}
 
             {enabledFeatures.requiresRiskAssessment && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Risk Assessment Upload</h2>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Risk Assessment Upload</h2>
                 <div className="space-y-3">
                   <label className="block">
                     <input
@@ -2146,26 +2386,26 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer">
+                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-pink-300 dark:border-[#EC4899] text-pink-600 dark:text-[#EC4899] hover:bg-pink-50 dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer font-medium">
                       Upload Risk Assessment
                     </span>
                   </label>
                   {formData.raUploads.length > 0 && (
                     <div className="space-y-2">
                       {formData.raUploads.map((ra, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
                           <div className="flex items-center gap-3">
-                            <span className="text-white text-sm">{ra.fileName}</span>
-                            <span className="text-gray-400 text-xs">({formatFileSize(ra.fileSize)})</span>
+                            <span className="text-gray-900 dark:text-white text-sm">{ra.fileName}</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-xs">({formatFileSize(ra.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 text-sm">
+                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 text-sm font-medium">
                               View
                             </a>
                             <button
                               type="button"
                               onClick={() => removeUpload('ra', index)}
-                              className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
+                              className="px-3 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
                             >
                               Remove
                             </button>
@@ -2180,7 +2420,7 @@ export function TaskFromTemplateModal({
 
             {/* Document Upload Feature - Only show if enabled in template features */}
             {enabledFeatures.documentUpload && (
-              <div className="border-t border-white/10 pt-6">
+              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
                 <DocumentUploadFeature
                   uploads={formData.documentUploads}
                   onUpload={(uploads) => setFormData({ ...formData, documentUploads: uploads })}

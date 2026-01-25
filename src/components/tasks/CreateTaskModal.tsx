@@ -25,6 +25,8 @@ export interface ModalContext {
   channelId?: string;
   preSelectedDate?: Date;
   preSelectedParticipants?: string[];
+  taskId?: string;
+  existingTask?: any;
 }
 
 interface CreateTaskModalProps {
@@ -94,10 +96,139 @@ export default function CreateTaskModal({
   const [templateName, setTemplateName] = useState<string | undefined>();
   const [autoTitleEnabled, setAutoTitleEnabled] = useState(true);
   const [userProfileName, setUserProfileName] = useState<string>('');
+  const [existingTask, setExistingTask] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Initialize form data based on context
-  const getInitialFormData = (): Partial<FormData> => {
+  const getInitialFormData = (existingTask?: any): Partial<FormData> => {
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    // If editing an existing task, use its data
+    if (existingTask) {
+      const taskType = existingTask.metadata?.task_type || 'task';
+      const taskDate = existingTask.due_date ? new Date(existingTask.due_date) : new Date();
+      const taskTime = existingTask.due_time || '';
+      
+      const base: Partial<BaseFormData> = {
+        title: existingTask.title || '',
+        description: existingTask.description || '',
+        siteId: existingTask.site_id || '',
+        dueDate: taskDate,
+        dueTime: taskTime,
+        timezone: existingTask.metadata?.timezone || userTimezone,
+      };
+
+      switch (taskType) {
+        case 'task':
+          // Extract assignedTo - could be in assigned_to column or metadata.assigned_to array
+          let assignedTo: string[] = [];
+          if (existingTask.assigned_to) {
+            assignedTo = Array.isArray(existingTask.assigned_to) ? existingTask.assigned_to : [existingTask.assigned_to];
+          } else if (existingTask.metadata?.assigned_to) {
+            assignedTo = Array.isArray(existingTask.metadata.assigned_to) ? existingTask.metadata.assigned_to : [existingTask.metadata.assigned_to];
+          }
+          
+          return {
+            ...base,
+            type: 'task' as const,
+            assignedTo,
+            priority: existingTask.priority || 'medium',
+            status: existingTask.status || 'todo',
+          };
+        case 'meeting':
+          // Extract participants - could be in metadata.participants array or assigned_to
+          let meetingParticipants: string[] = [];
+          if (existingTask.metadata?.participants) {
+            meetingParticipants = Array.isArray(existingTask.metadata.participants) 
+              ? existingTask.metadata.participants 
+              : [existingTask.metadata.participants];
+          } else if (existingTask.assigned_to) {
+            meetingParticipants = Array.isArray(existingTask.assigned_to) 
+              ? existingTask.assigned_to 
+              : [existingTask.assigned_to];
+          }
+          
+          // Determine duration
+          const durationMinutes = existingTask.metadata?.duration_minutes;
+          let duration: '15' | '30' | '60' | 'custom' = '30';
+          let customDuration: number | undefined = undefined;
+          if (durationMinutes) {
+            if (durationMinutes === 15) duration = '15';
+            else if (durationMinutes === 30) duration = '30';
+            else if (durationMinutes === 60) duration = '60';
+            else {
+              duration = 'custom';
+              customDuration = durationMinutes;
+            }
+          }
+          
+          return {
+            ...base,
+            type: 'meeting' as const,
+            meetingType: existingTask.metadata?.meeting_type || '1-2-1',
+            participants: meetingParticipants,
+            duration,
+            customDuration,
+            location: existingTask.metadata?.location || 'virtual',
+            customLocation: existingTask.metadata?.location === 'custom' ? existingTask.metadata.custom_location : undefined,
+            meetingLink: existingTask.metadata?.meeting_link,
+            sendInvites: true,
+            templateId: existingTask.metadata?.template_id,
+          };
+        case 'call':
+          // Extract participants - could be in metadata.participants array or assigned_to
+          let callParticipants: string[] = [];
+          if (existingTask.metadata?.participants) {
+            callParticipants = Array.isArray(existingTask.metadata.participants) 
+              ? existingTask.metadata.participants 
+              : [existingTask.metadata.participants];
+          } else if (existingTask.assigned_to) {
+            callParticipants = Array.isArray(existingTask.assigned_to) 
+              ? existingTask.assigned_to 
+              : [existingTask.assigned_to];
+          }
+          
+          // Determine duration
+          const callDurationMinutes = existingTask.metadata?.duration_minutes;
+          let callDuration: '15' | '30' | '60' | 'custom' = '15';
+          let callCustomDuration: number | undefined = undefined;
+          if (callDurationMinutes) {
+            if (callDurationMinutes === 15) callDuration = '15';
+            else if (callDurationMinutes === 30) callDuration = '30';
+            else if (callDurationMinutes === 60) callDuration = '60';
+            else {
+              callDuration = 'custom';
+              callCustomDuration = callDurationMinutes;
+            }
+          }
+          
+          return {
+            ...base,
+            type: 'call' as const,
+            participants: callParticipants,
+            duration: callDuration,
+            customDuration: callCustomDuration,
+            location: existingTask.metadata?.location || 'virtual',
+            customLocation: existingTask.metadata?.location === 'custom' ? existingTask.metadata.custom_location : undefined,
+            meetingLink: existingTask.metadata?.meeting_link,
+          };
+        case 'note':
+          return {
+            ...base,
+            type: 'note' as const,
+          };
+        default:
+          return {
+            ...base,
+            type: 'task' as const,
+            assignedTo: [],
+            priority: 'medium',
+            status: 'todo',
+          };
+      }
+    }
+    
+    // Otherwise, create new task
     const preSelectedDate = context?.preSelectedDate || new Date();
     const now = new Date();
     const defaultTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -150,16 +281,111 @@ export default function CreateTaskModal({
 
   const [formData, setFormData] = useState<Partial<FormData>>(getInitialFormData());
 
-  // Reset form when type changes or modal opens
+  // Load existing task when editing
   useEffect(() => {
-    if (isOpen) {
+    const loadExistingTask = async () => {
+      if (!isOpen) {
+        setExistingTask(null);
+        setIsEditing(false);
+        return;
+      }
+      
+      if (!context?.taskId && !context?.existingTask) {
+        setExistingTask(null);
+        setIsEditing(false);
+        // Reset to new task mode
+        const initial = getInitialFormData();
+        setFormData(initial);
+        setParticipantNames([]);
+        setTemplateName(undefined);
+        setAutoTitleEnabled(true);
+        return;
+      }
+
+      try {
+        // Use provided existingTask or fetch it
+        let task = context.existingTask;
+        
+        // If we have taskId but no existingTask, fetch it
+        if (context.taskId && !task) {
+          const { data: fetchedTask, error } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('id', context.taskId)
+            .single();
+          
+          if (error) throw error;
+          task = fetchedTask;
+        }
+        
+        if (!task) {
+          setExistingTask(null);
+          setIsEditing(false);
+          return;
+        }
+        
+        setExistingTask(task);
+        setIsEditing(true);
+        
+        // Set the active type based on task metadata
+        const taskType = task.metadata?.task_type || 'task';
+        setActiveType(taskType as TaskType);
+        
+        // Load form data from existing task
+        const initialData = getInitialFormData(task);
+        setFormData(initialData);
+        
+        // Load participant names if it's a meeting or call
+        if ((taskType === 'meeting' || taskType === 'call') && task.metadata?.participants) {
+          const participantIds = task.metadata.participants;
+          if (participantIds && participantIds.length > 0) {
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', participantIds);
+            
+            if (profiles) {
+              setParticipantNames(profiles.map(p => p.full_name || p.email?.split('@')[0] || ''));
+            }
+          }
+        }
+        
+        // Load template name if it's a meeting with a template
+        if (taskType === 'meeting' && task.metadata?.template_id) {
+          // Try to get template name from review_templates or task_templates
+          const { data: template } = await supabase
+            .from('review_templates')
+            .select('name')
+            .eq('id', task.metadata.template_id)
+            .single();
+          
+          if (template) {
+            setTemplateName(template.name);
+          }
+        }
+        
+        setAutoTitleEnabled(false); // Disable auto-generation when editing
+      } catch (error) {
+        console.error('Error loading existing task:', error);
+        toast.error('Failed to load task data');
+        setExistingTask(null);
+        setIsEditing(false);
+      }
+    };
+
+    loadExistingTask();
+  }, [isOpen, context?.taskId, context?.existingTask, companyId]);
+
+  // Reset form when type changes or modal opens (only if not editing)
+  useEffect(() => {
+    if (isOpen && !isEditing) {
       const initial = getInitialFormData();
       setFormData(initial);
       setParticipantNames([]);
       setTemplateName(undefined);
       setAutoTitleEnabled(true);
     }
-  }, [isOpen, activeType]);
+  }, [isOpen, activeType, isEditing]);
 
   // Load current user's name for title generation
   useEffect(() => {
@@ -255,7 +481,7 @@ export default function CreateTaskModal({
     isOpen,
     sites,
     // Don't include formData.title in deps to prevent loops
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   ]);
 
   // Load sites
@@ -365,17 +591,77 @@ export default function CreateTaskModal({
         };
       }
 
-      // Create task
-      const { data: task, error: taskError } = await supabase
-        .from('tasks')
-        .insert(taskInsert)
-        .select()
-        .single();
+      // Create or update task
+      let task;
+      if (isEditing && existingTask?.id) {
+        // Update existing task - merge metadata to preserve existing fields
+        const updatedMetadata = {
+          ...existingTask.metadata,
+          ...taskInsert.metadata,
+        };
+        
+        // Handle participants/assignedTo for updates
+        if ((formData.type === 'meeting' || formData.type === 'call') && 'participants' in formData) {
+          const participantIds = (formData as MeetingFormData | CallFormData).participants;
+          updatedMetadata.participants = participantIds || [];
+        } else if (formData.type === 'task' && 'assignedTo' in formData) {
+          const assignedTo = (formData as TaskFormData).assignedTo;
+          updatedMetadata.assigned_to = assignedTo || [];
+        }
+        
+        const updateData: any = {
+          title: taskInsert.title,
+          description: taskInsert.description,
+          site_id: taskInsert.site_id,
+          due_date: taskInsert.due_date,
+          due_time: taskInsert.due_time,
+          status: taskInsert.status,
+          priority: taskInsert.priority,
+          metadata: updatedMetadata,
+        };
+        
+        // Handle single assignment for assigned_to column
+        if (formData.type === 'task' && 'assignedTo' in formData) {
+          const assignedTo = (formData as TaskFormData).assignedTo;
+          if (assignedTo && assignedTo.length === 1) {
+            updateData.assigned_to = assignedTo[0];
+          } else if (assignedTo && assignedTo.length > 1) {
+            updateData.assigned_to = assignedTo[0]; // Use first for column
+          } else {
+            updateData.assigned_to = null;
+          }
+        } else if ((formData.type === 'meeting' || formData.type === 'call') && 'participants' in formData) {
+          const participantIds = (formData as MeetingFormData | CallFormData).participants;
+          if (participantIds && participantIds.length === 1) {
+            updateData.assigned_to = participantIds[0];
+          } else {
+            updateData.assigned_to = existingTask.assigned_to || null;
+          }
+        }
+        
+        const { data: updatedTask, error: updateError } = await supabase
+          .from('tasks')
+          .update(updateData)
+          .eq('id', existingTask.id)
+          .select()
+          .single();
 
-      if (taskError) throw taskError;
+        if (updateError) throw updateError;
+        task = updatedTask;
+      } else {
+        // Create new task
+        const { data: newTask, error: taskError } = await supabase
+          .from('tasks')
+          .insert(taskInsert)
+          .select()
+          .single();
 
-      // Add participants for meetings/calls
-      if ((formData.type === 'meeting' || formData.type === 'call') && 'participants' in formData) {
+        if (taskError) throw taskError;
+        task = newTask;
+      }
+
+      // Add participants for meetings/calls (only for new tasks)
+      if (!isEditing && (formData.type === 'meeting' || formData.type === 'call') && 'participants' in formData) {
         const participantIds = (formData as MeetingFormData | CallFormData).participants;
         if (participantIds && participantIds.length > 0) {
           // Note: If meeting_participants table exists, use it. Otherwise, store in metadata.
@@ -391,7 +677,7 @@ export default function CreateTaskModal({
             .from('tasks')
             .update({
               metadata: {
-                ...taskInsert.metadata,
+                ...task.metadata,
                 participants: participantIds,
               }
             })
@@ -399,8 +685,8 @@ export default function CreateTaskModal({
         }
       }
 
-      // Add task assignments for tasks
-      if (formData.type === 'task' && 'assignedTo' in formData) {
+      // Add task assignments for tasks (only for new tasks)
+      if (!isEditing && formData.type === 'task' && 'assignedTo' in formData) {
         const assignedTo = (formData as TaskFormData).assignedTo;
         if (assignedTo && assignedTo.length > 0) {
           // Use assigned_to for single assignment, metadata for multiple
@@ -414,7 +700,7 @@ export default function CreateTaskModal({
             .from('tasks')
             .update({
               metadata: {
-                ...taskInsert.metadata,
+                ...task.metadata,
                 assigned_to: assignedTo,
               }
             })
@@ -453,26 +739,28 @@ export default function CreateTaskModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-[#0B0D13] border border-white/[0.1] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.1] flex-shrink-0">
-          <h2 className="text-xl font-semibold text-white">Create {activeType.charAt(0).toUpperCase() + activeType.slice(1)}</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06] flex-shrink-0">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {isEditing ? 'Edit' : 'Create'} {activeType.charAt(0).toUpperCase() + activeType.slice(1)}
+          </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/[0.05] text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Type Tabs - Enhanced Visibility */}
-        <div className="flex gap-2 p-4 border-b border-white/[0.1] bg-gradient-to-r from-white/[0.03] to-white/[0.01] flex-shrink-0">
+        <div className="flex gap-2 p-4 border-b border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-gradient-to-r dark:from-white/[0.03] dark:to-white/[0.01] flex-shrink-0">
           {(['task', 'meeting', 'call', 'note'] as TaskType[]).map((type) => {
             const icons = {
               task: CheckSquare,
@@ -490,11 +778,11 @@ export default function CreateTaskModal({
                 className={`flex-1 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-200 ${
                   isActive
                     ? 'bg-[#EC4899] text-white shadow-[0_0_20px_rgba(236,72,153,0.5)] transform scale-105'
-                    : 'text-white/50 hover:text-white/80 hover:bg-white/[0.08] border border-white/[0.1]'
+                    : 'text-gray-600 dark:text-white/50 hover:text-gray-900 dark:hover:text-white/80 hover:bg-gray-100 dark:hover:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2.5">
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white/60'}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-600 dark:text-white/60'}`} />
                   <span className="capitalize">{type === '1-2-1' ? '1-2-1' : type === 'task' ? 'Task' : type === 'meeting' ? 'Meeting' : type === 'call' ? 'Call' : 'Note'}</span>
                 </div>
               </button>
@@ -563,10 +851,10 @@ export default function CreateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t border-white/[0.1] flex-shrink-0">
+        <div className="flex gap-3 p-6 border-t border-gray-200 dark:border-white/[0.06] flex-shrink-0">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-lg hover:bg-white/[0.08] transition-colors text-sm font-medium"
+            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-colors text-sm font-medium"
           >
             Cancel
           </button>
@@ -575,7 +863,13 @@ export default function CreateTaskModal({
             disabled={loading || !canSubmit}
             className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creating...' : `Create ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}`}
+            {loading 
+              ? (isEditing ? 'Updating...' : 'Creating...') 
+              : (isEditing 
+                  ? `Update ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}` 
+                  : `Create ${activeType.charAt(0).toUpperCase() + activeType.slice(1)}`
+                )
+            }
           </button>
         </div>
       </div>

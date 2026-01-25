@@ -17,6 +17,17 @@ DECLARE
   v_cleared_count INTEGER := 0;
   v_updated_count INTEGER := 0;
 BEGIN
+  -- Check if stockly schema and recipes table exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'recipes'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.recipes table does not exist - skipping backfill_recipe_codes migration';
+    RETURN;
+  END IF;
+
   -- Check if code column exists
   SELECT EXISTS (
     SELECT 1 FROM information_schema.columns 

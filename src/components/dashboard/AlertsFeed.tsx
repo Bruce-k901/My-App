@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { AlertTriangle, Clock, Bell, Thermometer, Wrench } from "lucide-react";
@@ -22,13 +22,92 @@ type AlertRow = {
 };
 
 export default function AlertsFeed() {
-  const { companyId } = useAppContext();
+  const { companyId, profile: userProfile } = useAppContext();
   const [open, setOpen] = useState(true);
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const since = useMemo(() => new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), []);
+
+  // Helper function to get accessible site IDs based on user role
+  const getAccessibleSiteIds = useCallback(async (userProfile: any, companyId: string) => {
+    if (!userProfile) return []
+
+    const { app_role } = userProfile
+
+    // OWNER/ADMIN: See all company sites
+    if (app_role === 'Owner' || app_role === 'Admin') {
+      const { data: sites } = await supabase
+        .from('sites')
+        .select('id')
+        .eq('company_id', companyId)
+
+      return sites?.map(s => s.id) || []
+    }
+
+    // REGIONAL MANAGER: See all sites in their region(s)
+    if (app_role === 'Regional Manager') {
+      // Find regions where this user is the regional_manager
+      const { data: regions } = await supabase
+        .from('regions')
+        .select('id')
+        .eq('regional_manager_id', userProfile.id)
+
+      if (regions && regions.length > 0) {
+        const regionIds = regions.map(r => r.id)
+
+        const { data: sites } = await supabase
+          .from('sites')
+          .select('id')
+          .in('region_id', regionIds)
+
+        return sites?.map(s => s.id) || []
+      }
+    }
+
+    // AREA MANAGER: See all sites in their area(s)
+    if (app_role === 'Area Manager') {
+      // Find areas where this user is the area_manager
+      const { data: areas } = await supabase
+        .from('areas')
+        .select('id')
+        .eq('area_manager_id', userProfile.id)
+
+      if (areas && areas.length > 0) {
+        const areaIds = areas.map(a => a.id)
+
+        const { data: sites } = await supabase
+          .from('sites')
+          .select('id')
+          .in('area_id', areaIds)
+
+        return sites?.map(s => s.id) || []
+      }
+    }
+
+    // MANAGER/STAFF: See home site + borrowed sites
+    const siteIds = new Set<string>()
+
+    if (userProfile.home_site) {
+      siteIds.add(userProfile.home_site)
+    }
+
+    // Get borrowed sites from employee_site_assignments
+    const { data: assignments } = await supabase
+      .from('employee_site_assignments')
+      .select('borrowed_site_id')
+      .eq('profile_id', userProfile.id)
+      .eq('is_active', true)
+      .lte('start_date', new Date().toISOString())
+      .or('end_date.is.null,end_date.gte.' + new Date().toISOString())
+
+    assignments?.forEach(a => {
+      if (a.borrowed_site_id) siteIds.add(a.borrowed_site_id)
+    })
+
+    return Array.from(siteIds)
+  }, [supabase])
 
   useEffect(() => {
     let mounted = true;
@@ -37,6 +116,15 @@ export default function AlertsFeed() {
     const load = async () => {
       // Prevent multiple simultaneous loads
       if (isLoading) return;
+
+      // Safety check: Don't proceed if profile isn't loaded yet
+      if (!userProfile || !companyId) {
+        console.log('⚠️ AlertsFeed: No userProfile or companyId, skipping')
+        isLoading = false; // Reset flag
+        setLoading(false);
+        return;
+      }
+
       isLoading = true;
       
       setLoading(true);
@@ -45,17 +133,32 @@ export default function AlertsFeed() {
         const alertRows: AlertRow[] = [];
         const todayIso = new Date().toISOString().split("T")[0];
 
+        // Get accessible site IDs for this user (used for both notifications and tasks)
+        const accessibleSiteIds = await getAccessibleSiteIds(userProfile, companyId)
+        console.log('🔔 Accessible site IDs:', accessibleSiteIds)
+        console.log('🔔 User role:', userProfile?.app_role)
+
         // Only query notifications if companyId is available
         if (companyId) {
           try {
-            // Query notifications - use select("*") to get all columns, handle severity column gracefully
-            const { data, error } = await supabase
+
+            // Build notifications query with site filtering
+            let notificationsQuery = supabase
               .from("notifications")
               .select("*")
               .eq("company_id", companyId)
               .gte("created_at", since)
-              .order("created_at", { ascending: false })
-              .limit(50);
+              .order("created_at", { ascending: false });
+
+            // Filter by accessible sites (or show if site_id is null - company-wide alerts)
+            if (accessibleSiteIds.length > 0) {
+              notificationsQuery = notificationsQuery.or(
+                `site_id.in.(${accessibleSiteIds.join(',')}),site_id.is.null`
+              );
+            }
+
+            const { data, error } = await notificationsQuery.limit(50);
+            console.log('🔔 Notifications query result:', { notificationsCount: data?.length, error });
             
             // ⚠️ ERROR HANDLING FIX - DO NOT REMOVE SUPPRESSION
             // 400/406 errors are expected when RLS blocks access or query syntax issues.
@@ -107,38 +210,59 @@ export default function AlertsFeed() {
 
         if (companyId) {
           // Fetch overdue tasks (due date before today)
-          const { data: overdueTasks, error: overdueError } = await supabase
+          let overdueQuery = supabase
             .from("checklist_tasks")
             .select("id, custom_name, template_id, due_date, due_time, status, site_id, template: task_templates(name)")
             .eq("company_id", companyId)
-            .in("status", ["pending", "in_progress"])
+            .in("status", ["pending", "in_progress", "accepted"])
             .lt("due_date", todayIso)
             .limit(20);
+
+          // Filter by accessible sites
+          if (accessibleSiteIds.length > 0) {
+            overdueQuery = overdueQuery.in("site_id", accessibleSiteIds);
+          }
+
+          const { data: overdueTasks, error: overdueError } = await overdueQuery;
 
           // Fetch late tasks (due today but past due time)
           const now = new Date();
           const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-          const { data: lateTasks, error: lateError } = await supabase
+          let lateQuery = supabase
             .from("checklist_tasks")
             .select("id, custom_name, template_id, due_date, due_time, status, site_id, template: task_templates(name)")
             .eq("company_id", companyId)
             .eq("due_date", todayIso)
-            .in("status", ["pending", "in_progress"])
+            .in("status", ["pending", "in_progress", "accepted"])
             .not("due_time", "is", null)
             .lt("due_time", currentTime)
             .limit(20);
+
+          // Filter by accessible sites
+          if (accessibleSiteIds.length > 0) {
+            lateQuery = lateQuery.in("site_id", accessibleSiteIds);
+          }
+
+          const { data: lateTasks, error: lateError } = await lateQuery;
 
           // Fetch missed tasks (yesterday's incomplete tasks)
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
           const yesterdayIso = yesterday.toISOString().split("T")[0];
-          const { data: missedTasks, error: missedError } = await supabase
+          let missedQuery = supabase
             .from("checklist_tasks")
             .select("id, custom_name, template_id, due_date, due_time, status, site_id, template: task_templates(name, is_critical)")
             .eq("company_id", companyId)
             .eq("due_date", yesterdayIso)
-            .in("status", ["pending", "in_progress"])
+            .in("status", ["pending", "in_progress", "accepted"])
             .limit(20);
+
+          // Filter by accessible sites
+          if (accessibleSiteIds.length > 0) {
+            missedQuery = missedQuery.in("site_id", accessibleSiteIds);
+          }
+
+          const { data: missedTasks, error: missedError } = await missedQuery;
 
           // Fetch tasks with notes from checklist_tasks table
           const { data: taskNotes, error: taskError } = await supabase
@@ -374,7 +498,7 @@ export default function AlertsFeed() {
       clearTimeout(debounceTimeout);
       supabase.removeChannel(channel);
     };
-  }, [companyId, since]);
+  }, [companyId, since, getAccessibleSiteIds, supabase, userProfile]);
 
   // Determine alert color and icon based on type and severity
   const getAlertStyle = (alert: AlertRow) => {

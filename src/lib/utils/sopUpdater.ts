@@ -88,15 +88,28 @@ export async function updateFoodSOPFromRecipe(
     });
 
     // 2. Fetch recipe ingredients - the view already has joined data (ingredient_name, supplier, allergens, unit_abbreviation)
+    console.log('🔍 Fetching recipe ingredients for recipe ID:', recipeId);
+    
     const { data: recipeIngredients, error: ingredientsError } = await supabase
       .from('recipe_ingredients')
       .select('*')
       .eq('recipe_id', recipeId)
       .order('sort_order', { ascending: true });
 
+    console.log('📊 Recipe ingredients query result:', {
+      count: recipeIngredients?.length || 0,
+      ingredients: recipeIngredients,
+      error: ingredientsError
+    });
+
     if (ingredientsError) {
-      console.error('Error fetching ingredients:', ingredientsError);
+      console.error('❌ Error fetching ingredients:', ingredientsError);
       throw new Error(`Failed to fetch recipe ingredients: ${ingredientsError.message}`);
+    }
+    
+    if (!recipeIngredients || recipeIngredients.length === 0) {
+      console.warn('⚠️ Recipe has no ingredients! Recipe ID:', recipeId);
+      // Don't throw error - just sync with empty ingredients
     }
 
     // 3. Fetch current SOP to preserve user-entered data
@@ -261,6 +274,28 @@ export async function updateFoodSOPFromRecipe(
       storageNotes: recipeWithCost.storage_requirements || ''
     };
 
+    // 10b. Preserve existing equipment list (if it exists)
+    let equipmentListIndex = sopData.content.findIndex((node: any) => node.type === 'equipmentList');
+    if (equipmentListIndex === -1) {
+      // Equipment list doesn't exist, create empty one if needed
+      // But don't create it automatically - let user add it manually if needed
+      console.log('No equipment list found - preserving existing structure');
+    } else {
+      console.log('Equipment list found at index', equipmentListIndex, '- preserving it');
+      // Equipment list exists, we preserve it - no changes needed
+    }
+
+    // 10c. Preserve existing process steps (if they exist)
+    let processStepsIndex = sopData.content.findIndex((node: any) => node.type === 'processSteps');
+    if (processStepsIndex === -1) {
+      // Process steps don't exist, create empty one if needed
+      // But don't create it automatically - let user add it manually if needed
+      console.log('No process steps found - preserving existing structure');
+    } else {
+      console.log('Process steps found at index', processStepsIndex, '- preserving it');
+      // Process steps exist, we preserve them - no changes needed
+    }
+
     // 11. Build structured metadata for print template
     // Get yield unit abbreviation if available
     const yieldUnitAbbr = recipeWithCost.yield_unit?.abbreviation 
@@ -285,22 +320,28 @@ export async function updateFoodSOPFromRecipe(
         supplier: row.supplier || null,
         allergens: row.allergen || []
       })),
-      equipment: [], // Preserve existing if available
-      method_steps: [] // Preserve existing if available
+      // Preserve existing equipment and steps from sop_data
+      equipment: equipmentListIndex !== -1 
+        ? (sopData.content[equipmentListIndex]?.attrs?.rows || []).map((eq: any) => eq.item || eq.name || '')
+        : [],
+      method_steps: processStepsIndex !== -1
+        ? (sopData.content[processStepsIndex]?.attrs?.steps || []).map((step: any) => step.description || step.text || '')
+        : []
     };
 
     // 12. Update SOP entry - always update with current recipe data
+    // Note: metadata column doesn't exist in all schemas, so we only update sop_data
+    // The metadata structure is already included in sop_data (TipTap format)
     console.log('Updating SOP with', ingredientRows.length, 'ingredients');
     
     const { data: updatedSop, error: updateError } = await supabase
       .from('sop_entries')
       .update({
-        sop_data: sopData, // TipTap format for editor
-        metadata: metadata, // Structured format for print template
+        sop_data: sopData, // TipTap format for editor - contains all data including ingredients
         updated_at: new Date().toISOString(),
       })
       .eq('id', sopId)
-      .select('sop_data, metadata')
+      .select('sop_data')
       .single();
 
     if (updateError) {
@@ -310,12 +351,12 @@ export async function updateFoodSOPFromRecipe(
 
     // Verify the update worked
     const updatedIngredientTable = updatedSop?.sop_data?.content?.find((n: any) => n.type === 'ingredientTable');
-    console.log('SOP updated successfully. Ingredient table has', 
+    console.log('✅ SOP updated successfully. Ingredient table has', 
       updatedIngredientTable?.attrs?.rows?.length || 0, 
       'ingredients');
     
     if ((updatedIngredientTable?.attrs?.rows?.length || 0) === 0 && ingredientRows.length > 0) {
-      console.warn('WARNING: Ingredients were not saved to SOP!');
+      console.warn('⚠️ WARNING: Ingredients were not saved to SOP!');
       throw new Error('Ingredients were not saved to SOP. Please check the console for details.');
     }
   } catch (error: any) {

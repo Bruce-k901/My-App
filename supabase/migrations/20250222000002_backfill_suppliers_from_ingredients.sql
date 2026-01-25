@@ -17,6 +17,18 @@ DECLARE
   v_created_count INTEGER := 0;
   v_skipped_count INTEGER := 0;
 BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'suppliers'
+  ) THEN
+    RAISE NOTICE 'ingredients_library or suppliers tables do not exist - skipping supplier backfill';
+    RETURN;
+  END IF;
+
   RAISE NOTICE 'Starting supplier backfill from ingredients_library...';
   
   -- Loop through all ingredients with supplier names, grouped by company and supplier name

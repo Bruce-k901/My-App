@@ -1239,19 +1239,19 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto scrollbar-hide">
         <DialogHeader>
-          <div className="bg-neutral-800/30 rounded-lg p-4 backdrop-blur-sm">
+          <div className="bg-gray-50 dark:bg-neutral-800/30 rounded-lg p-4 backdrop-blur-sm border border-gray-200 dark:border-white/10">
             {/* First row: Asset Name left, Site Name right with close button */}
             <div className="flex items-center justify-between mb-2">
-              <DialogTitle className="text-xl font-semibold text-white">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
                 {asset.name}
               </DialogTitle>
               <div className="flex items-center gap-3">
-                <div className="text-sm text-neutral-400">
+                <div className="text-sm text-gray-600 dark:text-neutral-400">
                   {asset.site_name || 'N/A'}
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   aria-label="Close"
                 >
                   <X className="h-5 w-5" />
@@ -1260,14 +1260,14 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             </div>
             
             {/* Second row: Serial only */}
-            <div className="text-sm text-neutral-400 mb-2">
+            <div className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
               Serial: {asset.serial_number || 'N/A'}
             </div>
             
             {/* Third row: Age + Warranty inline */}
-            <div className="flex items-center justify-between text-sm text-neutral-400">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400">
               <span>Age: {getAssetAgeInYearsMonths()}</span>
-              <span className={isUnderWarranty() ? 'text-green-400' : 'text-[#E14C4C]'}>
+              <span className={isUnderWarranty() ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-[#E14C4C]'}>
                 Warranty: {isUnderWarranty() ? 'In Warranty' : 'Out of Warranty'}
               </span>
             </div>
@@ -1275,13 +1275,13 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         </DialogHeader>
         
         {/* Tab Navigation */}
-        <div className="flex border-b border-neutral-700">
+        <div className="flex border-b border-gray-200 dark:border-neutral-700">
           <button
             onClick={() => setActiveTab('new')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'new'
-                ? 'border-magenta-500 text-magenta-400'
-                : 'border-transparent text-neutral-400 hover:text-white'
+                ? 'border-pink-500 dark:border-magenta-500 text-pink-600 dark:text-magenta-400'
+                : 'border-transparent text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             New Fault
@@ -1290,8 +1290,8 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             onClick={() => setActiveTab('active')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'active'
-                ? 'border-magenta-500 text-magenta-400'
-                : 'border-transparent text-neutral-400 hover:text-white'
+                ? 'border-pink-500 dark:border-magenta-500 text-pink-600 dark:text-magenta-400'
+                : 'border-transparent text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Active Ticket ({callouts.filter(c => c.status === 'open').length})
@@ -1300,8 +1300,8 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             onClick={() => setActiveTab('history')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'history'
-                ? 'border-magenta-500 text-magenta-400'
-                : 'border-transparent text-neutral-400 hover:text-white'
+                ? 'border-pink-500 dark:border-magenta-500 text-pink-600 dark:text-magenta-400'
+                : 'border-transparent text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             History ({callouts.length})
@@ -1309,12 +1309,12 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         </div>
 
         {/* Callout Type Segmented Control */}
-        <div className="flex rounded-md bg-white/5 backdrop-blur p-[2px] overflow-hidden h-[38px] mt-4">
+        <div className="flex rounded-md bg-gray-100 dark:bg-white/5 backdrop-blur p-[2px] overflow-hidden h-[38px] mt-4 border border-gray-200 dark:border-white/10">
           <div className="relative flex w-full">
             {/* Shared sliding indicator */}
             <motion.div
               layoutId="callout-indicator"
-              className="absolute inset-y-0 bg-fuchsia-500/10 border border-fuchsia-400/40 rounded-md shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] shadow-black/20"
+              className="absolute inset-y-0 bg-pink-100 dark:bg-fuchsia-500/10 border border-pink-300 dark:border-fuchsia-400/40 rounded-md shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] dark:shadow-black/20"
               transition={{
                 type: "spring",
                 stiffness: 420,
@@ -1337,8 +1337,8 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 onClick={() => setCalloutType(option.value as 'reactive' | 'warranty' | 'ppm')}
                 className={`flex-1 flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-200 ${
                   calloutType === option.value
-                    ? 'text-fuchsia-200'
-                    : 'text-zinc-300 hover:text-white'
+                    ? 'text-pink-600 dark:text-fuchsia-200'
+                    : 'text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 <option.icon size={16} />
@@ -1363,10 +1363,10 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               {/* Fault description */}
               {calloutType !== 'ppm' && (
                 <div>
-                  <label className="text-sm font-medium text-white mb-2 block">
-                    Fault Description <span className="text-red-400">*</span>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+                    Fault Description <span className="text-red-500 dark:text-red-400">*</span>
                     {!faultDescription.trim() && (
-                      <span className="ml-2 text-xs text-yellow-400">(Required)</span>
+                      <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">(Required)</span>
                     )}
                   </label>
                   <textarea
@@ -1376,15 +1376,15 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                       setFaultDescription(e.target.value);
                     }}
                     placeholder="Describe the fault or issue..."
-                    className={`w-full h-24 px-4 py-3 bg-neutral-800/50 border rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full h-24 px-4 py-3 bg-white dark:bg-neutral-800/50 border rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
                       !faultDescription.trim() 
-                        ? 'border-yellow-500/50 focus:ring-yellow-500/50 focus:border-yellow-500/50' 
-                        : 'border-neutral-700 focus:ring-magenta-500/50 focus:border-magenta-500/50'
+                        ? 'border-yellow-400 dark:border-yellow-500/50 focus:ring-yellow-500/50 focus:border-yellow-500/50' 
+                        : 'border-gray-300 dark:border-neutral-700 focus:ring-pink-500/50 dark:focus:ring-magenta-500/50 focus:border-pink-500/50 dark:focus:border-magenta-500/50'
                     }`}
                     required
                   />
                   {!faultDescription.trim() && (
-                    <p className="mt-1 text-xs text-yellow-400">
+                    <p className="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
                       Please enter a fault description to continue
                     </p>
                   )}
@@ -1393,8 +1393,8 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
 
               {/* Contractor Selection */}
               <div className="space-y-3">
-                <label className="text-sm font-medium text-white block">
-                  Contractor <span className="text-red-400">*</span>
+                <label className="text-sm font-medium text-gray-900 dark:text-white block">
+                  Contractor <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 
                 {!showCustomContractorInput ? (
@@ -1409,7 +1409,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                           setSelectedContractorId(e.target.value);
                         }
                       }}
-                      className="w-full px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-magenta-500/50 focus:border-magenta-500/50 transition-all"
+                      className="w-full px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50 dark:focus:ring-magenta-500/50 focus:border-pink-500/50 dark:focus:border-magenta-500/50 transition-all"
                       disabled={loadingContractors}
                     >
                       <option value="">Select a contractor...</option>
@@ -1422,12 +1422,12 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                     </select>
                     
                     {selectedContractorId && (
-                      <div className="p-3 bg-neutral-800/30 border border-neutral-700 rounded-lg">
-                        <p className="text-sm text-white font-medium">
+                      <div className="p-3 bg-gray-50 dark:bg-neutral-800/30 border border-gray-200 dark:border-neutral-700 rounded-lg">
+                        <p className="text-sm text-gray-900 dark:text-white font-medium">
                           {contractors.find(c => c.id === selectedContractorId)?.name}
                         </p>
                         {contractors.find(c => c.id === selectedContractorId)?.email && (
-                          <p className="text-xs text-neutral-400 mt-1">
+                          <p className="text-xs text-gray-600 dark:text-neutral-400 mt-1">
                             {contractors.find(c => c.id === selectedContractorId)?.email}
                           </p>
                         )}
@@ -1435,9 +1435,9 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="space-y-3 p-4 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-lg">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-yellow-400">Custom Contractor</label>
+                      <label className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Custom Contractor</label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1445,7 +1445,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                           setManualContractorName('');
                           setManualContractorEmail('');
                         }}
-                        className="text-xs text-neutral-400 hover:text-white"
+                        className="text-xs text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
                       >
                         Use existing contractor
                       </button>
@@ -1455,7 +1455,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                       value={manualContractorName}
                       onChange={(e) => setManualContractorName(e.target.value)}
                       placeholder="Contractor name *"
-                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+                      className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
                       required
                     />
                     <input
@@ -1463,7 +1463,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                       value={manualContractorEmail}
                       onChange={(e) => setManualContractorEmail(e.target.value)}
                       placeholder="Contractor email (optional)"
-                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+                      className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
                     />
                   </div>
                 )}
@@ -1472,15 +1472,15 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               {/* Troubleshooting Button */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-white">Troubleshooting</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Troubleshooting</label>
                   {!troubleshootAck && (
-                    <span className="text-xs text-yellow-400">Required</span>
+                    <span className="text-xs text-yellow-600 dark:text-yellow-400">Required</span>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowTroubleshootModal(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-all"
                 >
                   <Wrench className="h-4 w-4" />
                   <span>{troubleshootAck ? 'Troubleshooting Complete ✓' : 'Open Troubleshooting Guide'}</span>
@@ -1489,7 +1489,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
         
               {/* Photo upload with camera capture */}
               <div className="space-y-3">
-                <label className="text-sm font-medium text-white block">Photos</label>
+                <label className="text-sm font-medium text-gray-900 dark:text-white block">Photos</label>
                 
                 {/* Photo previews */}
                 {photoPreviewUrls.length > 0 && (
@@ -1499,7 +1499,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                         <img
                           src={url}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border border-neutral-700"
+                          className="w-full h-24 object-cover rounded-lg border border-gray-300 dark:border-neutral-700"
                         />
                         <button
                           type="button"
@@ -1518,7 +1518,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                   <button
                     type="button"
                     onClick={handleCameraCapture}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-all"
                   >
                     <Camera className="h-4 w-4" />
                     <span className="text-sm">Take Photo</span>
@@ -1526,7 +1526,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                   <button
                     type="button"
                     onClick={handlePhotoUpload}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white hover:bg-neutral-700/50 transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-all"
                   >
                     <Upload className="h-4 w-4" />
                     <span className="text-sm">Upload Photo</span>
@@ -1536,28 +1536,28 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               
               {/* Additional Notes */}
               <div>
-                <label className="text-sm font-medium text-white mb-2 block">Additional Notes (Optional)</label>
+                <label className="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Additional Notes (Optional)</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any additional notes..."
-                  className="w-full h-20 px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-magenta-500/50 focus:border-magenta-500/50 transition-all"
+                  className="w-full h-20 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 dark:focus:ring-magenta-500/50 focus:border-pink-500/50 dark:focus:border-magenta-500/50 transition-all"
                 />
               </div>
         
               {/* CTA Bar */}
-              <div className="flex gap-3 pt-4 border-t border-neutral-700">
+              <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-neutral-700">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                  className="flex-1 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCallOptions(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800/50 border border-neutral-700 text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
                 >
                   <Phone className="h-4 w-4" />
                   Call Options
@@ -1571,7 +1571,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                     handleCreateCallout(e);
                   }}
                   disabled={loading || (requireTroubleshoot && !troubleshootAck)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:text-neutral-500 transition-all text-sm font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-pink-600 dark:text-magenta-400 border border-pink-500 dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 dark:disabled:border-neutral-700 disabled:text-gray-400 dark:disabled:text-neutral-500 transition-all text-sm font-medium"
                 >
                   {loading ? 'Sending...' : (
                     <>
@@ -1587,64 +1587,64 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
           {activeTab === 'active' && (
             <div className="space-y-4">
               {callouts.filter(c => c.status === 'open').length === 0 ? (
-                <div className="text-center py-8 text-neutral-400">
-                  <Clock className="mx-auto h-12 w-12 mb-4" />
+                <div className="text-center py-8 text-gray-600 dark:text-neutral-400">
+                  <Clock className="mx-auto h-12 w-12 mb-4 text-gray-400 dark:text-neutral-500" />
                   <p>No active callouts</p>
                 </div>
               ) : (
                 callouts.filter(c => c.status === 'open').map((callout) => (
-                  <div key={callout.id} className="border border-neutral-700 rounded-lg p-4">
+                  <div key={callout.id} className="border border-gray-200 dark:border-neutral-700 rounded-lg p-4 bg-gray-50 dark:bg-neutral-800/30">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          callout.callout_type === 'reactive' ? 'bg-red-500/20 text-red-400' :
-                          callout.callout_type === 'warranty' ? 'bg-blue-500/20 text-blue-400' :
-                          'bg-green-500/20 text-green-400'
+                          callout.callout_type === 'reactive' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                          callout.callout_type === 'warranty' ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400' :
+                          'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
                         }`}>
                           {callout.callout_type.toUpperCase()}
                         </span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          callout.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
-                          callout.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-green-500/20 text-green-400'
+                          callout.priority === 'urgent' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                          callout.priority === 'medium' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400' :
+                          'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
                         }`}>
                           {callout.priority.toUpperCase()}
                         </span>
                       </div>
-                      <div className="text-sm text-neutral-400">
+                      <div className="text-sm text-gray-600 dark:text-neutral-400">
                         Created {new Date(callout.created_at).toLocaleDateString()}
                       </div>
                     </div>
 
                     {callout.fault_description && (
                       <div className="mb-4">
-                        <label className="text-sm text-neutral-400">Fault Description</label>
-                        <p className="text-white mt-1">{callout.fault_description}</p>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Fault Description</label>
+                        <p className="text-gray-900 dark:text-white mt-1">{callout.fault_description}</p>
                       </div>
                     )}
 
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
-                        <label className="text-sm text-neutral-400">Contractor</label>
-                        <p className="text-white">{callout.contractor_name || 'N/A'}</p>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Contractor</label>
+                        <p className="text-gray-900 dark:text-white">{callout.contractor_name || 'N/A'}</p>
                       </div>
                       <div>
-                        <label className="text-sm text-neutral-400">Created by</label>
-                        <p className="text-white">{callout.created_by_name || 'N/A'}</p>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Created by</label>
+                        <p className="text-gray-900 dark:text-white">{callout.created_by_name || 'N/A'}</p>
                       </div>
                     </div>
 
                     {/* Update section */}
-                    <div className="border-t border-neutral-700 pt-4">
-                      <h4 className="text-sm font-medium text-white mb-3">Update Callout</h4>
+                    <div className="border-t border-gray-200 dark:border-neutral-700 pt-4">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Update Callout</h4>
                       <div className="space-y-3">
                         <div>
-                          <label className="text-sm text-neutral-400 mb-2 block">Add Notes</label>
+                          <label className="text-sm text-gray-600 dark:text-neutral-400 mb-2 block">Add Notes</label>
                           <textarea
                             value={updateNotes}
                             onChange={(e) => setUpdateNotes(e.target.value)}
                             placeholder="Add update notes..."
-                            className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
+                            className="w-full h-20 px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 dark:focus:ring-magenta-500/40 focus:border-pink-500/40 dark:focus:border-magenta-500/40 scrollbar-hide"
                           />
                         </div>
                         <div className="flex gap-2">
@@ -1662,16 +1662,16 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
 
                     {/* Close section (Manager+ only) */}
                     {canCloseReopen() && (
-                      <div className="border-t border-neutral-700 pt-4 mt-4">
-                        <h4 className="text-sm font-medium text-white mb-3">Close Callout</h4>
+                      <div className="border-t border-gray-200 dark:border-neutral-700 pt-4 mt-4">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Close Callout</h4>
                         <div className="space-y-3">
                           <div>
-                            <label className="text-sm text-neutral-400 mb-2 block">Repair Summary *</label>
+                            <label className="text-sm text-gray-600 dark:text-neutral-400 mb-2 block">Repair Summary *</label>
                             <textarea
                               value={repairSummary}
                               onChange={(e) => setRepairSummary(e.target.value)}
                               placeholder="Describe what was repaired..."
-                              className="w-full h-20 px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 focus:border-magenta-500/40 scrollbar-hide"
+                              className="w-full h-20 px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 dark:focus:ring-magenta-500/40 focus:border-pink-500/40 dark:focus:border-magenta-500/40 scrollbar-hide"
                             />
                           </div>
                           <div className="flex gap-2">
@@ -1688,11 +1688,11 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                             <Button
                               onClick={() => handleCloseCallout(callout.id)}
                               disabled={loading || !repairSummary.trim()}
-                              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+                              className="bg-transparent border border-pink-500 dark:border-[#EC4899] text-pink-600 dark:text-[#EC4899] hover:shadow-lg hover:shadow-pink-500/30 dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
                             >
                               <CheckCircle size={14} className="mr-1" />
                               Close Callout
-          </Button>
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -1706,79 +1706,79 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
           {activeTab === 'history' && (
             <div className="space-y-4">
               {callouts.length === 0 ? (
-                <div className="text-center py-8 text-neutral-400">
-                  <Clock className="mx-auto h-12 w-12 mb-4" />
+                <div className="text-center py-8 text-gray-600 dark:text-neutral-400">
+                  <Clock className="mx-auto h-12 w-12 mb-4 text-gray-400 dark:text-neutral-500" />
                   <p>No callout history</p>
                 </div>
               ) : (
                 callouts.map((callout) => (
-                  <div key={callout.id} className="border border-neutral-700 rounded-lg p-4">
+                  <div key={callout.id} className="border border-gray-200 dark:border-neutral-700 rounded-lg p-4 bg-gray-50 dark:bg-neutral-800/30">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          callout.callout_type === 'reactive' ? 'bg-red-500/20 text-red-400' :
-                          callout.callout_type === 'warranty' ? 'bg-blue-500/20 text-blue-400' :
-                          'bg-green-500/20 text-green-400'
+                          callout.callout_type === 'reactive' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                          callout.callout_type === 'warranty' ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400' :
+                          'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
                         }`}>
                           {callout.callout_type.toUpperCase()}
                         </span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          callout.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
-                          callout.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-green-500/20 text-green-400'
+                          callout.priority === 'urgent' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                          callout.priority === 'medium' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400' :
+                          'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
                         }`}>
                           {callout.priority.toUpperCase()}
                         </span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          callout.status === 'open' ? 'bg-green-500/20 text-green-400' :
-                          callout.status === 'closed' ? 'bg-neutral-500/20 text-neutral-400' :
-                          'bg-orange-500/20 text-orange-400'
+                          callout.status === 'open' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' :
+                          callout.status === 'closed' ? 'bg-gray-200 dark:bg-neutral-500/20 text-gray-700 dark:text-neutral-400' :
+                          'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
                         }`}>
                           {callout.status.toUpperCase()}
                         </span>
                       </div>
-                      <div className="text-sm text-neutral-400">
+                      <div className="text-sm text-gray-600 dark:text-neutral-400">
                         {new Date(callout.created_at).toLocaleDateString()}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-3">
                       <div>
-                        <label className="text-sm text-neutral-400">Contractor</label>
-                        <p className="text-white text-sm">{callout.contractor_name || 'N/A'}</p>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Contractor</label>
+                        <p className="text-gray-900 dark:text-white text-sm">{callout.contractor_name || 'N/A'}</p>
                       </div>
                       <div>
-                        <label className="text-sm text-neutral-400">Created by</label>
-                        <p className="text-white text-sm">{callout.created_by_name || 'N/A'}</p>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Created by</label>
+                        <p className="text-gray-900 dark:text-white text-sm">{callout.created_by_name || 'N/A'}</p>
                       </div>
                     </div>
 
                     {callout.fault_description && (
                       <div className="mb-3">
-                        <label className="text-sm text-neutral-400">Fault</label>
-                        <p className="text-white text-sm mt-1">{callout.fault_description}</p>
-          </div>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Fault</label>
+                        <p className="text-gray-900 dark:text-white text-sm mt-1">{callout.fault_description}</p>
+                      </div>
                     )}
 
                     {callout.repair_summary && (
                       <div className="mb-3">
-                        <label className="text-sm text-neutral-400">Repair Summary</label>
-                        <p className="text-white text-sm mt-1">{callout.repair_summary}</p>
-          </div>
+                        <label className="text-sm text-gray-600 dark:text-neutral-400">Repair Summary</label>
+                        <p className="text-gray-900 dark:text-white text-sm mt-1">{callout.repair_summary}</p>
+                      </div>
                     )}
 
                     <div className="flex items-center justify-between">
-            <div className="text-xs text-neutral-500">
+                      <div className="text-xs text-gray-500 dark:text-neutral-500">
                         {callout.closed_at && `Closed: ${new Date(callout.closed_at).toLocaleDateString()}`}
                         {callout.reopened_at && ` • Reopened: ${new Date(callout.reopened_at).toLocaleDateString()}`}
                       </div>
                       {canReopen(callout) && (
-          <Button
+                        <Button
                           onClick={() => handleReopenCallout(callout.id)}
                           disabled={loading}
                           size="sm"
-            variant="outline"
-                          className="text-orange-400 border-orange-400 hover:bg-orange-400/10"
+                          variant="outline"
+                          className="text-orange-600 dark:text-orange-400 border-orange-500 dark:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-400/10"
                         >
                           Reopen Callout
                         </Button>
@@ -1795,39 +1795,39 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       {/* Confirmation Popup */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-neutral-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Confirm Call-Out</h3>
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-200 dark:border-neutral-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Confirm Call-Out</h3>
             
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
-                <span className="text-neutral-400">Asset:</span>
-                <span className="text-white">{asset.name}</span>
+                <span className="text-gray-600 dark:text-neutral-400">Asset:</span>
+                <span className="text-gray-900 dark:text-white">{asset.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Serial:</span>
-                <span className="text-white">{asset.serial_number || 'N/A'}</span>
+                <span className="text-gray-600 dark:text-neutral-400">Serial:</span>
+                <span className="text-gray-900 dark:text-white">{asset.serial_number || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Site:</span>
-                <span className="text-white">{asset.site_name || 'N/A'}</span>
+                <span className="text-gray-600 dark:text-neutral-400">Site:</span>
+                <span className="text-gray-900 dark:text-white">{asset.site_name || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Type:</span>
-                <span className="text-white capitalize">{calloutType}</span>
+                <span className="text-gray-600 dark:text-neutral-400">Type:</span>
+                <span className="text-gray-900 dark:text-white capitalize">{calloutType}</span>
               </div>
               {faultDescription && (
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Fault:</span>
-                  <span className="text-white text-sm max-w-xs truncate">{faultDescription}</span>
+                  <span className="text-gray-600 dark:text-neutral-400">Fault:</span>
+                  <span className="text-gray-900 dark:text-white text-sm max-w-xs truncate">{faultDescription}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-neutral-400">Priority:</span>
-                <span className="font-medium text-red-400">Urgent</span>
+                <span className="text-gray-600 dark:text-neutral-400">Priority:</span>
+                <span className="font-medium text-red-600 dark:text-red-400">Urgent</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Contractor:</span>
-                <span className="text-white">
+                <span className="text-gray-600 dark:text-neutral-400">Contractor:</span>
+                <span className="text-gray-900 dark:text-white">
                   {showCustomContractorInput 
                     ? `${manualContractorName}${manualContractorEmail ? ` (${manualContractorEmail})` : ''}`
                     : selectedContractorId 
@@ -1836,22 +1836,22 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Attachments:</span>
-                <span className="text-white">{attachments.length} files</span>
+                <span className="text-gray-600 dark:text-neutral-400">Attachments:</span>
+                <span className="text-gray-900 dark:text-white">{attachments.length} files</span>
               </div>
             </div>
 
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmation(false)}
-                className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 Edit
               </button>
               <button
                 onClick={handleConfirmCreateCallout}
                 disabled={loading}
-                className="px-4 py-2 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 bg-transparent text-pink-600 dark:text-magenta-400 border border-pink-500 dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {loading ? 'Sending...' : 'Send Callout'}
               </button>
@@ -1863,10 +1863,10 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       {/* Call Options Modal */}
       {showCallOptions && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
             <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold text-white mb-2">Choose Contact Option</h3>
-              <p className="text-neutral-400 text-sm">Select how you'd like to contact the contractor</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Choose Contact Option</h3>
+              <p className="text-gray-600 dark:text-neutral-400 text-sm">Select how you'd like to contact the contractor</p>
             </div>
             
             <div className="space-y-3">
@@ -1880,12 +1880,12 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                   }
                   setShowCallOptions(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 bg-magenta-500/10 border border-magenta-500/30 text-magenta-400 rounded-lg hover:bg-magenta-500/20 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-pink-50 dark:bg-magenta-500/10 border border-pink-200 dark:border-magenta-500/30 text-pink-700 dark:text-magenta-400 rounded-lg hover:bg-pink-100 dark:hover:bg-magenta-500/20 transition-colors"
               >
                 <div className="text-2xl">📞</div>
                 <div className="text-left">
                   <div className="font-medium">Call Contractor</div>
-                  <div className="text-sm text-neutral-400">{getContractorInfo() || 'Main contractor line'}</div>
+                  <div className="text-sm text-gray-600 dark:text-neutral-400">{getContractorInfo() || 'Main contractor line'}</div>
                 </div>
               </button>
               
@@ -1899,12 +1899,12 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                   }
                   setShowCallOptions(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors"
               >
                 <div className="text-2xl">🚨</div>
                 <div className="text-left">
                   <div className="font-medium">Emergency Contact</div>
-                  <div className="text-sm text-neutral-400">Out-of-hours emergency line</div>
+                  <div className="text-sm text-gray-600 dark:text-neutral-400">Out-of-hours emergency line</div>
                 </div>
               </button>
             </div>
@@ -1913,7 +1913,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => setShowCallOptions(false)}
-                className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 Cancel
               </button>
@@ -1942,11 +1942,11 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
           }}
         >
           <div 
-            className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide relative"
+            className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide relative shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4 sticky top-0 bg-neutral-900 z-10 pb-2">
-              <h3 className="text-lg font-semibold text-white">Troubleshooting Guide</h3>
+            <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-neutral-900 z-10 pb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Troubleshooting Guide</h3>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1962,7 +1962,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                   // Close the modal
                   setShowTroubleshootModal(false);
                 }}
-                className="text-neutral-400 hover:text-white transition-colors p-1 hover:bg-neutral-700/50 rounded flex items-center justify-center"
+                className="text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors p-1 hover:bg-gray-100 dark:hover:bg-neutral-700/50 rounded flex items-center justify-center"
                 aria-label="Close troubleshooting guide"
                 type="button"
               >
@@ -1972,7 +1972,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             
             {loadingQuestions ? (
               <div className="h-[200px] flex items-center justify-center">
-                <div className="text-neutral-400 text-sm">Loading troubleshooting guide...</div>
+                <div className="text-gray-600 dark:text-neutral-400 text-sm">Loading troubleshooting guide...</div>
               </div>
             ) : troubleshootingQuestions.length > 0 ? (
               <div>
@@ -1995,17 +1995,17 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                 
                 {/* Prevent closing troubleshoot modal when required */}
                 {requireTroubleshoot && !troubleshootAck && (
-                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-400 text-sm text-center">
+                  <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg text-yellow-700 dark:text-yellow-400 text-sm text-center">
                     Please complete the troubleshooting guide before proceeding
                   </div>
                 )}
               </div>
             ) : (
               <div className="h-[200px] flex flex-col items-center justify-center">
-                <div className="text-neutral-400 text-sm text-center mb-4">
+                <div className="text-gray-600 dark:text-neutral-400 text-sm text-center mb-4">
                   No troubleshooting guide available for this equipment.
                   <br />
-                  <span className="text-xs text-neutral-500 mt-2 block">
+                  <span className="text-xs text-gray-500 dark:text-neutral-500 mt-2 block">
                     Category: {asset?.category || 'Unknown'}
                   </span>
                 </div>
@@ -2016,7 +2016,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
                       setTroubleshootAck(true);
                       setShowTroubleshootModal(false);
                     }}
-                    className="px-4 py-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-colors text-sm"
+                    className="px-4 py-2 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 text-yellow-700 dark:text-yellow-400 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-500/20 transition-colors text-sm"
                   >
                     Acknowledge - Continue to Callout
                   </button>
@@ -2030,20 +2030,20 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
       {/* Validation Modal */}
       {showValidationModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border-2 border-yellow-500/50 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+          <div className="bg-white dark:bg-neutral-900 border-2 border-yellow-400 dark:border-yellow-500/50 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex items-start gap-4 mb-6">
-              <div className="p-3 bg-yellow-500/20 rounded-lg">
-                <AlertTriangle className="w-6 h-6 text-yellow-400" />
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-500/20 rounded-lg">
+                <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">Complete All Required Fields</h3>
-                <p className="text-neutral-400 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Complete All Required Fields</h3>
+                <p className="text-gray-600 dark:text-neutral-400 text-sm">
                   Please complete the following required fields before submitting the callout:
                 </p>
               </div>
               <button
                 onClick={() => setShowValidationModal(false)}
-                className="text-neutral-400 hover:text-white transition-colors p-1"
+                className="text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors p-1"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -2054,10 +2054,10 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
               {validationErrors.map((error, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg"
                 >
-                  <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-white text-sm">{error}</p>
+                  <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-900 dark:text-white text-sm">{error}</p>
                 </div>
               ))}
             </div>
@@ -2065,7 +2065,7 @@ export default function CalloutModal({ open, onClose, asset, requireTroubleshoot
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowValidationModal(false)}
-                className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                className="px-4 py-2 bg-gray-50 dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
               >
                 I'll Complete These Fields
               </button>

@@ -79,7 +79,7 @@ export default function DailyChecklistPage() {
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
   const loadBreachActions = useCallback(async () => {
-    if (!siteId) {
+    if (!siteId || siteId === 'all') {
       setBreachActions([])
       return
     }
@@ -116,7 +116,7 @@ export default function DailyChecklistPage() {
         .gte('created_at', weekAgo.toISOString())
         .order('created_at', { ascending: false })
 
-      if (siteId) {
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId)
       }
 

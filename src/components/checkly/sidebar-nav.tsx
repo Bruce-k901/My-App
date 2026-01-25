@@ -51,12 +51,6 @@ const navItems: NavItem[] = [
   },
   {
     type: 'link',
-    label: 'Active Tasks',
-    href: '/dashboard/tasks/active',
-    icon: Clock,
-  },
-  {
-    type: 'link',
     label: 'My Tasks',
     href: '/dashboard/tasks/my-tasks',
     icon: CheckCircle2,
@@ -80,7 +74,7 @@ const navItems: NavItem[] = [
   },
   {
     type: 'link',
-    label: 'Custom Templates',
+    label: 'Custom Task Builder',
     href: '/dashboard/tasks/templates',
     icon: FileText,
   },

@@ -182,7 +182,7 @@ export function StartConversationModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 dark:bg-black/50 backdrop-blur-sm"
       onClick={(e) => {
         // Close modal when clicking backdrop
         if (e.target === e.currentTarget) {
@@ -191,18 +191,18 @@ export function StartConversationModal({
       }}
     >
       <div 
-        className="bg-[#141823] border border-white/[0.1] rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-[#141823] border border-gray-200 dark:border-white/[0.1] rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col"
         onClick={(e) => {
           // Prevent clicks inside modal from closing it
           e.stopPropagation();
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.1]">
-          <h2 className="text-xl font-semibold text-white">Start a Conversation</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.1]">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Start a Conversation</h2>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg hover:bg-white/[0.1] text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.1] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -212,7 +212,7 @@ export function StartConversationModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Conversation Type Selection */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-white/80">Conversation Type</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-white/80">Conversation Type</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
@@ -221,12 +221,12 @@ export function StartConversationModal({
                 }}
                 className={`p-4 rounded-lg border transition-all ${
                   conversationType === 'direct'
-                    ? 'border-pink-500 bg-pink-500/10'
-                    : 'border-white/[0.1] bg-white/[0.05] hover:bg-white/[0.08]'
+                    ? 'border-pink-500 bg-pink-50 dark:bg-pink-500/10'
+                    : 'border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                 }`}
               >
-                <User className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'direct' ? 'text-pink-400' : 'text-white/60'}`} />
-                <div className={`text-sm font-medium ${conversationType === 'direct' ? 'text-white' : 'text-white/60'}`}>
+                <User className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'direct' ? 'text-pink-500 dark:text-pink-400' : 'text-gray-600 dark:text-white/60'}`} />
+                <div className={`text-sm font-medium ${conversationType === 'direct' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/60'}`}>
                   Direct Message
                 </div>
               </button>
@@ -237,12 +237,12 @@ export function StartConversationModal({
                 }}
                 className={`p-4 rounded-lg border transition-all ${
                   conversationType === 'group'
-                    ? 'border-pink-500 bg-pink-500/10'
-                    : 'border-white/[0.1] bg-white/[0.05] hover:bg-white/[0.08]'
+                    ? 'border-pink-500 bg-pink-50 dark:bg-pink-500/10'
+                    : 'border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                 }`}
               >
-                <Users className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'group' ? 'text-pink-400' : 'text-white/60'}`} />
-                <div className={`text-sm font-medium ${conversationType === 'group' ? 'text-white' : 'text-white/60'}`}>
+                <Users className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'group' ? 'text-pink-500 dark:text-pink-400' : 'text-gray-600 dark:text-white/60'}`} />
+                <div className={`text-sm font-medium ${conversationType === 'group' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/60'}`}>
                   Group Chat
                 </div>
               </button>
@@ -252,30 +252,30 @@ export function StartConversationModal({
           {/* Group Name Input */}
           {conversationType === 'group' && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white/80">Group Name</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-white/80">Group Name</label>
               <input
                 type="text"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder="Enter group name..."
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                className="w-full px-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
               />
             </div>
           )}
 
           {/* User Search */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white/80">
+            <label className="text-sm font-medium text-gray-700 dark:text-white/80">
               {conversationType === 'direct' ? 'Select User' : 'Select Users'}
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or email..."
-                className="w-full pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
               />
             </div>
           </div>
@@ -283,21 +283,21 @@ export function StartConversationModal({
           {/* Selected Users */}
           {selectedUsers.length > 0 && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white/80">Selected</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-white/80">Selected</label>
               <div className="flex flex-wrap gap-2">
                 {selectedUsers.map((userId) => {
                   const user = users.find((u) => u.id === userId);
                   return (
                     <div
                       key={userId}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/20 border border-pink-500/30 rounded-lg"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-pink-50 dark:bg-pink-500/20 border border-pink-300 dark:border-pink-500/30 rounded-lg"
                     >
-                      <span className="text-sm text-white">
+                      <span className="text-sm text-gray-900 dark:text-white">
                         {user?.full_name || user?.email || 'Unknown'}
                       </span>
                       <button
                         onClick={() => handleUserToggle(userId)}
-                        className="text-pink-400 hover:text-pink-300"
+                        className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -310,11 +310,11 @@ export function StartConversationModal({
 
           {/* User List */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white/80">Available Users</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-white/80">Available Users</label>
             {loading ? (
-              <div className="text-center py-8 text-white/60 text-sm">Loading users...</div>
+              <div className="text-center py-8 text-gray-600 dark:text-white/60 text-sm">Loading users...</div>
             ) : filteredUsers.length === 0 ? (
-              <div className="text-center py-8 text-white/60 text-sm">
+              <div className="text-center py-8 text-gray-600 dark:text-white/60 text-sm">
                 {searchTerm ? 'No users found' : 'No users available'}
               </div>
             ) : (
@@ -331,22 +331,22 @@ export function StartConversationModal({
                       }}
                       className={`w-full p-3 rounded-lg text-left transition-colors ${
                         isSelected
-                          ? 'bg-pink-500/20 border border-pink-500/30'
-                          : 'bg-white/[0.05] border border-white/[0.1] hover:bg-white/[0.08]'
+                          ? 'bg-pink-50 dark:bg-pink-500/20 border border-pink-300 dark:border-pink-500/30'
+                          : 'bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isSelected ? 'bg-pink-500/30' : 'bg-white/[0.1]'
+                          isSelected ? 'bg-pink-100 dark:bg-pink-500/30' : 'bg-gray-200 dark:bg-white/[0.1]'
                         }`}>
-                          <User className={`w-5 h-5 ${isSelected ? 'text-pink-400' : 'text-white/60'}`} />
+                          <User className={`w-5 h-5 ${isSelected ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-white/60'}`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-white truncate">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                             {user.full_name || 'No name'}
                           </div>
                           {user.email && (
-                            <div className="text-xs text-white/60 truncate">{user.email}</div>
+                            <div className="text-xs text-gray-600 dark:text-white/60 truncate">{user.email}</div>
                           )}
                         </div>
                         {isSelected && (
@@ -364,10 +364,10 @@ export function StartConversationModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.1]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/[0.1]">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             Cancel
           </button>

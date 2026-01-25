@@ -12,6 +12,9 @@ import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
+import { MessagingPanel } from "@/components/messaging/messaging-panel";
+import { CalendarPanel } from "@/components/calendar/calendar-panel";
+import { GlobalActions } from "@/components/layout/global-actions";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -250,6 +253,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   {children}
                   <Footer />
                   <Toaster position="top-right" richColors />
+                  
+                  {/* Global slide-in panels */}
+                  <MessagingPanel />
+                  <CalendarPanel />
+                  
+                  {/* Middle-right trigger buttons - always visible */}
+                  <GlobalActions />
                 </SiteContextProvider>
               </AppProvider>
             </QueryProvider>

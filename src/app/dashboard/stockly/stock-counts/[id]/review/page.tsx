@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -28,7 +28,8 @@ import { StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { getCurrentUserId } from '@/lib/stock-counts';
-import { XCircle, CheckCircle2 } from 'lucide-react';
+import { XCircle, CheckCircle2, RefreshCw, AlertTriangle } from 'lucide-react';
+import SelectApproverModal from '@/components/stockly/stock-counts/SelectApproverModal';
 
 // Map library types to table names and name columns
 const libraryTableMap: Record<string, string> = {
@@ -118,42 +119,95 @@ export default function ReviewCountItemsPage() {
   const [showSummary, setShowSummary] = useState<boolean>(true);
   
   // Editing state
-  const [editingValues, setEditingValues] = useState<Record<string, { closingStock?: number; comments?: string; reviewerComment?: string }>>({});
+  const [editingValues, setEditingValues] = useState<Record<string, { closingStock?: number; comments?: string; reviewerComment?: string; approvalComment?: string }>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [markingReady, setMarkingReady] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isApprover, setIsApprover] = useState(false);
+  const [autoApproveCountdown, setAutoApproveCountdown] = useState<number | null>(null);
+  const [backfilling, setBackfilling] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+  const [approverInfo, setApproverInfo] = useState<{ name: string; role: string } | null>(null);
+  const [loadingApprover, setLoadingApprover] = useState(false);
+  const [showApproverModal, setShowApproverModal] = useState(false);
+  const [selectedApprover, setSelectedApprover] = useState<{ id: string; name: string; role: string } | null>(null);
+  const backfillAttempted = useRef(false); // Track if backfill has been attempted for this count
 
   // Scroll synchronization refs for split table (per library)
   const scrollRefs = useRef<Record<string, { frozen: HTMLDivElement | null; scrollable: HTMLDivElement | null }>>({});
   const syncingScroll = useRef(false);
 
-  useEffect(() => {
-    if (params.id) {
-      fetchData();
-    }
-  }, [params.id]);
-
-
-  const fetchData = async () => {
+  // Define fetchData before useEffect that uses it
+  const fetchData = useCallback(async () => {
+    if (!params.id) return;
+    
     setLoading(true);
 
     try {
+      const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+      
       // Fetch count
       const { data: countData, error: countError } = await supabase
         .from('stock_counts')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', countId)
         .single();
 
       if (countError) throw countError;
-      setCount(countData);
+      
+      // Debug logging
+      console.log('[Review Page] Count data loaded:', {
+        id: countData?.id,
+        status: countData?.status,
+        items_counted: countData?.items_counted,
+        total_items: countData?.total_items,
+        name: countData?.name,
+        completed_at: countData?.completed_at,
+        ready_for_approval_at: countData?.ready_for_approval_at,
+        approved_by: countData?.approved_by,
+      });
+      
+      // Auto-backfill if count is in an old status that needs updating
+      // Only attempt once per count ID to prevent loops
+      if (countData && !backfillAttempted.current && (
+        countData.status === 'pending_review' || 
+        (countData.status === 'in_progress' && countData.items_counted > 0 && countData.items_counted >= countData.total_items) ||
+        (countData.status === 'approved' && (!countData.approved_by || !countData.approved_at))
+      )) {
+        backfillAttempted.current = true; // Mark as attempted
+        try {
+          // Silently backfill the count
+          await fetch(`/api/stock-counts/backfill/${countId}`, {
+            method: 'POST',
+          });
+          // Reload count data after backfill
+          const { data: updatedCount } = await supabase
+            .from('stock_counts')
+            .select('*')
+            .eq('id', countId)
+            .single();
+          if (updatedCount) {
+            setCount(updatedCount);
+          } else {
+            setCount(countData);
+          }
+        } catch (backfillError) {
+          console.warn('Error auto-backfilling count:', backfillError);
+          // Continue with original count data
+          setCount(countData);
+        }
+      } else {
+        setCount(countData);
+      }
 
       // Fetch items (reviewer_comment column will be available after migration is applied)
       const { data: itemsData, error: itemsError } = await supabase
         .from('stock_count_items')
         .select('*')
-        .eq('stock_count_id', params.id);
+        .eq('stock_count_id', countId);
 
       if (itemsError) throw itemsError;
 
@@ -280,10 +334,114 @@ export default function ReviewCountItemsPage() {
       }
 
       setItems(itemsWithNames);
+      
+      // Debug: Check approval comments in fetched data
+      if (countData?.status === 'approved' || countData?.status === 'rejected') {
+        const itemsWithApprovalComments = itemsWithNames.filter((item: any) => item.approval_comments);
+        console.log('💬 Fetched items with approval comments:', {
+          totalItems: itemsWithNames.length,
+          itemsWithComments: itemsWithApprovalComments.length,
+          comments: itemsWithApprovalComments.map((item: any) => ({
+            itemId: item.id,
+            ingredient: item.ingredient?.name,
+            approvalComment: item.approval_comments,
+          })),
+        });
+      }
     } catch (error: any) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    if (params.id) {
+      backfillAttempted.current = false; // Reset when count ID changes
+      fetchData();
+      getCurrentUserId().then(setCurrentUserId);
+    }
+     
+  }, [params.id]); // fetchData is memoized and depends on params.id, so we don't need it in deps
+
+  // Check if current user is the approver and calculate auto-approve countdown
+  useEffect(() => {
+    if (count && currentUserId) {
+      setIsApprover(count.approver_id === currentUserId);
+      
+      // Calculate auto-approve countdown if status is ready_for_approval
+      if (count.status === 'ready_for_approval' && count.ready_for_approval_at) {
+        const readyTime = new Date(count.ready_for_approval_at).getTime();
+        const autoApproveTime = readyTime + (24 * 60 * 60 * 1000); // 24 hours
+        const now = Date.now();
+        const remaining = Math.max(0, autoApproveTime - now);
+        
+        setAutoApproveCountdown(Math.floor(remaining / (60 * 60 * 1000))); // Hours remaining
+        
+        // Update countdown every minute
+        const interval = setInterval(() => {
+          const newRemaining = Math.max(0, autoApproveTime - Date.now());
+          setAutoApproveCountdown(Math.floor(newRemaining / (60 * 60 * 1000)));
+        }, 60000);
+        
+        return () => clearInterval(interval);
+      } else {
+        setAutoApproveCountdown(null);
+      }
+
+      // Load approver info if count is ready for approval
+      if (count.status === 'ready_for_approval' && count.approver_id) {
+        loadApproverInfo(count.approver_id);
+      } else if ((count.status === 'completed' || count.status === 'rejected' || 
+                  count.status === 'in_progress' || count.status === 'draft' || count.status === 'active') &&
+                 !approverInfo && !loadingApprover) {
+        // Pre-load approver info for counts that can be marked ready
+        loadApproverPreview();
+      }
+    }
+  }, [count, currentUserId]);
+
+  // Load approver information
+  const loadApproverInfo = async (approverId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', approverId)
+        .single();
+
+      if (profile) {
+        setApproverInfo({
+          name: profile.full_name || profile.email || 'Unknown',
+          role: 'Approver',
+        });
+      }
+    } catch (error) {
+      console.error('Error loading approver info:', error);
+    }
+  };
+
+  // Load approver preview before marking ready
+  const loadApproverPreview = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    setLoadingApprover(true);
+    
+    try {
+      const response = await fetch(`/api/stock-counts/get-approver/${countId}`);
+      const data = await response.json();
+      
+      if (data.success && data.approver) {
+        setApproverInfo({
+          name: data.approver.name,
+          role: data.approver.role,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading approver preview:', error);
+    } finally {
+      setLoadingApprover(false);
     }
   };
 
@@ -608,6 +766,9 @@ export default function ReviewCountItemsPage() {
       const comments = editingValue.comments !== undefined 
         ? editingValue.comments 
         : item.notes;
+      const approvalComment = editingValue.approvalComment !== undefined
+        ? editingValue.approvalComment
+        : (item as any).approval_comments;
 
       // Recalculate variances
       const theoreticalClosing = item.theoretical_closing || 0;
@@ -619,17 +780,25 @@ export default function ReviewCountItemsPage() {
         ? varianceQuantity * item.unit_cost
         : null;
 
+      const updateData: any = {
+        counted_quantity: closingStock,
+        variance_quantity: varianceQuantity,
+        variance_percentage: variancePercentage,
+        variance_value: varianceValue,
+        notes: comments || null,
+        status: closingStock !== null ? 'counted' : item.status,
+        is_counted: closingStock !== null, // Set is_counted for stockly schema trigger
+        counted_at: closingStock !== null ? new Date().toISOString() : item.counted_at,
+      };
+
+      // Only update approval_comments if it's being edited (for approvers)
+      if (editingValue.approvalComment !== undefined) {
+        updateData.approval_comments = approvalComment || null;
+      }
+
       const { error } = await supabase
         .from('stock_count_items')
-        .update({
-          counted_quantity: closingStock,
-          variance_quantity: varianceQuantity,
-          variance_percentage: variancePercentage,
-          variance_value: varianceValue,
-          notes: comments || null,
-          status: closingStock !== null ? 'counted' : item.status,
-          counted_at: closingStock !== null ? new Date().toISOString() : item.counted_at,
-        })
+        .update(updateData)
         .eq('id', item.id);
 
       if (error) {
@@ -650,6 +819,102 @@ export default function ReviewCountItemsPage() {
       alert('Error saving item. Please try again.');
     } finally {
       setSaving(null);
+    }
+  };
+
+  // Handle saving all items with pending edits
+  const handleSaveAll = async () => {
+    const itemsToSave = items.filter(item => {
+      const editingValue = editingValues[item.id];
+      return editingValue && (
+        editingValue.closingStock !== undefined || 
+        editingValue.comments !== undefined ||
+        editingValue.reviewerComment !== undefined ||
+        editingValue.approvalComment !== undefined
+      );
+    });
+
+    if (itemsToSave.length === 0) {
+      toast.info('No changes to save');
+      return;
+    }
+
+    setProcessing(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      // Save all items in parallel
+      const savePromises = itemsToSave.map(async (item) => {
+        const editingValue = editingValues[item.id];
+        const closingStock = editingValue.closingStock !== undefined 
+          ? editingValue.closingStock 
+          : item.counted_quantity;
+        const comments = editingValue.comments !== undefined 
+          ? editingValue.comments 
+          : item.notes;
+        const approvalComment = editingValue.approvalComment !== undefined
+          ? editingValue.approvalComment
+          : (item as any).approval_comments;
+
+        // Recalculate variances
+        const theoreticalClosing = item.theoretical_closing || 0;
+        const varianceQuantity = closingStock !== null ? closingStock - theoreticalClosing : null;
+        const variancePercentage = theoreticalClosing !== 0 && varianceQuantity !== null
+          ? (varianceQuantity / theoreticalClosing) * 100
+          : null;
+        const varianceValue = varianceQuantity !== null && item.unit_cost
+          ? varianceQuantity * item.unit_cost
+          : null;
+
+        const updateData: any = {
+          counted_quantity: closingStock,
+          variance_quantity: varianceQuantity,
+          variance_percentage: variancePercentage,
+          variance_value: varianceValue,
+          notes: comments || null,
+          status: closingStock !== null ? 'counted' : item.status,
+          is_counted: closingStock !== null,
+          counted_at: closingStock !== null ? new Date().toISOString() : item.counted_at,
+        };
+
+        // Only update approval_comments if it's being edited (for approvers)
+        if (editingValue.approvalComment !== undefined) {
+          updateData.approval_comments = approvalComment || null;
+        }
+
+        const { error } = await supabase
+          .from('stock_count_items')
+          .update(updateData)
+          .eq('id', item.id);
+
+        if (error) {
+          console.error(`Error saving item ${item.id}:`, error);
+          errorCount++;
+          throw error;
+        } else {
+          successCount++;
+        }
+      });
+
+      await Promise.all(savePromises);
+
+      // Clear all editing values
+      setEditingValues({});
+      
+      // Refresh data
+      await fetchData();
+
+      if (errorCount > 0) {
+        toast.error(`Saved ${successCount} items, but ${errorCount} failed`);
+      } else {
+        toast.success(`Successfully saved ${successCount} item${successCount !== 1 ? 's' : ''}`);
+      }
+    } catch (error) {
+      console.error('Error saving items:', error);
+      toast.error(`Error saving items. ${successCount > 0 ? `Saved ${successCount} items.` : ''}`);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -687,6 +952,170 @@ export default function ReviewCountItemsPage() {
     }));
   };
 
+  // Handle approval comment change
+  const handleApprovalCommentChange = (itemId: string, value: string) => {
+    setEditingValues(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        approvalComment: value,
+      },
+    }));
+  };
+
+  // Handle recalculating items_counted
+  const handleRecalculateItemsCounted = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    setRecalculating(true);
+    try {
+      const response = await fetch(`/api/stock-counts/recalculate-items-counted/${countId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to recalculate items counted');
+      }
+
+      toast.success(`Recalculated: ${data.items_counted} items counted`);
+      fetchData();
+    } catch (error: any) {
+      console.error('Error recalculating items counted:', error);
+      toast.error(error.message || 'Failed to recalculate items counted');
+    } finally {
+      setRecalculating(false);
+    }
+  };
+
+  // Handle manual backfill for existing counts
+  const handleBackfill = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    setBackfilling(true);
+    try {
+      const response = await fetch(`/api/stock-counts/backfill/${countId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to backfill count');
+      }
+
+      toast.success('Stock count updated for approval workflow');
+      fetchData();
+    } catch (error: any) {
+      console.error('Error backfilling count:', error);
+      toast.error(error.message || 'Failed to backfill count');
+    } finally {
+      setBackfilling(false);
+    }
+  };
+
+  // Handle opening approver selection modal
+  const handleOpenApproverModal = () => {
+    setShowApproverModal(true);
+  };
+
+  // Handle approver selection from modal
+  const handleApproverSelected = async (approver: { id: string; name: string; role: string }) => {
+    setSelectedApprover(approver);
+    setApproverInfo({
+      name: approver.name,
+      role: approver.role,
+    });
+    setShowApproverModal(false);
+    
+    // Now proceed with marking ready for approval
+    await handleMarkReadyForApproval(approver.id);
+  };
+
+  // Handle marking ready for approval (with selected approver)
+  const handleMarkReadyForApproval = async (approverId?: string) => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    // If no approver selected, show modal
+    if (!approverId && !selectedApprover) {
+      handleOpenApproverModal();
+      return;
+    }
+
+    const finalApproverId = approverId || selectedApprover?.id;
+    if (!finalApproverId) {
+      toast.error('Please select an approver');
+      return;
+    }
+    
+    // Show confirmation with approver name
+    const approverName = selectedApprover?.name || approverInfo?.name || 'the approver';
+    const approverRole = selectedApprover?.role || approverInfo?.role || 'Approver';
+    const confirmMessage = `Mark this stock count ready for approval?\n\n${approverName} (${approverRole}) will receive:\n• An in-app notification\n• A message in Msgly (from Opsly System)\n• A calendar task\n\nThey will be able to review and approve or reject this count.`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+    
+    setMarkingReady(true);
+    try {
+      const response = await fetch(`/api/stock-counts/ready-for-approval/${countId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ approver_id: finalApproverId }),
+      });
+
+      const data = await response.json();
+
+      // Debug: log full API response (including debug.logs if present)
+      console.log('📋 [ready-for-approval] API response:', data);
+      if (data.debug?.logs?.length) {
+        console.log('📋 [ready-for-approval] debug logs:');
+        data.debug.logs.forEach((line: string) => console.log('  ', line));
+        console.log('📋 [ready-for-approval] task_assigned_to:', data.debug.task_assigned_to);
+        console.log('📋 [ready-for-approval] calendar_date:', data.debug.calendar_date);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to mark ready for approval');
+      }
+
+      // Update approver info from response if available
+      if (data.approver) {
+        setApproverInfo({
+          name: data.approver.name || approverName,
+          role: data.approver.role || approverRole,
+        });
+      }
+
+      toast.success(
+        `✅ Stock count marked ready for approval!\n\n${approverName} has been notified via:\n• In-app notification\n• Msgly message (from Opsly System)\n• Calendar task\n\nThey can now review and approve or reject this count.`,
+        { duration: 7000 }
+      );
+      fetchData();
+    } catch (error: any) {
+      console.error('Error marking ready for approval:', error);
+      toast.error(error.message || 'Failed to mark ready for approval');
+    } finally {
+      setMarkingReady(false);
+    }
+  };
+
   // Handle approval
   const handleApprove = async () => {
     if (!count || !params.id) return;
@@ -702,11 +1131,30 @@ export default function ReviewCountItemsPage() {
         return;
       }
 
+      // Collect approval comments
+      const approvalComments: Record<string, string> = {};
+      Object.entries(editingValues).forEach(([itemId, values]) => {
+        if (values.approvalComment !== undefined) {
+          approvalComments[itemId] = values.approvalComment || '';
+        }
+      });
+
+      console.log('💬 Frontend: Approval comments being sent:', {
+        count: Object.keys(approvalComments).length,
+        comments: Object.entries(approvalComments).map(([id, comment]) => ({
+          itemId: id,
+          comment: comment,
+          hasComment: !!comment,
+        })),
+        allEditingValues: Object.keys(editingValues).length,
+      });
+
       const response = await fetch(`/api/stock-counts/approve/${countId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ approvalComments }),
       });
 
       const data = await response.json();
@@ -715,7 +1163,7 @@ export default function ReviewCountItemsPage() {
         throw new Error(data.error || 'Failed to approve count');
       }
 
-      toast.success('Stock count approved and stock levels updated');
+      toast.success('Stock count approved. The counter has been notified.');
       fetchData();
     } catch (error: any) {
       console.error('Error approving count:', error);
@@ -737,55 +1185,35 @@ export default function ReviewCountItemsPage() {
     }
     
     const countId = Array.isArray(params.id) ? params.id[0] : params.id;
-    const userId = await getCurrentUserId();
-    
-    if (!userId) {
-      toast.error('Unable to identify current user');
-      return;
-    }
 
     setProcessing(true);
     try {
-      // Save reviewer comments on items first (only if column exists after migration)
-      const itemsToUpdate = Object.entries(editingValues)
-        .filter(([_, values]) => values.reviewerComment !== undefined)
-        .map(([itemId, values]) => ({
-          id: itemId,
-          reviewer_comment: values.reviewerComment || null,
-        }));
-
-      if (itemsToUpdate.length > 0) {
-        for (const item of itemsToUpdate) {
-          try {
-            await supabase
-              .from('stock_count_items')
-              .update({ reviewer_comment: item.reviewer_comment })
-              .eq('id', item.id);
-          } catch (err: any) {
-            // Column might not exist if migration hasn't been applied yet
-            if (err?.message?.includes('column') || err?.code === '42703') {
-              console.warn('reviewer_comment column not found - migration may not be applied yet');
-            } else {
-              throw err;
-            }
-          }
+      // Collect approval comments
+      const approvalComments: Record<string, string> = {};
+      Object.entries(editingValues).forEach(([itemId, values]) => {
+        if (values.approvalComment !== undefined) {
+          approvalComments[itemId] = values.approvalComment || '';
         }
+      });
+
+      const response = await fetch(`/api/stock-counts/reject/${countId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rejectionReason: rejectionReason.trim(),
+          approvalComments,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reject count');
       }
 
-      // Update count status
-      const { error } = await supabase
-        .from('stock_counts')
-        .update({
-          status: 'rejected',
-          rejection_reason: rejectionReason.trim(),
-          rejected_by: userId,
-          rejected_at: new Date().toISOString(),
-        })
-        .eq('id', countId);
-
-      if (error) throw error;
-
-      toast.success('Stock count rejected');
+      toast.success('Stock count rejected. The counter has been notified.');
       setShowRejectionModal(false);
       setRejectionReason('');
       fetchData();
@@ -1080,42 +1508,265 @@ export default function ReviewCountItemsPage() {
               <ChevronLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white flex-shrink-0 min-w-0 truncate">
-              {count?.name}
-            </h1>
+            <div className="flex items-center gap-3 flex-shrink-0 min-w-0">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white min-w-0 truncate">
+                {count?.name}
+              </h1>
+              {count?.status && (
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                  count.status === 'completed' || count.status === 'ready_for_approval' 
+                    ? 'bg-amber-100 dark:bg-amber-600/20 text-amber-800 dark:text-amber-400'
+                    : count.status === 'approved'
+                    ? 'bg-green-100 dark:bg-green-600/20 text-green-800 dark:text-green-400'
+                    : count.status === 'rejected'
+                    ? 'bg-red-100 dark:bg-red-600/20 text-red-800 dark:text-red-400'
+                    : count.status === 'in_progress' || count.status === 'draft' || count.status === 'active'
+                    ? 'bg-blue-100 dark:bg-blue-600/20 text-blue-800 dark:text-blue-400'
+                    : 'bg-gray-100 dark:bg-gray-600/20 text-gray-800 dark:text-gray-400'
+                }`}>
+                  {count.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+              )}
+            </div>
             {count?.status === 'rejected' && count?.rejection_reason && (
               <div className="flex-1 min-w-0">
-                <div className="p-2 bg-red-50 dark:bg-red-600/10 border border-red-200 dark:border-red-600/30 rounded text-sm">
-                  <p className="font-semibold text-red-800 dark:text-red-400">Rejected:</p>
-                  <p className="text-red-700 dark:text-red-300 truncate">{count.rejection_reason}</p>
+                <div className="p-3 bg-red-50 dark:bg-red-600/10 border border-red-200 dark:border-red-600/30 rounded-lg text-sm">
+                  <p className="font-semibold text-red-800 dark:text-red-400 mb-1">Rejection reason</p>
+                  <p className="text-red-700 dark:text-red-300 whitespace-pre-wrap">{count.rejection_reason}</p>
+                  <p className="text-red-600 dark:text-red-400 text-xs mt-2">
+                    Check the <strong>Rejection feedback</strong> column below for per-line feedback on which items need attention. Rows with feedback are highlighted.
+                  </p>
                 </div>
               </div>
             )}
           </div>
           
-          {/* Approval/Rejection buttons - only show if pending review */}
+          {/* Backfill button - show for counts that might need updating (finalized/locked without approval flow) */}
+          {(count?.status === 'finalized' || count?.status === 'locked') && 
+           (!count?.approved_by && !count?.ready_for_approval_at) && (
+            <Button
+              onClick={handleBackfill}
+              disabled={backfilling}
+              variant="outline"
+              className="border-blue-600/50 text-blue-400 hover:bg-blue-600/10 hover:border-blue-600"
+              title="Update this count to work with the approval workflow"
+            >
+              {backfilling ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Update for Approval Flow
+                </>
+              )}
+            </Button>
+          )}
+
+          {/* Fix Count button - only show if items_counted is 0 but items exist */}
+          {count && count.items_counted === 0 && items.length > 0 && (
+            <Button
+              onClick={handleRecalculateItemsCounted}
+              disabled={recalculating}
+              size="sm"
+              variant="outline"
+              className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800"
+              title="Recalculate items_counted based on items with counted_quantity"
+            >
+              {recalculating ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                  Recalculating...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Fix Count
+                </>
+              )}
+            </Button>
+          )}
+
+          {/* Mark Ready for Approval button - show if completed, rejected, or in_progress/draft/active (regardless of items counted) */}
+          {((count?.status === 'completed' || count?.status === 'rejected') || 
+            count?.status === 'in_progress' ||
+            count?.status === 'draft' ||
+            count?.status === 'active') && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                {loadingApprover && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Loading approver...</span>
+                )}
+                {approverInfo && !loadingApprover && (
+                  <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600/30 rounded text-xs">
+                    <span className="text-blue-800 dark:text-blue-300">
+                      <strong>Will be reviewed by:</strong> {approverInfo.name} ({approverInfo.role})
+                    </span>
+                  </div>
+                )}
+              <Button
+                onClick={handleOpenApproverModal}
+                disabled={markingReady || loadingApprover}
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+                title={
+                  count?.status === 'in_progress' || count?.status === 'draft' || count?.status === 'active'
+                    ? 'This will mark the count as completed and ready for approval'
+                    : 'Mark this count as ready for approval'
+                }
+              >
+                {markingReady ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Mark Ready for Approval
+                  </>
+                )}
+              </Button>
+              </div>
+              {approverInfo && !loadingApprover && (
+                <div className="text-xs text-gray-600 dark:text-gray-400 px-1">
+                  They will receive an in-app notification, Msgly message (from Opsly System), and a calendar task.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Status info and approval section - show if ready_for_approval */}
+          {count?.status === 'ready_for_approval' && (
+            <div className="flex flex-col gap-3">
+              {/* Info banner */}
+              <div className="px-4 py-3 bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/30 rounded-lg">
+                {approverInfo && !isApprover && (
+                  <div className="text-sm text-amber-800 dark:text-amber-400 mb-2">
+                    <strong>Awaiting approval from:</strong> {approverInfo.name} ({approverInfo.role})
+                  </div>
+                )}
+                {approverInfo && !isApprover && (
+                  <div className="text-xs text-amber-700 dark:text-amber-500 mb-2">
+                    They have been notified via message and in-app notification. They can review and approve or reject this count.
+                  </div>
+                )}
+                {isApprover && (
+                  <div className="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
+                    ⚠️ Action Required: This count is waiting for your approval
+                  </div>
+                )}
+                {autoApproveCountdown !== null && (
+                  <div className="text-xs text-amber-600 dark:text-amber-500">
+                    ⏰ Auto-approves in <strong>{autoApproveCountdown}</strong> hours (to ensure stock on hand figures are updated)
+                  </div>
+                )}
+              </div>
+
+              {/* Approval/Rejection buttons - show if user is the approver */}
+              {isApprover && (
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleReject}
+                    disabled={processing}
+                    variant="outline"
+                    size="lg"
+                    className="flex-1 border-amber-600/50 text-amber-400 hover:bg-amber-600/10 hover:border-amber-600"
+                  >
+                    <AlertTriangle className="mr-2 h-5 w-5" />
+                    Requires Attention
+                  </Button>
+                  <Button
+                    onClick={handleApprove}
+                    disabled={processing}
+                    size="lg"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <CheckCircle2 className="mr-2 h-5 w-5" />
+                    {processing ? 'Processing...' : 'Approve'}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Approval/Rejection buttons for pending_review status */}
           {count?.status === 'pending_review' && (
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex gap-3">
               <Button
                 onClick={handleReject}
                 disabled={processing}
                 variant="outline"
-                className="border-red-600/50 text-red-400 hover:bg-red-600/10 hover:border-red-600"
+                size="lg"
+                className="flex-1 border-amber-600/50 text-amber-400 hover:bg-amber-600/10 hover:border-amber-600"
               >
-                <XCircle className="mr-2 h-4 w-4" />
-                Reject
+                <AlertTriangle className="mr-2 h-5 w-5" />
+                Requires Attention
               </Button>
               <Button
                 onClick={handleApprove}
                 disabled={processing}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                size="lg"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                <CheckCircle2 className="mr-2 h-4 w-4" />
+                <CheckCircle2 className="mr-2 h-5 w-5" />
                 {processing ? 'Processing...' : 'Approve'}
               </Button>
             </div>
           )}
         </div>
+
+        {/* Save All button - prominent placement when there are unsaved changes */}
+        {(() => {
+          const itemsWithChanges = items.filter(item => {
+            const editingValue = editingValues[item.id];
+            if (!editingValue) return false;
+            
+            // Check if any field has been changed
+            const hasClosingStockChange = editingValue.closingStock !== undefined && 
+              editingValue.closingStock !== item.counted_quantity;
+            const hasCommentsChange = editingValue.comments !== undefined && 
+              editingValue.comments !== (item.notes || '');
+            const hasReviewerCommentChange = editingValue.reviewerComment !== undefined;
+            const hasApprovalCommentChange = editingValue.approvalComment !== undefined;
+            
+            return hasClosingStockChange || hasCommentsChange || hasReviewerCommentChange || hasApprovalCommentChange;
+          });
+          
+          if (itemsWithChanges.length > 0) {
+            console.log('✅ Rendering Save All button with', itemsWithChanges.length, 'items');
+            return (
+              <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <Save className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+                    You have {itemsWithChanges.length} unsaved change{itemsWithChanges.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <Button
+                  onClick={handleSaveAll}
+                  disabled={processing}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+                  size="lg"
+                >
+                  {processing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All ({itemsWithChanges.length})
+                    </>
+                  )}
+                </Button>
+              </div>
+            );
+          }
+          return null;
+        })()}
 
         {/* Search and filters */}
         <div className="flex items-center gap-4 flex-wrap">
@@ -1179,7 +1830,7 @@ export default function ReviewCountItemsPage() {
       </div>
 
       {/* SCROLLABLE CONTENT */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-[#0B0D13]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-[#0B0D13] min-h-0">
         <div className="p-6">
         
         {/* Variance Summary Cards */}
@@ -1419,7 +2070,8 @@ export default function ReviewCountItemsPage() {
                     className="flex-shrink-0 border-r-2 border-gray-200 dark:border-white/[0.1] [&::-webkit-scrollbar]:hidden"
                     style={{
                       width: '200px',
-                      height: '600px',
+                      height: 'calc(100vh - 250px)',
+                      minHeight: '800px',
                       overflowY: 'auto',
                       overflowX: 'hidden',
                       scrollbarWidth: 'none',
@@ -1504,7 +2156,8 @@ export default function ReviewCountItemsPage() {
                     }}
                     className="flex-1"
                     style={{
-                      height: '600px',
+                      height: 'calc(100vh - 250px)',
+                      minHeight: '800px',
                       overflowY: 'auto',
                       overflowX: 'auto'
                     }}
@@ -1532,6 +2185,21 @@ export default function ReviewCountItemsPage() {
                               </div>
                             </th>
                           )}
+                          {count?.status === 'ready_for_approval' && isApprover && (
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[120px]">
+                              <div className="flex flex-col items-center gap-1">
+                                <span>Approval Comments</span>
+                              </div>
+                            </th>
+                          )}
+                          {/* Show saved approval/rejection comments for approved/rejected counts */}
+                          {(count?.status === 'approved' || count?.status === 'rejected') && (
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[140px]">
+                              <div className="flex flex-col items-center gap-1">
+                                <span>{count?.status === 'rejected' ? 'Rejection feedback' : 'Approval comments'}</span>
+                              </div>
+                            </th>
+                          )}
                           <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[80px]">
                             <div className="flex flex-col items-center gap-1">
                               <span>Actions</span>
@@ -1551,6 +2219,9 @@ export default function ReviewCountItemsPage() {
                           const currentReviewerComment = editingValue?.reviewerComment !== undefined
                             ? editingValue.reviewerComment
                             : (item as any).reviewer_comment || '';
+                          const currentApprovalComment = editingValue?.approvalComment !== undefined
+                            ? editingValue.approvalComment
+                            : (item as any).approval_comments || '';
                           
                           // Calculate variances based on current editing value
                           const theoreticalClosing = item.theoretical_closing || 0;
@@ -1573,8 +2244,10 @@ export default function ReviewCountItemsPage() {
           const hasChanges = isEditing && (
             editingValue.closingStock !== item.counted_quantity ||
             editingValue.comments !== item.notes ||
-            editingValue.reviewerComment !== ((item as any).reviewer_comment || '')
+            editingValue.reviewerComment !== ((item as any).reviewer_comment || '') ||
+            editingValue.approvalComment !== ((item as any).approval_comments || '')
           );
+                          const hasRejectionFeedback = count?.status === 'rejected' && !!(item as any).approval_comments;
 
                           return (
                             <tr
@@ -1582,6 +2255,8 @@ export default function ReviewCountItemsPage() {
                               className={`border-b border-gray-200 dark:border-white/[0.06] ${
                                 isEditing
                                   ? 'bg-blue-50 dark:bg-blue-500/10'
+                                  : hasRejectionFeedback
+                                  ? 'bg-amber-50 dark:bg-amber-600/10 hover:bg-amber-100 dark:hover:bg-amber-600/20'
                                   : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
                               }`}
                             >
@@ -1750,6 +2425,60 @@ export default function ReviewCountItemsPage() {
                                 </td>
                               )}
 
+                              {/* Approval Comments - Only show if ready_for_approval and user is approver */}
+                              {count?.status === 'ready_for_approval' && isApprover && (
+                                <td 
+                                  className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
+                                  style={{ height: '45px' }}
+                                >
+                                  <div className="flex justify-center">
+                                    <Input
+                                      type="text"
+                                      value={currentApprovalComment}
+                                      onChange={(e) => handleApprovalCommentChange(item.id, e.target.value)}
+                                      onFocus={(e) => {
+                                        if (!editingValue) {
+                                          setEditingValues(prev => ({
+                                            ...prev,
+                                            [item.id]: {
+                                              closingStock: item.counted_quantity || undefined,
+                                              comments: item.notes || undefined,
+                                              approvalComment: (item as any).approval_comments || undefined,
+                                            },
+                                          }));
+                                        }
+                                      }}
+                                      className="w-32 h-7 text-xs bg-blue-50 dark:bg-blue-600/10 border-blue-200 dark:border-blue-600/30 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500/50"
+                                      placeholder="Approval note..."
+                                    />
+                                  </div>
+                                </td>
+                              )}
+                              
+                              {/* Display saved approval comments for approved/rejected counts */}
+                              {(count?.status === 'approved' || count?.status === 'rejected') && (item as any).approval_comments && (
+                                <td 
+                                  className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
+                                  style={{ height: '45px' }}
+                                >
+                                  <div className="flex justify-center">
+                                    <div className="w-32 px-2 py-1 text-xs bg-blue-50 dark:bg-blue-600/10 border border-blue-200 dark:border-blue-600/30 text-gray-900 dark:text-white rounded">
+                                      {(item as any).approval_comments}
+                                    </div>
+                                  </div>
+                                </td>
+                              )}
+                              
+                              {/* Empty cell if no approval comments for approved/rejected counts */}
+                              {(count?.status === 'approved' || count?.status === 'rejected') && !(item as any).approval_comments && (
+                                <td 
+                                  className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
+                                  style={{ height: '45px' }}
+                                >
+                                  <span className="text-gray-400 dark:text-gray-600">—</span>
+                                </td>
+                              )}
+
                               {/* Actions */}
                               <td className="px-2 py-2.5 text-center" style={{ height: '45px' }}>
                                 {hasChanges && (
@@ -1787,10 +2516,10 @@ export default function ReviewCountItemsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Reject Stock Count
+              Stock Count Requires Attention
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Please provide a reason for rejecting this stock count. This will allow the count to be corrected and resubmitted.
+              Please explain what needs to be fixed. The counter will receive this feedback and can make corrections.
             </p>
             <textarea
               value={rejectionReason}
@@ -1812,14 +2541,23 @@ export default function ReviewCountItemsPage() {
               <Button
                 onClick={handleConfirmReject}
                 disabled={!rejectionReason.trim() || processing}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
               >
-                {processing ? 'Rejecting...' : 'Reject Count'}
+                {processing ? 'Sending...' : 'Send Feedback'}
               </Button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Approver Selection Modal */}
+      <SelectApproverModal
+        isOpen={showApproverModal}
+        onClose={() => setShowApproverModal(false)}
+        onSelect={handleApproverSelected}
+        countId={Array.isArray(params.id) ? params.id[0] : params.id || ''}
+        countName={count?.name}
+      />
     </div>
   );
 }

@@ -93,6 +93,70 @@ function RecipesPage() {
     }
   }, [companyId]);
 
+  // Real-time subscription for ingredient price updates and recipe cost changes
+  useEffect(() => {
+    if (!companyId) return;
+
+    const channel = supabase
+      .channel(`recipes-price-updates-${companyId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'ingredients_library',
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          console.log('Ingredient price updated, reloading recipes...', payload);
+          // Check if price-related fields changed
+          const oldData = payload.old as any;
+          const newData = payload.new as any;
+          
+          const priceChanged = 
+            oldData.unit_cost !== newData.unit_cost ||
+            oldData.pack_cost !== newData.pack_cost ||
+            oldData.pack_size !== newData.pack_size ||
+            oldData.yield_percent !== newData.yield_percent;
+          
+          if (priceChanged) {
+            console.log('Price change detected, reloading recipes to update costs...');
+            loadRecipes();
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'stockly',
+          table: 'recipes',
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          console.log('Recipe cost updated in real-time:', payload);
+          // Check if cost-related fields changed
+          const oldData = payload.old as any;
+          const newData = payload.new as any;
+          
+          const costChanged = 
+            oldData.total_cost !== newData.total_cost ||
+            oldData.total_ingredient_cost !== newData.total_ingredient_cost ||
+            oldData.unit_cost !== newData.unit_cost;
+          
+          if (costChanged) {
+            console.log('Recipe cost change detected, reloading recipes...');
+            loadRecipes();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId]);
+
   // Auto-expand recipe if specified in URL query parameter
   useEffect(() => {
     const recipeId = searchParams?.get('recipe');

@@ -56,14 +56,14 @@ export default function DateTimePicker({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-white/80">
+      <label className="block text-sm font-medium text-gray-700 dark:text-white/80">
         {label} {required && <span className="text-[#EC4899]">*</span>}
       </label>
 
       <div className="grid grid-cols-2 gap-4">
         {/* Date Picker */}
         <div>
-          <label className="flex items-center gap-1 text-xs text-white/60 mb-1.5">
+          <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-white/60 mb-1.5">
             <Calendar className="w-3.5 h-3.5" />
             Date
           </label>
@@ -79,14 +79,14 @@ export default function DateTimePicker({
               e.stopPropagation();
             }}
             min={format(new Date(), 'yyyy-MM-dd')}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 cursor-pointer [color-scheme:dark]"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 cursor-pointer"
             required={required}
           />
         </div>
 
         {/* Time Picker */}
         <div>
-          <label className="flex items-center gap-1 text-xs text-white/60 mb-1.5">
+          <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-white/60 mb-1.5">
             <Clock className="w-3.5 h-3.5" />
             Time
           </label>
@@ -105,7 +105,7 @@ export default function DateTimePicker({
       </div>
 
       {/* Timezone Display */}
-      <p className="text-xs text-white/40 mt-1">
+      <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
         Timezone: {userTimezone}
       </p>
     </div>

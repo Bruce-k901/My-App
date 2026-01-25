@@ -9,11 +9,18 @@
 -- 3. Ensures no duplicates are created
 -- ============================================================================
 
-BEGIN;
-
 -- Step 1: Delete ALL existing tasks
 DO $$
 BEGIN
+  -- Check if checklist_tasks table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'checklist_tasks table does not exist - skipping task deletion';
+    RETURN;
+  END IF;
+
   DELETE FROM checklist_tasks;
   RAISE NOTICE 'All tasks deleted. Starting fresh restoration...';
 END $$;
@@ -31,6 +38,24 @@ DECLARE
   v_daypart TEXT;
   v_created_count INTEGER := 0;
 BEGIN
+  -- Check if all required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'task_templates'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'sites'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'Required tables (task_templates, companies, sites, checklist_tasks) do not exist - skipping active tasks restoration';
+    RETURN;
+  END IF;
+
   -- Loop through all active library templates
   FOR v_template IN
     SELECT 
@@ -205,6 +230,15 @@ DO $$
 DECLARE
   v_duplicate_count INTEGER;
 BEGIN
+  -- Check if checklist_tasks table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'checklist_tasks table does not exist - skipping duplicate verification';
+    RETURN;
+  END IF;
+
   SELECT COUNT(*) INTO v_duplicate_count
   FROM (
     SELECT template_id, company_id, site_id, daypart, due_time
@@ -227,6 +261,15 @@ DECLARE
   v_active_count INTEGER;
   v_total_count INTEGER;
 BEGIN
+  -- Check if checklist_tasks table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'checklist_tasks table does not exist - skipping final verification';
+    RETURN;
+  END IF;
+
   SELECT COUNT(*) INTO v_active_count
   FROM checklist_tasks
   WHERE (task_data->>'source' IS NULL OR task_data->>'source' != 'cron');
@@ -239,5 +282,3 @@ BEGIN
   RAISE NOTICE '  Active Tasks (patterns): %', v_active_count;
   RAISE NOTICE '  Cron-generated tasks: %', (v_total_count - v_active_count);
 END $$;
-
-COMMIT;

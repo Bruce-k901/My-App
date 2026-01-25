@@ -20,7 +20,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Only compute pathname-dependent values on client after mount
     const isMessagingPage = pathname?.includes('/messaging');
-    const isTeamlyPage = pathname?.includes('/people');
+    const isTeamlyPage = pathname?.includes('/people') || pathname?.startsWith('/dashboard/courses');
     const isStocklyPage = pathname?.includes('/stockly');
     const isChecklyPage = pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists') || pathname?.includes('/incidents') || pathname?.includes('/sops') || pathname?.includes('/risk-assessments') || pathname?.includes('/logs');
     const isPlanlyPage = pathname?.includes('/planly');
@@ -38,7 +38,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   // Check more specific paths first (todays_tasks) before general paths (tasks)
   const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs');
   const isStockly = pathname?.startsWith('/dashboard/stockly');
-  const isTeamly = pathname?.startsWith('/dashboard/people');
+  const isTeamly = pathname?.startsWith('/dashboard/people') || pathname?.startsWith('/dashboard/courses');
   const isPlanly = pathname?.startsWith('/dashboard/planly');
   const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
   const showModuleSidebar = isCheckly || isStockly || isTeamly || isPlanly || isAssetly;

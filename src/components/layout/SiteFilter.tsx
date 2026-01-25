@@ -12,7 +12,7 @@ interface Site {
 }
 
 export function SiteFilter() {
-  const { company } = useAppContext();
+  const { company, setSelectedSite, profile } = useAppContext();
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   const [sites, setSites] = useState<Site[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +20,11 @@ export function SiteFilter() {
   const [currentView, setCurrentView] = useState<"business" | "site">("business");
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  
+  // Check if user is staff - staff should not see site selector
+  const userRole = profile?.app_role?.toLowerCase() || 'staff';
+  const isStaff = userRole === 'staff';
+  const homeSiteId = profile?.home_site || profile?.site_id;
 
   useEffect(() => {
     setMounted(true);
@@ -34,18 +39,37 @@ export function SiteFilter() {
 
   useEffect(() => {
     // Load sites for the company
+    // Staff: only load their home site
+    // Managers/Admins/Owners: load all sites
     const loadSites = async () => {
       if (!company?.id) return;
 
       try {
-        const { data, error } = await supabase
-          .from("sites")
-          .select("id, name")
-          .eq("company_id", company.id)
-          .order("name");
+        if (isStaff && homeSiteId) {
+          // Staff: only load their home site
+          const { data, error } = await supabase
+            .from("sites")
+            .select("id, name")
+            .eq("id", homeSiteId)
+            .single();
 
-        if (!error && data) {
-          setSites(data);
+          if (!error && data) {
+            setSites([data]);
+            // Auto-select home site for staff
+            setSelectedSiteId(homeSiteId);
+            setSelectedSite(homeSiteId);
+          }
+        } else {
+          // Managers/Admins/Owners: load all sites
+          const { data, error } = await supabase
+            .from("sites")
+            .select("id, name")
+            .eq("company_id", company.id)
+            .order("name");
+
+          if (!error && data) {
+            setSites(data);
+          }
         }
       } catch (error) {
         console.error("Error loading sites:", error);
@@ -53,9 +77,9 @@ export function SiteFilter() {
     };
 
     loadSites();
-  }, [company?.id]);
+  }, [company?.id, isStaff, homeSiteId]);
 
-  // Load selected site from localStorage - only after mount to prevent hydration mismatch
+  // Load selected site from localStorage and sync with AppContext - only after mount to prevent hydration mismatch
   useEffect(() => {
     if (!mounted) return;
     
@@ -64,20 +88,31 @@ export function SiteFilter() {
       if (stored && sites.length > 0) {
         const site = sites.find((s) => s.id === stored);
         if (site) {
+          console.log('🏢 [SiteFilter] Loading stored site from localStorage:', stored);
           setSelectedSiteId(stored);
+          // Also update AppContext
+          setSelectedSite(stored);
         }
       }
     }
-  }, [sites, mounted]);
+  }, [sites, mounted, setSelectedSite]);
 
   const handleSiteSelect = (siteId: string | null) => {
+    console.log('🏢 [SiteFilter] handleSiteSelect called with siteId:', siteId);
+    console.log('🏢 [SiteFilter] Current selectedSiteId before change:', selectedSiteId);
     setSelectedSiteId(siteId);
+    // Update AppContext so other components can react to the change
+    console.log('🏢 [SiteFilter] Calling setSelectedSite from AppContext with:', siteId);
+    setSelectedSite(siteId);
     if (siteId) {
       localStorage.setItem("selectedSiteId", siteId);
+      console.log('🏢 [SiteFilter] Saved to localStorage:', siteId);
     } else {
       localStorage.removeItem("selectedSiteId");
+      console.log('🏢 [SiteFilter] Removed from localStorage');
     }
     setIsOpen(false);
+    console.log('🏢 [SiteFilter] Site selection complete');
   };
 
   // Close on click outside
@@ -106,7 +141,18 @@ export function SiteFilter() {
   const buttonRect = buttonRef.current?.getBoundingClientRect();
 
   // Only show when in business view - use CSS class to hide instead of inline style to avoid hydration mismatch
-  const shouldShow = mounted && currentView === "business";
+  // Staff: hide the site selector completely (they can only see their home site)
+  // Managers/Admins/Owners: show the selector
+  const shouldShow = mounted && currentView === "business" && !isStaff;
+
+  // For staff, just show their home site name (read-only, no dropdown)
+  if (isStaff && homeSiteId && selectedSite) {
+    return (
+      <div className="h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px] bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06]">
+        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left">{selectedSite.name}</span>
+      </div>
+    );
+  }
 
   return (
     <>

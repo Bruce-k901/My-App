@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/Button'
 import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/temperature'
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
-import { buildTaskQueryFilter, isTaskDueNow } from '@/lib/shift-utils'
 import { calculateTaskTiming } from '@/utils/taskTiming'
 
 // Daypart chronological order (for sorting)
@@ -87,7 +86,7 @@ export default function DailyChecklistPage() {
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
   const loadBreachActions = useCallback(async () => {
-    if (!siteId) {
+    if (!siteId || siteId === 'all') {
       setBreachActions([])
       return
     }
@@ -124,7 +123,7 @@ export default function DailyChecklistPage() {
         .gte('created_at', weekAgo.toISOString())
         .order('created_at', { ascending: false })
 
-      if (siteId) {
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId)
       }
 
@@ -206,20 +205,164 @@ export default function DailyChecklistPage() {
       
       console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
       
-      // Apply shift-based filtering
-      const shiftFilter = await buildTaskQueryFilter()
-      console.log('🕐 Shift filter applied:', shiftFilter)
-      
-      // If staff is not on shift, return empty tasks array
-      if (!shiftFilter.showAll && !shiftFilter.siteId) {
-        console.log('⏸️ Staff not on shift - no tasks to show')
+      // Get user's home site - "Today's Tasks" should only show tasks from "My Tasks" (home site tasks)
+      // NOT tasks directly from templates or active tasks
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
         return
       }
       
+      // Get user profile to find home site
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('id, app_role, home_site')
+        .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
+        .maybeSingle();
+      
+      if (!userProfile) {
+        console.warn('⚠️ User profile not found')
+        setTasks([])
+        setCompletedTasks([])
+        setLoading(false)
+        return
+      }
+      
+      // Determine which site to filter by
+      let filterSiteId: string | null = null;
+      
+      // Managers/admins: can see all sites or filter by selected site
+      const managerRoles = ['manager', 'general_manager', 'admin', 'owner'];
+      const isManager = userProfile.app_role && managerRoles.includes(userProfile.app_role.toLowerCase());
+      
+      if (isManager) {
+        // Managers/admins: filter by selectedSiteId from header dropdown if set
+        if (selectedSiteId && selectedSiteId !== 'all') {
+          filterSiteId = selectedSiteId;
+          console.log('🔍 Manager: Filtering tasks by selected site:', filterSiteId);
+        } else {
+          // Show all company tasks for managers/admins when "All Sites" is selected
+          console.log('🔍 Manager: Showing all company tasks (All Sites selected)');
+        }
+      } else {
+        // Staff: always use their home site (same as "My Tasks")
+        filterSiteId = userProfile.home_site || null;
+        if (!filterSiteId) {
+          console.warn('⚠️ Staff member has no home site assigned - no tasks to show');
+          setTasks([])
+          setCompletedTasks([])
+          setLoading(false)
+          return
+        }
+        console.log('🔍 Staff: Filtering tasks by home site:', filterSiteId);
+      }
+      
+      // First, let's check what tasks exist for debugging
+      let debugQuery = supabase
+        .from('checklist_tasks')
+        .select('id, status, due_date, site_id, site_checklist_id, template_id, task_data, custom_name, company_id')
+        .eq('company_id', companyId)
+        .eq('due_date', todayStr)
+      
+      if (filterSiteId) {
+        debugQuery = debugQuery.eq('site_id', filterSiteId)
+      }
+      
+      const { data: debugTasks } = await debugQuery
+      console.log('🔍 DEBUG: All tasks for today (any status):', {
+        count: debugTasks?.length || 0,
+        tasks: debugTasks?.map(t => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source
+        })) || []
+      })
+      
+      // Also check for tasks in a wider date range to see if they exist with different dates
+      const { data: recentTasks } = await supabase
+        .from('checklist_tasks')
+        .select('id, status, due_date, site_id, site_checklist_id, template_id, custom_name, task_data, company_id')
+        .eq('company_id', companyId)
+        .gte('due_date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Last 7 days
+        .lte('due_date', new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Next 7 days
+        .order('due_date', { ascending: true })
+        .limit(50)
+      
+      console.log('🔍 DEBUG: Recent tasks (last 7 days to next 7 days):', {
+        count: recentTasks?.length || 0,
+        today: todayStr,
+        tasks: recentTasks?.map(t => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id ? 'YES' : 'NO',
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source,
+          isToday: t.due_date === todayStr,
+          isSelectedSite: t.site_id === filterSiteId
+        })) || []
+      })
+      
+      // Show summary of tasks by date
+      const tasksByDate = (recentTasks || []).reduce((acc: Record<string, number>, task: any) => {
+        const date = task.due_date;
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      }, {});
+      
+      console.log('📅 Tasks by date:', tasksByDate);
+      
+      // Show tasks for today specifically (if any)
+      const todayTasks = (recentTasks || []).filter((t: any) => t.due_date === todayStr);
+      console.log('📋 Tasks specifically for today:', {
+        count: todayTasks.length,
+        tasks: todayTasks.map((t: any) => ({
+          id: t.id,
+          status: t.status,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data: t.task_data
+        }))
+      });
+      
+      // Show tasks for the selected site (any date)
+      const siteTasks = (recentTasks || []).filter((t: any) => t.site_id === filterSiteId);
+      console.log('🏢 Tasks for selected site (any date):', {
+        count: siteTasks.length,
+        site_id: filterSiteId,
+        tasks: siteTasks.map((t: any) => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id ? 'YES' : 'NO',
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source,
+          generated_at: t.generated_at
+        }))
+      });
+      
+      console.log('⚠️ ISSUE DETECTED: All tasks are from 2026-01-20, not today (2026-01-25). The cron job may not have run since then, or is creating tasks with the wrong date.');
+      
       // Fetch ONLY today's tasks that are pending or in_progress
+      // These are task instances from "My Tasks", NOT templates or active tasks
       // Completed and missed tasks are shown in the Completed Tasks page
       let query = supabase
         .from('checklist_tasks')
@@ -231,23 +374,9 @@ export default function DailyChecklistPage() {
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
       
-      // Apply shift-based site filtering
-      // Managers/admins see all sites, staff only see their current site when on shift
-      if (shiftFilter.showAll) {
-        // Managers/admins: filter by selectedSiteId from header dropdown if set
-        // If selectedSiteId is null (All Sites selected), show all tasks for the company
-        // If selectedSiteId is set (specific site selected), filter by that site
-        if (selectedSiteId) {
-          console.log('🔍 Filtering tasks by selected site:', selectedSiteId)
-          query = query.eq('site_id', selectedSiteId)
-        } else {
-          console.log('🔍 No site selected (All Sites) - showing all company tasks')
-        }
-      } else {
-        // Staff on shift: only show tasks for their current site
-        if (shiftFilter.siteId) {
-          query = query.eq('site_id', shiftFilter.siteId)
-        }
+      // Apply site filtering (home site for staff, selected site for managers)
+      if (filterSiteId) {
+        query = query.eq('site_id', filterSiteId)
       }
       
       const { data: allTasks, error } = await query
@@ -282,15 +411,91 @@ export default function DailyChecklistPage() {
       
       console.log('📥 Raw tasks from database:', {
         total: allTasks?.length || 0,
-        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
+        tasks: allTasks?.map(t => ({ 
+          id: t.id, 
+          status: t.status, 
+          daypart: t.daypart, 
+          flag_reason: t.flag_reason,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          task_data: t.task_data,
+          site_id: t.site_id
+        }))
       })
+      
+      // Role-based task type filtering
+      let filteredTasks = allTasks || [];
+      
+      if (isManager) {
+        // Managers+: Template tasks + Expiry tasks + Monitoring tasks
+        // Template tasks have site_checklist_id
+        // Expiry tasks have source_type in (sop_review, ra_review, certificate_expiry, policy_expiry, document_expiry)
+        // Monitoring tasks have flag_reason = 'monitoring'
+        // Note: Approval tasks (stock counts, rotas, payroll) don't appear here - they go to calendar/msgly
+        
+        filteredTasks = (allTasks || []).filter((task: any) => {
+          // Include template tasks (have site_checklist_id)
+          if (task.site_checklist_id) {
+            console.log('✅ Including template task:', task.id, task.custom_name || task.template?.name);
+            return true;
+          }
+          
+          // Include monitoring tasks (flag_reason = 'monitoring')
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task:', task.id, task.custom_name);
+            return true;
+          }
+          
+          // Include expiry tasks (specific source_types)
+          // Check both source_type and type fields in task_data
+          const sourceType = task.task_data?.source_type || task.task_data?.type;
+          const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate'];
+          if (expiryTypes.includes(sourceType)) {
+            console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
+            return true;
+          }
+          
+          // Log excluded tasks for debugging
+          if (task.task_data) {
+            console.log('❌ Excluding task (not template, monitoring, or expiry):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              flag_reason: task.flag_reason,
+              source_type: task.task_data?.source_type,
+              type: task.task_data?.type,
+              task_data: task.task_data
+            });
+          }
+          
+          // Exclude everything else (approval tasks, etc.)
+          return false;
+        });
+        
+        console.log(`Manager view: ${filteredTasks.length} template + monitoring + expiry tasks (filtered from ${allTasks?.length || 0} total)`);
+      } else {
+        // Staff: Template tasks (have site_checklist_id) + Monitoring tasks
+        filteredTasks = (allTasks || []).filter((task: any) => {
+          // Include template tasks
+          if (task.site_checklist_id !== null) {
+            return true;
+          }
+          // Include monitoring tasks
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task for staff:', task.id, task.custom_name);
+            return true;
+          }
+          return false;
+        });
+        console.log(`Staff view: ${filteredTasks.length} template + monitoring tasks (filtered from ${allTasks?.length || 0} total)`);
+      }
       
       // Fetch templates separately if we have tasks
       // CRITICAL: Load ALL required fields needed by TaskCompletionModal
       // This includes: evidence_types, asset_id, repeatable_field_name, instructions, etc.
       let templatesMap: Record<string, any> = {}
-      if (allTasks && allTasks.length > 0) {
-        const templateIds = [...new Set(allTasks.map((t: any) => t.template_id).filter(Boolean))]
+      if (filteredTasks && filteredTasks.length > 0) {
+        const templateIds = [...new Set(filteredTasks.map((t: any) => t.template_id).filter(Boolean))]
         if (templateIds.length > 0) {
           const { data: templates, error: templatesError } = await supabase
             .from('task_templates')
@@ -337,7 +542,8 @@ export default function DailyChecklistPage() {
       
       // Filter tasks - only show tasks due TODAY
       // Database query already filters by due_date = today, but double-check here
-      const data = (allTasks || []).filter(task => {
+      // Use filteredTasks (already filtered by role) instead of allTasks
+      const data = (filteredTasks || []).filter((task: any) => {
         // CRITICAL: Only show tasks due TODAY (database should already filter, but verify)
         if (task.due_date !== todayStr) {
           console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr}`)
@@ -349,26 +555,44 @@ export default function DailyChecklistPage() {
           return false
         }
         
-        // For staff on shift: only show tasks that are due now (within 2 hours window)
-        // Managers/admins see all tasks regardless of timing
-        if (!shiftFilter.showAll && shiftFilter.siteId) {
-          const isDueNow = isTaskDueNow(task)
-          if (!isDueNow) {
-            console.log(`⏰ Task ${task.id} filtered: not due now (due_time: ${task.due_time})`)
-            return false
-          }
-        }
-        
+        // No timing filter - show all tasks from "My Tasks" that are due today
+        // "Today's Tasks" is simply "My Tasks" filtered by due_date = today
         return true
       })
       
       if (!data || data.length === 0) {
-        console.log('⚠️ No tasks found for today')
+        console.log('⚠️ No tasks found for today after filtering', {
+          todayStr,
+          filteredTasksCount: filteredTasks?.length || 0,
+          allTasksCount: allTasks?.length || 0,
+          filterSiteId,
+          isManager,
+          sampleTask: allTasks?.[0] ? {
+            id: allTasks[0].id,
+            status: allTasks[0].status,
+            due_date: allTasks[0].due_date,
+            site_checklist_id: allTasks[0].site_checklist_id,
+            task_data_source_type: allTasks[0].task_data?.source_type,
+            site_id: allTasks[0].site_id
+          } : null
+        })
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
         return
       }
+      
+      console.log('✅ Tasks after date filtering:', {
+        count: data.length,
+        tasks: data.map(t => ({
+          id: t.id,
+          name: t.custom_name || t.template?.name,
+          status: t.status,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id,
+          task_data_source_type: t.task_data?.source_type
+        }))
+      })
       
       // Fetch full template details for remaining tasks that weren't in the initial fetch
       // (This handles edge cases where new templates were added between fetches)

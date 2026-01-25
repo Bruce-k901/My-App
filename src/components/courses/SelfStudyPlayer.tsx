@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * @deprecated V1 selfstudy player only. Do not use.
+ * Food Safety Level 2 now uses the V2 course at /training/courses/l2-food-hygiene/start
+ * (courses/uk-l2-food-hygiene, PlayerShell). V1 selfstudy URLs redirect there.
+ */
+
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";

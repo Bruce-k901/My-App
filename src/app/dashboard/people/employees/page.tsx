@@ -939,9 +939,9 @@ export default function EmployeesPage() {
       case 'offboarding':
         return <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs">Offboarding</span>;
       case 'inactive':
-        return <span className="px-2 py-0.5 bg-neutral-700 text-neutral-400 rounded text-xs">Inactive</span>;
+        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs">Inactive</span>;
       default:
-        return <span className="px-2 py-0.5 bg-neutral-700 text-neutral-400 rounded text-xs">{status}</span>;
+        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs">{status}</span>;
     }
   };
 
@@ -954,7 +954,7 @@ export default function EmployeesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     );
   }
@@ -964,13 +964,13 @@ export default function EmployeesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Employees</h1>
-          <p className="text-neutral-400">
+          <h1 className="text-2xl font-bold text-theme-primary">Employees</h1>
+          <p className="text-theme-secondary">
             {stats.active} active employees{stats.onboarding > 0 && `, ${stats.onboarding} onboarding`}
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-800 text-white rounded-lg hover:bg-neutral-700">
+          <button className="flex items-center gap-2 px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary rounded-lg hover:bg-theme-button-hover transition-colors">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -978,7 +978,7 @@ export default function EmployeesPage() {
           {/* Add Head Office / Executive Button */}
           <button
             onClick={() => setShowExecutiveModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 dark:border-purple-500 text-purple-600 dark:text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] dark:hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
           >
             <Briefcase className="w-5 h-5" />
             <span className="hidden sm:inline">Add Head Office</span>
@@ -988,7 +988,7 @@ export default function EmployeesPage() {
           {/* Add Site Employee Button */}
           <Link
             href="/dashboard/people/directory/new"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
           >
             <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">Add Site Employee</span>
@@ -1000,20 +1000,20 @@ export default function EmployeesPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search employees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899]"
+            className="w-full pl-10 pr-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-500"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+          className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
@@ -1026,7 +1026,7 @@ export default function EmployeesPage() {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+            className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
           >
             <option value="">All Departments</option>
             {departments.map(dept => (
@@ -1039,7 +1039,7 @@ export default function EmployeesPage() {
           <select
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
-            className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+            className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
           >
             <option value="">All Sites</option>
             {siteNames.map(site => (
@@ -1050,7 +1050,7 @@ export default function EmployeesPage() {
       </div>
 
       {/* Results Count */}
-      <p className="text-neutral-500 text-sm">
+      <p className="text-theme-tertiary text-sm">
         Showing {filteredEmployees.length} of {employees.length} employees
       </p>
 
@@ -1064,7 +1064,7 @@ export default function EmployeesPage() {
           return (
             <div
               key={employee.id}
-              className={`bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-[#EC4899]/50 transition-colors group relative ${isExpanded ? 'md:col-span-2 lg:col-span-3' : ''}`}
+              className={`bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors group relative ${isExpanded ? 'md:col-span-2 lg:col-span-3' : ''}`}
             >
               {/* Edit Button, Add to Rota Button, and Expand Button - Positioned absolutely */}
               {!editingEmployee && (
@@ -1089,8 +1089,8 @@ export default function EmployeesPage() {
                     disabled={!employee.home_site}
                     className={`p-1.5 rounded-lg transition-all cursor-pointer active:scale-95 shadow-lg ${
                       employee.home_site
-                        ? 'bg-neutral-800 hover:bg-neutral-700 text-white hover:text-[#EC4899] hover:shadow-[0_0_8px_rgba(236,72,153,0.5)]'
-                        : 'bg-neutral-800/50 text-neutral-500 cursor-not-allowed'
+                        ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-[0_0_8px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.7)]'
+                        : 'bg-theme-button text-theme-tertiary cursor-not-allowed'
                     }`}
                     title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
                   >
@@ -1105,7 +1105,7 @@ export default function EmployeesPage() {
                       const employeeToEdit = expandedEmployeeData.get(employee.id) || employee;
                       handleEdit(employeeToEdit);
                     }}
-                    className="p-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white hover:text-[#EC4899] transition-all cursor-pointer active:scale-95 shadow-lg hover:shadow-[0_0_8px_rgba(236,72,153,0.5)]"
+                    className="p-1.5 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer active:scale-95 shadow-lg hover:shadow-[0_0_8px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.7)]"
                     title="Edit Employee"
                   >
                     <Pencil className="w-4 h-4" />
@@ -1117,7 +1117,7 @@ export default function EmployeesPage() {
                       e.preventDefault();
                       handleToggleExpand(employee.id);
                     }}
-                    className="p-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white hover:text-[#EC4899] transition-all cursor-pointer active:scale-95"
+                    className="p-1.5 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer active:scale-95"
                     title={isExpanded ? "Collapse" : "Expand"}
                   >
                     {isExpanded ? (
@@ -1148,7 +1148,7 @@ export default function EmployeesPage() {
                 className={`cursor-pointer ${isExpanded ? 'pr-20' : 'pr-20'}`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white font-medium flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-white font-medium flex-shrink-0">
                     {employee.avatar_url ? (
                       <img src={employee.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -1158,7 +1158,7 @@ export default function EmployeesPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-white font-medium truncate group-hover:text-[#EC4899] transition-colors">
+                      <p className="text-theme-primary font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {employee.full_name}
                       </p>
                       {getStatusBadge(employee.status)}
@@ -1166,16 +1166,16 @@ export default function EmployeesPage() {
                         <Link
                           href={`/dashboard/people/onboarding?employeeId=${employee.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="px-2 py-0.5 bg-[#EC4899]/15 text-[#EC4899] rounded text-xs hover:bg-[#EC4899]/25"
+                          className="px-2 py-0.5 bg-blue-500/15 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded text-xs hover:bg-blue-500/25 dark:hover:bg-blue-500/25"
                           title="Go to onboarding"
                         >
                           Go to onboarding
                         </Link>
                       )}
                     </div>
-                    <p className="text-neutral-400 text-sm truncate">{employee.position_title || 'No title'}</p>
+                    <p className="text-theme-secondary text-sm truncate">{employee.position_title || 'No title'}</p>
 
-                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-neutral-500">
+                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-theme-tertiary">
                       {employee.department && (
                         <span className="flex items-center gap-1">
                           <Building2 className="w-3 h-3" />
@@ -1191,7 +1191,7 @@ export default function EmployeesPage() {
                 </div>
 
                 {!isExpanded && (
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-theme">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1209,8 +1209,8 @@ export default function EmployeesPage() {
                       disabled={!employee.home_site}
                       className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm transition-all border ${
                         employee.home_site
-                          ? 'bg-[#EC4899]/20 hover:bg-[#EC4899]/30 text-[#EC4899] border-[#EC4899]/30'
-                          : 'bg-neutral-700/50 text-neutral-500 border-neutral-600/50 cursor-not-allowed'
+                          ? 'bg-blue-500/20 dark:bg-blue-500/20 hover:bg-blue-500/30 dark:hover:bg-blue-500/30 text-blue-600 dark:text-blue-400 border-blue-500/30 dark:border-blue-500/30'
+                          : 'bg-theme-button text-theme-tertiary border-theme cursor-not-allowed'
                       }`}
                       title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
                     >
@@ -1220,7 +1220,7 @@ export default function EmployeesPage() {
                     <a
                       href={`mailto:${employee.email}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-neutral-700 text-neutral-300 rounded-lg hover:bg-neutral-600 text-sm"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-secondary rounded-lg hover:bg-theme-button-hover text-sm"
                     >
                       <Mail className="w-4 h-4" />
                       Email
@@ -1229,7 +1229,7 @@ export default function EmployeesPage() {
                       <a
                         href={`tel:${employee.phone}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 bg-neutral-700 text-neutral-300 rounded-lg hover:bg-neutral-600 text-sm"
+                        className="flex-1 flex items-center justify-center gap-2 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-secondary rounded-lg hover:bg-theme-button-hover text-sm"
                       >
                         <Phone className="w-4 h-4" />
                         Call
@@ -1241,11 +1241,11 @@ export default function EmployeesPage() {
 
               {/* Expanded View */}
               {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-white/[0.1]" onClick={(e) => e.stopPropagation()}>
+                <div className="mt-4 pt-4 border-t border-theme" onClick={(e) => e.stopPropagation()}>
                   {isLoadingData ? (
                     <div className="flex items-center justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-[#EC4899]" />
-                      <span className="ml-2 text-neutral-400">Loading details...</span>
+                      <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                      <span className="ml-2 text-theme-secondary">Loading details...</span>
                     </div>
                   ) : fullData ? (
                     <ExpandedEmployeeView
@@ -1268,7 +1268,7 @@ export default function EmployeesPage() {
                       }}
                     />
                   ) : (
-                    <div className="text-center py-8 text-neutral-400">
+                    <div className="text-center py-8 text-theme-secondary">
                       Failed to load employee details
                     </div>
                   )}
@@ -1281,9 +1281,9 @@ export default function EmployeesPage() {
 
       {filteredEmployees.length === 0 && employees.length === 0 && !loading && (
         <div className="text-center py-12">
-          <UserX className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-          <p className="text-neutral-400 mb-2">No employees found</p>
-          <p className="text-neutral-500 text-sm">
+          <UserX className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+          <p className="text-theme-secondary mb-2">No employees found</p>
+          <p className="text-theme-tertiary text-sm">
             {profile?.company_id 
               ? 'Try adjusting your filters or add employees to your company.'
               : 'Unable to load company information.'}
@@ -1293,8 +1293,8 @@ export default function EmployeesPage() {
       
       {filteredEmployees.length === 0 && employees.length > 0 && (
         <div className="text-center py-12">
-          <UserX className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-          <p className="text-neutral-400">No employees found matching your filters</p>
+          <UserX className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+          <p className="text-theme-secondary">No employees found matching your filters</p>
           <button
             onClick={() => {
               setSearch('');
@@ -1302,7 +1302,7 @@ export default function EmployeesPage() {
               setDepartmentFilter('');
               setSiteFilter('');
             }}
-            className="mt-4 px-4 py-2 text-sm text-[#EC4899] hover:underline"
+            className="mt-4 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
           >
             Clear all filters
           </button>
@@ -1417,8 +1417,8 @@ function ExpandedEmployeeView({
       {/* Header with Edit button and Add to Rota */}
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">Employee Details</h3>
-          <p className="text-neutral-400 text-sm mt-1">{employee.full_name}</p>
+          <h3 className="text-lg font-semibold text-theme-primary">Employee Details</h3>
+          <p className="text-theme-secondary text-sm mt-1">{employee.full_name}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -1436,8 +1436,8 @@ function ExpandedEmployeeView({
             disabled={!employee.home_site}
             className={`px-3 py-1.5 bg-transparent border rounded-lg text-sm transition-all flex items-center gap-1 ${
               employee.home_site
-                ? 'border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]'
-                : 'border-neutral-600 text-neutral-500 cursor-not-allowed opacity-50'
+                ? 'border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)]'
+                : 'border-theme text-theme-tertiary cursor-not-allowed opacity-50'
             }`}
             title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
           >
@@ -1446,7 +1446,7 @@ function ExpandedEmployeeView({
           </button>
           <button
             onClick={onEdit}
-            className="px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg text-sm transition-all"
+            className="px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg text-sm transition-all"
           >
             <Pencil className="w-4 h-4 inline mr-1" />
             Edit
@@ -1455,7 +1455,7 @@ function ExpandedEmployeeView({
       </div>
 
       {/* Tabs - Matching Edit Modal */}
-      <div className="flex gap-2 border-b border-neutral-800 overflow-x-auto">
+      <div className="flex gap-2 border-b border-theme overflow-x-auto">
         {[
           { id: 'personal', label: 'Personal', icon: User },
           { id: 'employment', label: 'Employment', icon: Briefcase },
@@ -1472,8 +1472,8 @@ function ExpandedEmployeeView({
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-neutral-800 text-white border-b-2 border-[#EC4899]'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                  ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-blue-500 dark:border-blue-500'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -1484,11 +1484,11 @@ function ExpandedEmployeeView({
       </div>
 
       {/* Tab Content */}
-      <div className="border border-white/[0.1] rounded-lg bg-white/[0.02]">
+      <div className="border border-theme rounded-lg bg-theme-button">
         {activeTab === 'personal' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <User className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <User className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Personal Information
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1507,9 +1507,9 @@ function ExpandedEmployeeView({
             </div>
             
             {/* Address */}
-            <div className="border-t border-white/[0.1] pt-4 mt-4">
-              <h5 className="text-sm font-medium text-white mb-3">Address</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border-t border-theme pt-4 mt-4">
+              <h5 className="text-sm font-medium text-theme-primary mb-3">Address</h5>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="md:col-span-2">
                   <InfoRow label="Address Line 1" value={employee.address_line_1 || '—'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
                 </div>
@@ -1525,12 +1525,12 @@ function ExpandedEmployeeView({
 
             {/* Emergency Contacts */}
             {emergencyContacts.length > 0 && (
-              <div className="border-t border-white/[0.1] pt-4 mt-4">
-                <h5 className="text-sm font-medium text-white mb-3">Emergency Contacts</h5>
+              <div className="border-t border-theme pt-4 mt-4">
+                <h5 className="text-sm font-medium text-theme-primary mb-3">Emergency Contacts</h5>
                 <div className="space-y-3">
                   {emergencyContacts.map((contact: any, idx: number) => (
                     <div key={idx} className="p-3 bg-white/[0.03] rounded">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <InfoRow label="Name" value={contact.name || '—'} />
                         <InfoRow label="Relationship" value={contact.relationship || '—'} />
                         <InfoRow label="Phone" value={contact.phone || '—'} />
@@ -1546,8 +1546,8 @@ function ExpandedEmployeeView({
 
         {activeTab === 'employment' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Employment Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1638,8 +1638,8 @@ function ExpandedEmployeeView({
 
         {activeTab === 'compliance' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Compliance & Right to Work
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1663,8 +1663,8 @@ function ExpandedEmployeeView({
             
             {/* DBS Section */}
             <div className="border-t border-white/[0.1] pt-4 mt-4">
-              <h5 className="text-sm font-medium text-white mb-3">DBS Check</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h5 className="text-sm font-medium text-theme-primary mb-3">DBS Check</h5>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <InfoRow label="DBS Status" value={employee.dbs_status || 'not_required'} fieldName="dbs_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                   { value: 'not_required', label: 'Not Required' },
                   { value: 'pending', label: 'Pending' },
@@ -1680,11 +1680,11 @@ function ExpandedEmployeeView({
 
         {activeTab === 'banking' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Bank Details
             </h4>
-            <p className="text-sm text-neutral-400 mb-4">
+            <p className="text-sm text-theme-secondary mb-4">
               Bank details are used for payroll export only and are stored securely.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1698,8 +1698,8 @@ function ExpandedEmployeeView({
 
         {activeTab === 'leave' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Leave Allowance
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1711,8 +1711,8 @@ function ExpandedEmployeeView({
 
         {activeTab === 'pay' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Pay & Tax Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1739,8 +1739,8 @@ function ExpandedEmployeeView({
 
         {activeTab === 'training' && (
           <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-white mb-4 flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-[#EC4899]" />
+            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               Training & Certifications
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1922,8 +1922,8 @@ function InfoRow({
   if (!fieldName || !employeeId) {
     // Non-editable row
     return (
-      <div className="flex justify-between py-2 border-b border-neutral-700">
-        <span className="text-neutral-400 text-sm">{label}</span>
+      <div className="flex justify-between py-2 border-b border-theme">
+        <span className="text-theme-secondary text-sm">{label}</span>
         <span className={`text-right text-sm ${
           status === 'success' ? 'text-green-400' :
           status === 'warning' ? 'text-amber-400' :
@@ -1937,7 +1937,7 @@ function InfoRow({
   }
 
   return (
-    <div className="flex justify-between items-center py-2 border-b border-neutral-700 group">
+    <div className="flex justify-between items-center py-2 border-b border-theme group">
       <span className="text-neutral-400 text-sm">{label}</span>
       <div className="flex items-center gap-2 flex-1 justify-end">
         {isEditing ? (
@@ -1946,7 +1946,7 @@ function InfoRow({
               <select
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1958,7 +1958,7 @@ function InfoRow({
               <select
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1970,7 +1970,7 @@ function InfoRow({
                 type="date"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 autoFocus
               />
             ) : type === 'number' ? (
@@ -1978,14 +1978,14 @@ function InfoRow({
                 type="number"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 autoFocus
               />
             ) : type === 'textarea' ? (
               <textarea
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 rows={2}
                 autoFocus
               />
@@ -1994,7 +1994,7 @@ function InfoRow({
                 type="text"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/[0.06] rounded text-white text-sm"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -2012,7 +2012,7 @@ function InfoRow({
             <button
               onClick={handleCancel}
               disabled={saving}
-              className="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 text-white text-xs rounded disabled:opacity-50"
+              className="px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary text-xs rounded disabled:opacity-50"
             >
               ✕
             </button>
@@ -2029,7 +2029,7 @@ function InfoRow({
             </span>
             <button
               onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-[#EC4899] hover:text-[#EC4899]/80 text-xs transition-opacity"
+              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs transition-opacity"
               title="Edit"
             >
               <Edit className="w-3 h-3" />
@@ -2112,24 +2112,24 @@ function EditEmployeeModal({
   const managersKey = `managers-${managers?.length || 0}-${managers?.map(m => m.id).join(',') || ''}`;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-neutral-900 rounded-xl border border-neutral-800 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto" onClick={(e) => e.stopPropagation()} key={`modal-${sitesKey}-${managersKey}`}>
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto" onClick={(e) => e.stopPropagation()} key={`modal-${sitesKey}-${managersKey}`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-800">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div>
-            <h2 className="text-2xl font-bold text-white">Edit Employee</h2>
-            <p className="text-neutral-400 mt-1">{employee.full_name}</p>
+            <h2 className="text-2xl font-bold text-theme-primary">Edit Employee</h2>
+            <p className="text-theme-secondary mt-1">{employee.full_name}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
+            className="p-2 hover:bg-theme-button-hover rounded-lg text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 px-6 pt-4 border-b border-neutral-800 overflow-x-auto">
+        <div className="flex gap-1 px-4 pt-3 border-b border-theme">
           {[
             { id: 'personal', label: 'Personal', icon: User },
             { id: 'employment', label: 'Employment', icon: Briefcase },
@@ -2144,13 +2144,13 @@ function EditEmployeeModal({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-neutral-800 text-white border-b-2 border-[#EC4899]'
-                    : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                    ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-blue-500 dark:border-blue-500'
+                    : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
                 {tab.label}
               </button>
             );
@@ -2160,15 +2160,15 @@ function EditEmployeeModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 'personal' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <User className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Personal Information
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -2177,12 +2177,12 @@ function EditEmployeeModal({
                     value={formData.full_name || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Email <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -2191,12 +2191,12 @@ function EditEmployeeModal({
                     value={formData.email || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Phone Number
                   </label>
                   <input
@@ -2204,12 +2204,12 @@ function EditEmployeeModal({
                     name="phone_number"
                     value={formData.phone_number || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Date of Birth
                   </label>
                   <input
@@ -2217,19 +2217,19 @@ function EditEmployeeModal({
                     name="date_of_birth"
                     value={formData.date_of_birth || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Gender
                   </label>
                   <select
                     name="gender"
                     value={formData.gender || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="male">Male</option>
@@ -2241,7 +2241,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Nationality
                   </label>
                   <input
@@ -2249,17 +2249,17 @@ function EditEmployeeModal({
                     name="nationality"
                     value={formData.nationality || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
               
               {/* Address */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-white mb-4">Address</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+              <div className="border-t border-theme pt-6 mt-6">
+                <h3 className="text-md font-medium text-theme-primary mb-4">Address</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className="md:col-span-3">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 1
                     </label>
                     <input
@@ -2267,12 +2267,12 @@ function EditEmployeeModal({
                       name="address_line_1"
                       value={formData.address_line_1 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <div className="md:col-span-3">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 2
                     </label>
                     <input
@@ -2280,12 +2280,12 @@ function EditEmployeeModal({
                       name="address_line_2"
                       value={formData.address_line_2 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       City
                     </label>
                     <input
@@ -2293,12 +2293,12 @@ function EditEmployeeModal({
                       name="city"
                       value={formData.city || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       County
                     </label>
                     <input
@@ -2306,12 +2306,12 @@ function EditEmployeeModal({
                       name="county"
                       value={formData.county || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Postcode
                     </label>
                     <input
@@ -2319,12 +2319,12 @@ function EditEmployeeModal({
                       name="postcode"
                       value={formData.postcode || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Country
                     </label>
                     <input
@@ -2332,20 +2332,20 @@ function EditEmployeeModal({
                       name="country"
                       value={formData.country || 'United Kingdom'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
               </div>
               
               {/* Emergency Contacts */}
-              <div className="border-t border-neutral-700 pt-4">
+              <div className="border-t border-theme pt-6 mt-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-md font-medium text-white">Emergency Contacts</h3>
+                  <h3 className="text-md font-medium text-theme-primary">Emergency Contacts</h3>
                   <button
                     type="button"
                     onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-[#EC4899] hover:text-[#EC4899]/80"
+                    className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     <Plus className="w-4 h-4" />
                     Add Contact
@@ -2353,43 +2353,43 @@ function EditEmployeeModal({
                 </div>
                 
                 {emergencyContacts.map((contact, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-neutral-700/30 rounded-lg">
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-5 p-5 bg-theme-button rounded-lg">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Name</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Name</label>
                       <input
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Relationship</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Relationship</label>
                       <input
                         type="text"
                         value={contact.relationship}
                         onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
                         placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Phone</label>
                       <input
                         type="tel"
                         value={contact.phone}
                         onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div className="flex items-end gap-2">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-300 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-theme-secondary mb-1.5">Email</label>
                         <input
                           type="email"
                           value={contact.email || ''}
                           onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                          className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                         />
                       </div>
                       {emergencyContacts.length > 1 && (
@@ -2409,15 +2409,15 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'employment' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Employment Details
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Employee Number
                   </label>
                   <input
@@ -2426,12 +2426,12 @@ function EditEmployeeModal({
                     value={formData.employee_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Position / Job Title
                   </label>
                   <input
@@ -2439,12 +2439,12 @@ function EditEmployeeModal({
                     name="position_title"
                     value={formData.position_title || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Department
                   </label>
                   <input
@@ -2452,19 +2452,19 @@ function EditEmployeeModal({
                     name="department"
                     value={formData.department || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     App Role
                   </label>
                   <select
                     name="app_role"
                     value={formData.app_role || 'Staff'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -2474,14 +2474,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Home Site
                   </label>
                   <select
                     name="home_site"
                     value={formData.home_site || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select site...</option>
                     {sites.map(site => (
@@ -2490,7 +2490,7 @@ function EditEmployeeModal({
                   </select>
                 </div>
                 
-                <div className="md:col-span-2 pt-4 border-t border-neutral-700">
+                <div className="md:col-span-2 pt-4 border-t border-theme">
                   <button
                     onClick={() => onOpenSiteAssignments(employee)}
                     type="button"
@@ -2499,20 +2499,20 @@ function EditEmployeeModal({
                     <MapPin className="w-4 h-4" />
                     Manage Site Assignments
                   </button>
-                  <p className="text-xs text-neutral-500 mt-2">
+                  <p className="text-xs text-theme-tertiary mt-2">
                     Allow this employee to work at other sites during specified date ranges
                   </p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Reports To
                   </label>
                   <select
                     name="reports_to"
                     value={formData.reports_to || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select manager...</option>
                     {managers.map(manager => (
@@ -2522,14 +2522,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     BOH / FOH
                   </label>
                   <select
                     name="boh_foh"
                     value={formData.boh_foh || 'FOH'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="FOH">Front of House</option>
                     <option value="BOH">Back of House</option>
@@ -2538,7 +2538,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Start Date
                   </label>
                   <input
@@ -2546,12 +2546,12 @@ function EditEmployeeModal({
                     name="start_date"
                     value={formData.start_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Probation End Date
                   </label>
                   <input
@@ -2559,19 +2559,19 @@ function EditEmployeeModal({
                     name="probation_end_date"
                     value={formData.probation_end_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Contract Type
                   </label>
                   <select
                     name="contract_type"
                     value={formData.contract_type || 'permanent'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -2584,7 +2584,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Contracted Hours (per week)
                   </label>
                   <input
@@ -2593,12 +2593,12 @@ function EditEmployeeModal({
                     value={formData.contracted_hours || ''}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Hourly Rate (£)
                   </label>
                   <input
@@ -2607,12 +2607,12 @@ function EditEmployeeModal({
                     value={formData.hourly_rate || ''}
                     onChange={handleChange}
                     step="0.01"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Annual Salary (£)
                   </label>
                   <input
@@ -2621,19 +2621,19 @@ function EditEmployeeModal({
                     value={formData.salary || ''}
                     onChange={handleChange}
                     step="100"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Pay Frequency
                   </label>
                   <select
                     name="pay_frequency"
                     value={formData.pay_frequency || 'monthly'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -2643,7 +2643,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Notice Period (weeks)
                   </label>
                   <input
@@ -2652,7 +2652,7 @@ function EditEmployeeModal({
                     value={formData.notice_period_weeks || '1'}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -2660,15 +2660,15 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'compliance' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Compliance & Right to Work
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     National Insurance Number
                   </label>
                   <input
@@ -2677,19 +2677,19 @@ function EditEmployeeModal({
                     value={formData.national_insurance_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors uppercase"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Right to Work Status
                   </label>
                   <select
                     name="right_to_work_status"
                     value={formData.right_to_work_status || 'pending'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -2699,14 +2699,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Document Type
                   </label>
                   <select
                     name="right_to_work_document_type"
                     value={formData.right_to_work_document_type || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -2718,7 +2718,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Document Number
                   </label>
                   <input
@@ -2727,12 +2727,12 @@ function EditEmployeeModal({
                     value={formData.right_to_work_document_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., passport number, share code"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Expiry Date
                   </label>
                   <input
@@ -2740,25 +2740,25 @@ function EditEmployeeModal({
                     name="right_to_work_expiry"
                     value={formData.right_to_work_expiry || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
-                  <p className="text-xs text-neutral-400 mt-1">Leave blank if no expiry (e.g., British citizen)</p>
+                  <p className="text-xs text-theme-secondary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
                 </div>
               </div>
               
               {/* DBS Section */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-white mb-4">DBS Check</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border-t border-theme pt-6 mt-6">
+                <h3 className="text-md font-medium text-theme-primary mb-5">DBS Check</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Status
                     </label>
                     <select
                       name="dbs_status"
                       value={formData.dbs_status || 'not_required'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     >
                       <option value="not_required">Not Required</option>
                       <option value="pending">Pending</option>
@@ -2768,7 +2768,7 @@ function EditEmployeeModal({
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Certificate Number
                     </label>
                     <input
@@ -2776,12 +2776,12 @@ function EditEmployeeModal({
                       name="dbs_certificate_number"
                       value={formData.dbs_certificate_number || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Check Date
                     </label>
                     <input
@@ -2789,7 +2789,7 @@ function EditEmployeeModal({
                       name="dbs_check_date"
                       value={formData.dbs_check_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -2798,18 +2798,18 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'banking' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Bank Details
               </h2>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-theme-secondary">
                 Bank details are used for payroll export only and are stored securely.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Bank Name
                   </label>
                   <input
@@ -2817,12 +2817,12 @@ function EditEmployeeModal({
                     name="bank_name"
                     value={formData.bank_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Holder Name
                   </label>
                   <input
@@ -2830,12 +2830,12 @@ function EditEmployeeModal({
                     name="bank_account_name"
                     value={formData.bank_account_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Sort Code
                   </label>
                   <input
@@ -2844,12 +2844,12 @@ function EditEmployeeModal({
                     value={formData.bank_sort_code || ''}
                     onChange={handleChange}
                     placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Number
                   </label>
                   <input
@@ -2859,7 +2859,7 @@ function EditEmployeeModal({
                     onChange={handleChange}
                     placeholder="8 digits"
                     maxLength={8}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -2867,15 +2867,15 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'leave' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Leave Allowance
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Annual Leave Allowance (days)
                   </label>
                   <input
@@ -2884,7 +2884,7 @@ function EditEmployeeModal({
                     value={formData.annual_leave_allowance || '28'}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                   <p className="text-xs text-neutral-400 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
@@ -2893,15 +2893,15 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'pay' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Pay & Tax Details
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Tax Code
                   </label>
                   <input
@@ -2910,12 +2910,12 @@ function EditEmployeeModal({
                     value={formData.tax_code || ''}
                     onChange={handleChange}
                     placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors uppercase"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Student Loan
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -2927,22 +2927,22 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('student_loan', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
-                    <span className="text-sm text-neutral-300">Has student loan</span>
+                    <span className="text-sm text-theme-secondary">Has student loan</span>
                   </div>
                 </div>
                 
                 {formData.student_loan && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Student Loan Plan
                     </label>
                     <select
                       name="student_loan_plan"
                       value={formData.student_loan_plan || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     >
                       <option value="">Select plan...</option>
                       <option value="plan_1">Plan 1</option>
@@ -2954,7 +2954,7 @@ function EditEmployeeModal({
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Pension Enrolled
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -2966,7 +2966,7 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('pension_enrolled', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
                     <span className="text-sm text-neutral-300">Enrolled in pension</span>
                   </div>
@@ -2974,7 +2974,7 @@ function EditEmployeeModal({
                 
                 {formData.pension_enrolled && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Pension Contribution (%)
                     </label>
                     <input
@@ -2985,13 +2985,13 @@ function EditEmployeeModal({
                       step="0.1"
                       min="0"
                       max="100"
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     P45 Received
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3003,14 +3003,14 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('p45_received', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
                     <span className="text-sm text-neutral-300">P45 received</span>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     P45 Date
                   </label>
                   <input
@@ -3018,12 +3018,12 @@ function EditEmployeeModal({
                     name="p45_date"
                     value={formData.p45_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     P45 Reference
                   </label>
                   <input
@@ -3032,7 +3032,7 @@ function EditEmployeeModal({
                     value={formData.p45_reference || ''}
                     onChange={handleChange}
                     placeholder="P45 reference number"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -3040,22 +3040,22 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'training' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <GraduationCap className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Training & Certifications
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Food Safety Level
                   </label>
                   <select
                     name="food_safety_level"
                     value={formData.food_safety_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select level...</option>
                     <option value="2">Level 2</option>
@@ -3066,7 +3066,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Food Safety Expiry Date
                   </label>
                   <input
@@ -3074,19 +3074,19 @@ function EditEmployeeModal({
                     name="food_safety_expiry_date"
                     value={formData.food_safety_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     H&S Level
                   </label>
                   <select
                     name="h_and_s_level"
                     value={formData.h_and_s_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select level...</option>
                     <option value="2">Level 2</option>
@@ -3096,7 +3096,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     H&S Expiry Date
                   </label>
                   <input
@@ -3104,12 +3104,12 @@ function EditEmployeeModal({
                     name="h_and_s_expiry_date"
                     value={formData.h_and_s_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Fire Marshal Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3121,7 +3121,7 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('fire_marshal_trained', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
                     <span className="text-sm text-neutral-300">Fire marshal trained</span>
                   </div>
@@ -3129,7 +3129,7 @@ function EditEmployeeModal({
                 
                 {formData.fire_marshal_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Fire Marshal Expiry Date
                     </label>
                     <input
@@ -3137,13 +3137,13 @@ function EditEmployeeModal({
                       name="fire_marshal_expiry_date"
                       value={formData.fire_marshal_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     First Aid Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3155,7 +3155,7 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('first_aid_trained', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
                     <span className="text-sm text-neutral-300">First aid trained</span>
                   </div>
@@ -3163,7 +3163,7 @@ function EditEmployeeModal({
                 
                 {formData.first_aid_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       First Aid Expiry Date
                     </label>
                     <input
@@ -3171,13 +3171,13 @@ function EditEmployeeModal({
                       name="first_aid_expiry_date"
                       value={formData.first_aid_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     COSSH Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3189,7 +3189,7 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('cossh_trained', checked);
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
                     />
                     <span className="text-sm text-neutral-300">COSSH trained</span>
                   </div>
@@ -3197,7 +3197,7 @@ function EditEmployeeModal({
                 
                 {formData.cossh_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       COSSH Expiry Date
                     </label>
                     <input
@@ -3205,7 +3205,7 @@ function EditEmployeeModal({
                       name="cossh_expiry_date"
                       value={formData.cossh_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 )}
@@ -3215,17 +3215,17 @@ function EditEmployeeModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-800">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving ? (
               <>
@@ -3264,7 +3264,7 @@ function SimpleFormField({
         type={type}
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899] transition-colors"
+        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20 transition-colors"
       />
     </div>
   );
@@ -3288,7 +3288,7 @@ function SimpleFormSelect({
       <select
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899] transition-colors"
+        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20 transition-colors"
       >
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>

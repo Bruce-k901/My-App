@@ -3,10 +3,43 @@
 -- Description: Issue reporting, product ratings, and credit requests
 -- ============================================================================
 
--- ============================================================================
--- TABLE: order_book_issues
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.order_book_issues (
+-- This migration only runs if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist - exit early if they don't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'order_book_customers'
+  ) THEN
+    RAISE NOTICE 'companies or order_book_customers table does not exist - skipping customer_portal_feedback_issues migration';
+    RETURN;
+  END IF;
+  
+  RAISE NOTICE 'Required tables found - proceeding with customer_portal_feedback_issues migration';
+END $$;
+
+-- Only proceed if required tables exist (checked above)
+DO $$
+BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'order_book_customers'
+  ) THEN
+    RETURN;
+  END IF;
+
+  -- ============================================================================
+  -- TABLE: order_book_issues
+  -- ============================================================================
+  EXECUTE $sql_table1$
+    CREATE TABLE IF NOT EXISTS public.order_book_issues (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
   customer_id UUID NOT NULL REFERENCES order_book_customers(id) ON DELETE CASCADE,
@@ -43,20 +76,22 @@ CREATE TABLE IF NOT EXISTS public.order_book_issues (
   resolved_by UUID REFERENCES profiles(id),
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  created_by UUID REFERENCES profiles(id) NOT NULL
-);
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      created_by UUID REFERENCES profiles(id) NOT NULL
+    );
+  $sql_table1$;
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_issues_customer ON order_book_issues(customer_id);
-CREATE INDEX IF NOT EXISTS idx_issues_status ON order_book_issues(status);
-CREATE INDEX IF NOT EXISTS idx_issues_order ON order_book_issues(order_id);
-CREATE INDEX IF NOT EXISTS idx_issues_created ON order_book_issues(created_at DESC);
+  -- Indexes
+  CREATE INDEX IF NOT EXISTS idx_issues_customer ON order_book_issues(customer_id);
+  CREATE INDEX IF NOT EXISTS idx_issues_status ON order_book_issues(status);
+  CREATE INDEX IF NOT EXISTS idx_issues_order ON order_book_issues(order_id);
+  CREATE INDEX IF NOT EXISTS idx_issues_created ON order_book_issues(created_at DESC);
 
--- ============================================================================
--- TABLE: order_book_issue_comments
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.order_book_issue_comments (
+  -- ============================================================================
+  -- TABLE: order_book_issue_comments
+  -- ============================================================================
+  EXECUTE $sql_table2$
+    CREATE TABLE IF NOT EXISTS public.order_book_issue_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   issue_id UUID NOT NULL REFERENCES order_book_issues(id) ON DELETE CASCADE,
   
@@ -67,17 +102,19 @@ CREATE TABLE IF NOT EXISTS public.order_book_issue_comments (
   attachments JSONB DEFAULT '[]'::jsonb,
   is_internal BOOLEAN DEFAULT false, -- Supplier-only notes
   
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  $sql_table2$;
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON order_book_issue_comments(issue_id);
-CREATE INDEX IF NOT EXISTS idx_issue_comments_created ON order_book_issue_comments(created_at DESC);
+  -- Indexes
+  CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON order_book_issue_comments(issue_id);
+  CREATE INDEX IF NOT EXISTS idx_issue_comments_created ON order_book_issue_comments(created_at DESC);
 
--- ============================================================================
--- TABLE: order_book_product_ratings
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.order_book_product_ratings (
+  -- ============================================================================
+  -- TABLE: order_book_product_ratings
+  -- ============================================================================
+  EXECUTE $sql_table3$
+    CREATE TABLE IF NOT EXISTS public.order_book_product_ratings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
   customer_id UUID NOT NULL REFERENCES order_book_customers(id) ON DELETE CASCADE,
@@ -100,17 +137,19 @@ CREATE TABLE IF NOT EXISTS public.order_book_product_ratings (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID REFERENCES profiles(id) NOT NULL,
   
-  UNIQUE(customer_id, product_id) -- One rating per customer per product (can update)
-);
+      UNIQUE(customer_id, product_id) -- One rating per customer per product (can update)
+    );
+  $sql_table3$;
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_product_ratings_product ON order_book_product_ratings(product_id);
-CREATE INDEX IF NOT EXISTS idx_product_ratings_customer ON order_book_product_ratings(customer_id);
+  -- Indexes
+  CREATE INDEX IF NOT EXISTS idx_product_ratings_product ON order_book_product_ratings(product_id);
+  CREATE INDEX IF NOT EXISTS idx_product_ratings_customer ON order_book_product_ratings(customer_id);
 
--- ============================================================================
--- TABLE: order_book_credit_requests
--- ============================================================================
-CREATE TABLE IF NOT EXISTS public.order_book_credit_requests (
+  -- ============================================================================
+  -- TABLE: order_book_credit_requests
+  -- ============================================================================
+  EXECUTE $sql_table4$
+    CREATE TABLE IF NOT EXISTS public.order_book_credit_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
   customer_id UUID NOT NULL REFERENCES order_book_customers(id) ON DELETE CASCADE,
@@ -136,91 +175,101 @@ CREATE TABLE IF NOT EXISTS public.order_book_credit_requests (
   
   applied_at TIMESTAMPTZ,
   
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  created_by UUID REFERENCES profiles(id) NOT NULL
-);
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      created_by UUID REFERENCES profiles(id) NOT NULL
+    );
+  $sql_table4$;
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_credit_requests_customer ON order_book_credit_requests(customer_id);
-CREATE INDEX IF NOT EXISTS idx_credit_requests_status ON order_book_credit_requests(status);
-CREATE INDEX IF NOT EXISTS idx_credit_requests_issue ON order_book_credit_requests(issue_id);
+  -- Indexes
+  CREATE INDEX IF NOT EXISTS idx_credit_requests_customer ON order_book_credit_requests(customer_id);
+  CREATE INDEX IF NOT EXISTS idx_credit_requests_status ON order_book_credit_requests(status);
+  CREATE INDEX IF NOT EXISTS idx_credit_requests_issue ON order_book_credit_requests(issue_id);
 
--- ============================================================================
--- FUNCTION: generate_issue_number()
--- ============================================================================
-CREATE OR REPLACE FUNCTION generate_issue_number()
-RETURNS TEXT AS $$
-DECLARE
-  v_date TEXT := TO_CHAR(NOW(), 'YYYYMMDD');
-  v_count INTEGER;
-BEGIN
-  SELECT COUNT(*) + 1 INTO v_count
-  FROM order_book_issues
-  WHERE issue_number LIKE 'ISS-' || v_date || '-%';
-  
-  RETURN 'ISS-' || v_date || '-' || LPAD(v_count::TEXT, 3, '0');
-END;
-$$ LANGUAGE plpgsql;
+  -- ============================================================================
+  -- FUNCTION: generate_issue_number()
+  -- ============================================================================
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION generate_issue_number()
+    RETURNS TEXT AS $func$
+    DECLARE
+      v_date TEXT := TO_CHAR(NOW(), 'YYYYMMDD');
+      v_count INTEGER;
+    BEGIN
+      SELECT COUNT(*) + 1 INTO v_count
+      FROM order_book_issues
+      WHERE issue_number LIKE 'ISS-' || v_date || '-%';
+      
+      RETURN 'ISS-' || v_date || '-' || LPAD(v_count::TEXT, 3, '0');
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func1$;
 
--- ============================================================================
--- FUNCTION: generate_credit_request_number()
--- ============================================================================
-CREATE OR REPLACE FUNCTION generate_credit_request_number()
-RETURNS TEXT AS $$
-DECLARE
-  v_date TEXT := TO_CHAR(NOW(), 'YYYYMMDD');
-  v_count INTEGER;
-BEGIN
-  SELECT COUNT(*) + 1 INTO v_count
-  FROM order_book_credit_requests
-  WHERE request_number LIKE 'CRD-' || v_date || '-%';
-  
-  RETURN 'CRD-' || v_date || '-' || LPAD(v_count::TEXT, 3, '0');
-END;
-$$ LANGUAGE plpgsql;
+  -- ============================================================================
+  -- FUNCTION: generate_credit_request_number()
+  -- ============================================================================
+  EXECUTE $sql_func2$
+    CREATE OR REPLACE FUNCTION generate_credit_request_number()
+    RETURNS TEXT AS $func$
+    DECLARE
+      v_date TEXT := TO_CHAR(NOW(), 'YYYYMMDD');
+      v_count INTEGER;
+    BEGIN
+      SELECT COUNT(*) + 1 INTO v_count
+      FROM order_book_credit_requests
+      WHERE request_number LIKE 'CRD-' || v_date || '-%';
+      
+      RETURN 'CRD-' || v_date || '-' || LPAD(v_count::TEXT, 3, '0');
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func2$;
 
--- ============================================================================
--- TRIGGER: set_issue_number()
--- ============================================================================
-CREATE OR REPLACE FUNCTION set_issue_number()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF NEW.issue_number IS NULL OR NEW.issue_number = '' THEN
-    NEW.issue_number := generate_issue_number();
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+  -- ============================================================================
+  -- TRIGGER: set_issue_number()
+  -- ============================================================================
+  EXECUTE $sql_func3$
+    CREATE OR REPLACE FUNCTION set_issue_number()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      IF NEW.issue_number IS NULL OR NEW.issue_number = '' THEN
+        NEW.issue_number := generate_issue_number();
+      END IF;
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func3$;
 
-DROP TRIGGER IF EXISTS trigger_set_issue_number ON order_book_issues;
-CREATE TRIGGER trigger_set_issue_number
-  BEFORE INSERT ON order_book_issues
-  FOR EACH ROW
-  EXECUTE FUNCTION set_issue_number();
+  DROP TRIGGER IF EXISTS trigger_set_issue_number ON order_book_issues;
+  CREATE TRIGGER trigger_set_issue_number
+    BEFORE INSERT ON order_book_issues
+    FOR EACH ROW
+    EXECUTE FUNCTION set_issue_number();
 
--- ============================================================================
--- TRIGGER: set_credit_request_number()
--- ============================================================================
-CREATE OR REPLACE FUNCTION set_credit_request_number()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF NEW.request_number IS NULL OR NEW.request_number = '' THEN
-    NEW.request_number := generate_credit_request_number();
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+  -- ============================================================================
+  -- TRIGGER: set_credit_request_number()
+  -- ============================================================================
+  EXECUTE $sql_func4$
+    CREATE OR REPLACE FUNCTION set_credit_request_number()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      IF NEW.request_number IS NULL OR NEW.request_number = '' THEN
+        NEW.request_number := generate_credit_request_number();
+      END IF;
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func4$;
 
-DROP TRIGGER IF EXISTS trigger_set_credit_request_number ON order_book_credit_requests;
-CREATE TRIGGER trigger_set_credit_request_number
-  BEFORE INSERT ON order_book_credit_requests
-  FOR EACH ROW
-  EXECUTE FUNCTION set_credit_request_number();
+  DROP TRIGGER IF EXISTS trigger_set_credit_request_number ON order_book_credit_requests;
+  CREATE TRIGGER trigger_set_credit_request_number
+    BEFORE INSERT ON order_book_credit_requests
+    FOR EACH ROW
+    EXECUTE FUNCTION set_credit_request_number();
 
--- ============================================================================
--- VIEW: order_book_product_rating_summary
--- ============================================================================
-CREATE OR REPLACE VIEW order_book_product_rating_summary AS
+  -- ============================================================================
+  -- VIEW: order_book_product_rating_summary
+  -- ============================================================================
+  EXECUTE $sql_view1$
+    CREATE OR REPLACE VIEW order_book_product_rating_summary AS
 SELECT 
   product_id,
   COUNT(*) AS rating_count,
@@ -229,6 +278,9 @@ SELECT
   ROUND(AVG(freshness_rating), 2) AS avg_freshness,
   ROUND(AVG(consistency_rating), 2) AS avg_consistency,
   ROUND(AVG(value_rating), 2) AS avg_value
-FROM order_book_product_ratings
-GROUP BY product_id;
+    FROM order_book_product_ratings
+    GROUP BY product_id;
+  $sql_view1$;
+
+END $$;
 

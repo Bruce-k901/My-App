@@ -121,40 +121,54 @@ BEGIN
 END $$;
 
 -- Drop and recreate the public view to include new columns
-DROP VIEW IF EXISTS public.storage_areas CASCADE;
-
-CREATE VIEW public.storage_areas AS
-SELECT 
-  id,
-  company_id,
-  name,
-  division,
-  description,
-  is_active,
-  sort_order,
-  created_at,
-  updated_at
-FROM stockly.storage_areas;
-
--- Set view to be security invoker (uses permissions of the querying user)
-ALTER VIEW public.storage_areas SET (security_invoker = true);
-
--- Enable RLS on the underlying table
-ALTER TABLE stockly.storage_areas ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies on stockly.storage_areas if they exist
-DROP POLICY IF EXISTS "Users can view their company's storage areas" ON stockly.storage_areas;
-DROP POLICY IF EXISTS "Managers can insert storage areas" ON stockly.storage_areas;
-DROP POLICY IF EXISTS "Managers can update storage areas" ON stockly.storage_areas;
-DROP POLICY IF EXISTS "Managers can delete storage areas" ON stockly.storage_areas;
-DROP POLICY IF EXISTS "storage_areas_site" ON stockly.storage_areas;
-
--- RLS Policies on stockly.storage_areas
--- Check if profiles table exists before creating policies
+-- Only if stockly.storage_areas table exists
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables 
-             WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+             WHERE table_schema = 'stockly' AND table_name = 'storage_areas') THEN
+    DROP VIEW IF EXISTS public.storage_areas CASCADE;
+
+    EXECUTE $sql_view1$
+      CREATE VIEW public.storage_areas AS
+      SELECT 
+        id,
+        company_id,
+        name,
+        division,
+        description,
+        is_active,
+        sort_order,
+        created_at,
+        updated_at
+      FROM stockly.storage_areas;
+    $sql_view1$;
+
+    -- Set view to be security invoker (uses permissions of the querying user)
+    ALTER VIEW public.storage_areas SET (security_invoker = true);
+
+    -- Enable RLS on the underlying table
+    ALTER TABLE stockly.storage_areas ENABLE ROW LEVEL SECURITY;
+  ELSE
+    RAISE NOTICE 'stockly.storage_areas table does not exist - skipping view creation';
+  END IF;
+END $$;
+
+-- Drop existing policies on stockly.storage_areas if they exist
+-- Only if stockly.storage_areas table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables 
+             WHERE table_schema = 'stockly' AND table_name = 'storage_areas') THEN
+    DROP POLICY IF EXISTS "Users can view their company's storage areas" ON stockly.storage_areas;
+    DROP POLICY IF EXISTS "Managers can insert storage areas" ON stockly.storage_areas;
+    DROP POLICY IF EXISTS "Managers can update storage areas" ON stockly.storage_areas;
+    DROP POLICY IF EXISTS "Managers can delete storage areas" ON stockly.storage_areas;
+    DROP POLICY IF EXISTS "storage_areas_site" ON stockly.storage_areas;
+
+    -- RLS Policies on stockly.storage_areas
+    -- Check if profiles table exists before creating policies
+    IF EXISTS (SELECT 1 FROM information_schema.tables 
+               WHERE table_schema = 'public' AND table_name = 'profiles') THEN
     
     -- Users can view their company's storage areas
     CREATE POLICY "Users can view their company's storage areas"
@@ -205,6 +219,7 @@ BEGIN
           AND LOWER(p.app_role::text) IN ('owner', 'admin', 'manager', 'general_manager', 'area_manager')
         )
       );
+    END IF;
   END IF;
 END $$;
 
@@ -212,7 +227,9 @@ END $$;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables 
-             WHERE table_schema = 'public' AND table_name = 'ingredients_library') THEN
+             WHERE table_schema = 'public' AND table_name = 'ingredients_library') 
+     AND EXISTS (SELECT 1 FROM information_schema.tables 
+                 WHERE table_schema = 'stockly' AND table_name = 'storage_areas') THEN
     IF NOT EXISTS (
       SELECT 1 FROM information_schema.columns 
       WHERE table_schema = 'public' 
@@ -234,25 +251,35 @@ BEGIN
 END $$;
 
 -- Create or replace trigger for updated_at on stockly.storage_areas
-DROP TRIGGER IF EXISTS update_storage_areas_updated_at ON stockly.storage_areas;
-
--- Check if update_updated_at_column function exists
+-- Only if stockly.storage_areas table exists
 DO $$
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.routines 
-    WHERE routine_schema = 'public' 
-    AND routine_name = 'update_updated_at_column'
-  ) THEN
-    CREATE TRIGGER update_storage_areas_updated_at
-      BEFORE UPDATE ON stockly.storage_areas
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
+  IF EXISTS (SELECT 1 FROM information_schema.tables 
+             WHERE table_schema = 'stockly' AND table_name = 'storage_areas') THEN
+    DROP TRIGGER IF EXISTS update_storage_areas_updated_at ON stockly.storage_areas;
+
+    -- Check if update_updated_at_column function exists
+    IF EXISTS (
+      SELECT 1 FROM information_schema.routines 
+      WHERE routine_schema = 'public' 
+      AND routine_name = 'update_updated_at_column'
+    ) THEN
+      CREATE TRIGGER update_storage_areas_updated_at
+        BEFORE UPDATE ON stockly.storage_areas
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+    END IF;
+
+    -- Comment the table
+    COMMENT ON TABLE stockly.storage_areas IS 'Physical storage locations for inventory management and stock counting';
   END IF;
 END $$;
 
--- Comment the table
-COMMENT ON TABLE stockly.storage_areas IS 'Physical storage locations for inventory management and stock counting';
-
--- Grant permissions on the view
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.storage_areas TO authenticated;
+-- Grant permissions on the view (only if it exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.views 
+             WHERE table_schema = 'public' AND table_name = 'storage_areas') THEN
+    GRANT SELECT, INSERT, UPDATE, DELETE ON public.storage_areas TO authenticated;
+  END IF;
+END $$;

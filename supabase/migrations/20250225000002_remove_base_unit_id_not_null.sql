@@ -3,12 +3,19 @@
 -- This allows stock_items to be created without base_unit_id
 -- ============================================================================
 
-BEGIN;
-
--- Check if base_unit_id exists and has a NOT NULL constraint
 DO $$
 BEGIN
-  -- Check if the column exists
+  -- Check if stockly.stock_items table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' 
+    AND table_name = 'stock_items'
+  ) THEN
+    RAISE NOTICE 'stockly.stock_items table does not exist - skipping base_unit_id constraint removal';
+    RETURN;
+  END IF;
+
+  -- Check if base_unit_id exists and has a NOT NULL constraint
   IF EXISTS (
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'stockly' 
@@ -23,24 +30,21 @@ BEGIN
   ELSE
     RAISE NOTICE 'base_unit_id column does not exist in stockly.stock_items';
   END IF;
-END $$;
 
--- Recreate the view to reflect changes
-DROP VIEW IF EXISTS public.stock_items CASCADE;
+  -- Recreate the view to reflect changes
+  DROP VIEW IF EXISTS public.stock_items CASCADE;
 
-CREATE VIEW public.stock_items AS
-SELECT * FROM stockly.stock_items;
+  EXECUTE $sql_view1$
+    CREATE VIEW public.stock_items AS
+    SELECT * FROM stockly.stock_items;
+  $sql_view1$;
 
--- Grant permissions
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.stock_items TO authenticated;
-ALTER VIEW public.stock_items SET (security_invoker = true);
+  -- Grant permissions
+  GRANT SELECT, INSERT, UPDATE, DELETE ON public.stock_items TO authenticated;
+  ALTER VIEW public.stock_items SET (security_invoker = true);
 
--- Refresh PostgREST schema cache
-NOTIFY pgrst, 'reload schema';
-
-DO $$
-BEGIN
+  -- Refresh PostgREST schema cache
+  NOTIFY pgrst, 'reload schema';
   PERFORM pg_notify('pgrst', 'reload schema');
-END $$;
 
-COMMIT;
+END $$;

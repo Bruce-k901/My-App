@@ -6,6 +6,18 @@
 
 DO $$
 BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'site_checklists'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+  ) THEN
+    RAISE NOTICE 'site_checklists or profiles tables do not exist - skipping site_checklists INSERT RLS policy fix';
+    RETURN;
+  END IF;
+
   -- Drop the existing INSERT policy if it exists
   DROP POLICY IF EXISTS "Users insert site_checklists for their site" ON site_checklists;
 

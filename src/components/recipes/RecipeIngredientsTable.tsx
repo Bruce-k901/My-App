@@ -439,6 +439,68 @@ export function RecipeIngredientsTable({
     }
   }, [isEditing, recipeId, loadIngredients]);
 
+  // Real-time subscription for ingredient price updates
+  useEffect(() => {
+    if (!companyId || !recipeId) return;
+
+    const channel = supabase
+      .channel(`recipe-ingredients-price-updates-${recipeId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'ingredients_library',
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          console.log('Ingredient price updated in real-time:', payload);
+          // Check if price-related fields changed
+          const oldData = payload.old as any;
+          const newData = payload.new as any;
+          
+          const priceChanged = 
+            oldData.unit_cost !== newData.unit_cost ||
+            oldData.pack_cost !== newData.pack_cost ||
+            oldData.pack_size !== newData.pack_size ||
+            oldData.yield_percent !== newData.yield_percent;
+          
+          if (priceChanged) {
+            console.log('Price change detected, reloading recipe ingredients...');
+            // Reload ingredients to get updated prices
+            loadIngredients();
+            // Notify parent to recalculate recipe cost
+            if (onRecipeUpdate) {
+              onRecipeUpdate();
+            }
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'stockly',
+          table: 'recipes',
+          filter: `id=eq.${recipeId}`,
+        },
+        (payload) => {
+          console.log('Recipe cost updated in real-time:', payload);
+          // Reload ingredients to get updated recipe cost data
+          loadIngredients();
+          // Notify parent to refresh recipe data
+          if (onRecipeUpdate) {
+            onRecipeUpdate();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId, recipeId, loadIngredients, onRecipeUpdate]);
+
   // Load available ingredients when companyId changes or component mounts
   useEffect(() => {
     if (companyId && !loadingAvailableIngredientsRef.current) {

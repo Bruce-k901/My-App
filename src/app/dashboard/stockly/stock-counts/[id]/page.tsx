@@ -43,6 +43,7 @@ export default function StockCountDetailPage() {
   const [showLockModal, setShowLockModal] = useState(false);
   const [hasReviewers, setHasReviewers] = useState(false);
   const [submittingForReview, setSubmittingForReview] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -124,6 +125,41 @@ export default function StockCountDetailPage() {
     }
   };
 
+  const handleCompleteCount = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      toast.error('Unable to identify current user');
+      return;
+    }
+
+    setCompleting(true);
+    try {
+      const { error } = await supabase
+        .from('stock_counts')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          completed_by: userId,
+        })
+        .eq('id', countId);
+
+      if (error) throw error;
+
+      toast.success('Stock count marked as completed');
+      // Redirect to review page where "Mark Ready for Approval" button will be visible
+      router.push(`/dashboard/stockly/stock-counts/${countId}/review`);
+    } catch (error: any) {
+      console.error('Error completing count:', error);
+      toast.error(error.message || 'Failed to complete count');
+    } finally {
+      setCompleting(false);
+    }
+  };
+
   // Memoize countId to ensure stable reference
   const countId = useMemo(() => {
     return Array.isArray(params.id) ? params.id[0] : params.id;
@@ -131,19 +167,69 @@ export default function StockCountDetailPage() {
 
   useEffect(() => {
     // Auto-select appropriate tab based on status
-    if (count) {
-      if (count.status === 'draft') {
-        setActiveTab('print');
-      } else if (count.status === 'active' || count.status === 'in_progress') {
-        setActiveTab('enter');
-      } else if (count.status === 'finalized' || count.status === 'locked') {
-        // Navigate to review page instead of setting tab
-        if (countId) {
-          router.push(`/dashboard/stockly/stock-counts/${countId}/review`);
-        }
-      }
+    // CRITICAL: Never redirect new counts (with 0 items) to review page
+    if (!count) return; // Don't do anything if count isn't loaded yet
+    
+    const itemsCounted = count.items_counted || 0;
+    const totalItems = count.total_items || 0;
+    const status = count.status;
+    
+    // DEBUG: Log what we're checking
+    console.log('[StockCountDetail] Redirect check:', {
+      status,
+      itemsCounted,
+      totalItems,
+      countId,
+    });
+    
+    // Draft counts: show print tab - NEVER redirect
+    if (status === 'draft') {
+      console.log('[StockCountDetail] Draft count - staying on print tab');
+      setActiveTab('print');
+      return;
+    } 
+    
+    // Active/in_progress counts: show enter tab - NEVER redirect these
+    // Even if they have items, they're still being worked on
+    if (status === 'active' || status === 'in_progress') {
+      console.log('[StockCountDetail] Active/in_progress count - staying on enter tab');
+      setActiveTab('enter');
+      return; // NEVER redirect in_progress counts, period
+    } 
+    
+    // Only redirect to review for counts that:
+    // 1. Are in a review/approval state (completed, ready_for_approval, etc.)
+    // 2. AND have actually been worked on (items_counted > 0 AND total_items > 0)
+    // 3. AND are NOT in_progress (double-check)
+    const hasBeenWorkedOn = itemsCounted > 0 && totalItems > 0;
+    const isReviewState = 
+      status === 'completed' || 
+      status === 'ready_for_approval' || 
+      status === 'pending_review' || 
+      status === 'approved' ||
+      status === 'rejected' ||
+      status === 'finalized' || 
+      status === 'locked';
+    
+    // CRITICAL: Never redirect if status is still in_progress or active
+    if (status === 'in_progress' || status === 'active') {
+      console.log('[StockCountDetail] Status is in_progress/active - NOT redirecting');
+      setActiveTab('enter');
+      return;
     }
-  }, [count?.status, countId, router]);
+    
+    if (isReviewState && hasBeenWorkedOn) {
+      console.log('[StockCountDetail] Redirecting to review page');
+      // Navigate to review page
+      if (countId) {
+        router.push(`/dashboard/stockly/stock-counts/${countId}/review`);
+      }
+    } else {
+      // For any other state, default to print tab (safe default)
+      console.log('[StockCountDetail] Defaulting to print tab');
+      setActiveTab('print');
+    }
+  }, [count?.status, count?.items_counted, count?.total_items, countId, router, count]);
 
   const fetchCountDetails = async () => {
     if (!params.id) return;
@@ -570,6 +656,34 @@ export default function StockCountDetailPage() {
             Locked
           </span>
         );
+      case 'completed':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-50 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Completed
+          </span>
+        );
+      case 'ready_for_approval':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/40 text-sm font-medium">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Ready for Approval
+          </span>
+        );
+      case 'approved':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm font-medium">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Approved
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-red-50 dark:bg-red-600/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-600/40 text-sm font-medium">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Rejected
+          </span>
+        );
     }
   };
 
@@ -693,6 +807,14 @@ export default function StockCountDetailPage() {
             
             {(count.status === 'active' || count.status === 'in_progress') && count.items_counted > 0 && (
               <>
+                <Button
+                  onClick={handleCompleteCount}
+                  disabled={completing}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  {completing ? 'Completing...' : 'Complete Count'}
+                </Button>
                 {hasReviewers && (
                   <Button
                     onClick={handleSubmitForReview}
@@ -706,6 +828,8 @@ export default function StockCountDetailPage() {
                 <Button
                   onClick={() => setShowFinalizeModal(true)}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  disabled={count.status !== 'approved'}
+                  title={count.status !== 'approved' ? 'Count must be approved before finalization' : 'Finalize and adjust stock levels'}
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Finalize & Adjust Stock
@@ -727,41 +851,59 @@ export default function StockCountDetailPage() {
             )}
           </div>
           </div>
+        </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Total Items</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{count.total_items}</p>
-          </div>
+        {(() => {
+          // Calculate summary values from items array to ensure accuracy
+          const countedItems = items.filter(item => item.is_counted === true || item.counted_quantity !== null);
+          const itemsWithVariance = countedItems.filter(item => {
+            const varianceQty = item.variance_quantity ?? (item.counted_quantity ?? 0) - (item.expected_quantity ?? item.theoretical_closing ?? 0);
+            return Math.abs(varianceQty) > 0.001; // More than 0.001 variance
+          });
+          const totalVarianceValue = countedItems.reduce((sum, item) => {
+            const varianceValue = item.variance_value ?? 
+              ((item.counted_quantity ?? 0) - (item.expected_quantity ?? item.theoretical_closing ?? 0)) * (item.unit_cost ?? 0);
+            return sum + (varianceValue ?? 0);
+          }, 0);
+          const itemsCounted = countedItems.length;
+          const totalItems = count.total_items ?? items.length;
           
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Items Counted</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {count.items_counted}
-              <span className="text-sm text-gray-500 dark:text-gray-500 ml-2">
-                ({count.total_items > 0 ? Math.round((count.items_counted / count.total_items) * 100) : 0}%)
-              </span>
-            </p>
-          </div>
-          
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Variances</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{count.variance_count}</p>
-          </div>
-          
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Variance Value</p>
-            <p className={`text-2xl font-bold mt-1 ${
-              count.total_variance_value < 0 ? 'text-red-600 dark:text-red-400' : 
-              count.total_variance_value > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
-            }`}>
-              {count.total_variance_value < 0 ? '-' : count.total_variance_value > 0 ? '+' : ''}
-              £{Math.abs(count.total_variance_value).toFixed(2)}
-            </p>
-          </div>
-        </div>
-      </div>
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Total Items</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{totalItems}</p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Items Counted</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {itemsCounted}
+                  <span className="text-sm text-gray-500 dark:text-gray-500 ml-2">
+                    ({totalItems > 0 ? Math.round((itemsCounted / totalItems) * 100) : 0}%)
+                  </span>
+                </p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Variances</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{itemsWithVariance.length}</p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Variance Value</p>
+                <p className={`text-2xl font-bold mt-1 ${
+                  totalVarianceValue < 0 ? 'text-red-600 dark:text-red-400' : 
+                  totalVarianceValue > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
+                }`}>
+                  {totalVarianceValue < 0 ? '-' : totalVarianceValue > 0 ? '+' : ''}
+                  £{Math.abs(totalVarianceValue).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
 
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-white/[0.06] mb-6">
@@ -779,7 +921,14 @@ export default function StockCountDetailPage() {
           </button>
           
           <button
-            onClick={() => setActiveTab('enter')}
+            onClick={() => {
+              // If count is in draft status, automatically start entering data
+              if (count?.status === 'draft') {
+                handleStartEntering();
+              } else {
+                setActiveTab('enter');
+              }
+            }}
             className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
               activeTab === 'enter'
                 ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
@@ -905,17 +1054,10 @@ export default function StockCountDetailPage() {
         <>
           {count.status === 'draft' ? (
             <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Start Entering Data</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Click the "Start Entering Data" button in the header to begin entering your stock counts.
+              <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">
+                Starting data entry...
               </p>
-              <Button
-                onClick={handleStartEntering}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Start Entering Data
-              </Button>
             </div>
           ) : (
             <CountDataEntry
@@ -927,7 +1069,6 @@ export default function StockCountDetailPage() {
           )}
         </>
       )}
-
 
       {/* Modals */}
       <FinalizeModal

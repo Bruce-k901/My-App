@@ -200,6 +200,17 @@ export function TemperatureLoggingFeature({
           </div>
         )}
         
+        {temperatures.length === 0 && selectedAssets.length === 0 && (
+          <div className="mb-4 p-4 rounded-lg border border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.03]">
+            <p className="text-sm text-gray-600 dark:text-white/60">
+              {isTemplateMode 
+                ? "Select assets in the Asset Selection section above to create temperature logs. Temperature logs will be automatically populated from selected assets."
+                : "No temperature logs configured. Select assets to add temperature logs."
+              }
+            </p>
+          </div>
+        )}
+        
         <div className="space-y-3">
           {temperatures.map((temp, index) => {
             const asset = assets.find(a => a.id === temp.assetId);

@@ -2,11 +2,18 @@
 -- Description: Add sales channel columns to ingredients_library (replacing is_saleable)
 -- Date: 2025-03-22
 
-BEGIN;
-
 -- Add sales channel columns to ingredients_library
 DO $$
 BEGIN
+  -- Check if table exists first
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+  ) THEN
+    RAISE NOTICE 'ingredients_library table does not exist - skipping add_sales_channels_to_ingredients migration';
+    RETURN;
+  END IF;
+
   -- Add retail sales channel
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns 
@@ -100,6 +107,4 @@ END $$;
 
 -- Notify PostgREST to reload schema
 NOTIFY pgrst, 'reload schema';
-
-COMMIT;
 

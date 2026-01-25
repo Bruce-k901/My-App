@@ -352,58 +352,80 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- View: Enhanced leave balances with calculated entitlements
--- Drop view first to allow column changes
-DROP VIEW IF EXISTS leave_balances_enhanced_view CASCADE;
+-- Only create view if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'leave_balances'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'leave_types'
+  ) THEN
+    RAISE NOTICE 'leave_balances, profiles, or leave_types tables do not exist - skipping leave_balances_enhanced_view creation';
+    RETURN;
+  END IF;
 
-CREATE VIEW leave_balances_enhanced_view AS
-SELECT 
-  lb.id,
-  lb.company_id,
-  lb.profile_id,
-  lb.leave_type_id,
-  lb.year,
-  lb.entitled_days,
-  lb.carried_over,
-  lb.adjustments,
-  lb.taken_days,
-  lb.pending_days,
-  (lb.entitled_days + lb.carried_over + lb.adjustments - lb.taken_days - lb.pending_days) as remaining_days,
-  
-  -- Employee details
-  p.full_name,
-  p.email,
-  p.site_id,
-  p.contracted_hours,
-  p.salary,
-  p.hourly_rate,
-  p.annual_leave_allowance,
-  
-  -- Leave type details
-  lt.name as leave_type_name,
-  lt.code as leave_type_code,
-  lt.color as leave_type_color,
-  
-  -- Calculated fields
-  calculate_holiday_entitlement(lb.profile_id, lb.year) as calculated_entitlement,
-  calculate_average_hours_13_weeks(lb.profile_id) as average_hours_13_weeks,
-  calculate_overtime_to_holiday_days(lb.profile_id, lb.year) as overtime_holiday_days,
-  get_total_days_in_lieu(lb.profile_id, lb.year) as total_days_in_lieu,
-  calculate_accrued_holiday_days(lb.profile_id, lb.year) as accrued_days,
-  calculate_available_holiday_days(lb.profile_id, lb.leave_type_id, lb.year) as available_days,
-  
-  -- Employee type
-  CASE 
-    WHEN p.salary IS NOT NULL AND p.salary > 0 AND (p.hourly_rate IS NULL OR p.hourly_rate = 0) THEN 'salaried'
-    WHEN p.hourly_rate IS NOT NULL AND p.hourly_rate > 0 THEN 'hourly'
-    ELSE 'unknown'
-  END as employee_type
-  
-FROM leave_balances lb
-JOIN profiles p ON p.id = lb.profile_id
-JOIN leave_types lt ON lt.id = lb.leave_type_id;
+  -- Drop view first to allow column changes
+  DROP VIEW IF EXISTS leave_balances_enhanced_view CASCADE;
 
--- Grant permissions
-GRANT SELECT ON leave_balances_enhanced_view TO authenticated;
+  -- Create view
+  EXECUTE $sql_view1$
+    CREATE VIEW leave_balances_enhanced_view AS
+    SELECT 
+      lb.id,
+      lb.company_id,
+      lb.profile_id,
+      lb.leave_type_id,
+      lb.year,
+      lb.entitled_days,
+      lb.carried_over,
+      lb.adjustments,
+      lb.taken_days,
+      lb.pending_days,
+      (lb.entitled_days + lb.carried_over + lb.adjustments - lb.taken_days - lb.pending_days) as remaining_days,
+      
+      -- Employee details
+      p.full_name,
+      p.email,
+      p.site_id,
+      p.contracted_hours,
+      p.salary,
+      p.hourly_rate,
+      p.annual_leave_allowance,
+      
+      -- Leave type details
+      lt.name as leave_type_name,
+      lt.code as leave_type_code,
+      lt.color as leave_type_color,
+      
+      -- Calculated fields
+      calculate_holiday_entitlement(lb.profile_id, lb.year) as calculated_entitlement,
+      calculate_average_hours_13_weeks(lb.profile_id) as average_hours_13_weeks,
+      calculate_overtime_to_holiday_days(lb.profile_id, lb.year) as overtime_holiday_days,
+      get_total_days_in_lieu(lb.profile_id, lb.year) as total_days_in_lieu,
+      calculate_accrued_holiday_days(lb.profile_id, lb.year) as accrued_days,
+      calculate_available_holiday_days(lb.profile_id, lb.leave_type_id, lb.year) as available_days,
+      
+      -- Employee type
+      CASE 
+        WHEN p.salary IS NOT NULL AND p.salary > 0 AND (p.hourly_rate IS NULL OR p.hourly_rate = 0) THEN 'salaried'
+        WHEN p.hourly_rate IS NOT NULL AND p.hourly_rate > 0 THEN 'hourly'
+        ELSE 'unknown'
+      END as employee_type
+      
+    FROM leave_balances lb
+    JOIN profiles p ON p.id = lb.profile_id
+    JOIN leave_types lt ON lt.id = lb.leave_type_id;
+  $sql_view1$;
+
+  -- Grant permissions
+  GRANT SELECT ON leave_balances_enhanced_view TO authenticated;
+END $$;
 GRANT EXECUTE ON FUNCTION calculate_average_hours_13_weeks(UUID, DATE) TO authenticated;
 GRANT EXECUTE ON FUNCTION calculate_holiday_entitlement(UUID, INTEGER) TO authenticated;
 GRANT EXECUTE ON FUNCTION calculate_overtime_to_holiday_days(UUID, INTEGER, DATE, DATE) TO authenticated;

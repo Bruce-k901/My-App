@@ -86,7 +86,7 @@ export default function AreasAndRegionsPage() {
       // Load regions with their areas
       const { data: regionsData, error: regionsError } = await supabase
         .from('regions')
-        .select('id, name, regional_manager_id')
+        .select('id, name, regional_manager_id, manager_id')
         .eq('company_id', profile!.company_id)
         .order('name');
 
@@ -95,7 +95,7 @@ export default function AreasAndRegionsPage() {
       // Load areas
       const { data: areasData, error: areasError } = await supabase
         .from('areas')
-        .select('id, name, region_id, area_manager_id')
+        .select('id, name, region_id, area_manager_id, manager_id')
         .eq('company_id', profile!.company_id)
         .order('name');
 
@@ -197,6 +197,7 @@ export default function AreasAndRegionsPage() {
           .update({
             name: regionName,
             regional_manager_id: regionManagerId || null,
+            manager_id: regionManagerId || null, // Sync to manager_id for compatibility
           })
           .eq('id', editingRegion.id);
 
@@ -209,6 +210,7 @@ export default function AreasAndRegionsPage() {
           .insert({
             name: regionName,
             regional_manager_id: regionManagerId || null,
+            manager_id: regionManagerId || null, // Sync to manager_id for compatibility
             company_id: profile!.company_id,
           });
 
@@ -266,6 +268,7 @@ export default function AreasAndRegionsPage() {
           .update({
             name: areaName,
             area_manager_id: areaManagerId || null,
+            manager_id: areaManagerId || null, // Sync to manager_id for compatibility
           })
           .eq('id', editingArea.id);
 
@@ -279,6 +282,7 @@ export default function AreasAndRegionsPage() {
             name: areaName,
             region_id: selectedRegionId,
             area_manager_id: areaManagerId || null,
+            manager_id: areaManagerId || null, // Sync to manager_id for compatibility
             company_id: profile!.company_id,
           });
 
@@ -321,14 +325,16 @@ export default function AreasAndRegionsPage() {
   function openEditRegion(region: Region) {
     setEditingRegion(region);
     setRegionName(region.name);
-    setRegionManagerId(region.manager_id || '');
+    // Check both manager_id and regional_manager_id for compatibility
+    setRegionManagerId(region.regional_manager_id || region.manager_id || '');
     setShowRegionModal(true);
   }
 
   function openEditArea(area: Area) {
     setEditingArea(area);
     setAreaName(area.name);
-    setAreaManagerId(area.manager_id || '');
+    // Check both manager_id and area_manager_id for compatibility
+    setAreaManagerId(area.area_manager_id || area.manager_id || '');
     setShowAreaModal(true);
   }
 

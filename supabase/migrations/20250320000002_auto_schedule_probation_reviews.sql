@@ -3,14 +3,27 @@
 -- Description: Automatically schedules probation reviews when employee start_date is set
 -- ============================================================================
 
--- Function to schedule probation review for an employee
-CREATE OR REPLACE FUNCTION public.auto_schedule_probation_review()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
+-- This migration only runs if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist - exit early if they don't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+  ) THEN
+    RAISE NOTICE 'profiles table does not exist - skipping auto_schedule_probation_reviews migration';
+    RETURN;
+  END IF;
+
+  -- Function to schedule probation review for an employee
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION public.auto_schedule_probation_review()
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+    DECLARE
   v_template_id UUID;
   v_probation_date DATE;
   v_manager_id UUID;
@@ -102,34 +115,37 @@ BEGIN
     RAISE NOTICE 'Auto-scheduled probation review for employee % on %', NEW.id, v_probation_date;
   END IF;
 
-  RETURN NEW;
-END;
-$$;
+    RETURN NEW;
+  END;
+  $func$;
+  $sql_func1$;
 
--- Create trigger that fires when start_date is set or updated
-DROP TRIGGER IF EXISTS trigger_auto_schedule_probation_review ON public.profiles;
-CREATE TRIGGER trigger_auto_schedule_probation_review
-  AFTER INSERT OR UPDATE OF start_date, reports_to, company_id
-  ON public.profiles
-  FOR EACH ROW
-  WHEN (NEW.start_date IS NOT NULL)
-  EXECUTE FUNCTION public.auto_schedule_probation_review();
+  -- Create trigger that fires when start_date is set or updated
+  -- Only create if profiles table exists (already checked above)
+  DROP TRIGGER IF EXISTS trigger_auto_schedule_probation_review ON public.profiles;
+  CREATE TRIGGER trigger_auto_schedule_probation_review
+    AFTER INSERT OR UPDATE OF start_date, reports_to, company_id
+    ON public.profiles
+    FOR EACH ROW
+    WHEN (NEW.start_date IS NOT NULL)
+    EXECUTE FUNCTION public.auto_schedule_probation_review();
 
--- Function to manually schedule probation reviews for existing employees
--- This can be called to backfill probation reviews for employees who already have start_date set
-CREATE OR REPLACE FUNCTION public.schedule_missing_probation_reviews()
-RETURNS TABLE (
-  employee_id UUID,
-  employee_name TEXT,
-  start_date DATE,
-  probation_date DATE,
-  scheduled BOOLEAN
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
+  -- Function to manually schedule probation reviews for existing employees
+  -- This can be called to backfill probation reviews for employees who already have start_date set
+  EXECUTE $sql_func2$
+    CREATE OR REPLACE FUNCTION public.schedule_missing_probation_reviews()
+    RETURNS TABLE (
+      employee_id UUID,
+      employee_name TEXT,
+      start_date DATE,
+      probation_date DATE,
+      scheduled BOOLEAN
+    )
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+    DECLARE
   v_employee RECORD;
   v_template_id UUID;
   v_probation_date DATE;
@@ -221,15 +237,18 @@ BEGIN
     RETURN NEXT;
   END LOOP;
 END;
-$$;
+  $func$;
+  $sql_func2$;
 
--- Grant execute permissions
-GRANT EXECUTE ON FUNCTION public.auto_schedule_probation_review() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.schedule_missing_probation_reviews() TO authenticated;
+  -- Grant execute permissions
+  GRANT EXECUTE ON FUNCTION public.auto_schedule_probation_review() TO authenticated;
+  GRANT EXECUTE ON FUNCTION public.schedule_missing_probation_reviews() TO authenticated;
 
-COMMENT ON FUNCTION public.auto_schedule_probation_review() IS 
-  'Automatically schedules a 90-day probation review when an employee start_date is set or updated';
+  COMMENT ON FUNCTION public.auto_schedule_probation_review() IS 
+    'Automatically schedules a 90-day probation review when an employee start_date is set or updated';
 
-COMMENT ON FUNCTION public.schedule_missing_probation_reviews() IS 
-  'Manually schedules probation reviews for existing employees who have start_date but no scheduled review';
+  COMMENT ON FUNCTION public.schedule_missing_probation_reviews() IS 
+    'Manually schedules probation reviews for existing employees who have start_date but no scheduled review';
+
+END $$;
 

@@ -19,6 +19,7 @@ export interface TaskFilterParams {
   siteId?: string | null;
   userId?: string | null;
   showAll?: boolean; // For managers/admins
+  onShift?: boolean; // Whether staff is currently on shift (for timing filters)
 }
 
 /**
@@ -187,7 +188,7 @@ export async function getUsersToNotify(siteId: string): Promise<string[]> {
 
 /**
  * Build task query filter based on shift status
- * Staff: only tasks for their current site when on shift
+ * Staff: tasks for their home site (always) or current shift site (when on shift)
  * Managers/Admins: all tasks (no filtering)
  */
 export async function buildTaskQueryFilter(): Promise<TaskFilterParams> {
@@ -197,10 +198,10 @@ export async function buildTaskQueryFilter(): Promise<TaskFilterParams> {
       return { showAll: false };
     }
 
-    // Get user profile
+    // Get user profile with home_site
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, app_role')
+      .select('id, app_role, home_site')
       .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
       .maybeSingle();
 
@@ -217,17 +218,30 @@ export async function buildTaskQueryFilter(): Promise<TaskFilterParams> {
     // Staff: check if on shift
     const shiftStatus = await getCurrentShiftStatus();
     
-    if (!shiftStatus.onShift || !shiftStatus.siteId) {
-      // Staff not on shift - return filter that shows no tasks
-      return { showAll: false, siteId: null };
+    // If staff is on shift, use their current shift site
+    if (shiftStatus.onShift && shiftStatus.siteId) {
+      return {
+        showAll: false,
+        siteId: shiftStatus.siteId,
+        userId: profile.id,
+        onShift: true,
+      };
     }
 
-    // Staff on shift - only show tasks for their current site
-    return {
-      showAll: false,
-      siteId: shiftStatus.siteId,
-      userId: profile.id,
-    };
+    // Staff not on shift - use their home site instead of showing no tasks
+    if (profile.home_site) {
+      console.log('📋 Staff not on shift - using home site for task filtering:', profile.home_site);
+      return {
+        showAll: false,
+        siteId: profile.home_site,
+        userId: profile.id,
+        onShift: false,
+      };
+    }
+
+    // Fallback: no home site assigned
+    console.warn('⚠️ Staff member has no home site assigned');
+    return { showAll: false, siteId: null, onShift: false };
   } catch (error) {
     console.error('Error building task filter:', error);
     return { showAll: false };

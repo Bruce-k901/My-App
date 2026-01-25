@@ -196,6 +196,21 @@ BEGIN
         60, 3
       ) ON CONFLICT (company_id, code) DO NOTHING;
       
+      -- Health and Safety Level 2
+      INSERT INTO training_courses (
+        company_id, name, code, description, category, course_type,
+        results_in_certification, certification_name, certification_validity_months,
+        is_mandatory, renewal_required, renewal_period_months, renewal_reminder_days,
+        duration_minutes, sort_order
+      ) VALUES (
+        p_company_id, 'Health and Safety Level 2', 'HS-L2',
+        'Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards',
+        'Health & Safety', 'online',
+        true, 'Health and Safety Level 2 Certificate', 36,
+        true, true, 36, 60,
+        240, 2.5
+      ) ON CONFLICT (company_id, code) DO NOTHING;
+      
       -- COSHH
       INSERT INTO training_courses (
         company_id, name, code, description, category, course_type,

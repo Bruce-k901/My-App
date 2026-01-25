@@ -350,23 +350,23 @@ export default function AddEmployeePage() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link
           href="/dashboard/people/employees"
-          className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 text-neutral-400" />
+          <ArrowLeft className="w-5 h-5 text-theme-secondary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Add Employee</h1>
-          <p className="text-neutral-400">Create a new team member profile</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Add Employee</h1>
+          <p className="text-theme-secondary">Create a new team member profile</p>
         </div>
       </div>
 
       {/* Section Navigation */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <div className="flex gap-1 px-4 pt-3 mb-6 border-b border-theme">
         {sections.map((section) => {
           const Icon = section.icon;
           return (
@@ -374,14 +374,14 @@ export default function AddEmployeePage() {
               key={section.id}
               onClick={() => setActiveSection(section.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
+                flex items-center gap-1.5 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-all relative
                 ${activeSection === section.id
-                  ? 'bg-gradient-to-r from-[#EC4899]/20 to-blue-600/20 text-white border border-[#EC4899]/30'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                  ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 dark:border-blue-500 shadow-sm'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-blue-500/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
                 }
               `}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className={`w-4 h-4 ${activeSection === section.id ? 'text-blue-600 dark:text-blue-400' : ''}`} />
               {section.label}
             </button>
           );
@@ -390,26 +390,26 @@ export default function AddEmployeePage() {
 
       {/* Error Display */}
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400">
+        <div className="mb-6 p-4 bg-red-500/10 dark:bg-red-500/10 border border-red-500/50 dark:border-red-500/50 rounded-lg text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-button backdrop-blur-sm border border-theme rounded-lg p-6">
           
           {/* Personal Section */}
           {activeSection === 'personal' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <User className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Personal Information
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -418,12 +418,12 @@ export default function AddEmployeePage() {
                     value={formData.full_name}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Email <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -432,12 +432,12 @@ export default function AddEmployeePage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Phone Number
                   </label>
                   <input
@@ -445,12 +445,12 @@ export default function AddEmployeePage() {
                     name="phone_number"
                     value={formData.phone_number}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Date of Birth
                   </label>
                   <input
@@ -458,19 +458,19 @@ export default function AddEmployeePage() {
                     name="date_of_birth"
                     value={formData.date_of_birth}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Gender
                   </label>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="male">Male</option>
@@ -482,7 +482,7 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Nationality
                   </label>
                   <input
@@ -490,17 +490,17 @@ export default function AddEmployeePage() {
                     name="nationality"
                     value={formData.nationality}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
               
               {/* Address */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-white mb-4">Address</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border-t border-theme pt-6 mt-6">
+                <h3 className="text-md font-medium text-theme-primary mb-5">Address</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 1
                     </label>
                     <input
@@ -508,12 +508,12 @@ export default function AddEmployeePage() {
                       name="address_line_1"
                       value={formData.address_line_1}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 2
                     </label>
                     <input
@@ -521,12 +521,12 @@ export default function AddEmployeePage() {
                       name="address_line_2"
                       value={formData.address_line_2}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       City
                     </label>
                     <input
@@ -534,12 +534,12 @@ export default function AddEmployeePage() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       County
                     </label>
                     <input
@@ -547,12 +547,12 @@ export default function AddEmployeePage() {
                       name="county"
                       value={formData.county}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Postcode
                     </label>
                     <input
@@ -560,12 +560,12 @@ export default function AddEmployeePage() {
                       name="postcode"
                       value={formData.postcode}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Country
                     </label>
                     <input
@@ -573,20 +573,20 @@ export default function AddEmployeePage() {
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
               </div>
               
               {/* Emergency Contacts */}
-              <div className="border-t border-neutral-700 pt-4">
+              <div className="border-t border-theme pt-6 mt-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-md font-medium text-white">Emergency Contacts</h3>
+                  <h3 className="text-md font-medium text-theme-primary">Emergency Contacts</h3>
                   <button
                     type="button"
                     onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-[#EC4899] hover:text-[#EC4899]/80"
+                    className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     <Plus className="w-4 h-4" />
                     Add Contact
@@ -594,43 +594,43 @@ export default function AddEmployeePage() {
                 </div>
                 
                 {emergencyContacts.map((contact, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-neutral-700/30 rounded-lg">
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-5 p-5 bg-theme-button rounded-lg">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Name</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Name</label>
                       <input
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Relationship</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Relationship</label>
                       <input
                         type="text"
                         value={contact.relationship}
                         onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
                         placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Phone</label>
                       <input
                         type="tel"
                         value={contact.phone}
                         onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div className="flex items-end gap-2">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-300 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-theme-secondary mb-1.5">Email</label>
                         <input
                           type="email"
                           value={contact.email || ''}
                           onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                          className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                         />
                       </div>
                       {emergencyContacts.length > 1 && (
@@ -651,15 +651,15 @@ export default function AddEmployeePage() {
 
           {/* Employment Section */}
           {activeSection === 'employment' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Employment Details
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Employee Number
                   </label>
                   <input
@@ -669,14 +669,14 @@ export default function AddEmployeePage() {
                     onChange={handleChange}
                     placeholder="Auto-generated"
                     readOnly
-                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-600 rounded-lg text-neutral-400 cursor-not-allowed"
+                    className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-theme-tertiary cursor-not-allowed"
                     title="Employee number is auto-generated"
                   />
-                  <p className="text-xs text-neutral-500 mt-1">Auto-generated based on company prefix</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Auto-generated based on company prefix</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Position / Job Title
                   </label>
                   <input
@@ -684,12 +684,12 @@ export default function AddEmployeePage() {
                     name="position_title"
                     value={formData.position_title}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Department
                   </label>
                   <input
@@ -697,19 +697,19 @@ export default function AddEmployeePage() {
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     App Role
                   </label>
                   <select
                     name="app_role"
                     value={formData.app_role}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -719,14 +719,14 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Home Site
                   </label>
                   <select
                     name="home_site"
                     value={formData.home_site}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select site...</option>
                     {sites.map(site => (
@@ -736,14 +736,14 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Reports To
                   </label>
                   <select
                     name="reports_to"
                     value={formData.reports_to}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select manager...</option>
                     {managers.map(manager => (
@@ -753,14 +753,14 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     BOH / FOH
                   </label>
                   <select
                     name="boh_foh"
                     value={formData.boh_foh}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="FOH">Front of House</option>
                     <option value="BOH">Back of House</option>
@@ -769,7 +769,7 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Start Date
                   </label>
                   <input
@@ -777,12 +777,12 @@ export default function AddEmployeePage() {
                     name="start_date"
                     value={formData.start_date}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Probation End Date
                   </label>
                   <input
@@ -790,19 +790,19 @@ export default function AddEmployeePage() {
                     name="probation_end_date"
                     value={formData.probation_end_date}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Contract Type
                   </label>
                   <select
                     name="contract_type"
                     value={formData.contract_type}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -815,7 +815,7 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Contracted Hours (per week)
                   </label>
                   <input
@@ -824,12 +824,12 @@ export default function AddEmployeePage() {
                     value={formData.contracted_hours}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Hourly Rate (£)
                   </label>
                   <input
@@ -838,12 +838,12 @@ export default function AddEmployeePage() {
                     value={formData.hourly_rate}
                     onChange={handleChange}
                     step="0.01"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Annual Salary (£)
                   </label>
                   <input
@@ -852,19 +852,19 @@ export default function AddEmployeePage() {
                     value={formData.salary}
                     onChange={handleChange}
                     step="100"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Pay Frequency
                   </label>
                   <select
                     name="pay_frequency"
                     value={formData.pay_frequency}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -874,7 +874,7 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Notice Period (weeks)
                   </label>
                   <input
@@ -883,7 +883,7 @@ export default function AddEmployeePage() {
                     value={formData.notice_period_weeks}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -892,15 +892,15 @@ export default function AddEmployeePage() {
 
           {/* Compliance Section */}
           {activeSection === 'compliance' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Compliance & Right to Work
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     National Insurance Number
                   </label>
                   <input
@@ -909,19 +909,19 @@ export default function AddEmployeePage() {
                     value={formData.national_insurance_number}
                     onChange={handleChange}
                     placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors uppercase"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Right to Work Status
                   </label>
                   <select
                     name="right_to_work_status"
                     value={formData.right_to_work_status}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -931,14 +931,14 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Document Type
                   </label>
                   <select
                     name="right_to_work_document_type"
                     value={formData.right_to_work_document_type}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -950,7 +950,7 @@ export default function AddEmployeePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Expiry Date
                   </label>
                   <input
@@ -958,25 +958,25 @@ export default function AddEmployeePage() {
                     name="right_to_work_expiry"
                     value={formData.right_to_work_expiry}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
-                  <p className="text-xs text-neutral-400 mt-1">Leave blank if no expiry (e.g., British citizen)</p>
+                  <p className="text-xs text-theme-secondary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
                 </div>
               </div>
               
               {/* DBS Section */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-white mb-4">DBS Check</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border-t border-theme pt-6 mt-6">
+                <h3 className="text-md font-medium text-theme-primary mb-5">DBS Check</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Status
                     </label>
                     <select
                       name="dbs_status"
                       value={formData.dbs_status}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     >
                       <option value="not_required">Not Required</option>
                       <option value="pending">Pending</option>
@@ -986,7 +986,7 @@ export default function AddEmployeePage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Certificate Number
                     </label>
                     <input
@@ -994,12 +994,12 @@ export default function AddEmployeePage() {
                       name="dbs_certificate_number"
                       value={formData.dbs_certificate_number}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       DBS Check Date
                     </label>
                     <input
@@ -1007,7 +1007,7 @@ export default function AddEmployeePage() {
                       name="dbs_check_date"
                       value={formData.dbs_check_date}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -1017,18 +1017,18 @@ export default function AddEmployeePage() {
 
           {/* Banking Section */}
           {activeSection === 'banking' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Bank Details
               </h2>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-theme-secondary">
                 Bank details are used for payroll export only and are stored securely.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Bank Name
                   </label>
                   <input
@@ -1036,12 +1036,12 @@ export default function AddEmployeePage() {
                     name="bank_name"
                     value={formData.bank_name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Holder Name
                   </label>
                   <input
@@ -1049,12 +1049,12 @@ export default function AddEmployeePage() {
                     name="bank_account_name"
                     value={formData.bank_account_name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Sort Code
                   </label>
                   <input
@@ -1063,12 +1063,12 @@ export default function AddEmployeePage() {
                     value={formData.bank_sort_code}
                     onChange={handleChange}
                     placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Number
                   </label>
                   <input
@@ -1078,7 +1078,7 @@ export default function AddEmployeePage() {
                     onChange={handleChange}
                     placeholder="8 digits"
                     maxLength={8}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -1087,15 +1087,15 @@ export default function AddEmployeePage() {
 
           {/* Leave Section */}
           {activeSection === 'leave' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#EC4899]" />
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
+                <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 Leave Allowance
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Annual Leave Allowance (days)
                   </label>
                   <input
@@ -1104,26 +1104,26 @@ export default function AddEmployeePage() {
                     value={formData.annual_leave_allowance}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
-                  <p className="text-xs text-neutral-400 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
+                  <p className="text-xs text-theme-secondary mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-neutral-700">
+          <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-theme">
             <Link
               href="/dashboard/people/employees"
-              className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-theme-secondary hover:text-theme-primary transition-colors"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {loading ? (
                 <>

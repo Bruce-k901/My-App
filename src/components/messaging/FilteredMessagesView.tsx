@@ -175,7 +175,7 @@ export default function FilteredMessagesView({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-white/60">Loading messages...</div>
+        <div className="text-gray-600 dark:text-white/60">Loading messages...</div>
       </div>
     );
   }
@@ -183,18 +183,18 @@ export default function FilteredMessagesView({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.02]">
+      <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between bg-white dark:bg-[#0B0D13]">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {getTopicLabel(topic)}
           </h2>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-gray-600 dark:text-white/60">
             {messages.length} tagged message{messages.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
           onClick={onClearFilter}
-          className="p-2 rounded-lg hover:bg-white/[0.05] text-white/60 hover:text-white transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
           title="Clear filter"
         >
           <X className="w-5 h-5" />
@@ -206,35 +206,35 @@ export default function FilteredMessagesView({
         {messages.map((message: Message & { channel?: { id: string; name: string | null } }) => (
           <div
             key={message.id}
-            className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.06] hover:border-white/[0.1] transition cursor-pointer"
+            className="bg-gray-50 dark:bg-white/[0.03] rounded-lg p-3 border border-gray-200 dark:border-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.1] transition cursor-pointer"
             onClick={() => handleMessageClick(message)}
           >
             {/* Channel name */}
             {message.channel?.name && (
-              <div className="text-xs text-white/50 mb-1">
+              <div className="text-xs text-gray-500 dark:text-white/50 mb-1">
                 {message.channel.name}
               </div>
             )}
 
             {/* Sender */}
-            <div className="text-sm font-medium text-white mb-1">
+            <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
               {message.sender?.full_name || message.sender?.email?.split('@')[0] || 'Unknown'}
             </div>
 
             {/* Message content */}
-            <div className="text-sm text-white/70 line-clamp-2 mb-2">
+            <div className="text-sm text-gray-700 dark:text-white/70 line-clamp-2 mb-2">
               {message.content}
             </div>
 
             {/* Timestamp */}
-            <div className="text-xs text-white/50">
+            <div className="text-xs text-gray-500 dark:text-white/50">
               {formatMessageTime(message.created_at)}
             </div>
           </div>
         ))}
 
         {messages.length === 0 && (
-          <div className="text-center text-white/40 py-8">
+          <div className="text-center text-gray-500 dark:text-white/40 py-8">
             No messages tagged with {getTopicLabel(topic)}
           </div>
         )}

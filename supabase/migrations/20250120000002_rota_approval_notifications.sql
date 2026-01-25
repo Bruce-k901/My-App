@@ -3,8 +3,35 @@
 -- Sends notifications when day approvals change
 -- =============================================
 
--- Function to notify team about rota approval status
-CREATE OR REPLACE FUNCTION public.notify_rota_approval_status()
+-- This migration only runs if rota_day_approvals table exists
+DO $$
+BEGIN
+  -- Check if rota_day_approvals table exists - exit early if it doesn't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'rota_day_approvals'
+  ) THEN
+    RAISE NOTICE 'rota_day_approvals table does not exist - skipping rota_approval_notifications migration';
+    RETURN;
+  END IF;
+  
+  RAISE NOTICE 'rota_day_approvals table found - proceeding with rota_approval_notifications migration';
+END $$;
+
+-- Only proceed if rota_day_approvals table exists (checked above)
+DO $$
+BEGIN
+  -- Check if rota_day_approvals table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'rota_day_approvals'
+  ) THEN
+    RETURN;
+  END IF;
+
+  -- Function to notify team about rota approval status
+  EXECUTE $sql1$
+    CREATE OR REPLACE FUNCTION public.notify_rota_approval_status()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $func$
@@ -235,20 +262,22 @@ BEGIN
 EXCEPTION
   WHEN OTHERS THEN
     RAISE WARNING 'Error in notify_rota_approval_status: %', SQLERRM;
-    RETURN NEW;
-END;
-$func$;
+      RETURN NEW;
+    END;
+    $func$;
+  $sql1$;
 
--- Create trigger
-DROP TRIGGER IF EXISTS trigger_notify_rota_approval_status ON public.rota_day_approvals;
-CREATE TRIGGER trigger_notify_rota_approval_status
-  AFTER INSERT OR UPDATE OF status, approved_by, rejection_reason ON public.rota_day_approvals
-  FOR EACH ROW
-  WHEN (NEW.status IN ('approved', 'rejected', 'needs_review'))
-  EXECUTE FUNCTION public.notify_rota_approval_status();
+  -- Create trigger
+  DROP TRIGGER IF EXISTS trigger_notify_rota_approval_status ON public.rota_day_approvals;
+  CREATE TRIGGER trigger_notify_rota_approval_status
+    AFTER INSERT OR UPDATE OF status, approved_by, rejection_reason ON public.rota_day_approvals
+    FOR EACH ROW
+    WHEN (NEW.status IN ('approved', 'rejected', 'needs_review'))
+    EXECUTE FUNCTION public.notify_rota_approval_status();
 
--- Function to notify when all days are approved
-CREATE OR REPLACE FUNCTION public.notify_all_days_approved()
+  -- Function to notify when all days are approved
+  EXECUTE $sql2$
+    CREATE OR REPLACE FUNCTION public.notify_all_days_approved()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $func$
@@ -334,17 +363,20 @@ BEGIN
 EXCEPTION
   WHEN OTHERS THEN
     RAISE WARNING 'Error in notify_all_days_approved: %', SQLERRM;
-    RETURN NEW;
-END;
-$func$;
+      RETURN NEW;
+    END;
+    $func$;
+  $sql2$;
 
--- Create trigger for all days approved
-DROP TRIGGER IF EXISTS trigger_notify_all_days_approved ON public.rota_day_approvals;
-CREATE TRIGGER trigger_notify_all_days_approved
-  AFTER INSERT OR UPDATE OF status ON public.rota_day_approvals
-  FOR EACH ROW
-  WHEN (NEW.status = 'approved')
-  EXECUTE FUNCTION public.notify_all_days_approved();
+  -- Create trigger for all days approved
+  DROP TRIGGER IF EXISTS trigger_notify_all_days_approved ON public.rota_day_approvals;
+  CREATE TRIGGER trigger_notify_all_days_approved
+    AFTER INSERT OR UPDATE OF status ON public.rota_day_approvals
+    FOR EACH ROW
+    WHEN (NEW.status = 'approved')
+    EXECUTE FUNCTION public.notify_all_days_approved();
 
-NOTIFY pgrst, 'reload schema';
+  NOTIFY pgrst, 'reload schema';
+
+END $$;
 

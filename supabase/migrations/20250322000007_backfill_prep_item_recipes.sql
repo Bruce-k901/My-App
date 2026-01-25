@@ -21,6 +21,23 @@ DECLARE
   v_has_ingredient_cost BOOLEAN;
   v_has_version_number BOOLEAN;
 BEGIN
+  -- Check if required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'recipes'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) THEN
+    RAISE NOTICE 'stockly schema, stockly.recipes, ingredients_library, or companies tables do not exist - skipping backfill_prep_item_recipes migration';
+    RETURN;
+  END IF;
+
   -- Ensure code column exists (add if it doesn't)
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns 

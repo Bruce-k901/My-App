@@ -6,10 +6,19 @@
 -- Add missing columns if they don't exist
 DO $$ 
 BEGIN
+    -- Check if table exists first
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows'
+    ) THEN
+        RAISE NOTICE 'approval_workflows table does not exist - skipping fix_approval_workflows_schema migration';
+        RETURN;
+    END IF;
+
     -- Add name column if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'name'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'name'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN name TEXT;
         -- Update existing rows with a default name if any exist
@@ -21,7 +30,7 @@ BEGIN
     -- Add type column if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'type'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'type'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN type TEXT;
         -- Set default type
@@ -35,7 +44,7 @@ BEGIN
     -- Add description column if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'description'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'description'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN description TEXT;
     END IF;
@@ -43,7 +52,7 @@ BEGIN
     -- Add is_active column if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'is_active'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'is_active'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN is_active BOOLEAN DEFAULT true;
     END IF;
@@ -51,16 +60,21 @@ BEGIN
     -- Add company_id column if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'company_id'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'company_id'
     ) THEN
-        ALTER TABLE approval_workflows ADD COLUMN company_id UUID REFERENCES companies(id) ON DELETE CASCADE;
+        -- Only add foreign key if companies table exists
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+            ALTER TABLE approval_workflows ADD COLUMN company_id UUID REFERENCES companies(id) ON DELETE CASCADE;
+        ELSE
+            ALTER TABLE approval_workflows ADD COLUMN company_id UUID;
+        END IF;
         -- Note: You'll need to populate this manually for existing rows
     END IF;
 
     -- Add created_at if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'created_at'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'created_at'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN created_at TIMESTAMPTZ DEFAULT NOW();
     END IF;
@@ -68,24 +82,37 @@ BEGIN
     -- Add updated_at if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'updated_at'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'updated_at'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN updated_at TIMESTAMPTZ DEFAULT NOW();
     END IF;
 END $$;
 
--- Create index on company_id if it doesn't exist
-CREATE INDEX IF NOT EXISTS idx_approval_workflows_company_id ON approval_workflows(company_id);
+-- Create index on company_id if it doesn't exist (only if table exists)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows'
+    ) THEN
+        CREATE INDEX IF NOT EXISTS idx_approval_workflows_company_id ON approval_workflows(company_id);
+    END IF;
+END $$;
 
 -- Ensure unique constraint on company_id + name if it doesn't exist
 DO $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'approval_workflows_company_id_name_key'
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows'
     ) THEN
-        ALTER TABLE approval_workflows ADD CONSTRAINT approval_workflows_company_id_name_key 
-            UNIQUE(company_id, name);
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint 
+            WHERE conname = 'approval_workflows_company_id_name_key'
+        ) THEN
+            ALTER TABLE approval_workflows ADD CONSTRAINT approval_workflows_company_id_name_key 
+                UNIQUE(company_id, name);
+        END IF;
     END IF;
 END $$;
 

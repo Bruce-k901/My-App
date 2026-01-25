@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { Plus, Loader2, Calendar, FileText, Lock, CheckCircle, Package, ArrowLeft } from 'lucide-react';
@@ -70,19 +70,24 @@ export default function StockCountsPage() {
   useEffect(() => {
     console.log('[StockCountsPage] useEffect triggered', { companyId, hasFetchStockCounts: !!fetchStockCounts });
     
+    // Only fetch if companyId is available
+    if (!companyId) {
+      console.log('[StockCountsPage] No companyId in useEffect, skipping fetch');
+      setLoading(false); // Set loading to false if no companyId
+      return;
+    }
+    
     try {
-      if (companyId) {
-        console.log('[StockCountsPage] Calling fetchStockCounts from useEffect');
-        fetchStockCounts();
-      } else {
-        console.log('[StockCountsPage] No companyId in useEffect, skipping fetch');
-      }
+      console.log('[StockCountsPage] Calling fetchStockCounts from useEffect');
+      fetchStockCounts();
     } catch (err) {
       console.error('[StockCountsPage] Exception in useEffect:', err);
+      setLoading(false);
     }
-  }, [companyId, fetchStockCounts]);
+     
+  }, [companyId, filter]); // Only depend on companyId and filter, not fetchStockCounts
 
-  const getStatusStats = () => {
+  const stats = useMemo(() => {
     const inProgress = counts.filter(c => 
       ['active', 'in_progress', 'draft'].includes(c.status)
     ).length;
@@ -104,13 +109,7 @@ export default function StockCountsPage() {
         ? completedCounts[0].count_date 
         : null 
     };
-  };
-
-  const stats = getStatusStats();
-
-  // Debug: Log stats calculation
-  console.log('[StockCountsPage] Stats calculated:', stats);
-  console.log('[StockCountsPage] Counts array:', counts);
+  }, [counts]);
 
   return (
     <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">

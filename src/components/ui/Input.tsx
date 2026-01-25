@@ -12,9 +12,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
         className={cn(
-          "flex h-10 w-full rounded-lg bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.12] text-theme-primary dark:text-white text-sm px-3 py-2",
-          "placeholder:text-theme-tertiary dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50",
-          "hover:bg-theme-button-hover dark:hover:bg-white/[0.08] hover:border-theme-hover dark:hover:border-white/20 transition-colors",
+          "flex h-10 w-full rounded-lg bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 text-theme-primary text-sm px-3 py-2",
+          "placeholder:text-theme-tertiary dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-500 focus-visible:border-blue-500 dark:focus-visible:border-blue-500",
+          "hover:bg-theme-button-hover dark:hover:bg-theme-button-hover hover:border-blue-400 dark:hover:border-blue-500/70 transition-colors",
           className,
         )}
       />

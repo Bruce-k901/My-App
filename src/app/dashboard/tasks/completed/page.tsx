@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -20,35 +20,62 @@ type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
 }
 
 export default function CompletedTasksPage() {
-  const { companyId, siteId } = useAppContext();
+  const { companyId, siteId, profile, selectedSiteId } = useAppContext();
   const [completedTasks, setCompletedTasks] = useState<CompletedTaskWithRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [debugInfo, setDebugInfo] = useState<{
-    queryExecuted: boolean;
-    tasksFound: number;
-    error: string | null;
-    companyId: string | null;
-    siteId: string | null;
-  } | null>(null);
+  const [showDebugInfo, setShowDebugInfo] = useState(false); // Debug info should be hidden by default
 
-  useEffect(() => {
-    if (companyId) {
-      fetchCompletedTasks();
-    }
-  }, [companyId, siteId]);
-
-  async function fetchCompletedTasks() {
+  // Define fetchCompletedTasks with useCallback to avoid dependency issues
+  const fetchCompletedTasks = useCallback(async () => {
     if (!companyId) {
       console.log('⚠️ No companyId available, skipping fetch');
       setLoading(false);
       return;
     }
 
+    // Wait for profile to load
+    if (!profile) {
+      console.log('⏳ Waiting for profile to load...');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
+      // Determine effective site ID based on role (same logic as "My Tasks" and "Today's Tasks")
+      const userRole = profile?.app_role?.toLowerCase() || 'staff';
+      const isManager = ['manager', 'general_manager', 'admin', 'owner'].includes(userRole);
+      const homeSiteId = profile?.home_site || profile?.site_id;
+      
+      let effectiveSiteId: string | null = null;
+      
+      if (isManager) {
+        // Managers: use selectedSiteId from header if it's a specific site (not 'all'), otherwise use home site
+        if (selectedSiteId && selectedSiteId !== 'all') {
+          effectiveSiteId = selectedSiteId;
+          console.log('🔍 Manager: Filtering completed tasks by selected site:', effectiveSiteId);
+        } else {
+          effectiveSiteId = homeSiteId;
+          console.log('🔍 Manager: Using home site (no specific site selected):', effectiveSiteId);
+        }
+      } else {
+        // Staff: always use home site (ignore selectedSiteId)
+        effectiveSiteId = homeSiteId;
+        console.log('🔍 Staff: Filtering completed tasks by home site:', effectiveSiteId);
+        
+        if (!effectiveSiteId) {
+          console.warn('⚠️ Staff member has no home site assigned - no tasks to show');
+          setCompletedTasks([]);
+          setLoading(false);
+          return;
+        }
+      }
+
       console.log('🔍 Starting fetch for completed tasks:', {
         companyId,
-        siteId: siteId || 'all sites',
+        effectiveSiteId,
+        userRole,
+        isManager,
         timestamp: new Date().toISOString()
       });
 
@@ -151,13 +178,22 @@ export default function CompletedTasksPage() {
         .eq('company_id', companyId)
         .in('status', ['completed', 'missed']);
 
-      // Filter by site if available and valid (not "all")
-      if (siteId && siteId !== 'all') {
-        console.log('🔍 Filtering by site:', siteId);
-        query = query.eq('site_id', siteId);
+      // Filter by effective site ID
+      if (effectiveSiteId) {
+        console.log('🔍 Filtering by effective site:', effectiveSiteId);
+        query = query.eq('site_id', effectiveSiteId);
       } else {
-        console.log('🔍 No site filter - fetching all sites');
+        console.log('🔍 No site filter - fetching all sites (manager view)');
       }
+
+      // IMPORTANT: Show ALL completed tasks regardless of source
+      // This includes:
+      // - Template-based tasks (have site_checklist_id)
+      // - Monitoring tasks (have flag_reason: 'monitoring', no site_checklist_id)
+      // - Calendar tasks (no site_checklist_id)
+      // - Other reactive tasks
+      // Staff and managers should see all tasks they have access to based on site
+      console.log('🔍 Showing all completed tasks (template-based, monitoring, calendar, etc.)');
 
       // Order by updated_at (most recently updated first) - this works for both completed and missed tasks
       // updated_at is set when task status changes, so it's reliable for sorting
@@ -194,14 +230,16 @@ export default function CompletedTasksPage() {
               sample: tasksViaCompletions[0]
             });
             
-            // Filter by site if needed
-            if (siteId) {
-              tasks = tasksViaCompletions.filter((t: any) => t.site_id === siteId);
+            // Apply the same filtering logic as the main query
+            // Filter by effective site ID
+            if (effectiveSiteId) {
+              tasks = tasksViaCompletions.filter((t: any) => t.site_id === effectiveSiteId);
             } else {
               tasks = tasksViaCompletions;
             }
             
-            console.log(`✅ After site filter: ${tasks.length} tasks`);
+            // Show all tasks regardless of source (template-based, monitoring, calendar, etc.)
+            console.log(`✅ After site filter: ${tasks.length} tasks (including all types: template, monitoring, calendar, etc.)`);
           } else {
             console.log('⚠️ FALLBACK: No tasks found via completion records either');
           }
@@ -214,13 +252,6 @@ export default function CompletedTasksPage() {
         console.error('❌ Error code:', error.code);
         console.error('❌ Error message:', error.message);
         console.error('❌ Error hint:', error.hint);
-        setDebugInfo({
-          queryExecuted: true,
-          tasksFound: 0,
-          error: error.message || 'Unknown error',
-          companyId,
-          siteId: siteId || null
-        });
         setCompletedTasks([]);
         setLoading(false);
         return;
@@ -228,16 +259,15 @@ export default function CompletedTasksPage() {
 
       console.log(`✅ Fetched ${tasks?.length || 0} completed/missed tasks for company ${companyId}${siteId ? ` and site ${siteId}` : ''}`);
       
-      // Update debug info
-      setDebugInfo({
-        queryExecuted: true,
-        tasksFound: tasks?.length || 0,
-        error: null,
-        companyId,
-        siteId: siteId || null
-      });
-      
       if (tasks && tasks.length > 0) {
+        // Log breakdown by task type
+        const taskTypeBreakdown = {
+          templateBased: tasks.filter((t: any) => t.site_checklist_id != null).length,
+          monitoring: tasks.filter((t: any) => t.flag_reason === 'monitoring').length,
+          calendar: tasks.filter((t: any) => t.site_checklist_id == null && t.flag_reason !== 'monitoring').length,
+          other: tasks.filter((t: any) => t.flag_reason && !['monitoring'].includes(t.flag_reason)).length
+        };
+        
         console.log('📋 Sample task data:', {
           firstTask: {
             id: tasks[0].id,
@@ -245,12 +275,15 @@ export default function CompletedTasksPage() {
             completed_at: tasks[0].completed_at,
             template_id: tasks[0].template_id,
             company_id: tasks[0].company_id,
-            site_id: tasks[0].site_id
+            site_id: tasks[0].site_id,
+            site_checklist_id: tasks[0].site_checklist_id,
+            flag_reason: tasks[0].flag_reason
           },
           statusBreakdown: {
             completed: tasks.filter(t => t.status === 'completed').length,
             missed: tasks.filter(t => t.status === 'missed').length
-          }
+          },
+          taskTypeBreakdown
         });
       }
 
@@ -277,15 +310,30 @@ export default function CompletedTasksPage() {
       // Extract asset IDs from task_data
       const assetIds = new Set<string>()
       
+      // Helper function to extract string ID from various formats
+      const extractStringId = (value: any): string | null => {
+        if (!value) return null
+        if (typeof value === 'string') return value
+        if (typeof value === 'object' && value !== null) {
+          // Try to extract ID from object
+          return value.id || value.value || value.asset_id || null
+        }
+        return null
+      }
+      
       tasks.forEach((task: any) => {
         if (task.task_data && typeof task.task_data === 'object') {
           // Check for repeatable field data
           Object.entries(task.task_data).forEach(([key, value]: [string, any]) => {
             if (Array.isArray(value)) {
               value.forEach((item: any) => {
-                if (item.value) assetIds.add(item.value)
-                if (item.asset_id) assetIds.add(item.asset_id)
-                if (item.id) assetIds.add(item.id)
+                const id1 = extractStringId(item.value)
+                const id2 = extractStringId(item.asset_id)
+                const id3 = extractStringId(item.id)
+                
+                if (id1 && typeof id1 === 'string') assetIds.add(id1)
+                if (id2 && typeof id2 === 'string') assetIds.add(id2)
+                if (id3 && typeof id3 === 'string') assetIds.add(id3)
               })
             }
           })
@@ -399,7 +447,93 @@ export default function CompletedTasksPage() {
       setLoading(false);
       console.log('🏁 Fetch completed, loading set to false');
     }
-  }
+  }, [companyId, siteId, profile, selectedSiteId]);
+
+  useEffect(() => {
+    if (companyId && profile?.id) {
+      fetchCompletedTasks();
+    }
+  }, [companyId, siteId, profile?.id, profile?.app_role, profile?.home_site, profile?.site_id, selectedSiteId, fetchCompletedTasks]);
+
+  // Set up real-time subscription for new task completions
+  useEffect(() => {
+    if (!companyId || !profile?.id) return;
+
+    console.log('🔔 Setting up real-time subscription for task completions...');
+    
+    // Subscribe to task_completion_records table changes
+    const channel = supabase
+      .channel(`task-completions-${companyId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'task_completion_records',
+          filter: `company_id=eq.${companyId}`
+        },
+        (payload) => {
+          console.log('🔔 New task completion detected via real-time:', payload.new);
+          // Refresh the completed tasks list immediately
+          setTimeout(() => {
+            fetchCompletedTasks();
+          }, 300); // Small delay to ensure task status is also updated
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'checklist_tasks',
+          filter: `company_id=eq.${companyId}`
+        },
+        (payload) => {
+          // If a task status changed to 'completed' or 'missed', refresh
+          if (payload.new.status === 'completed' || payload.new.status === 'missed') {
+            console.log('🔔 Task status changed to completed/missed via real-time:', payload.new);
+            setTimeout(() => {
+              fetchCompletedTasks();
+            }, 300);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('🔔 Real-time subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Successfully subscribed to task completion events');
+        }
+      });
+
+    // Cleanup subscription on unmount
+    return () => {
+      console.log('🔔 Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [companyId, profile?.id, fetchCompletedTasks]);
+
+  // Also listen for custom events (e.g., when task is completed from modal)
+  useEffect(() => {
+    const handleTaskCompleted = (event: any) => {
+      console.log('🔔 Task completed event received:', event.detail);
+      // Immediate refresh with retry logic
+      const refreshWithRetry = async (retries = 3) => {
+        for (let i = 0; i < retries; i++) {
+          await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+          console.log(`🔄 Refreshing completed tasks (attempt ${i + 1}/${retries})...`);
+          await fetchCompletedTasks();
+          // Check if the task appeared (optional - could check state)
+        }
+      };
+      refreshWithRetry();
+    };
+
+    window.addEventListener('task-completed', handleTaskCompleted);
+    
+    return () => {
+      window.removeEventListener('task-completed', handleTaskCompleted);
+    };
+  }, [fetchCompletedTasks]);
 
   return (
     <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
@@ -407,26 +541,19 @@ export default function CompletedTasksPage() {
       <div>
         <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Completed Tasks</h1>
         <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View all completed and missed task records</p>
-        
-        {/* Debug Info */}
-        {debugInfo && (
-          <div className="mt-4 p-4 bg-black/[0.05] dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-sm">
-            <p className="text-[rgb(var(--text-primary))] dark:text-white/80 font-semibold mb-2">Debug Info:</p>
-            <ul className="space-y-1 text-[rgb(var(--text-secondary))] dark:text-white/60">
-              <li>Query Executed: {debugInfo.queryExecuted ? '✅ Yes' : '❌ No'}</li>
-              <li>Tasks Found: {debugInfo.tasksFound}</li>
-              <li>Company ID: {debugInfo.companyId || 'Not set'}</li>
-              <li>Site ID: {debugInfo.siteId || 'All sites'}</li>
-              {debugInfo.error && (
-                <li className="text-red-600 dark:text-red-400">Error: {debugInfo.error}</li>
-              )}
-            </ul>
-            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-xs mt-2">
-              Check browser console (F12) for detailed logs
-            </p>
-          </div>
-        )}
       </div>
+
+      {/* Debug Info - HIDDEN (removed per user request) */}
+      {false && showDebugInfo && (
+        <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+          <p className="font-bold mb-2">Debug Info:</p>
+          <p>Query Executed: Yes</p>
+          <p>Tasks Found: {completedTasks.length}</p>
+          <p>Company ID: {companyId}</p>
+          <p>Site ID: {siteId || 'N/A'}</p>
+          <p className="text-xs mt-2">Check browser console (F12) for detailed logs</p>
+        </div>
+      )}
 
       {/* Loading State */}
       {loading ? (

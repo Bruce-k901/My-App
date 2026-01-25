@@ -6,15 +6,24 @@
 
 DO $$ 
 BEGIN
+    -- Check if table exists first
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows'
+    ) THEN
+        RAISE NOTICE 'approval_workflows table does not exist - skipping workflow_type column fix';
+        RETURN;
+    END IF;
+
     -- Check if column 'workflow_type' exists (the error suggests this might be the actual name)
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'workflow_type'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'workflow_type'
     ) THEN
         -- If workflow_type exists, check if type also exists
         IF NOT EXISTS (
             SELECT 1 FROM information_schema.columns 
-            WHERE table_name = 'approval_workflows' AND column_name = 'type'
+            WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'type'
         ) THEN
             -- Rename workflow_type to type to match the schema
             ALTER TABLE approval_workflows RENAME COLUMN workflow_type TO type;
@@ -29,7 +38,7 @@ BEGIN
     -- Ensure 'type' column exists with correct constraints
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'approval_workflows' AND column_name = 'type'
+        WHERE table_schema = 'public' AND table_name = 'approval_workflows' AND column_name = 'type'
     ) THEN
         ALTER TABLE approval_workflows ADD COLUMN type TEXT;
         UPDATE approval_workflows SET type = 'other' WHERE type IS NULL;

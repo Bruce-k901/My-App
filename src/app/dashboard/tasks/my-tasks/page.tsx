@@ -12,20 +12,28 @@ import { FireAlarmTestTemplate } from '@/components/compliance/FireAlarmTestTemp
 import { EmergencyLightingTemplate } from '@/components/compliance/EmergencyLightingTemplate';
 
 export default function MyTasksPage() {
-  const { profile, companyId, loading: authLoading, siteId, selectedSiteId } = useAppContext();
+  const { profile, companyId, loading: authLoading, siteId, selectedSiteId, setSelectedSite } = useAppContext();
   const { showToast } = useToast();
   
-  const [loading, setLoading] = useState(true);
+  // Ensure staff always have their home site selected (can't change it)
+  useEffect(() => {
+    if (profile?.id && profile?.app_role?.toLowerCase() === 'staff') {
+      const homeSiteId = profile?.home_site || profile?.site_id;
+      if (homeSiteId && selectedSiteId !== homeSiteId) {
+        console.log('🔒 Staff: Forcing selectedSiteId to home site:', homeSiteId);
+        setSelectedSite(homeSiteId);
+      }
+    }
+  }, [profile?.id, profile?.app_role, profile?.home_site, profile?.site_id, selectedSiteId, setSelectedSite]);
+  
   const [loadingConfigs, setLoadingConfigs] = useState(true);
-  const [tasks, setTasks] = useState([]);
   const [configs, setConfigs] = useState([]); // Task configurations (site_checklists)
   const [assetsMap, setAssetsMap] = useState<Record<string, { name: string }>>({}); // Map of assetId to asset name
-  const [showConfigs, setShowConfigs] = useState(true); // Toggle between configs and instances
-  const [filter, setFilter] = useState('all'); // all, pending, in_progress, completed
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
   const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
   const [editingConfig, setEditingConfig] = useState<any>(null); // For editing configurations
   const [expandedEquipment, setExpandedEquipment] = useState<Record<string, boolean>>({}); // Track which configs have equipment expanded
+  const [sitesMap, setSitesMap] = useState<Record<string, { id: string; name: string }>>({}); // Map of siteId to site name
 
   const loadConfigs = async () => {
     if (!companyId) {
@@ -33,10 +41,72 @@ export default function MyTasksPage() {
       return;
     }
     
+    // Wait for profile to load if not available
+    if (!profile) {
+      console.log('⏳ Waiting for profile to load...');
+      setLoadingConfigs(false);
+      return;
+    }
+    
     try {
       setLoadingConfigs(true);
       // Fetch site_checklists (task configurations)
-      const effectiveSiteId = selectedSiteId || siteId;
+      // Everyone sees configurations for their home site
+      // Managers/owners can use header selector to view other sites' configurations
+      const userRole = profile?.app_role?.toLowerCase() || 'staff';
+      const isManager = ['manager', 'general_manager', 'admin', 'owner'].includes(userRole);
+      const homeSiteId = profile?.home_site || profile?.site_id;
+      
+      // Determine effective site ID:
+      // - Staff: always use home site (ignore selectedSiteId)
+      // - Managers: use selectedSiteId if it's a specific site (not 'all'), otherwise use home site
+      let effectiveSiteId: string | null = null;
+      if (isManager) {
+        // Managers can cycle through sites using header selector
+        // If selectedSiteId is set and not 'all', use it; otherwise use home site
+        if (selectedSiteId && selectedSiteId !== 'all' && selectedSiteId !== null) {
+          effectiveSiteId = selectedSiteId;
+          console.log('🔍 Manager: Using selected site from header:', selectedSiteId, 'home site:', homeSiteId);
+        } else {
+          effectiveSiteId = homeSiteId;
+          console.log('🔍 Manager: Using home site (no specific site selected or "all" selected):', homeSiteId);
+        }
+      } else {
+        // Staff: always use home site (ignore selectedSiteId)
+        effectiveSiteId = homeSiteId;
+        console.log('🔍 Staff: Using home site:', homeSiteId, '(ignoring selectedSiteId:', selectedSiteId, ')');
+        
+        // For staff, also ensure selectedSiteId in context is set to their home site
+        // This prevents any confusion if they somehow have a different site selected
+        if (homeSiteId && selectedSiteId !== homeSiteId) {
+          console.log('🔒 Staff: Resetting selectedSiteId to home site in context');
+          // Note: We can't call setSelectedSite here as it's not available in this scope
+          // But the query will use homeSiteId anyway, so this is just for logging
+        }
+      }
+      
+      console.log('🔍 Configuration loading:', {
+        userRole,
+        isManager,
+        homeSiteId,
+        selectedSiteId,
+        effectiveSiteId,
+        profileId: profile?.id,
+        hasProfile: !!profile
+      });
+      
+      if (!effectiveSiteId) {
+        console.warn('⚠️ No effectiveSiteId - cannot load configurations', {
+          isManager,
+          homeSiteId,
+          selectedSiteId,
+          userRole
+        });
+        setConfigs([]);
+        setLoadingConfigs(false);
+        return;
+      }
+      
       let query = supabase
         .from('site_checklists')
         .select(`
@@ -51,10 +121,65 @@ export default function MyTasksPage() {
           )
         `)
         .eq('company_id', companyId)
-        .eq('active', true);
+        .eq('active', true)
+        .eq('site_id', effectiveSiteId); // Always filter by site_id
       
-      if (effectiveSiteId) {
-        query = query.eq('site_id', effectiveSiteId);
+      console.log('🔍 Query filters:', {
+        company_id: companyId,
+        site_id: effectiveSiteId,
+        active: true,
+        selectedSiteId,
+        isManager
+      });
+      
+      // Debug: Check what site_checklists exist for this site (any status)
+      if (effectiveSiteId && effectiveSiteId !== 'all') {
+        const { data: debugConfigs } = await supabase
+          .from('site_checklists')
+          .select('id, name, site_id, template_id, frequency, active, company_id')
+          .eq('site_id', effectiveSiteId)
+          .eq('company_id', companyId);
+        
+        console.log('🔍 DEBUG: All site_checklists for this site (any active status):', {
+          count: debugConfigs?.length || 0,
+          site_id: effectiveSiteId,
+          company_id: companyId,
+          configs: debugConfigs?.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            site_id: c.site_id,
+            template_id: c.template_id,
+            frequency: c.frequency,
+            active: c.active
+          })) || []
+        });
+        
+        // Also check for the known site_checklist_id from tasks
+        const knownSiteChecklistId = '10816ec5-3e89-45cb-82ed-a92276a60579';
+        const { data: knownConfig } = await supabase
+          .from('site_checklists')
+          .select('id, name, site_id, template_id, frequency, active, company_id')
+          .eq('id', knownSiteChecklistId)
+          .single();
+        
+        console.log('🔍 DEBUG: Known site_checklist from tasks:', {
+          id: knownSiteChecklistId,
+          found: !!knownConfig,
+          config: knownConfig ? {
+            id: knownConfig.id,
+            name: knownConfig.name,
+            site_id: knownConfig.site_id,
+            template_id: knownConfig.template_id,
+            frequency: knownConfig.frequency,
+            active: knownConfig.active,
+            company_id: knownConfig.company_id
+          } : null,
+          matchesSite: knownConfig?.site_id === effectiveSiteId,
+          matchesCompany: knownConfig?.company_id === companyId,
+          effectiveSiteId,
+          configSiteId: knownConfig?.site_id,
+          homeSiteId
+        });
       }
       
       const { data: configsData, error } = await query
@@ -66,6 +191,18 @@ export default function MyTasksPage() {
         setConfigs([]);
         return;
       }
+      
+      console.log('🔧 Task Configurations (site_checklists) loaded:', {
+        count: configsData?.length || 0,
+        configs: configsData?.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          site_id: c.site_id,
+          template_id: c.template_id,
+          frequency: c.frequency,
+          active: c.active
+        })) || []
+      });
 
       // Fetch sites separately and map them
       const siteIds = [...new Set((configsData || []).map((c: any) => c.site_id).filter(Boolean))];
@@ -130,66 +267,40 @@ export default function MyTasksPage() {
     }
   };
 
-  const loadTasks = async () => {
-    if (!companyId || !profile?.id) return;
-    
-    try {
-      setLoading(true);
-      
-      // Fetch tasks with explicit filtering
-      const { data, error } = await supabase
-        .from("checklist_tasks")
-        .select("*")
-        .eq("company_id", companyId)
-        .eq("assigned_to_user_id", profile.id)
-        .order("due_date", { ascending: true });
-      
-      if (error) {
-        console.error('Error loading tasks:', error);
-        throw error;
-      }
-      
-      console.log(`Loaded ${data?.length || 0} task(s) for user`);
-      
-      // Manually fetch templates for each task
-      if (data && data.length > 0) {
-        const templateIds = [...new Set(data.map(t => t.template_id))];
-        const { data: templates, error: templatesError } = await supabase
-          .from("task_templates")
-          .select("id, name, description, category, frequency")
-          .in("id", templateIds);
-        
-        if (!templatesError && templates) {
-          const templatesMap = new Map(templates.map(t => [t.id, t]));
-          const tasksWithTemplates = data.map(task => ({
-            ...task,
-            template: templatesMap.get(task.template_id)
-          }));
-          setTasks(tasksWithTemplates);
-        } else {
-          setTasks(data || []);
-        }
-      } else {
-        setTasks(data || []);
-      }
-    } catch (error) {
-      console.error('Error loading tasks:', error);
-      const errorMsg = error?.message || JSON.stringify(error);
-      console.error('Full error details:', errorMsg);
-      showToast({ title: 'Error loading tasks', description: errorMsg, type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
 
+  // Watch for selectedSiteId changes and log them
   useEffect(() => {
-    if (companyId) {
-      loadConfigs();
-      if (profile?.id) {
-        loadTasks();
+    console.log('🔄 selectedSiteId changed:', selectedSiteId);
+  }, [selectedSiteId]);
+  
+  useEffect(() => {
+    console.log('🔄 useEffect triggered:', {
+      companyId,
+      profileId: profile?.id,
+      homeSiteId: profile?.home_site || profile?.site_id,
+      selectedSiteId,
+      app_role: profile?.app_role,
+      hasProfile: !!profile
+    });
+    
+    if (companyId && profile?.id) {
+      // Wait for profile to have home_site before loading (especially for staff)
+      const homeSiteId = profile?.home_site || profile?.site_id;
+      const userRole = profile?.app_role?.toLowerCase() || 'staff';
+      const isManager = ['manager', 'general_manager', 'admin', 'owner'].includes(userRole);
+      
+      // Staff MUST have a home_site to load configs
+      // Managers can load even without home_site (they can use selectedSiteId)
+      if (isManager || homeSiteId) {
+        console.log('✅ Calling loadConfigs()', { isManager, homeSiteId });
+        loadConfigs();
+      } else {
+        console.log('⏸️ Not calling loadConfigs - staff member has no home_site');
       }
+    } else {
+      console.log('⏸️ Not calling loadConfigs - missing companyId or profile.id', { companyId: !!companyId, profileId: !!profile?.id });
     }
-  }, [companyId, profile?.id, siteId, selectedSiteId]);
+  }, [companyId, profile?.id, profile?.home_site, profile?.site_id, profile?.app_role, selectedSiteId]);
 
   // Show loading only while auth is initializing
   if (authLoading) {
@@ -222,93 +333,6 @@ export default function MyTasksPage() {
     );
   }
 
-  const handleStatusChange = async (taskId, newStatus) => {
-    try {
-      const { error } = await supabase
-        .from("checklist_tasks")
-        .update({ 
-          status: newStatus,
-          completed_at: newStatus === 'completed' ? new Date().toISOString() : null
-        })
-        .eq("id", taskId);
-      
-      if (error) throw error;
-      
-      showToast({ 
-        title: 'Task updated', 
-        description: `Task marked as ${newStatus}`, 
-        type: 'success' 
-      });
-      loadTasks();
-    } catch (error) {
-      console.error('Error updating task:', error);
-      showToast({ title: 'Error updating task', description: error.message, type: 'error' });
-    }
-  };
-
-  const handleDeleteTask = async (taskId) => {
-    if (!confirm('Are you sure you want to DELETE this task instance? This will:\n\n• Permanently delete the task\n• Delete all completion records\n• Remove it from your task list\n• This action cannot be undone!')) return;
-    
-    try {
-      // Check for related completion records first (for logging)
-      const { data: completionRecords } = await supabase
-        .from("task_completion_records")
-        .select("id")
-        .eq("task_id", taskId);
-      
-      // Delete completion records first (though CASCADE should handle this, doing it explicitly for safety)
-      if (completionRecords && completionRecords.length > 0) {
-        const { error: completionError } = await supabase
-          .from("task_completion_records")
-          .delete()
-          .eq("task_id", taskId);
-        
-        if (completionError) {
-          console.error('Error deleting completion records:', completionError);
-          // Continue anyway - CASCADE might handle it
-        } else {
-          console.log(`Deleted ${completionRecords.length} completion record(s)`);
-        }
-      }
-      
-      // Delete the task instance
-      const { error, data } = await supabase
-        .from("checklist_tasks")
-        .delete()
-        .eq("id", taskId)
-        .select(); // Select to verify deletion
-      
-      if (error) {
-        console.error('Delete error details:', {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
-        throw error;
-      }
-      
-      console.log('Task deleted successfully:', taskId);
-      console.log('Deleted data:', data);
-      
-      showToast({ 
-        title: 'Task deleted', 
-        description: 'Task instance permanently deleted', 
-        type: 'success' 
-      });
-      
-      // Force reload tasks to refresh the list
-      await loadTasks();
-    } catch (error: any) {
-      console.error('Error deleting task:', error);
-      const errorMessage = error?.message || error?.error?.message || 'Unknown error occurred';
-      showToast({ 
-        title: 'Error deleting task', 
-        description: errorMessage, 
-        type: 'error' 
-      });
-    }
-  };
 
   const getStatusColor = (status) => {
     const colors = {
@@ -345,10 +369,6 @@ export default function MyTasksPage() {
     return colors[category] || 'bg-gray-500/10 text-gray-400';
   };
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'all') return true;
-    return task.status === filter;
-  });
 
   const getFrequencyLabel = (frequency: string) => {
     const labels: Record<string, string> = {
@@ -379,38 +399,19 @@ export default function MyTasksPage() {
   return (
     <div className="w-full -mt-[72px] pt-[72px] p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">My Tasks</h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View and manage your task configurations and assigned task instances</p>
-      </div>
-
-      {/* Toggle between Configurations and Instances */}
-      <div className="flex items-center gap-2 mb-6">
-        <button
-          onClick={() => setShowConfigs(true)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-            showConfigs
-              ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border-[#EC4899]/30 dark:border-pink-500/30'
-              : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.06] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.12]'
-          }`}
-        >
-          Configurations ({configs.length})
-        </button>
-        <button
-          onClick={() => setShowConfigs(false)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-            !showConfigs
-              ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border-[#EC4899]/30 dark:border-pink-500/30'
-              : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.06] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.12]'
-          }`}
-        >
-          Task Instances ({tasks.length})
-        </button>
+        <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
+          My Tasks
+          {selectedSiteId && sitesMap[selectedSiteId] && (
+            <span className="text-lg font-normal text-[rgb(var(--text-secondary))] dark:text-white/60 ml-2">
+              - {sitesMap[selectedSiteId].name}
+            </span>
+          )}
+        </h1>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View and manage task configurations for your home site</p>
       </div>
 
       {/* Show Configurations */}
-      {showConfigs && (
-        <>
-          {loadingConfigs ? (
+      {loadingConfigs ? (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
                 <Loader2 className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
@@ -564,157 +565,6 @@ export default function MyTasksPage() {
               })}
             </div>
           )}
-        </>
-      )}
-
-      {/* Show Task Instances */}
-      {!showConfigs && (
-        <>
-          {/* Filter Tabs for Instances */}
-          <div className="flex items-center gap-2 mb-6">
-            {[
-              { key: 'all', label: 'All Tasks', count: tasks.length },
-              { key: 'pending', label: 'Pending', count: tasks.filter(t => t.status === 'pending').length },
-              { key: 'in_progress', label: 'In Progress', count: tasks.filter(t => t.status === 'in_progress').length },
-              { key: 'completed', label: 'Completed', count: tasks.filter(t => t.status === 'completed').length }
-            ].map(({ key, label, count }) => (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-                  filter === key
-                    ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border-[#EC4899]/30 dark:border-pink-500/30'
-                    : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.06] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.12] hover:border-gray-300 dark:hover:border-white/[0.12] hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
-                }`}
-              >
-                {label} ({count})
-              </button>
-            ))}
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
-                <Clock className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
-              </div>
-              <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading tasks...</h3>
-            </div>
-          ) : filteredTasks.length === 0 ? (
-        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-8">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
-              <CheckCircle className="w-8 h-8 text-[#EC4899] dark:text-pink-400" />
-            </div>
-            <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No tasks found</h2>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto">
-              {filter === 'all' 
-                ? "You don't have any tasks assigned yet. Create a template and deploy it to see tasks here."
-                : `No ${filter} tasks found.`
-              }
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredTasks.map((task) => (
-            <div key={task.id} className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6 hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-colors">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
-                      {task.template?.name || 'Untitled Task'}
-                    </h3>
-                    {/* Status and category tags removed per user request */}
-                  </div>
-                  
-                  <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mb-3">
-                    {task.template?.description || 'No description available'}
-                  </p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/60" />
-                      {new Date(task.due_date).toLocaleDateString()}
-                    </div>
-                    {task.due_time && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/60" />
-                        {task.due_time}
-                      </div>
-                    )}
-                    {task.daypart && (
-                      <div className="flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/60" />
-                        {task.daypart.charAt(0).toUpperCase() + task.daypart.slice(1)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 pt-4 border-t border-[rgb(var(--border))] dark:border-white/[0.06]">
-                {/* Edit Task button - always visible */}
-                {task.template_id && (
-                  <button
-                    onClick={async () => {
-                      try {
-                      // Fetch the full template details
-                        const { data, error } = await supabase
-                        .from("task_templates")
-                        .select("*")
-                        .eq("id", task.template_id)
-                          .single();
-                        
-                        if (error) throw error;
-                        
-                        if (data) {
-                          // Also fetch template_fields separately to help determine type
-                          const { data: fields } = await supabase
-                            .from('template_fields')
-                            .select('field_name, field_type')
-                            .eq('template_id', task.template_id);
-                          
-                          // Attach fields to template for detection
-                          const templateWithFields = {
-                            ...data,
-                            template_fields: fields || []
-                          };
-                          
-                          setEditingTemplate(templateWithFields);
-                            setEditingTemplateId(data.id);
-                          }
-                      } catch (error: any) {
-                        console.error('Error loading template:', error);
-                        showToast({
-                          title: 'Error',
-                          description: error.message || 'Failed to load template details.',
-                          type: 'error'
-                        });
-                      }
-                    }}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#EC4899]/20 dark:bg-pink-500/20 border border-[#EC4899]/30 dark:border-pink-500/30 text-[#EC4899] dark:text-pink-400 hover:bg-[#EC4899]/30 dark:hover:bg-pink-500/30 transition-colors text-sm"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                    Edit Task
-                  </button>
-                )}
-
-                {/* Delete button - always visible for all tasks */}
-                <button
-                  onClick={() => handleDeleteTask(task.id)}
-                  className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500/20 dark:bg-red-500/20 border border-red-500/30 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/30 dark:hover:bg-red-500/30 transition-colors text-sm"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-        </>
-      )}
 
       {/* Edit Configuration Modal */}
       {editingConfig && editingConfig.template_id && (
@@ -817,7 +667,7 @@ export default function MyTasksPage() {
                 const onSaveCallback = () => {
                         setEditingTemplate(null);
                         setEditingTemplateId(null);
-                        loadTasks(); // Refresh tasks to show updated task info
+                        loadConfigs(); // Refresh configurations
                         showToast({ 
                           title: 'Task updated', 
                           description: 'Task configuration has been successfully updated.', 

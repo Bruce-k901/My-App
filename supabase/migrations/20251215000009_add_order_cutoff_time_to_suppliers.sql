@@ -7,6 +7,17 @@
 -- Add order_cutoff_time column to stockly.suppliers
 DO $$
 BEGIN
+  -- Check if stockly schema and suppliers table exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'suppliers'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.suppliers table does not exist - skipping add_order_cutoff_time migration';
+    RETURN;
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'stockly' 
@@ -23,11 +34,37 @@ BEGIN
 END $$;
 
 -- Refresh the public.suppliers view to include the new column
-DROP VIEW IF EXISTS public.suppliers CASCADE;
-CREATE VIEW public.suppliers AS
-SELECT * FROM stockly.suppliers;
-ALTER VIEW public.suppliers SET (security_invoker = true);
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.suppliers TO authenticated;
+-- Only if the underlying table exists
+DO $$
+BEGIN
+  -- Check if stockly schema and suppliers table exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'suppliers'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.suppliers table does not exist - skipping suppliers view refresh';
+    RETURN;
+  END IF;
+
+  -- Drop existing view if it exists
+  DROP VIEW IF EXISTS public.suppliers CASCADE;
+
+  -- Recreate the view
+  EXECUTE $sql_view1$
+    CREATE VIEW public.suppliers AS
+    SELECT * FROM stockly.suppliers;
+  $sql_view1$;
+
+  -- Set security_invoker
+  ALTER VIEW public.suppliers SET (security_invoker = true);
+
+  -- Grant permissions
+  GRANT SELECT, INSERT, UPDATE, DELETE ON public.suppliers TO authenticated;
+
+  RAISE NOTICE 'View public.suppliers recreated successfully';
+END $$;
 
 -- Refresh PostgREST schema cache
 NOTIFY pgrst, 'reload schema';

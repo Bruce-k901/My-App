@@ -4,15 +4,42 @@
 --              delivery radius checks, and order locking
 -- ============================================================================
 
--- ============================================================================
--- FUNCTION: generate_order_number()
--- ============================================================================
--- Generates unique order number: OB-YYYYMMDD-001
-CREATE OR REPLACE FUNCTION public.generate_order_number(supplier_id_param UUID)
-RETURNS TEXT
-LANGUAGE plpgsql
-AS $$
-DECLARE
+-- This migration only runs if order_book_orders table exists
+DO $$
+BEGIN
+  -- Check if order_book_orders table exists - exit early if it doesn't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'order_book_orders'
+  ) THEN
+    RAISE NOTICE 'order_book_orders table does not exist - skipping order_book_helper_functions migration';
+    RETURN;
+  END IF;
+  
+  RAISE NOTICE 'order_book_orders table found - proceeding with order_book_helper_functions migration';
+END $$;
+
+-- Only proceed if order_book_orders table exists (checked above)
+DO $$
+BEGIN
+  -- Check if order_book_orders table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'order_book_orders'
+  ) THEN
+    RETURN;
+  END IF;
+
+  -- ============================================================================
+  -- FUNCTION: generate_order_number()
+  -- ============================================================================
+  -- Generates unique order number: OB-YYYYMMDD-001
+  EXECUTE $sql1$
+    CREATE OR REPLACE FUNCTION public.generate_order_number(supplier_id_param UUID)
+    RETURNS TEXT
+    LANGUAGE plpgsql
+    AS $func$
+    DECLARE
   today_prefix TEXT;
   last_number INTEGER;
   new_number TEXT;
@@ -41,26 +68,28 @@ BEGIN
   -- Increment and format with leading zeros
   new_number := today_prefix || LPAD((last_number + 1)::TEXT, 3, '0');
   
-  RETURN new_number;
-END;
-$$;
+    RETURN new_number;
+  END;
+  $func$;
+  $sql1$;
 
--- ============================================================================
--- FUNCTION: calculate_distance_km()
--- ============================================================================
--- Calculates distance between two lat/lng points using Haversine formula
--- Returns distance in kilometers
-CREATE OR REPLACE FUNCTION public.calculate_distance_km(
-  lat1 DECIMAL,
-  lng1 DECIMAL,
-  lat2 DECIMAL,
-  lng2 DECIMAL
-)
-RETURNS DECIMAL
-LANGUAGE plpgsql
-IMMUTABLE
-AS $$
-DECLARE
+  -- ============================================================================
+  -- FUNCTION: calculate_distance_km()
+  -- ============================================================================
+  -- Calculates distance between two lat/lng points using Haversine formula
+  -- Returns distance in kilometers
+  EXECUTE $sql2$
+    CREATE OR REPLACE FUNCTION public.calculate_distance_km(
+      lat1 DECIMAL,
+      lng1 DECIMAL,
+      lat2 DECIMAL,
+      lng2 DECIMAL
+    )
+    RETURNS DECIMAL
+    LANGUAGE plpgsql
+    IMMUTABLE
+    AS $func$
+    DECLARE
   earth_radius_km DECIMAL := 6371.0;
   dlat DECIMAL;
   dlng DECIMAL;
@@ -78,24 +107,26 @@ BEGIN
   
   c := 2 * ATAN2(SQRT(a), SQRT(1 - a));
   
-  RETURN earth_radius_km * c;
-END;
-$$;
+    RETURN earth_radius_km * c;
+  END;
+  $func$;
+  $sql2$;
 
--- ============================================================================
--- FUNCTION: is_within_delivery_radius()
--- ============================================================================
--- Checks if customer location is within supplier's delivery radius
-CREATE OR REPLACE FUNCTION public.is_within_delivery_radius(
-  supplier_id_param UUID,
-  customer_lat DECIMAL,
-  customer_lng DECIMAL
-)
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-STABLE
-AS $$
-DECLARE
+  -- ============================================================================
+  -- FUNCTION: is_within_delivery_radius()
+  -- ============================================================================
+  -- Checks if customer location is within supplier's delivery radius
+  EXECUTE $sql3$
+    CREATE OR REPLACE FUNCTION public.is_within_delivery_radius(
+      supplier_id_param UUID,
+      customer_lat DECIMAL,
+      customer_lng DECIMAL
+    )
+    RETURNS BOOLEAN
+    LANGUAGE plpgsql
+    STABLE
+    AS $func$
+    DECLARE
   supplier_record RECORD;
   distance_km DECIMAL;
 BEGIN
@@ -124,20 +155,22 @@ BEGIN
     customer_lng
   );
   
-  -- Check if within radius
-  RETURN distance_km <= supplier_record.delivery_radius_km;
-END;
-$$;
+    -- Check if within radius
+    RETURN distance_km <= supplier_record.delivery_radius_km;
+  END;
+  $func$;
+  $sql3$;
 
--- ============================================================================
--- FUNCTION: generate_invoice_number()
--- ============================================================================
--- Generates unique invoice number: INV-YYYYMMDD-001
-CREATE OR REPLACE FUNCTION public.generate_invoice_number(supplier_id_param UUID)
-RETURNS TEXT
-LANGUAGE plpgsql
-AS $$
-DECLARE
+  -- ============================================================================
+  -- FUNCTION: generate_invoice_number()
+  -- ============================================================================
+  -- Generates unique invoice number: INV-YYYYMMDD-001
+  EXECUTE $sql4$
+    CREATE OR REPLACE FUNCTION public.generate_invoice_number(supplier_id_param UUID)
+    RETURNS TEXT
+    LANGUAGE plpgsql
+    AS $func$
+    DECLARE
   today_prefix TEXT;
   last_number INTEGER;
   new_number TEXT;
@@ -163,22 +196,24 @@ BEGIN
   WHERE supplier_id = supplier_id_param
     AND invoice_number LIKE today_prefix || '%';
   
-  -- Increment and format with leading zeros
-  new_number := today_prefix || LPAD((last_number + 1)::TEXT, 3, '0');
-  
-  RETURN new_number;
-END;
-$$;
+    -- Increment and format with leading zeros
+    new_number := today_prefix || LPAD((last_number + 1)::TEXT, 3, '0');
+    
+    RETURN new_number;
+  END;
+  $func$;
+  $sql4$;
 
--- ============================================================================
--- FUNCTION: lock_orders_past_cutoff()
--- ============================================================================
--- Locks orders that are past the cutoff time (prevents customer edits)
-CREATE OR REPLACE FUNCTION public.lock_orders_past_cutoff()
-RETURNS INTEGER
-LANGUAGE plpgsql
-AS $$
-  DECLARE
+  -- ============================================================================
+  -- FUNCTION: lock_orders_past_cutoff()
+  -- ============================================================================
+  -- Locks orders that are past the cutoff time (prevents customer edits)
+  EXECUTE $sql5$
+    CREATE OR REPLACE FUNCTION public.lock_orders_past_cutoff()
+    RETURNS INTEGER
+    LANGUAGE plpgsql
+    AS $func$
+    DECLARE
   locked_count INTEGER := 0;
   order_record RECORD;
   cutoff_time_val TIME;
@@ -219,53 +254,66 @@ BEGIN
     END IF;
   END LOOP;
   
-  RETURN locked_count;
-END;
-$$;
+    RETURN locked_count;
+  END;
+  $func$;
+  $sql5$;
 
--- ============================================================================
--- TRIGGER: Auto-generate order_number on INSERT
--- ============================================================================
-CREATE OR REPLACE FUNCTION public.order_book_orders_set_order_number()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
-BEGIN
+  -- ============================================================================
+  -- TRIGGER: Auto-generate order_number on INSERT
+  -- ============================================================================
+  EXECUTE $sql6$
+    CREATE OR REPLACE FUNCTION public.order_book_orders_set_order_number()
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+    AS $func$
+    BEGIN
   -- Only set if not already provided
   IF NEW.order_number IS NULL OR NEW.order_number = '' THEN
     NEW.order_number := public.generate_order_number(NEW.supplier_id);
   END IF;
   
-  RETURN NEW;
-END;
-$$;
+    RETURN NEW;
+  END;
+  $func$;
+  $sql6$;
 
-DROP TRIGGER IF EXISTS order_book_orders_set_order_number_trigger ON public.order_book_orders;
-CREATE TRIGGER order_book_orders_set_order_number_trigger
-  BEFORE INSERT ON public.order_book_orders
-  FOR EACH ROW
-  EXECUTE FUNCTION public.order_book_orders_set_order_number();
+  DROP TRIGGER IF EXISTS order_book_orders_set_order_number_trigger ON public.order_book_orders;
+  CREATE TRIGGER order_book_orders_set_order_number_trigger
+    BEFORE INSERT ON public.order_book_orders
+    FOR EACH ROW
+    EXECUTE FUNCTION public.order_book_orders_set_order_number();
 
--- ============================================================================
--- TRIGGER: Auto-generate invoice_number on INSERT
--- ============================================================================
-CREATE OR REPLACE FUNCTION public.order_book_invoices_set_invoice_number()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
-BEGIN
+  -- ============================================================================
+  -- TRIGGER: Auto-generate invoice_number on INSERT
+  -- ============================================================================
+  -- Only create invoice trigger if order_book_invoices table exists
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'order_book_invoices'
+  ) THEN
+    EXECUTE $sql7$
+      CREATE OR REPLACE FUNCTION public.order_book_invoices_set_invoice_number()
+      RETURNS TRIGGER
+      LANGUAGE plpgsql
+      AS $func$
+      BEGIN
   -- Only set if not already provided
   IF NEW.invoice_number IS NULL OR NEW.invoice_number = '' THEN
     NEW.invoice_number := public.generate_invoice_number(NEW.supplier_id);
   END IF;
   
-  RETURN NEW;
-END;
-$$;
+      RETURN NEW;
+    END;
+    $func$;
+    $sql7$;
 
-DROP TRIGGER IF EXISTS order_book_invoices_set_invoice_number_trigger ON public.order_book_invoices;
-CREATE TRIGGER order_book_invoices_set_invoice_number_trigger
-  BEFORE INSERT ON public.order_book_invoices
-  FOR EACH ROW
-  EXECUTE FUNCTION public.order_book_invoices_set_invoice_number();
+    DROP TRIGGER IF EXISTS order_book_invoices_set_invoice_number_trigger ON public.order_book_invoices;
+    CREATE TRIGGER order_book_invoices_set_invoice_number_trigger
+      BEFORE INSERT ON public.order_book_invoices
+      FOR EACH ROW
+      EXECUTE FUNCTION public.order_book_invoices_set_invoice_number();
+  END IF;
+
+END $$;
 

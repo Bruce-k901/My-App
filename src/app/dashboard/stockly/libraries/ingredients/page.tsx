@@ -261,6 +261,58 @@ export default function IngredientsLibraryPage() {
     return () => { cancelled = true; };
   }, [companyId]);
 
+  // Real-time subscription for ingredient price updates
+  useEffect(() => {
+    if (!companyId) return;
+
+    const channel = supabase
+      .channel(`ingredients-price-updates-${companyId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'ingredients_library',
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          console.log('Ingredient price updated in real-time:', payload);
+          // Check if price-related fields changed
+          const oldData = payload.old as any;
+          const newData = payload.new as any;
+          
+          const priceChanged = 
+            oldData.unit_cost !== newData.unit_cost ||
+            oldData.pack_cost !== newData.pack_cost ||
+            oldData.pack_size !== newData.pack_size ||
+            oldData.yield_percent !== newData.yield_percent;
+          
+          if (priceChanged) {
+            console.log('Price change detected, reloading ingredients...');
+            loadIngredients();
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ingredients_library',
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          console.log('New ingredient added, reloading...');
+          loadIngredients();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId]);
+
   // Initialize debounced search query to match search query on mount
   useEffect(() => {
     setDebouncedSearchQuery(searchQuery);

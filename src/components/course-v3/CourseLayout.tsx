@@ -249,7 +249,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                     
                     {!quizSubmitted ? (
                         <div className="space-y-6 text-left">
-                            {course.questionBanks?.['final']?.slice(0, 3).map((q, idx) => (
+                            {course.questionBanks?.['final']?.slice(0, 5).map((q, idx) => (
                                 <div key={q.id} className="bg-slate-900/50 p-6 rounded-xl border border-white/5">
                                     <p className="font-medium mb-4">{idx + 1}. {q.text}</p>
                                     <div className="space-y-2">
@@ -277,7 +277,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                         </div>
                     ) : (
                         <div className="text-center space-y-4">
-                            <div className="text-4xl font-bold text-white">{quizScore} / 3</div>
+                            <div className="text-4xl font-bold text-white">{quizScore} / {Math.min(5, course.questionBanks?.['final']?.length ?? 0)}</div>
                             <p className="text-slate-400">Score</p>
                             <button 
                                 onClick={handleNext}

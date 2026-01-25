@@ -60,11 +60,11 @@ export default function Select({
           className={cn(
             // Input-like base styles for consistency
             "w-full h-10 rounded-md px-4 text-left text-theme-primary dark:text-white relative",
-            "bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1]",
+            "bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50",
             "transition-all duration-150 ease-in-out",
-            "hover:border-theme-hover dark:hover:border-white/20 hover:bg-theme-button-hover dark:hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
-            "focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none",
-            "data-[state=open]:border-pink-500 data-[state=open]:shadow-[0_0_14px_rgba(236,72,153,0.4)]",
+            "hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-theme-button-hover dark:hover:bg-theme-button-hover hover:shadow-[0_0_10px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]",
+            "focus:border-blue-500 dark:focus:border-blue-500 focus:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:focus:shadow-[0_0_14px_rgba(59,130,246,0.4)] focus:ring-0 focus:outline-none",
+            "data-[state=open]:border-blue-500 dark:data-[state=open]:border-blue-500 data-[state=open]:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:data-[state=open]:shadow-[0_0_14px_rgba(59,130,246,0.4)]",
             disabled && "opacity-50 cursor-not-allowed",
             "flex items-center justify-between"
           )}
@@ -81,7 +81,7 @@ export default function Select({
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
-            className="relative z-[10000] max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-theme dark:border-white/[0.1] bg-[rgb(var(--surface-elevated))] dark:bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            className="relative z-[10000] max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-theme dark:border-blue-500/30 bg-[rgb(var(--surface-elevated))] dark:bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(59,130,246,0.2)] dark:shadow-[0_0_14px_rgba(59,130,246,0.3)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             position="popper"
             sideOffset={6}
           >

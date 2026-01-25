@@ -5,32 +5,62 @@
 -- Risk: HIGH - Affects core identity references
 -- ============================================================================
 
-BEGIN;
-
 -- ============================================================================
 -- STEP 1: BACKUP (Create schema with current data)
 -- ============================================================================
 
 CREATE SCHEMA IF NOT EXISTS backup_identity_migration;
 
--- Backup critical tables before changes
-CREATE TABLE IF NOT EXISTS backup_identity_migration.staff_attendance AS 
-  SELECT * FROM staff_attendance WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'staff_attendance');
+-- Backup critical tables before changes (only if they exist)
+DO $$
+BEGIN
+  -- Backup staff_attendance
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'staff_attendance') THEN
+    DROP TABLE IF EXISTS backup_identity_migration.staff_attendance;
+    CREATE TABLE backup_identity_migration.staff_attendance AS 
+      SELECT * FROM staff_attendance;
+  END IF;
 
-CREATE TABLE IF NOT EXISTS backup_identity_migration.messages AS 
-  SELECT * FROM messages WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages');
+  -- Backup messages
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'messages') THEN
+    DROP TABLE IF EXISTS backup_identity_migration.messages;
+    CREATE TABLE backup_identity_migration.messages AS 
+      SELECT * FROM messages;
+  END IF;
 
-CREATE TABLE IF NOT EXISTS backup_identity_migration.conversation_participants AS 
-  SELECT * FROM conversation_participants WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'conversation_participants');
+  -- Backup conversation_participants
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversation_participants') THEN
+    DROP TABLE IF EXISTS backup_identity_migration.conversation_participants;
+    CREATE TABLE backup_identity_migration.conversation_participants AS 
+      SELECT * FROM conversation_participants;
+  END IF;
 
-CREATE TABLE IF NOT EXISTS backup_identity_migration.message_reads AS 
-  SELECT * FROM message_reads WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'message_reads');
+  -- Backup message_reads
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'message_reads') THEN
+    DROP TABLE IF EXISTS backup_identity_migration.message_reads;
+    CREATE TABLE backup_identity_migration.message_reads AS 
+      SELECT * FROM message_reads;
+  END IF;
 
-CREATE TABLE IF NOT EXISTS backup_identity_migration.notifications AS 
-  SELECT * FROM notifications WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications');
+  -- Backup notifications
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'notifications') THEN
+    DROP TABLE IF EXISTS backup_identity_migration.notifications;
+    CREATE TABLE backup_identity_migration.notifications AS 
+      SELECT * FROM notifications;
+  END IF;
 
-CREATE TABLE IF NOT EXISTS backup_identity_migration.profile_settings AS 
-  SELECT * FROM profile_settings WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profile_settings');
+  -- Backup profile_settings (only if it's a table, not a view)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' 
+      AND table_name = 'profile_settings' 
+      AND table_type = 'BASE TABLE'
+  ) THEN
+    DROP TABLE IF EXISTS backup_identity_migration.profile_settings;
+    CREATE TABLE backup_identity_migration.profile_settings AS 
+      SELECT * FROM profile_settings;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- STEP 2: VERIFICATION QUERIES (Run before migration)
@@ -1085,8 +1115,6 @@ BEGIN
   ============================================
   ';
 END $$;
-
-COMMIT;
 
 -- ============================================================================
 -- ROLLBACK SCRIPT (COMMENTED - UNCOMMENT IF NEEDED)

@@ -246,20 +246,20 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
         className="absolute inset-0 bg-black/60" 
         onClick={onClose}
       />
-      <div className="relative w-full max-w-3xl rounded-xl bg-[#0B0D13] border border-white/[0.06] p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-5xl rounded-xl bg-theme-surface border border-theme p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-              <Briefcase className="w-5 h-5 text-purple-400" />
+            <div className="w-10 h-10 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">Add Head Office / Executive</h2>
-              <p className="text-sm text-neutral-400">Complete employee onboarding details</p>
+              <h2 className="text-xl font-semibold text-theme-primary">Add Head Office / Executive</h2>
+              <p className="text-sm text-theme-secondary">Complete employee onboarding details</p>
             </div>
           </div>
           <button 
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-theme-secondary hover:text-theme-primary transition-colors"
             onClick={onClose}
             type="button"
           >
@@ -268,7 +268,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-white/[0.06] pb-2 overflow-x-auto">
+        <div className="flex gap-1 px-4 pt-3 mb-6 border-b border-theme">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -276,13 +276,13 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-all relative ${
                   activeTab === tab.id
-                    ? 'bg-purple-500/20 text-purple-300 border-b-2 border-purple-500'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.03]'
+                    ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 dark:border-blue-500 shadow-sm'
+                    : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-blue-500/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-blue-600 dark:text-blue-400' : ''}`} />
                 {tab.label}
               </button>
             );
@@ -291,20 +291,20 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="mb-4 p-3 bg-red-500/10 dark:bg-red-500/10 border border-red-500/50 dark:border-red-500/50 rounded-lg">
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Tab */}
           {activeTab === 'personal' && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {/* Full Name */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                <div className="md:col-span-3">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Full Name *
                   </label>
                   <Input
@@ -317,7 +317,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Email Address *
                   </label>
                   <Input
@@ -331,7 +331,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Phone Number */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Phone Number
                   </label>
                   <Input
@@ -344,7 +344,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Date of Birth */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Date of Birth
                   </label>
                   <Input
@@ -356,14 +356,14 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
               </div>
 
               {/* Address Section */}
-              <div className="border-t border-white/[0.06] pt-4 mt-4">
-                <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                  <Home className="w-4 h-4 text-purple-400" />
+              <div className="border-t border-theme pt-6 mt-6">
+                <h3 className="text-sm font-semibold text-theme-primary mb-5 flex items-center gap-2">
+                  <Home className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                   Address
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 1
                     </label>
                     <Input
@@ -373,7 +373,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Address Line 2
                     </label>
                     <Input
@@ -383,7 +383,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       City
                     </label>
                     <Input
@@ -393,7 +393,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Postcode
                     </label>
                     <Input
@@ -403,7 +403,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                       Country
                     </label>
                     <Input
@@ -418,11 +418,11 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
           {/* Employment Tab */}
           {activeTab === 'employment' && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {/* Role */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Role *
                   </label>
                   <Select
@@ -431,14 +431,14 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     onValueChange={(val) => updateForm({ app_role: val })}
                     placeholder="Select role..."
                   />
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     Determines org chart placement
                   </p>
                 </div>
 
                 {/* Position Title */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Position Title
                   </label>
                   <Select
@@ -451,7 +451,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Department */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Department
                   </label>
                   <Input
@@ -463,7 +463,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Start Date */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Start Date
                   </label>
                   <Input
@@ -475,13 +475,13 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Contract Type */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Contract Type
                   </label>
                   <select
                     value={form.contract_type}
                     onChange={(e) => updateForm({ contract_type: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -491,7 +491,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Salary */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Annual Salary (£)
                   </label>
                   <Input
@@ -505,13 +505,13 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Pay Frequency */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Pay Frequency
                   </label>
                   <select
                     value={form.pay_frequency}
                     onChange={(e) => updateForm({ pay_frequency: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -521,9 +521,9 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
               </div>
 
               {/* Info Box */}
-              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                <p className="text-sm text-blue-300">
-                  <strong>Note:</strong> This employee will not be assigned to any site. 
+              <div className="p-4 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-300 dark:border-blue-500/50 rounded-lg">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <strong className="font-semibold">Note:</strong> This employee will not be assigned to any site. 
                   They will appear in the organizational chart under their role category.
                 </p>
               </div>
@@ -532,11 +532,11 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
           {/* Compliance Tab */}
           {activeTab === 'compliance' && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {/* National Insurance Number */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     National Insurance Number
                   </label>
                   <Input
@@ -549,13 +549,13 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Right to Work Status */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Right to Work Status
                   </label>
                   <select
                     value={form.right_to_work_status}
                     onChange={(e) => updateForm({ right_to_work_status: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -566,13 +566,13 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* RTW Document Type */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Document Type
                   </label>
                   <select
                     value={form.right_to_work_document_type}
                     onChange={(e) => updateForm({ right_to_work_document_type: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -585,7 +585,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* RTW Expiry Date */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     RTW Expiry Date
                   </label>
                   <Input
@@ -593,15 +593,15 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                     value={form.right_to_work_expiry}
                     onChange={(e) => updateForm({ right_to_work_expiry: e.target.value })}
                   />
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     Leave blank if no expiry (e.g., British citizen)
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                <p className="text-sm text-amber-300">
-                  <strong>Important:</strong> Ensure right to work documentation is verified before the employee starts work. This is a legal requirement in the UK.
+              <div className="p-4 bg-amber-500/10 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/50 rounded-lg">
+                <p className="text-sm text-amber-700 dark:text-amber-300">
+                  <strong className="font-semibold">Important:</strong> Ensure right to work documentation is verified before the employee starts work. This is a legal requirement in the UK.
                 </p>
               </div>
             </div>
@@ -609,15 +609,15 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
           {/* Banking Tab */}
           {activeTab === 'banking' && (
-            <div className="space-y-4">
-              <p className="text-sm text-neutral-400">
+            <div className="space-y-8">
+              <p className="text-sm text-theme-secondary">
                 Bank details are used for payroll export only and are stored securely.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {/* Bank Name */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Bank Name
                   </label>
                   <Input
@@ -629,7 +629,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Account Holder Name */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Holder Name
                   </label>
                   <Input
@@ -641,7 +641,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Sort Code */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Sort Code
                   </label>
                   <Input
@@ -654,7 +654,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
 
                 {/* Account Number */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
                     Account Number
                   </label>
                   <Input
@@ -666,20 +666,20 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                 </div>
               </div>
 
-              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                <p className="text-sm text-green-300">
-                  <strong>Secure:</strong> Bank details are encrypted and only accessible to authorized payroll administrators.
+              <div className="p-4 bg-green-500/10 dark:bg-green-500/10 border border-green-300 dark:border-green-500/50 rounded-lg">
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  <strong className="font-semibold">Secure:</strong> Bank details are encrypted and only accessible to authorized payroll administrators.
                 </p>
               </div>
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-6 border-t border-theme">
             <Button
               type="submit"
               disabled={saving}
-              className="flex-1"
+              className="flex-1 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200"
             >
               {saving ? (
                 <>
@@ -698,7 +698,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
               variant="outline"
               onClick={onClose}
               disabled={saving}
-              className="flex-1"
+              className="flex-1 border-theme hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10"
             >
               Cancel
             </Button>

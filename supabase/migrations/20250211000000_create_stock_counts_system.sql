@@ -14,7 +14,8 @@ BEGIN
     -- ============================================================================
     -- STOCK COUNTS (Main event)
     -- ============================================================================
-    CREATE TABLE IF NOT EXISTS public.stock_counts (
+    EXECUTE $sql_table1$
+      CREATE TABLE IF NOT EXISTS public.stock_counts (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       company_id uuid NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
       name text NOT NULL,
@@ -34,7 +35,8 @@ BEGIN
       items_counted integer DEFAULT 0,
       variance_count integer DEFAULT 0,
       total_variance_value decimal(10,2) DEFAULT 0
-    );
+      );
+    $sql_table1$;
 
     -- ============================================================================
     -- STOCK COUNT AREAS (Storage areas included in count)
@@ -45,7 +47,8 @@ BEGIN
       WHERE (table_schema = 'public' AND table_name = 'storage_areas')
          OR (table_schema = 'stockly' AND table_name = 'storage_areas')
     ) THEN
-      CREATE TABLE IF NOT EXISTS public.stock_count_areas (
+      EXECUTE $sql_table2$
+        CREATE TABLE IF NOT EXISTS public.stock_count_areas (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
         stock_count_id uuid NOT NULL REFERENCES stock_counts(id) ON DELETE CASCADE,
         storage_area_id uuid NOT NULL,
@@ -53,7 +56,8 @@ BEGIN
         created_at timestamptz DEFAULT now(),
         
         UNIQUE(stock_count_id, storage_area_id)
-      );
+        );
+      $sql_table2$;
 
       -- Add foreign key to storage_areas (try both schemas)
       IF EXISTS (SELECT 1 FROM information_schema.tables 
@@ -89,7 +93,8 @@ BEGIN
          OR (table_schema = 'public' AND table_name = 'ingredients')
          OR (table_schema = 'stockly' AND table_name = 'ingredients')
     ) THEN
-      CREATE TABLE IF NOT EXISTS public.stock_count_items (
+      EXECUTE $sql_table3$
+        CREATE TABLE IF NOT EXISTS public.stock_count_items (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
         stock_count_id uuid NOT NULL REFERENCES stock_counts(id) ON DELETE CASCADE,
         storage_area_id uuid NOT NULL,
@@ -120,7 +125,8 @@ BEGIN
         created_at timestamptz DEFAULT now(),
         
         UNIQUE(stock_count_id, ingredient_id)
-      );
+        );
+      $sql_table3$;
 
       -- Add foreign key to storage_areas
       IF EXISTS (SELECT 1 FROM information_schema.tables 
@@ -182,7 +188,8 @@ BEGIN
     -- ============================================================================
     -- STOCK COUNT SCHEDULES (Recurring schedules - for future implementation)
     -- ============================================================================
-    CREATE TABLE IF NOT EXISTS public.stock_count_schedules (
+    EXECUTE $sql_table4$
+      CREATE TABLE IF NOT EXISTS public.stock_count_schedules (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       company_id uuid NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
       name text NOT NULL,
@@ -195,7 +202,8 @@ BEGIN
       next_generation_date date,
       created_at timestamptz DEFAULT now(),
       updated_at timestamptz DEFAULT now()
-    );
+      );
+    $sql_table4$;
 
     -- ============================================================================
     -- INDEXES
@@ -396,36 +404,38 @@ BEGIN
     -- ============================================================================
     -- FUNCTION: Update summary fields on stock_counts
     -- ============================================================================
-    CREATE OR REPLACE FUNCTION update_stock_count_summary()
-    RETURNS TRIGGER AS $$
-    BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables 
-                 WHERE table_schema = 'public' AND table_name = 'stock_count_items') THEN
-        UPDATE stock_counts
-        SET 
-          total_items = (
-            SELECT COUNT(*) FROM stock_count_items WHERE stock_count_id = NEW.stock_count_id
-          ),
-          items_counted = (
-            SELECT COUNT(*) FROM stock_count_items 
-            WHERE stock_count_id = NEW.stock_count_id AND status = 'counted'
-          ),
-          variance_count = (
-            SELECT COUNT(*) FROM stock_count_items 
-            WHERE stock_count_id = NEW.stock_count_id 
-            AND status = 'counted' 
-            AND ABS(variance_quantity) > 0
-          ),
-          total_variance_value = (
-            SELECT COALESCE(SUM(variance_value), 0) FROM stock_count_items 
-            WHERE stock_count_id = NEW.stock_count_id AND status = 'counted'
-          )
-        WHERE id = NEW.stock_count_id;
-      END IF;
-      
-      RETURN NEW;
-    END;
-    $$ LANGUAGE plpgsql SECURITY DEFINER;
+    EXECUTE $sql_func1$
+      CREATE OR REPLACE FUNCTION update_stock_count_summary()
+      RETURNS TRIGGER AS $func$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables 
+                   WHERE table_schema = 'public' AND table_name = 'stock_count_items') THEN
+          UPDATE stock_counts
+          SET 
+            total_items = (
+              SELECT COUNT(*) FROM stock_count_items WHERE stock_count_id = NEW.stock_count_id
+            ),
+            items_counted = (
+              SELECT COUNT(*) FROM stock_count_items 
+              WHERE stock_count_id = NEW.stock_count_id AND status = 'counted'
+            ),
+            variance_count = (
+              SELECT COUNT(*) FROM stock_count_items 
+              WHERE stock_count_id = NEW.stock_count_id 
+              AND status = 'counted' 
+              AND ABS(variance_quantity) > 0
+            ),
+            total_variance_value = (
+              SELECT COALESCE(SUM(variance_value), 0) FROM stock_count_items 
+              WHERE stock_count_id = NEW.stock_count_id AND status = 'counted'
+            )
+          WHERE id = NEW.stock_count_id;
+        END IF;
+        
+        RETURN NEW;
+      END;
+      $func$ LANGUAGE plpgsql SECURITY DEFINER;
+    $sql_func1$;
 
     -- ============================================================================
     -- TRIGGER: Update summary on stock_count_items changes

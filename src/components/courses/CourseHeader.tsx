@@ -12,16 +12,16 @@ export function CourseHeader() {
         </div>
         <div className="ml-auto flex flex-col items-start gap-2 sm:flex-row sm:items-center">
           <Link
-            href="/training/courses/l2-food-hygiene/start"
+            href="/learn/uk-l2-food-safety"
             className="rounded-lg bg-transparent border border-[#EC4899] text-[#EC4899] px-4 py-2 text-sm font-semibold hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
           >
             Launch course
           </Link>
           <Link
-            href="/training/courses/l2-food-hygiene/certificate"
+            href="/dashboard/people/training"
             className="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-slate-200 transition hover:bg-neutral-800"
           >
-            View certificate portal
+            Training & records
           </Link>
           <Link
             href="/dashboard/training"
@@ -32,7 +32,7 @@ export function CourseHeader() {
         </div>
       </div>
       <p className="mt-3 text-xs text-slate-400">
-        Start with your details, work through modules m1–m7, complete the final assessment, then generate your certificate.
+        Work through the modules, complete the final assessment, then return to the dashboard. Training records can be viewed in Training.
       </p>
     </div>
   );

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { CheckCircle, Loader2, Save, ArrowRight, ArrowUp } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
+import { toast } from 'sonner';
 
 interface CountDataEntryProps {
   countId: string;
@@ -117,20 +118,28 @@ export default function CountDataEntry({
       : 0;
     const varianceValue = variance * (item.unit_cost || 0);
 
+    // Note: variance_quantity and variance_value are GENERATED columns in the database
+    // They are automatically calculated as (counted_quantity - expected_quantity) and 
+    // ((counted_quantity - expected_quantity) * unit_cost) respectively.
+    // We should NOT send them in the UPDATE - PostgreSQL will calculate them automatically.
     const { error } = await supabase
       .from('stock_count_items')
       .update({
         counted_quantity: countedQty,
-        variance_quantity: variance,
+        // variance_quantity: variance, // REMOVED - this is a GENERATED column
         variance_percentage: variancePercentage,
-        variance_value: varianceValue,
+        // variance_value: varianceValue, // REMOVED - this is a GENERATED column
         status: 'counted',
+        is_counted: true, // Set is_counted for stockly schema trigger
         counted_at: new Date().toISOString(),
       })
       .eq('id', item.id);
 
     if (error) {
       console.error('Error saving count:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('Item being saved:', { id: item.id, countedQty, variance, variancePercentage, varianceValue });
+      toast.error(`Failed to save count: ${error.message || 'Unknown error'}`);
     } else {
       // Clear the editing value
       setEditingValues(prev => {
@@ -260,6 +269,66 @@ export default function CountDataEntry({
     
     // Save and move to next empty
     await handleSaveLibrary(selectedLibrary, currentLibraryItems, true);
+  };
+
+  // Handle saving ALL items across ALL libraries
+  const handleSaveAll = async () => {
+    // Find all items across all libraries that have values in editingValues
+    const allItemsToSave = sortedItems.filter(item => {
+      const value = editingValues[item.id]?.trim() || '';
+      return value && !isNaN(parseFloat(value));
+    });
+
+    if (allItemsToSave.length === 0) {
+      toast.info('No changes to save');
+      return;
+    }
+
+    // Save all items in parallel
+    const savePromises = allItemsToSave.map(item => {
+      const countValue = editingValues[item.id]?.trim() || '';
+      const countedQty = parseFloat(countValue);
+      
+      const theoreticalClosing = item.theoretical_closing || 0;
+      const variance = countedQty - theoreticalClosing;
+      const variancePercentage = theoreticalClosing !== 0 
+        ? (variance / theoreticalClosing) * 100 
+        : 0;
+      const varianceValue = variance * (item.unit_cost || 0);
+
+      return supabase
+        .from('stock_count_items')
+        .update({
+          counted_quantity: countedQty,
+          variance_quantity: variance,
+          variance_percentage: variancePercentage,
+          variance_value: varianceValue,
+          status: 'counted',
+          counted_at: new Date().toISOString(),
+        })
+        .eq('id', item.id);
+    });
+
+    try {
+      await Promise.all(savePromises);
+
+      // Clear saved values from editingValues
+      setEditingValues(prev => {
+        const newValues = { ...prev };
+        allItemsToSave.forEach(item => {
+          delete newValues[item.id];
+        });
+        return newValues;
+      });
+
+      // Refresh data
+      onUpdate();
+
+      toast.success(`Successfully saved ${allItemsToSave.length} item${allItemsToSave.length !== 1 ? 's' : ''}`);
+    } catch (error: any) {
+      console.error('Error saving all items:', error);
+      toast.error(`Failed to save items: ${error.message || 'Unknown error'}`);
+    }
   };
 
   // Scroll to top of page
@@ -535,6 +604,29 @@ export default function CountDataEntry({
           )}
         </div>
       </div>
+
+      {/* Save All Button - Global save for all libraries */}
+      {(() => {
+        const allItemsWithChanges = sortedItems.filter(item => {
+          const value = editingValues[item.id]?.trim() || '';
+          return value && !isNaN(parseFloat(value));
+        });
+        return allItemsWithChanges.length > 0 && (
+          <div className="mb-4 flex justify-end">
+            <Button
+              onClick={handleSaveAll}
+              disabled={savingLibrary !== null}
+              loading={savingLibrary !== null}
+              variant="primary"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+              size="lg"
+            >
+              <Save className="h-5 w-5 mr-2" />
+              Save All ({allItemsWithChanges.length} items)
+            </Button>
+          </div>
+        );
+      })()}
 
       {/* Keyboard Shortcuts - Front and Center */}
       <div className="bg-emerald-50 dark:bg-emerald-600/20 border-2 border-emerald-500 dark:border-emerald-400 rounded-lg p-4 shadow-lg">

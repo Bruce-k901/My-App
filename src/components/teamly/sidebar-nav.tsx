@@ -99,7 +99,7 @@ const navItems: NavItem[] = [
       { label: 'All Courses', href: '/dashboard/courses' },
       ...COURSES.map(course => ({
         label: course.title,
-        href: `/dashboard/courses/${course.slug}`,
+        href: course.href,
       })),
     ],
   },
@@ -190,21 +190,21 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
             setIsOpen(!isOpen);
           }
         }}
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
           isActive || childActive
-            ? 'bg-[#EC4899]/20 text-[#EC4899]'
-            : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
-        }`}
+            ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400'
+            : 'text-theme-secondary hover:bg-theme-button-hover hover:text-theme-primary'
+        } ${isActive || childActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400' : ''}`}
       >
         <item.icon className="w-5 h-5 flex-shrink-0" />
         <span className="flex-1">{item.label}</span>
         {item.badge && (
-          <span className="px-2 py-0.5 bg-[#EC4899] text-white text-xs rounded-full">
+          <span className="px-2 py-0.5 bg-blue-500 dark:bg-blue-500 text-white text-xs rounded-full">
             {item.badge}
           </span>
         )}
         {hasChildren && (
-          <span className="text-neutral-500">
+          <span className="text-theme-tertiary">
             {isOpen || childActive ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -222,8 +222,8 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
               href={child.href}
               className={`block px-3 py-1.5 rounded text-sm transition-colors ${
                 pathname === child.href
-                  ? 'text-[#EC4899]'
-                  : 'text-neutral-500 hover:text-white'
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-theme-tertiary hover:text-theme-primary'
               }`}
             >
               {child.label}
@@ -248,14 +248,14 @@ export function TeamlySidebar() {
   });
 
   return (
-    <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full" suppressHydrationWarning>
+    <aside className="w-64 bg-theme-surface border-r border-theme flex flex-col h-full" suppressHydrationWarning>
       {/* Header */}
-      <div className="p-4 bg-black dark:bg-neutral-900 border-b border-neutral-800">
+      <div className="p-4 bg-theme-surface border-b border-theme">
         <Link href="/dashboard/people" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center">
             <Users className="w-5 h-5 text-white" />
           </div>
-          <span className="text-lg font-bold text-white" suppressHydrationWarning>
+          <span className="text-lg font-bold text-theme-primary" suppressHydrationWarning>
             {APP_NAME}
           </span>
         </Link>
@@ -269,15 +269,15 @@ export function TeamlySidebar() {
       </nav>
 
       {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-neutral-800">
+      <div className="p-4 border-t border-theme">
         <Link
           href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:bg-neutral-800 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-theme-secondary hover:bg-theme-button-hover hover:text-theme-primary transition-colors"
         >
           <UserCircle className="w-5 h-5" />
           <div className="flex-1 min-w-0">
-            <p className="truncate text-white">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-neutral-500">{profile?.position_title || 'Employee'}</p>
+            <p className="truncate text-theme-primary">{profile?.full_name || 'My Profile'}</p>
+            <p className="truncate text-xs text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
           </div>
         </Link>
       </div>

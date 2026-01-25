@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CalendarWidget from "@/components/dashboard/CalendarWidget";
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
 import AlertsFeed from "@/components/dashboard/AlertsFeed";
 import EmergencyBreakdowns from "@/components/dashboard/EmergencyBreakdowns";
@@ -43,8 +42,7 @@ export default function DashboardHomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Calendar Widget - Compact 7-day view */}
-            <CalendarWidget />
+            {/* Calendar moved to slide-in panel - accessible via middle-right button */}
             
             {/* Compliance Metrics - More compact */}
             <ComplianceMetricsWidget />

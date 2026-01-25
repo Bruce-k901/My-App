@@ -4,66 +4,97 @@
 -- based on hours allocated and forecasted sales
 -- =============================================
 
--- Create rota_day_approvals table
-CREATE TABLE IF NOT EXISTS public.rota_day_approvals (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  rota_id UUID NOT NULL REFERENCES public.rotas(id) ON DELETE CASCADE,
-  approval_date DATE NOT NULL,
+-- This migration only runs if rotas table exists
+DO $$
+BEGIN
+  -- Check if rotas table exists - exit early if it doesn't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'rotas'
+  ) THEN
+    RAISE NOTICE 'rotas table does not exist - skipping rota_day_approvals migration';
+    RETURN;
+  END IF;
   
-  -- Approval details
-  status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'needs_review')),
-  approved_by UUID REFERENCES public.profiles(id),
-  approved_at TIMESTAMPTZ,
-  
-  -- Review metrics
-  hours_allocated DECIMAL(10, 2) NOT NULL DEFAULT 0,
-  forecasted_sales DECIMAL(12, 2), -- in pence
-  recommended_hours DECIMAL(10, 2),
-  
-  -- Feedback
-  rejection_reason TEXT,
-  notes TEXT,
-  
-  -- Metadata
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
-  -- Ensure one approval record per day per rota
-  UNIQUE(rota_id, approval_date)
-);
+  RAISE NOTICE 'rotas table found - proceeding with rota_day_approvals migration';
+END $$;
 
--- Create indexes
-CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_rota_id ON public.rota_day_approvals(rota_id);
-CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_date ON public.rota_day_approvals(approval_date);
-CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_status ON public.rota_day_approvals(status);
+-- Only proceed if rotas table exists (checked above)
+DO $$
+BEGIN
+  -- Check if rotas table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'rotas'
+  ) THEN
+    RETURN;
+  END IF;
 
--- Enable RLS
-ALTER TABLE public.rota_day_approvals ENABLE ROW LEVEL SECURITY;
+  -- Create rota_day_approvals table using dynamic SQL to avoid parse-time FK validation
+  EXECUTE $sql_table$
+    CREATE TABLE IF NOT EXISTS public.rota_day_approvals (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      rota_id UUID NOT NULL REFERENCES public.rotas(id) ON DELETE CASCADE,
+      approval_date DATE NOT NULL,
+      
+      -- Approval details
+      status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'needs_review')),
+      approved_by UUID REFERENCES public.profiles(id),
+      approved_at TIMESTAMPTZ,
+      
+      -- Review metrics
+      hours_allocated DECIMAL(10, 2) NOT NULL DEFAULT 0,
+      forecasted_sales DECIMAL(12, 2), -- in pence
+      recommended_hours DECIMAL(10, 2),
+      
+      -- Feedback
+      rejection_reason TEXT,
+      notes TEXT,
+      
+      -- Metadata
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      
+      -- Ensure one approval record per day per rota
+      UNIQUE(rota_id, approval_date)
+    );
+  $sql_table$;
 
--- RLS Policies
--- Managers can view approvals for their company's rotas
-CREATE POLICY "Managers can view day approvals" ON public.rota_day_approvals
+  -- Create indexes
+  CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_rota_id ON public.rota_day_approvals(rota_id);
+  CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_date ON public.rota_day_approvals(approval_date);
+  CREATE INDEX IF NOT EXISTS idx_rota_day_approvals_status ON public.rota_day_approvals(status);
+
+  -- Enable RLS
+  ALTER TABLE public.rota_day_approvals ENABLE ROW LEVEL SECURITY;
+
+  -- RLS Policies
+  -- Managers can view approvals for their company's rotas
+  DROP POLICY IF EXISTS "Managers can view day approvals" ON public.rota_day_approvals;
+  CREATE POLICY "Managers can view day approvals" ON public.rota_day_approvals
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.rotas r
       WHERE r.id = rota_day_approvals.rota_id
       AND r.company_id = public.get_user_company_id()
     )
-  );
+    );
 
--- Senior managers (admin, owner, area_manager, ops_manager) can manage approvals
-CREATE POLICY "Senior managers can manage day approvals" ON public.rota_day_approvals
+  -- Senior managers (admin, owner, area_manager, ops_manager) can manage approvals
+  DROP POLICY IF EXISTS "Senior managers can manage day approvals" ON public.rota_day_approvals;
+  CREATE POLICY "Senior managers can manage day approvals" ON public.rota_day_approvals
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM public.rotas r
       WHERE r.id = rota_day_approvals.rota_id
       AND r.company_id = public.get_user_company_id()
       AND public.normalize_role(public.get_user_role()) IN ('admin', 'owner', 'area_manager', 'ops_manager')
-    )
-  );
+      )
+    );
 
--- Function to approve a day
-CREATE OR REPLACE FUNCTION public.approve_rota_day(
+  -- Function to approve a day
+  EXECUTE $sql1$
+    CREATE OR REPLACE FUNCTION public.approve_rota_day(
   p_rota_id UUID,
   p_approval_date DATE,
   p_notes TEXT DEFAULT NULL
@@ -139,12 +170,14 @@ BEGIN
     forecasted_sales = v_forecast,
     notes = COALESCE(p_notes, rota_day_approvals.notes),
     rejection_reason = NULL,
-    updated_at = NOW();
-END;
-$func$;
+      updated_at = NOW();
+    END;
+    $func$;
+  $sql1$;
 
--- Function to reject a day
-CREATE OR REPLACE FUNCTION public.reject_rota_day(
+  -- Function to reject a day
+  EXECUTE $sql2$
+    CREATE OR REPLACE FUNCTION public.reject_rota_day(
   p_rota_id UUID,
   p_approval_date DATE,
   p_rejection_reason TEXT,
@@ -227,12 +260,14 @@ BEGIN
     forecasted_sales = v_forecast,
     rejection_reason = p_rejection_reason,
     notes = COALESCE(p_notes, rota_day_approvals.notes),
-    updated_at = NOW();
-END;
-$func$;
+      updated_at = NOW();
+    END;
+    $func$;
+  $sql2$;
 
--- Function to mark day as needs review
-CREATE OR REPLACE FUNCTION public.mark_rota_day_needs_review(
+  -- Function to mark day as needs review
+  EXECUTE $sql3$
+    CREATE OR REPLACE FUNCTION public.mark_rota_day_needs_review(
   p_rota_id UUID,
   p_approval_date DATE,
   p_notes TEXT DEFAULT NULL
@@ -304,17 +339,19 @@ BEGIN
     rejection_reason = NULL,
     approved_by = NULL,
     approved_at = NULL,
-    updated_at = NOW();
-END;
-$func$;
+      updated_at = NOW();
+    END;
+    $func$;
+  $sql3$;
 
--- Grant execute permissions
-GRANT EXECUTE ON FUNCTION public.approve_rota_day(UUID, DATE, TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.reject_rota_day(UUID, DATE, TEXT, TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.mark_rota_day_needs_review(UUID, DATE, TEXT) TO authenticated;
+  -- Grant execute permissions
+  GRANT EXECUTE ON FUNCTION public.approve_rota_day(UUID, DATE, TEXT) TO authenticated;
+  GRANT EXECUTE ON FUNCTION public.reject_rota_day(UUID, DATE, TEXT, TEXT) TO authenticated;
+  GRANT EXECUTE ON FUNCTION public.mark_rota_day_needs_review(UUID, DATE, TEXT) TO authenticated;
 
--- Trigger to auto-create pending approvals when rota is submitted for approval
-CREATE OR REPLACE FUNCTION public.auto_create_day_approvals()
+  -- Trigger to auto-create pending approvals when rota is submitted for approval
+  EXECUTE $sql4$
+    CREATE OR REPLACE FUNCTION public.auto_create_day_approvals()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $func$
@@ -366,33 +403,38 @@ BEGIN
     END LOOP;
   END IF;
   
-  RETURN NEW;
-END;
-$func$;
+      RETURN NEW;
+    END;
+    $func$;
+  $sql4$;
 
--- Create trigger
-DROP TRIGGER IF EXISTS trigger_auto_create_day_approvals ON public.rotas;
-CREATE TRIGGER trigger_auto_create_day_approvals
-  AFTER UPDATE OF status ON public.rotas
-  FOR EACH ROW
-  EXECUTE FUNCTION public.auto_create_day_approvals();
+  -- Create trigger
+  DROP TRIGGER IF EXISTS trigger_auto_create_day_approvals ON public.rotas;
+  CREATE TRIGGER trigger_auto_create_day_approvals
+    AFTER UPDATE OF status ON public.rotas
+    FOR EACH ROW
+    EXECUTE FUNCTION public.auto_create_day_approvals();
 
--- Trigger to update updated_at
-CREATE OR REPLACE FUNCTION public.update_rota_day_approvals_updated_at()
+  -- Trigger to update updated_at
+  EXECUTE $sql5$
+    CREATE OR REPLACE FUNCTION public.update_rota_day_approvals_updated_at()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $func$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$func$;
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $func$;
+  $sql5$;
 
-DROP TRIGGER IF EXISTS trigger_update_rota_day_approvals_updated_at ON public.rota_day_approvals;
-CREATE TRIGGER trigger_update_rota_day_approvals_updated_at
-  BEFORE UPDATE ON public.rota_day_approvals
-  FOR EACH ROW
-  EXECUTE FUNCTION public.update_rota_day_approvals_updated_at();
+  DROP TRIGGER IF EXISTS trigger_update_rota_day_approvals_updated_at ON public.rota_day_approvals;
+  CREATE TRIGGER trigger_update_rota_day_approvals_updated_at
+    BEFORE UPDATE ON public.rota_day_approvals
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_rota_day_approvals_updated_at();
 
-NOTIFY pgrst, 'reload schema';
+  NOTIFY pgrst, 'reload schema';
+
+END $$;
 

@@ -1,7 +1,23 @@
 -- General Settings table for company-wide configuration
 -- Uses UPSERT pattern: one row per company_id
 
-CREATE TABLE IF NOT EXISTS general_settings (
+-- This migration only runs if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist - exit early if they don't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+  ) THEN
+    RAISE NOTICE 'companies or profiles tables do not exist - skipping general_settings migration';
+    RETURN;
+  END IF;
+
+  EXECUTE $sql_table1$
+    CREATE TABLE IF NOT EXISTS general_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_id UUID NOT NULL UNIQUE REFERENCES companies(id) ON DELETE CASCADE,
   
@@ -39,157 +55,171 @@ CREATE TABLE IF NOT EXISTS general_settings (
   -- Fiscal Year
   fiscal_year_start_month INTEGER DEFAULT 4 CHECK (fiscal_year_start_month >= 1 AND fiscal_year_start_month <= 12),
   
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  $sql_table1$;
 
--- Index for faster lookups
-CREATE INDEX IF NOT EXISTS idx_general_settings_company_id ON general_settings(company_id);
+  -- Index for faster lookups
+  CREATE INDEX IF NOT EXISTS idx_general_settings_company_id ON general_settings(company_id);
 
--- Updated_at trigger
-CREATE OR REPLACE FUNCTION update_general_settings_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+  -- Updated_at trigger
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION update_general_settings_updated_at()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func1$;
 
-DROP TRIGGER IF EXISTS trg_general_settings_updated_at ON general_settings;
-CREATE TRIGGER trg_general_settings_updated_at
-  BEFORE UPDATE ON general_settings
-  FOR EACH ROW
-  EXECUTE FUNCTION update_general_settings_updated_at();
+  -- Create trigger only if table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'general_settings') THEN
+    DROP TRIGGER IF EXISTS trg_general_settings_updated_at ON general_settings;
+    CREATE TRIGGER trg_general_settings_updated_at
+      BEFORE UPDATE ON general_settings
+      FOR EACH ROW
+      EXECUTE FUNCTION update_general_settings_updated_at();
+  END IF;
 
--- Enable RLS
-ALTER TABLE general_settings ENABLE ROW LEVEL SECURITY;
+  -- Enable RLS
+  ALTER TABLE general_settings ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies: Users can only access their company's settings
-DROP POLICY IF EXISTS general_settings_select_company ON general_settings;
-CREATE POLICY general_settings_select_company
-  ON general_settings FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = general_settings.company_id
+  -- RLS Policies: Users can only access their company's settings
+  DROP POLICY IF EXISTS general_settings_select_company ON general_settings;
+  CREATE POLICY general_settings_select_company
+    ON general_settings FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = general_settings.company_id
+      )
+    );
+
+  DROP POLICY IF EXISTS general_settings_insert_company ON general_settings;
+  CREATE POLICY general_settings_insert_company
+    ON general_settings FOR INSERT
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = general_settings.company_id
+      )
+    );
+
+  DROP POLICY IF EXISTS general_settings_update_company ON general_settings;
+  CREATE POLICY general_settings_update_company
+    ON general_settings FOR UPDATE
+    USING (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = general_settings.company_id
+      )
     )
-  );
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = general_settings.company_id
+      )
+    );
 
-DROP POLICY IF EXISTS general_settings_insert_company ON general_settings;
-CREATE POLICY general_settings_insert_company
-  ON general_settings FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = general_settings.company_id
+  -- Company-wide planned closures table (similar to site_closures)
+  EXECUTE $sql_table2$
+    CREATE TABLE IF NOT EXISTS company_closures (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      closure_start DATE NOT NULL,
+      closure_end DATE NOT NULL,
+      notes TEXT,
+      is_active BOOLEAN DEFAULT true,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      CONSTRAINT company_closures_date_range CHECK (closure_end >= closure_start)
+    );
+  $sql_table2$;
+
+  -- Index for faster lookups
+  CREATE INDEX IF NOT EXISTS idx_company_closures_company_id ON company_closures(company_id);
+  CREATE INDEX IF NOT EXISTS idx_company_closures_dates ON company_closures(closure_start, closure_end);
+  CREATE INDEX IF NOT EXISTS idx_company_closures_active ON company_closures(company_id, is_active) WHERE is_active = true;
+
+  -- Updated_at trigger for company_closures
+  EXECUTE $sql_func2$
+    CREATE OR REPLACE FUNCTION update_company_closures_updated_at()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func2$;
+
+  -- Create trigger only if table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_closures') THEN
+    DROP TRIGGER IF EXISTS trg_company_closures_updated_at ON company_closures;
+    CREATE TRIGGER trg_company_closures_updated_at
+      BEFORE UPDATE ON company_closures
+      FOR EACH ROW
+      EXECUTE FUNCTION update_company_closures_updated_at();
+  END IF;
+
+  -- Enable RLS for company_closures
+  ALTER TABLE company_closures ENABLE ROW LEVEL SECURITY;
+
+  -- RLS Policies: Users can only access their company's closures
+  DROP POLICY IF EXISTS company_closures_select_company ON company_closures;
+  CREATE POLICY company_closures_select_company
+    ON company_closures FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = company_closures.company_id
+      )
+    );
+
+  DROP POLICY IF EXISTS company_closures_insert_company ON company_closures;
+  CREATE POLICY company_closures_insert_company
+    ON company_closures FOR INSERT
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = company_closures.company_id
+      )
+    );
+
+  DROP POLICY IF EXISTS company_closures_update_company ON company_closures;
+  CREATE POLICY company_closures_update_company
+    ON company_closures FOR UPDATE
+    USING (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = company_closures.company_id
+      )
     )
-  );
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = company_closures.company_id
+      )
+    );
 
-DROP POLICY IF EXISTS general_settings_update_company ON general_settings;
-CREATE POLICY general_settings_update_company
-  ON general_settings FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = general_settings.company_id
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = general_settings.company_id
-    )
-  );
+  DROP POLICY IF EXISTS company_closures_delete_company ON company_closures;
+  CREATE POLICY company_closures_delete_company
+    ON company_closures FOR DELETE
+    USING (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.company_id = company_closures.company_id
+      )
+    );
 
--- Company-wide planned closures table (similar to site_closures)
-CREATE TABLE IF NOT EXISTS company_closures (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-  closure_start DATE NOT NULL,
-  closure_end DATE NOT NULL,
-  notes TEXT,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT company_closures_date_range CHECK (closure_end >= closure_start)
-);
-
--- Index for faster lookups
-CREATE INDEX IF NOT EXISTS idx_company_closures_company_id ON company_closures(company_id);
-CREATE INDEX IF NOT EXISTS idx_company_closures_dates ON company_closures(closure_start, closure_end);
-CREATE INDEX IF NOT EXISTS idx_company_closures_active ON company_closures(company_id, is_active) WHERE is_active = true;
-
--- Updated_at trigger for company_closures
-CREATE OR REPLACE FUNCTION update_company_closures_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trg_company_closures_updated_at ON company_closures;
-CREATE TRIGGER trg_company_closures_updated_at
-  BEFORE UPDATE ON company_closures
-  FOR EACH ROW
-  EXECUTE FUNCTION update_company_closures_updated_at();
-
--- Enable RLS for company_closures
-ALTER TABLE company_closures ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies: Users can only access their company's closures
-DROP POLICY IF EXISTS company_closures_select_company ON company_closures;
-CREATE POLICY company_closures_select_company
-  ON company_closures FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = company_closures.company_id
-    )
-  );
-
-DROP POLICY IF EXISTS company_closures_insert_company ON company_closures;
-CREATE POLICY company_closures_insert_company
-  ON company_closures FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = company_closures.company_id
-    )
-  );
-
-DROP POLICY IF EXISTS company_closures_update_company ON company_closures;
-CREATE POLICY company_closures_update_company
-  ON company_closures FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = company_closures.company_id
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = company_closures.company_id
-    )
-  );
-
-DROP POLICY IF EXISTS company_closures_delete_company ON company_closures;
-CREATE POLICY company_closures_delete_company
-  ON company_closures FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-        AND profiles.company_id = company_closures.company_id
-    )
-  );
-
+END $$;

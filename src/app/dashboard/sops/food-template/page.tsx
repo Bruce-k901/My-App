@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2, FileText } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2, FileText, GripVertical } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -10,6 +10,23 @@ import BackButton from '@/components/ui/BackButton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getVersioningInfo, createVersionPayload } from '@/lib/utils/sopVersioning';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const COLOUR_CODES = [
   "Red – Raw Meat",
@@ -33,6 +50,190 @@ const UNIT_OPTIONS = [
   "ml", "L", "cup",
   "tsp", "tbsp", "pcs"
 ];
+
+// Sortable Process Step Component
+function SortableStepItem({ 
+  step, 
+  index, 
+  processSteps, 
+  updateProcessStep, 
+  removeProcessStep, 
+  photoInputRefs, 
+  uploadingPhotos, 
+  handlePhotoUpload, 
+  handleRemovePhoto 
+}: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: step.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`p-4 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 rounded-lg border ${
+        isDragging 
+          ? 'border-magenta-500/60 shadow-lg' 
+          : 'border-[rgb(var(--border))] dark:border-neutral-600'
+      }`}
+    >
+      <div className="flex items-center gap-3 mb-3">
+        {/* Drag Handle - More Visible */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1.5 rounded hover:bg-magenta-500/20 dark:hover:bg-magenta-500/20 transition-colors touch-none"
+          title="Drag to reorder"
+        >
+          <GripVertical 
+            size={22} 
+            className="text-magenta-400 dark:text-magenta-400 opacity-80 hover:opacity-100" 
+            strokeWidth={2.5}
+          />
+        </div>
+
+        {/* Editable Step Title */}
+        <input
+          type="text"
+          value={step.title || ''}
+          onChange={(e) => updateProcessStep(step.id, 'title', e.target.value)}
+          placeholder={`Step ${index + 1}`}
+          className="flex-1 bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-1.5 text-sm font-semibold text-magenta-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 placeholder:text-magenta-400/60"
+        />
+
+        {/* Delete Button */}
+        <button
+          onClick={() => removeProcessStep(step.id)}
+          disabled={processSteps.length === 1}
+          className="text-red-400 hover:text-red-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          title="Remove step"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        <textarea
+          value={step.description}
+          onChange={(e) => updateProcessStep(step.id, 'description', e.target.value)}
+          className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
+          placeholder="Describe this step in detail..."
+          rows={2}
+        />
+
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Temperature (°C)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              pattern="-?[0-9]*\.?[0-9]*"
+              value={step.temperature}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Allow negative numbers, decimals, and empty string
+                if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                  updateProcessStep(step.id, 'temperature', value);
+                }
+              }}
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
+              placeholder="Optional"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Duration</label>
+            <input
+              value={step.duration}
+              onChange={(e) => updateProcessStep(step.id, 'duration', e.target.value)}
+              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
+              placeholder="e.g., 15 min"
+            />
+          </div>
+          <div className="flex items-end">
+            <label className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={step.is_ccp}
+                onChange={(e) => updateProcessStep(step.id, 'is_ccp', e.target.checked)}
+                className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900"
+              />
+              Critical Control Point
+            </label>
+          </div>
+        </div>
+
+        <input
+          value={step.haccp_note}
+          onChange={(e) => updateProcessStep(step.id, 'haccp_note', e.target.value)}
+          className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
+          placeholder="HACCP notes (optional)"
+        />
+
+        {/* Photo Upload Section */}
+        <div className="mt-3 pt-3 border-t border-[rgb(var(--border))] dark:border-neutral-700">
+          <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-2">Process Photo</label>
+          {step.photo_url ? (
+            <div className="relative inline-block">
+              <img 
+                src={step.photo_url} 
+                alt="Process step photo" 
+                className="w-32 h-32 object-cover rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600"
+              />
+              <button
+                onClick={() => handleRemovePhoto(step.id, step.photo_url)}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-[rgb(var(--text-primary))] dark:text-white"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <input
+                ref={el => photoInputRefs.current[step.id] = el}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handlePhotoUpload(file, step.id);
+                }}
+                className="hidden"
+              />
+              <button
+                onClick={() => photoInputRefs.current[step.id]?.click()}
+                disabled={uploadingPhotos[step.id]}
+                className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-primary))] text-sm transition-colors disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white"
+              >
+                {uploadingPhotos[step.id] ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload size={16} />
+                    Upload Photo
+                  </>
+                )}
+              </button>
+              <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500">Max 5MB, JPEG/PNG/WebP</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function FoodSOPTemplatePageContent() {
   const { profile, companyId } = useAppContext();
@@ -75,7 +276,7 @@ function FoodSOPTemplatePageContent() {
 
   // Process steps state
   const [processSteps, setProcessSteps] = useState([
-    { id: Date.now(), description: "", temperature: "", duration: "", haccp_note: "", is_ccp: false, photo_url: "" }
+    { id: Date.now(), title: "", description: "", temperature: "", duration: "", haccp_note: "", is_ccp: false, photo_url: "" }
   ]);
 
   // Photo upload refs and state
@@ -729,6 +930,7 @@ function FoodSOPTemplatePageContent() {
   const addProcessStep = () => {
     setProcessSteps([...processSteps, { 
       id: Date.now(), 
+      title: "", 
       description: "", 
       temperature: "", 
       duration: "", 
@@ -744,6 +946,26 @@ function FoodSOPTemplatePageContent() {
 
   const updateProcessStep = (id, field, value) => {
     setProcessSteps(processSteps.map(step => step.id === id ? { ...step, [field]: value } : step));
+  };
+
+  // Drag and drop handlers for process steps
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setProcessSteps((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   // Photo upload helpers
@@ -1353,134 +1575,37 @@ function FoodSOPTemplatePageContent() {
       <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-neutral-700">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Process Steps</h2>
         <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-4">
-          Break down the process into clear, numbered steps. Include HACCP critical control points where applicable
+          Break down the process into clear, numbered steps. Include HACCP critical control points where applicable. 
+          <span className="block mt-1 text-magenta-400/80">💡 Drag steps to reorder • Click step title to rename</span>
         </p>
 
-        <div className="space-y-3">
-          {processSteps.map((step, index) => (
-            <div key={step.id} className="p-4 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-magenta-400">Step {index + 1}</span>
-                <button
-                  onClick={() => removeProcessStep(step.id)}
-                  disabled={processSteps.length === 1}
-                  className="text-red-400 hover:text-red-300 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <textarea
-                  value={step.description}
-                  onChange={(e) => updateProcessStep(step.id, 'description', e.target.value)}
-                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
-                  placeholder="Describe this step in detail..."
-                  rows={2}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={processSteps.map(step => step.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-3">
+              {processSteps.map((step, index) => (
+                <SortableStepItem
+                  key={step.id}
+                  step={step}
+                  index={index}
+                  processSteps={processSteps}
+                  updateProcessStep={updateProcessStep}
+                  removeProcessStep={removeProcessStep}
+                  photoInputRefs={photoInputRefs}
+                  uploadingPhotos={uploadingPhotos}
+                  handlePhotoUpload={handlePhotoUpload}
+                  handleRemovePhoto={handleRemovePhoto}
                 />
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Temperature (°C)</label>
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      pattern="-?[0-9]*\.?[0-9]*"
-                      value={step.temperature}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Allow negative numbers, decimals, and empty string
-                        if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
-                          updateProcessStep(step.id, 'temperature', value);
-                        }
-                      }}
-                      className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
-                      placeholder="Optional"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-1">Duration</label>
-                    <input
-                      value={step.duration}
-                      onChange={(e) => updateProcessStep(step.id, 'duration', e.target.value)}
-                      className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
-                      placeholder="e.g., 15 min"
-                    />
-                  </div>
-                  <div className="flex items-end">
-                    <label className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={step.is_ccp}
-                        onChange={(e) => updateProcessStep(step.id, 'is_ccp', e.target.checked)}
-                        className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900"
-                      />
-                      Critical Control Point
-                    </label>
-                  </div>
-                </div>
-
-                <input
-                  value={step.haccp_note}
-                  onChange={(e) => updateProcessStep(step.id, 'haccp_note', e.target.value)}
-                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-neutral-500"
-                  placeholder="HACCP notes (optional)"
-                />
-
-                {/* Photo Upload Section */}
-                <div className="mt-3 pt-3 border-t border-[rgb(var(--border))] dark:border-neutral-700">
-                  <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400 mb-2">Process Photo</label>
-                  {step.photo_url ? (
-                    <div className="relative inline-block">
-                      <img 
-                        src={step.photo_url} 
-                        alt="Process step photo" 
-                        className="w-32 h-32 object-cover rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600"
-                      />
-                      <button
-                        onClick={() => handleRemovePhoto(step.id, step.photo_url)}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-[rgb(var(--text-primary))] dark:text-white"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <input
-                        ref={el => photoInputRefs.current[step.id] = el}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handlePhotoUpload(file, step.id);
-                        }}
-                        className="hidden"
-                      />
-                      <button
-                        onClick={() => photoInputRefs.current[step.id]?.click()}
-                        disabled={uploadingPhotos[step.id]}
-                        className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-primary))] text-sm transition-colors disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white"
-                      >
-                        {uploadingPhotos[step.id] ? (
-                          <>
-                            <Loader2 size={16} className="animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <Upload size={16} />
-                            Upload Photo
-                          </>
-                        )}
-                      </button>
-                      <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500">Max 5MB, JPEG/PNG/WebP</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
 
         <button
           onClick={addProcessStep}

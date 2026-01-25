@@ -13,8 +13,21 @@ DECLARE
   new_sku TEXT;
   sku_counter INT := 0;
 BEGIN
+  -- Check if companies table exists (required for all backfills)
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) THEN
+    RAISE NOTICE 'companies table does not exist - skipping all SKU backfills';
+    RETURN;
+  END IF;
+
   -- Backfill SKUs for ingredients_library
-  FOR rec IN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ingredients_library'
+  ) THEN
+    FOR rec IN 
     SELECT 
       il.id,
       il.ingredient_name,
@@ -80,14 +93,21 @@ BEGIN
     SET sku = new_sku
     WHERE id = rec.id;
     
-    sku_counter := sku_counter + 1;
-  END LOOP;
-  
-  RAISE NOTICE 'Backfilled % SKUs for ingredients_library', sku_counter;
+      sku_counter := sku_counter + 1;
+    END LOOP;
+    
+    RAISE NOTICE 'Backfilled % SKUs for ingredients_library', sku_counter;
+  ELSE
+    RAISE NOTICE 'ingredients_library table does not exist - skipping';
+  END IF;
   sku_counter := 0;
   
   -- Backfill SKUs for ppe_library
-  FOR rec IN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'ppe_library'
+  ) THEN
+    FOR rec IN 
     SELECT 
       pl.id,
       pl.item_name,
@@ -147,14 +167,21 @@ BEGIN
     SET sku = new_sku
     WHERE id = rec.id;
     
-    sku_counter := sku_counter + 1;
-  END LOOP;
-  
-  RAISE NOTICE 'Backfilled % SKUs for ppe_library', sku_counter;
+      sku_counter := sku_counter + 1;
+    END LOOP;
+    
+    RAISE NOTICE 'Backfilled % SKUs for ppe_library', sku_counter;
+  ELSE
+    RAISE NOTICE 'ppe_library table does not exist - skipping';
+  END IF;
   sku_counter := 0;
   
   -- Backfill SKUs for chemicals_library
-  FOR rec IN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'chemicals_library'
+  ) THEN
+    FOR rec IN 
     SELECT 
       cl.id,
       cl.product_name,
@@ -214,14 +241,21 @@ BEGIN
     SET sku = new_sku
     WHERE id = rec.id;
     
-    sku_counter := sku_counter + 1;
-  END LOOP;
-  
-  RAISE NOTICE 'Backfilled % SKUs for chemicals_library', sku_counter;
+      sku_counter := sku_counter + 1;
+    END LOOP;
+    
+    RAISE NOTICE 'Backfilled % SKUs for chemicals_library', sku_counter;
+  ELSE
+    RAISE NOTICE 'chemicals_library table does not exist - skipping';
+  END IF;
   sku_counter := 0;
   
   -- Backfill SKUs for disposables_library
-  FOR rec IN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'disposables_library'
+  ) THEN
+    FOR rec IN 
     SELECT 
       dl.id,
       dl.item_name,
@@ -281,14 +315,21 @@ BEGIN
     SET sku = new_sku
     WHERE id = rec.id;
     
-    sku_counter := sku_counter + 1;
-  END LOOP;
-  
-  RAISE NOTICE 'Backfilled % SKUs for disposables_library', sku_counter;
+      sku_counter := sku_counter + 1;
+    END LOOP;
+    
+    RAISE NOTICE 'Backfilled % SKUs for disposables_library', sku_counter;
+  ELSE
+    RAISE NOTICE 'disposables_library table does not exist - skipping';
+  END IF;
   sku_counter := 0;
   
   -- Backfill SKUs for first_aid_supplies_library
-  FOR rec IN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'first_aid_supplies_library'
+  ) THEN
+    FOR rec IN 
     SELECT 
       fal.id,
       fal.item_name,
@@ -348,14 +389,20 @@ BEGIN
     SET sku = new_sku
     WHERE id = rec.id;
     
-    sku_counter := sku_counter + 1;
-  END LOOP;
-  
-  RAISE NOTICE 'Backfilled % SKUs for first_aid_supplies_library', sku_counter;
+      sku_counter := sku_counter + 1;
+    END LOOP;
+    
+    RAISE NOTICE 'Backfilled % SKUs for first_aid_supplies_library', sku_counter;
+  ELSE
+    RAISE NOTICE 'first_aid_supplies_library table does not exist - skipping';
+  END IF;
   sku_counter := 0;
   
-  -- Backfill SKUs for packaging_library (only if sku column exists)
+  -- Backfill SKUs for packaging_library (only if table and sku column exist)
   IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'packaging_library'
+  ) AND EXISTS (
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'public' 
     AND table_name = 'packaging_library' 
@@ -372,55 +419,55 @@ BEGIN
       WHERE pkl.sku IS NULL OR pkl.sku = ''
       ORDER BY pkl.company_id, pkl.item_name
     LOOP
-    company_prefix := UPPER(REGEXP_REPLACE(rec.company_name, '[^a-zA-Z0-9]', '', 'g'));
-    IF LENGTH(company_prefix) = 0 THEN
-      company_prefix := 'XXX';
-    ELSIF LENGTH(company_prefix) > 3 THEN
-      company_prefix := SUBSTRING(company_prefix, 1, 3);
-    END IF;
-    
-    item_prefix := UPPER(REGEXP_REPLACE(rec.item_name, '[^a-zA-Z0-9]', '', 'g'));
-    IF LENGTH(item_prefix) = 0 THEN
-      item_prefix := 'XXX';
-    ELSIF LENGTH(item_prefix) > 3 THEN
-      item_prefix := SUBSTRING(item_prefix, 1, 3);
-    END IF;
-    
-    base_sku := company_prefix || '-' || item_prefix || '-';
-    
-    SELECT ARRAY_AGG(sku)
-    INTO existing_skus
-    FROM public.packaging_library
-    WHERE company_id = (SELECT company_id FROM public.packaging_library WHERE id = rec.id)
-      AND sku IS NOT NULL
-      AND sku LIKE base_sku || '%';
-    
-    next_num := 1;
-    IF existing_skus IS NOT NULL THEN
-      FOR i IN 1..array_length(existing_skus, 1) LOOP
-        DECLARE
-          num_str TEXT;
-          num_val INT;
-        BEGIN
-          num_str := SUBSTRING(existing_skus[i] FROM base_sku || '([0-9]{3})$');
-          IF num_str IS NOT NULL THEN
-            num_val := num_str::INT;
-            IF num_val = next_num THEN
-              next_num := next_num + 1;
-            ELSIF num_val > next_num THEN
-              EXIT;
+      company_prefix := UPPER(REGEXP_REPLACE(rec.company_name, '[^a-zA-Z0-9]', '', 'g'));
+      IF LENGTH(company_prefix) = 0 THEN
+        company_prefix := 'XXX';
+      ELSIF LENGTH(company_prefix) > 3 THEN
+        company_prefix := SUBSTRING(company_prefix, 1, 3);
+      END IF;
+      
+      item_prefix := UPPER(REGEXP_REPLACE(rec.item_name, '[^a-zA-Z0-9]', '', 'g'));
+      IF LENGTH(item_prefix) = 0 THEN
+        item_prefix := 'XXX';
+      ELSIF LENGTH(item_prefix) > 3 THEN
+        item_prefix := SUBSTRING(item_prefix, 1, 3);
+      END IF;
+      
+      base_sku := company_prefix || '-' || item_prefix || '-';
+      
+      SELECT ARRAY_AGG(sku)
+      INTO existing_skus
+      FROM public.packaging_library
+      WHERE company_id = (SELECT company_id FROM public.packaging_library WHERE id = rec.id)
+        AND sku IS NOT NULL
+        AND sku LIKE base_sku || '%';
+      
+      next_num := 1;
+      IF existing_skus IS NOT NULL THEN
+        FOR i IN 1..array_length(existing_skus, 1) LOOP
+          DECLARE
+            num_str TEXT;
+            num_val INT;
+          BEGIN
+            num_str := SUBSTRING(existing_skus[i] FROM base_sku || '([0-9]{3})$');
+            IF num_str IS NOT NULL THEN
+              num_val := num_str::INT;
+              IF num_val = next_num THEN
+                next_num := next_num + 1;
+              ELSIF num_val > next_num THEN
+                EXIT;
+              END IF;
             END IF;
-          END IF;
-        END;
-      END LOOP;
-    END IF;
-    
-    new_sku := base_sku || LPAD(next_num::TEXT, 3, '0');
-    
-    UPDATE public.packaging_library
-    SET sku = new_sku
-    WHERE id = rec.id;
-    
+          END;
+        END LOOP;
+      END IF;
+      
+      new_sku := base_sku || LPAD(next_num::TEXT, 3, '0');
+      
+      UPDATE public.packaging_library
+      SET sku = new_sku
+      WHERE id = rec.id;
+      
       sku_counter := sku_counter + 1;
     END LOOP;
     

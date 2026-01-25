@@ -39,14 +39,14 @@
   .dark .text-theme-primary {
     color: rgb(var(--text-primary));
   }
-  
+
   .text-theme-secondary {
     color: rgb(var(--text-secondary));
   }
   .dark .text-theme-secondary {
     color: rgb(var(--text-secondary));
   }
-  
+
   .text-theme-tertiary {
     color: rgb(var(--text-tertiary));
   }
@@ -61,7 +61,7 @@
   .dark .bg-theme-surface {
     background-color: rgb(var(--surface));
   }
-  
+
   .bg-theme-surface-elevated {
     background-color: rgb(var(--surface-elevated));
   }
@@ -76,7 +76,7 @@
   .dark .border-theme {
     border-color: rgb(var(--border));
   }
-  
+
   .border-theme-hover {
     border-color: rgb(var(--border-hover));
   }
@@ -91,7 +91,7 @@
   .dark .bg-theme-button {
     background-color: rgba(255, 255, 255, 0.03);
   }
-  
+
   .bg-theme-button-hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
@@ -130,7 +130,7 @@ select {
 
 select:focus {
   outline: none;
-  border-color: #EC4899;
+  border-color: #ec4899;
   box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.5);
 }
 
@@ -147,7 +147,7 @@ select option {
 }
 
 .dark select option {
-  background-color: #0B0D13 !important;
+  background-color: #0b0d13 !important;
   color: white !important;
 }
 
@@ -158,7 +158,7 @@ select option {
     color: rgb(var(--text-primary));
   }
   .dark select option {
-    background-color: #0B0D13;
+    background-color: #0b0d13;
     color: white;
   }
 }
@@ -431,10 +431,12 @@ select option {
 
 body {
   @apply font-sans;
-  font-family: var(--font-poppins), 'Poppins', 'Century Gothic', system-ui, sans-serif;
+  font-family: var(--font-poppins), "Poppins", "Century Gothic", system-ui, sans-serif;
   color: rgb(var(--text-primary));
   background: rgb(var(--background));
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Dark mode body background (radial gradient) */
@@ -475,7 +477,7 @@ html {
 }
 
 .stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #10B981;
+  background: #10b981;
   border-radius: 4px;
 }
 
@@ -486,7 +488,7 @@ html {
 /* Firefox scrollbar for Stockly sidebar */
 .stockly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #10B981 transparent;
+  scrollbar-color: #10b981 transparent;
 }
 
 /* Stockly Pages - Emerald Green Scrollbar for main content */
@@ -524,7 +526,7 @@ html {
 }
 
 .order-book-scrollbar::-webkit-scrollbar-thumb {
-  background: #10B981;
+  background: #10b981;
   border-radius: 4px;
 }
 
@@ -535,7 +537,7 @@ html {
 /* Firefox scrollbar for Order Book */
 .order-book-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #10B981 transparent;
+  scrollbar-color: #10b981 transparent;
 }
 
 /* Prevent body scrolling on dashboard pages - app-like experience */
@@ -760,7 +762,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .checkly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #EC4899;
+  background: #ec4899;
   border-radius: 4px;
 }
 .checkly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -768,7 +770,7 @@ body:has(.marketing-page) .global-footer {
 }
 .checkly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #EC4899 transparent;
+  scrollbar-color: #ec4899 transparent;
 }
 
 .checkly-page-scrollbar::-webkit-scrollbar {
@@ -797,7 +799,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #10B981;
+  background: #10b981;
   border-radius: 4px;
 }
 .stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -805,7 +807,7 @@ body:has(.marketing-page) .global-footer {
 }
 .stockly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #10B981 transparent;
+  scrollbar-color: #10b981 transparent;
 }
 
 .stockly-page-scrollbar::-webkit-scrollbar {
@@ -834,7 +836,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .teamly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #2563EB;
+  background: #2563eb;
   border-radius: 4px;
 }
 .teamly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -842,7 +844,7 @@ body:has(.marketing-page) .global-footer {
 }
 .teamly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #2563EB transparent;
+  scrollbar-color: #2563eb transparent;
 }
 
 .teamly-page-scrollbar::-webkit-scrollbar {
@@ -871,7 +873,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .assetly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #0284C7;
+  background: #0284c7;
   border-radius: 4px;
 }
 .assetly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -879,7 +881,7 @@ body:has(.marketing-page) .global-footer {
 }
 .assetly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #0284C7 transparent;
+  scrollbar-color: #0284c7 transparent;
 }
 
 .assetly-page-scrollbar::-webkit-scrollbar {
@@ -908,7 +910,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .planly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #14B8A6;
+  background: #14b8a6;
   border-radius: 4px;
 }
 .planly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -916,7 +918,7 @@ body:has(.marketing-page) .global-footer {
 }
 .planly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #14B8A6 transparent;
+  scrollbar-color: #14b8a6 transparent;
 }
 
 .planly-page-scrollbar::-webkit-scrollbar {
@@ -945,7 +947,7 @@ body:has(.marketing-page) .global-footer {
   background: transparent;
 }
 .forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #7C3AED;
+  background: #7c3aed;
   border-radius: 4px;
 }
 .forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -953,7 +955,7 @@ body:has(.marketing-page) .global-footer {
 }
 .forecastly-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #7C3AED transparent;
+  scrollbar-color: #7c3aed transparent;
 }
 
 .forecastly-page-scrollbar::-webkit-scrollbar {
@@ -1175,4 +1177,57 @@ input[type="number"] {
 
 .animate-slideInRight {
   animation: slideInRight 0.3s ease-out;
+}
+
+/* ----------------------------- */
+/* Planly Print Styles           */
+/* ----------------------------- */
+
+@media print {
+  /* Hide non-print elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print\:block {
+    display: block !important;
+  }
+
+  /* Reset page margins */
+  @page {
+    margin: 1cm;
+    size: A4 portrait;
+  }
+
+  /* Ensure tables don't break across pages */
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Section breaks */
+  .print-section {
+    page-break-after: auto;
+  }
+
+  /* Compact spacing for print */
+  .print-compact {
+    padding: 0.25rem !important;
+    margin: 0.25rem !important;
+  }
+
+  /* Delivery notes - 4 per A4 page */
+  .delivery-note-print {
+    width: 50%;
+    height: 50%;
+    float: left;
+    box-sizing: border-box;
+    padding: 0.5cm;
+    border: 1px solid #000;
+  }
+
+  /* Production worksheet print */
+  .production-worksheet-print {
+    page-break-after: always;
+  }
 }

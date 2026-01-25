@@ -710,8 +710,8 @@ export function ExpandableRecipeCard({
                 )}
               </div>
               <RecipeIngredientsTable
-                key={recipe.id} // Force remount when recipe changes
-                recipeId={recipe.id}
+                key={recipe.id || 'no-id'} // Force remount when recipe changes
+                recipeId={recipe.id || ''}
                 companyId={companyId}
                 isEditing={isEditing}
                 onRecipeUpdate={() => {

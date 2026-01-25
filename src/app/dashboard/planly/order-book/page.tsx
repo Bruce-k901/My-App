@@ -1,24 +1,40 @@
 "use client";
 
-import { Package } from 'lucide-react';
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { Calendar } from 'lucide-react';
+import { OrderBook } from '@/components/planly/orders/OrderBook';
+import { useAppContext } from '@/context/AppContext';
+import { Input } from '@/components/ui/Input';
 
 export default function OrderBookPage() {
+  const { siteId } = useAppContext();
+  const [deliveryDate, setDeliveryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
+  if (!siteId) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white/60">Please select a site</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Order Book</h1>
-        <p className="text-white/50 text-sm mt-1">
-          View and manage customer orders
-        </p>
+        <div className="flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-[#14B8A6]" />
+          <Input
+            type="date"
+            value={deliveryDate}
+            onChange={(e) => setDeliveryDate(e.target.value)}
+            className="bg-white/[0.03] border-white/[0.06] text-white"
+          />
+        </div>
       </div>
 
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-        <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-        <h3 className="text-white font-medium mb-2">Order Book</h3>
-        <p className="text-white/60 text-sm">
-          Order book view coming soon. This will show all customer orders with filtering and search.
-        </p>
-      </div>
+      <OrderBook deliveryDate={deliveryDate} siteId={siteId} />
     </div>
   );
 }

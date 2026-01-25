@@ -102,7 +102,8 @@ BEGIN
       RAISE NOTICE '⚠️ Creating public.stock_count_items table...';
       
       -- Create the table in public schema with correct columns
-      CREATE TABLE IF NOT EXISTS public.stock_count_items (
+      EXECUTE $sql_table1$
+        CREATE TABLE IF NOT EXISTS public.stock_count_items (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
         stock_count_id uuid NOT NULL,
         storage_area_id uuid,
@@ -126,7 +127,8 @@ BEGIN
         notes text,
         created_at timestamptz DEFAULT now(),
         UNIQUE(stock_count_id, ingredient_id)
-      );
+        );
+      $sql_table1$;
       
       -- Add foreign key to stock_counts - find the actual table (not view)
       -- Check if stockly.stock_counts is a table (this is the actual underlying table)
@@ -228,9 +230,17 @@ BEGIN
     END IF;
   END IF;
   
-  -- Step 7: Drop any problematic triggers/functions
-  DROP TRIGGER IF EXISTS stock_count_items_insert_trigger ON public.stock_count_items;
-  DROP TRIGGER IF EXISTS stock_count_items_update_trigger ON public.stock_count_items;
+  -- Step 7: Drop any problematic triggers/functions (only if table exists)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'stock_count_items'
+    AND table_type = 'BASE TABLE'
+  ) THEN
+    DROP TRIGGER IF EXISTS stock_count_items_insert_trigger ON public.stock_count_items;
+    DROP TRIGGER IF EXISTS stock_count_items_update_trigger ON public.stock_count_items;
+  END IF;
+  
+  -- Drop functions regardless (they might exist even if table doesn't)
   DROP FUNCTION IF EXISTS public.insert_stock_count_items() CASCADE;
   DROP FUNCTION IF EXISTS public.update_stock_count_items() CASCADE;
   

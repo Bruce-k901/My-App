@@ -11,8 +11,6 @@
 -- These serve as patterns for the cron to regenerate daily/weekly/monthly tasks
 -- ============================================================================
 
-BEGIN;
-
 -- Create Active Tasks from active templates for each company/site combination
 -- This restores the master task registry that the cron uses
 DO $$
@@ -24,6 +22,24 @@ DECLARE
   v_due_time TIME;
   v_daypart TEXT;
 BEGIN
+  -- Check if all required tables exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'task_templates'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'sites'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'Required tables (task_templates, companies, sites, checklist_tasks) do not exist - skipping active tasks restoration';
+    RETURN;
+  END IF;
+
   -- Loop through all active templates
   FOR v_template IN
     SELECT 
@@ -195,6 +211,15 @@ DECLARE
   v_active_count INTEGER;
   v_cron_count INTEGER;
 BEGIN
+  -- Check if checklist_tasks table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'checklist_tasks'
+  ) THEN
+    RAISE NOTICE 'checklist_tasks table does not exist - skipping verification';
+    RETURN;
+  END IF;
+
   SELECT COUNT(*) INTO v_active_count
   FROM checklist_tasks
   WHERE (task_data->>'source' IS NULL OR task_data->>'source' != 'cron');
@@ -206,5 +231,3 @@ BEGIN
   RAISE NOTICE 'Active Tasks (patterns): %', v_active_count;
   RAISE NOTICE 'Cron-generated tasks: %', v_cron_count;
 END $$;
-
-COMMIT;

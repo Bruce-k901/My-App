@@ -164,29 +164,29 @@ export default function ForwardMessageModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#141823] border border-white/[0.06] rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-[#141823] border border-gray-200 dark:border-white/[0.06] rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-white">Forward Message</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Forward Message</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-white/[0.06]">
+        <div className="p-4 border-b border-gray-200 dark:border-white/[0.06]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function ForwardMessageModal({
         {/* Conversation List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {availableConversations.length === 0 ? (
-            <div className="text-center text-white/40 py-8">
+            <div className="text-center text-gray-500 dark:text-white/40 py-8">
               {searchTerm ? 'No conversations found' : 'No other conversations available'}
             </div>
           ) : (
@@ -214,23 +214,23 @@ export default function ForwardMessageModal({
                   onClick={() => toggleChannel(conv.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors ${
                     isSelected
-                      ? 'bg-pink-500/20 border-pink-500/50'
-                      : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
+                      ? 'bg-pink-50 dark:bg-pink-500/20 border-pink-300 dark:border-pink-500/50'
+                      : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   }`}
                 >
                   <div
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
                       isSelected
                         ? 'bg-pink-500 border-pink-500'
-                        : 'border-white/30'
+                        : 'border-gray-300 dark:border-white/30'
                     }`}
                   >
                     {isSelected && <Check className="w-3 h-3 text-white" />}
                   </div>
                   <div className="flex-1 text-left min-w-0">
-                    <div className="text-sm font-medium text-white truncate">{name}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-white truncate">{name}</div>
                     {conv.last_message && (
-                      <div className="text-xs text-white/40 truncate mt-1">
+                      <div className="text-xs text-gray-500 dark:text-white/40 truncate mt-1">
                         {conv.last_message.content}
                       </div>
                     )}
@@ -242,14 +242,14 @@ export default function ForwardMessageModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/[0.06] flex items-center justify-between">
-          <div className="text-sm text-white/60">
+        <div className="p-4 border-t border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+          <div className="text-sm text-gray-600 dark:text-white/60">
             {selectedChannels.size} conversation{selectedChannels.size !== 1 ? 's' : ''} selected
           </div>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-transparent text-white/60 hover:text-white border border-white/[0.06] rounded-lg transition-colors"
+              className="px-4 py-2 bg-transparent text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-white/[0.06] rounded-lg transition-colors"
               disabled={isForwarding}
             >
               Cancel

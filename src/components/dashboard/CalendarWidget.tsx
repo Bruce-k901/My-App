@@ -45,6 +45,16 @@ interface CalendarItem {
   source_message_id?: string;
   meeting_link?: string;
   meeting_location?: string;
+  metadata?: {
+    type?: string;
+    source?: string;
+    color?: string;
+    isBold?: boolean;
+    priority?: string;
+    link?: string;
+    assignedTo?: string;
+    [key: string]: any;
+  };
 }
 
 interface FilterState {
@@ -61,13 +71,14 @@ interface FilterState {
 // ============================================================================
 
 export default function CalendarWidget() {
-  const { companyId, siteId, userId, userProfile } = useAppContext();
+  const { companyId, siteId, userId, profile: userProfile } = useAppContext();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarItems, setCalendarItems] = useState<CalendarItem[]>([]);
   const [loading, setLoading] = useState(true);
   const fetchInProgressRef = useRef(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSetItemsRef = useRef<Set<string>>(new Set()); // Track what we last set to prevent accumulation
+  const lastFetchParamsRef = useRef<string>(''); // Track last fetch parameters to prevent duplicate fetches
   // Load filter preferences from localStorage
   const loadFilters = (): FilterState => {
     if (typeof window === "undefined") {
@@ -121,8 +132,100 @@ export default function CalendarWidget() {
   // DATA FETCHING
   // ============================================================================
 
+  // Helper function to get accessible site IDs based on user role
+  const getAccessibleSiteIds = useCallback(async (userProfile: any, companyId: string) => {
+    if (!userProfile) return []
+
+    const { app_role } = userProfile
+
+    // OWNER/ADMIN: See all company sites
+    if (app_role === 'Owner' || app_role === 'Admin') {
+      const { data: sites } = await supabase
+        .from('sites')
+        .select('id')
+        .eq('company_id', companyId)
+
+      return sites?.map(s => s.id) || []
+    }
+
+    // REGIONAL MANAGER: See all sites in their region(s)
+    if (app_role === 'Regional Manager') {
+      // Find regions where this user is the regional_manager
+      const { data: regions } = await supabase
+        .from('regions')
+        .select('id')
+        .eq('regional_manager_id', userProfile.id)
+
+      if (regions && regions.length > 0) {
+        const regionIds = regions.map(r => r.id)
+
+        const { data: sites } = await supabase
+          .from('sites')
+          .select('id')
+          .in('region_id', regionIds)
+
+        return sites?.map(s => s.id) || []
+      }
+    }
+
+    // AREA MANAGER: See all sites in their area(s)
+    if (app_role === 'Area Manager') {
+      // Find areas where this user is the area_manager
+      const { data: areas } = await supabase
+        .from('areas')
+        .select('id')
+        .eq('area_manager_id', userProfile.id)
+
+      if (areas && areas.length > 0) {
+        const areaIds = areas.map(a => a.id)
+
+        const { data: sites } = await supabase
+          .from('sites')
+          .select('id')
+          .in('area_id', areaIds)
+
+        return sites?.map(s => s.id) || []
+      }
+    }
+
+    // MANAGER/STAFF: See home site + borrowed sites
+    const siteIds = new Set<string>()
+
+    if (userProfile.home_site) {
+      siteIds.add(userProfile.home_site)
+    }
+
+    // Get borrowed sites from employee_site_assignments
+    const { data: assignments } = await supabase
+      .from('employee_site_assignments')
+      .select('borrowed_site_id')
+      .eq('profile_id', userProfile.id)
+      .eq('is_active', true)
+      .lte('start_date', new Date().toISOString())
+      .or('end_date.is.null,end_date.gte.' + new Date().toISOString())
+
+    assignments?.forEach(a => {
+      if (a.borrowed_site_id) siteIds.add(a.borrowed_site_id)
+    })
+
+    return Array.from(siteIds)
+  }, [supabase])
+
   const fetchCalendarItems = useCallback(async () => {
+    // Safety check: Don't proceed if profile isn't loaded yet
+    if (!userProfile) {
+      return
+    }
+
+    // Define isAdminOrManager based on profile
+    const isAdminOrManager = userProfile.app_role === 'Owner' ||
+                             userProfile.app_role === 'Admin' ||
+                             userProfile.app_role === 'Manager' ||
+                             userProfile.app_role === 'Regional Manager' ||
+                             userProfile.app_role === 'Area Manager'
+
     if (!companyId || !userId) {
+      console.log('❌ Missing companyId or userId, returning early')
       setLoading(false);
       setCalendarItems([]);
       fetchInProgressRef.current = false;
@@ -134,6 +237,7 @@ export default function CalendarWidget() {
       console.log("⏸️ Fetch already in progress, skipping...");
       return;
     }
+
 
     fetchInProgressRef.current = true;
     setLoading(true);
@@ -147,13 +251,12 @@ export default function CalendarWidget() {
       // Note: The actual schema uses due_date (DATE) and due_time (TEXT), not scheduled_at_utc
       // We'll need to combine these for display
       // Fetch tasks assigned to user OR tasks in their company (if admin/manager)
-      const userRole = userProfile?.app_role;
-      const isAdminOrManager = userRole === "admin" || userRole === "manager";
 
       let tasksQuery = supabase
         .from("checklist_tasks")
         .select(`
           id,
+          site_id,
           custom_name,
           due_date,
           due_time,
@@ -163,6 +266,10 @@ export default function CalendarWidget() {
           template_id,
           task_data,
           created_at,
+          site:sites(
+            id,
+            name
+          ),
           template:task_templates(
             id,
             name,
@@ -178,25 +285,238 @@ export default function CalendarWidget() {
         .eq("company_id", companyId)
         .gte("due_date", format(startDate, "yyyy-MM-dd"))
         .lte("due_date", format(endDate, "yyyy-MM-dd"))
-        .in("status", ["pending", "in_progress"]);
+        .in("status", ["pending", "in_progress", "accepted"]);
 
-      // Filter by assignment if not admin/manager
-      if (!isAdminOrManager) {
-        tasksQuery = tasksQuery.or(`assigned_to_user_id.eq.${userId},assigned_to_user_id.is.null`);
-      }
+      // For calendar view, ALWAYS filter by assignment - calendar is personal, not company-wide
+      // Only show tasks assigned to the current user
+      tasksQuery = tasksQuery.eq("assigned_to_user_id", userId);
 
       const { data: tasks, error: tasksError } = await tasksQuery
         .order("due_date", { ascending: true })
         .order("due_time", { ascending: true });
+
+      console.log('📅 Tasks fetched from database:', tasks?.length || 0)
+
+      // Calendar should match "my tasks" page - show ALL tasks assigned to user, regardless of site
+      // The query already filters by assigned_to_user_id, so no additional site filtering needed
+      let filteredTasks = tasks || []
+
+      console.log('📅 Tasks after assignment filtering (matching my-tasks page):', filteredTasks.length)
+      console.log('📅 Included tasks:', filteredTasks.map(t => ({
+        id: t.id,
+        title: t.custom_name || t.template?.name,
+        siteId: t.site_id,
+        siteName: t.site?.name,
+        assignedTo: t.assigned_to_user_id,
+        status: t.status
+      })))
 
       if (tasksError) {
         console.error("Error fetching tasks:", tasksError);
         throw tasksError;
       }
 
+      // Also load handover tasks from profile_settings
+      // Query for handover entries within our date range (one query per date to avoid RLS issues with LIKE)
+      console.log('📅 CalendarWidget: Loading handover tasks from profile_settings for company:', companyId);
+      let handoverData: any[] = [];
+      let handoverError: any = null;
+      
+      try {
+        // Generate date keys for the date range
+        const datesToQuery: string[] = [];
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          const dateKey = format(currentDate, 'yyyy-MM-dd');
+          datesToQuery.push(`handover:${dateKey}`);
+          currentDate = addDays(currentDate, 1);
+        }
+        
+        console.log('📅 Querying handover entries for dates:', datesToQuery.length, 'dates', datesToQuery);
+        console.log('📅 CalendarWidget: Querying profile_settings for handover tasks via API');
+        console.log('📅 Company ID:', companyId);
+        console.log('📅 User ID (from context):', userId);
+        console.log('📅 User Profile ID:', userProfile?.id);
+        
+        // Use API route to bypass RLS (uses admin client on server)
+        const startDateStr = format(startDate, 'yyyy-MM-dd');
+        const endDateStr = format(endDate, 'yyyy-MM-dd');
+        const apiUrl = `/api/calendar/handover-tasks?company_id=${encodeURIComponent(companyId)}&start_date=${startDateStr}&end_date=${endDateStr}`;
+        
+        console.log('📅 Fetching from API:', apiUrl);
+        const response = await fetch(apiUrl, {
+          cache: 'no-store', // Prevent caching
+        });
+        
+        console.log('📅 API response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorData: any = {};
+          try {
+            errorData = JSON.parse(errorText);
+          } catch (e) {
+            errorData = { raw: errorText };
+          }
+          console.error('❌ API error response:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+          });
+          throw new Error(`API error: ${response.status} ${response.statusText} - ${errorData.error || errorData.message || errorData.raw || 'Unknown error'}`);
+        }
+        
+        const apiData = await response.json();
+        console.log('📅 API response data:', {
+          success: apiData.success,
+          entriesFound: apiData.entriesFound,
+          datesQueried: apiData.datesQueried,
+          dataLength: apiData.data?.length || 0,
+        });
+        
+        if (!apiData.success) {
+          console.error('❌ API returned success=false:', apiData);
+          throw new Error(`API returned error: ${apiData.error || 'Unknown error'}`);
+        }
+        
+        handoverData = apiData.data || [];
+        
+        console.log('📅 API returned', handoverData.length, 'handover entries');
+        if (handoverData.length > 0) {
+          console.log('📅 Handover entry keys:', handoverData.map((h: any) => h.key));
+          console.log('📅 Handover entry details:', handoverData.map((h: any) => ({
+            key: h.key,
+            hasValue: !!h.value,
+            valueType: typeof h.value,
+          })));
+          
+          // Log task details for debugging
+          handoverData.forEach((entry: any) => {
+            try {
+              const value = typeof entry.value === 'string' ? JSON.parse(entry.value) : entry.value;
+              if (value?.tasks) {
+                console.log(`📅 Tasks in ${entry.key}:`, value.tasks.map((t: any) => ({
+                  id: t.id,
+                  title: t.title,
+                  assignedTo: t.assignedTo,
+                  dueDate: t.dueDate,
+                  metadata: t.metadata,
+                })));
+              }
+            } catch (e) {
+              console.error('Error parsing entry value:', e);
+            }
+          });
+        } else {
+          console.log('📭 No handover data found for date range');
+          console.log('🔍 This could mean:');
+          console.log('  1. No tasks were created (check server logs when marking count ready)');
+          console.log('  2. Tasks exist but for different dates');
+          console.log('  3. Tasks exist but assignedTo does not match userId:', userId);
+        }
+      } catch (err: any) {
+        handoverError = err;
+        console.error("❌ Exception loading handover data:", {
+          message: err?.message,
+          stack: err?.stack,
+          fullError: err,
+        });
+      }
+
+      // Extract handover tasks and convert them to calendar items
+      const handoverTasks: CalendarItem[] = [];
+      if (!handoverError && handoverData && handoverData.length > 0) {
+        console.log('📅 Processing', handoverData.length, 'handover entries');
+        handoverData.forEach((item, index) => {
+          try {
+            const handoverValue = typeof item.value === "string" ? JSON.parse(item.value) : item.value;
+            if (!handoverValue) {
+              console.warn(`📅 Handover entry ${index} has no value`);
+              return;
+            }
+            
+            if (handoverValue?.tasks && Array.isArray(handoverValue.tasks)) {
+              console.log(`📅 Found ${handoverValue.tasks.length} tasks in entry ${item.key}`);
+              handoverValue.tasks.forEach((task: any) => {
+                // Filter by assignedTo - check both auth user ID and profile ID
+                // assignedTo can be either the auth user ID or the profile ID
+                const profileId = userProfile?.id || null;
+                
+                console.log(`📅 Checking task assignment:`, {
+                  taskTitle: task.title,
+                  taskAssignedTo: task.assignedTo,
+                  userId: userId,
+                  profileId: profileId,
+                  userProfileId: userProfile?.id,
+                });
+                
+                // If assignedTo is empty/null, show it (unassigned tasks)
+                // Otherwise check if it matches userId or profileId
+                const isAssignedToUser = !task.assignedTo || task.assignedTo === '' || 
+                  task.assignedTo === userId || 
+                  (profileId && task.assignedTo === profileId);
+                
+                if (!isAssignedToUser) {
+                  console.log(`📅❌ Skipping task "${task.title}" - assignedTo "${task.assignedTo}" !== userId "${userId}" and !== profileId "${profileId || 'undefined'}"`);
+                  return;
+                }
+                
+                console.log(`📅✅ Task "${task.title}" matches user - assignedTo: "${task.assignedTo}", userId: "${userId}", profileId: "${profileId || 'undefined'}"`);
+                
+                // Only include tasks within our date range
+                const taskDueDate = task.dueDate ? parseISO(task.dueDate) : null;
+                if (!taskDueDate) {
+                  console.warn(`📅 Task "${task.title}" has no dueDate`);
+                  return;
+                }
+                
+                if (taskDueDate >= startDate && taskDueDate <= endDate) {
+                  // Parse dueTime (format: "HH:mm")
+                  const [hours, minutes] = task.dueTime ? task.dueTime.split(':').map(Number) : [0, 0];
+                  const scheduledAt = setMinutes(setHours(startOfDay(taskDueDate), hours || 0), minutes || 0);
+                  
+                  const handoverItem: CalendarItem = {
+                    id: task.id || `handover-${Date.now()}-${Math.random()}`,
+                    type: "task" as CalendarItemType,
+                    title: task.title || 'Untitled Task',
+                    description: task.metadata?.note || undefined,
+                    scheduledAt: scheduledAt,
+                    scheduledAtUTC: scheduledAt,
+                    timezone: userTimezone,
+                    status: task.status === 'completed' ? 'completed' : task.status === 'in_progress' ? 'in_progress' : 'pending',
+                    metadata: {
+                      ...task.metadata,
+                      source: 'handover',
+                      color: task.color,
+                      isBold: task.isBold,
+                      priority: task.priority,
+                      link: task.metadata?.link,
+                      assignedTo: task.assignedTo,
+                    },
+                  };
+                  handoverTasks.push(handoverItem);
+                  console.log(`📅✅ Added handover task: "${task.title}" (dueDate: ${task.dueDate}, dueTime: ${task.dueTime}, scheduledAt: ${format(scheduledAt, 'yyyy-MM-dd HH:mm')}, assignedTo: ${task.assignedTo})`);
+                } else {
+                  console.log(`📅 Skipping task "${task.title}" - dueDate ${task.dueDate} outside range (${format(startDate, 'yyyy-MM-dd')} to ${format(endDate, 'yyyy-MM-dd')})`);
+                }
+              });
+            } else {
+              console.log(`📅 Entry ${item.key} has no tasks array`);
+            }
+          } catch (parseError) {
+            console.error(`❌ Error parsing handover entry ${item.key}:`, parseError, item);
+          }
+        });
+        console.log('📅 CalendarWidget: Total handover tasks loaded:', handoverTasks.length);
+      } else if (handoverError) {
+        console.warn('📅 Skipping handover tasks due to error');
+      } else {
+        console.log('📅 No handover data found');
+      }
+
       // AGGRESSIVE: Deduplicate at database result level first
       const taskIdCounts = new Map<string, number>();
-      tasks?.forEach((task: any) => {
+      filteredTasks?.forEach((task: any) => {
         taskIdCounts.set(task.id, (taskIdCounts.get(task.id) || 0) + 1);
       });
       
@@ -213,9 +533,23 @@ export default function CalendarWidget() {
         });
       }
       
-      const uniqueTasks = tasks ? Array.from(
-        new Map(tasks.map((task: any) => [task.id, task])).values()
+      const uniqueTasks = filteredTasks ? Array.from(
+        new Map(filteredTasks.map((task: any) => [task.id, task])).values()
       ) : [];
+      
+      // Verify uniqueTasks has no duplicates
+      const uniqueTasksIds = new Set<string>();
+      const duplicatesInUniqueTasks: string[] = [];
+      uniqueTasks.forEach((task: any) => {
+        if (uniqueTasksIds.has(task.id)) {
+          duplicatesInUniqueTasks.push(task.id);
+        } else {
+          uniqueTasksIds.add(task.id);
+        }
+      });
+      if (duplicatesInUniqueTasks.length > 0) {
+        console.error(`❌ CRITICAL: uniqueTasks still has ${duplicatesInUniqueTasks.length} duplicate IDs after deduplication:`, duplicatesInUniqueTasks);
+      }
       
       console.log(`📊 Database returned ${tasks?.length || 0} tasks, ${uniqueTasks.length} unique after deduplication (${duplicateTaskIds.length} duplicate IDs found)`);
 
@@ -398,6 +732,27 @@ export default function CalendarWidget() {
         }
       }
 
+      // Add handover tasks to the items map
+      console.log(`📅 Total handover tasks to add: ${handoverTasks.length}`);
+      handoverTasks.forEach((handoverTask) => {
+        console.log(`📅 Processing handover task: ${handoverTask.title} (ID: ${handoverTask.id})`);
+        if (!itemsMap.has(handoverTask.id)) {
+          itemsMap.set(handoverTask.id, handoverTask);
+          console.log('📅✅ Added handover task to calendar:', handoverTask.title, 'assignedTo:', handoverTask.metadata?.assignedTo);
+        } else {
+          const existingItem = itemsMap.get(handoverTask.id);
+          console.log('📅⚠️ Handover task already in map (duplicate ID):', handoverTask.id, handoverTask.title);
+          console.log('📅⚠️ Existing item:', existingItem?.title, 'Type:', existingItem?.type, 'Source:', existingItem?.metadata?.source);
+        }
+      });
+      
+      // Check for any ID conflicts between regular tasks and handover tasks
+      const allTaskIds = Array.from(itemsMap.keys());
+      const duplicateIdsInMap = allTaskIds.filter((id, index) => allTaskIds.indexOf(id) !== index);
+      if (duplicateIdsInMap.length > 0) {
+        console.error('❌ Found duplicate IDs in itemsMap:', duplicateIdsInMap);
+      }
+
       // TODO: Fetch meetings, calls, notes, reminders, messages
       // For now, we'll focus on tasks
 
@@ -438,7 +793,44 @@ export default function CalendarWidget() {
         });
       }
 
+      // Log handover tasks in final array
+      const handoverTasksInFinal = finalUniqueItems.filter(item => item.metadata?.source === 'handover');
       console.log(`📅 Calendar: Final result - ${finalUniqueItems.length} unique items from ${uniqueTasks?.length || 0} tasks (${uniqueItems.length} before final check, ${duplicateIds.length} duplicates removed)`);
+      console.log(`📅 Handover tasks in final array: ${handoverTasksInFinal.length}`, handoverTasksInFinal.map(t => ({
+        id: t.id,
+        title: t.title,
+        scheduledAt: format(t.scheduledAt, 'yyyy-MM-dd HH:mm'),
+        type: t.type
+      })));
+      
+      // Log all items grouped by day to detect cross-day duplicates
+      const itemsByDayForLogging = new Map<string, CalendarItem[]>();
+      finalUniqueItems.forEach(item => {
+        const dayKey = format(item.scheduledAt, 'yyyy-MM-dd');
+        if (!itemsByDayForLogging.has(dayKey)) {
+          itemsByDayForLogging.set(dayKey, []);
+        }
+        itemsByDayForLogging.get(dayKey)!.push(item);
+      });
+      
+      // Check for items appearing in multiple days
+      const itemIdToDays = new Map<string, string[]>();
+      finalUniqueItems.forEach(item => {
+        const dayKey = format(item.scheduledAt, 'yyyy-MM-dd');
+        if (!itemIdToDays.has(item.id)) {
+          itemIdToDays.set(item.id, []);
+        }
+        itemIdToDays.get(item.id)!.push(dayKey);
+      });
+      
+      const crossDayDuplicates = Array.from(itemIdToDays.entries()).filter(([id, days]) => days.length > 1);
+      if (crossDayDuplicates.length > 0) {
+        console.error(`❌ Found ${crossDayDuplicates.length} items appearing in multiple days:`, crossDayDuplicates.map(([id, days]) => ({
+          id,
+          days,
+          item: finalUniqueItems.find(i => i.id === id)?.title
+        })));
+      }
 
       // NUCLEAR: Verify no duplicates in final array
       const finalCheckSet = new Set<string>();
@@ -475,10 +867,15 @@ export default function CalendarWidget() {
       setLoading(false);
       fetchInProgressRef.current = false;
     }
-  }, [companyId, userId, startDate, endDate, userTimezone, userProfile]);
+  }, [companyId, userId, startDate, endDate, userTimezone, userProfile, getAccessibleSiteIds, supabase]);
 
   // NUCLEAR: Monitor calendarItems state and auto-fix duplicates
   useEffect(() => {
+    // Skip if items array is empty (likely being cleared/reset)
+    if (calendarItems.length === 0) {
+      return;
+    }
+    
     // Skip if we just set these items (prevent infinite loop)
     const currentIds = new Set(calendarItems.map(item => item.id));
     const lastSetIds = lastSetItemsRef.current;
@@ -511,14 +908,24 @@ export default function CalendarWidget() {
   }, [calendarItems]);
 
   useEffect(() => {
-    if (companyId && userId) {
-      // Reset fetch flag and clear items
-      fetchInProgressRef.current = false;
-      setCalendarItems([]);
-      lastSetItemsRef.current = new Set();
-      fetchCalendarItems();
+    if (!companyId || !userId || fetchInProgressRef.current) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+    // Create a unique key for this fetch based on parameters
+    const fetchKey = `${companyId}-${userId}-${startDateStr}-${endDateStr}`;
+    
+    // Skip if we're already fetching with the same parameters
+    if (lastFetchParamsRef.current === fetchKey) {
+      return;
+    }
+    
+    // Update the last fetch params BEFORE clearing items to prevent loops
+    lastFetchParamsRef.current = fetchKey;
+    
+    // Don't clear items here - let fetchCalendarItems handle it to prevent triggering monitoring useEffect
+    fetchCalendarItems();
+     
   }, [companyId, userId, startDateStr, endDateStr]); // Use stable date strings, fetchCalendarItems is stable via useCallback
 
   // ============================================================================
@@ -601,7 +1008,7 @@ export default function CalendarWidget() {
       supabase.removeChannel(tasksChannel);
       supabase.removeChannel(assetsChannel);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId, userId]); // Only re-subscribe if companyId or userId changes
 
   // ============================================================================
@@ -612,19 +1019,19 @@ export default function CalendarWidget() {
   const filteredItems = useMemo(() => {
     // CRITICAL: Deduplicate by ID using Map - this MUST happen first
     const uniqueMap = new Map<string, CalendarItem>();
-    const duplicateIds: string[] = [];
+    const duplicateIdsInState: string[] = [];
     
     calendarItems.forEach((item) => {
       if (!uniqueMap.has(item.id)) {
         uniqueMap.set(item.id, item);
       } else {
-        duplicateIds.push(item.id);
+        duplicateIdsInState.push(item.id);
         console.error(`❌ DUPLICATE IN STATE: ${item.id} - ${item.title} - REMOVING`);
       }
     });
 
-    if (duplicateIds.length > 0) {
-      console.error(`❌ FOUND ${duplicateIds.length} DUPLICATES IN calendarItems STATE:`, duplicateIds);
+    if (duplicateIdsInState.length > 0) {
+      console.error(`❌ FOUND ${duplicateIdsInState.length} DUPLICATES IN calendarItems STATE:`, duplicateIdsInState);
     }
 
     // Convert to array and apply filters
@@ -659,8 +1066,23 @@ export default function CalendarWidget() {
       return;
     }
 
+    // Handle handover tasks (stock count approvals) - they have links instead of database records
+    if (item.metadata?.source === 'handover' || item.metadata?.type === 'stock_count_approval') {
+      const link = item.metadata?.link;
+      if (link) {
+        console.log('📅 Navigating to stock count review:', link);
+        // Navigate to the stock count review page
+        window.location.href = link;
+        return;
+      } else {
+        console.error('❌ No link found in handover task metadata:', item.metadata);
+        toast.error("Link not found for this task");
+        return;
+      }
+    }
+
     try {
-      // Fetch full task data with template
+      // Fetch full task data with template (only for regular tasks)
       const { data: taskData, error: taskError } = await supabase
         .from("checklist_tasks")
         .select(`
@@ -763,7 +1185,7 @@ export default function CalendarWidget() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <section className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-4 sm:p-6 shadow-[0_0_12px_rgba(236,72,153,0.05)] fade-in-soft">
+      <section className="bg-white/[0.03] dark:bg-[#0b0d13]/80 border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 rounded-2xl p-4 sm:p-6 shadow-[0_0_20px_rgba(236,72,153,0.15)] dark:shadow-[0_0_20px_rgba(236,72,153,0.25)] fade-in-soft ring-1 ring-[#EC4899]/10 dark:ring-[#EC4899]/20">
         <CalendarHeader
           filters={filters}
           onFilterChange={setFilters}
@@ -776,17 +1198,17 @@ export default function CalendarWidget() {
           <div className="h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-2 border-[#EC4899] border-t-transparent rounded-full animate-spin"></div>
-              <div className="text-gray-400">Loading calendar...</div>
+              <div className="text-gray-600 dark:text-gray-400">Loading calendar...</div>
             </div>
           </div>
         ) : calendarItems.length === 0 ? (
           <div className="h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <Calendar className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-              <div className="text-gray-400 mb-2">No items scheduled for this week</div>
+              <Calendar className="w-12 h-12 text-gray-500 dark:text-gray-400 mx-auto mb-4" />
+              <div className="text-gray-600 dark:text-gray-400 mb-2">No items scheduled for this week</div>
               <button
                 onClick={() => handleSlotClick(currentDate, 9)}
-                className="px-4 py-2 rounded-lg bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#EC4899]/10 to-[#EC4899]/5 dark:from-[#EC4899]/20 dark:to-[#EC4899]/10 text-[#EC4899] border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_16px_rgba(236,72,153,0.8)] hover:scale-105 transition-all duration-200 ease-in-out text-sm font-semibold shadow-md"
               >
                 <Plus className="w-4 h-4 inline mr-2" />
                 Create New Item
@@ -899,12 +1321,12 @@ function CalendarHeader({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 rounded-lg bg-pink-500/10 border border-pink-500/20">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
+        <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#EC4899]/20 to-[#EC4899]/10 dark:from-[#EC4899]/30 dark:to-[#EC4899]/20 border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 shadow-md">
+          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899] dark:text-[#EC4899]" />
         </div>
         <div>
-          <h3 className="text-xl sm:text-2xl font-semibold text-white">Daily Notes & Actions</h3>
-          <p className="text-xs text-slate-400 hidden sm:block">7-day calendar view</p>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
+          <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block font-medium">7-day calendar view</p>
         </div>
       </div>
 
@@ -912,24 +1334,24 @@ function CalendarHeader({
         {/* Week Navigation */}
         <button
           onClick={() => navigateWeek("prev")}
-          className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+          className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all shadow-sm hover:shadow-md"
         >
-          <ChevronLeft className="w-4 h-4 text-gray-400" />
+          <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="text-sm text-gray-300 px-3">
+        <span className="text-sm font-semibold text-gray-900 dark:text-white px-3 bg-white/50 dark:bg-white/5 rounded-lg py-1 border border-[#EC4899]/10 dark:border-[#EC4899]/20">
           {format(currentDate, "MMM dd")} - {format(addDays(currentDate, 6), "MMM dd, yyyy")}
         </span>
         <button
           onClick={() => navigateWeek("next")}
-          className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+          className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all shadow-sm hover:shadow-md"
         >
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
 
         {/* Expand Calendar Button */}
         <button
           onClick={onExpandClick}
-          className="px-3 py-2 rounded-lg bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+          className="px-3 py-2 rounded-lg bg-gradient-to-r from-[#EC4899]/10 to-[#EC4899]/5 dark:from-[#EC4899]/20 dark:to-[#EC4899]/10 text-[#EC4899] border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_16px_rgba(236,72,153,0.8)] hover:scale-105 transition-all duration-200 ease-in-out text-sm font-semibold shadow-md"
         >
           <Calendar className="w-4 h-4 inline mr-2" />
           Full Calendar
@@ -938,33 +1360,33 @@ function CalendarHeader({
 
       {/* Filter Toggles */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-gray-400 mr-2">Filters:</span>
+        <span className="text-xs text-gray-600 dark:text-gray-400 mr-2">Filters:</span>
         {filterTypes.map(({ key, label, color }) => {
           const isActive = filters[key];
           const colorClasses: Record<string, { active: string; inactive: string }> = {
             purple: {
-              active: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-purple-500/30 to-purple-600/20 dark:from-purple-500/40 dark:to-purple-600/30 text-purple-700 dark:text-purple-200 border-2 border-purple-500/50 dark:border-purple-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-purple-300/50 dark:hover:border-purple-500/30 hover:bg-purple-50/50 dark:hover:bg-purple-500/10",
             },
             blue: {
-              active: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-blue-500/30 to-blue-600/20 dark:from-blue-500/40 dark:to-blue-600/30 text-blue-700 dark:text-blue-200 border-2 border-blue-500/50 dark:border-blue-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-blue-300/50 dark:hover:border-blue-500/30 hover:bg-blue-50/50 dark:hover:bg-blue-500/10",
             },
             emerald: {
-              active: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 text-emerald-700 dark:text-emerald-200 border-2 border-emerald-500/50 dark:border-emerald-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-emerald-300/50 dark:hover:border-emerald-500/30 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10",
             },
             gray: {
-              active: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 text-gray-700 dark:text-gray-200 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-gray-300/50 dark:hover:border-gray-500/30 hover:bg-gray-50/50 dark:hover:bg-gray-500/10",
             },
             yellow: {
-              active: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 text-yellow-700 dark:text-yellow-200 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-yellow-300/50 dark:hover:border-yellow-500/30 hover:bg-yellow-50/50 dark:hover:bg-yellow-500/10",
             },
             pink: {
-              active: "bg-pink-500/20 text-pink-400 border-pink-500/30",
-              inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06]",
+              active: "bg-gradient-to-r from-pink-500/30 to-pink-600/20 dark:from-pink-500/40 dark:to-pink-600/30 text-pink-700 dark:text-pink-200 border-2 border-pink-500/50 dark:border-pink-400/60 shadow-md font-semibold",
+              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-pink-300/50 dark:hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10",
             },
           };
           return (
@@ -1062,7 +1484,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-7 border-b border-white/[0.06]">
+      <div className="grid grid-cols-7 border-b-2 border-[#EC4899]/20 dark:border-[#EC4899]/30">
         {/* Day headers with + button */}
         {weekDays.map((day) => {
           const dayKey = format(day, "yyyy-MM-dd");
@@ -1075,16 +1497,16 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
           return (
             <div
               key={dayKey}
-              className="p-2 border-r border-white/[0.06] text-center last:border-r-0"
+              className="p-2 border-r-2 border-[#EC4899]/10 dark:border-[#EC4899]/20 text-center last:border-r-0 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex-1">
-                  <div className="text-xs text-gray-400 uppercase tracking-wide">
+                  <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                     {format(day, "EEE")}
                   </div>
                   <div
                     className={`text-sm font-semibold mt-1 ${
-                      isSameDay(day, new Date()) ? "text-[#EC4899]" : "text-white"
+                      isSameDay(day, new Date()) ? "text-[#EC4899]" : "text-gray-900 dark:text-white"
                     }`}
                   >
                     {format(day, "MMM d")}
@@ -1092,10 +1514,10 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                 </div>
                 <button
                   onClick={handleAddClick}
-                  className="p-1 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-[#EC4899]/50 transition-colors flex-shrink-0"
+                  className="p-1.5 rounded-lg bg-[#EC4899]/10 dark:bg-[#EC4899]/20 border-2 border-[#EC4899]/30 dark:border-[#EC4899]/40 hover:bg-[#EC4899]/20 dark:hover:bg-[#EC4899]/30 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/60 hover:shadow-md transition-all flex-shrink-0"
                   title="Add item"
                 >
-                  <Plus className="w-3 h-3 text-gray-400 hover:text-[#EC4899]" />
+                  <Plus className="w-3 h-3 text-[#EC4899] dark:text-[#EC4899]" />
                 </button>
               </div>
             </div>
@@ -1104,7 +1526,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
       </div>
 
       {/* Day columns with items in chronological order */}
-      <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+      <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
         <div className="grid grid-cols-7">
           {(() => {
             // GLOBAL: Track all rendered item IDs across ALL days to prevent cross-day duplicates
@@ -1154,7 +1576,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                   onSlotClick={onSlotClick}
                 >
                   {finalDayItems.length === 0 ? (
-                    <div className="text-xs text-gray-500 text-center py-4">No items</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 text-center py-4 italic border-2 border-dashed border-gray-300/30 dark:border-gray-600/30 rounded-lg mx-1">No items</div>
                   ) : (
                     <div className="space-y-1">
                       {finalDayItems.map((item) => {
@@ -1237,8 +1659,8 @@ function DroppableDayColumn({
   return (
     <div
       ref={drop}
-      className={`border-r border-white/[0.06] last:border-r-0 min-h-[400px] p-1 transition-colors ${
-        isOver ? "bg-[#EC4899]/10" : ""
+      className={`border-r-2 border-[#EC4899]/10 dark:border-[#EC4899]/20 last:border-r-0 min-h-[400px] p-2 transition-all ${
+        isOver ? "bg-[#EC4899]/20 dark:bg-[#EC4899]/30 ring-2 ring-[#EC4899]/50 dark:ring-[#EC4899]/60" : "bg-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10"
       }`}
       onClick={(e) => {
         // Only trigger if clicking on empty space, not on items
@@ -1264,12 +1686,12 @@ interface CalendarItemComponentProps {
 function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
   
   const itemColors: Record<CalendarItemType, string> = {
-    task: "bg-purple-500/20 border-purple-500",
-    meeting: "bg-blue-500/20 border-blue-500",
-    call: "bg-emerald-500/20 border-emerald-500",
-    note: "bg-gray-500/20 border-gray-500",
-    reminder: "bg-yellow-500/20 border-yellow-500",
-    message: "bg-pink-500/20 border-pink-500",
+    task: "bg-gradient-to-br from-purple-500/30 to-purple-600/20 dark:from-purple-500/40 dark:to-purple-600/30 border-2 border-purple-500/50 dark:border-purple-400/60 shadow-sm hover:shadow-md",
+    meeting: "bg-gradient-to-br from-blue-500/30 to-blue-600/20 dark:from-blue-500/40 dark:to-blue-600/30 border-2 border-blue-500/50 dark:border-blue-400/60 shadow-sm hover:shadow-md",
+    call: "bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 border-2 border-emerald-500/50 dark:border-emerald-400/60 shadow-sm hover:shadow-md",
+    note: "bg-gradient-to-br from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-sm hover:shadow-md",
+    reminder: "bg-gradient-to-br from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-sm hover:shadow-md",
+    message: "bg-gradient-to-br from-pink-500/30 to-pink-600/20 dark:from-pink-500/40 dark:to-pink-600/30 border-2 border-pink-500/50 dark:border-pink-400/60 shadow-sm hover:shadow-md",
   };
 
   const statusIcons: Record<string, string> = {
@@ -1280,19 +1702,22 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
     cancelled: "✗",
   };
 
+  // Check if this is an approval/review task
+  const isApprovalTask = item.metadata?.type === 'stock_count_approval' || item.metadata?.source === 'handover';
+
   return (
     <div
       onClick={(e) => {
         e.stopPropagation();
         onClick();
       }}
-      className={`${itemColors[item.type]} border rounded p-2 mb-1 cursor-pointer hover:opacity-80 transition-opacity`}
+      className={`${itemColors[item.type]} rounded-lg p-2.5 mb-1.5 cursor-pointer hover:scale-[1.02] hover:brightness-110 transition-all duration-200`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-white truncate leading-tight">{item.title}</div>
+          <div className={`text-xs font-semibold truncate leading-tight ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-white'}`}>{item.title}</div>
           {item.scheduledAt && (
-            <div className="text-[10px] text-gray-400 mt-0.5">
+            <div className="text-[10px] font-medium text-gray-600 dark:text-gray-200 mt-0.5">
               {format(item.scheduledAt, "h:mm a")}
             </div>
           )}
@@ -1302,7 +1727,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
             {item.assignees?.slice(0, 2).map((assignee) => (
               <div
                 key={assignee.id}
-                className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center text-[8px] text-white"
+                className="w-4 h-4 rounded-full bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-[8px] text-white"
                 title={assignee.name}
               >
                 {assignee.avatar_url ? (
@@ -1313,7 +1738,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
               </div>
             ))}
             {(item.assignees?.length || 0) > 2 && (
-              <span className="text-[8px] text-gray-400">+{(item.assignees?.length || 0) - 2}</span>
+              <span className="text-[8px] text-gray-400 dark:text-gray-400">+{(item.assignees?.length || 0) - 2}</span>
             )}
           </div>
         )}
@@ -1383,26 +1808,26 @@ function CalendarModal({
       onClick={onClose}
     >
       <div
-        className="bg-[#0b0d13] border border-white/[0.06] rounded-2xl p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
+        className="bg-white dark:bg-[#0b0d13] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-semibold text-white">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateMonth("prev")}
-                className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+                className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-400" />
+                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
               <button
                 onClick={() => navigateMonth("next")}
-                className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+                className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
@@ -1414,9 +1839,9 @@ function CalendarModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+            className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
@@ -1424,7 +1849,7 @@ function CalendarModal({
         <div className="grid grid-cols-7 gap-2">
           {/* Day headers */}
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} className="p-2 text-center text-sm font-medium text-gray-400">
+            <div key={day} className="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-400">
               {day}
             </div>
           ))}
@@ -1443,9 +1868,9 @@ function CalendarModal({
             return (
               <div
                 key={dateKey}
-                className={`min-h-[100px] p-2 border border-white/[0.06] rounded-lg ${
+                className={`min-h-[100px] p-2 border border-white/[0.06] dark:border-white/[0.06] rounded-lg ${
                   isToday ? "ring-2 ring-[#EC4899]" : ""
-                } ${isCurrentMonth ? "bg-white/[0.02]" : "bg-white/[0.01] opacity-50"}`}
+                } ${isCurrentMonth ? "bg-white/[0.02] dark:bg-white/[0.02]" : "bg-white/[0.01] dark:bg-white/[0.01] opacity-50"}`}
                 onClick={() => {
                   // Switch to week view for this day
                   setCurrentMonth(day);
@@ -1454,26 +1879,29 @@ function CalendarModal({
               >
                 <div
                   className={`text-sm font-semibold mb-1 ${
-                    isToday ? "text-[#EC4899]" : isCurrentMonth ? "text-white" : "text-gray-500"
+                    isToday ? "text-[#EC4899]" : isCurrentMonth ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-500"
                   }`}
                 >
                   {format(day, "d")}
                 </div>
                 <div className="space-y-1">
-                  {dayItems.slice(0, 3).map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onItemClick(item);
-                      }}
-                      className="text-xs p-1 rounded bg-purple-500/20 border border-purple-500/30 text-white truncate cursor-pointer hover:opacity-80"
-                    >
-                      {format(item.scheduledAt, "h:mm a")} {item.title}
-                    </div>
-                  ))}
+                  {dayItems.slice(0, 3).map((item) => {
+                    const isApprovalTask = item.metadata?.type === 'stock_count_approval' || item.metadata?.source === 'handover';
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onItemClick(item);
+                        }}
+                        className={`text-xs p-1 rounded bg-purple-500/20 border border-purple-500/30 truncate cursor-pointer hover:opacity-80 ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-white dark:text-white'}`}
+                      >
+                        {format(item.scheduledAt, "h:mm a")} {item.title}
+                      </div>
+                    );
+                  })}
                   {dayItems.length > 3 && (
-                    <div className="text-xs text-gray-400">+{dayItems.length - 3} more</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">+{dayItems.length - 3} more</div>
                   )}
                 </div>
               </div>
@@ -1559,31 +1987,31 @@ function CreateItemModal({
       onClick={onClose}
     >
       <div
-        className="bg-[#0b0d13] border border-white/[0.06] rounded-2xl p-6 w-full max-w-md shadow-2xl"
+        className="bg-white dark:bg-[#0b0d13] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-md shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Create New Item</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create New Item</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+            className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* Scheduled Time Display */}
-          <div className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg">
-            <div className="text-sm text-gray-400 mb-1">Scheduled for</div>
-            <div className="text-white font-medium">
+          <div className="p-3 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg">
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Scheduled for</div>
+            <div className="text-gray-900 dark:text-white font-medium">
               {format(scheduledTime, "EEEE, MMMM d, yyyy 'at' h:mm a")}
             </div>
           </div>
 
           {/* Item Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">Type</label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { value: "task", label: "Task", color: "purple" },
@@ -1597,27 +2025,27 @@ function CreateItemModal({
                 const colorClasses: Record<string, { active: string; inactive: string }> = {
                   purple: {
                     active: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   blue: {
                     active: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   emerald: {
                     active: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   gray: {
                     active: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   yellow: {
                     active: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   pink: {
                     active: "bg-pink-500/20 text-pink-400 border-pink-500/30",
-                    inactive: "bg-white/[0.03] text-gray-400 border-white/[0.06] hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                 };
                 return (
@@ -1637,7 +2065,7 @@ function CreateItemModal({
 
           {/* Title Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
               Title <span className="text-red-400">*</span>
             </label>
             <input
@@ -1645,31 +2073,31 @@ function CreateItemModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter item title"
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
               autoFocus
             />
           </div>
 
           {/* Description Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
               rows={3}
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
             />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-6 pt-4 border-t border-white/[0.06]">
+        <div className="flex gap-3 mt-6 pt-4 border-t border-white/[0.06] dark:border-white/[0.06]">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-white/[0.05] border border-white/[0.1] text-white rounded-lg hover:bg-white/[0.08] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-white/[0.05] dark:bg-white/[0.05] border border-white/[0.1] dark:border-white/[0.1] text-gray-900 dark:text-white rounded-lg hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>

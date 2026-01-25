@@ -9,7 +9,7 @@
  * This service is the single source of truth for site access permissions.
  */
 
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 
 /**
@@ -51,7 +51,6 @@ export type UserRole =
 export async function getUserAccessibleSites(
   userId: string
 ): Promise<AccessibleSite[]> {
-  const supabase = await createServerSupabaseClient();
 
   // Step 1: Get user's profile with home_site and role
   const { data: profile, error: profileError } = await supabase
@@ -205,6 +204,72 @@ export async function getUserAccessibleSites(
 }
 
 /**
+ * Get user accessible site IDs (string array)
+ * Returns just the site IDs based on user role hierarchy
+ */
+export async function getUserAccessibleSiteIds(userId: string): Promise<string[]> {
+  // Get user profile
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, app_role, home_site, company_id')
+    .eq('id', userId)
+    .single()
+
+  if (profileError || !profile) {
+    console.error('Error fetching user profile:', profileError)
+    return []
+  }
+
+  // OWNER/ADMIN: See ALL company sites
+  if (profile.app_role === 'Owner' || profile.app_role === 'Admin') {
+    const { data: sites } = await supabase
+      .from('sites')
+      .select('id')
+      .eq('company_id', profile.company_id)
+
+    return sites?.map(s => s.id) || []
+  }
+
+  // REGIONAL MANAGER: Check if user manages any regions
+  const { data: managedRegions } = await supabase
+    .from('regions')
+    .select('id')
+    .eq('regional_manager_id', userId)
+
+  if (managedRegions && managedRegions.length > 0) {
+    const regionIds = managedRegions.map(r => r.id)
+
+    const { data: sites } = await supabase
+      .from('sites')
+      .select('id')
+      .in('region_id', regionIds)
+
+    return sites?.map(s => s.id) || []
+  }
+
+  // AREA MANAGER: Check if user manages any areas
+  const { data: managedAreas } = await supabase
+    .from('areas')
+    .select('id')
+    .eq('area_manager_id', userId)
+
+  if (managedAreas && managedAreas.length > 0) {
+    const areaIds = managedAreas.map(a => a.id)
+
+    const { data: sites } = await supabase
+      .from('sites')
+      .select('id')
+      .in('area_id', areaIds)
+
+    return sites?.map(s => s.id) || []
+  }
+
+  // MANAGER/STAFF: Get home site + borrowed sites (use existing function)
+  const sites = await getUserAccessibleSites(userId)
+  return sites.map(site => site.id)
+}
+
+/**
  * Get the default site ID to show on login
  * 
  * Logic:
@@ -218,7 +283,6 @@ export async function getUserAccessibleSites(
 export async function getDefaultSiteId(
   userId: string
 ): Promise<string | "all"> {
-  const supabase = await createServerSupabaseClient();
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
@@ -269,7 +333,6 @@ export async function canAccessSite(
 ): Promise<boolean> {
   // 'all' is only accessible to admins/owners
   if (siteId === "all") {
-    const supabase = await createServerSupabaseClient();
     const { data: profile } = await supabase
       .from("profiles")
       .select("app_role")

@@ -134,7 +134,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       // Dynamically generated from COURSES constant
       ...COURSES.map(course => ({
         label: course.title,
-        href: `/dashboard/courses/${course.slug}`,
+        href: course.href,
       })),
     ],
   },

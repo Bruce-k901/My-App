@@ -5,6 +5,15 @@
 
 DO $$
 BEGIN
+  -- Check if review_templates table exists
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'review_templates'
+  ) THEN
+    RAISE NOTICE 'review_templates table does not exist - skipping seed_review_templates migration';
+    RETURN;
+  END IF;
+
   -- Performance & Development Templates
 
   -- 1. Weekly 1-2-1

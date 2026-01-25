@@ -37,76 +37,23 @@ export default function FinalizeModal({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get all counted items
-      const { data: countedItems, error: itemsError } = await supabase
-        .from('stock_count_items')
-        .select('*')
-        .eq('stock_count_id', count.id)
-        .eq('status', 'counted');
-
-      if (itemsError) throw itemsError;
-
-      if (!countedItems || countedItems.length === 0) {
-        throw new Error('No counted items to finalize');
+      // Check if count is approved
+      if (count.status !== 'approved') {
+        throw new Error('Stock count must be approved before finalization. Please wait for approval or mark it ready for approval first.');
       }
 
-      // Update stock levels based on library type
-      for (const item of countedItems) {
-        if (!item.counted_quantity) continue;
+      // Call the database function to process the approved count
+      // This function handles stock level updates and movement records
+      const { error: processError } = await supabase.rpc(
+        'process_approved_stock_count',
+        { p_count_id: count.id }
+      );
 
-        let updateError = null;
-
-        // Update based on library_type
-        switch (item.library_type) {
-          case 'ingredients':
-            const { error: ingError } = await supabase
-              .from('ingredients_library')
-              .update({ 
-                current_stock_level: item.counted_quantity 
-              })
-              .eq('id', item.ingredient_id);
-            if (ingError) {
-              console.error('Error updating ingredient:', ingError);
-              updateError = ingError;
-            }
-            break;
-
-          case 'packaging':
-            const { error: packError } = await supabase
-              .from('packaging_library')
-              .update({ 
-                current_stock_level: item.counted_quantity 
-              })
-              .eq('id', item.ingredient_id);
-            if (packError) {
-              console.error('Error updating packaging:', packError);
-              updateError = packError;
-            }
-            break;
-
-          case 'foh':
-            const { error: fohError } = await supabase
-              .from('disposables_library')
-              .update({ 
-                current_stock_level: item.counted_quantity 
-              })
-              .eq('id', item.ingredient_id);
-            if (fohError) {
-              console.error('Error updating FOH item:', fohError);
-              updateError = fohError;
-            }
-            break;
-
-          default:
-            console.warn('Unknown library type:', item.library_type);
-        }
-
-        if (updateError) {
-          throw new Error(`Failed to update stock levels for ${item.library_type}`);
-        }
+      if (processError) {
+        throw new Error(`Failed to process approved count: ${processError.message}`);
       }
 
-      // Update stock count status
+      // Update stock count status to finalized
       const { error: countError } = await supabase
         .from('stock_counts')
         .update({
@@ -142,27 +89,49 @@ export default function FinalizeModal({
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
-          <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-2">What will happen:</h4>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
-                <span>All ingredient stock levels will be updated to match counted quantities</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
-                <span>Variance records will be saved for reporting</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
-                <span>Stock adjustment transactions will be created</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
-                <span>Count status will change to "Finalized"</span>
-              </li>
-            </ul>
-          </div>
+          {/* Approval status check */}
+          {count.status !== 'approved' && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="font-medium text-red-700 dark:text-red-400 mb-1">Approval Required</h4>
+                  <p className="text-sm text-red-600 dark:text-red-300">
+                    This stock count must be approved before it can be finalized. 
+                    {count.status === 'ready_for_approval' 
+                      ? ' The approver has been notified and will review it shortly.'
+                      : count.status === 'completed'
+                      ? ' Please mark it ready for approval first.'
+                      : ' Please wait for approval.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {count.status === 'approved' && (
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-4">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">What will happen:</h4>
+              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span>All stock levels will be updated to match counted quantities</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span>Variance records will be saved for reporting</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span>Stock adjustment transactions will be created</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span>Count status will change to "Finalized"</span>
+                </li>
+              </ul>
+            </div>
+          )}
 
           <div className="bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/30 rounded-lg p-4">
             <div className="flex items-start gap-2">
@@ -218,8 +187,8 @@ export default function FinalizeModal({
             </Button>
             <Button
               onClick={handleFinalize}
-              disabled={finalizing}
-              className="bg-emerald-600 hover:bg-emerald-700 min-w-[180px] text-white"
+              disabled={finalizing || count.status !== 'approved'}
+              className="bg-emerald-600 hover:bg-emerald-700 min-w-[180px] text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {finalizing ? (
                 <>

@@ -664,6 +664,14 @@ Deno.serve(async (req) => {
 
             if (existing && existing.length > 0) continue;
 
+            // Extract selectedAssets from equipment_config for task completion modal
+            let selectedAssets: string[] = [];
+            if (checklist.equipment_config && Array.isArray(checklist.equipment_config)) {
+              selectedAssets = checklist.equipment_config
+                .map((eq: any) => eq.assetId || eq.asset_id || eq.value || eq.id)
+                .filter(Boolean);
+            }
+            
             const { error } = await supabase.from("checklist_tasks").insert({
               site_checklist_id: checklist.id, // Link back to config
               template_id: checklist.template_id,
@@ -680,6 +688,7 @@ Deno.serve(async (req) => {
               task_data: {
                 source_type: "site_checklist",
                 equipment_config: checklist.equipment_config,
+                selectedAssets: selectedAssets, // Extract asset IDs for task completion modal
               },
             });
 

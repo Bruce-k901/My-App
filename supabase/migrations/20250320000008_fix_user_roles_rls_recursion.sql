@@ -1,13 +1,29 @@
 -- Fix infinite recursion in user_roles RLS policy
 -- The policy was querying user_roles to check admin status, causing recursion
 
--- Update seed_default_roles function to use SECURITY DEFINER
-CREATE OR REPLACE FUNCTION seed_default_roles(p_company_id UUID)
-RETURNS void
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
+-- This migration only runs if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist - exit early if they don't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'roles'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'user_roles'
+  ) THEN
+    RAISE NOTICE 'roles or user_roles tables do not exist - skipping user_roles_rls_recursion fix';
+    RETURN;
+  END IF;
+
+  -- Update seed_default_roles function to use SECURITY DEFINER
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION seed_default_roles(p_company_id UUID)
+    RETURNS void
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+    DECLARE
   v_owner_id UUID;
   v_admin_id UUID;
   v_hr_manager_id UUID;
@@ -139,38 +155,43 @@ BEGIN
   PERFORM seed_role_permissions(v_site_manager_id, 'site_manager');
   PERFORM seed_role_permissions(v_department_manager_id, 'department_manager');
   PERFORM seed_role_permissions(v_team_leader_id, 'team_leader');
-  PERFORM seed_role_permissions(v_employee_id, 'employee');
-END;
-$$ LANGUAGE plpgsql;
+    PERFORM seed_role_permissions(v_employee_id, 'employee');
+  END;
+  $func$ LANGUAGE plpgsql;
+  $sql_func1$;
 
--- Fix the RLS policy on user_roles to avoid circular dependency
--- Instead of querying user_roles in the policy, we'll use a helper function
-DROP POLICY IF EXISTS "Admins can manage user roles" ON user_roles;
+  -- Fix the RLS policy on user_roles to avoid circular dependency
+  -- Instead of querying user_roles in the policy, we'll use a helper function
+  DROP POLICY IF EXISTS "Admins can manage user roles" ON user_roles;
 
--- Create a helper function to check admin status without circular dependency
-CREATE OR REPLACE FUNCTION is_user_admin(p_profile_id UUID)
-RETURNS BOOLEAN
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM user_roles ur
-    JOIN roles r ON ur.role_id = r.id
-    WHERE ur.profile_id = p_profile_id
-    AND r.slug IN ('owner', 'admin')
-    AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-  );
-END;
-$$ LANGUAGE plpgsql;
+  -- Create a helper function to check admin status without circular dependency
+  EXECUTE $sql_func2$
+    CREATE OR REPLACE FUNCTION is_user_admin(p_profile_id UUID)
+    RETURNS BOOLEAN
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+    BEGIN
+      RETURN EXISTS (
+        SELECT 1 FROM user_roles ur
+        JOIN roles r ON ur.role_id = r.id
+        WHERE ur.profile_id = p_profile_id
+        AND r.slug IN ('owner', 'admin')
+        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
+      );
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func2$;
 
--- Now create the policy using the helper function
-CREATE POLICY "Admins can manage user roles"
-  ON user_roles FOR ALL
-  USING (
-    is_user_admin(auth.uid())
-  )
-  WITH CHECK (
-    is_user_admin(auth.uid())
-  );
+  -- Now create the policy using the helper function
+  CREATE POLICY "Admins can manage user roles"
+    ON user_roles FOR ALL
+    USING (
+      is_user_admin(auth.uid())
+    )
+    WITH CHECK (
+      is_user_admin(auth.uid())
+    );
+
+END $$;
 

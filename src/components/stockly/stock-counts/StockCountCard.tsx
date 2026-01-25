@@ -49,6 +49,20 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
             Pending Review
           </span>
         );
+      case 'ready_for_approval':
+        return (
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/40 text-sm">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            Ready for Approval
+          </span>
+        );
+      case 'completed':
+        return (
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Completed
+          </span>
+        );
       case 'rejected':
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-50 dark:bg-red-600/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-600/40 text-sm">
@@ -92,7 +106,12 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
   };
 
   const handleClick = () => {
-    router.push(`/dashboard/stockly/stock-counts/${count.id}`);
+    // Navigate directly to review page for completed, ready_for_approval, pending_review, approved, or finalized counts
+    if (['completed', 'ready_for_approval', 'pending_review', 'approved', 'finalized', 'locked'].includes(count.status)) {
+      router.push(`/dashboard/stockly/stock-counts/${count.id}/review`);
+    } else {
+      router.push(`/dashboard/stockly/stock-counts/${count.id}`);
+    }
   };
 
   const handleDelete = async (e: React.MouseEvent) => {

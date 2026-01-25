@@ -364,8 +364,8 @@ export default function CreateCountModal({
         if (itemsError) throw itemsError;
       }
 
-      // Navigate to review page
-      router.push(`/dashboard/stockly/stock-counts/${count.id}/review`);
+      // Navigate to detail page (NOT review page - new counts should go to detail page first)
+      router.push(`/dashboard/stockly/stock-counts/${count.id}`);
       onSuccess();
       onClose();
       

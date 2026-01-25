@@ -3,10 +3,26 @@
 -- ============================================
 -- Flexible, company-customisable RBAC with scope-based permissions
 
--- ============================================
--- TABLE: roles
--- ============================================
-CREATE TABLE IF NOT EXISTS roles (
+-- This migration only runs if required tables exist
+DO $$
+BEGIN
+  -- Check if required tables exist - exit early if they don't
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'companies'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+  ) THEN
+    RAISE NOTICE 'companies or profiles tables do not exist - skipping roles_permissions migration';
+    RETURN;
+  END IF;
+
+  -- ============================================
+  -- TABLE: roles
+  -- ============================================
+  EXECUTE $sql_table1$
+    CREATE TABLE IF NOT EXISTS roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
   
@@ -32,34 +48,41 @@ CREATE TABLE IF NOT EXISTS roles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_by UUID REFERENCES profiles(id),
   
-  UNIQUE(company_id, slug)
-);
+      UNIQUE(company_id, slug)
+    );
+  $sql_table1$;
 
--- Indexes for fast lookups
-CREATE INDEX IF NOT EXISTS idx_roles_company ON roles(company_id);
-CREATE INDEX IF NOT EXISTS idx_roles_slug ON roles(company_id, slug);
-CREATE INDEX IF NOT EXISTS idx_roles_hierarchy ON roles(company_id, hierarchy_level);
+  -- Indexes for fast lookups
+  CREATE INDEX IF NOT EXISTS idx_roles_company ON roles(company_id);
+  CREATE INDEX IF NOT EXISTS idx_roles_slug ON roles(company_id, slug);
+  CREATE INDEX IF NOT EXISTS idx_roles_hierarchy ON roles(company_id, hierarchy_level);
 
--- Updated_at trigger
-CREATE OR REPLACE FUNCTION update_roles_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+  -- Updated_at trigger
+  EXECUTE $sql_func1$
+    CREATE OR REPLACE FUNCTION update_roles_updated_at()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func1$;
 
-DROP TRIGGER IF EXISTS trg_roles_updated_at ON roles;
-CREATE TRIGGER trg_roles_updated_at
-  BEFORE UPDATE ON roles
-  FOR EACH ROW
-  EXECUTE FUNCTION update_roles_updated_at();
+  -- Create trigger only if table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'roles') THEN
+    DROP TRIGGER IF EXISTS trg_roles_updated_at ON roles;
+    CREATE TRIGGER trg_roles_updated_at
+      BEFORE UPDATE ON roles
+      FOR EACH ROW
+      EXECUTE FUNCTION update_roles_updated_at();
+  END IF;
 
--- ============================================
--- TABLE: permissions
--- ============================================
--- Reference table of all available permissions
-CREATE TABLE IF NOT EXISTS permissions (
+  -- ============================================
+  -- TABLE: permissions
+  -- ============================================
+  -- Reference table of all available permissions
+  EXECUTE $sql_table2$
+    CREATE TABLE IF NOT EXISTS permissions (
   id TEXT PRIMARY KEY, -- e.g., 'employees.view', 'payroll.export'
   
   -- Permission details
@@ -78,11 +101,12 @@ CREATE TABLE IF NOT EXISTS permissions (
   -- Sorting
   sort_order INTEGER NOT NULL DEFAULT 0,
   
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  $sql_table2$;
 
--- Seed the permissions
-INSERT INTO permissions (id, area, action, name, description, sensitivity, supports_scope, sort_order) VALUES
+  -- Seed the permissions
+  INSERT INTO permissions (id, area, action, name, description, sensitivity, supports_scope, sort_order) VALUES
   -- EMPLOYEES
   ('employees.view', 'employees', 'view', 'View Employees', 'View employee directory and profiles', 'medium', true, 10),
   ('employees.view_contact', 'employees', 'view', 'View Contact Details', 'View phone, email, address', 'high', true, 11),
@@ -155,11 +179,12 @@ INSERT INTO permissions (id, area, action, name, description, sensitivity, suppo
   ('reports.export', 'reports', 'export', 'Export Reports', 'Download report data', 'high', true, 1010)
 ON CONFLICT (id) DO NOTHING;
 
--- ============================================
--- TABLE: role_permissions
--- ============================================
--- Maps permissions to roles with optional scope
-CREATE TABLE IF NOT EXISTS role_permissions (
+  -- ============================================
+  -- TABLE: role_permissions
+  -- ============================================
+  -- Maps permissions to roles with optional scope
+  EXECUTE $sql_table3$
+    CREATE TABLE IF NOT EXISTS role_permissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
   permission_id TEXT NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
@@ -171,19 +196,39 @@ CREATE TABLE IF NOT EXISTS role_permissions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   granted_by UUID REFERENCES profiles(id),
   
-  UNIQUE(role_id, permission_id)
-);
+      UNIQUE(role_id, permission_id)
+    );
+  $sql_table3$;
 
-CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id);
-CREATE INDEX IF NOT EXISTS idx_role_permissions_permission ON role_permissions(permission_id);
+  CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id);
+  CREATE INDEX IF NOT EXISTS idx_role_permissions_permission ON role_permissions(permission_id);
 
--- ============================================
--- TABLE: user_roles
--- ============================================
--- Assigns roles to users (a user can have multiple roles)
--- Handle existing table that might have different schema (from stockly migration)
-DO $$
-BEGIN
+  -- ============================================
+  -- TABLE: user_roles
+  -- ============================================
+  -- Assigns roles to users (a user can have multiple roles)
+  -- Handle existing table that might have different schema (from stockly migration)
+  -- Check if old user_roles table exists (with user_id, company_id, role text)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'user_roles'
+    AND EXISTS (
+      SELECT 1 FROM information_schema.columns 
+      WHERE table_schema = 'public' AND table_name = 'user_roles' AND column_name = 'user_id'
+    )
+  ) THEN
+    -- Drop the old table if it exists (it has incompatible schema)
+    -- Note: This will lose any existing data, but the old schema is incompatible
+    DROP TABLE IF EXISTS user_roles CASCADE;
+  END IF;
+  
+  -- Create the new table with correct schema
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'user_roles'
+  ) THEN
+    EXECUTE $sql_table4$
+      CREATE TABLE user_roles (
   -- Check if old user_roles table exists (with user_id, company_id, role text)
   IF EXISTS (
     SELECT 1 FROM information_schema.tables 
@@ -214,41 +259,40 @@ BEGIN
       region_id UUID, -- Role applies to this region only (FK added conditionally below)
       
       -- Metadata
-      assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      assigned_by UUID REFERENCES profiles(id),
-      expires_at TIMESTAMPTZ -- Optional expiry
-    );
+        assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        assigned_by UUID REFERENCES profiles(id),
+        expires_at TIMESTAMPTZ -- Optional expiry
+      );
+    $sql_table4$;
   END IF;
-END $$;
 
--- Ensure columns exist (in case table was created without them in a previous failed migration)
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_roles' AND column_name = 'site_id') THEN
-    ALTER TABLE user_roles ADD COLUMN site_id UUID;
+  -- Ensure columns exist (in case table was created without them in a previous failed migration)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_roles') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'user_roles' AND column_name = 'site_id') THEN
+      ALTER TABLE user_roles ADD COLUMN site_id UUID;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'user_roles' AND column_name = 'area_id') THEN
+      ALTER TABLE user_roles ADD COLUMN area_id UUID;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'user_roles' AND column_name = 'region_id') THEN
+      ALTER TABLE user_roles ADD COLUMN region_id UUID;
+    END IF;
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_roles' AND column_name = 'area_id') THEN
-    ALTER TABLE user_roles ADD COLUMN area_id UUID;
+
+  -- Create unique index to prevent duplicate role assignments
+  -- This handles NULL values properly by treating them as distinct
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_roles') THEN
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_user_roles_unique_assignment 
+    ON user_roles (profile_id, role_id, COALESCE(site_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(area_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(region_id, '00000000-0000-0000-0000-000000000000'::uuid));
+
+    CREATE INDEX IF NOT EXISTS idx_user_roles_profile ON user_roles(profile_id);
+    CREATE INDEX IF NOT EXISTS idx_user_roles_role ON user_roles(role_id);
+    CREATE INDEX IF NOT EXISTS idx_user_roles_site ON user_roles(site_id) WHERE site_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_user_roles_area ON user_roles(area_id) WHERE area_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_user_roles_region ON user_roles(region_id) WHERE region_id IS NOT NULL;
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_roles' AND column_name = 'region_id') THEN
-    ALTER TABLE user_roles ADD COLUMN region_id UUID;
-  END IF;
-END $$;
 
--- Create unique index to prevent duplicate role assignments
--- This handles NULL values properly by treating them as distinct
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_roles_unique_assignment 
-ON user_roles (profile_id, role_id, COALESCE(site_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(area_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(region_id, '00000000-0000-0000-0000-000000000000'::uuid));
-
-CREATE INDEX IF NOT EXISTS idx_user_roles_profile ON user_roles(profile_id);
-CREATE INDEX IF NOT EXISTS idx_user_roles_role ON user_roles(role_id);
-CREATE INDEX IF NOT EXISTS idx_user_roles_site ON user_roles(site_id) WHERE site_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_user_roles_area ON user_roles(area_id) WHERE area_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_user_roles_region ON user_roles(region_id) WHERE region_id IS NOT NULL;
-
--- Add foreign key constraints conditionally (only if referenced tables exist)
-DO $$
-BEGIN
+  -- Add foreign key constraints conditionally (only if referenced tables exist)
   -- Add site_id foreign key if sites table exists
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
     IF NOT EXISTS (
@@ -302,20 +346,20 @@ BEGIN
       FOREIGN KEY (region_id) REFERENCES company_regions(id) ON DELETE CASCADE;
     END IF;
   END IF;
-END $$;
 
--- ============================================
--- FUNCTIONS: Seed Default Roles
--- ============================================
+  -- ============================================
+  -- FUNCTIONS: Seed Default Roles
+  -- ============================================
 
--- Function to seed default roles for a company
--- SECURITY DEFINER allows this function to bypass RLS when inserting roles
-CREATE OR REPLACE FUNCTION seed_default_roles(p_company_id UUID)
-RETURNS void
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
+  -- Function to seed default roles for a company
+  -- SECURITY DEFINER allows this function to bypass RLS when inserting roles
+  EXECUTE $sql_func2$
+    CREATE OR REPLACE FUNCTION seed_default_roles(p_company_id UUID)
+    RETURNS void
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+    DECLARE
   v_owner_id UUID;
   v_admin_id UUID;
   v_hr_manager_id UUID;
@@ -447,14 +491,16 @@ BEGIN
   PERFORM seed_role_permissions(v_site_manager_id, 'site_manager');
   PERFORM seed_role_permissions(v_department_manager_id, 'department_manager');
   PERFORM seed_role_permissions(v_team_leader_id, 'team_leader');
-  PERFORM seed_role_permissions(v_employee_id, 'employee');
-END;
-$$ LANGUAGE plpgsql;
+    PERFORM seed_role_permissions(v_employee_id, 'employee');
+    END;
+    $func$ LANGUAGE plpgsql;
+  $sql_func2$;
 
--- Function to seed default permissions for a role
-CREATE OR REPLACE FUNCTION seed_role_permissions(p_role_id UUID, p_role_slug TEXT)
-RETURNS void AS $$
-BEGIN
+  -- Function to seed default permissions for a role
+  EXECUTE $sql_func3$
+    CREATE OR REPLACE FUNCTION seed_role_permissions(p_role_id UUID, p_role_slug TEXT)
+    RETURNS void AS $func$
+    BEGIN
   CASE p_role_slug
     WHEN 'owner' THEN
       -- Owner gets ALL permissions with ALL scope
@@ -616,104 +662,107 @@ BEGIN
         (p_role_id, 'onboarding.view', 'self'),
         (p_role_id, 'settings.view', 'self')
       ON CONFLICT (role_id, permission_id) DO UPDATE SET scope = EXCLUDED.scope;
-  END CASE;
-END;
-$$ LANGUAGE plpgsql;
+    END CASE;
+  END;
+  $func$ LANGUAGE plpgsql;
+  $sql_func3$;
 
--- ============================================
--- ROW LEVEL SECURITY
--- ============================================
+  -- ============================================
+  -- ROW LEVEL SECURITY
+  -- ============================================
 
--- Roles: Company members can view, admins can edit
-ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
+  -- Roles: Company members can view, admins can edit
+  ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Users can view their company roles" ON roles;
-CREATE POLICY "Users can view their company roles"
-  ON roles FOR SELECT
-  USING (
-    company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
-  );
+  DROP POLICY IF EXISTS "Users can view their company roles" ON roles;
+  CREATE POLICY "Users can view their company roles"
+    ON roles FOR SELECT
+    USING (
+      company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
+    );
 
-DROP POLICY IF EXISTS "Admins can manage roles" ON roles;
-CREATE POLICY "Admins can manage roles"
-  ON roles FOR ALL
-  USING (
-    company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
-    AND EXISTS (
-      SELECT 1 FROM user_roles ur
-      JOIN roles r ON ur.role_id = r.id
-      WHERE ur.profile_id = auth.uid()
-      AND r.slug IN ('owner', 'admin')
-      AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-    )
-  );
+  DROP POLICY IF EXISTS "Admins can manage roles" ON roles;
+  CREATE POLICY "Admins can manage roles"
+    ON roles FOR ALL
+    USING (
+      company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
+      AND EXISTS (
+        SELECT 1 FROM user_roles ur
+        JOIN roles r ON ur.role_id = r.id
+        WHERE ur.profile_id = auth.uid()
+        AND r.slug IN ('owner', 'admin')
+        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
+      )
+    );
 
--- Permissions: Anyone can read (reference table)
-ALTER TABLE permissions ENABLE ROW LEVEL SECURITY;
+  -- Permissions: Anyone can read (reference table)
+  ALTER TABLE permissions ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Anyone can view permissions" ON permissions;
-CREATE POLICY "Anyone can view permissions"
-  ON permissions FOR SELECT
-  USING (true);
+  DROP POLICY IF EXISTS "Anyone can view permissions" ON permissions;
+  CREATE POLICY "Anyone can view permissions"
+    ON permissions FOR SELECT
+    USING (true);
 
--- Role Permissions: Follow role access
-ALTER TABLE role_permissions ENABLE ROW LEVEL SECURITY;
+  -- Role Permissions: Follow role access
+  ALTER TABLE role_permissions ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Users can view their company role permissions" ON role_permissions;
-CREATE POLICY "Users can view their company role permissions"
-  ON role_permissions FOR SELECT
-  USING (
-    role_id IN (
-      SELECT id FROM roles 
-      WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
-    )
-  );
+  DROP POLICY IF EXISTS "Users can view their company role permissions" ON role_permissions;
+  CREATE POLICY "Users can view their company role permissions"
+    ON role_permissions FOR SELECT
+    USING (
+      role_id IN (
+        SELECT id FROM roles 
+        WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
+      )
+    );
 
-DROP POLICY IF EXISTS "Admins can manage role permissions" ON role_permissions;
-CREATE POLICY "Admins can manage role permissions"
-  ON role_permissions FOR ALL
-  USING (
-    role_id IN (
-      SELECT id FROM roles 
-      WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
-    )
-    AND EXISTS (
-      SELECT 1 FROM user_roles ur
-      JOIN roles r ON ur.role_id = r.id
-      WHERE ur.profile_id = auth.uid()
-      AND r.slug IN ('owner', 'admin')
-      AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-    )
-  );
+  DROP POLICY IF EXISTS "Admins can manage role permissions" ON role_permissions;
+  CREATE POLICY "Admins can manage role permissions"
+    ON role_permissions FOR ALL
+    USING (
+      role_id IN (
+        SELECT id FROM roles 
+        WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
+      )
+      AND EXISTS (
+        SELECT 1 FROM user_roles ur
+        JOIN roles r ON ur.role_id = r.id
+        WHERE ur.profile_id = auth.uid()
+        AND r.slug IN ('owner', 'admin')
+        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
+      )
+    );
 
--- User Roles: Company members can view, admins can assign
-ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+  -- User Roles: Company members can view, admins can assign
+  ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Users can view their company user roles" ON user_roles;
-CREATE POLICY "Users can view their company user roles"
-  ON user_roles FOR SELECT
-  USING (
-    profile_id IN (
-      SELECT id FROM profiles 
-      WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
-    )
-  );
+  DROP POLICY IF EXISTS "Users can view their company user roles" ON user_roles;
+  CREATE POLICY "Users can view their company user roles"
+    ON user_roles FOR SELECT
+    USING (
+      profile_id IN (
+        SELECT id FROM profiles 
+        WHERE company_id = (SELECT company_id FROM profiles WHERE id = auth.uid())
+      )
+    );
 
-DROP POLICY IF EXISTS "Users can view own roles" ON user_roles;
-CREATE POLICY "Users can view own roles"
-  ON user_roles FOR SELECT
-  USING (profile_id = auth.uid());
+  DROP POLICY IF EXISTS "Users can view own roles" ON user_roles;
+  CREATE POLICY "Users can view own roles"
+    ON user_roles FOR SELECT
+    USING (profile_id = auth.uid());
 
-DROP POLICY IF EXISTS "Admins can manage user roles" ON user_roles;
-CREATE POLICY "Admins can manage user roles"
-  ON user_roles FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles ur
-      JOIN roles r ON ur.role_id = r.id
-      WHERE ur.profile_id = auth.uid()
-      AND r.slug IN ('owner', 'admin')
-      AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-    )
-  );
+  DROP POLICY IF EXISTS "Admins can manage user roles" ON user_roles;
+  CREATE POLICY "Admins can manage user roles"
+    ON user_roles FOR ALL
+    USING (
+      EXISTS (
+        SELECT 1 FROM user_roles ur
+        JOIN roles r ON ur.role_id = r.id
+        WHERE ur.profile_id = auth.uid()
+        AND r.slug IN ('owner', 'admin')
+        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
+      )
+    );
+
+END $$;
 

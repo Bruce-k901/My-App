@@ -8,6 +8,17 @@
 -- Add any missing columns that the application expects
 DO $$
 BEGIN
+  -- Check if stockly schema and suppliers table exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'suppliers'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.suppliers table does not exist - skipping ensure_all_supplier_columns migration';
+    RETURN;
+  END IF;
+
   -- Check and add minimum_order_value if missing
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
@@ -112,52 +123,83 @@ DO $$
 DECLARE
   v_columns TEXT;
 BEGIN
-  SELECT string_agg(column_name || ' (' || data_type || ')', E'\n  ' ORDER BY ordinal_position)
-  INTO v_columns
-  FROM information_schema.columns
-  WHERE table_schema = 'stockly'
-    AND table_name = 'suppliers';
-  
-  RAISE NOTICE '📋 Final columns in stockly.suppliers:';
-  RAISE NOTICE '  %', v_columns;
+  -- Only show columns if table exists
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'suppliers'
+  ) THEN
+    SELECT string_agg(column_name || ' (' || data_type || ')', E'\n  ' ORDER BY ordinal_position)
+    INTO v_columns
+    FROM information_schema.columns
+    WHERE table_schema = 'stockly'
+      AND table_name = 'suppliers';
+    
+    RAISE NOTICE '📋 Final columns in stockly.suppliers:';
+    RAISE NOTICE '  %', v_columns;
+  END IF;
 END $$;
 
 -- Drop and recreate the view to ensure it includes all columns
-DROP VIEW IF EXISTS public.suppliers CASCADE;
+-- Only if the underlying table exists
+DO $$
+BEGIN
+  -- Check if stockly schema and suppliers table exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_namespace WHERE nspname = 'stockly'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'stockly' AND table_name = 'suppliers'
+  ) THEN
+    RAISE NOTICE 'stockly schema or stockly.suppliers table does not exist - skipping view recreation';
+    RETURN;
+  END IF;
 
--- Recreate with SELECT * to include all columns
-CREATE VIEW public.suppliers AS
-SELECT * FROM stockly.suppliers;
+  -- Drop existing view if it exists
+  DROP VIEW IF EXISTS public.suppliers CASCADE;
 
--- Set security_invoker
-ALTER VIEW public.suppliers SET (security_invoker = true);
+  -- Recreate with SELECT * to include all columns
+  EXECUTE $sql_view1$
+    CREATE VIEW public.suppliers AS
+    SELECT * FROM stockly.suppliers;
+  $sql_view1$;
 
--- Grant permissions
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.suppliers TO authenticated;
+  -- Set security_invoker
+  ALTER VIEW public.suppliers SET (security_invoker = true);
+
+  -- Grant permissions
+  GRANT SELECT, INSERT, UPDATE, DELETE ON public.suppliers TO authenticated;
+
+  RAISE NOTICE 'View public.suppliers recreated successfully';
+END $$;
 
 -- Recreate triggers
 DO $$
 BEGIN
-  DROP TRIGGER IF EXISTS suppliers_insert_trigger ON public.suppliers;
-  DROP TRIGGER IF EXISTS suppliers_update_trigger ON public.suppliers;
-  DROP TRIGGER IF EXISTS suppliers_delete_trigger ON public.suppliers;
-  
-  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'insert_suppliers' AND pronamespace = 'public'::regnamespace) THEN
-    CREATE TRIGGER suppliers_insert_trigger
-      INSTEAD OF INSERT ON public.suppliers
-      FOR EACH ROW EXECUTE FUNCTION public.insert_suppliers();
-  END IF;
-  
-  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_suppliers' AND pronamespace = 'public'::regnamespace) THEN
-    CREATE TRIGGER suppliers_update_trigger
-      INSTEAD OF UPDATE ON public.suppliers
-      FOR EACH ROW EXECUTE FUNCTION public.update_suppliers();
-  END IF;
-  
-  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'delete_suppliers' AND pronamespace = 'public'::regnamespace) THEN
-    CREATE TRIGGER suppliers_delete_trigger
-      INSTEAD OF DELETE ON public.suppliers
-      FOR EACH ROW EXECUTE FUNCTION public.delete_suppliers();
+  -- Only create triggers if the view exists
+  IF EXISTS (SELECT 1 FROM information_schema.views WHERE table_schema = 'public' AND table_name = 'suppliers') THEN
+    DROP TRIGGER IF EXISTS suppliers_insert_trigger ON public.suppliers;
+    DROP TRIGGER IF EXISTS suppliers_update_trigger ON public.suppliers;
+    DROP TRIGGER IF EXISTS suppliers_delete_trigger ON public.suppliers;
+    
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'insert_suppliers' AND pronamespace = 'public'::regnamespace) THEN
+      CREATE TRIGGER suppliers_insert_trigger
+        INSTEAD OF INSERT ON public.suppliers
+        FOR EACH ROW EXECUTE FUNCTION public.insert_suppliers();
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_suppliers' AND pronamespace = 'public'::regnamespace) THEN
+      CREATE TRIGGER suppliers_update_trigger
+        INSTEAD OF UPDATE ON public.suppliers
+        FOR EACH ROW EXECUTE FUNCTION public.update_suppliers();
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'delete_suppliers' AND pronamespace = 'public'::regnamespace) THEN
+      CREATE TRIGGER suppliers_delete_trigger
+        INSTEAD OF DELETE ON public.suppliers
+        FOR EACH ROW EXECUTE FUNCTION public.delete_suppliers();
+    END IF;
+  ELSE
+    RAISE NOTICE 'View public.suppliers does not exist - skipping trigger creation';
   END IF;
 END $$;
 
@@ -173,8 +215,10 @@ BEGIN
   PERFORM pg_notify('pgrst', 'reload schema');
   PERFORM pg_notify('pgrst', 'reload');
   
-  -- Force a query to trigger schema read
-  PERFORM NULL FROM public.suppliers LIMIT 1;
+  -- Force a query to trigger schema read (only if view exists)
+  IF EXISTS (SELECT 1 FROM information_schema.views WHERE table_schema = 'public' AND table_name = 'suppliers') THEN
+    PERFORM NULL FROM public.suppliers LIMIT 1;
+  END IF;
 END $$;
 
 -- Verify view columns
@@ -182,35 +226,40 @@ DO $$
 DECLARE
   v_view_columns TEXT;
 BEGIN
-  SELECT string_agg(column_name, ', ' ORDER BY ordinal_position)
-  INTO v_view_columns
-  FROM information_schema.columns
-  WHERE table_schema = 'public' 
-    AND table_name = 'suppliers';
-  
-  RAISE NOTICE '📋 Columns in public.suppliers view:';
-  RAISE NOTICE '%', v_view_columns;
-  
-  -- Check for critical columns
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
+  -- Only verify if the view exists
+  IF EXISTS (SELECT 1 FROM information_schema.views WHERE table_schema = 'public' AND table_name = 'suppliers') THEN
+    SELECT string_agg(column_name, ', ' ORDER BY ordinal_position)
+    INTO v_view_columns
+    FROM information_schema.columns
     WHERE table_schema = 'public' 
-      AND table_name = 'suppliers'
-      AND column_name = 'minimum_order_value'
-  ) THEN
-    RAISE NOTICE '✅ minimum_order_value is in the view';
+      AND table_name = 'suppliers';
+    
+    RAISE NOTICE '📋 Columns in public.suppliers view:';
+    RAISE NOTICE '%', v_view_columns;
+    
+    -- Check for critical columns
+    IF EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' 
+        AND table_name = 'suppliers'
+        AND column_name = 'minimum_order_value'
+    ) THEN
+      RAISE NOTICE '✅ minimum_order_value is in the view';
+    ELSE
+      RAISE WARNING '❌ minimum_order_value is MISSING from the view';
+    END IF;
+    
+    IF EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' 
+        AND table_name = 'suppliers'
+        AND column_name = 'delivery_days'
+    ) THEN
+      RAISE NOTICE '✅ delivery_days is in the view';
+    ELSE
+      RAISE WARNING '❌ delivery_days is MISSING from the view';
+    END IF;
   ELSE
-    RAISE WARNING '❌ minimum_order_value is MISSING from the view';
-  END IF;
-  
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public' 
-      AND table_name = 'suppliers'
-      AND column_name = 'delivery_days'
-  ) THEN
-    RAISE NOTICE '✅ delivery_days is in the view';
-  ELSE
-    RAISE WARNING '❌ delivery_days is MISSING from the view';
+    RAISE NOTICE 'View public.suppliers does not exist - skipping verification';
   END IF;
 END $$;
