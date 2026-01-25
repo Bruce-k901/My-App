@@ -1,3 +1,5 @@
+'use client';
+
 import dynamic from 'next/dynamic';
 
 // Prevent SSR for this page to avoid React Client Manifest errors
