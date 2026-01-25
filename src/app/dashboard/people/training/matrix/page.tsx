@@ -26,7 +26,7 @@ interface Course {
   is_mandatory: boolean;
 }
 
-export default function ComplianceMatrixPage() {
+function ComplianceMatrixPage() {
   const { profile } = useAppContext();
   const [data, setData] = useState<ComplianceMatrixEntry[]>([]);
   const [loading, setLoading] = useState(true);
