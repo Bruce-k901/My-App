@@ -1245,7 +1245,33 @@ export default function TaskCompletionModal({
       // Find the specific asset that triggered monitoring
       const outOfRangeAsset = selectedAssets.find(a => a.id === targetAssetId)
       const savedTemp = task.task_data?.temperatures?.find((t: any) => t.assetId === targetAssetId)
-      const assetNickname = savedTemp?.nickname || ''
+      
+      // Extract nickname from multiple sources (priority order):
+      // 1. Asset's nickname property (if loaded from DB)
+      // 2. Saved temp's nickname
+      // 3. Repeatable field data
+      // 4. Empty string as fallback
+      let assetNickname = outOfRangeAsset?.nickname || 
+                         savedTemp?.nickname || 
+                         ''
+      
+      // If still no nickname, try to get it from repeatable field data
+      if (!assetNickname && task.template?.repeatable_field_name) {
+        const repeatableFieldName = task.template.repeatable_field_name
+        const repeatableData = task.task_data?.[repeatableFieldName]
+        if (Array.isArray(repeatableData)) {
+          const matchingItem = repeatableData.find((item: any) => {
+            const itemId = item.assetId || item.asset_id || item.id || item.value
+            return itemId === targetAssetId || String(itemId) === String(targetAssetId)
+          })
+          if (matchingItem) {
+            assetNickname = matchingItem.nickname || 
+                           (matchingItem.id && typeof matchingItem.id === 'object' ? matchingItem.id.nickname : null) ||
+                           (matchingItem.value && typeof matchingItem.value === 'object' ? matchingItem.value.nickname : null) ||
+                           ''
+          }
+        }
+      }
       
       if (task.task_data && typeof task.task_data === 'object') {
         // Deep copy the original task_data to preserve ALL features
@@ -1330,13 +1356,47 @@ export default function TaskCompletionModal({
         }
         
         // If there's a repeatable field, include it with only the out-of-range asset
+        // CRITICAL: Preserve the full structure from original task_data if it exists
         const repeatableFieldName = task.template?.repeatable_field_name
-        if (repeatableFieldName && outOfRangeAsset) {
-          monitoringTaskData[repeatableFieldName] = [{
-            assetId: targetAssetId,
-            nickname: assetNickname,
-            equipment: outOfRangeAsset.name
-          }]
+        if (repeatableFieldName) {
+          // Try to get the original item structure from task_data
+          const originalRepeatableData = task.task_data?.[repeatableFieldName]
+          if (Array.isArray(originalRepeatableData)) {
+            const originalItem = originalRepeatableData.find((item: any) => {
+              const itemId = item.assetId || item.asset_id || item.id || item.value
+              return itemId === targetAssetId || String(itemId) === String(targetAssetId)
+            })
+            
+            if (originalItem) {
+              // Preserve original structure but ensure nickname is set
+              monitoringTaskData[repeatableFieldName] = [{
+                ...originalItem,
+                assetId: targetAssetId,
+                nickname: assetNickname || originalItem.nickname || 
+                         (originalItem.id && typeof originalItem.id === 'object' ? originalItem.id.nickname : null) ||
+                         (originalItem.value && typeof originalItem.value === 'object' ? originalItem.value.nickname : null) ||
+                         ''
+              }]
+            } else if (outOfRangeAsset) {
+              // Fallback: create new structure
+              monitoringTaskData[repeatableFieldName] = [{
+                assetId: targetAssetId,
+                nickname: assetNickname,
+                equipment: outOfRangeAsset.name,
+                name: outOfRangeAsset.name,
+                label: outOfRangeAsset.name
+              }]
+            }
+          } else if (outOfRangeAsset) {
+            // Fallback: create new structure
+            monitoringTaskData[repeatableFieldName] = [{
+              assetId: targetAssetId,
+              nickname: assetNickname,
+              equipment: outOfRangeAsset.name,
+              name: outOfRangeAsset.name,
+              label: outOfRangeAsset.name
+            }]
+          }
         }
       }
 
@@ -4595,17 +4655,6 @@ export default function TaskCompletionModal({
                             <span className="text-sm text-gray-600 dark:text-white/60">°C</span>
                           </div>
                         </div>
-                        
-                        {/* Temperature Range Info - Always show if range exists */}
-                        {range ? (
-                          <p className="text-xs text-gray-500 dark:text-white/50 ml-2 mt-1">
-                            Range: {range.min !== null ? `${range.min}°C` : 'No min'} - {range.max !== null ? `${range.max}°C` : 'No max'}
-                          </p>
-                        ) : (
-                          <p className="text-xs text-gray-400 dark:text-white/40 ml-2 mt-1 italic">
-                            No temperature range set
-                          </p>
-                        )}
                         
                         {/* Temperature Warning - Show for out of range asset */}
                         {(() => {
