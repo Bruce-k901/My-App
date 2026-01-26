@@ -363,8 +363,21 @@ export default function TemperatureLogsPage() {
             const repeatableField = taskData[taskDetails.repeatableFieldName];
             if (Array.isArray(repeatableField)) {
               repeatableField.forEach((item: any) => {
-                const assetId = item.value || item.asset_id || item.id;
-                if (assetId) {
+                // Properly extract asset ID from nested structures
+                let assetId: string | null = null
+                const rawId = item.value || item.asset_id || item.id
+                
+                if (rawId) {
+                  if (typeof rawId === 'string') {
+                    assetId = rawId
+                  } else if (typeof rawId === 'object' && rawId !== null) {
+                    // Extract from nested object
+                    assetId = rawId.id || rawId.value || rawId.asset_id || rawId.assetId
+                  }
+                }
+                
+                // Only add if we have a valid asset ID (not "[object Object]")
+                if (assetId && typeof assetId === 'string' && !assetId.includes('[object')) {
                   assetsFromTaskData.push({
                     asset_id: assetId,
                     asset_name: item.label || item.name || item.asset_name || 'Unknown Equipment'
@@ -376,14 +389,68 @@ export default function TemperatureLogsPage() {
           
           // METHOD 1: Extract from equipment_list (preferred format)
           if (completionData.equipment_list && Array.isArray(completionData.equipment_list)) {
-            completionData.equipment_list.forEach((eq: any) => {
-              const assetId = eq.asset_id;
-              if (assetId) {
+            completionData.equipment_list.forEach((eq: any, index: number) => {
+              // CRITICAL: Properly extract asset ID, handling "[object Object]" and nested objects
+              let assetId: string | null = null
+              const rawId = eq.asset_id || eq.assetId || eq.id || eq.value
+              
+              if (rawId) {
+                if (typeof rawId === 'string') {
+                  // Skip if it's "[object Object]" - try to find real ID from task_data
+                  if (rawId === '[object Object]' || rawId.includes('[object')) {
+                    // Try to find real asset ID from task_data by index
+                    if (assetsFromTaskData.length > index) {
+                      const taskDataAsset = assetsFromTaskData[index]
+                      if (taskDataAsset && taskDataAsset.asset_id) {
+                        assetId = typeof taskDataAsset.asset_id === 'string' 
+                          ? taskDataAsset.asset_id 
+                          : (taskDataAsset.asset_id.id || taskDataAsset.asset_id.value || taskDataAsset.asset_id.asset_id)
+                      }
+                    }
+                    // If still no ID, try to match by asset_name
+                    if (!assetId && eq.asset_name) {
+                      const matchingAsset = assetsFromTaskData.find(a => 
+                        a.asset_name === eq.asset_name || 
+                        eq.asset_name?.includes(a.asset_name) ||
+                        a.asset_name?.includes(eq.asset_name)
+                      )
+                      if (matchingAsset && matchingAsset.asset_id) {
+                        assetId = typeof matchingAsset.asset_id === 'string'
+                          ? matchingAsset.asset_id
+                          : (matchingAsset.asset_id.id || matchingAsset.asset_id.value || matchingAsset.asset_id.asset_id)
+                      }
+                    }
+                  } else {
+                    assetId = rawId
+                  }
+                } else if (typeof rawId === 'object' && rawId !== null) {
+                  // Extract from nested object
+                  assetId = rawId.id || rawId.value || rawId.asset_id || rawId.assetId
+                }
+              }
+              
+              // Only process if we have a valid asset ID
+              if (assetId && typeof assetId === 'string' && !assetId.includes('[object')) {
                 const tempValue = eq.temperature !== undefined && eq.temperature !== null ? eq.temperature 
                   : (eq.reading !== undefined && eq.reading !== null ? eq.reading 
                   : (eq.temp !== undefined && eq.temp !== null ? eq.temp : null));
                 
-                if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
+                // Handle 0 as valid temperature
+                if (tempValue === 0 || tempValue === '0') {
+                  const numValue = 0
+                  allLogs.push({
+                    id: `${record.id}_${assetId}`,
+                    asset_id: assetId,
+                    reading: numValue,
+                    unit: '°C',
+                    recorded_at: eq.recorded_at || record.completed_at,
+                    day_part: taskDetails?.daypart || null,
+                    status: eq.status || 'ok',
+                    notes: `Recorded via task: ${taskDetails?.templateName || 'Unknown Task'}`,
+                    recorded_by: record.completed_by,
+                    profiles: profile || null
+                  });
+                } else if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
                   const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue;
                   if (!isNaN(numValue)) {
                     allLogs.push({
@@ -407,8 +474,19 @@ export default function TemperatureLogsPage() {
           // METHOD 2: Extract from temperatures array
           if (completionData.temperatures && Array.isArray(completionData.temperatures)) {
             completionData.temperatures.forEach((temp: any) => {
-              const assetId = temp.assetId || temp.asset_id;
-              if (assetId) {
+              // Properly extract asset ID
+              let assetId: string | null = null
+              const rawId = temp.assetId || temp.asset_id || temp.id || temp.value
+              
+              if (rawId) {
+                if (typeof rawId === 'string' && !rawId.includes('[object')) {
+                  assetId = rawId
+                } else if (typeof rawId === 'object' && rawId !== null) {
+                  assetId = rawId.id || rawId.value || rawId.asset_id || rawId.assetId
+                }
+              }
+              
+              if (assetId && typeof assetId === 'string' && !assetId.includes('[object')) {
                 const tempValue = temp.temp !== undefined && temp.temp !== null ? temp.temp 
                   : (temp.temperature !== undefined && temp.temperature !== null ? temp.temperature 
                   : (temp.reading !== undefined && temp.reading !== null ? temp.reading : null));
