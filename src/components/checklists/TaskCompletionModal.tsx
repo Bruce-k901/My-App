@@ -575,13 +575,15 @@ export default function TaskCompletionModal({
                 });
                 
                 // Merge: replace constructed assets with real assets where IDs match, keep constructed ones for items without IDs
+                // CRITICAL: Preserve nickname from constructed asset (from repeatable field data) as it's the source of truth
                 const allAssets = constructedAssets.map((constructed: any) => {
                   const realAsset = assetsWithSite.find((real: any) => real.id === constructed.id)
                   if (realAsset) {
-                    // Use real asset data, but preserve nickname if it was in the constructed asset
+                    // Use real asset data, but ALWAYS preserve nickname from constructed asset (repeatable field data)
+                    // The nickname in repeatable field data is the source of truth for display
                     return {
                       ...realAsset,
-                      nickname: constructed.nickname || realAsset.nickname || ''
+                      nickname: constructed.nickname || '' // Prioritize nickname from repeatable field data
                     }
                   }
                   return constructed // Keep constructed asset if no real asset found
@@ -630,15 +632,44 @@ export default function TaskCompletionModal({
         if (assetsError) {
           console.error('❌ Error loading assets:', assetsError)
         } else if (assetsData && assetsData.length > 0) {
+          // CRITICAL: Extract nicknames from repeatable field data and merge with assets
+          const repeatableFieldName = task.template?.repeatable_field_name
+          const repeatableData = repeatableFieldName ? (taskData[repeatableFieldName] as any[]) : null
+          
           const assetsWithSite = assetsData.map((asset: any) => {
             const site = Array.isArray(asset.sites) ? asset.sites[0] : asset.sites;
+            
+            // Try to find nickname from repeatable field data
+            let nickname = ''
+            if (repeatableData && Array.isArray(repeatableData)) {
+              const matchingItem = repeatableData.find((item: any) => {
+                // Extract ID from various possible structures
+                const itemId = item.assetId || item.asset_id || item.id || item.value
+                // Handle nested structures
+                const itemIdStr = typeof itemId === 'string' 
+                  ? itemId 
+                  : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                return itemIdStr === asset.id || String(itemIdStr) === String(asset.id)
+              })
+              
+              if (matchingItem) {
+                // Extract nickname from matching item
+                nickname = matchingItem.nickname || 
+                          (matchingItem.id && typeof matchingItem.id === 'object' ? matchingItem.id.nickname : null) ||
+                          (matchingItem.value && typeof matchingItem.value === 'object' ? matchingItem.value.nickname : null) ||
+                          (matchingItem.asset_id && typeof matchingItem.asset_id === 'object' ? matchingItem.asset_id.nickname : null) ||
+                          ''
+              }
+            }
+            
             return {
               ...asset,
-              site_name: site?.name || 'No site assigned'
+              site_name: site?.name || 'No site assigned',
+              nickname: nickname // Add nickname from repeatable field data
             };
           });
           setSelectedAssets(assetsWithSite);
-          console.log('✅ Loaded assets:', assetsWithSite.length, assetsWithSite.map(a => a.name))
+          console.log('✅ Loaded assets with nicknames:', assetsWithSite.length, assetsWithSite.map(a => ({ id: a.id, name: a.name, nickname: a.nickname })))
           
           if (isMonitoringTask) {
             console.log('🔧 Monitoring task: Only loading monitored asset:', {
@@ -4347,13 +4378,18 @@ export default function TaskCompletionModal({
                       }
                     }
                     
-                    // Extract nickname - check direct property first, then nested structures
+                    // Extract nickname - check multiple sources with priority:
+                    // 1. asset.nickname (loaded from repeatable field data when asset was loaded) - HIGHEST PRIORITY
+                    // 2. repeatableItem.nickname (from current repeatable field data)
+                    // 3. Nested structures in repeatableItem
+                    // 4. savedTemp.nickname (from completion data)
+                    // 5. Empty string as fallback
                     const nickname = asset.nickname || 
-                                   savedTemp?.nickname || 
                                    repeatableItem?.nickname ||
                                    (repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.nickname : null) ||
                                    (repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.nickname : null) ||
                                    (repeatableItem?.asset_id && typeof repeatableItem.asset_id === 'object' ? repeatableItem.asset_id.nickname : null) ||
+                                   savedTemp?.nickname || 
                                    ''
                     const displayLabel = nickname 
                       ? `${asset.name} | ${nickname}`
