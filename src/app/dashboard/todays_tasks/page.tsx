@@ -471,15 +471,6 @@ export default function DailyChecklistPage() {
             return true;
           }
           
-          // Include expiry tasks (specific source_types)
-          // Check both source_type and type fields in task_data
-          const sourceType = task.task_data?.source_type || task.task_data?.type;
-          const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate'];
-          if (expiryTypes.includes(sourceType)) {
-            console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
-            return true;
-          }
-          
           // Log excluded tasks for debugging
           if (task.task_data) {
             console.log('❌ Excluding task (not template, monitoring, or expiry):', {

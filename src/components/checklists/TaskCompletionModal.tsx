@@ -3119,44 +3119,67 @@ export default function TaskCompletionModal({
       
       // CRITICAL FALLBACK: If equipmentList is empty OR has equipment but no temperatures, check formData
       // This ensures NO temperature is ever lost, even if equipment structure doesn't match
-      const equipmentListWithTemps = equipmentList.filter((eq: any) => 
-        eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== ''
-      )
+      const equipmentListWithTemps = equipmentList.filter((eq: any) => {
+        const temp = eq.temperature
+        return temp !== null && temp !== undefined && temp !== '' && !isNaN(parseFloat(String(temp)))
+      })
       
-      if (equipmentList.length === 0 || (equipmentList.length > 0 && equipmentListWithTemps.length === 0)) {
-        console.log('⚠️ Equipment list has no temperatures, checking formData for any temp_* keys...', {
+      // Run fallback if:
+      // 1. No equipment at all, OR
+      // 2. Equipment exists but none have valid temperatures, OR
+      // 3. Some equipment has temps but we have more temp_* keys in formData than equipment with temps
+      const formDataTempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
+      const shouldRunFallback = equipmentList.length === 0 || 
+                                 equipmentListWithTemps.length === 0 ||
+                                 (formDataTempKeys.length > 0 && formDataTempKeys.length > equipmentListWithTemps.length)
+      
+      if (shouldRunFallback) {
+        console.log('⚠️ Equipment list missing temperatures, checking formData for any temp_* keys...', {
           equipmentListCount: equipmentList.length,
           equipmentListWithTempsCount: equipmentListWithTemps.length,
-          formDataTempKeys: Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
+          formDataTempKeys: formDataTempKeys,
+          formDataTempValues: formDataTempKeys.reduce((acc: any, key) => {
+            acc[key] = formData[key]
+            return acc
+          }, {})
         })
         
-        // Get all temp_* keys from formData
-        const tempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
-        
-        tempKeys.forEach(key => {
-          const assetId = key.replace('temp_', '')
+        // Get all temp_* keys from formData (already computed above)
+        formDataTempKeys.forEach(key => {
+          const assetIdFromKey = key.replace('temp_', '')
           const tempValue = formData[key]
           
           if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
             const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
             if (!isNaN(numValue) && isFinite(numValue)) {
-              // Check if this asset is already in equipmentList
-              const existingIndex = equipmentList.findIndex((eq: any) => 
-                eq.asset_id === assetId || 
-                String(eq.asset_id) === String(assetId)
-              )
+              // Try to find matching asset in equipmentList - check multiple ID formats
+              let existingIndex = equipmentList.findIndex((eq: any) => {
+                const eqAssetId = eq.asset_id
+                // Try exact match
+                if (String(eqAssetId) === String(assetIdFromKey)) return true
+                // Try matching nested structures
+                if (eqAssetId && typeof eqAssetId === 'object') {
+                  const nestedId = eqAssetId.id || eqAssetId.value || eqAssetId.assetId
+                  if (String(nestedId) === String(assetIdFromKey)) return true
+                }
+                // Try matching via equipment.value, equipment.id, etc.
+                if (String(eq.value) === String(assetIdFromKey) || 
+                    String(eq.id) === String(assetIdFromKey) ||
+                    String(eq.asset_id) === String(assetIdFromKey)) return true
+                return false
+              })
               
               if (existingIndex >= 0) {
                 // Update existing equipment entry with temperature
                 equipmentList[existingIndex].temperature = numValue
                 equipmentList[existingIndex].reading = numValue
                 equipmentList[existingIndex].temp = numValue
-                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetId} in equipment_list`)
+                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetIdFromKey} (${equipmentList[existingIndex].asset_name}) in equipment_list`)
               } else {
                 // Add new equipment entry with temperature
-                const assetName = assetsMap.get(assetId)?.name || 'Unknown Equipment'
+                const assetName = assetsMap.get(assetIdFromKey)?.name || 'Unknown Equipment'
                 equipmentList.push({
-                  asset_id: assetId,
+                  asset_id: assetIdFromKey,
                   asset_name: assetName,
                   temperature: numValue,
                   reading: numValue,
@@ -3164,7 +3187,7 @@ export default function TaskCompletionModal({
                   status: 'ok',
                   recorded_at: completedAt
                 })
-                console.log(`✅ FALLBACK: Added temperature ${numValue}°C for asset ${assetId} (${assetName}) from formData`)
+                console.log(`✅ FALLBACK: Added temperature ${numValue}°C for asset ${assetIdFromKey} (${assetName}) from formData`)
               }
             }
           }
@@ -3346,15 +3369,15 @@ export default function TaskCompletionModal({
       }
 
       // CRITICAL: Log what we're about to save - VERIFY TEMPERATURES ARE INCLUDED
-      const equipmentListWithTemps = completionData.equipment_list?.filter((eq: any) => 
+      const equipmentListWithTempsForLogging = completionData.equipment_list?.filter((eq: any) => 
         eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== ''
       ) || []
       
       console.log('💾 SAVING COMPLETION RECORD:', {
         task_id: completionRecord.task_id,
         equipment_list_count: completionData.equipment_list?.length || 0,
-        equipment_list_with_temps_count: equipmentListWithTemps.length,
-        equipment_list_with_temps: equipmentListWithTemps.map((eq: any) => ({
+        equipment_list_with_temps_count: equipmentListWithTempsForLogging.length,
+        equipment_list_with_temps: equipmentListWithTempsForLogging.map((eq: any) => ({
           asset_id: eq.asset_id,
           asset_name: eq.asset_name,
           temperature: eq.temperature,
@@ -3377,7 +3400,7 @@ export default function TaskCompletionModal({
       })
       
       // Final verification: Ensure temperatures are in equipment_list before saving
-      if (isTemperatureTask && equipmentListWithTemps.length === 0 && completionData.equipment_list?.length > 0) {
+      if (isTemperatureTask && equipmentListWithTempsForLogging.length === 0 && completionData.equipment_list?.length > 0) {
         console.error('❌ CRITICAL: Temperature task has equipment but NO temperatures in equipment_list!', {
           equipment_list: completionData.equipment_list,
           formData_temp_keys: Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
