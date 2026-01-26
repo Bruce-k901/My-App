@@ -345,7 +345,21 @@ export default function DailyChecklistPage() {
       }
       
       // Filter tasks by visibility windows and shift-based timing
+      // CRITICAL: Only show tasks from "My Tasks" (site_checklists), NOT directly from templates
+      // Templates should never appear in "Today's Tasks" - only task instances from site_checklists
       const data = (allTasks || []).filter(task => {
+        // CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+        // These are templates that were incorrectly created as tasks
+        if ((task as any).template_id && !(task as any).site_checklist_id) {
+          console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
+            id: task.id,
+            custom_name: (task as any).custom_name,
+            template_id: (task as any).template_id,
+            site_checklist_id: (task as any).site_checklist_id
+          });
+          return false;
+        }
+        
         // Exclude callout_followup tasks - they're shown in the upcoming section
         if (task.flag_reason === 'callout_followup') {
           return false

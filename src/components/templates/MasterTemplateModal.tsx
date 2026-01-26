@@ -590,7 +590,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         evidence_types: evidenceTypes,
         requires_sop: features.sopUpload,
         requires_risk_assessment: features.raUpload,
-        is_active: true,
+        // CRITICAL: Set is_active = false for Custom Task Builder templates
+        // Templates should only generate tasks when added to "My Tasks" (which creates site_checklist entries)
+        // This prevents the old database cron from creating tasks for all sites
+        is_active: false,
         is_template_library: false, // User-created templates, not library templates
       };
 
@@ -680,7 +683,27 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         savedTemplate = data;
         error = insertError;
         
+        // CRITICAL: If only one site is selected, set site_id on the template
+        // This prevents the old database cron from creating tasks for ALL sites
+        // If multiple sites are selected, site_id remains NULL (template is company-wide)
+        if (savedTemplate && selectedSites.length === 1) {
+          const { error: updateError } = await supabase
+            .from('task_templates')
+            .update({ site_id: selectedSites[0] })
+            .eq('id', savedTemplate.id);
+          
+          if (updateError) {
+            console.error('Error setting template site_id:', updateError);
+            // Don't fail - template is created, just log the error
+          } else {
+            console.log(`Template site_id set to: ${selectedSites[0]}`);
+            // Update savedTemplate to reflect the change
+            savedTemplate.site_id = selectedSites[0];
+          }
+        }
+        
         // Link template to selected sites (only for new templates)
+        // This is for future use - currently the system uses site_checklists
         if (savedTemplate && selectedSites.length > 0) {
           const siteAssignments = selectedSites.map(siteId => ({
             template_id: savedTemplate.id,

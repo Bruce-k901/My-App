@@ -425,19 +425,33 @@ export default function DailyChecklistPage() {
       })
       
       // Role-based task type filtering
+      // CRITICAL: Only show tasks from "My Tasks" (site_checklists), NOT directly from templates
+      // Templates should never appear in "Today's Tasks" - only task instances from site_checklists
       let filteredTasks = allTasks || [];
       
       if (isManager) {
         // Managers+: Template tasks + Expiry tasks + Monitoring tasks
-        // Template tasks have site_checklist_id
+        // Template tasks MUST have site_checklist_id (from "My Tasks" configurations)
         // Expiry tasks have source_type in (sop_review, ra_review, certificate_expiry, policy_expiry, document_expiry)
         // Monitoring tasks have flag_reason = 'monitoring'
         // Note: Approval tasks (stock counts, rotas, payroll) don't appear here - they go to calendar/msgly
         
         filteredTasks = (allTasks || []).filter((task: any) => {
-          // Include template tasks (have site_checklist_id)
+          // CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // These are templates that were incorrectly created as tasks
+          if (task.template_id && !task.site_checklist_id) {
+            console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              template_id: task.template_id,
+              site_checklist_id: task.site_checklist_id
+            });
+            return false;
+          }
+          
+          // Include template tasks (have site_checklist_id - from "My Tasks")
           if (task.site_checklist_id) {
-            console.log('✅ Including template task:', task.id, task.custom_name || task.template?.name);
+            console.log('✅ Including template task from "My Tasks":', task.id, task.custom_name || task.template?.name);
             return true;
           }
           
@@ -474,9 +488,21 @@ export default function DailyChecklistPage() {
         
         console.log(`Manager view: ${filteredTasks.length} template + monitoring + expiry tasks (filtered from ${allTasks?.length || 0} total)`);
       } else {
-        // Staff: Template tasks (have site_checklist_id) + Monitoring tasks
+        // Staff: Template tasks (have site_checklist_id - from "My Tasks") + Monitoring tasks
         filteredTasks = (allTasks || []).filter((task: any) => {
-          // Include template tasks
+          // CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // These are templates that were incorrectly created as tasks
+          if (task.template_id && !task.site_checklist_id) {
+            console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              template_id: task.template_id,
+              site_checklist_id: task.site_checklist_id
+            });
+            return false;
+          }
+          
+          // Include template tasks (have site_checklist_id - from "My Tasks")
           if (task.site_checklist_id !== null) {
             return true;
           }
@@ -646,33 +672,47 @@ export default function DailyChecklistPage() {
       data.forEach((task: any) => {
         const taskData = task.task_data || {}
         
+        // Helper to safely extract string ID from potentially object value
+        const extractId = (value: any): string | null => {
+          if (!value) return null
+          if (typeof value === 'string') return value
+          if (typeof value === 'object' && value.id) return String(value.id)
+          return String(value)
+        }
+        
         // Direct asset_id (if present)
-        if (taskData.asset_id) {
-          assetIdsFromTaskData.add(taskData.asset_id)
+        const assetId = extractId(taskData.asset_id)
+        if (assetId) {
+          assetIdsFromTaskData.add(assetId)
         }
         
         // PPM overdue tasks: source_id IS the asset_id directly
         // (From TaskCompletionModal: "PPM tasks use source_id (not asset_id) - this is the asset ID")
-        if (taskData.source_type === 'ppm_overdue' && taskData.source_id) {
-          assetIdsFromTaskData.add(taskData.source_id)
+        const ppmSourceId = extractId(taskData.source_id)
+        if (taskData.source_type === 'ppm_overdue' && ppmSourceId) {
+          assetIdsFromTaskData.add(ppmSourceId)
         }
         
         // PPM service tasks (from cron job): look up asset from ppm_schedule using ppm_id
-        if (taskData.source_type === 'ppm_service' && taskData.ppm_id) {
-          ppmIdsToLookup.add(taskData.ppm_id)
-        }
-        if (taskData.source_type === 'ppm_service' && taskData.source_id) {
-          ppmIdsToLookup.add(taskData.source_id)
+        if (taskData.source_type === 'ppm_service') {
+          const ppmId = extractId(taskData.ppm_id)
+          if (ppmId) {
+            ppmIdsToLookup.add(ppmId)
+          }
+          if (ppmSourceId) {
+            ppmIdsToLookup.add(ppmSourceId)
+          }
         }
         
         // Callout follow-up tasks: source_id is the callout_id, need to look up asset from callouts
-        if (taskData.source_type === 'callout_followup' && taskData.source_id) {
-          calloutIdsToLookup.add(taskData.source_id)
+        if (taskData.source_type === 'callout_followup' && ppmSourceId) {
+          calloutIdsToLookup.add(ppmSourceId)
         }
         
         // Also check for direct callout_id (if present)
-        if (taskData.callout_id) {
-          calloutIdsToLookup.add(taskData.callout_id)
+        const calloutId = extractId(taskData.callout_id)
+        if (calloutId) {
+          calloutIdsToLookup.add(calloutId)
         }
       })
       
@@ -757,8 +797,11 @@ export default function DailyChecklistPage() {
         taskDataIds: allAssetIdsFromTaskData
       })
       
-      // Combine all asset IDs
-      const allAssetIds = [...new Set([...assetIdsFromTemplates, ...allAssetIdsFromTaskData])]
+      // Combine all asset IDs and ensure they're all strings (not objects)
+      const allAssetIds = [...new Set([
+        ...assetIdsFromTemplates.map(id => typeof id === 'string' ? id : String(id)),
+        ...allAssetIdsFromTaskData.map(id => typeof id === 'string' ? id : String(id))
+      ])].filter(id => id && id !== 'null' && id !== 'undefined' && id !== '[object Object]')
       
       // Fetch assets to check archived status
       let archivedAssetIds = new Set<string>()
