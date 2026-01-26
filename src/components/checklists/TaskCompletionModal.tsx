@@ -3931,8 +3931,32 @@ export default function TaskCompletionModal({
                     
                     if (repeatableData) {
                       // Try to match by ID first
+                      // Handle nested structure where id/value/asset_id might be objects with assetId property
                       repeatableItem = repeatableData.find((item: any) => {
-                        const itemId = item.assetId || item.asset_id || item.id
+                        // Extract asset ID from various possible structures
+                        let itemId: string | null = null
+                        
+                        // Check direct properties first
+                        if (typeof item.assetId === 'string') {
+                          itemId = item.assetId
+                        } else if (typeof item.asset_id === 'string') {
+                          itemId = item.asset_id
+                        } else if (typeof item.id === 'string') {
+                          itemId = item.id
+                        } else if (typeof item.value === 'string') {
+                          itemId = item.value
+                        }
+                        // Check nested structures (objects with assetId property)
+                        else if (item.id && typeof item.id === 'object' && item.id.assetId) {
+                          itemId = item.id.assetId
+                        } else if (item.value && typeof item.value === 'object' && item.value.assetId) {
+                          itemId = item.value.assetId
+                        } else if (item.asset_id && typeof item.asset_id === 'object' && item.asset_id.assetId) {
+                          itemId = item.asset_id.assetId
+                        } else if (item.assetId && typeof item.assetId === 'object' && item.assetId.assetId) {
+                          itemId = item.assetId.assetId
+                        }
+                        
                         return itemId === asset.id
                       })
                       
@@ -3950,9 +3974,13 @@ export default function TaskCompletionModal({
                       }
                     }
                     
+                    // Extract nickname - check direct property first, then nested structures
                     const nickname = asset.nickname || 
                                    savedTemp?.nickname || 
-                                   repeatableItem?.nickname || 
+                                   repeatableItem?.nickname ||
+                                   (repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.nickname : null) ||
+                                   (repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.nickname : null) ||
+                                   (repeatableItem?.asset_id && typeof repeatableItem.asset_id === 'object' ? repeatableItem.asset_id.nickname : null) ||
                                    ''
                     const displayLabel = nickname 
                       ? `${asset.name} | ${nickname}`
@@ -3967,7 +3995,10 @@ export default function TaskCompletionModal({
                         assetNickname: asset.nickname,
                         savedTempNickname: savedTemp?.nickname,
                         repeatableItemNickname: repeatableItem?.nickname,
+                        nestedNicknameFromId: repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.nickname : null,
+                        nestedNicknameFromValue: repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.nickname : null,
                         hasRepeatableItem: !!repeatableItem,
+                        repeatableItemKeys: repeatableItem ? Object.keys(repeatableItem) : null,
                         assetName: asset.name
                       })
                     }
@@ -3976,7 +4007,11 @@ export default function TaskCompletionModal({
                         hasRangeInMap: assetTempRanges.has(assetId),
                         isTempId: assetId?.startsWith('temp_'),
                         hasRepeatableItem: !!repeatableItem,
-                        repeatableItemKeys: repeatableItem ? Object.keys(repeatableItem) : null
+                        repeatableItemKeys: repeatableItem ? Object.keys(repeatableItem) : null,
+                        nestedTempMinFromId: repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.temp_min : null,
+                        nestedTempMaxFromId: repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.temp_max : null,
+                        nestedTempMinFromValue: repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.temp_min : null,
+                        nestedTempMaxFromValue: repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.temp_max : null
                       })
                     }
                     
@@ -4023,9 +4058,32 @@ export default function TaskCompletionModal({
                       }
                       
                       // PRIORITY 2: Try repeatableItem (already matched above)
+                      // Handle nested structure where temp_min/temp_max might be in id/value/asset_id objects
                       if (!range && repeatableItem) {
-                        const tempMin = repeatableItem.temp_min !== undefined ? repeatableItem.temp_min : null
-                        const tempMax = repeatableItem.temp_max !== undefined ? repeatableItem.temp_max : null
+                        let tempMin: number | null = null
+                        let tempMax: number | null = null
+                        
+                        // Check direct properties first
+                        if (repeatableItem.temp_min !== undefined) {
+                          tempMin = repeatableItem.temp_min
+                        }
+                        if (repeatableItem.temp_max !== undefined) {
+                          tempMax = repeatableItem.temp_max
+                        }
+                        
+                        // Check nested structures (objects with temp_min/temp_max properties)
+                        if (tempMin === null || tempMax === null) {
+                          const nestedSource = repeatableItem.id || repeatableItem.value || repeatableItem.asset_id
+                          if (nestedSource && typeof nestedSource === 'object') {
+                            if (tempMin === null && nestedSource.temp_min !== undefined) {
+                              tempMin = nestedSource.temp_min
+                            }
+                            if (tempMax === null && nestedSource.temp_max !== undefined) {
+                              tempMax = nestedSource.temp_max
+                            }
+                          }
+                        }
+                        
                         if (tempMin !== null || tempMax !== null) {
                           range = { min: tempMin, max: tempMax }
                           setAssetTempRanges(prev => {
@@ -4038,12 +4096,35 @@ export default function TaskCompletionModal({
                       }
                       
                       // PRIORITY 3: If still no range and it's a temp ID, try to get from repeatableData by index
+                      // Handle nested structure where temp_min/temp_max might be in id/value/asset_id objects
                       if (!range && assetId?.startsWith('temp_') && repeatableData) {
                         const tempIndex = parseInt(assetId.replace('temp_', ''))
                         if (!isNaN(tempIndex) && repeatableData[tempIndex]) {
                           const item = repeatableData[tempIndex]
-                          const tempMin = item.temp_min !== undefined ? item.temp_min : null
-                          const tempMax = item.temp_max !== undefined ? item.temp_max : null
+                          let tempMin: number | null = null
+                          let tempMax: number | null = null
+                          
+                          // Check direct properties first
+                          if (item.temp_min !== undefined) {
+                            tempMin = item.temp_min
+                          }
+                          if (item.temp_max !== undefined) {
+                            tempMax = item.temp_max
+                          }
+                          
+                          // Check nested structures
+                          if (tempMin === null || tempMax === null) {
+                            const nestedSource = item.id || item.value || item.asset_id
+                            if (nestedSource && typeof nestedSource === 'object') {
+                              if (tempMin === null && nestedSource.temp_min !== undefined) {
+                                tempMin = nestedSource.temp_min
+                              }
+                              if (tempMax === null && nestedSource.temp_max !== undefined) {
+                                tempMax = nestedSource.temp_max
+                              }
+                            }
+                          }
+                          
                           if (tempMin !== null || tempMax !== null) {
                             range = { min: tempMin, max: tempMax }
                             setAssetTempRanges(prev => {
