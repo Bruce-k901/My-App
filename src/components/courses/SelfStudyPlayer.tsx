@@ -381,14 +381,14 @@ function uiShell(
 ) {
   return (
     <div className="mx-auto max-w-4xl p-4">
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5 shadow">
-        <div className="text-neutral-100">{content}</div>
+      <div className="rounded-2xl border border-[rgb(var(--border))] dark:border-neutral-800 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/60 p-5 shadow">
+        <div className="text-[rgb(var(--text-primary))] dark:text-neutral-100">{content}</div>
         <div className="mt-6 flex flex-wrap gap-2">
           <button
             type="button"
             onClick={onBack}
             disabled={!onBack}
-            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-200 transition hover:border-orange-300 hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)] disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600 disabled:shadow-none"
+            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)] disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
           >
             Back
           </button>
@@ -396,12 +396,12 @@ function uiShell(
             type="button"
             onClick={onNext}
             disabled={!onNext}
-            className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-200 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)] disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600 disabled:shadow-none"
+            className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)] disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
           >
             Next
           </button>
         </div>
-        <div className="mt-6 h-2 rounded-full bg-neutral-800">
+        <div className="mt-6 h-2 rounded-full bg-[rgb(var(--surface))] dark:bg-neutral-800">
           <div className="h-2 rounded-full bg-blue-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
@@ -445,19 +445,19 @@ function Content({
 
   return (
     <div>
-      <h2 className="mb-4 text-3xl font-semibold text-pink-200">{title}</h2>
+      <h2 className="mb-4 text-3xl font-semibold text-pink-600 dark:text-pink-200">{title}</h2>
       {media ? (
         <img
           src={media}
           alt=""
-          className="mb-4 w-full rounded-lg border border-neutral-800 bg-neutral-950 object-contain"
+          className="mb-4 w-full rounded-lg border border-[rgb(var(--border))] dark:border-neutral-800 bg-[rgb(var(--surface))] dark:bg-neutral-950 object-contain"
         />
       ) : null}
-      <p className="leading-relaxed text-slate-200">{text}</p>
+      <p className="leading-relaxed text-[rgb(var(--text-secondary))] dark:text-slate-200">{text}</p>
       {module?.objectives && module.objectives.length ? (
-        <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-          <h3 className="text-sm font-semibold text-white">Learning objectives</h3>
-          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-slate-200">
+        <div className="mt-4 rounded-xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 p-4">
+          <h3 className="text-sm font-semibold text-[rgb(var(--text-primary))] dark:text-white">Learning objectives</h3>
+          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">
             {module.objectives.map((objective) => (
               <li key={objective}>{objective}</li>
             ))}
@@ -469,16 +469,16 @@ function Content({
           <button
             type="button"
             onClick={() => setShowDeck((prev) => !prev)}
-            className="inline-flex items-center gap-2 rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-200 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
+            className="inline-flex items-center gap-2 rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
           >
             {showDeck ? "Hide module deck" : "View module deck"}
           </button>
           {showDeck ? (
-            <div className="mt-4 rounded-xl border border-white/10 bg-black/60 p-4">
+            <div className="mt-4 rounded-xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface))] dark:bg-black/60 p-4">
               {deckLoading ? (
-                <p className="text-sm text-slate-300">Loading deck…</p>
+                <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">Loading deck…</p>
               ) : deckError ? (
-                <p className="text-sm text-red-400">{deckError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{deckError}</p>
               ) : deckContent ? (
                 <div className="markdown-viewer prose prose-invert max-w-none text-sm">
                   <DeckMarkdown content={deckContent} />
@@ -501,7 +501,7 @@ function DeckMarkdown({ content }: { content: string }) {
     if (!listBuffer) return;
     if (listBuffer.type === "ul") {
       elements.push(
-        <ul key={`ul-${elements.length}`} className="ml-4 list-disc space-y-1 text-slate-200">
+        <ul key={`ul-${elements.length}`} className="ml-4 list-disc space-y-1 text-[rgb(var(--text-secondary))] dark:text-slate-200">
           {listBuffer.items.map((item, index) => (
             <li key={index}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -509,7 +509,7 @@ function DeckMarkdown({ content }: { content: string }) {
       );
     } else {
       elements.push(
-        <ol key={`ol-${elements.length}`} className="ml-4 list-decimal space-y-1 text-slate-200">
+        <ol key={`ol-${elements.length}`} className="ml-4 list-decimal space-y-1 text-[rgb(var(--text-secondary))] dark:text-slate-200">
           {listBuffer.items.map((item, index) => (
             <li key={index}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -529,7 +529,7 @@ function DeckMarkdown({ content }: { content: string }) {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h3 key={`h3-${elements.length}`} className="text-lg font-semibold text-pink-200">
+        <h3 key={`h3-${elements.length}`} className="text-lg font-semibold text-pink-600 dark:text-pink-200">
           {line.replace(/^##\s+/, "")}
         </h3>
       );
@@ -539,7 +539,7 @@ function DeckMarkdown({ content }: { content: string }) {
     if (line.startsWith("# ")) {
       flushList();
       elements.push(
-        <h2 key={`h2-${elements.length}`} className="text-2xl font-semibold text-white">
+        <h2 key={`h2-${elements.length}`} className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">
           {line.replace(/^#\s+/, "")}
         </h2>
       );
@@ -578,7 +578,7 @@ function DeckMarkdown({ content }: { content: string }) {
 
     flushList();
     elements.push(
-      <p key={`p-${elements.length}`} className="text-slate-200">
+      <p key={`p-${elements.length}`} className="text-[rgb(var(--text-secondary))] dark:text-slate-200">
         {renderInlineMarkdown(line)}
       </p>
     );
@@ -594,7 +594,7 @@ function renderInlineMarkdown(text: string): ReactNode[] {
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={index} className="text-white">
+        <strong key={index} className="text-[rgb(var(--text-primary))] dark:text-white">
           {part.slice(2, -2)}
         </strong>
       );
@@ -602,7 +602,7 @@ function renderInlineMarkdown(text: string): ReactNode[] {
 
     if (part.startsWith("`") && part.endsWith("`")) {
       return (
-        <code key={index} className="rounded bg-black/40 px-1 py-0.5 text-xs text-orange-200">
+        <code key={index} className="rounded bg-[rgb(var(--surface))] dark:bg-black/40 px-1 py-0.5 text-xs text-orange-600 dark:text-orange-200">
           {part.slice(1, -1)}
         </code>
       );
@@ -641,12 +641,12 @@ function Onboarding({
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-pink-200">{page.title}</h2>
-      <p className="mb-5 text-sm text-slate-300">{page.text}</p>
+      <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">{page.title}</h2>
+      <p className="mb-5 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">{page.text}</p>
       <div className="grid gap-4 md:grid-cols-2">
         {page.fields.map((field) => (
-          <label key={field.key} className="flex flex-col gap-2 text-sm text-slate-200">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{field.label}</span>
+          <label key={field.key} className="flex flex-col gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">
+            <span className="text-xs font-semibold uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">{field.label}</span>
             <input
               type="text"
               value={state[field.key] ?? ""}
@@ -657,16 +657,16 @@ function Onboarding({
               }
               readOnly={lockFields}
               disabled={lockFields}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-neutral-900"
+              className="w-full rounded-lg border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-2 text-sm text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-slate-500 disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:bg-[rgb(var(--surface))] dark:disabled:bg-neutral-900"
               required={field.required}
             />
           </label>
         ))}
       </div>
-      {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
+      {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
       <button
         type="button"
-        className="mt-4 rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-200 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
+        className="mt-4 rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
         onClick={() => {
           const missing = page.fields.filter((field) => field.required && !state[field.key]);
           if (missing.length) {
@@ -679,7 +679,7 @@ function Onboarding({
       >
         {page.cta.label}
       </button>
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-400">
         Start with your details, then progress through all modules. Your results are saved automatically.
       </p>
     </div>
@@ -712,21 +712,21 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-pink-200">{page.title}</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">{page.title}</h2>
       {page.media ? (
         <img
           src={page.media}
           alt=""
-          className="mb-4 w-full rounded-lg border border-neutral-800 bg-neutral-950 object-contain"
+          className="mb-4 w-full rounded-lg border border-[rgb(var(--border))] dark:border-neutral-800 bg-[rgb(var(--surface))] dark:bg-neutral-950 object-contain"
         />
       ) : null}
-      <p className="mb-4 text-slate-200">{page.text}</p>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{page.text}</p>
 
       {page.interaction.type === "drag_drop" ? (
         <div className="space-y-3">
           {page.interaction.pairs.map(([left]) => (
-            <div key={left} className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="text-sm font-semibold text-white">{left}</p>
+            <div key={left} className="rounded-xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 p-3">
+              <p className="text-sm font-semibold text-[rgb(var(--text-primary))] dark:text-white">{left}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {Array.from(new Set(page.interaction.pairs.map(([, right]) => right))).map((right) => {
                   const selected = attempt[left] === right;
@@ -737,13 +737,13 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                       onClick={() => setAttempt((prev) => ({ ...prev, [left]: right }))}
                       className={`group flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm transition ${
                         selected
-                          ? "border-pink-400/70 bg-pink-400/10 text-pink-100 shadow-[0_0_14px_rgba(236,72,153,0.35)]"
-                          : "border-neutral-700 text-slate-200 hover:border-neutral-500"
+                          ? "border-pink-400/70 bg-pink-400/10 text-pink-700 dark:text-pink-100 shadow-[0_0_14px_rgba(236,72,153,0.35)]"
+                          : "border-[rgb(var(--border))] dark:border-neutral-700 text-[rgb(var(--text-secondary))] dark:text-slate-200 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                       }`}
                     >
                       <Check
                         className={`h-3 w-3 transition ${
-                          selected ? "opacity-100 text-pink-200" : "opacity-0 text-slate-400 group-hover:opacity-40"
+                          selected ? "opacity-100 text-pink-600 dark:text-pink-200" : "opacity-0 text-[rgb(var(--text-tertiary))] dark:text-slate-400 group-hover:opacity-40"
                         }`}
                       />
                       <span>{right}</span>
@@ -767,13 +767,13 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                 onClick={() => setAttempt((prev) => ({ ...prev, [index]: step }))}
                 className={`group flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition ${
                   selected
-                    ? "border-pink-400/70 bg-pink-400/10 text-pink-100 shadow-[0_0_14px_rgba(236,72,153,0.35)]"
-                    : "border-neutral-700 bg-neutral-950 text-slate-100 hover:border-neutral-500"
+                    ? "border-pink-400/70 bg-pink-400/10 text-pink-700 dark:text-pink-100 shadow-[0_0_14px_rgba(236,72,153,0.35)]"
+                    : "border-[rgb(var(--border))] dark:border-neutral-700 bg-[rgb(var(--surface))] dark:bg-neutral-950 text-[rgb(var(--text-secondary))] dark:text-slate-100 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                 }`}
               >
                 <Check
                   className={`h-4 w-4 transition ${
-                    selected ? "opacity-100 text-pink-200" : "opacity-0 text-slate-400 group-hover:opacity-40"
+                    selected ? "opacity-100 text-pink-600 dark:text-pink-200" : "opacity-0 text-[rgb(var(--text-tertiary))] dark:text-slate-400 group-hover:opacity-40"
                   }`}
                 />
                 <span>{step}</span>
@@ -787,19 +787,19 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
           <button
             type="button"
             onClick={onBack}
-            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-200 transition hover:border-orange-300 hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)]"
+            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)]"
           >
             Back
           </button>
           <button
             type="button"
             onClick={submit}
-            className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-200 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
+            className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
           >
             Check
           </button>
         </div>
-      {feedback ? <p className="mt-3 text-sm text-slate-200">{feedback}</p> : null}
+      {feedback ? <p className="mt-3 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">{feedback}</p> : null}
     </div>
   );
 }
@@ -854,8 +854,8 @@ function ModuleQuiz({
   if (maxItems === 0) {
     return (
       <div>
-        <h2 className="mb-3 text-3xl font-semibold text-pink-200">Module knowledge check</h2>
-        <p className="text-slate-300">No quiz items configured for this module.</p>
+        <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">Module knowledge check</h2>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-slate-300">No quiz items configured for this module.</p>
       </div>
     );
   }
@@ -863,8 +863,8 @@ function ModuleQuiz({
   if (index >= maxItems) {
     return (
       <div>
-        <h2 className="mb-3 text-3xl font-semibold text-pink-200">Module knowledge check</h2>
-        <p className="text-slate-300">Great work! Moving to the next section…</p>
+        <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">Module knowledge check</h2>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-slate-300">Great work! Moving to the next section…</p>
       </div>
     );
   }
@@ -876,8 +876,8 @@ function ModuleQuiz({
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-pink-200">Module knowledge check</h2>
-      <p className="mb-4 text-slate-200">{stem}</p>
+      <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">Module knowledge check</h2>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{stem}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
@@ -889,7 +889,7 @@ function ModuleQuiz({
               }
               setIndex((prev) => prev + 1);
             }}
-            className="group flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-slate-100 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+            className="group flex items-center gap-2 rounded-lg border border-[rgb(var(--border))] dark:border-white/15 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-1.5 text-sm text-[rgb(var(--text-primary))] dark:text-slate-100 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_12px_rgba(236,72,153,0.35)]"
           >
             <Check className="h-3 w-3 opacity-0 transition group-hover:opacity-50" />
             <span>{option}</span>
@@ -897,7 +897,7 @@ function ModuleQuiz({
         ))}
       </div>
       {feedbackMode === "immediate" ? (
-        <p className="mt-3 text-xs text-slate-400">Immediate feedback is shown after you answer.</p>
+        <p className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-400">Immediate feedback is shown after you answer.</p>
       ) : null}
     </div>
   );
@@ -911,8 +911,8 @@ function FinalQuiz({ count, onDone }: { count: number; onDone: (percent: number)
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-pink-200">Final assessment</h2>
-      <p className="text-slate-200">
+      <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">Final assessment</h2>
+      <p className="text-[rgb(var(--text-secondary))] dark:text-slate-200">
         Complete the {count}-question assessment to finish the course. Your score will appear on the
         completion screen.
       </p>
@@ -923,19 +923,19 @@ function FinalQuiz({ count, onDone }: { count: number; onDone: (percent: number)
 function Completion({ title, text, payload }: { title: string; text: string; payload: unknown }) {
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-pink-200">{title}</h2>
-      <p className="mb-4 text-slate-200">{text}</p>
+      <h2 className="mb-3 text-3xl font-semibold text-pink-600 dark:text-pink-200">{title}</h2>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{text}</p>
       <ResultSummary payload={payload} />
       <div className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/dashboard/training"
-          className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-200 transition hover:border-pink-300 hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
+          className="rounded-lg border border-pink-400/70 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200 transition hover:border-pink-500 dark:hover:border-pink-300 hover:text-pink-700 dark:hover:text-pink-100 hover:shadow-[0_0_16px_rgba(236,72,153,0.45)]"
         >
           Return to Training Matrix
         </Link>
         <Link
           href="/dashboard"
-          className="rounded-lg border border-white/10 px-4 py-2 text-sm text-slate-200 transition hover:border-white/30 hover:text-white"
+          className="rounded-lg border border-[rgb(var(--border))] dark:border-white/10 px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 transition hover:border-[rgb(var(--border-hover))] dark:hover:border-white/30 hover:text-[rgb(var(--text-primary))] dark:hover:text-white"
         >
           Back to Dashboard
         </Link>
@@ -954,23 +954,23 @@ function ResultSummary({ payload }: { payload: any }) {
   const scores = (payload as any).scores ?? {};
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-      <h3 className="text-sm font-semibold text-white">Result summary</h3>
-      <dl className="mt-3 grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
+    <div className="rounded-2xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 p-4">
+      <h3 className="text-sm font-semibold text-[rgb(var(--text-primary))] dark:text-white">Result summary</h3>
+      <dl className="mt-3 grid gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 sm:grid-cols-2">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-slate-400">Learner</dt>
+          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Learner</dt>
           <dd>{learner.full_name || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-slate-400">Position</dt>
+          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Position</dt>
           <dd>{learner.position || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-slate-400">Home site</dt>
+          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Home site</dt>
           <dd>{learner.home_site || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-slate-400">Final score</dt>
+          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Final score</dt>
           <dd>
             {scores?.final?.score_percent != null
               ? `${scores.final.score_percent}%`
@@ -978,7 +978,7 @@ function ResultSummary({ payload }: { payload: any }) {
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-slate-400">Pass mark</dt>
+          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Pass mark</dt>
           <dd>{scores?.final?.passed ? "Met" : "Not met"}</dd>
         </div>
       </dl>

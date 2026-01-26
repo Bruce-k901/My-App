@@ -230,13 +230,16 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
     };
 
     const IconComponent = item.icon;
+    // Only highlight parent if it's the exact page AND no child is active
+    const shouldHighlightParent = isParentActive && !childActive;
+    
     return (
       <div>
         <Link
           href={item.href!}
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-            isParentActive || childActive
+            shouldHighlightParent
               ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
               : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white'
           }`}
@@ -255,16 +258,16 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
         {shouldExpand && (
           <div className="ml-8 mt-1 space-y-1">
             {item.children!.map((child) => {
-              const isChildActive = pathname === child.href || pathname.startsWith(child.href + '/');
+              const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
               const ChildIcon = child.icon || BarChart3;
               
               return (
                 <Link
                   key={child.href}
                   href={child.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'text-emerald-600 dark:text-emerald-400 font-medium'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-emerald-600 dark:before:bg-emerald-400'
                       : 'text-gray-600 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-neutral-800/50'
                   }`}
                 >

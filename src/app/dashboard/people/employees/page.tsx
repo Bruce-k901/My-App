@@ -82,7 +82,17 @@ export default function EmployeesPage() {
   const [siteAssignmentsEmployee, setSiteAssignmentsEmployee] = useState<Employee | null>(null);
   const [showExecutiveModal, setShowExecutiveModal] = useState(false);
 
+  // Check if user is staff (not admin/owner/manager)
+  const userRole = profile?.app_role?.toLowerCase() || 'staff';
+  const isStaff = !['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes(userRole);
+
   useEffect(() => {
+    // If staff, redirect to their own profile page
+    if (isStaff && profile?.id) {
+      router.replace(`/dashboard/people/${profile.id}`);
+      return;
+    }
+
     if (profile?.company_id) {
       console.log('Fetching employees for company:', profile.company_id, 'status filter:', statusFilter);
       fetchEmployees();

@@ -28,11 +28,11 @@ export default async function CoursePage({ params }: PageProps) {
     course = allergensData as unknown as Course;
   } else {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-900 text-white">
+      <div className="flex min-h-screen items-center justify-center bg-[rgb(var(--background))] dark:bg-slate-900 text-[rgb(var(--text-primary))] dark:text-white">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Course not found</h1>
-          <p className="text-slate-400 mb-4">{courseId}</p>
-          <a href="/dashboard/courses" className="text-pink-500 hover:underline">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-4">{courseId}</p>
+          <a href="/dashboard/courses" className="text-pink-600 dark:text-pink-500 hover:underline">
             Return to Courses
           </a>
         </div>

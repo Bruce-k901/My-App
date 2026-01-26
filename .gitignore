@@ -57,3 +57,6 @@ test-results/
 playwright-report/
 tests/e2e/.auth/
 playwright/.cache/
+
+# Private assets (certificate templates, etc.)
+/private/

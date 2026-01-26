@@ -171,13 +171,16 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
     };
 
     const IconComponent = item.icon;
+    // Only highlight parent if it's the exact page AND no child is active
+    const shouldHighlightParent = isParentActive && !childActive;
+    
     return (
       <div>
         <Link
           href={item.href!}
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-            isParentActive || childActive
+            shouldHighlightParent
               ? 'bg-[#14B8A6]/20 text-[#14B8A6]'
               : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
           }`}
@@ -196,16 +199,16 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
         {shouldExpand && (
           <div className="ml-8 mt-1 space-y-1">
             {item.children!.map((child) => {
-              const isChildActive = pathname === child.href || pathname.startsWith(child.href + '/');
+              const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
               const ChildIcon = child.icon || Package;
               
               return (
                 <Link
                   key={child.href}
                   href={child.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'text-[#14B8A6]'
+                      ? 'bg-[#14B8A6]/20 text-[#14B8A6] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#14B8A6]'
                       : 'text-neutral-500 hover:text-white'
                   }`}
                 >
@@ -231,14 +234,13 @@ export function PlanlySidebar() {
   return (
     <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full overflow-y-auto" suppressHydrationWarning>
       {/* Header */}
-      <div className="p-4 bg-black dark:bg-neutral-900 border-b border-neutral-800">
-        <Link href="/dashboard/planly" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#14B8A6] to-teal-600 flex items-center justify-center">
-            <Package className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-lg font-bold text-white" suppressHydrationWarning>
-            {APP_NAME}
-          </span>
+      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-neutral-800">
+        <Link href="/dashboard/planly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
+          <img
+            src="/module_logos/planly.png"
+            alt="Planly"
+            className="h-12 w-auto max-w-full"
+          />
         </Link>
       </div>
 

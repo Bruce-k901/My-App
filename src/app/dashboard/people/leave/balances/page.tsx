@@ -306,19 +306,19 @@ export default function HolidayBalancesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/people/leave" className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-            <ArrowLeft className="w-5 h-5 text-neutral-400" />
+          <Link href="/dashboard/people/leave" className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+            <ArrowLeft className="w-5 h-5 text-theme-secondary" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Holiday Balances</h1>
-            <p className="text-neutral-400">View and manage employee holiday entitlements</p>
+            <h1 className="text-2xl font-bold text-theme-primary">Holiday Balances</h1>
+            <p className="text-theme-secondary">View and manage employee holiday entitlements</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
           <button
             onClick={recalculateBalances}
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out font-medium"
           >
             <RefreshCw className="w-4 h-4" />
             Recalculate
@@ -327,14 +327,14 @@ export default function HolidayBalancesPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4 bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+      <div className="flex flex-wrap items-center gap-4 bg-theme-button border border-theme rounded-lg p-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-neutral-400" />
-          <label className="text-sm text-neutral-300">Year:</label>
+          <Calendar className="w-4 h-4 text-theme-secondary" />
+          <label className="text-sm text-theme-secondary">Year:</label>
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-3 py-1.5 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]"
+            className="px-3 py-1.5 bg-neutral-800 border border-blue-500/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           >
             {[new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1].map(year => (
               <option key={year} value={year}>{year}</option>
@@ -345,12 +345,12 @@ export default function HolidayBalancesPage() {
         {isManager && (
           <>
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-neutral-400" />
-              <label className="text-sm text-neutral-300">Employee Type:</label>
+              <Users className="w-4 h-4 text-theme-secondary" />
+              <label className="text-sm text-theme-secondary">Employee Type:</label>
               <select
                 value={filterEmployeeType}
                 onChange={(e) => setFilterEmployeeType(e.target.value as any)}
-                className="px-3 py-1.5 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]"
+                className="px-3 py-1.5 bg-neutral-800 border border-blue-500/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 <option value="all">All</option>
                 <option value="salaried">Salaried</option>
@@ -359,12 +359,12 @@ export default function HolidayBalancesPage() {
             </div>
             
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-neutral-400" />
-              <label className="text-sm text-neutral-300">Site:</label>
+              <MapPin className="w-4 h-4 text-theme-secondary" />
+              <label className="text-sm text-theme-secondary">Site:</label>
               <select
                 value={filterSiteId}
                 onChange={(e) => setFilterSiteId(e.target.value)}
-                className="px-3 py-1.5 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]"
+                className="px-3 py-1.5 bg-neutral-800 border border-blue-500/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 <option value="all">All Sites</option>
                 {sites.map(site => (
@@ -374,12 +374,12 @@ export default function HolidayBalancesPage() {
             </div>
             
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-neutral-400" />
-              <label className="text-sm text-neutral-300">Status:</label>
+              <Filter className="w-4 h-4 text-theme-secondary" />
+              <label className="text-sm text-theme-secondary">Status:</label>
               <select
                 value={filterAllowanceStatus}
                 onChange={(e) => setFilterAllowanceStatus(e.target.value as any)}
-                className="px-3 py-1.5 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]"
+                className="px-3 py-1.5 bg-neutral-800 border border-blue-500/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 <option value="all">All</option>
                 <option value="available">Has Available</option>
@@ -398,11 +398,11 @@ export default function HolidayBalancesPage() {
       )}
 
       {/* Info Banner */}
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
+      <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 flex items-start gap-3">
         <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
         <div className="text-sm text-blue-300">
-          <p className="font-medium mb-1">How holiday entitlement is calculated:</p>
-          <ul className="list-disc list-inside space-y-1 text-blue-200/80">
+          <p className="font-medium mb-2 text-blue-200">How holiday entitlement is calculated:</p>
+          <ul className="list-disc list-inside space-y-1.5 text-blue-300/90">
             <li><strong>Salaried employees:</strong> Standard 28 days (or custom allowance if set)</li>
             <li><strong>Hourly employees:</strong> Based on average hours worked over the last 13 weeks</li>
             <li><strong>Accrued days:</strong> Pro-rata entitlement based on days worked in the leave year</li>
@@ -415,7 +415,7 @@ export default function HolidayBalancesPage() {
 
       {/* Balances Table */}
       {balances.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-8">
+        <div className="bg-theme-button border border-theme rounded-lg p-8">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-amber-500/20 rounded-lg">
               <Info className="w-6 h-6 text-amber-400" />
@@ -429,14 +429,14 @@ export default function HolidayBalancesPage() {
               </p>
               
               {isManager && (
-                <div className="space-y-3 mt-4 p-4 bg-white/[0.02] rounded-lg border border-white/[0.06]">
+                <div className="space-y-3 mt-4 p-4 bg-white/[0.03] rounded-lg border border-white/[0.06]">
                   <p className="text-sm font-medium text-neutral-300 mb-2">Common issues and how to fix them:</p>
                   <ul className="space-y-2 text-sm text-neutral-400">
                     <li className="flex items-start gap-2">
                       <span className="text-amber-400 mt-1">•</span>
                       <span>
-                        <strong className="text-neutral-300">Missing start dates:</strong> Employees need a start date to calculate holiday entitlements. 
-                        <Link href="/dashboard/people" className="text-[#EC4899] hover:underline ml-1">
+                        <strong className="text-white">Missing start dates:</strong> Employees need a start date to calculate holiday entitlements. 
+                        <Link href="/dashboard/people" className="text-blue-400 hover:underline ml-1">
                           Update employee profiles
                         </Link>
                       </span>
@@ -444,10 +444,10 @@ export default function HolidayBalancesPage() {
                     <li className="flex items-start gap-2">
                       <span className="text-amber-400 mt-1">•</span>
                       <span>
-                        <strong className="text-neutral-300">No leave balances created:</strong> Leave balances are created automatically when employees are added, but may need to be initialized for existing employees.
+                        <strong className="text-white">No leave balances created:</strong> Leave balances are created automatically when employees are added, but may need to be initialized for existing employees.
                         <button 
                           onClick={recalculateBalances}
-                          className="text-[#EC4899] hover:underline ml-1"
+                          className="text-blue-400 hover:underline ml-1"
                         >
                           Initialize balances
                         </button>
@@ -456,14 +456,14 @@ export default function HolidayBalancesPage() {
                     <li className="flex items-start gap-2">
                       <span className="text-amber-400 mt-1">•</span>
                       <span>
-                        <strong className="text-neutral-300">Wrong year selected:</strong> Check if balances exist for a different year using the year filter above.
+                        <strong className="text-white">Wrong year selected:</strong> Check if balances exist for a different year using the year filter above.
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-amber-400 mt-1">•</span>
                       <span>
-                        <strong className="text-neutral-300">Missing leave types:</strong> Ensure at least one leave type exists for your company.
-                        <Link href="/dashboard/people/leave" className="text-[#EC4899] hover:underline ml-1">
+                        <strong className="text-white">Missing leave types:</strong> Ensure at least one leave type exists for your company.
+                        <Link href="/dashboard/people/leave" className="text-blue-400 hover:underline ml-1">
                           Check leave types
                         </Link>
                       </span>
@@ -475,7 +475,7 @@ export default function HolidayBalancesPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+        <div className="bg-theme-button border border-theme rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.05] border-b border-white/[0.06]">

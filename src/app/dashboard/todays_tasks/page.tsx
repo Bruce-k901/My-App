@@ -361,16 +361,16 @@ export default function DailyChecklistPage() {
       
       console.log('⚠️ ISSUE DETECTED: All tasks are from 2026-01-20, not today (2026-01-25). The cron job may not have run since then, or is creating tasks with the wrong date.');
       
-      // Fetch ONLY today's tasks that are pending or in_progress
+      // Fetch today's tasks including completed ones (needed to match with completion records)
       // These are task instances from "My Tasks", NOT templates or active tasks
-      // Completed and missed tasks are shown in the Completed Tasks page
+      // Completed tasks will be filtered out from active list but used for completion record matching
       let query = supabase
         .from('checklist_tasks')
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
-        // Only show pending and in_progress tasks
-        .in('status', ['pending', 'in_progress'])
+        // Include pending, in_progress, AND completed tasks (completed needed for completion record matching)
+        .in('status', ['pending', 'in_progress', 'completed', 'missed'])
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
       
@@ -1210,8 +1210,41 @@ export default function DailyChecklistPage() {
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
+      // ALSO: Fetch completion records for tasks that might not be in tasksWithProfiles (e.g., completed tasks from different dates)
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
+      
+      // Also fetch completion records for today's date even if task isn't in tasksWithProfiles
+      // This ensures we can display completed tasks with their completion records
+      let todayCompletionQuery = supabase
+        .from('task_completion_records')
+        .select('*')
+        .eq('company_id', companyId)
+        .gte('completed_at', `${todayStr}T00:00:00`)
+        .lt('completed_at', `${todayStr}T23:59:59`)
+        .order('completed_at', { ascending: false })
+      
+      if (filterSiteId) {
+        todayCompletionQuery = todayCompletionQuery.eq('site_id', filterSiteId)
+      }
+      
+      const { data: todayCompletionRecords } = await todayCompletionQuery
+      if (todayCompletionRecords && todayCompletionRecords.length > 0) {
+        console.log('📝 Found completion records for today:', todayCompletionRecords.length, todayCompletionRecords.map(r => ({ task_id: r.task_id, completed_at: r.completed_at })))
+        // Add these to allCompletionRecords immediately (they're for today, so we want them)
+        allCompletionRecords.push(...todayCompletionRecords)
+        
+        // Also add task IDs to fetch tasks if they're not in tasksWithProfiles
+        const existingTaskIds = new Set(allTaskIds)
+        todayCompletionRecords.forEach(record => {
+          if (!existingTaskIds.has(record.task_id)) {
+            // Task not in tasksWithProfiles - fetch it separately
+            allTaskIds.push(record.task_id)
+            existingTaskIds.add(record.task_id)
+            console.log('📥 Will fetch missing task:', record.task_id)
+          }
+        })
+      }
       
       if (allTaskIds.length > 0) {
         console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
@@ -1246,8 +1279,15 @@ export default function DailyChecklistPage() {
           }
           
           if (filteredRecords.length > 0) {
-            allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
+            // Merge with today's completion records (deduplicate by id)
+            const existingRecordIds = new Set(allCompletionRecords.map(r => r.id))
+            filteredRecords.forEach(record => {
+              if (!existingRecordIds.has(record.id)) {
+                allCompletionRecords.push(record)
+                existingRecordIds.add(record.id)
+              }
+            })
+            console.log('📝 Completion records details (merged):', allCompletionRecords.map(r => ({
               id: r.id,
               task_id: r.task_id,
               completed_at: r.completed_at,
@@ -1373,17 +1413,61 @@ export default function DailyChecklistPage() {
       
       // Create one entry per completion record (not just one per task)
       // This ensures all completion records are shown, even for multi-daypart tasks
-      const completedTasksWithRecords = allCompletionRecords
-        .map(record => {
-          const task = tasksWithProfiles.find(t => t.id === record.task_id)
-          if (!task) return null
-          
-          return {
+      // CRITICAL: If task isn't in tasksWithProfiles, fetch it separately
+      const completedTasksWithRecords: any[] = []
+      const tasksToFetch: string[] = []
+      
+      for (const record of allCompletionRecords) {
+        let task = tasksWithProfiles.find(t => t.id === record.task_id)
+        
+        if (!task) {
+          // Task not in tasksWithProfiles - need to fetch it
+          tasksToFetch.push(record.task_id)
+        } else {
+          // Task found - add it with completion record
+          completedTasksWithRecords.push({
             ...task,
             completion_record: record
+          })
+        }
+      }
+      
+      // Fetch missing tasks if any
+      if (tasksToFetch.length > 0) {
+        console.log('📥 Fetching missing tasks for completion records:', tasksToFetch.length, tasksToFetch)
+        const { data: missingTasks } = await supabase
+          .from('checklist_tasks')
+          .select('*, template: task_templates(*)')
+          .in('id', tasksToFetch)
+        
+        if (missingTasks) {
+          // Get templates for missing tasks
+          const missingTemplateIds = missingTasks.map(t => t.template_id).filter(Boolean)
+          const templatesMap = new Map()
+          if (missingTemplateIds.length > 0) {
+            const { data: templates } = await supabase
+              .from('task_templates')
+              .select('*')
+              .in('id', missingTemplateIds)
+            
+            if (templates) {
+              templates.forEach(t => templatesMap.set(t.id, t))
+            }
           }
-        })
-        .filter((task): task is ChecklistTaskWithTemplate & { completion_record: any } => task !== null)
+          
+          // Match missing tasks with their completion records
+          missingTasks.forEach(task => {
+            const record = allCompletionRecords.find(r => r.task_id === task.id)
+            if (record) {
+              completedTasksWithRecords.push({
+                ...task,
+                template: templatesMap.get(task.template_id) || null,
+                completion_record: record
+              })
+            }
+          })
+        }
+      }
       
       // Sort both active and completed tasks chronologically
       // PRIMARY: Sort by due_time (actual time is the anchor) - this ensures tasks are sorted

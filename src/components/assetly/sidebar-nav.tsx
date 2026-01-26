@@ -108,14 +108,13 @@ export function AssetlySidebar() {
   return (
     <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full overflow-y-auto" suppressHydrationWarning>
       {/* Header */}
-      <div className="p-4 bg-black dark:bg-neutral-900 border-b border-neutral-800">
-        <Link href="/dashboard/assets" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0284C7] to-blue-600 flex items-center justify-center">
-            <Package className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-lg font-bold text-white" suppressHydrationWarning>
-            {APP_NAME}
-          </span>
+      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-neutral-800">
+        <Link href="/dashboard/assets" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
+          <img
+            src="/module_logos/assetly.png"
+            alt="Assetly"
+            className="h-12 w-auto max-w-full"
+          />
         </Link>
       </div>
 

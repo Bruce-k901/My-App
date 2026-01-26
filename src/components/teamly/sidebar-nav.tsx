@@ -52,6 +52,15 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: 'My Profile',
+    href: '/dashboard/people/employees',
+    icon: UserCircle,
+    roles: ['staff'],
+    children: [
+      { label: 'View Profile', href: '/dashboard/people/employees' },
+    ],
+  },
+  {
     label: 'Leave',
     href: '/dashboard/people/leave',
     icon: CalendarDays,
@@ -75,7 +84,6 @@ const navItems: NavItem[] = [
     label: 'Attendance',
     href: '/dashboard/people/attendance',
     icon: Clock,
-    roles: ['admin', 'owner', 'manager'],
     children: [
       { label: 'Time Clock', href: '/dashboard/people/attendance' },
       { label: 'Timesheets', href: '/dashboard/people/attendance/signoff' },
@@ -140,6 +148,12 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: 'My Payslips',
+    href: '/dashboard/people/payroll/my-payslips',
+    icon: Wallet,
+    roles: ['staff'],
+  },
+  {
     label: 'Recruitment',
     href: '/dashboard/people/recruitment',
     icon: Briefcase,
@@ -172,13 +186,18 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   
-  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
   const hasChildren = item.children && item.children.length > 0;
   
-  // Auto-expand if a child is active
+  // Check if a child is active (but don't highlight parent)
   const childActive = item.children?.some(
-    child => pathname === child.href || pathname.startsWith(child.href + '/')
+    child => pathname === child.href || (child.href && pathname.startsWith(child.href + '/'))
   );
+  
+  // Only highlight parent if it's the exact current page AND no child is active
+  // For items without children, highlight if pathname matches or starts with href
+  const isActive = hasChildren 
+    ? (pathname === item.href && !childActive)
+    : (pathname === item.href || (item.href && pathname.startsWith(item.href + '/')))
 
   return (
     <div>
@@ -191,10 +210,10 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
           }
         }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
-          isActive || childActive
+          isActive
             ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400'
             : 'text-theme-secondary hover:bg-theme-button-hover hover:text-theme-primary'
-        } ${isActive || childActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400' : ''}`}
+        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400' : ''}`}
       >
         <item.icon className="w-5 h-5 flex-shrink-0" />
         <span className="flex-1">{item.label}</span>
@@ -216,19 +235,22 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
       
       {hasChildren && (isOpen || childActive) && (
         <div className="ml-8 mt-1 space-y-1">
-          {item.children!.map((child) => (
-            <Link
-              key={child.href}
-              href={child.href}
-              className={`block px-3 py-1.5 rounded text-sm transition-colors ${
-                pathname === child.href
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-theme-tertiary hover:text-theme-primary'
-              }`}
-            >
-              {child.label}
-            </Link>
-          ))}
+          {item.children!.map((child) => {
+            const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
+            return (
+              <Link
+                key={child.href}
+                href={child.href}
+                className={`block px-3 py-1.5 rounded text-sm transition-colors relative ${
+                  isChildActive
+                    ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400'
+                    : 'text-theme-tertiary hover:text-theme-primary'
+                }`}
+              >
+                {child.label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
@@ -250,14 +272,13 @@ export function TeamlySidebar() {
   return (
     <aside className="w-64 bg-theme-surface border-r border-theme flex flex-col h-full" suppressHydrationWarning>
       {/* Header */}
-      <div className="p-4 bg-theme-surface border-b border-theme">
-        <Link href="/dashboard/people" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center">
-            <Users className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-lg font-bold text-theme-primary" suppressHydrationWarning>
-            {APP_NAME}
-          </span>
+      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-theme">
+        <Link href="/dashboard/people" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
+          <img
+            src="/module_logos/teamly.png"
+            alt="Teamly"
+            className="h-12 w-auto max-w-full"
+          />
         </Link>
       </div>
 

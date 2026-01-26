@@ -251,7 +251,7 @@ export default function LeaveManagementPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-500" />
       </div>
     );
   }
@@ -261,20 +261,20 @@ export default function LeaveManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Leave Management</h1>
-          <p className="text-neutral-400">Request time off and view team calendar</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Leave Management</h1>
+          <p className="text-theme-secondary">Request time off and view team calendar</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/dashboard/people/leave/balances"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.06] text-neutral-300 rounded-lg hover:border-[#EC4899] hover:text-[#EC4899] transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-theme text-theme-secondary rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 ease-in-out"
           >
             <Calendar className="w-5 h-5" />
             Balances
           </Link>
           <Link
             href="/dashboard/people/leave/request"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out font-medium"
           >
             <Plus className="w-5 h-5" />
             Request Leave
@@ -287,21 +287,21 @@ export default function LeaveManagementPage() {
         {myBalances.map((balance) => (
           <div
             key={balance.id}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4"
+            className="bg-theme-button border border-theme rounded-lg p-4"
           >
             <div className="flex items-center gap-2 mb-2">
               <div 
                 className="w-3 h-3 rounded-full" 
                 style={{ backgroundColor: balance.leave_type_color }}
               />
-              <span className="text-sm text-neutral-400">{balance.leave_type_name}</span>
+              <span className="text-sm text-theme-secondary">{balance.leave_type_name}</span>
             </div>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-theme-primary">
               {balance.remaining_days}
-              <span className="text-sm font-normal text-neutral-400"> / {balance.entitled_days}</span>
+              <span className="text-sm font-normal text-theme-secondary"> / {balance.entitled_days}</span>
             </div>
             {balance.pending_days > 0 && (
-              <p className="text-xs text-amber-400 mt-1">{balance.pending_days} pending</p>
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">{balance.pending_days} pending</p>
             )}
           </div>
         ))}
@@ -313,8 +313,8 @@ export default function LeaveManagementPage() {
           onClick={() => setActiveView('calendar')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeView === 'calendar' 
-              ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-              : 'bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:text-white'
+              ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
+              : 'bg-theme-button border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
           }`}
         >
           <Calendar className="w-4 h-4 inline mr-2" />
@@ -324,14 +324,14 @@ export default function LeaveManagementPage() {
           onClick={() => setActiveView('requests')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeView === 'requests' 
-              ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-              : 'bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:text-white'
+              ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
+              : 'bg-theme-button border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
           }`}
         >
           <Clock className="w-4 h-4 inline mr-2" />
           Requests
           {pendingRequests.length > 0 && (
-            <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+            <span className="ml-2 px-2 py-0.5 bg-amber-500 dark:bg-amber-500 text-white text-xs rounded-full font-medium">
               {pendingRequests.length}
             </span>
           )}
@@ -340,24 +340,24 @@ export default function LeaveManagementPage() {
 
       {/* Calendar View */}
       {activeView === 'calendar' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-button border border-theme rounded-lg p-6">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
-            <button onClick={prevMonth} className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-              <ChevronLeft className="w-5 h-5 text-neutral-400" />
+            <button onClick={prevMonth} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-theme-secondary" />
             </button>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-theme-primary">
               {currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
             </h2>
-            <button onClick={nextMonth} className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-              <ChevronRight className="w-5 h-5 text-neutral-400" />
+            <button onClick={nextMonth} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+              <ChevronRight className="w-5 h-5 text-theme-secondary" />
             </button>
           </div>
 
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center text-sm text-neutral-400 py-2">{day}</div>
+              <div key={day} className="text-center text-sm text-theme-secondary py-2">{day}</div>
             ))}
             
             {getDaysInMonth().map((day, index) => {
@@ -368,10 +368,10 @@ export default function LeaveManagementPage() {
                 new Date().getFullYear() === currentMonth.getFullYear();
               
               return (
-                <div key={index} className={`min-h-24 p-1 border border-white/[0.06] rounded ${day ? 'bg-white/[0.02]' : ''}`}>
+                <div key={index} className={`min-h-24 p-1 border border-theme rounded ${day ? 'bg-theme-surface-elevated' : ''}`}>
                   {day && (
                     <>
-                      <div className={`text-sm mb-1 ${isToday ? 'w-6 h-6 bg-[#EC4899] rounded-full flex items-center justify-center text-white' : 'text-neutral-400'}`}>
+                      <div className={`text-sm mb-1 ${isToday ? 'w-6 h-6 bg-blue-500 dark:bg-blue-500 rounded-full flex items-center justify-center text-white font-medium' : 'text-theme-secondary'}`}>
                         {day}
                       </div>
                       <div className="space-y-1">
@@ -386,7 +386,7 @@ export default function LeaveManagementPage() {
                           </div>
                         ))}
                         {events.length > 3 && (
-                          <div className="text-xs text-neutral-400 px-1">+{events.length - 3} more</div>
+                          <div className="text-xs text-theme-tertiary px-1">+{events.length - 3} more</div>
                         )}
                       </div>
                     </>
@@ -400,19 +400,19 @@ export default function LeaveManagementPage() {
 
       {/* Requests View */}
       {activeView === 'requests' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+        <div className="bg-theme-button border border-theme rounded-lg overflow-hidden">
           {pendingRequests.length === 0 ? (
             <div className="text-center py-12">
-              <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
-              <p className="text-white font-medium">No pending requests</p>
-              <p className="text-neutral-400 text-sm">All leave requests have been processed</p>
+              <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
+              <p className="text-theme-primary font-medium">No pending requests</p>
+              <p className="text-theme-secondary text-sm">All leave requests have been processed</p>
             </div>
           ) : (
-            <div className="divide-y divide-white/[0.06]">
+            <div className="divide-y divide-theme">
               {pendingRequests.map((request) => (
                 <div key={request.id} className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white font-medium">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-white font-medium">
                       {request.employee_avatar ? (
                         <img src={request.employee_avatar} alt="" className="w-full h-full rounded-full object-cover" />
                       ) : (
@@ -420,7 +420,7 @@ export default function LeaveManagementPage() {
                       )}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{request.employee_name}</p>
+                      <p className="text-theme-primary font-medium">{request.employee_name}</p>
                       <div className="flex items-center gap-2 text-sm">
                         <span 
                           className="px-2 py-0.5 rounded text-xs"
@@ -428,13 +428,13 @@ export default function LeaveManagementPage() {
                         >
                           {request.leave_type_name}
                         </span>
-                        <span className="text-neutral-400">
+                        <span className="text-theme-secondary">
                           {new Date(request.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                           {request.start_date !== request.end_date && (
                             <> - {new Date(request.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</>
                           )}
                         </span>
-                        <span className="text-neutral-500">({request.total_days} day{request.total_days !== 1 ? 's' : ''})</span>
+                        <span className="text-theme-tertiary">({request.total_days} day{request.total_days !== 1 ? 's' : ''})</span>
                       </div>
                     </div>
                   </div>
@@ -445,21 +445,21 @@ export default function LeaveManagementPage() {
                       <>
                         <button
                           onClick={() => handleApprove(request.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-transparent border border-green-500 text-green-400 rounded-lg hover:shadow-[0_0_12px_rgba(34,197,94,0.7)] transition-all duration-200 ease-in-out"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-transparent border border-green-500 dark:border-green-500 text-green-600 dark:text-green-400 rounded-lg hover:shadow-[0_0_12px_rgba(34,197,94,0.5)] dark:hover:shadow-[0_0_12px_rgba(34,197,94,0.7)] transition-all duration-200 ease-in-out"
                         >
                           <CheckCircle className="w-4 h-4" />
                           Approve
                         </button>
                         <button
                           onClick={() => handleDecline(request.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-transparent border border-red-500 text-red-400 rounded-lg hover:shadow-[0_0_12px_rgba(239,68,68,0.7)] transition-all duration-200 ease-in-out"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-transparent border border-red-500 dark:border-red-500 text-red-600 dark:text-red-400 rounded-lg hover:shadow-[0_0_12px_rgba(239,68,68,0.5)] dark:hover:shadow-[0_0_12px_rgba(239,68,68,0.7)] transition-all duration-200 ease-in-out"
                         >
                           <XCircle className="w-4 h-4" />
                           Decline
                         </button>
                       </>
                     ) : request.profile_id === profile?.id && !isAdminOrOwner ? (
-                      <span className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-lg text-sm">Pending</span>
+                      <span className="px-3 py-1 bg-amber-500/20 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-lg text-sm font-medium">Pending</span>
                     ) : null}
                   </div>
                 </div>

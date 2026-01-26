@@ -35,35 +35,35 @@ export default function TeamCalendarPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Team Calendar</h1>
-          <p className="text-neutral-400 mt-1">View all scheduled reviews and meetings</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Team Calendar</h1>
+          <p className="text-theme-secondary mt-1">View all scheduled reviews and meetings</p>
         </div>
       </div>
 
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-button border border-theme rounded-lg p-6">
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[#EC4899]" />
+          <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
             {format(currentDate, 'MMMM yyyy')}
           </h2>
           
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigateMonth('prev')}
-              className="p-2 text-neutral-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
+              className="p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover rounded-lg transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setCurrentDate(new Date())}
-              className="px-3 py-1 text-sm text-neutral-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
+              className="px-3 py-1 text-sm text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover rounded-lg transition-colors"
             >
               Today
             </button>
             <button
               onClick={() => navigateMonth('next')}
-              className="p-2 text-neutral-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
+              className="p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover rounded-lg transition-colors"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -72,13 +72,13 @@ export default function TeamCalendarPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-500" />
           </div>
         ) : (
           <div className="grid grid-cols-7 gap-1">
             {/* Day Headers */}
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="p-3 text-center text-sm font-medium text-neutral-400 border-b border-white/[0.06]">
+              <div key={day} className="p-3 text-center text-sm font-medium text-theme-secondary border-b border-theme">
                 {day}
               </div>
             ))}
@@ -93,11 +93,11 @@ export default function TeamCalendarPage() {
               return (
                 <div
                   key={index}
-                  className={`min-h-[100px] p-2 border border-white/[0.06] ${
-                    isCurrentMonthDay ? 'bg-white/[0.02]' : 'bg-white/[0.01]'
-                  } ${isTodayDay ? 'ring-2 ring-[#EC4899]' : ''}`}
+                  className={`min-h-[100px] p-2 border border-theme ${
+                    isCurrentMonthDay ? 'bg-theme-surface-elevated' : 'bg-theme-button'
+                  } ${isTodayDay ? 'ring-2 ring-blue-500 dark:ring-blue-500' : ''}`}
                 >
-                  <div className={`text-sm mb-1 ${isCurrentMonthDay ? 'text-white' : 'text-neutral-600'} ${isTodayDay ? 'font-bold text-[#EC4899]' : ''}`}>
+                  <div className={`text-sm mb-1 ${isCurrentMonthDay ? 'text-theme-primary' : 'text-theme-tertiary'} ${isTodayDay ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`}>
                     {format(date, 'd')}
                   </div>
                   
@@ -106,20 +106,20 @@ export default function TeamCalendarPage() {
                       <Link
                         key={review.id}
                         href={review.review_id ? `/dashboard/people/reviews/${review.review_id}` : `/dashboard/people/reviews`}
-                        className="block text-xs p-1 rounded bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:bg-[#EC4899]/30 transition-colors truncate"
+                        className="block text-xs p-1 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-500/50 hover:bg-blue-500/20 dark:hover:bg-blue-500/30 transition-colors truncate"
                         title={review.title}
                       >
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           <span className="truncate">{review.employee_name}</span>
                         </div>
-                        <div className="truncate text-[10px] text-neutral-300 mt-0.5">
+                        <div className="truncate text-[10px] text-theme-secondary mt-0.5">
                           {review.title}
                         </div>
                       </Link>
                     ))}
                     {dayReviews.length > 3 && (
-                      <div className="text-xs text-neutral-500 px-1">
+                      <div className="text-xs text-theme-tertiary px-1">
                         +{dayReviews.length - 3} more
                       </div>
                     )}

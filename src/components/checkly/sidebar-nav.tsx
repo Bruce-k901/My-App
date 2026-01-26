@@ -215,13 +215,16 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
     };
 
     const IconComponent = item.icon;
+    // Only highlight parent if it's the exact page AND no child is active
+    const shouldHighlightParent = isParentActive && !childActive;
+    
     return (
       <div>
         <Link
           href={item.href!}
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-            isParentActive || childActive
+            shouldHighlightParent
               ? 'bg-[#EC4899]/20 dark:bg-[#EC4899]/20 text-[#EC4899] dark:text-[#EC4899]'
               : 'text-[rgb(var(--text-secondary))] dark:text-neutral-400 hover:bg-black/[0.03] dark:hover:bg-neutral-800 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
           }`}
@@ -240,16 +243,16 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
         {shouldExpand && (
           <div className="ml-8 mt-1 space-y-1">
             {item.children!.map((child) => {
-              const isChildActive = pathname === child.href || pathname.startsWith(child.href + '/');
+              const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
               const ChildIcon = child.icon || AlertTriangle;
               
               return (
                 <Link
                   key={child.href}
                   href={child.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'text-[#EC4899] dark:text-[#EC4899]'
+                      ? 'bg-[#EC4899]/20 dark:bg-[#EC4899]/20 text-[#EC4899] dark:text-[#EC4899] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#EC4899] dark:before:bg-[#EC4899]'
                       : 'text-[rgb(var(--text-tertiary))] dark:text-neutral-500 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                   }`}
                 >

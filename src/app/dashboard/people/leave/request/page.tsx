@@ -177,7 +177,7 @@ export default function LeaveRequestPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-500" />
       </div>
     );
   }
@@ -185,10 +185,10 @@ export default function LeaveRequestPage() {
   if (success) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-8 text-center">
-          <Check className="w-16 h-16 text-green-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Leave Request Submitted</h2>
-          <p className="text-neutral-400">
+        <div className="bg-green-500/10 dark:bg-green-500/10 border border-green-300 dark:border-green-500/50 rounded-lg p-8 text-center">
+          <Check className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-theme-primary mb-2">Leave Request Submitted</h2>
+          <p className="text-theme-secondary">
             {selectedType?.requires_approval 
               ? 'Your request has been sent for approval.'
               : 'Your leave has been approved automatically.'}
@@ -202,31 +202,31 @@ export default function LeaveRequestPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/people/leave" className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-          <ArrowLeft className="w-5 h-5 text-neutral-400" />
+        <Link href="/dashboard/people/leave" className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
+          <ArrowLeft className="w-5 h-5 text-theme-secondary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Request Leave</h1>
-          <p className="text-neutral-400">Submit a new leave request</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Request Leave</h1>
+          <p className="text-theme-secondary">Submit a new leave request</p>
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-400" />
-          <p className="text-red-400">{error}</p>
+        <div className="mb-6 p-4 bg-red-500/10 dark:bg-red-500/10 border border-red-300 dark:border-red-500/50 rounded-lg flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-6">
+        <div className="bg-theme-button border border-theme rounded-lg p-6 space-y-6">
           
           {/* Leave Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Leave Type <span className="text-red-400">*</span>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              Leave Type <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {leaveTypes.map((type) => (
@@ -236,17 +236,17 @@ export default function LeaveRequestPage() {
                   onClick={() => setFormData(prev => ({ ...prev, leave_type_id: type.id }))}
                   className={`p-3 rounded-lg border text-left transition-all ${
                     formData.leave_type_id === type.id
-                      ? 'border-[#EC4899] bg-[#EC4899]/10'
-                      : 'border-white/[0.06] hover:border-white/[0.1]'
+                      ? 'border-blue-500 dark:border-blue-500 bg-blue-50 dark:bg-blue-500/20'
+                      : 'border-theme hover:border-blue-300 dark:hover:border-blue-500/50'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }} />
-                    <span className="text-white font-medium text-sm">{type.name}</span>
+                    <span className="text-theme-primary font-medium text-sm">{type.name}</span>
                   </div>
                   <div className="flex gap-2 text-xs">
-                    {type.is_paid && <span className="text-green-400">Paid</span>}
-                    {!type.requires_approval && <span className="text-blue-400">Auto-approved</span>}
+                    {type.is_paid && <span className="text-green-600 dark:text-green-400">Paid</span>}
+                    {!type.requires_approval && <span className="text-blue-600 dark:text-blue-400">Auto-approved</span>}
                   </div>
                 </button>
               ))}
@@ -255,23 +255,23 @@ export default function LeaveRequestPage() {
 
           {/* Balance Info */}
           {selectedType && selectedType.deducts_from_allowance && balance && (
-            <div className="p-4 bg-white/[0.05] rounded-lg">
+            <div className="p-4 bg-theme-surface-elevated dark:bg-theme-surface-elevated rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <Info className="w-4 h-4 text-blue-400" />
-                <span className="text-sm text-neutral-300">Your {selectedType.name} Balance</span>
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm text-theme-secondary">Your {selectedType.name} Balance</span>
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p className="text-2xl font-bold text-white">{balance.remaining_days}</p>
-                  <p className="text-xs text-neutral-400">Remaining</p>
+                  <p className="text-2xl font-bold text-theme-primary">{balance.remaining_days}</p>
+                  <p className="text-xs text-theme-tertiary">Remaining</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-neutral-400">{balance.taken_days}</p>
-                  <p className="text-xs text-neutral-400">Taken</p>
+                  <p className="text-2xl font-bold text-theme-secondary">{balance.taken_days}</p>
+                  <p className="text-xs text-theme-tertiary">Taken</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-amber-400">{balance.pending_days}</p>
-                  <p className="text-xs text-neutral-400">Pending</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{balance.pending_days}</p>
+                  <p className="text-xs text-theme-tertiary">Pending</p>
                 </div>
               </div>
             </div>
@@ -280,8 +280,8 @@ export default function LeaveRequestPage() {
           {/* Date Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1">
-                Start Date <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-theme-secondary mb-1.5">
+                Start Date <span className="text-red-600 dark:text-red-400">*</span>
               </label>
               <input
                 type="date"
@@ -289,16 +289,16 @@ export default function LeaveRequestPage() {
                 value={formData.start_date}
                 onChange={handleChange}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
               />
               {selectedType?.allow_half_days && (
-                <label className="flex items-center gap-2 mt-2 text-sm text-neutral-400">
+                <label className="flex items-center gap-2 mt-2 text-sm text-theme-secondary">
                   <input
                     type="checkbox"
                     name="start_half_day"
                     checked={formData.start_half_day}
                     onChange={handleChange}
-                    className="rounded border-white/[0.06] bg-[#0B0D13] text-[#EC4899] focus:ring-[#EC4899]"
+                    className="rounded border-blue-300 dark:border-blue-500/50 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-500"
                   />
                   Afternoon only (PM)
                 </label>
@@ -306,8 +306,8 @@ export default function LeaveRequestPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1">
-                End Date <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-theme-secondary mb-1.5">
+                End Date <span className="text-red-600 dark:text-red-400">*</span>
               </label>
               <input
                 type="date"
@@ -315,16 +315,16 @@ export default function LeaveRequestPage() {
                 value={formData.end_date}
                 onChange={handleChange}
                 min={formData.start_date || new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
               />
               {selectedType?.allow_half_days && formData.start_date !== formData.end_date && (
-                <label className="flex items-center gap-2 mt-2 text-sm text-neutral-400">
+                <label className="flex items-center gap-2 mt-2 text-sm text-theme-secondary">
                   <input
                     type="checkbox"
                     name="end_half_day"
                     checked={formData.end_half_day}
                     onChange={handleChange}
-                    className="rounded border-white/[0.06] bg-[#0B0D13] text-[#EC4899] focus:ring-[#EC4899]"
+                    className="rounded border-blue-300 dark:border-blue-500/50 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-500"
                   />
                   Morning only (AM)
                 </label>
@@ -334,36 +334,36 @@ export default function LeaveRequestPage() {
 
           {/* Calculated Days */}
           {calculatedDays > 0 && (
-            <div className="p-4 bg-[#EC4899]/10 border border-[#EC4899]/30 rounded-lg">
+            <div className="p-4 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-300 dark:border-blue-500/50 rounded-lg">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-300">Working days requested:</span>
-                <span className="text-xl font-bold text-white">{calculatedDays} day{calculatedDays !== 1 ? 's' : ''}</span>
+                <span className="text-theme-secondary">Working days requested:</span>
+                <span className="text-xl font-bold text-theme-primary">{calculatedDays} day{calculatedDays !== 1 ? 's' : ''}</span>
               </div>
             </div>
           )}
 
           {/* Reason */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-1">Reason (optional)</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1.5">Reason (optional)</label>
             <textarea
               name="reason"
               value={formData.reason}
               onChange={handleChange}
               rows={3}
               placeholder="Add any notes for your manager..."
-              className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white placeholder-neutral-400 resize-none focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary placeholder-theme-tertiary resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
             />
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
-            <Link href="/dashboard/people/leave" className="px-4 py-2 text-neutral-400 hover:text-white transition-colors">
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme">
+            <Link href="/dashboard/people/leave" className="px-4 py-2 text-theme-secondary hover:text-theme-primary transition-colors">
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting || !formData.leave_type_id || !formData.start_date || !formData.end_date}
-              className="flex items-center gap-2 px-6 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {submitting ? (
                 <>

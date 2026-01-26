@@ -496,17 +496,17 @@ function EditShiftModal({
                 type="number"
                 value={breakMins}
                 onChange={(e) => setBreakMins(parseInt(e.target.value) || 0)}
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+                className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs text-neutral-400 mb-1">Assigned To</label>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">Assigned To</label>
             <select
               value={selectedStaff}
               onChange={(e) => setSelectedStaff(e.target.value)}
-              className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899]"
             >
               <option value="">Unassigned</option>
               {staff.map(s => (
@@ -517,11 +517,11 @@ function EditShiftModal({
 
           {sectionsEnabled && (
             <div>
-              <label className="block text-xs text-neutral-400 mb-1">Section</label>
+              <label className="block text-sm font-medium text-neutral-300 mb-2">Section</label>
               <select
                 value={selectedSectionId}
                 onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white"
+                className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899]"
               >
                 <option value="">No section</option>
                 {sections.map((s) => (
@@ -533,8 +533,19 @@ function EditShiftModal({
             </div>
           )}
 
-          <div className="bg-neutral-800/50 rounded-lg p-3 text-sm text-neutral-400">
-            {netHours}h net {estimatedCost > 0 && `• £${estimatedCost.toFixed(2)}`}
+          <div className="bg-neutral-800/50 rounded-lg p-3 flex items-center justify-between">
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-neutral-400">
+                <Clock className="w-4 h-4 inline mr-1" />
+                {netHours}h net
+              </span>
+              {estimatedCost > 0 && (
+                <span className="text-neutral-400">
+                  <PoundSterling className="w-4 h-4 inline mr-1" />
+                  £{estimatedCost.toFixed(2)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1419,7 +1430,7 @@ function ManageSectionsModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. FOH"
-                className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm"
+                className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
               />
               <button
                 type="button"
@@ -1811,14 +1822,14 @@ export default function RotaBuilderPage() {
     if (profile?.company_id && !siteContext.loading && sites.length === 0 && !error) {
       loadSites();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [profile?.company_id, siteContext.loading, siteContext.accessibleSites]);
 
   useEffect(() => {
     if (selectedSite && profile?.company_id && !siteContext.loading) {
       loadData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [selectedSite, weekStarting, profile?.company_id, siteContext.loading, siteContext.accessibleSites]);
 
   const loadData = useCallback(async () => {

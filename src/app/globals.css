@@ -582,7 +582,7 @@ h3 {
 
 p {
   font-weight: 400;
-  color: #cbd5e1;
+  color: rgb(var(--text-secondary));
 }
 
 /* ----------------------------- */

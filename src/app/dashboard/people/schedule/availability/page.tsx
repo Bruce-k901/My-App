@@ -323,12 +323,12 @@ export default function MyAvailabilityPage() {
         </div>
 
         {/* Week selector */}
-        <div className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+        <div className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.12] transition-colors">
           <Button
             onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-neutral-400 hover:text-white"
+            className="text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -339,7 +339,7 @@ export default function MyAvailabilityPage() {
             onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-neutral-400 hover:text-white"
+            className="text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
@@ -580,36 +580,36 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
   }, []);
 
   return (
-    <Card className="p-4 bg-white/[0.03] border border-white/[0.06]">
+    <Card className="p-4 bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors">
       <div className="space-y-3">
         <h3 className="font-semibold text-white">{day.label}</h3>
         
         {/* Period checkboxes - always visible */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
             <input
               type="checkbox"
               checked={periods.allDay}
               onChange={() => handlePeriodChange('allDay')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899]"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">All Day</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
             <input
               type="checkbox"
               checked={periods.am}
               onChange={() => handlePeriodChange('am')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899]"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">AM (9am - 12pm)</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
             <input
               type="checkbox"
               checked={periods.pm}
               onChange={() => handlePeriodChange('pm')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899]"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">PM (12pm - 5pm)</span>
           </label>
@@ -626,7 +626,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
             value={notes}
             onChange={(e) => handleNotesChange(e.target.value)}
             placeholder="e.g., School pickup at 3pm"
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#EC4899]"
+            className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
           />
         </div>
       </div>
@@ -795,7 +795,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
             />
           </div>
 
@@ -805,7 +805,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
             <select
               value={type}
               onChange={(e) => setType(e.target.value as 'time_off_request' | 'leave')}
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
             >
               <option value="time_off_request">Time Off Request</option>
               <option value="leave">Leave (Holiday/Sick)</option>
@@ -859,7 +859,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               required
               rows={3}
               placeholder="Please provide a reason for your request..."
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#EC4899]"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
             />
           </div>
 
