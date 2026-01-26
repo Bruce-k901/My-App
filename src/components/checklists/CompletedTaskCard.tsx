@@ -208,21 +208,52 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       console.log(`🔍 METHOD 1: Processing equipment_list item ${index}:`, eq)
       
       // Try multiple possible asset ID field names and ensure it's a string
+      // CRITICAL: Handle "[object Object]" which can occur if asset_id was incorrectly saved
       let assetId: string | null = null
       const rawId = eq.asset_id || eq.assetId || eq.id || eq.value
       if (rawId) {
         if (typeof rawId === 'string') {
-          assetId = rawId
+          // Skip if it's "[object Object]" - try to find real ID from other fields
+          if (rawId === '[object Object]' || rawId.includes('[object')) {
+            // Try to find real asset ID from other fields or task_data
+            const taskDataAssets = taskData[task.template?.repeatable_field_name || ''] || []
+            if (Array.isArray(taskDataAssets) && taskDataAssets.length > index) {
+              const taskDataAsset = taskDataAssets[index]
+              if (taskDataAsset) {
+                const realId = taskDataAsset.value || taskDataAsset.id || taskDataAsset.asset_id
+                if (realId && typeof realId === 'string' && !realId.includes('[object')) {
+                  assetId = realId
+                } else if (realId && typeof realId === 'object' && realId.id) {
+                  assetId = realId.id
+                }
+              }
+            }
+            // If still no valid ID, try to match by asset_name
+            if (!assetId && eq.asset_name) {
+              // Try to find asset by name in assetsMap
+              for (const [id, asset] of assetsMap.entries()) {
+                if (asset.name === eq.asset_name) {
+                  assetId = id
+                  break
+                }
+              }
+            }
+          } else {
+            assetId = rawId
+          }
         } else if (typeof rawId === 'object' && rawId !== null) {
-          assetId = rawId.id || rawId.value || rawId.asset_id || String(rawId)
-        } else {
-          assetId = String(rawId)
+          // Extract from nested object
+          assetId = rawId.id || rawId.value || rawId.asset_id
+          // Never use String() on objects - it creates "[object Object]"
+          if (!assetId && rawId.id && typeof rawId.id === 'string') assetId = rawId.id
+          if (!assetId && rawId.value && typeof rawId.value === 'string') assetId = rawId.value
         }
       }
       
-      console.log(`🔍 METHOD 1: Extracted assetId: ${assetId} (type: ${typeof assetId})`)
+      console.log(`🔍 METHOD 1: Extracted assetId: ${assetId} (type: ${typeof assetId}, rawId: ${rawId})`)
       
-      if (assetId && typeof assetId === 'string') {
+      // Skip if assetId is invalid
+      if (assetId && typeof assetId === 'string' && !assetId.includes('[object')) {
         const assetFromDb = assetsMap.get(assetId)
         // Check multiple possible field names for temperature value
         // IMPORTANT: Check for 0 as a valid temperature reading
@@ -688,11 +719,15 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           const rawEqId = eq.asset_id || eq.assetId || eq.id || eq.value
           if (rawEqId) {
             if (typeof rawEqId === 'string') {
-              eqAssetId = rawEqId
+              // Skip "[object Object]" - try to match by name instead
+              if (rawEqId === '[object Object]' || rawEqId.includes('[object')) {
+                eqAssetId = null // Will match by name instead
+              } else {
+                eqAssetId = rawEqId
+              }
             } else if (typeof rawEqId === 'object' && rawEqId !== null) {
-              eqAssetId = rawEqId.id || rawEqId.value || rawEqId.asset_id || String(rawEqId)
-            } else {
-              eqAssetId = String(rawEqId)
+              // Extract from nested object - never use String() on objects
+              eqAssetId = rawEqId.id || rawEqId.value || rawEqId.asset_id
             }
           }
           

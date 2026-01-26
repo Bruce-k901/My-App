@@ -2910,41 +2910,60 @@ export default function TaskCompletionModal({
       if (equipmentFromForm.length > 0) {
         equipmentFromForm.forEach((equipment: any) => {
           // Extract asset ID - handle nested structures where id/value/asset_id might be objects
+          // CRITICAL: Must extract actual UUID string, never use String() on objects (creates "[object Object]")
           let assetId: string | null = null
           
-          // Check direct properties first
+          // Helper to safely extract ID from nested object
+          const extractIdFromObject = (obj: any): string | null => {
+            if (!obj || typeof obj !== 'object') return null
+            // Try common ID property names
+            if (typeof obj.id === 'string') return obj.id
+            if (typeof obj.value === 'string') return obj.value
+            if (typeof obj.assetId === 'string') return obj.assetId
+            if (typeof obj.asset_id === 'string') return obj.asset_id
+            // Try nested structures
+            if (obj.id && typeof obj.id === 'object' && typeof obj.id.assetId === 'string') return obj.id.assetId
+            if (obj.value && typeof obj.value === 'object' && typeof obj.value.assetId === 'string') return obj.value.assetId
+            return null
+          }
+          
+          // Check direct string properties first
           if (typeof equipment.value === 'string') {
             assetId = equipment.value
           } else if (typeof equipment.asset_id === 'string') {
             assetId = equipment.asset_id
           } else if (typeof equipment.id === 'string') {
             assetId = equipment.id
+          } else if (typeof equipment.assetId === 'string') {
+            assetId = equipment.assetId
           }
-          // Check nested structures (objects with assetId property)
-          else if (equipment.id && typeof equipment.id === 'object' && equipment.id.assetId) {
-            assetId = equipment.id.assetId
-          } else if (equipment.value && typeof equipment.value === 'object' && equipment.value.assetId) {
-            assetId = equipment.value.assetId
-          } else if (equipment.asset_id && typeof equipment.asset_id === 'object' && equipment.asset_id.assetId) {
-            assetId = equipment.asset_id.assetId
-          } else if (equipment.assetId && typeof equipment.assetId === 'object' && equipment.assetId.assetId) {
-            assetId = equipment.assetId.assetId
+          // Check if value/asset_id/id are objects and extract ID from them
+          else if (equipment.value && typeof equipment.value === 'object') {
+            assetId = extractIdFromObject(equipment.value) || extractIdFromObject(equipment.value.id) || extractIdFromObject(equipment.value.value)
+          } else if (equipment.asset_id && typeof equipment.asset_id === 'object') {
+            assetId = extractIdFromObject(equipment.asset_id) || extractIdFromObject(equipment.asset_id.id) || extractIdFromObject(equipment.asset_id.assetId)
+          } else if (equipment.id && typeof equipment.id === 'object') {
+            assetId = extractIdFromObject(equipment.id) || extractIdFromObject(equipment.id.id) || extractIdFromObject(equipment.id.assetId)
           } else if (typeof equipment === 'string') {
             assetId = equipment
-          } else {
-            // Final fallback: try to stringify
-            assetId = String(equipment.value || equipment.asset_id || equipment.id || equipment)
           }
           
-          // Normalize to string
-          if (assetId && typeof assetId !== 'string') {
-            assetId = String(assetId)
-          }
-          
-          if (!assetId || assetId === 'null' || assetId === 'undefined') {
-            console.warn('⚠️ Could not extract valid asset ID from equipment:', equipment)
+          // Final validation: ensure we have a valid UUID string (not "[object Object]")
+          if (!assetId || 
+              assetId === 'null' || 
+              assetId === 'undefined' || 
+              assetId === '[object Object]' ||
+              assetId.includes('[object')) {
+            console.warn('⚠️ Could not extract valid asset ID from equipment:', {
+              equipment,
+              extractedAssetId: assetId,
+              equipmentKeys: Object.keys(equipment || {})
+            })
             return
           }
+          
+          // Ensure assetId is a clean string (no extra whitespace)
+          assetId = assetId.trim()
           
           // CRITICAL: Check multiple sources for temperature
           const recordedTemp = tempMap.get(assetId)
@@ -3152,42 +3171,118 @@ export default function TaskCompletionModal({
           if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
             const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
             if (!isNaN(numValue) && isFinite(numValue)) {
-              // Try to find matching asset in equipmentList - check multiple ID formats
-              let existingIndex = equipmentList.findIndex((eq: any) => {
-                const eqAssetId = eq.asset_id
-                // Try exact match
-                if (String(eqAssetId) === String(assetIdFromKey)) return true
-                // Try matching nested structures
-                if (eqAssetId && typeof eqAssetId === 'object') {
-                  const nestedId = eqAssetId.id || eqAssetId.value || eqAssetId.assetId
-                  if (String(nestedId) === String(assetIdFromKey)) return true
+              // Helper to safely extract and compare asset IDs
+              const extractAndCompareId = (eq: any, targetId: string): boolean => {
+                // Try direct asset_id
+                if (eq.asset_id && String(eq.asset_id).trim() === String(targetId).trim()) return true
+                // Try other ID fields
+                if (eq.id && String(eq.id).trim() === String(targetId).trim()) return true
+                if (eq.value && String(eq.value).trim() === String(targetId).trim()) return true
+                // Try nested structures
+                if (eq.asset_id && typeof eq.asset_id === 'object') {
+                  const nestedId = eq.asset_id.id || eq.asset_id.value || eq.asset_id.assetId
+                  if (nestedId && String(nestedId).trim() === String(targetId).trim()) return true
                 }
-                // Try matching via equipment.value, equipment.id, etc.
-                if (String(eq.value) === String(assetIdFromKey) || 
-                    String(eq.id) === String(assetIdFromKey) ||
-                    String(eq.asset_id) === String(assetIdFromKey)) return true
                 return false
-              })
+              }
+              
+              // Try to find matching asset in equipmentList
+              let existingIndex = equipmentList.findIndex((eq: any) => extractAndCompareId(eq, assetIdFromKey))
               
               if (existingIndex >= 0) {
-                // Update existing equipment entry with temperature
-                equipmentList[existingIndex].temperature = numValue
-                equipmentList[existingIndex].reading = numValue
-                equipmentList[existingIndex].temp = numValue
-                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetIdFromKey} (${equipmentList[existingIndex].asset_name}) in equipment_list`)
+                // Update existing equipment entry with temperature AND fix asset_id if it's wrong
+                const existingEq = equipmentList[existingIndex]
+                
+                // CRITICAL: Fix asset_id if it's "[object Object]" or invalid
+                if (!existingEq.asset_id || 
+                    String(existingEq.asset_id).includes('[object') ||
+                    existingEq.asset_id === '[object Object]') {
+                  existingEq.asset_id = assetIdFromKey
+                  console.log(`🔧 FIXED: Corrected asset_id from "${existingEq.asset_id}" to "${assetIdFromKey}"`)
+                }
+                
+                existingEq.temperature = numValue
+                existingEq.reading = numValue
+                existingEq.temp = numValue
+                
+                // Recalculate status based on temperature and range
+                if (assetIdFromKey && assetTempRanges.has(assetIdFromKey)) {
+                  const assetRange = assetTempRanges.get(assetIdFromKey)!
+                  const { min, max } = assetRange
+                  const temp = numValue
+                  const tolerance = 2
+                  const warningTolerance = 1
+                  
+                  const isInvertedRange = min !== null && max !== null && min > max
+                  
+                  if (isInvertedRange) {
+                    if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                      existingEq.status = 'failed'
+                    } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                      existingEq.status = 'warning'
+                    } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                      existingEq.status = 'warning'
+                    } else {
+                      existingEq.status = 'ok'
+                    }
+                  } else {
+                    if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                      existingEq.status = 'failed'
+                    } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                      existingEq.status = 'warning'
+                    } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                      existingEq.status = 'warning'
+                    } else {
+                      existingEq.status = 'ok'
+                    }
+                  }
+                }
+                
+                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetIdFromKey} (${existingEq.asset_name}) with status ${existingEq.status}`)
               } else {
                 // Add new equipment entry with temperature
                 const assetName = assetsMap.get(assetIdFromKey)?.name || 'Unknown Equipment'
+                
+                // Determine status based on temperature and range
+                let status = 'ok'
+                if (assetIdFromKey && assetTempRanges.has(assetIdFromKey)) {
+                  const assetRange = assetTempRanges.get(assetIdFromKey)!
+                  const { min, max } = assetRange
+                  const temp = numValue
+                  const tolerance = 2
+                  const warningTolerance = 1
+                  
+                  const isInvertedRange = min !== null && max !== null && min > max
+                  
+                  if (isInvertedRange) {
+                    if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                      status = 'failed'
+                    } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                      status = 'warning'
+                    } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                      status = 'warning'
+                    }
+                  } else {
+                    if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                      status = 'failed'
+                    } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                      status = 'warning'
+                    } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                      status = 'warning'
+                    }
+                  }
+                }
+                
                 equipmentList.push({
                   asset_id: assetIdFromKey,
                   asset_name: assetName,
                   temperature: numValue,
                   reading: numValue,
                   temp: numValue,
-                  status: 'ok',
+                  status: status,
                   recorded_at: completedAt
                 })
-                console.log(`✅ FALLBACK: Added temperature ${numValue}°C for asset ${assetIdFromKey} (${assetName}) from formData`)
+                console.log(`✅ FALLBACK: Added temperature ${numValue}°C for asset ${assetIdFromKey} (${assetName}) with status ${status}`)
               }
             }
           }
