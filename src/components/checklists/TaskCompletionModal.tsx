@@ -4158,7 +4158,15 @@ export default function TaskCompletionModal({
                         <div className="flex items-center gap-3">
                           {/* Asset Name | Nickname */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-pink-600 dark:text-magenta-400 font-medium">{displayLabel}</p>
+                            {nickname ? (
+                              <div className="flex items-baseline gap-2">
+                                <p className="text-pink-600 dark:text-magenta-400 font-medium">{asset.name}</p>
+                                <span className="text-pink-600 dark:text-magenta-400 font-bold text-xl">|</span>
+                                <p className="text-pink-500 dark:text-magenta-300 font-bold text-xl">{nickname}</p>
+                              </div>
+                            ) : (
+                              <p className="text-pink-600 dark:text-magenta-400 font-medium">{asset.name}</p>
+                            )}
                             {asset.site_name && (
                               <p className="text-xs text-gray-600 dark:text-white/60 mt-0.5">{asset.site_name}</p>
                             )}
@@ -4547,7 +4555,15 @@ export default function TaskCompletionModal({
                         return (
                           <div key={idx} className="flex items-center gap-3">
                             <div className="flex-1 min-w-0">
-                              <p className="text-magenta-400 font-medium">{displayLabel}</p>
+                              {nickname ? (
+                                <div className="flex items-baseline gap-2">
+                                  <p className="text-magenta-400 font-medium">{assetName}</p>
+                                  <span className="text-magenta-400 font-bold text-xl">|</span>
+                                  <p className="text-magenta-300 font-bold text-xl">{nickname}</p>
+                                </div>
+                              ) : (
+                                <p className="text-magenta-400 font-medium">{typeof equipmentLabel === 'string' ? equipmentLabel : assetName}</p>
+                              )}
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                               <input
