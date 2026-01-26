@@ -26,9 +26,18 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   const [temperatureLogs, setTemperatureLogs] = useState<any[]>([])
 
   // Fetch temperature_logs for this task completion
+  // Only fetch if this is a temperature-related task
   useEffect(() => {
     const fetchTemperatureLogs = async () => {
-      if (!completionRecord?.completed_by || !completionRecord?.completed_at) return
+      // Only fetch for temperature tasks - check if task has temperature data in completion_data
+      const hasTemperatureData = completionRecord?.completion_data?.equipment_list?.some(
+        (item: any) => item.temperature !== null && item.temperature !== undefined
+      )
+      
+      // Skip if no temperature data and no recorded_by/completed_at
+      if (!hasTemperatureData && (!completionRecord?.completed_by || !completionRecord?.completed_at)) {
+        return
+      }
 
       try {
         // Fetch temperature_logs that match:
@@ -39,22 +48,15 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         const timeWindowStart = new Date(completionTime.getTime() - 5 * 60 * 1000) // 5 minutes before
         const timeWindowEnd = new Date(completionTime.getTime() + 5 * 60 * 1000) // 5 minutes after
 
+        // Simplified query without foreign key join (fetch asset names separately if needed)
         let query = supabase
           .from('temperature_logs')
-          .select(`
-            id,
-            asset_id,
-            reading,
-            unit,
-            recorded_at,
-            status,
-            notes,
-            assets:asset_id(id, name)
-          `)
+          .select('id, asset_id, reading, unit, recorded_at, status, notes')
           .eq('recorded_by', completionRecord.completed_by)
           .gte('recorded_at', timeWindowStart.toISOString())
           .lte('recorded_at', timeWindowEnd.toISOString())
           .order('recorded_at', { ascending: false })
+          .limit(10) // Limit to prevent excessive queries
 
         // If we have site_id from task, filter by it
         if (task.site_id) {
@@ -64,20 +66,45 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         const { data, error } = await query
 
         if (error) {
-          console.error('Error fetching temperature_logs:', error)
+          // Only log errors that aren't expected (like RLS blocking or no data)
+          // PGRST301 = RLS policy violation, PGRST116 = no rows returned (not really an error)
+          if (error.code !== 'PGRST116' && !error.message?.includes('permission') && !error.message?.includes('policy')) {
+            console.warn('⚠️ Error fetching temperature_logs (non-critical):', error.message || error.code)
+          }
+          // Silently handle expected errors (no data, RLS blocking)
         } else if (data && data.length > 0) {
-          console.log('✅ Found temperature_logs for this task:', data)
-          setTemperatureLogs(data)
-        } else {
-          console.log('ℹ️ No temperature_logs found for this task completion')
+          // Fetch asset names separately if needed
+          const assetIds = [...new Set(data.map((log: any) => log.asset_id).filter(Boolean))]
+          if (assetIds.length > 0) {
+            const { data: assets } = await supabase
+              .from('assets')
+              .select('id, name')
+              .in('id', assetIds)
+            
+            const assetMap = new Map((assets || []).map((a: any) => [a.id, a.name]))
+            
+            // Enrich temperature logs with asset names
+            const enrichedLogs = data.map((log: any) => ({
+              ...log,
+              asset_name: assetMap.get(log.asset_id) || 'Unknown Asset'
+            }))
+            
+            setTemperatureLogs(enrichedLogs)
+          } else {
+            setTemperatureLogs(data)
+          }
         }
-      } catch (error) {
-        console.error('Error in fetchTemperatureLogs:', error)
+        // Silently handle no data case - this is expected for many tasks
+      } catch (error: any) {
+        // Only log unexpected errors
+        if (error?.code !== 'PGRST116' && !error?.message?.includes('permission')) {
+          console.warn('⚠️ Error in fetchTemperatureLogs (non-critical):', error?.message || error)
+        }
       }
     }
 
     fetchTemperatureLogs()
-  }, [completionRecord?.completed_by, completionRecord?.completed_at, task.site_id])
+  }, [completionRecord?.completed_by, completionRecord?.completed_at, completionRecord?.completion_data, task.site_id])
 
   // Check both completion_data and task_data for recorded information
   const completionData = completionRecord?.completion_data || {}

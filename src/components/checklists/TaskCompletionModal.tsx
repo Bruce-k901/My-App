@@ -57,6 +57,7 @@ export default function TaskCompletionModal({
   const [calloutAsset, setCalloutAsset] = useState<any>(null)
   const [calloutQueue, setCalloutQueue] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', asset: any}>>([])
   const [pendingCallouts, setPendingCallouts] = useState<Array<{type: 'fire_alarm' | 'emergency_lights', notes?: string}>>([])
+  const [siteChecklistEquipmentConfig, setSiteChecklistEquipmentConfig] = useState<any[]>([]) // Store equipment_config from site_checklist for nickname fallback
   // Fire alarm and emergency lighting checklist states
   const [fireAlarmChecklist, setFireAlarmChecklist] = useState<boolean[]>([false, false, false, false, false, false])
   const [emergencyLightingChecklist, setEmergencyLightingChecklist] = useState<boolean[]>([false, false, false, false, false, false])
@@ -338,6 +339,27 @@ export default function TaskCompletionModal({
       // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
       // Monitoring tasks should only show the asset that was out of range
       const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
+      
+      // For monitoring tasks, fetch equipment_config from site_checklist as fallback for nickname
+      if (isMonitoringTask && task.template_id && siteId) {
+        try {
+          const { data: siteChecklist } = await supabase
+            .from('site_checklists')
+            .select('equipment_config')
+            .eq('template_id', task.template_id)
+            .eq('site_id', siteId)
+            .maybeSingle()
+          
+          if (siteChecklist?.equipment_config && Array.isArray(siteChecklist.equipment_config)) {
+            setSiteChecklistEquipmentConfig(siteChecklist.equipment_config)
+            console.log('📦 Loaded equipment_config from site_checklist for monitoring task:', siteChecklist.equipment_config.length, 'items')
+          }
+        } catch (error) {
+          console.warn('⚠️ Failed to load equipment_config from site_checklist:', error)
+        }
+      } else {
+        setSiteChecklistEquipmentConfig([])
+      }
       
       // CRITICAL: For PPM tasks, load the asset from task_data.source_id (or asset_id for backwards compatibility)
       // PPM tasks use source_id (not asset_id) - this is the asset ID
@@ -636,12 +658,35 @@ export default function TaskCompletionModal({
           const repeatableFieldName = task.template?.repeatable_field_name
           const repeatableData = repeatableFieldName ? (taskData[repeatableFieldName] as any[]) : null
           
+          // For monitoring tasks, also fetch equipment_config from site_checklist as fallback
+          let siteChecklistConfig: any[] = []
+          if (isMonitoringTask && task.template_id && siteId) {
+            try {
+              const { data: siteChecklist } = await supabase
+                .from('site_checklists')
+                .select('equipment_config')
+                .eq('template_id', task.template_id)
+                .eq('site_id', siteId)
+                .maybeSingle()
+              
+              if (siteChecklist?.equipment_config && Array.isArray(siteChecklist.equipment_config)) {
+                siteChecklistConfig = siteChecklist.equipment_config
+                setSiteChecklistEquipmentConfig(siteChecklistConfig) // Also store in state for later use
+                console.log('📦 Loaded equipment_config from site_checklist for nickname fallback:', siteChecklistConfig.length, 'items')
+              }
+            } catch (error) {
+              console.warn('⚠️ Failed to load equipment_config from site_checklist:', error)
+            }
+          }
+          
           const assetsWithSite = assetsData.map((asset: any) => {
             const site = Array.isArray(asset.sites) ? asset.sites[0] : asset.sites;
             
-            // Try to find nickname from repeatable field data
+            // Try to find nickname from multiple sources (priority order):
             let nickname = ''
-            if (repeatableData && Array.isArray(repeatableData)) {
+            
+            // PRIORITY 1: Repeatable field data (if available)
+            if (repeatableData && Array.isArray(repeatableData) && repeatableData.length > 0) {
               const matchingItem = repeatableData.find((item: any) => {
                 // Extract ID from various possible structures
                 const itemId = item.assetId || item.asset_id || item.id || item.value
@@ -662,10 +707,73 @@ export default function TaskCompletionModal({
               }
             }
             
+            // PRIORITY 2: Equipment_config from task_data (if repeatable field is empty, especially for monitoring tasks)
+            if (!nickname && taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
+              const configItem = taskData.equipment_config.find((item: any) => {
+                const itemId = item.assetId || item.asset_id || item.id || item.value
+                const itemIdStr = typeof itemId === 'string' 
+                  ? itemId 
+                  : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                return itemIdStr === asset.id || String(itemIdStr) === String(asset.id)
+              })
+              
+              if (configItem) {
+                nickname = configItem.nickname || 
+                          (configItem.id && typeof configItem.id === 'object' ? configItem.id.nickname : null) ||
+                          (configItem.value && typeof configItem.value === 'object' ? configItem.value.nickname : null) ||
+                          ''
+              }
+            }
+            
+            // PRIORITY 3: Equipment_config from task_data (if available)
+            if (!nickname && taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
+              const configItem = taskData.equipment_config.find((item: any) => {
+                const itemId = item.assetId || item.asset_id || item.id || item.value
+                const itemIdStr = typeof itemId === 'string' 
+                  ? itemId 
+                  : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                return itemIdStr === asset.id || String(itemIdStr) === String(asset.id)
+              })
+              
+              if (configItem) {
+                nickname = configItem.nickname || 
+                          (configItem.id && typeof configItem.id === 'object' ? configItem.id.nickname : null) ||
+                          (configItem.value && typeof configItem.value === 'object' ? configItem.value.nickname : null) ||
+                          ''
+              }
+            }
+            
+            // PRIORITY 3: Temperatures array (for monitoring tasks that might have it there)
+            if (!nickname && taskData.temperatures && Array.isArray(taskData.temperatures)) {
+              const tempItem = taskData.temperatures.find((t: any) => {
+                const tempAssetId = t.assetId || t.asset_id
+                return tempAssetId === asset.id || String(tempAssetId) === String(asset.id)
+              })
+              if (tempItem && tempItem.nickname) {
+                nickname = tempItem.nickname
+              }
+            }
+            
+            // PRIORITY 4: Site_checklist equipment_config (CRITICAL fallback for monitoring tasks)
+            if (!nickname && siteChecklistConfig.length > 0) {
+              const configItem = siteChecklistConfig.find((item: any) => {
+                const itemId = item.assetId || item.asset_id || item.id || item.value
+                const itemIdStr = typeof itemId === 'string' 
+                  ? itemId 
+                  : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                return itemIdStr === asset.id || String(itemIdStr) === String(asset.id)
+              })
+              
+              if (configItem) {
+                nickname = configItem.nickname || ''
+                console.log(`✅ [ASSET LOADING] Found nickname "${nickname}" from site_checklist equipment_config for asset ${asset.id} (${asset.name})`)
+              }
+            }
+            
             return {
               ...asset,
               site_name: site?.name || 'No site assigned',
-              nickname: nickname // Add nickname from repeatable field data
+              nickname: nickname // Add nickname from various sources
             };
           });
           setSelectedAssets(assetsWithSite);
@@ -1290,10 +1398,11 @@ export default function TaskCompletionModal({
       if (!assetNickname && task.template?.repeatable_field_name) {
         const repeatableFieldName = task.template.repeatable_field_name
         const repeatableData = task.task_data?.[repeatableFieldName]
-        if (Array.isArray(repeatableData)) {
+        if (Array.isArray(repeatableData) && repeatableData.length > 0) {
           const matchingItem = repeatableData.find((item: any) => {
             const itemId = item.assetId || item.asset_id || item.id || item.value
-            return itemId === targetAssetId || String(itemId) === String(targetAssetId)
+            const itemIdStr = typeof itemId === 'string' ? itemId : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+            return itemIdStr === targetAssetId || String(itemIdStr) === String(targetAssetId)
           })
           if (matchingItem) {
             assetNickname = matchingItem.nickname || 
@@ -1301,6 +1410,43 @@ export default function TaskCompletionModal({
                            (matchingItem.value && typeof matchingItem.value === 'object' ? matchingItem.value.nickname : null) ||
                            ''
           }
+        }
+      }
+      
+      // FALLBACK: If still no nickname, try equipment_config
+      if (!assetNickname && task.task_data?.equipment_config && Array.isArray(task.task_data.equipment_config)) {
+        const configItem = task.task_data.equipment_config.find((item: any) => {
+          const itemId = item.assetId || item.asset_id || item.id || item.value
+          const itemIdStr = typeof itemId === 'string' ? itemId : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+          return itemIdStr === targetAssetId || String(itemIdStr) === String(targetAssetId)
+        })
+        if (configItem) {
+          assetNickname = configItem.nickname || ''
+        }
+      }
+      
+      // FINAL FALLBACK: Try to fetch from site_checklist equipment_config
+      if (!assetNickname && task.template_id && siteId) {
+        try {
+          const { data: siteChecklist } = await supabase
+            .from('site_checklists')
+            .select('equipment_config')
+            .eq('template_id', task.template_id)
+            .eq('site_id', siteId)
+            .maybeSingle()
+          
+          if (siteChecklist?.equipment_config && Array.isArray(siteChecklist.equipment_config)) {
+            const configItem = siteChecklist.equipment_config.find((item: any) => {
+              const itemId = item.assetId || item.asset_id || item.id || item.value
+              return itemId === targetAssetId || String(itemId) === String(targetAssetId)
+            })
+            if (configItem) {
+              assetNickname = configItem.nickname || ''
+              console.log(`✅ Found nickname "${assetNickname}" from site_checklist when creating monitoring task`)
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ Failed to fetch nickname from site_checklist:', error)
         }
       }
       
@@ -1328,16 +1474,50 @@ export default function TaskCompletionModal({
         }]
         
         // 3. If there's a repeatable field (equipment list), filter it to only the out-of-range asset
+        // CRITICAL: Ensure the repeatable field has the full structure including nickname
         const repeatableFieldName = task.template?.repeatable_field_name
-        if (repeatableFieldName && monitoringTaskData[repeatableFieldName]) {
-          if (Array.isArray(monitoringTaskData[repeatableFieldName])) {
-            monitoringTaskData[repeatableFieldName] = monitoringTaskData[repeatableFieldName].filter((item: any) => {
+        if (repeatableFieldName) {
+          if (monitoringTaskData[repeatableFieldName] && Array.isArray(monitoringTaskData[repeatableFieldName])) {
+            const filtered = monitoringTaskData[repeatableFieldName].filter((item: any) => {
               // Filter by assetId if it's an object, or by value if it's a string/ID
               if (typeof item === 'object' && item !== null) {
-                return item.assetId === targetAssetId || item.id === targetAssetId || item.value === targetAssetId
+                const itemId = item.assetId || item.asset_id || item.id || item.value
+                const itemIdStr = typeof itemId === 'string' ? itemId : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                return itemIdStr === targetAssetId || String(itemIdStr) === String(targetAssetId)
               }
               return item === targetAssetId
             })
+            
+            // If filtered array has items, use it; otherwise create new structure with nickname
+            if (filtered.length > 0) {
+              // Ensure nickname is set on the filtered item
+              monitoringTaskData[repeatableFieldName] = filtered.map((item: any) => ({
+                ...item,
+                assetId: targetAssetId,
+                nickname: assetNickname || item.nickname || 
+                         (item.id && typeof item.id === 'object' ? item.id.nickname : null) ||
+                         (item.value && typeof item.value === 'object' ? item.value.nickname : null) ||
+                         ''
+              }))
+            } else {
+              // Create new structure if filtered array is empty (shouldn't happen, but safety check)
+              monitoringTaskData[repeatableFieldName] = [{
+                assetId: targetAssetId,
+                nickname: assetNickname,
+                equipment: outOfRangeAsset?.name || assetName,
+                name: outOfRangeAsset?.name || assetName,
+                label: outOfRangeAsset?.name || assetName
+              }]
+            }
+          } else {
+            // If repeatable field doesn't exist or is empty, create it with the asset and nickname
+            monitoringTaskData[repeatableFieldName] = [{
+              assetId: targetAssetId,
+              nickname: assetNickname,
+              equipment: outOfRangeAsset?.name || assetName,
+              name: outOfRangeAsset?.name || assetName,
+              label: outOfRangeAsset?.name || assetName
+            }]
           }
         }
         
@@ -1434,31 +1614,113 @@ export default function TaskCompletionModal({
       // Create monitoring task based on original template
       // CRITICAL: Monitoring tasks are SINGLE INSTANCE tasks - they should NOT have dayparts in task_data
       // This prevents them from being expanded into multiple instances in Today's Tasks
-      const { data: monitoringTask, error: taskError } = await supabase
+      
+      // Check for existing monitoring task to avoid unique constraint violation
+      const dueDateStr = now.toISOString().split('T')[0];
+      const dueTimeStr = dueDate.toTimeString().slice(0, 5);
+      
+      const { data: existingMonitoringTask } = await supabase
         .from('checklist_tasks')
-        .insert({
-          template_id: task.template_id,
-          company_id: companyId,
-          site_id: siteId,
-          due_date: now.toISOString().split('T')[0], // Today's date
-          due_time: dueDate.toTimeString().slice(0, 5), // HH:MM format (calculated from duration)
-          daypart: 'during_service', // Monitoring tasks are always single instance - use a default daypart
-          assigned_to_role: task.template.assigned_to_role || null,
-          assigned_to_user_id: task.assigned_to_user_id || null,
-          status: 'pending',
-          priority: 'high', // Monitoring tasks are high priority
-          flagged: true,
-          flag_reason: 'monitoring', // Mark as monitoring task
-          generated_at: new Date().toISOString(),
-          expires_at: dueDate.toISOString(),
-          task_data: monitoringTaskData, // Include all assets, temperatures, and features from original task (but NO dayparts)
-          custom_name: task.custom_name || task.template?.name, // Preserve task name
-          custom_instructions: task.custom_instructions || task.template?.instructions, // Preserve instructions
-        })
-        .select()
-        .single()
+        .select('id, status')
+        .eq('template_id', task.template_id)
+        .eq('site_id', siteId)
+        .eq('due_date', dueDateStr)
+        .eq('daypart', 'during_service')
+        .eq('due_time', dueTimeStr)
+        .eq('flag_reason', 'monitoring')
+        .eq('status', 'pending')
+        .maybeSingle();
+      
+      let monitoringTask;
+      
+      if (existingMonitoringTask) {
+        // Update existing monitoring task instead of creating duplicate
+        console.log('🔄 Found existing monitoring task, updating instead of creating:', existingMonitoringTask.id);
+        const { data: updatedTask, error: updateError } = await supabase
+          .from('checklist_tasks')
+          .update({
+            task_data: monitoringTaskData,
+            expires_at: dueDate.toISOString(),
+            priority: 'high',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingMonitoringTask.id)
+          .select()
+          .single();
+        
+        if (updateError) throw updateError;
+        monitoringTask = updatedTask;
+      } else {
+        // Create new monitoring task
+        // Add small random offset to due_time (seconds) to avoid conflicts if multiple monitoring tasks created simultaneously
+        const timeOffset = Math.floor(Math.random() * 60); // 0-59 seconds
+        const dueTimeWithOffset = new Date(dueDate.getTime() + timeOffset * 1000);
+        const dueTimeStrWithOffset = dueTimeWithOffset.toTimeString().slice(0, 5);
+        
+        const { data: newTask, error: taskError } = await supabase
+          .from('checklist_tasks')
+          .insert({
+            template_id: task.template_id,
+            company_id: companyId,
+            site_id: siteId,
+            due_date: dueDateStr,
+            due_time: dueTimeStrWithOffset, // Add small offset to avoid conflicts
+            daypart: 'during_service', // Monitoring tasks are always single instance - use a default daypart
+            assigned_to_role: task.template.assigned_to_role || null,
+            assigned_to_user_id: task.assigned_to_user_id || null,
+            status: 'pending',
+            priority: 'high', // Monitoring tasks are high priority
+            flagged: true,
+            flag_reason: 'monitoring', // Mark as monitoring task
+            generated_at: new Date().toISOString(),
+            expires_at: dueDate.toISOString(),
+            task_data: monitoringTaskData, // Include all assets, temperatures, and features from original task (but NO dayparts)
+            custom_name: task.custom_name || task.template?.name, // Preserve task name
+            custom_instructions: task.custom_instructions || task.template?.instructions, // Preserve instructions
+          })
+          .select()
+          .single();
 
-      if (taskError) throw taskError
+        if (taskError) {
+          // If still getting unique constraint error, try with a different time
+          if (taskError.code === '23505' && taskError.message?.includes('idx_checklist_tasks_unique_template_task')) {
+            console.warn('⚠️ Unique constraint violation, retrying with different time...');
+            const retryTime = new Date(dueDate.getTime() + 120 * 1000); // Add 2 minutes
+            const retryTimeStr = retryTime.toTimeString().slice(0, 5);
+            
+            const { data: retryTask, error: retryError } = await supabase
+              .from('checklist_tasks')
+              .insert({
+                template_id: task.template_id,
+                company_id: companyId,
+                site_id: siteId,
+                due_date: dueDateStr,
+                due_time: retryTimeStr,
+                daypart: 'during_service',
+                assigned_to_role: task.template.assigned_to_role || null,
+                assigned_to_user_id: task.assigned_to_user_id || null,
+                status: 'pending',
+                priority: 'high',
+                flagged: true,
+                flag_reason: 'monitoring',
+                generated_at: new Date().toISOString(),
+                expires_at: dueDate.toISOString(),
+                task_data: monitoringTaskData,
+                custom_name: task.custom_name || task.template?.name,
+                custom_instructions: task.custom_instructions || task.template?.instructions,
+              })
+              .select()
+              .single();
+            
+            if (retryError) throw retryError;
+            monitoringTask = retryTask;
+          } else {
+            throw taskError;
+          }
+        } else {
+          monitoringTask = newTask;
+        }
+      }
 
       // Create notification/alert
       await createTemperatureAlert('monitor', assetName, tempValue, monitoringTask.id)
@@ -2226,6 +2488,25 @@ export default function TaskCompletionModal({
     }
     if (!task.template) return
 
+    // CRITICAL: Log formData state at submission time
+    const tempKeysAtSubmit = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
+    const tempValuesAtSubmit = tempKeysAtSubmit.reduce((acc: any, key) => {
+      acc[key] = formData[key];
+      return acc;
+    }, {});
+    
+    console.log('🚀 [TASK COMPLETION] Starting handleSubmit:', {
+      taskId: task.id,
+      templateName: task.template?.name,
+      formDataKeys: Object.keys(formData),
+      tempKeysCount: tempKeysAtSubmit.length,
+      tempKeys: tempKeysAtSubmit,
+      tempValues: tempValuesAtSubmit,
+      hasEquipmentConfig: !!task.task_data?.equipment_config,
+      equipmentConfigLength: task.task_data?.equipment_config?.length || 0,
+      selectedAssetsCount: selectedAssets.length
+    });
+
     setLoading(true)
     setError('')
 
@@ -2281,21 +2562,230 @@ export default function TaskCompletionModal({
       const temperatureRecords: any[] = []
       
       // DEBUG: Log temperature field detection
+      const allFormDataKeys = Object.keys(formData);
+      const tempKeysInFormData = allFormDataKeys.filter(k => k.startsWith('temp_') && k !== 'temp_action');
+      const tempValuesInFormData = tempKeysInFormData.reduce((acc: any, key) => {
+        acc[key] = formData[key];
+        return acc;
+      }, {});
+      
       console.log('🌡️ [TEMP LOGS] Checking for temperature data:', {
         hasRepeatableField: !!repeatableField,
         repeatableFieldName: repeatableField?.field_name,
         repeatableFieldValue: repeatableField ? formData[repeatableField.field_name] : undefined,
         hasTemperatureField: formData.temperature !== undefined,
         temperatureValue: formData.temperature,
-        formDataKeys: Object.keys(formData).filter(k => k.toLowerCase().includes('temp')),
+        formDataKeys: allFormDataKeys,
+        tempKeysInFormData: tempKeysInFormData,
+        tempValuesInFormData: tempValuesInFormData,
         templateAssetId: task.template?.asset_id,
         companyId,
         siteId,
-        profileId: profile?.id
+        profileId: profile?.id,
+        hasEquipmentConfig: !!task.task_data?.equipment_config,
+        equipmentConfigLength: task.task_data?.equipment_config?.length || 0,
+        selectedAssetsCount: selectedAssets.length
       })
       
-      // Check if this is a temperature task with equipment fields
-      if (repeatableField && formData[repeatableField.field_name]) {
+      // NEW APPROACH: Create temperature records from equipment_config (source of truth)
+      // This happens BEFORE equipment_list building so we can use temperatureRecords as fallback
+      let equipmentConfigForTempRecords = task.task_data?.equipment_config;
+      
+      // Fallback for legacy tasks: reconstruct equipment_config
+      if (!equipmentConfigForTempRecords || !Array.isArray(equipmentConfigForTempRecords)) {
+        if (task.task_data?.temperatures && Array.isArray(task.task_data.temperatures) && task.task_data.temperatures.length > 0) {
+          equipmentConfigForTempRecords = task.task_data.temperatures.map((temp: any) => ({
+            assetId: temp.assetId || temp.asset_id,
+            equipment: temp.equipment || temp.asset_name || 'Unknown Equipment',
+            nickname: temp.nickname || '',
+            temp_min: temp.temp_min,
+            temp_max: temp.temp_max
+          })).filter((item: any) => item.assetId);
+        } else if (task.task_data?.selectedAssets && Array.isArray(task.task_data.selectedAssets) && task.task_data.selectedAssets.length > 0) {
+          equipmentConfigForTempRecords = task.task_data.selectedAssets.map((assetId: string) => {
+            const assetRange = assetTempRanges.get(assetId);
+            return {
+              assetId: assetId,
+              equipment: assetsMap.get(assetId)?.name || 'Unknown Equipment',
+              nickname: '',
+              temp_min: assetRange?.min ?? undefined,
+              temp_max: assetRange?.max ?? undefined
+            };
+          });
+        } else if (task.template?.asset_id) {
+          const assetId = task.template.asset_id;
+          const assetRange = assetTempRanges.get(assetId);
+          equipmentConfigForTempRecords = [{
+            assetId: assetId,
+            equipment: assetsMap.get(assetId)?.name || 'Unknown Equipment',
+            nickname: '',
+            temp_min: assetRange?.min ?? undefined,
+            temp_max: assetRange?.max ?? undefined
+          }];
+        }
+      }
+      
+      // Create temperature records from equipment_config
+      if (equipmentConfigForTempRecords && Array.isArray(equipmentConfigForTempRecords) && equipmentConfigForTempRecords.length > 0) {
+        console.log('🌡️ [TEMP LOGS] Creating temperature records from equipment_config:', equipmentConfigForTempRecords.length, 'items');
+        console.log('🌡️ [TEMP LOGS] Available formData temp keys:', Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action'));
+        console.log('🌡️ [TEMP LOGS] FormData temp values:', Object.keys(formData)
+          .filter(k => k.startsWith('temp_') && k !== 'temp_action')
+          .reduce((acc: any, key) => {
+            acc[key] = formData[key];
+            return acc;
+          }, {}));
+        
+        for (const configItem of equipmentConfigForTempRecords) {
+          const assetId = configItem.assetId || configItem.asset_id;
+          if (!assetId) {
+            console.warn('⚠️ [TEMP LOGS] Skipping config item without assetId:', configItem);
+            continue;
+          }
+          
+          // Get temperature from formData (temp_${assetId})
+          const tempKey = `temp_${assetId}`;
+          let tempValue = formData[tempKey];
+          
+          // If not found, try scanning all temp_* keys and match by assetId
+          if ((tempValue === undefined || tempValue === null || tempValue === '') && assetId) {
+            Object.keys(formData).forEach(key => {
+              if (key.startsWith('temp_') && key !== 'temp_action') {
+                const keyAssetId = key.replace('temp_', '');
+                // Try multiple matching strategies
+                if (keyAssetId === assetId || 
+                    String(keyAssetId) === String(assetId) ||
+                    keyAssetId.trim() === assetId.trim()) {
+                  tempValue = formData[key];
+                  console.log(`🔍 [TEMP LOGS] Found temperature via key match: ${key} = ${tempValue} for asset ${assetId}`);
+                }
+              }
+            });
+          }
+          
+          if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
+            const temp = parseFloat(String(tempValue));
+            if (isNaN(temp) || !isFinite(temp)) {
+              console.warn(`⚠️ [TEMP LOGS] Invalid temperature value for asset ${assetId}:`, tempValue);
+              continue;
+            }
+            
+            // Calculate status using same logic as equipment_list
+            const min = configItem.temp_min;
+            const max = configItem.temp_max;
+            let status = 'ok';
+            
+            if (min !== undefined && max !== undefined && min !== null && max !== null) {
+              const isInvertedRange = min > max;
+              if (isInvertedRange) {
+                status = (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+              } else {
+                status = (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+              }
+            }
+            
+            temperatureRecords.push({
+              company_id: companyId,
+              site_id: siteId,
+              asset_id: assetId,
+              recorded_by: profile.id,
+              reading: temp,
+              unit: '°C',
+              recorded_at: completedAt,
+              day_part: task.daypart || null,
+              status,
+              notes: `Recorded via task: ${task.template.name}`,
+              // Note: photo_url column doesn't exist in temperature_logs table
+              // Photos are stored in task_completion_records.completion_data instead
+            });
+            
+            console.log(`✅ [TEMP LOGS] Created temperature record: ${temp}°C for asset ${assetId} (${configItem.equipment || configItem.asset_name || 'Unknown'}) with status ${status}`);
+          } else {
+            console.warn(`⚠️ [TEMP LOGS] No temperature found in formData for asset ${assetId}. Checked key: ${tempKey}`);
+          }
+        }
+        
+        // CRITICAL FALLBACK: If we still have temp_* keys in formData that weren't matched,
+        // create temperature records for them anyway (match by index or create new records)
+        const allFormDataTempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
+        const unmatchedTempKeys = allFormDataTempKeys.filter(key => {
+          const keyAssetId = key.replace('temp_', '');
+          return !temperatureRecords.some(tr => 
+            tr.asset_id === keyAssetId || 
+            String(tr.asset_id) === String(keyAssetId)
+          );
+        });
+        
+        if (unmatchedTempKeys.length > 0) {
+          console.log(`⚠️ [TEMP LOGS] Found ${unmatchedTempKeys.length} unmatched temperature keys. Creating records by index matching...`);
+          
+          unmatchedTempKeys.forEach((tempKey, index) => {
+            const keyAssetId = tempKey.replace('temp_', '');
+            const tempValue = formData[tempKey];
+            
+            if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
+              const temp = parseFloat(String(tempValue));
+              if (isNaN(temp) || !isFinite(temp)) return;
+              
+              // Try to find matching asset in equipment_config by index
+              const configItem = equipmentConfigForTempRecords[index];
+              if (configItem) {
+                const assetId = configItem.assetId || configItem.asset_id || keyAssetId;
+                const min = configItem.temp_min;
+                const max = configItem.temp_max;
+                let status = 'ok';
+                
+                if (min !== undefined && max !== undefined && min !== null && max !== null) {
+                  const isInvertedRange = min > max;
+                  if (isInvertedRange) {
+                    status = (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+                  } else {
+                    status = (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+                  }
+                }
+                
+                temperatureRecords.push({
+                  company_id: companyId,
+                  site_id: siteId,
+                  asset_id: assetId,
+                  recorded_by: profile.id,
+                  reading: temp,
+                  unit: '°C',
+                  recorded_at: completedAt,
+                  day_part: task.daypart || null,
+                  status,
+                  notes: `Recorded via task: ${task.template.name}`
+                  // Note: photo_url column doesn't exist in temperature_logs table
+                });
+                
+                console.log(`✅ [TEMP LOGS FALLBACK] Created temperature record by index: ${temp}°C for asset ${assetId} from ${tempKey}`);
+              } else {
+                // Last resort: create record with the keyAssetId itself
+                temperatureRecords.push({
+                  company_id: companyId,
+                  site_id: siteId,
+                  asset_id: keyAssetId,
+                  recorded_by: profile.id,
+                  reading: temp,
+                  unit: '°C',
+                  recorded_at: completedAt,
+                  day_part: task.daypart || null,
+                  status: 'ok',
+                  notes: `Recorded via task: ${task.template.name}`
+                  // Note: photo_url column doesn't exist in temperature_logs table
+                });
+                
+                console.log(`✅ [TEMP LOGS FALLBACK] Created temperature record with keyAssetId: ${temp}°C for asset ${keyAssetId} from ${tempKey}`);
+              }
+            }
+          });
+        }
+      } else {
+        console.warn('⚠️ [TEMP LOGS] No equipment_config available for temperature records creation');
+      }
+      
+      // LEGACY FALLBACK: Check if this is a temperature task with equipment fields (old approach)
+      if (temperatureRecords.length === 0 && repeatableField && formData[repeatableField.field_name]) {
         // Handle repeatable equipment list (e.g., multiple fridges)
         const equipmentList = formData[repeatableField.field_name] || []
         for (const equipment of equipmentList) {
@@ -2456,8 +2946,8 @@ export default function TaskCompletionModal({
               recorded_at: completedAt,
               day_part: task.daypart || null,
               status,
-              notes: `Recorded via task: ${task.template.name}`,
-              photo_url: photoUrls.length > 0 ? photoUrls[0] : null
+              notes: `Recorded via task: ${task.template.name}`
+              // Note: photo_url column doesn't exist in temperature_logs table
             })
           }
         }
@@ -2510,12 +3000,66 @@ export default function TaskCompletionModal({
             recorded_at: completedAt,
             day_part: task.daypart || null,
             status,
-            notes: `Recorded via task: ${task.template.name}`,
-            photo_url: photoUrls.length > 0 ? photoUrls[0] : null
+            notes: `Recorded via task: ${task.template.name}`
+            // Note: photo_url column doesn't exist in temperature_logs table
           })
         }
       }
 
+      // FINAL FALLBACK: If we still have no temperature records but formData has temp_* keys,
+      // create records for ALL temp_* keys (even if they don't match equipment_config perfectly)
+      if (temperatureRecords.length === 0) {
+        const allTempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
+        console.log('⚠️ [TEMP LOGS] No temperature records created yet, but found temp keys in formData:', allTempKeys);
+        
+        if (allTempKeys.length > 0) {
+          console.log('🔄 [TEMP LOGS] Creating temperature records from ALL formData temp keys as final fallback...');
+          
+          for (const tempKey of allTempKeys) {
+            const keyAssetId = tempKey.replace('temp_', '');
+            const tempValue = formData[tempKey];
+            
+            if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
+              const temp = parseFloat(String(tempValue));
+              if (isNaN(temp) || !isFinite(temp)) continue;
+              
+              // Try to get asset info from assetsMap
+              const asset = assetsMap.get(keyAssetId);
+              const assetRange = assetTempRanges.get(keyAssetId);
+              
+              let status = 'ok';
+              if (assetRange) {
+                const { min, max } = assetRange;
+                if (min !== undefined && max !== undefined && min !== null && max !== null) {
+                  const isInvertedRange = min > max;
+                  if (isInvertedRange) {
+                    status = (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+                  } else {
+                    status = (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+                  }
+                }
+              }
+              
+              temperatureRecords.push({
+                company_id: companyId,
+                site_id: siteId,
+                asset_id: keyAssetId,
+                recorded_by: profile.id,
+                reading: temp,
+                unit: '°C',
+                recorded_at: completedAt,
+                day_part: task.daypart || null,
+                status,
+                notes: `Recorded via task: ${task.template.name}`
+                // Note: photo_url column doesn't exist in temperature_logs table
+              });
+              
+              console.log(`✅ [TEMP LOGS FINAL FALLBACK] Created temperature record: ${temp}°C for asset ${keyAssetId} (${asset?.name || 'Unknown'})`);
+            }
+          }
+        }
+      }
+      
       // Insert temperature records
       if (temperatureRecords.length > 0) {
         console.log('🌡️ [TEMP LOGS] Attempting to insert temperature records:', {
@@ -2525,7 +3069,9 @@ export default function TaskCompletionModal({
             reading: r.reading,
             company_id: r.company_id,
             site_id: r.site_id,
-            recorded_by: r.recorded_by
+            recorded_by: r.recorded_by,
+            status: r.status,
+            recorded_at: r.recorded_at
           }))
         })
         
@@ -2535,25 +3081,51 @@ export default function TaskCompletionModal({
           .select()
 
         if (tempError) {
-          console.error('❌ Temperature logs insert error:', tempError)
-          console.error('❌ Error details:', {
-            message: tempError.message,
-            details: tempError.details,
-            hint: tempError.hint,
-            code: tempError.code
-          })
-          // Don't fail the whole operation, but log it
+          // Handle 409 Conflict (duplicate) gracefully - this is non-critical
+          // The temperature data is already saved in completion_data.equipment_list
+          if (tempError.code === '23505' || tempError.code === 'PGRST204' || 
+              tempError.message?.includes('duplicate') || tempError.message?.includes('unique') ||
+              tempError.message?.includes('Conflict')) {
+            console.warn('⚠️ [TEMP LOGS] Duplicate record detected (409 Conflict). This is non-critical - temperature data is saved in completion_data.')
+            console.warn('   Error code:', tempError.code)
+            console.warn('   Error message:', tempError.message)
+            console.warn('   Note: Temperature data is still available in task completion records.')
+          } else {
+            console.error('❌ Temperature logs insert error:', tempError)
+            console.error('❌ Error details:', {
+              message: tempError.message,
+              details: tempError.details,
+              hint: tempError.hint,
+              code: tempError.code,
+              attemptedRecords: temperatureRecords
+            })
+          }
+          
+          // Don't fail the whole operation - temperature data is saved in completion_data.equipment_list
+          // Note: Temperature logs insertion failure doesn't prevent task completion
         } else {
           console.log(`✅ Created ${temperatureRecords.length} temperature record(s)`, insertedData)
+          console.log('✅ [TEMP LOGS] Inserted records:', insertedData?.map((r: any) => ({
+            id: r.id,
+            asset_id: r.asset_id,
+            reading: r.reading,
+            status: r.status
+          })))
         }
       } else {
-        console.log('⚠️ [TEMP LOGS] No temperature records to insert. Check formData:', {
+        console.warn('⚠️ [TEMP LOGS] No temperature records to insert!', {
           formDataKeys: Object.keys(formData),
-          formDataValues: Object.entries(formData).filter(([k, v]) => 
-            k.toLowerCase().includes('temp') || (typeof v === 'number' && v > -50 && v < 50)
-          ),
+          formDataTempKeys: Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action'),
+          formDataTempValues: Object.keys(formData)
+            .filter(k => k.startsWith('temp_') && k !== 'temp_action')
+            .reduce((acc: any, key) => {
+              acc[key] = formData[key];
+              return acc;
+            }, {}),
           hasRepeatableField: !!repeatableField,
-          templateAssetId: task.template?.asset_id
+          templateAssetId: task.template?.asset_id,
+          equipmentConfigLength: equipmentConfigForTempRecords?.length || 0,
+          selectedAssetsCount: selectedAssets.length
         })
       }
 
@@ -2900,484 +3472,310 @@ export default function TaskCompletionModal({
         }
       }
 
-      // CRITICAL: Build equipment_list with ALL assets from task_data, not just those with temperatures
-      // This ensures compliance reporting shows all assets checked, even if no temp was recorded
-      const equipmentList: any[] = []
+      // ============================================
+      // BUILD EQUIPMENT LIST FROM SOURCE OF TRUTH
+      // ============================================
+      // equipment_config comes from task creation and contains:
+      // - Asset IDs, nicknames, temp ranges, equipment names
+      // We just add temperature readings from user input during completion
+
+      // Helper function for temperature status calculation (binary: ok or out_of_range)
+      const calculateTemperatureStatus = (
+        temp: number | null,
+        min: number | null | undefined,
+        max: number | null | undefined
+      ): string => {
+        if (temp === null || temp === undefined) return 'not_recorded';
+        if (min === undefined || max === undefined || min === null || max === null) {
+          return 'recorded'; // No range to compare
+        }
+        
+        const isInvertedRange = min > max; // Freezer case
+        
+        if (isInvertedRange) {
+          // Freezer: valid range is max (colder) to min (warmer)
+          return (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+        } else {
+          // Normal: valid range is min to max
+          return (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+        }
+      };
+
+      // Build equipment_list from equipment_config (source of truth)
+      let equipmentList: any[] = [];
+
+      // Check if equipment_config exists (new structure)
+      let equipmentConfig = task.task_data?.equipment_config;
       
-      // Get all assets from task_data (these are the assets chosen when task was created)
-      // First check formData (user's current selections)
-      // Note: repeatableField is already declared above
-      let equipmentFromForm = []
-      
-      if (repeatableField && formData[repeatableField.field_name]) {
-        equipmentFromForm = formData[repeatableField.field_name] || []
-      }
-      
-      // Also check task_data as fallback (assets chosen when task was created)
-      if (equipmentFromForm.length === 0 && task.task_data && task.template?.repeatable_field_name) {
-        const taskDataField = task.task_data[task.template.repeatable_field_name]
-        if (Array.isArray(taskDataField)) {
-          equipmentFromForm = taskDataField
+      // Fallback: Reconstruct equipment_config from legacy task data
+      if (!equipmentConfig || !Array.isArray(equipmentConfig)) {
+        console.warn('⚠️ Legacy task detected: equipment_config missing, attempting to reconstruct from old structure');
+        console.log('Task data:', task.task_data);
+        
+        // Try to build from temperatures array (most complete legacy data)
+        if (task.task_data?.temperatures && Array.isArray(task.task_data.temperatures) && task.task_data.temperatures.length > 0) {
+          equipmentConfig = task.task_data.temperatures.map((temp: any) => ({
+            assetId: temp.assetId || temp.asset_id,
+            equipment: temp.equipment || temp.asset_name || 'Unknown Equipment',
+            nickname: temp.nickname || '',
+            temp_min: temp.temp_min,
+            temp_max: temp.temp_max
+          })).filter((item: any) => item.assetId); // Only include items with assetId
+          
+          console.log('✅ Reconstructed equipment_config from temperatures array:', equipmentConfig);
+        }
+        // Fallback: Build from selectedAssets array
+        else if (task.task_data?.selectedAssets && Array.isArray(task.task_data.selectedAssets) && task.task_data.selectedAssets.length > 0) {
+          equipmentConfig = task.task_data.selectedAssets.map((assetId: string) => {
+            const asset = assetsMap.get(assetId);
+            // Try to get temp range from assetTempRanges
+            const assetRange = assetTempRanges.get(assetId);
+            return {
+              assetId: assetId,
+              equipment: asset?.name || 'Unknown Equipment',
+              nickname: '',
+              temp_min: assetRange?.min ?? undefined,
+              temp_max: assetRange?.max ?? undefined
+            };
+          });
+          
+          console.log('✅ Reconstructed equipment_config from selectedAssets:', equipmentConfig);
+        }
+        // Last resort: Check if there's a single asset_id in template
+        else if (task.template?.asset_id) {
+          const assetId = task.template.asset_id;
+          const asset = assetsMap.get(assetId);
+          const assetRange = assetTempRanges.get(assetId);
+          equipmentConfig = [{
+            assetId: assetId,
+            equipment: asset?.name || 'Unknown Equipment',
+            nickname: '',
+            temp_min: assetRange?.min ?? undefined,
+            temp_max: assetRange?.max ?? undefined
+          }];
+          
+          console.log('✅ Reconstructed equipment_config from template asset_id:', equipmentConfig);
         }
       }
-      
-      // Also check selectedAssets state (loaded from task_data when modal opened)
-      if (equipmentFromForm.length === 0 && selectedAssets.length > 0) {
-        // Convert selectedAssets to equipment format
-        equipmentFromForm = selectedAssets.map(asset => ({
-          value: asset.id,
-          asset_id: asset.id,
-          id: asset.id,
-          label: asset.name,
-          name: asset.name,
-          asset_name: asset.name
-        }))
+
+      // Final validation: equipment_config must exist after fallback attempts
+      if (!equipmentConfig || !Array.isArray(equipmentConfig) || equipmentConfig.length === 0) {
+        console.error('🚨 CRITICAL: Could not determine equipment configuration from task_data');
+        console.error('Task ID:', task.id);
+        console.error('Task data:', task.task_data);
+        
+        showToast({
+          variant: 'destructive',
+          title: 'Task Configuration Error',
+          description: 'This task is missing equipment configuration. Please contact support.'
+        });
+        setLoading(false);
+        return;
       }
-      
-      // Final fallback: check task_data.selectedAssets
-      if (equipmentFromForm.length === 0 && task.task_data?.selectedAssets && Array.isArray(task.task_data.selectedAssets)) {
-        // Fetch asset names for these IDs
-        const assetIds = task.task_data.selectedAssets.filter(Boolean)
-        if (assetIds.length > 0) {
-          equipmentFromForm = assetIds.map((assetId: string) => ({
-            value: assetId,
-            asset_id: assetId,
-            id: assetId,
-            label: assetsMap.get(assetId)?.name || 'Unknown Equipment',
-            name: assetsMap.get(assetId)?.name || 'Unknown Equipment',
-            asset_name: assetsMap.get(assetId)?.name || 'Unknown Equipment'
-          }))
+
+      console.log('📦 Building equipment_list from equipment_config (source of truth)');
+      console.log('Equipment config:', equipmentConfig);
+
+      // Build equipment list by enriching equipment_config with temperature readings
+      equipmentList = equipmentConfig.map((configItem: any) => {
+        const assetId = configItem.assetId || configItem.asset_id;
+        
+        // Strict validation: corrupted data should throw error, not be silently filtered
+        if (!assetId) {
+          console.error('🚨 CORRUPTED DATA: equipment_config missing asset ID');
+          console.error('Task:', task.id);
+          console.error('Config item:', configItem);
+          throw new Error(`Task ${task.id} has corrupted equipment_config - missing asset ID`);
         }
-      }
-      
-      // Create a map of recorded temperatures by asset_id for quick lookup
-      const tempMap = new Map(temperatureRecords.map(tr => [tr.asset_id, tr]))
-      
-      // CRITICAL: Helper function to get temperature from formData directly
-      // This ensures temperatures are captured even if temperatureRecords building failed
-      // Temperatures are stored in formData as temp_${assetId}
-      const getTemperatureFromFormData = (assetId: string): number | null => {
-        if (!assetId) return null
         
-        // Normalize asset ID to string to ensure consistent matching
-        const normalizedId = typeof assetId === 'string' ? assetId : String(assetId)
+        // Extract temperature reading from formData (primary source)
+        let tempReading: number | null = null;
         
-        // Try exact match first (most common case)
-        const tempKey = `temp_${normalizedId}`
-        let tempValue = formData[tempKey]
+        // Primary: temp_${assetId} (user input from form)
+        const tempKey = `temp_${assetId}`;
+        if (formData[tempKey] !== undefined && formData[tempKey] !== null && formData[tempKey] !== '') {
+          const numValue = typeof formData[tempKey] === 'string' 
+            ? parseFloat(formData[tempKey]) 
+            : formData[tempKey];
+          if (!isNaN(numValue) && isFinite(numValue)) {
+            tempReading = numValue;
+            console.log(`✅ [EQUIPMENT_LIST] Found temperature ${tempReading}°C for asset ${assetId} from formData[${tempKey}]`);
+          }
+        }
         
-        // If not found, scan all temp_* keys and try to match by ID
-        if ((tempValue === undefined || tempValue === null || tempValue === '') && normalizedId) {
+        // If not found, try scanning all temp_* keys (handle case where assetId format might differ)
+        if (tempReading === null && assetId) {
           Object.keys(formData).forEach(key => {
             if (key.startsWith('temp_') && key !== 'temp_action') {
-              const keyAssetId = key.replace('temp_', '')
-              // Try exact match or string comparison
-              if (keyAssetId === normalizedId || String(keyAssetId) === String(normalizedId)) {
-                tempValue = formData[key]
-              }
-            }
-          })
-        }
-        
-        // If still not found, try formData.temperature (for single asset tasks)
-        if ((tempValue === undefined || tempValue === null || tempValue === '') && formData.temperature !== undefined) {
-          tempValue = formData.temperature
-        }
-        
-        if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
-          // Handle 0 as valid temperature
-          if (tempValue === 0 || tempValue === '0') {
-            return 0
-          }
-          const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
-          if (!isNaN(numValue) && isFinite(numValue)) {
-            return numValue
-          }
-        }
-        return null
-      }
-      
-      // Include ALL assets from formData or task_data
-      if (equipmentFromForm.length > 0) {
-        equipmentFromForm.forEach((equipment: any) => {
-          // Extract asset ID - handle nested structures where id/value/asset_id might be objects
-          // CRITICAL: Must extract actual UUID string, never use String() on objects (creates "[object Object]")
-          let assetId: string | null = null
-          
-          // Helper to safely extract ID from nested object
-          const extractIdFromObject = (obj: any): string | null => {
-            if (!obj || typeof obj !== 'object') return null
-            // Try common ID property names
-            if (typeof obj.id === 'string') return obj.id
-            if (typeof obj.value === 'string') return obj.value
-            if (typeof obj.assetId === 'string') return obj.assetId
-            if (typeof obj.asset_id === 'string') return obj.asset_id
-            // Try nested structures
-            if (obj.id && typeof obj.id === 'object' && typeof obj.id.assetId === 'string') return obj.id.assetId
-            if (obj.value && typeof obj.value === 'object' && typeof obj.value.assetId === 'string') return obj.value.assetId
-            return null
-          }
-          
-          // Check direct string properties first
-          if (typeof equipment.value === 'string') {
-            assetId = equipment.value
-          } else if (typeof equipment.asset_id === 'string') {
-            assetId = equipment.asset_id
-          } else if (typeof equipment.id === 'string') {
-            assetId = equipment.id
-          } else if (typeof equipment.assetId === 'string') {
-            assetId = equipment.assetId
-          }
-          // Check if value/asset_id/id are objects and extract ID from them
-          else if (equipment.value && typeof equipment.value === 'object') {
-            assetId = extractIdFromObject(equipment.value) || extractIdFromObject(equipment.value.id) || extractIdFromObject(equipment.value.value)
-          } else if (equipment.asset_id && typeof equipment.asset_id === 'object') {
-            assetId = extractIdFromObject(equipment.asset_id) || extractIdFromObject(equipment.asset_id.id) || extractIdFromObject(equipment.asset_id.assetId)
-          } else if (equipment.id && typeof equipment.id === 'object') {
-            assetId = extractIdFromObject(equipment.id) || extractIdFromObject(equipment.id.id) || extractIdFromObject(equipment.id.assetId)
-          } else if (typeof equipment === 'string') {
-            assetId = equipment
-          }
-          
-          // Final validation: ensure we have a valid UUID string (not "[object Object]")
-          if (!assetId || 
-              assetId === 'null' || 
-              assetId === 'undefined' || 
-              assetId === '[object Object]' ||
-              assetId.includes('[object')) {
-            console.warn('⚠️ Could not extract valid asset ID from equipment:', {
-              equipment,
-              extractedAssetId: assetId,
-              equipmentKeys: Object.keys(equipment || {})
-            })
-            return
-          }
-          
-          // Ensure assetId is a clean string (no extra whitespace)
-          assetId = assetId.trim()
-          
-          // CRITICAL: Check multiple sources for temperature
-          const recordedTemp = tempMap.get(assetId)
-          let tempFromFormData = getTemperatureFromFormData(assetId)
-          
-          // FINAL FALLBACK: If still no temperature, scan ALL formData temp_* keys and try to match
-          // This handles cases where asset ID format might be slightly different
-          if (tempFromFormData === null) {
-            Object.keys(formData).forEach(key => {
-              if (key.startsWith('temp_') && key !== 'temp_action') {
-                const keyAssetId = key.replace('temp_', '')
-                // Try multiple matching strategies
-                if (keyAssetId === assetId || 
-                    String(keyAssetId) === String(assetId) ||
-                    (equipment.value && (keyAssetId === String(equipment.value) || String(keyAssetId) === String(equipment.value))) ||
-                    (equipment.asset_id && (keyAssetId === String(equipment.asset_id) || String(keyAssetId) === String(equipment.asset_id)))) {
-                  const tempVal = formData[key]
-                  if (tempVal !== undefined && tempVal !== null && tempVal !== '') {
-                    const numVal = typeof tempVal === 'string' ? parseFloat(tempVal) : tempVal
-                    if (!isNaN(numVal) && isFinite(numVal)) {
-                      tempFromFormData = numVal
-                      console.log(`✅ FALLBACK MATCH: Found temperature ${numVal}°C for asset ${assetId} via key ${key}`)
-                    }
-                  }
-                }
-              }
-            })
-          }
-          
-          // Use temperature from temperatureRecords first, then formData, then null
-          const finalTemp = recordedTemp ? recordedTemp.reading : (tempFromFormData !== null ? tempFromFormData : null)
-          
-          // Comprehensive logging for debugging
-          console.log(`🌡️ Equipment ${assetId}:`, {
-            equipmentValue: equipment.value,
-            equipmentAssetId: equipment.asset_id,
-            equipmentId: equipment.id,
-            extractedAssetId: assetId,
-            tempFromRecords: recordedTemp?.reading,
-            tempFromFormData: tempFromFormData,
-            finalTemp: finalTemp,
-            willBeSaved: finalTemp !== null,
-            formDataTempKeys: Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action'),
-            allFormDataTempValues: Object.keys(formData)
-              .filter(k => k.startsWith('temp_') && k !== 'temp_action')
-              .map(k => ({ key: k, value: formData[k] }))
-          })
-          
-          // Determine status based on temperature and ranges
-          // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
-          let status = 'ok'
-          if (finalTemp !== null && assetId) {
-            const assetRange = assetTempRanges.get(assetId)
-            if (assetRange) {
-              const { min, max } = assetRange
-              const temp = finalTemp
-              const tolerance = 2
-              const warningTolerance = 1
-              
-              // Check if range is inverted (min > max) - this happens for freezers
-              const isInvertedRange = min !== null && max !== null && min > max
-              
-              if (isInvertedRange) {
-                // Inverted range (freezer): actual range is max (colder) to min (warmer)
-                // Temperature is out of range if: temp < max - tolerance (too cold) OR temp > min + tolerance (too warm)
-                if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
-                  status = 'failed'
-                } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
-                  status = 'warning'
-                } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
-                  status = 'warning'
-                }
-              } else {
-                // Normal range (fridge): range is min (colder) to max (warmer)
-                if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                  status = 'failed'
-                } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                  status = 'warning'
-                } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                  status = 'warning'
+              const keyAssetId = key.replace('temp_', '');
+              // Try multiple matching strategies
+              if (keyAssetId === assetId || 
+                  String(keyAssetId) === String(assetId) ||
+                  keyAssetId.trim() === assetId.trim()) {
+                const numValue = typeof formData[key] === 'string' 
+                  ? parseFloat(formData[key]) 
+                  : formData[key];
+                if (!isNaN(numValue) && isFinite(numValue)) {
+                  tempReading = numValue;
+                  console.log(`✅ [EQUIPMENT_LIST] Found temperature ${tempReading}°C for asset ${assetId} via key scan: ${key}`);
                 }
               }
             }
-          }
-          
-          const assetName = assetsMap.get(assetId)?.name || equipment.label || equipment.name || equipment.asset_name || 'Unknown Equipment'
-          
-          equipmentList.push({
-            asset_id: assetId,
-            asset_name: assetName,
-            temperature: finalTemp,
-            reading: finalTemp,
-            temp: finalTemp, // Also include 'temp' field for compatibility
-            status: recordedTemp ? recordedTemp.status : status,
-            recorded_at: recordedTemp ? recordedTemp.recorded_at : completedAt
-          })
-        })
-      } else if (task.template?.asset_id) {
-        // Handle single asset task (template's linked asset)
-        const assetId = task.template.asset_id
-        const recordedTemp = temperatureRecords.find(tr => tr.asset_id === assetId)
+          });
+        }
         
-        // CRITICAL: Check multiple sources for temperature
-        const tempFromFormData = getTemperatureFromFormData(assetId)
-        const tempFromFormDataField = formData.temperature !== undefined && formData.temperature !== null && formData.temperature !== '' ? parseFloat(formData.temperature) : null
-        
-        // Use temperature from temperatureRecords first, then formData temp_${assetId}, then formData.temperature, then null
-        const finalTemp = recordedTemp ? recordedTemp.reading : (tempFromFormData !== null ? tempFromFormData : (tempFromFormDataField !== null ? tempFromFormDataField : null))
-        
-        // Determine status
-        // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
-        let status = 'ok'
-        if (finalTemp !== null && assetId) {
-          const assetRange = assetTempRanges.get(assetId)
-          if (assetRange) {
-            const { min, max } = assetRange
-            const temp = finalTemp
-            const tolerance = 2
-            const warningTolerance = 1
-            
-            // Check if range is inverted (min > max) - this happens for freezers
-            const isInvertedRange = min !== null && max !== null && min > max
-            
-            if (isInvertedRange) {
-              // Inverted range (freezer): actual range is max (colder) to min (warmer)
-              // Temperature is out of range if: temp < max - tolerance (too cold) OR temp > min + tolerance (too warm)
-              if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
-                status = 'failed'
-              } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
-                status = 'warning'
-              } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
-                status = 'warning'
-              }
-            } else {
-              // Normal range (fridge): range is min (colder) to max (warmer)
-              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                status = 'failed'
-              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                status = 'warning'
-              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                status = 'warning'
-              }
-            }
+        // Fallback: Check temperatureRecords (derived from formData, used for DB logging)
+        if (tempReading === null) {
+          const recordedTemp = temperatureRecords.find(tr => tr.asset_id === assetId);
+          if (recordedTemp) {
+            tempReading = recordedTemp.reading;
+            console.log(`✅ [EQUIPMENT_LIST] Found temperature ${tempReading}°C for asset ${assetId} from temperatureRecords`);
           }
         }
         
-        const assetName = assetsMap.get(assetId)?.name || 'Unknown Equipment'
+        if (tempReading === null) {
+          console.warn(`⚠️ [EQUIPMENT_LIST] No temperature found for asset ${assetId}. Checked formData[${tempKey}] and temperatureRecords`);
+        }
         
-        equipmentList.push({
+        // Get asset name from assetsMap or use equipment name from config
+        const assetName = assetsMap.get(assetId)?.name || 
+                          configItem.equipment || 
+                          configItem.asset_name || 
+                          'Unknown Equipment';
+        
+        // Calculate status
+        const status = calculateTemperatureStatus(
+          tempReading,
+          configItem.temp_min,
+          configItem.temp_max
+        );
+        
+        // Build complete equipment record
+        return {
+          // Asset identification
+          value: assetId,
           asset_id: assetId,
+          id: assetId,
+          
+          // Asset details (from equipment_config - preserved)
           asset_name: assetName,
-          temperature: finalTemp,
-          reading: finalTemp,
-          temp: finalTemp, // Also include 'temp' field for compatibility
-          status: recordedTemp ? recordedTemp.status : status,
-          recorded_at: recordedTemp ? recordedTemp.recorded_at : completedAt
-        })
-      } else if (temperatureRecords.length > 0) {
-        // Fallback: if no task_data assets, use temperature records
-        temperatureRecords.forEach(tr => {
-          equipmentList.push({
-            asset_id: tr.asset_id,
-            asset_name: assetsMap.get(tr.asset_id)?.name || 'Unknown Equipment',
-            temperature: tr.reading,
-            reading: tr.reading,
-            temp: tr.reading, // Also include 'temp' field for compatibility
-            status: tr.status,
-            recorded_at: tr.recorded_at
-          })
-        })
-      }
+          equipment: configItem.equipment || assetName,
+          nickname: configItem.nickname || '',
+          
+          // Temperature configuration (from equipment_config - preserved)
+          temp_min: configItem.temp_min,
+          temp_max: configItem.temp_max,
+          
+          // Temperature reading (from user input)
+          temperature: tempReading,
+          reading: tempReading,
+          temp: tempReading,
+          
+          // Status (calculated)
+          status: status,
+          recorded_at: tempReading !== null ? completedAt : null
+        };
+      }); // No filter needed - all items are valid (errors thrown above)
+
+      // CRITICAL FALLBACK: If any equipment_list items are missing temperatures, 
+      // scan ALL formData temp_* keys and try to match them by asset name or other means
+      const equipmentListWithTemps = equipmentList.filter((eq: any) => 
+        eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== ''
+      );
+      const formDataTempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
       
-      // CRITICAL FALLBACK: If equipmentList is empty OR has equipment but no temperatures, check formData
-      // This ensures NO temperature is ever lost, even if equipment structure doesn't match
-      const equipmentListWithTemps = equipmentList.filter((eq: any) => {
-        const temp = eq.temperature
-        return temp !== null && temp !== undefined && temp !== '' && !isNaN(parseFloat(String(temp)))
-      })
-      
-      // Run fallback if:
-      // 1. No equipment at all, OR
-      // 2. Equipment exists but none have valid temperatures, OR
-      // 3. Some equipment has temps but we have more temp_* keys in formData than equipment with temps
-      const formDataTempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
-      const shouldRunFallback = equipmentList.length === 0 || 
-                                 equipmentListWithTemps.length === 0 ||
-                                 (formDataTempKeys.length > 0 && formDataTempKeys.length > equipmentListWithTemps.length)
-      
-      if (shouldRunFallback) {
-        console.log('⚠️ Equipment list missing temperatures, checking formData for any temp_* keys...', {
-          equipmentListCount: equipmentList.length,
-          equipmentListWithTempsCount: equipmentListWithTemps.length,
-          formDataTempKeys: formDataTempKeys,
-          formDataTempValues: formDataTempKeys.reduce((acc: any, key) => {
-            acc[key] = formData[key]
-            return acc
-          }, {})
-        })
+      if (equipmentListWithTemps.length < equipmentList.length && formDataTempKeys.length > 0) {
+        console.log('⚠️ [EQUIPMENT_LIST] Some equipment missing temperatures. Attempting fallback matching...');
+        console.log('   Equipment without temps:', equipmentList.length - equipmentListWithTemps.length);
+        console.log('   Available temp keys in formData:', formDataTempKeys);
         
-        // Get all temp_* keys from formData (already computed above)
-        formDataTempKeys.forEach(key => {
-          const assetIdFromKey = key.replace('temp_', '')
-          const tempValue = formData[key]
+        // For each temp_* key in formData, try to find matching equipment
+        formDataTempKeys.forEach(tempKey => {
+          const keyAssetId = tempKey.replace('temp_', '');
+          const tempValue = formData[tempKey];
           
           if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
-            const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
-            if (!isNaN(numValue) && isFinite(numValue)) {
-              // Helper to safely extract and compare asset IDs
-              const extractAndCompareId = (eq: any, targetId: string): boolean => {
-                // Try direct asset_id
-                if (eq.asset_id && String(eq.asset_id).trim() === String(targetId).trim()) return true
-                // Try other ID fields
-                if (eq.id && String(eq.id).trim() === String(targetId).trim()) return true
-                if (eq.value && String(eq.value).trim() === String(targetId).trim()) return true
-                // Try nested structures
-                if (eq.asset_id && typeof eq.asset_id === 'object') {
-                  const nestedId = eq.asset_id.id || eq.asset_id.value || eq.asset_id.assetId
-                  if (nestedId && String(nestedId).trim() === String(targetId).trim()) return true
+            const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue;
+            if (isNaN(numValue) || !isFinite(numValue)) return;
+            
+            // Try to find equipment that matches this temp key
+            // First try exact assetId match
+            let matchedEq = equipmentList.find((eq: any) => 
+              eq.asset_id === keyAssetId || 
+              String(eq.asset_id) === String(keyAssetId) ||
+              eq.id === keyAssetId ||
+              String(eq.id) === String(keyAssetId)
+            );
+            
+            // If not found, try matching by asset name (in case assetId format differs)
+            if (!matchedEq) {
+              const assetFromKey = assetsMap.get(keyAssetId);
+              if (assetFromKey) {
+                matchedEq = equipmentList.find((eq: any) => 
+                  eq.asset_name === assetFromKey.name ||
+                  eq.equipment === assetFromKey.name
+                );
+              }
+            }
+            
+            if (matchedEq && (matchedEq.temperature === null || matchedEq.temperature === undefined || matchedEq.temperature === '')) {
+              matchedEq.temperature = numValue;
+              matchedEq.reading = numValue;
+              matchedEq.temp = numValue;
+              
+              // Recalculate status
+              const min = matchedEq.temp_min;
+              const max = matchedEq.temp_max;
+              if (min !== undefined && max !== undefined && min !== null && max !== null) {
+                const isInvertedRange = min > max;
+                if (isInvertedRange) {
+                  matchedEq.status = (numValue >= max && numValue <= min) ? 'ok' : 'out_of_range';
+                } else {
+                  matchedEq.status = (numValue >= min && numValue <= max) ? 'ok' : 'out_of_range';
                 }
-                return false
               }
               
-              // Try to find matching asset in equipmentList
-              let existingIndex = equipmentList.findIndex((eq: any) => extractAndCompareId(eq, assetIdFromKey))
-              
-              if (existingIndex >= 0) {
-                // Update existing equipment entry with temperature AND fix asset_id if it's wrong
-                const existingEq = equipmentList[existingIndex]
+              console.log(`✅ [EQUIPMENT_LIST FALLBACK] Matched temperature ${numValue}°C from ${tempKey} to equipment ${matchedEq.asset_name || matchedEq.equipment}`);
+            } else if (!matchedEq) {
+              // Last resort: match by index (first temp to first equipment without temp, etc.)
+              const equipmentWithoutTemp = equipmentList.filter((eq: any) => 
+                eq.temperature === null || eq.temperature === undefined || eq.temperature === ''
+              );
+              const tempKeyIndex = formDataTempKeys.indexOf(tempKey);
+              if (equipmentWithoutTemp.length > 0 && tempKeyIndex < equipmentWithoutTemp.length) {
+                const matchedByIndex = equipmentWithoutTemp[tempKeyIndex];
+                matchedByIndex.temperature = numValue;
+                matchedByIndex.reading = numValue;
+                matchedByIndex.temp = numValue;
                 
-                // CRITICAL: Fix asset_id if it's "[object Object]" or invalid
-                if (!existingEq.asset_id || 
-                    String(existingEq.asset_id).includes('[object') ||
-                    existingEq.asset_id === '[object Object]') {
-                  existingEq.asset_id = assetIdFromKey
-                  console.log(`🔧 FIXED: Corrected asset_id from "${existingEq.asset_id}" to "${assetIdFromKey}"`)
-                }
-                
-                existingEq.temperature = numValue
-                existingEq.reading = numValue
-                existingEq.temp = numValue
-                
-                // Recalculate status based on temperature and range
-                if (assetIdFromKey && assetTempRanges.has(assetIdFromKey)) {
-                  const assetRange = assetTempRanges.get(assetIdFromKey)!
-                  const { min, max } = assetRange
-                  const temp = numValue
-                  const tolerance = 2
-                  const warningTolerance = 1
-                  
-                  const isInvertedRange = min !== null && max !== null && min > max
-                  
+                // Recalculate status
+                const min = matchedByIndex.temp_min;
+                const max = matchedByIndex.temp_max;
+                if (min !== undefined && max !== undefined && min !== null && max !== null) {
+                  const isInvertedRange = min > max;
                   if (isInvertedRange) {
-                    if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
-                      existingEq.status = 'failed'
-                    } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
-                      existingEq.status = 'warning'
-                    } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
-                      existingEq.status = 'warning'
-                    } else {
-                      existingEq.status = 'ok'
-                    }
+                    matchedByIndex.status = (numValue >= max && numValue <= min) ? 'ok' : 'out_of_range';
                   } else {
-                    if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                      existingEq.status = 'failed'
-                    } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                      existingEq.status = 'warning'
-                    } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                      existingEq.status = 'warning'
-                    } else {
-                      existingEq.status = 'ok'
-                    }
+                    matchedByIndex.status = (numValue >= min && numValue <= max) ? 'ok' : 'out_of_range';
                   }
                 }
                 
-                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetIdFromKey} (${existingEq.asset_name}) with status ${existingEq.status}`)
-              } else {
-                // Add new equipment entry with temperature
-                const assetName = assetsMap.get(assetIdFromKey)?.name || 'Unknown Equipment'
-                
-                // Determine status based on temperature and range
-                let status = 'ok'
-                if (assetIdFromKey && assetTempRanges.has(assetIdFromKey)) {
-                  const assetRange = assetTempRanges.get(assetIdFromKey)!
-                  const { min, max } = assetRange
-                  const temp = numValue
-                  const tolerance = 2
-                  const warningTolerance = 1
-                  
-                  const isInvertedRange = min !== null && max !== null && min > max
-                  
-                  if (isInvertedRange) {
-                    if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
-                      status = 'failed'
-                    } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
-                      status = 'warning'
-                    } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
-                      status = 'warning'
-                    }
-                  } else {
-                    if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                      status = 'failed'
-                    } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                      status = 'warning'
-                    } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                      status = 'warning'
-                    }
-                  }
-                }
-                
-                equipmentList.push({
-                  asset_id: assetIdFromKey,
-                  asset_name: assetName,
-                  temperature: numValue,
-                  reading: numValue,
-                  temp: numValue,
-                  status: status,
-                  recorded_at: completedAt
-                })
-                console.log(`✅ FALLBACK: Added temperature ${numValue}°C for asset ${assetIdFromKey} (${assetName}) with status ${status}`)
+                console.log(`✅ [EQUIPMENT_LIST FALLBACK INDEX] Matched temperature ${numValue}°C from ${tempKey} to equipment ${matchedByIndex.asset_name || matchedByIndex.equipment} by index`);
               }
             }
           }
-        })
+        });
+      }
+
+      console.log(`✅ Built equipment_list: ${equipmentList.length} items`, equipmentList);
+      console.log(`✅ Equipment with temperatures: ${equipmentList.filter((eq: any) => eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== '').length} items`);
+
+      // Validation: equipment_list should match equipment_config length
+      if (equipmentList.length !== equipmentConfig.length) {
+        console.warn('⚠️ Equipment list length mismatch:', {
+          configLength: equipmentConfig.length,
+          builtLength: equipmentList.length
+        });
       }
       
       // Debug logging - CRITICAL: Verify what data is being saved
@@ -4379,18 +4777,77 @@ export default function TaskCompletionModal({
                     }
                     
                     // Extract nickname - check multiple sources with priority:
-                    // 1. asset.nickname (loaded from repeatable field data when asset was loaded) - HIGHEST PRIORITY
+                    // 1. asset.nickname (loaded from repeatable field/equipment_config when asset was loaded) - HIGHEST PRIORITY
                     // 2. repeatableItem.nickname (from current repeatable field data)
                     // 3. Nested structures in repeatableItem
-                    // 4. savedTemp.nickname (from completion data)
-                    // 5. Empty string as fallback
-                    const nickname = asset.nickname || 
+                    // 4. equipment_config (fallback for monitoring tasks where repeatable field might be empty)
+                    // 5. savedTemp.nickname (from completion data)
+                    // 6. Empty string as fallback
+                    let nickname = asset.nickname || 
                                    repeatableItem?.nickname ||
                                    (repeatableItem?.id && typeof repeatableItem.id === 'object' ? repeatableItem.id.nickname : null) ||
                                    (repeatableItem?.value && typeof repeatableItem.value === 'object' ? repeatableItem.value.nickname : null) ||
                                    (repeatableItem?.asset_id && typeof repeatableItem.asset_id === 'object' ? repeatableItem.asset_id.nickname : null) ||
-                                   savedTemp?.nickname || 
                                    ''
+                    
+                    // FALLBACK 1: Check equipment_config from task_data (especially for monitoring tasks)
+                    if (!nickname && task.task_data?.equipment_config && Array.isArray(task.task_data.equipment_config)) {
+                      const configItem = task.task_data.equipment_config.find((item: any) => {
+                        const itemId = item.assetId || item.asset_id || item.id || item.value
+                        const itemIdStr = typeof itemId === 'string' 
+                          ? itemId 
+                          : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                        return itemIdStr === assetId || String(itemIdStr) === String(assetId)
+                      })
+                      
+                      if (configItem) {
+                        nickname = configItem.nickname || 
+                                  (configItem.id && typeof configItem.id === 'object' ? configItem.id.nickname : null) ||
+                                  (configItem.value && typeof configItem.value === 'object' ? configItem.value.nickname : null) ||
+                                  ''
+                      }
+                    }
+                    
+                    // FALLBACK 2: Check site_checklist equipment_config (for monitoring tasks where task_data is empty)
+                    if (!nickname && siteChecklistEquipmentConfig.length > 0) {
+                      const configItem = siteChecklistEquipmentConfig.find((item: any) => {
+                        const itemId = item.assetId || item.asset_id || item.id || item.value
+                        const itemIdStr = typeof itemId === 'string' 
+                          ? itemId 
+                          : (itemId && typeof itemId === 'object' ? (itemId.id || itemId.value || itemId.assetId) : null)
+                        return itemIdStr === assetId || String(itemIdStr) === String(assetId)
+                      })
+                      
+                      if (configItem) {
+                        nickname = configItem.nickname || ''
+                        console.log(`✅ [NICKNAME] Found nickname "${nickname}" from site_checklist equipment_config for asset ${assetId}`)
+                      } else {
+                        console.log(`⚠️ [NICKNAME] Asset ${assetId} not found in site_checklist equipment_config (${siteChecklistEquipmentConfig.length} items)`)
+                      }
+                    } else if (!nickname && isMonitoringTask) {
+                      console.log(`⚠️ [NICKNAME] No site_checklist equipment_config available for monitoring task (length: ${siteChecklistEquipmentConfig.length})`)
+                    }
+                    
+                    // FINAL FALLBACK: Check savedTemp
+                    if (!nickname) {
+                      nickname = savedTemp?.nickname || ''
+                      if (nickname) {
+                        console.log(`✅ [NICKNAME] Found nickname "${nickname}" from savedTemp for asset ${assetId}`)
+                      }
+                    }
+                    
+                    // CRITICAL DEBUG: Log final nickname status
+                    if (!nickname && isMonitoringTask) {
+                      console.error(`❌ [NICKNAME] CRITICAL: No nickname found for monitoring task asset ${assetId} after all fallbacks!`, {
+                        assetNickname: asset.nickname,
+                        repeatableItemNickname: repeatableItem?.nickname,
+                        hasRepeatableItem: !!repeatableItem,
+                        hasEquipmentConfig: !!task.task_data?.equipment_config,
+                        equipmentConfigLength: task.task_data?.equipment_config?.length || 0,
+                        siteChecklistConfigLength: siteChecklistEquipmentConfig.length,
+                        savedTempNickname: savedTemp?.nickname
+                      })
+                    }
                     const displayLabel = nickname 
                       ? `${asset.name} | ${nickname}`
                       : asset.name

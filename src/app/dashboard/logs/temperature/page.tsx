@@ -22,7 +22,7 @@ type TempLog = {
   unit: string;
   recorded_at: string;
   day_part?: string | null;
-  status: "ok" | "warning" | "failed";
+  status: string; // Allow any string status value
   notes?: string | null;
   recorded_by?: string | null;
   profiles?: {
@@ -31,13 +31,26 @@ type TempLog = {
   } | null;
 };
 
-function StatusBadge({ status }: { status: TempLog["status"] }) {
-  const config = {
+function StatusBadge({ status }: { status: string }) {
+  const config: Record<string, { color: string; bg: string; border: string; icon: string; label: string }> = {
     ok: { color: "text-green-700 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/20", border: "border-green-200 dark:border-green-500/30", icon: "✅", label: "OK" },
     warning: { color: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/20", border: "border-amber-200 dark:border-amber-500/30", icon: "⚠️", label: "Warning" },
     failed: { color: "text-red-700 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/20", border: "border-red-200 dark:border-red-500/30", icon: "❌", label: "Failed" },
+    out_of_range: { color: "text-red-700 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/20", border: "border-red-200 dark:border-red-500/30", icon: "❌", label: "Out of Range" },
+    not_recorded: { color: "text-gray-700 dark:text-gray-400", bg: "bg-gray-50 dark:bg-gray-500/20", border: "border-gray-200 dark:border-gray-500/30", icon: "⏸️", label: "Not Recorded" },
+    recorded: { color: "text-blue-700 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/20", border: "border-blue-200 dark:border-blue-500/30", icon: "📝", label: "Recorded" },
   };
-  const { color, bg, border, icon, label } = config[status];
+  
+  // Get config for status, or use default for unknown statuses
+  const statusConfig = config[status?.toLowerCase()] || {
+    color: "text-gray-700 dark:text-gray-400",
+    bg: "bg-gray-50 dark:bg-gray-500/20",
+    border: "border-gray-200 dark:border-gray-500/30",
+    icon: "❓",
+    label: status || "Unknown"
+  };
+  
+  const { color, bg, border, icon, label } = statusConfig;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${bg} ${color} ${border}`}>
       {icon} {label}
