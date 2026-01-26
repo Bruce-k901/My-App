@@ -146,17 +146,29 @@ export function useTemperatureWarnings(
     }
     
     // Check if temperature is outside the working range
-    const isOutOfRange = 
-      (min !== null && temp < min) || 
-      (max !== null && temp > max)
+    // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
+    // For freezers: range is actually max to min (colder to warmer), so -20°C to -18°C
+    // For fridges: range is min to max (colder to warmer), so 3°C to 5°C
+    const isInvertedRange = min !== null && max !== null && min > max
+    let isOutOfRange = false
+    
+    if (isInvertedRange) {
+      // Inverted range (freezer): actual range is max (colder) to min (warmer)
+      // Temperature is out of range if: temp < max (too cold) OR temp > min (too warm)
+      isOutOfRange = (max !== null && temp < max) || (min !== null && temp > min)
+    } else {
+      // Normal range (fridge): range is min (colder) to max (warmer)
+      isOutOfRange = (min !== null && temp < min) || (max !== null && temp > max)
+    }
     
     if (isOutOfRange) {
       console.log(`🌡️ Temperature ${temp}°C is out of range for asset ${assetId}:`, {
         temp,
         min,
         max,
-        belowMin: min !== null && temp < min,
-        aboveMax: max !== null && temp > max
+        isInvertedRange,
+        belowMin: isInvertedRange ? (max !== null && temp < max) : (min !== null && temp < min),
+        aboveMax: isInvertedRange ? (min !== null && temp > min) : (max !== null && temp > max)
       })
     }
     

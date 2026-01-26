@@ -2032,26 +2032,53 @@ export default function TaskCompletionModal({
     }
     
     // CRITICAL: Check if temperature is outside the working range
-    // For negative temps: -22 < -20 (below min) OR -19 > -18 (above max)
-    // For positive temps: 10 > 5 (above max) OR -1 < 0 (below min)
+    // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
+    // For freezers: range is actually max to min (colder to warmer), so -20°C to -18°C
+    // For fridges: range is min to max (colder to warmer), so 3°C to 5°C
     let isOutOfRange = false
     
-    if (min !== null && temp < min) {
-      // Temperature is below minimum (works for both positive and negative)
-      // Example: -22 < -20 (freezer too cold) OR -1 < 0 (fridge too cold)
-      isOutOfRange = true
-      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${min}°C (out of range) [source: ${rangeSource}]`)
-    }
+    // Check if range is inverted (min > max) - this happens for freezers
+    const isInvertedRange = min !== null && max !== null && min > max
     
-    if (max !== null && temp > max) {
-      // Temperature is above maximum (works for both positive and negative)
-      // Example: -19 > -18 (freezer too warm) OR 10 > 5 (fridge too warm)
-      isOutOfRange = true
-      console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${max}°C (out of range) [source: ${rangeSource}]`)
+    if (isInvertedRange) {
+      // Inverted range (freezer): actual range is max (colder) to min (warmer)
+      // Example: {min: -18, max: -20} means range is -20°C to -18°C
+      // Temperature is out of range if: temp < max (too cold) OR temp > min (too warm)
+      if (max !== null && temp < max) {
+        // Temperature is too cold (below the colder limit)
+        // Example: -22 < -20 (too cold)
+        isOutOfRange = true
+        console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${max}°C (too cold, out of range) [source: ${rangeSource}, inverted range]`)
+      } else if (min !== null && temp > min) {
+        // Temperature is too warm (above the warmer limit)
+        // Example: -17 > -18 (too warm)
+        isOutOfRange = true
+        console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${min}°C (too warm, out of range) [source: ${rangeSource}, inverted range]`)
+      }
+    } else {
+      // Normal range (fridge): range is min (colder) to max (warmer)
+      // Example: {min: 3, max: 5} means range is 3°C to 5°C
+      if (min !== null && temp < min) {
+        // Temperature is below minimum (too cold)
+        // Example: 2 < 3 (too cold)
+        isOutOfRange = true
+        console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is BELOW minimum ${min}°C (out of range) [source: ${rangeSource}]`)
+      }
+      
+      if (max !== null && temp > max) {
+        // Temperature is above maximum (too warm)
+        // Example: 6 > 5 (too warm)
+        isOutOfRange = true
+        console.log(`🌡️ [TEMPERATURE RANGE CHECK] ${temp}°C is ABOVE maximum ${max}°C (out of range) [source: ${rangeSource}]`)
+      }
     }
     
     if (!isOutOfRange) {
-      console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${min ?? 'no min'}, ${max ?? 'no max'}] [source: ${rangeSource}]`)
+      if (isInvertedRange) {
+        console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${max}°C to ${min}°C] (inverted range) [source: ${rangeSource}]`)
+      } else {
+        console.log(`✅ [TEMPERATURE RANGE CHECK] ${temp}°C is within range [${min ?? 'no min'}, ${max ?? 'no max'}] [source: ${rangeSource}]`)
+      }
     }
     
     return isOutOfRange

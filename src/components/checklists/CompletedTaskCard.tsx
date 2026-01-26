@@ -533,16 +533,27 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   }
   
   // Helper function to check if temperature is out of range
+  // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
   const checkTemperatureRange = (temp: number | null, assetId: string): 'ok' | 'warning' | 'failed' => {
     if (temp === null || temp === undefined || isNaN(temp)) return 'ok'
     
     const range = tempRanges.get(assetId)
     if (!range || (range.min === null && range.max === null)) return 'ok'
     
-    const isBelowMin = range.min !== null && temp < range.min
-    const isAboveMax = range.max !== null && temp > range.max
+    const { min, max } = range
+    const isInvertedRange = min !== null && max !== null && min > max
     
-    if (isBelowMin || isAboveMax) {
+    let isOutOfRange = false
+    if (isInvertedRange) {
+      // Inverted range (freezer): actual range is max (colder) to min (warmer)
+      // Temperature is out of range if: temp < max (too cold) OR temp > min (too warm)
+      isOutOfRange = (max !== null && temp < max) || (min !== null && temp > min)
+    } else {
+      // Normal range (fridge): range is min (colder) to max (warmer)
+      isOutOfRange = (min !== null && temp < min) || (max !== null && temp > max)
+    }
+    
+    if (isOutOfRange) {
       return 'failed' // Out of range
     }
     

@@ -66,14 +66,26 @@ export function TemperatureLoggingFeature({
     onChange(newTemps);
 
     // Check if temp is outside the defined range
+    // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
     const tempRange = {
       min: newTemps[index].temp_min,
       max: newTemps[index].temp_max
     };
     
     if (temp !== undefined && (tempRange.min !== undefined || tempRange.max !== undefined)) {
-      const isOutOfRange = (tempRange.min !== undefined && temp < tempRange.min) || 
-                          (tempRange.max !== undefined && temp > tempRange.max);
+      const isInvertedRange = tempRange.min !== undefined && tempRange.max !== undefined && tempRange.min > tempRange.max
+      let isOutOfRange = false
+      
+      if (isInvertedRange) {
+        // Inverted range (freezer): actual range is max (colder) to min (warmer)
+        // Temperature is out of range if: temp < max (too cold) OR temp > min (too warm)
+        isOutOfRange = (tempRange.max !== undefined && temp < tempRange.max) || 
+                      (tempRange.min !== undefined && temp > tempRange.min)
+      } else {
+        // Normal range (fridge): range is min (colder) to max (warmer)
+        isOutOfRange = (tempRange.min !== undefined && temp < tempRange.min) || 
+                      (tempRange.max !== undefined && temp > tempRange.max)
+      }
       
       if (isOutOfRange) {
         const assetId = newTemps[index].assetId;
