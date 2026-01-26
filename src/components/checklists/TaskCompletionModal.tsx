@@ -4483,6 +4483,20 @@ export default function TaskCompletionModal({
                             {asset.site_name && (
                               <p className="text-xs text-gray-600 dark:text-white/60 mt-0.5">{asset.site_name}</p>
                             )}
+                            {/* Temperature Range - CRITICAL for monitoring tasks */}
+                            {range && (range.min !== null || range.max !== null) && (
+                              <p className="text-xs text-gray-600 dark:text-white/60 mt-1">
+                                Range: {
+                                  range.min !== null && range.max !== null
+                                    ? `${range.min}°C - ${range.max}°C`
+                                    : range.min !== null
+                                    ? `≥ ${range.min}°C`
+                                    : range.max !== null
+                                    ? `≤ ${range.max}°C`
+                                    : ''
+                                }
+                              </p>
+                            )}
                           </div>
                           {/* Temperature Input */}
                           <div className="flex items-center gap-2 flex-shrink-0">
