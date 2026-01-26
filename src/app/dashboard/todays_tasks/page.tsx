@@ -437,8 +437,24 @@ export default function DailyChecklistPage() {
         // Note: Approval tasks (stock counts, rotas, payroll) don't appear here - they go to calendar/msgly
         
         filteredTasks = (allTasks || []).filter((task: any) => {
-          // CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // PRIORITY 1: Include monitoring tasks FIRST (they may have template_id but no site_checklist_id)
+          // Monitoring tasks are special - they're created from out-of-range temperatures and should always appear
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task:', task.id, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 2: Include expiry tasks (they may also have template_id but no site_checklist_id)
+          const sourceType = task.task_data?.source_type || task.task_data?.type;
+          const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate'];
+          if (expiryTypes.includes(sourceType)) {
+            console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 3: CRITICAL: Exclude tasks that have template_id but no site_checklist_id
           // These are templates that were incorrectly created as tasks
+          // BUT: Only exclude if they're NOT monitoring or expiry tasks (already handled above)
           if (task.template_id && !task.site_checklist_id) {
             console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
               id: task.id,
@@ -449,15 +465,9 @@ export default function DailyChecklistPage() {
             return false;
           }
           
-          // Include template tasks (have site_checklist_id - from "My Tasks")
+          // PRIORITY 4: Include template tasks (have site_checklist_id - from "My Tasks")
           if (task.site_checklist_id) {
             console.log('✅ Including template task from "My Tasks":', task.id, task.custom_name || task.template?.name);
-            return true;
-          }
-          
-          // Include monitoring tasks (flag_reason = 'monitoring')
-          if (task.flag_reason === 'monitoring') {
-            console.log('✅ Including monitoring task:', task.id, task.custom_name);
             return true;
           }
           
@@ -490,8 +500,16 @@ export default function DailyChecklistPage() {
       } else {
         // Staff: Template tasks (have site_checklist_id - from "My Tasks") + Monitoring tasks
         filteredTasks = (allTasks || []).filter((task: any) => {
-          // CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // PRIORITY 1: Include monitoring tasks FIRST (they may have template_id but no site_checklist_id)
+          // Monitoring tasks are special - they're created from out-of-range temperatures and should always appear
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task for staff:', task.id, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 2: CRITICAL: Exclude tasks that have template_id but no site_checklist_id
           // These are templates that were incorrectly created as tasks
+          // BUT: Only exclude if they're NOT monitoring tasks (already handled above)
           if (task.template_id && !task.site_checklist_id) {
             console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
               id: task.id,
@@ -502,13 +520,8 @@ export default function DailyChecklistPage() {
             return false;
           }
           
-          // Include template tasks (have site_checklist_id - from "My Tasks")
+          // PRIORITY 3: Include template tasks (have site_checklist_id - from "My Tasks")
           if (task.site_checklist_id !== null) {
-            return true;
-          }
-          // Include monitoring tasks
-          if (task.flag_reason === 'monitoring') {
-            console.log('✅ Including monitoring task for staff:', task.id, task.custom_name);
             return true;
           }
           return false;

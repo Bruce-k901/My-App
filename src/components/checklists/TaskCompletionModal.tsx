@@ -2208,28 +2208,84 @@ export default function TaskCompletionModal({
         // Handle repeatable equipment list (e.g., multiple fridges)
         const equipmentList = formData[repeatableField.field_name] || []
         for (const equipment of equipmentList) {
-          const tempKey = `temp_${equipment.value || equipment}`
-          const tempValue = formData[tempKey]
+          // Extract asset ID - handle nested structures where id/value/asset_id might be objects
+          let assetId: string | null = null
+          
+          // Check direct properties first
+          if (typeof equipment.value === 'string') {
+            assetId = equipment.value
+          } else if (typeof equipment.asset_id === 'string') {
+            assetId = equipment.asset_id
+          } else if (typeof equipment.id === 'string') {
+            assetId = equipment.id
+          }
+          // Check nested structures (objects with assetId property)
+          else if (equipment.id && typeof equipment.id === 'object' && equipment.id.assetId) {
+            assetId = equipment.id.assetId
+          } else if (equipment.value && typeof equipment.value === 'object' && equipment.value.assetId) {
+            assetId = equipment.value.assetId
+          } else if (equipment.asset_id && typeof equipment.asset_id === 'object' && equipment.asset_id.assetId) {
+            assetId = equipment.asset_id.assetId
+          } else if (equipment.assetId && typeof equipment.assetId === 'object' && equipment.assetId.assetId) {
+            assetId = equipment.assetId.assetId
+          } else if (typeof equipment === 'string') {
+            assetId = equipment
+          }
+          
+          if (!assetId) {
+            console.warn('⚠️ Could not extract asset ID from equipment:', equipment)
+            continue
+          }
+          
+          // Try to get temperature from formData - check multiple possible key formats
+          let tempValue = formData[`temp_${assetId}`]
+          
+          // If not found, try scanning all temp_* keys
+          if ((tempValue === undefined || tempValue === null || tempValue === '') && assetId) {
+            Object.keys(formData).forEach(key => {
+              if (key.startsWith('temp_') && key !== 'temp_action') {
+                const keyAssetId = key.replace('temp_', '')
+                if (keyAssetId === assetId || String(keyAssetId) === String(assetId)) {
+                  tempValue = formData[key]
+                }
+              }
+            })
+          }
           
           if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
-            const assetId = equipment.value || equipment
             const assetName = assetsMap.get(assetId)?.name || 'Unknown Equipment'
             
             // Get asset temperature range to determine status
+            // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
             const assetRange = assetTempRanges.get(assetId)
             let status = 'ok'
             if (assetRange) {
               const { min, max } = assetRange
-              const temp = parseFloat(tempValue)
+              const temp = parseFloat(String(tempValue))
               const tolerance = 2
               const warningTolerance = 1
               
-              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                status = 'failed'
-              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                status = 'warning'
-              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                status = 'warning'
+              // Check if range is inverted (min > max) - this happens for freezers
+              const isInvertedRange = min !== null && max !== null && min > max
+              
+              if (isInvertedRange) {
+                // Inverted range (freezer): actual range is max (colder) to min (warmer)
+                if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                  status = 'failed'
+                } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                  status = 'warning'
+                } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                  status = 'warning'
+                }
+              } else {
+                // Normal range (fridge): range is min (colder) to max (warmer)
+                if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                  status = 'failed'
+                } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                  status = 'warning'
+                } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                  status = 'warning'
+                }
               }
             }
             
@@ -2275,12 +2331,27 @@ export default function TaskCompletionModal({
               const tolerance = 2
               const warningTolerance = 1
               
-              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                status = 'failed'
-              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                status = 'warning'
-              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                status = 'warning'
+              // Check if range is inverted (min > max) - this happens for freezers
+              const isInvertedRange = min !== null && max !== null && min > max
+              
+              if (isInvertedRange) {
+                // Inverted range (freezer): actual range is max (colder) to min (warmer)
+                if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                  status = 'failed'
+                } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                  status = 'warning'
+                } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                  status = 'warning'
+                }
+              } else {
+                // Normal range (fridge): range is min (colder) to max (warmer)
+                if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                  status = 'failed'
+                } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                  status = 'warning'
+                } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                  status = 'warning'
+                }
               }
             }
             
@@ -2310,16 +2381,31 @@ export default function TaskCompletionModal({
           let status = 'ok'
           if (assetRange) {
             const { min, max } = assetRange
-            const temp = parseFloat(formData.temperature)
+            const temp = parseFloat(String(formData.temperature))
             const tolerance = 2
             const warningTolerance = 1
             
-            if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-              status = 'failed'
-            } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-              status = 'warning'
-            } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-              status = 'warning'
+            // Check if range is inverted (min > max) - this happens for freezers
+            const isInvertedRange = min !== null && max !== null && min > max
+            
+            if (isInvertedRange) {
+              // Inverted range (freezer): actual range is max (colder) to min (warmer)
+              if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                status = 'failed'
+              } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                status = 'warning'
+              } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                status = 'warning'
+              }
+            } else {
+              // Normal range (fridge): range is min (colder) to max (warmer)
+              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                status = 'failed'
+              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                status = 'warning'
+              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                status = 'warning'
+              }
             }
           }
           
@@ -2823,19 +2909,42 @@ export default function TaskCompletionModal({
       // Include ALL assets from formData or task_data
       if (equipmentFromForm.length > 0) {
         equipmentFromForm.forEach((equipment: any) => {
-          // Extract asset ID - try all possible formats but normalize to string
-          let assetId = equipment.value || equipment.asset_id || equipment.id || equipment
+          // Extract asset ID - handle nested structures where id/value/asset_id might be objects
+          let assetId: string | null = null
           
-          // Normalize asset ID to ensure consistent string format matching formData keys
-          if (typeof assetId !== 'string') {
-            if (typeof assetId === 'object' && assetId !== null) {
-              assetId = assetId.id || assetId.value || assetId.asset_id || String(assetId)
-            } else {
-              assetId = String(assetId)
-            }
+          // Check direct properties first
+          if (typeof equipment.value === 'string') {
+            assetId = equipment.value
+          } else if (typeof equipment.asset_id === 'string') {
+            assetId = equipment.asset_id
+          } else if (typeof equipment.id === 'string') {
+            assetId = equipment.id
+          }
+          // Check nested structures (objects with assetId property)
+          else if (equipment.id && typeof equipment.id === 'object' && equipment.id.assetId) {
+            assetId = equipment.id.assetId
+          } else if (equipment.value && typeof equipment.value === 'object' && equipment.value.assetId) {
+            assetId = equipment.value.assetId
+          } else if (equipment.asset_id && typeof equipment.asset_id === 'object' && equipment.asset_id.assetId) {
+            assetId = equipment.asset_id.assetId
+          } else if (equipment.assetId && typeof equipment.assetId === 'object' && equipment.assetId.assetId) {
+            assetId = equipment.assetId.assetId
+          } else if (typeof equipment === 'string') {
+            assetId = equipment
+          } else {
+            // Final fallback: try to stringify
+            assetId = String(equipment.value || equipment.asset_id || equipment.id || equipment)
           }
           
-          if (!assetId) return
+          // Normalize to string
+          if (assetId && typeof assetId !== 'string') {
+            assetId = String(assetId)
+          }
+          
+          if (!assetId || assetId === 'null' || assetId === 'undefined') {
+            console.warn('⚠️ Could not extract valid asset ID from equipment:', equipment)
+            return
+          }
           
           // CRITICAL: Check multiple sources for temperature
           const recordedTemp = tempMap.get(assetId)
@@ -2885,6 +2994,7 @@ export default function TaskCompletionModal({
           })
           
           // Determine status based on temperature and ranges
+          // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
           let status = 'ok'
           if (finalTemp !== null && assetId) {
             const assetRange = assetTempRanges.get(assetId)
@@ -2894,12 +3004,28 @@ export default function TaskCompletionModal({
               const tolerance = 2
               const warningTolerance = 1
               
-              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-                status = 'failed'
-              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-                status = 'warning'
-              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-                status = 'warning'
+              // Check if range is inverted (min > max) - this happens for freezers
+              const isInvertedRange = min !== null && max !== null && min > max
+              
+              if (isInvertedRange) {
+                // Inverted range (freezer): actual range is max (colder) to min (warmer)
+                // Temperature is out of range if: temp < max - tolerance (too cold) OR temp > min + tolerance (too warm)
+                if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                  status = 'failed'
+                } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                  status = 'warning'
+                } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                  status = 'warning'
+                }
+              } else {
+                // Normal range (fridge): range is min (colder) to max (warmer)
+                if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                  status = 'failed'
+                } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                  status = 'warning'
+                } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                  status = 'warning'
+                }
               }
             }
           }
@@ -2929,6 +3055,7 @@ export default function TaskCompletionModal({
         const finalTemp = recordedTemp ? recordedTemp.reading : (tempFromFormData !== null ? tempFromFormData : (tempFromFormDataField !== null ? tempFromFormDataField : null))
         
         // Determine status
+        // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
         let status = 'ok'
         if (finalTemp !== null && assetId) {
           const assetRange = assetTempRanges.get(assetId)
@@ -2938,12 +3065,28 @@ export default function TaskCompletionModal({
             const tolerance = 2
             const warningTolerance = 1
             
-            if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
-              status = 'failed'
-            } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
-              status = 'warning'
-            } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
-              status = 'warning'
+            // Check if range is inverted (min > max) - this happens for freezers
+            const isInvertedRange = min !== null && max !== null && min > max
+            
+            if (isInvertedRange) {
+              // Inverted range (freezer): actual range is max (colder) to min (warmer)
+              // Temperature is out of range if: temp < max - tolerance (too cold) OR temp > min + tolerance (too warm)
+              if ((max !== null && temp < max - tolerance) || (min !== null && temp > min + tolerance)) {
+                status = 'failed'
+              } else if ((max !== null && temp < max - warningTolerance) || (min !== null && temp > min + warningTolerance)) {
+                status = 'warning'
+              } else if ((max !== null && temp < max) || (min !== null && temp > min)) {
+                status = 'warning'
+              }
+            } else {
+              // Normal range (fridge): range is min (colder) to max (warmer)
+              if ((min !== null && temp < min - tolerance) || (max !== null && temp > max + tolerance)) {
+                status = 'failed'
+              } else if ((min !== null && temp < min - warningTolerance) || (max !== null && temp > max + warningTolerance)) {
+                status = 'warning'
+              } else if ((min !== null && temp < min) || (max !== null && temp > max)) {
+                status = 'warning'
+              }
             }
           }
         }
@@ -2974,18 +3117,43 @@ export default function TaskCompletionModal({
         })
       }
       
-      // CRITICAL FALLBACK: If equipmentList is empty but we have temperatures in formData, add them
-      // This ensures NO temperature is ever lost
-      if (equipmentList.length === 0) {
-        console.log('⚠️ Equipment list is empty, checking formData for any temperatures...')
-        Object.keys(formData).forEach(key => {
-          if (key.startsWith('temp_') && key !== 'temp_action') {
-            const assetId = key.replace('temp_', '')
-            const tempValue = formData[key]
-            
-            if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
-              const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
-              if (!isNaN(numValue) && isFinite(numValue)) {
+      // CRITICAL FALLBACK: If equipmentList is empty OR has equipment but no temperatures, check formData
+      // This ensures NO temperature is ever lost, even if equipment structure doesn't match
+      const equipmentListWithTemps = equipmentList.filter((eq: any) => 
+        eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== ''
+      )
+      
+      if (equipmentList.length === 0 || (equipmentList.length > 0 && equipmentListWithTemps.length === 0)) {
+        console.log('⚠️ Equipment list has no temperatures, checking formData for any temp_* keys...', {
+          equipmentListCount: equipmentList.length,
+          equipmentListWithTempsCount: equipmentListWithTemps.length,
+          formDataTempKeys: Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
+        })
+        
+        // Get all temp_* keys from formData
+        const tempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action')
+        
+        tempKeys.forEach(key => {
+          const assetId = key.replace('temp_', '')
+          const tempValue = formData[key]
+          
+          if (tempValue !== undefined && tempValue !== null && tempValue !== '') {
+            const numValue = typeof tempValue === 'string' ? parseFloat(tempValue) : tempValue
+            if (!isNaN(numValue) && isFinite(numValue)) {
+              // Check if this asset is already in equipmentList
+              const existingIndex = equipmentList.findIndex((eq: any) => 
+                eq.asset_id === assetId || 
+                String(eq.asset_id) === String(assetId)
+              )
+              
+              if (existingIndex >= 0) {
+                // Update existing equipment entry with temperature
+                equipmentList[existingIndex].temperature = numValue
+                equipmentList[existingIndex].reading = numValue
+                equipmentList[existingIndex].temp = numValue
+                console.log(`✅ FALLBACK: Updated temperature ${numValue}°C for existing asset ${assetId} in equipment_list`)
+              } else {
+                // Add new equipment entry with temperature
                 const assetName = assetsMap.get(assetId)?.name || 'Unknown Equipment'
                 equipmentList.push({
                   asset_id: assetId,
