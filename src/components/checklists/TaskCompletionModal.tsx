@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb, ArrowRight } from 'lucide-react'
+import { X, Camera, Thermometer, FileText, CheckCircle2, AlertCircle, Save, ChevronDown, ChevronUp, Monitor, PhoneCall, ExternalLink, Download, Lightbulb, ArrowRight, Calendar, BookOpen } from 'lucide-react'
 import { ChecklistTaskWithTemplate, TaskCompletionPayload } from '@/types/checklist-types'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -15,6 +15,14 @@ import type { ComplianceTemplate } from '@/data/compliance-templates'
 import Image from 'next/image'
 import Link from 'next/link'
 import CheckboxCustom from '@/components/ui/CheckboxCustom'
+import { getOrCreatePositionForAsset } from '@/lib/temperature-queries'
+import { UpdateCertificateExpiryModal } from '@/components/training/UpdateCertificateExpiryModal'
+import { BookCourseFromTaskModal } from '@/components/training/BookCourseFromTaskModal'
+import { findTrainingRecordForCertificate } from '@/lib/training/trainingRecordLookup'
+import { certificateTypeToCourseCode, isCourseAvailableInApp } from '@/lib/training/certificateMapping'
+import SetExpiryPanel from '@/components/compliance/SetExpiryPanel'
+import SetReviewDatePanel from '@/components/compliance/SetReviewDatePanel'
+import PPMServicePanel from '@/components/compliance/PPMServicePanel'
 
 interface TaskCompletionModalProps {
   task: ChecklistTaskWithTemplate
@@ -61,7 +69,7 @@ export default function TaskCompletionModal({
   // Fire alarm and emergency lighting checklist states
   const [fireAlarmChecklist, setFireAlarmChecklist] = useState<boolean[]>([false, false, false, false, false, false])
   const [emergencyLightingChecklist, setEmergencyLightingChecklist] = useState<boolean[]>([false, false, false, false, false, false])
-  const { companyId, siteId } = useAppContext()
+  const { companyId, siteId, profile } = useAppContext()
   const { showToast } = useToast()
   
   // State for task data (assets, libraries, SOPs, RAs)
@@ -78,6 +86,15 @@ export default function TaskCompletionModal({
   const [calloutRepairSummary, setCalloutRepairSummary] = useState('')
   const [calloutUpdateNotes, setCalloutUpdateNotes] = useState('')
   const [calloutCloseDocuments, setCalloutCloseDocuments] = useState<File[]>([])
+  
+  // Certificate expiry task modals
+  const [showUpdateExpiryModal, setShowUpdateExpiryModal] = useState(false)
+  const [showBookCourseModal, setShowBookCourseModal] = useState(false)
+  const [trainingRecord, setTrainingRecord] = useState<{ id: string; expiry_date: string | null; course: { name: string } } | null>(null)
+  const [courseId, setCourseId] = useState<string | null>(null)
+  const [employeeName, setEmployeeName] = useState<string>('Employee')
+  const [certificateProfileId, setCertificateProfileId] = useState<string | null>(null)
+  const [certificateType, setCertificateType] = useState<string>('')
 
   useEffect(() => {
     if (isOpen) {
@@ -207,39 +224,54 @@ export default function TaskCompletionModal({
       // Set formData with task data immediately
       setFormData(initialData)
       
+      // Skip asset/temperature processing for non-asset tasks
+      const taskSourceType = taskData.source_type || taskData.type
+      const nonAssetTaskTypes = ['certificate_expiry', 'certificate_renewal', 'sop_review', 'document_expiry']
+      const shouldSkipAssetProcessing = nonAssetTaskTypes.includes(taskSourceType)
+      
       // Load task resources (assets, libraries, SOPs, RAs) - await to ensure assets are loaded before temp ranges
       // CRITICAL: Temperature warning system depends on selectedAssets being loaded first
       // Note: loadTaskResources now calls loadAssetTempRanges internally with asset IDs
       // This ensures ranges load immediately when assets are available, avoiding state timing issues
-      loadTaskResources(taskData).then(() => {
-        // Additional safeguard: Load ranges again after a short delay to catch any edge cases
-        // This is a fallback in case the internal call didn't work
-        setTimeout(() => {
-          console.log('🌡️ [TEMPERATURE SYSTEM] Final check: Loading temperature ranges...')
-          loadAssetTempRanges();
-        }, 500)
-      }).catch((error) => {
-        console.error('❌ [TEMPERATURE SYSTEM] Error loading task resources:', error)
-        // Still try to load temp ranges even if task resources fail
-        // Try to get asset IDs from task_data directly
-        const assetIdsFromTaskData = taskData.selectedAssets || []
-        if (assetIdsFromTaskData.length > 0) {
-          loadAssetTempRanges(assetIdsFromTaskData)
-        } else {
-          loadAssetTempRanges();
-        }
-      })
+      if (!shouldSkipAssetProcessing) {
+        loadTaskResources(taskData).then(() => {
+          // Additional safeguard: Load ranges again after a short delay to catch any edge cases
+          // This is a fallback in case the internal call didn't work
+          setTimeout(() => {
+            console.log('🌡️ [TEMPERATURE SYSTEM] Final check: Loading temperature ranges...')
+            loadAssetTempRanges();
+          }, 500)
+        }).catch((error) => {
+          console.error('❌ [TEMPERATURE SYSTEM] Error loading task resources:', error)
+          // Still try to load temp ranges even if task resources fail
+          // Try to get asset IDs from task_data directly
+          const assetIdsFromTaskData = taskData.selectedAssets || []
+          if (assetIdsFromTaskData.length > 0) {
+            loadAssetTempRanges(assetIdsFromTaskData)
+          } else {
+            loadAssetTempRanges();
+          }
+        })
+      } else {
+        console.log(`⏭️ Skipping asset/temperature processing for ${taskSourceType} task`)
+      }
       
       // SAFEGUARD: Also load temp ranges after a short delay to catch any missed assets
       // This ensures ranges are loaded even if loadTaskResources doesn't complete properly
-      const tempRangeTimeout = setTimeout(() => {
-        console.log('🌡️ [TEMPERATURE SYSTEM] Safety timeout: Re-checking temperature ranges...')
-        loadAssetTempRanges();
-      }, 1500)
+      // Only for tasks that need assets
+      let tempRangeTimeout: NodeJS.Timeout | null = null
+      if (!shouldSkipAssetProcessing) {
+        tempRangeTimeout = setTimeout(() => {
+          console.log('🌡️ [TEMPERATURE SYSTEM] Safety timeout: Re-checking temperature ranges...')
+          loadAssetTempRanges();
+        }, 1500)
+      }
       
       // Cleanup timeout on unmount
       return () => {
-        clearTimeout(tempRangeTimeout)
+        if (tempRangeTimeout) {
+          clearTimeout(tempRangeTimeout)
+        }
       }
       
       // Then load template fields (which will preserve existing formData)
@@ -336,6 +368,15 @@ export default function TaskCompletionModal({
   // Load task resources (assets, libraries, SOPs, RAs) from task_data
   async function loadTaskResources(taskData: Record<string, any>) {
     try {
+      // Skip asset processing for tasks that don't need assets
+      const taskSourceType = taskData.source_type || taskData.type
+      const nonAssetTaskTypes = ['certificate_expiry', 'certificate_renewal', 'sop_review', 'document_expiry']
+      
+      if (nonAssetTaskTypes.includes(taskSourceType)) {
+        console.log(`⏭️ Skipping asset processing for ${taskSourceType} task`)
+        return // Early return - no assets needed for these task types
+      }
+      
       // CRITICAL: For monitoring tasks, only load the monitored asset (not all assets)
       // Monitoring tasks should only show the asset that was out of range
       const isMonitoringTask = task.flag_reason === 'monitoring' || task.flagged === true
@@ -2488,8 +2529,11 @@ export default function TaskCompletionModal({
     }
     if (!task.template) return
 
-    // CRITICAL: Log formData state at submission time
-    const tempKeysAtSubmit = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
+    // Skip equipment/temperature processing for certificate expiry and renewal tasks
+    const isCertificateTask = taskData?.source_type === 'certificate_expiry' || taskData?.type === 'certificate_renewal' || taskData?.source_type === 'sop_review' || taskData?.source_type === 'document_expiry';
+    
+    // CRITICAL: Log formData state at submission time (only for non-certificate tasks)
+    const tempKeysAtSubmit = isCertificateTask ? [] : Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action');
     const tempValuesAtSubmit = tempKeysAtSubmit.reduce((acc: any, key) => {
       acc[key] = formData[key];
       return acc;
@@ -2555,21 +2599,26 @@ export default function TaskCompletionModal({
         completedAt
       )
 
+      // Skip equipment/temperature processing for certificate expiry and renewal tasks
+      const isCertificateTask = taskData?.source_type === 'certificate_expiry' || taskData?.type === 'certificate_renewal' || taskData?.source_type === 'sop_review' || taskData?.source_type === 'document_expiry';
+      
       // Get repeatable field once for use in both temperature records and equipment list
       const repeatableField = templateFields.find(f => f.field_name === task.template?.repeatable_field_name)
       
       // Save temperature records for each equipment/temperature entry
       const temperatureRecords: any[] = []
       
-      // DEBUG: Log temperature field detection
-      const allFormDataKeys = Object.keys(formData);
-      const tempKeysInFormData = allFormDataKeys.filter(k => k.startsWith('temp_') && k !== 'temp_action');
-      const tempValuesInFormData = tempKeysInFormData.reduce((acc: any, key) => {
-        acc[key] = formData[key];
-        return acc;
-      }, {});
-      
-      console.log('🌡️ [TEMP LOGS] Checking for temperature data:', {
+      // Skip temperature/equipment processing for certificate tasks
+      if (!isCertificateTask) {
+        // DEBUG: Log temperature field detection
+        const allFormDataKeys = Object.keys(formData);
+        const tempKeysInFormData = allFormDataKeys.filter(k => k.startsWith('temp_') && k !== 'temp_action');
+        const tempValuesInFormData = tempKeysInFormData.reduce((acc: any, key) => {
+          acc[key] = formData[key];
+          return acc;
+        }, {});
+        
+        console.log('🌡️ [TEMP LOGS] Checking for temperature data:', {
         hasRepeatableField: !!repeatableField,
         repeatableFieldName: repeatableField?.field_name,
         repeatableFieldValue: repeatableField ? formData[repeatableField.field_name] : undefined,
@@ -2586,15 +2635,18 @@ export default function TaskCompletionModal({
         equipmentConfigLength: task.task_data?.equipment_config?.length || 0,
         selectedAssetsCount: selectedAssets.length
       })
+      }
       
       // NEW APPROACH: Create temperature records from equipment_config (source of truth)
+      // Skip for certificate tasks
+      if (!isCertificateTask) {
       // This happens BEFORE equipment_list building so we can use temperatureRecords as fallback
       let equipmentConfigForTempRecords = task.task_data?.equipment_config;
       
       // Fallback for legacy tasks: reconstruct equipment_config
       if (!equipmentConfigForTempRecords || !Array.isArray(equipmentConfigForTempRecords) || equipmentConfigForTempRecords.length === 0) {
-        console.warn('⚠️ Legacy task detected: equipment_config missing, attempting to reconstruct from old structure');
-        console.log('Task data:', task.task_data);
+        console.log('ℹ️ [TEMP LOGS] equipment_config not found, reconstructing from legacy task data structure');
+        console.log('   Task data keys:', Object.keys(task.task_data || {}));
         
         // Try to build from temperatures array (most complete legacy data)
         if (task.task_data?.temperatures && Array.isArray(task.task_data.temperatures) && task.task_data.temperatures.length > 0) {
@@ -2770,9 +2822,26 @@ export default function TaskCompletionModal({
           }, {}));
         
         for (const configItem of equipmentConfigForTempRecords) {
-          const assetId = configItem.assetId || configItem.asset_id;
+          // Extract and normalize assetId - handle both string and object cases
+          let assetIdRaw = configItem.assetId || configItem.asset_id;
+          
+          // If assetId is an object, extract the actual ID
+          if (assetIdRaw && typeof assetIdRaw === 'object') {
+            assetIdRaw = assetIdRaw.id || assetIdRaw.value || assetIdRaw.assetId || assetIdRaw.asset_id;
+          }
+          
+          // Convert to string and validate
+          const assetId = assetIdRaw ? String(assetIdRaw).trim() : null;
+          
           if (!assetId) {
-            console.warn('⚠️ [TEMP LOGS] Skipping config item without assetId:', configItem);
+            console.warn('⚠️ [TEMP LOGS] Skipping config item without valid assetId:', configItem);
+            continue;
+          }
+          
+          // Validate UUID format
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          if (!uuidRegex.test(assetId)) {
+            console.warn(`⚠️ [TEMP LOGS] Invalid UUID format for assetId: ${assetId}. Skipping.`);
             continue;
           }
           
@@ -2813,16 +2882,16 @@ export default function TaskCompletionModal({
             if (min !== undefined && max !== undefined && min !== null && max !== null) {
               const isInvertedRange = min > max;
               if (isInvertedRange) {
-                status = (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+                status = (temp >= max && temp <= min) ? 'ok' : 'failed';
               } else {
-                status = (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+                status = (temp >= min && temp <= max) ? 'ok' : 'failed';
               }
             }
             
             temperatureRecords.push({
               company_id: companyId,
               site_id: siteId,
-              asset_id: assetId,
+              asset_id: assetId, // Already validated as UUID string
               recorded_by: profile.id,
               reading: temp,
               unit: '°C',
@@ -2865,7 +2934,26 @@ export default function TaskCompletionModal({
               // Try to find matching asset in equipment_config by index
               const configItem = equipmentConfigForTempRecords[index];
               if (configItem) {
-                const assetId = configItem.assetId || configItem.asset_id || keyAssetId;
+                // Extract and normalize assetId
+                let assetIdRaw = configItem.assetId || configItem.asset_id || keyAssetId;
+                if (assetIdRaw && typeof assetIdRaw === 'object') {
+                  assetIdRaw = assetIdRaw.id || assetIdRaw.value || assetIdRaw.assetId || assetIdRaw.asset_id;
+                }
+                let assetId = assetIdRaw ? String(assetIdRaw).trim() : keyAssetId;
+                
+                // Validate UUID format
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (!uuidRegex.test(assetId)) {
+                  console.warn(`⚠️ [TEMP LOGS FALLBACK] Invalid UUID format for assetId: ${assetId}. Using keyAssetId instead.`);
+                  // Use keyAssetId if configItem assetId is invalid
+                  const keyAssetIdValid = uuidRegex.test(keyAssetId) ? keyAssetId : null;
+                  if (!keyAssetIdValid) {
+                    console.warn(`⚠️ [TEMP LOGS FALLBACK] keyAssetId ${keyAssetId} is also invalid. Skipping record.`);
+                    return;
+                  }
+                  assetId = keyAssetIdValid;
+                }
+                
                 const min = configItem.temp_min;
                 const max = configItem.temp_max;
                 let status = 'ok';
@@ -2895,7 +2983,13 @@ export default function TaskCompletionModal({
                 
                 console.log(`✅ [TEMP LOGS FALLBACK] Created temperature record by index: ${temp}°C for asset ${assetId} from ${tempKey}`);
               } else {
-                // Last resort: create record with the keyAssetId itself
+                // Last resort: create record with the keyAssetId itself (validate first)
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (!uuidRegex.test(keyAssetId)) {
+                  console.warn(`⚠️ [TEMP LOGS FALLBACK] keyAssetId ${keyAssetId} is not a valid UUID. Skipping record.`);
+                  return;
+                }
+                
                 temperatureRecords.push({
                   company_id: companyId,
                   site_id: siteId,
@@ -3005,10 +3099,23 @@ export default function TaskCompletionModal({
               }
             }
             
+            // Get or create position for this asset to link the temperature log
+            let positionId: string | null = null;
+            try {
+              if (siteId && companyId && assetId) {
+                const position = await getOrCreatePositionForAsset(siteId, companyId, assetId);
+                positionId = position.id;
+              }
+            } catch (error) {
+              console.warn('⚠️ [TEMP LOGS] Failed to get/create position for asset:', assetId, error);
+              // Continue without position_id - graceful fallback
+            }
+            
             temperatureRecords.push({
               company_id: companyId,
               site_id: siteId,
               asset_id: assetId,
+              position_id: positionId,
               recorded_by: profile.id,
               reading: parseFloat(tempValue),
               unit: '°C',
@@ -3071,10 +3178,23 @@ export default function TaskCompletionModal({
               }
             }
             
+            // Get or create position for this asset to link the temperature log
+            let positionId: string | null = null;
+            try {
+              if (siteId && companyId && assetId) {
+                const position = await getOrCreatePositionForAsset(siteId, companyId, assetId);
+                positionId = position.id;
+              }
+            } catch (error) {
+              console.warn('⚠️ [TEMP LOGS] Failed to get/create position for asset:', assetId, error);
+              // Continue without position_id - graceful fallback
+            }
+            
             temperatureRecords.push({
               company_id: companyId,
               site_id: siteId,
               asset_id: assetId,
+              position_id: positionId,
               recorded_by: profile.id,
               reading: parseFloat(String(tempValue)),
               unit: '°C',
@@ -3125,10 +3245,23 @@ export default function TaskCompletionModal({
             }
           }
           
+          // Get or create position for this asset to link the temperature log
+          let positionId: string | null = null;
+          try {
+            if (siteId && companyId && assetId) {
+              const position = await getOrCreatePositionForAsset(siteId, companyId, assetId);
+              positionId = position.id;
+            }
+          } catch (error) {
+            console.warn('⚠️ [TEMP LOGS] Failed to get/create position for asset:', assetId, error);
+            // Continue without position_id - graceful fallback
+          }
+          
           temperatureRecords.push({
             company_id: companyId,
             site_id: siteId,
             asset_id: assetId,
+            position_id: positionId,
             recorded_by: profile.id,
             reading: parseFloat(formData.temperature),
             unit: '°C',
@@ -3158,6 +3291,13 @@ export default function TaskCompletionModal({
               const temp = parseFloat(String(tempValue));
               if (isNaN(temp) || !isFinite(temp)) continue;
               
+              // Validate UUID format
+              const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+              if (!uuidRegex.test(keyAssetId)) {
+                console.warn(`⚠️ [TEMP LOGS FINAL FALLBACK] keyAssetId ${keyAssetId} is not a valid UUID. Skipping record.`);
+                continue;
+              }
+              
               // Try to get asset info from assetsMap
               const asset = assetsMap.get(keyAssetId);
               const assetRange = assetTempRanges.get(keyAssetId);
@@ -3168,17 +3308,30 @@ export default function TaskCompletionModal({
                 if (min !== undefined && max !== undefined && min !== null && max !== null) {
                   const isInvertedRange = min > max;
                   if (isInvertedRange) {
-                    status = (temp >= max && temp <= min) ? 'ok' : 'out_of_range';
+                    status = (temp >= max && temp <= min) ? 'ok' : 'failed';
                   } else {
-                    status = (temp >= min && temp <= max) ? 'ok' : 'out_of_range';
+                    status = (temp >= min && temp <= max) ? 'ok' : 'failed';
                   }
                 }
+              }
+              
+              // Get or create position for this asset to link the temperature log
+              let positionId: string | null = null;
+              try {
+                if (siteId && companyId && keyAssetId) {
+                  const position = await getOrCreatePositionForAsset(siteId, companyId, keyAssetId);
+                  positionId = position.id;
+                }
+              } catch (error) {
+                console.warn('⚠️ [TEMP LOGS] Failed to get/create position for asset:', keyAssetId, error);
+                // Continue without position_id - graceful fallback
               }
               
               temperatureRecords.push({
                 company_id: companyId,
                 site_id: siteId,
                 asset_id: keyAssetId,
+                position_id: positionId,
                 recorded_by: profile.id,
                 reading: temp,
                 unit: '°C',
@@ -3196,89 +3349,198 @@ export default function TaskCompletionModal({
       }
       
       // Insert temperature records
+      // CRITICAL: This is wrapped in try-catch to ensure temperature log failures NEVER block task completion
+      // Temperature data is already saved in completion_data.equipment_list, so this is just for the logs table
       if (temperatureRecords.length > 0) {
-        console.log('🌡️ [TEMP LOGS] Attempting to insert temperature records:', {
-          count: temperatureRecords.length,
-          records: temperatureRecords.map(r => ({
-            asset_id: r.asset_id,
-            reading: r.reading,
-            company_id: r.company_id,
-            site_id: r.site_id,
-            recorded_by: r.recorded_by,
-            status: r.status,
-            recorded_at: r.recorded_at
-          }))
-        })
-        
-        // Insert temperature records one at a time to avoid conflicts and get better error messages
-        const insertedIds: string[] = [];
-        const errors: any[] = [];
-        
-        for (const record of temperatureRecords) {
-          try {
-            const { data: insertedData, error: tempError } = await supabase
-              .from('temperature_logs')
-              .insert(record)
-              .select()
-              .single();
+        try {
+          // Validate and normalize all records before insertion
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const validRecords = temperatureRecords.filter(record => {
+            // Normalize asset_id to string if it's an object
+            let assetId = record.asset_id;
+            if (assetId && typeof assetId === 'object') {
+              assetId = assetId.id || assetId.value || assetId.assetId || assetId.asset_id;
+            }
+            assetId = assetId ? String(assetId).trim() : null;
+            
+            // Validate required fields
+            if (!assetId || !uuidRegex.test(assetId)) {
+              console.warn(`⚠️ [TEMP LOGS] Invalid asset_id in record:`, record);
+              return false;
+            }
+            
+            if (!record.company_id || !uuidRegex.test(String(record.company_id))) {
+              console.warn(`⚠️ [TEMP LOGS] Invalid company_id in record:`, record);
+              return false;
+            }
+            
+            if (!record.recorded_by || !uuidRegex.test(String(record.recorded_by))) {
+              console.warn(`⚠️ [TEMP LOGS] Invalid recorded_by in record:`, record);
+              return false;
+            }
+            
+            if (record.reading === undefined || record.reading === null || isNaN(Number(record.reading))) {
+              console.warn(`⚠️ [TEMP LOGS] Invalid reading in record:`, record);
+              return false;
+            }
+            
+            // Update record with normalized asset_id
+            record.asset_id = assetId;
+            return true;
+          });
+          
+          if (validRecords.length !== temperatureRecords.length) {
+            console.warn(`⚠️ [TEMP LOGS] Filtered out ${temperatureRecords.length - validRecords.length} invalid record(s) before insertion`);
+          }
+          
+          console.log('🌡️ [TEMP LOGS] Attempting to insert temperature records:', {
+            count: validRecords.length,
+            records: validRecords.map(r => ({
+              asset_id: r.asset_id,
+              reading: r.reading,
+              company_id: r.company_id,
+              site_id: r.site_id,
+              recorded_by: r.recorded_by,
+              status: r.status,
+              recorded_at: r.recorded_at
+            }))
+          })
+          
+          // Insert temperature records one at a time to avoid conflicts and get better error messages
+          const insertedIds: string[] = [];
+          const errors: any[] = [];
+          
+          for (const record of validRecords) {
+            try {
+              const { data: insertedData, error: tempError } = await supabase
+                .from('temperature_logs')
+                .insert(record)
+                .select()
+                .single();
 
-            if (tempError) {
-              // Handle 409 Conflict (duplicate) gracefully - this is non-critical
-              // The temperature data is already saved in completion_data.equipment_list
-              const isConflict = tempError.code === '23505' || 
-                                tempError.code === 'PGRST204' || 
-                                tempError.status === 409 ||
-                                tempError.message?.includes('duplicate') || 
-                                tempError.message?.includes('unique') ||
-                                tempError.message?.includes('Conflict') ||
-                                tempError.message?.toLowerCase().includes('already exists');
+              if (tempError) {
+                // Handle 409 Conflict (duplicate) gracefully - this is non-critical
+                // The temperature data is already saved in completion_data.equipment_list
+                // Check multiple ways the error might be represented
+                const errorCode = tempError.code || (tempError as any).code;
+                const errorStatus = tempError.status || (tempError as any).status || (tempError as any).statusCode;
+                const errorMessage = (tempError.message || (tempError as any).message || String(tempError) || '').toLowerCase();
+                const errorDetails = (tempError.details || (tempError as any).details || '').toLowerCase();
+                const errorHint = (tempError.hint || (tempError as any).hint || '').toLowerCase();
+                
+                // Log full error for debugging 409 conflicts
+                const fullErrorString = JSON.stringify(tempError, null, 2);
+                const errorStringLower = fullErrorString.toLowerCase();
+                
+                // Comprehensive conflict detection - check EVERYTHING
+                const isConflict = 
+                  errorCode === '23505' || // PostgreSQL unique violation
+                  errorCode === 'PGRST204' || // PostgREST conflict
+                  errorCode === '409' ||
+                  errorCode === 409 ||
+                  errorStatus === 409 ||
+                  errorStatus === '409' ||
+                  errorStatus === 409 ||
+                  errorMessage.includes('duplicate') || 
+                  errorMessage.includes('unique') ||
+                  errorMessage.includes('conflict') ||
+                  errorMessage.includes('already exists') ||
+                  errorMessage.includes('409') ||
+                  errorDetails.includes('duplicate') ||
+                  errorDetails.includes('unique') ||
+                  errorDetails.includes('conflict') ||
+                  errorDetails.includes('409') ||
+                  errorHint.includes('duplicate') ||
+                  errorHint.includes('unique') ||
+                  errorHint.includes('409') ||
+                  errorStringLower.includes('409') ||
+                  errorStringLower.includes('conflict');
+                
+                if (isConflict) {
+                  // Don't log as error - this is expected for duplicates
+                  console.log(`ℹ️ [TEMP LOGS] Duplicate record detected for asset ${record.asset_id} (409 Conflict). Skipping (non-critical).`)
+                  console.log(`   Error code: ${errorCode}, Status: ${errorStatus}`)
+                  errors.push({ record, error: tempError, type: 'duplicate' });
+                } else {
+                  console.error(`❌ Temperature logs insert error for asset ${record.asset_id}:`, tempError)
+                  console.error('❌ Error details:', {
+                    message: tempError.message,
+                    details: tempError.details,
+                    hint: tempError.hint,
+                    code: errorCode,
+                    status: errorStatus,
+                    fullError: tempError,
+                    fullErrorString: fullErrorString,
+                    record
+                  })
+                  errors.push({ record, error: tempError, type: 'error' });
+                }
+              } else if (insertedData) {
+                insertedIds.push(insertedData.id);
+                console.log(`✅ [TEMP LOGS] Inserted record for asset ${record.asset_id}: ${record.reading}°C (status: ${record.status})`)
+              }
+            } catch (err: any) {
+              // Also check for conflicts in caught exceptions
+              const errorMessage = (err?.message || String(err) || '').toLowerCase();
+              const errorStatus = err?.status || err?.statusCode;
+              const isConflict = 
+                errorStatus === 409 ||
+                errorStatus === '409' ||
+                errorMessage.includes('duplicate') ||
+                errorMessage.includes('unique') ||
+                errorMessage.includes('conflict') ||
+                errorMessage.includes('409');
               
               if (isConflict) {
-                // Don't log as error - this is expected for duplicates
-                console.log(`ℹ️ [TEMP LOGS] Duplicate record detected for asset ${record.asset_id} (409 Conflict). Skipping (non-critical).`)
-                errors.push({ record, error: tempError, type: 'duplicate' });
+                console.log(`ℹ️ [TEMP LOGS] Duplicate record detected (exception) for asset ${record.asset_id} (409 Conflict). Skipping (non-critical).`)
+                errors.push({ record, error: err, type: 'duplicate' });
               } else {
-                console.error(`❌ Temperature logs insert error for asset ${record.asset_id}:`, tempError)
-                console.error('❌ Error details:', {
-                  message: tempError.message,
-                  details: tempError.details,
-                  hint: tempError.hint,
-                  code: tempError.code,
-                  status: tempError.status,
-                  record
-                })
-                errors.push({ record, error: tempError, type: 'error' });
-              }
-            } else if (insertedData) {
-              insertedIds.push(insertedData.id);
-              console.log(`✅ [TEMP LOGS] Inserted record for asset ${record.asset_id}: ${record.reading}°C (status: ${record.status})`)
+                console.error(`❌ Unexpected error inserting temperature record for asset ${record.asset_id}:`, err)
+                errors.push({ record, error: err, type: 'exception' });
             }
-          } catch (err: any) {
-            console.error(`❌ Unexpected error inserting temperature record for asset ${record.asset_id}:`, err)
-            errors.push({ record, error: err, type: 'exception' });
+          }
+          }
+          
+          if (insertedIds.length > 0) {
+            console.log(`✅ [TEMP LOGS] Successfully created ${insertedIds.length} of ${temperatureRecords.length} temperature record(s)`)
+          }
+          
+          if (errors.length > 0) {
+            const duplicateCount = errors.filter(e => e.type === 'duplicate').length;
+            const errorCount = errors.filter(e => e.type !== 'duplicate').length;
+            if (duplicateCount > 0) {
+              console.log(`ℹ️ [TEMP LOGS] ${duplicateCount} duplicate record(s) skipped (non-critical - data saved in completion_data)`)
+            }
+            if (errorCount > 0) {
+              console.error(`❌ [TEMP LOGS] ${errorCount} record(s) failed to insert (non-duplicate errors)`)
+              // Log details for debugging
+              errors.filter(e => e.type !== 'duplicate').forEach(({ record, error }) => {
+                console.error(`  - Asset ${record.asset_id}: ${error?.message || String(error)}`)
+              })
+            } else {
+              // All errors were duplicates, which is fine - this is success
+              console.log(`✅ [TEMP LOGS] All temperature records processed successfully (${duplicateCount} duplicates skipped, ${insertedIds.length} new records created)`)
+            }
+          } else if (insertedIds.length > 0) {
+            console.log(`✅ [TEMP LOGS] All ${insertedIds.length} temperature record(s) inserted successfully`)
+          }
+          
+          // CRITICAL: Don't fail the whole operation - temperature data is saved in completion_data.equipment_list
+          // Note: Temperature logs insertion failure (including 409 conflicts) NEVER prevents task completion
+          // All temperature data is preserved in completion_data.equipment_list regardless of temperature_logs insert status
+        } catch (tempLogError: any) {
+          // Wrap entire temperature log insertion in try-catch to ensure it never blocks task completion
+          // Temperature data is already in completion_data.equipment_list, so this is non-critical
+          console.warn('⚠️ [TEMP LOGS] Error during temperature log insertion (non-critical):', tempLogError);
+          console.warn('   Temperature data is still saved in completion_data.equipment_list');
+          console.warn('   Task completion will proceed normally');
+          // Check if it's a 409 conflict
+          const errorStatus = tempLogError?.status || tempLogError?.statusCode || (tempLogError?.error?.status);
+          const errorMessage = (tempLogError?.message || String(tempLogError) || '').toLowerCase();
+          if (errorStatus === 409 || errorMessage.includes('409') || errorMessage.includes('conflict')) {
+            console.log('ℹ️ [TEMP LOGS] 409 Conflict detected - this is expected for duplicate records');
           }
         }
-        
-        if (insertedIds.length > 0) {
-          console.log(`✅ [TEMP LOGS] Successfully created ${insertedIds.length} of ${temperatureRecords.length} temperature record(s)`)
-        }
-        
-        if (errors.length > 0) {
-          const duplicateCount = errors.filter(e => e.type === 'duplicate').length;
-          const errorCount = errors.filter(e => e.type !== 'duplicate').length;
-          if (duplicateCount > 0) {
-            console.log(`ℹ️ [TEMP LOGS] ${duplicateCount} duplicate record(s) skipped (non-critical - data saved in completion_data)`)
-          }
-          if (errorCount > 0) {
-            console.error(`❌ [TEMP LOGS] ${errorCount} record(s) failed to insert`)
-          } else {
-            // All errors were duplicates, which is fine
-            console.log(`✅ [TEMP LOGS] All temperature records processed (${duplicateCount} duplicates skipped, ${insertedIds.length} new records created)`)
-          }
-        }
-        
-        // Don't fail the whole operation - temperature data is saved in completion_data.equipment_list
-        // Note: Temperature logs insertion failure doesn't prevent task completion
       } else {
         console.warn('⚠️ [TEMP LOGS] No temperature records to insert!', {
           formDataKeys: Object.keys(formData),
@@ -3676,8 +3938,8 @@ export default function TaskCompletionModal({
       
       // Fallback: Reconstruct equipment_config from legacy task data
       if (!equipmentConfig || !Array.isArray(equipmentConfig)) {
-        console.warn('⚠️ Legacy task detected: equipment_config missing, attempting to reconstruct from old structure');
-        console.log('Task data:', task.task_data);
+        console.log('ℹ️ [TEMP LOGS] equipment_config not found, reconstructing from legacy task data structure');
+        console.log('   Task data keys:', Object.keys(task.task_data || {}));
         
         // Try to build from temperatures array (most complete legacy data)
         if (task.task_data?.temperatures && Array.isArray(task.task_data.temperatures) && task.task_data.temperatures.length > 0) {
@@ -3825,26 +4087,67 @@ export default function TaskCompletionModal({
       }
 
       // Final validation: equipment_config must exist after fallback attempts
+      // If still missing, try to build from formData as last resort before failing
       if (!equipmentConfig || !Array.isArray(equipmentConfig) || equipmentConfig.length === 0) {
-        console.error('🚨 CRITICAL: Could not determine equipment configuration from task_data');
-        console.error('Task ID:', task.id);
-        console.error('Task data:', task.task_data);
+        console.warn('⚠️ [EQUIPMENT_LIST] Could not determine equipment configuration from task_data, trying formData as last resort');
+        console.warn('   Task ID:', task.id);
+        console.warn('   Task data keys:', Object.keys(task.task_data || {}));
         
-        showToast({
-          variant: 'destructive',
-          title: 'Task Configuration Error',
-          description: 'This task is missing equipment configuration. Please contact support.'
-        });
-        setLoading(false);
-        return;
+        // Last resort: Build from formData temp_* keys
+        const tempKeys = Object.keys(formData).filter(k => k.startsWith('temp_') && k !== 'temp_action' && formData[k] !== undefined && formData[k] !== null && formData[k] !== '');
+        if (tempKeys.length > 0) {
+          console.log('   Building equipment_config from formData temp_* keys as last resort:', tempKeys);
+          equipmentConfig = tempKeys.map((tempKey) => {
+            const keyAssetId = tempKey.replace('temp_', '');
+            const assetRange = assetTempRanges.get(keyAssetId);
+            return {
+              assetId: keyAssetId,
+              equipment: assetsMap.get(keyAssetId)?.name || 'Unknown Equipment',
+              nickname: '',
+              temp_min: assetRange?.min ?? undefined,
+              temp_max: assetRange?.max ?? undefined
+            };
+          }).filter((item: any) => item.assetId);
+          
+          if (equipmentConfig.length > 0) {
+            console.log('✅ Reconstructed equipment_config from formData temp keys:', equipmentConfig);
+          }
+        }
+        
+        // If STILL missing after all fallbacks, allow task to complete but log warning
+        // Temperature data will still be saved in completion_data.equipment_list
+        if (!equipmentConfig || !Array.isArray(equipmentConfig) || equipmentConfig.length === 0) {
+          // Only log critical error for non-certificate tasks
+          if (!isCertificateTask) {
+            console.error('🚨 CRITICAL: Could not determine equipment configuration after all fallback attempts');
+            console.error('   Task ID:', task.id);
+            console.error('   Task data:', task.task_data);
+            console.error('   FormData temp keys:', Object.keys(formData).filter(k => k.startsWith('temp_')));
+            console.error('   ⚠️ Task will still complete, but equipment_list may be incomplete');
+          }
+          // Don't block task completion - temperature data is in completion_data.equipment_list
+          // Set empty array so code doesn't crash
+          equipmentConfig = [];
+        }
       }
 
-      console.log('📦 Building equipment_list from equipment_config (source of truth)');
-      console.log('Equipment config:', equipmentConfig);
+      if (!isCertificateTask) {
+        console.log('📦 Building equipment_list from equipment_config (source of truth)');
+        console.log('Equipment config:', equipmentConfig);
 
-      // Build equipment list by enriching equipment_config with temperature readings
-      equipmentList = equipmentConfig.map((configItem: any) => {
-        const assetId = configItem.assetId || configItem.asset_id;
+        // Build equipment list by enriching equipment_config with temperature readings
+        let equipmentList: any[] = [];
+        equipmentList = equipmentConfig.map((configItem: any) => {
+        // Extract and normalize assetId - handle both string and object cases
+        let assetIdRaw = configItem.assetId || configItem.asset_id;
+        
+        // If assetId is an object, extract the actual ID
+        if (assetIdRaw && typeof assetIdRaw === 'object') {
+          assetIdRaw = assetIdRaw.id || assetIdRaw.value || assetIdRaw.assetId || assetIdRaw.asset_id;
+        }
+        
+        // Convert to string and validate
+        const assetId = assetIdRaw ? String(assetIdRaw).trim() : null;
         
         // Strict validation: corrupted data should throw error, not be silently filtered
         if (!assetId) {
@@ -3852,6 +4155,16 @@ export default function TaskCompletionModal({
           console.error('Task:', task.id);
           console.error('Config item:', configItem);
           throw new Error(`Task ${task.id} has corrupted equipment_config - missing asset ID`);
+        }
+        
+        // Validate UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(assetId)) {
+          console.error('🚨 CORRUPTED DATA: equipment_config has invalid UUID format');
+          console.error('Task:', task.id);
+          console.error('Config item:', configItem);
+          console.error('Invalid assetId:', assetId);
+          throw new Error(`Task ${task.id} has corrupted equipment_config - invalid UUID format: ${assetId}`);
         }
         
         // Extract temperature reading from formData (primary source)
@@ -3894,7 +4207,10 @@ export default function TaskCompletionModal({
         
         // Fallback: Check temperatureRecords (derived from formData, used for DB logging)
         if (tempReading === null) {
-          const recordedTemp = temperatureRecords.find(tr => tr.asset_id === assetId);
+          const recordedTemp = temperatureRecords.find(tr => {
+            const trAssetId = tr.asset_id ? String(tr.asset_id).trim() : null;
+            return trAssetId === assetId || (trAssetId && assetId && trAssetId.toLowerCase() === assetId.toLowerCase());
+          });
           if (recordedTemp) {
             tempReading = recordedTemp.reading;
             console.log(`✅ [EQUIPMENT_LIST] Found temperature ${tempReading}°C for asset ${assetId} from temperatureRecords`);
@@ -4038,18 +4354,18 @@ export default function TaskCompletionModal({
       console.log(`✅ Built equipment_list: ${equipmentList.length} items`, equipmentList);
       console.log(`✅ Equipment with temperatures: ${equipmentList.filter((eq: any) => eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== '').length} items`);
 
-      // Validation: equipment_list should match equipment_config length
-      if (equipmentList.length !== equipmentConfig.length) {
-        console.warn('⚠️ Equipment list length mismatch:', {
-          configLength: equipmentConfig.length,
-          builtLength: equipmentList.length
-        });
-      }
-      
-      // Debug logging - CRITICAL: Verify what data is being saved
-      console.log('📋 COMPLETION DATA BEING SAVED:', {
-        equipmentCount: equipmentList.length,
-        equipmentList: equipmentList.map((eq: any) => ({
+        // Validation: equipment_list should match equipment_config length
+        if (equipmentList.length !== equipmentConfig.length) {
+          console.warn('⚠️ Equipment list length mismatch:', {
+            configLength: equipmentConfig.length,
+            builtLength: equipmentList.length
+          });
+        }
+        
+        // Debug logging - CRITICAL: Verify what data is being saved
+        console.log('📋 COMPLETION DATA BEING SAVED:', {
+          equipmentCount: equipmentList.length,
+          equipmentList: equipmentList.map((eq: any) => ({
           asset_id: eq.asset_id,
           asset_name: eq.asset_name,
           temperature: eq.temperature,
@@ -4079,13 +4395,13 @@ export default function TaskCompletionModal({
         photos: photoUrls.length
       })
       
-      // CRITICAL: Warn if this is a temperature task but no temperatures were captured
-      const isTemperatureTask = task.template?.evidence_types?.includes('temperature') || 
-                                task.template?.name?.toLowerCase().includes('temperature') ||
-                                task.template?.name?.toLowerCase().includes('fridge') ||
-                                task.template?.name?.toLowerCase().includes('freezer')
-      
-      if (isTemperatureTask && equipmentList.length > 0) {
+        // CRITICAL: Warn if this is a temperature task but no temperatures were captured
+        const isTemperatureTask = task.template?.evidence_types?.includes('temperature') || 
+                                  task.template?.name?.toLowerCase().includes('temperature') ||
+                                  task.template?.name?.toLowerCase().includes('fridge') ||
+                                  task.template?.name?.toLowerCase().includes('freezer')
+        
+        if (isTemperatureTask && equipmentList.length > 0) {
         const tempsWithReadings = equipmentList.filter((eq: any) => 
           eq.temperature !== null && eq.temperature !== undefined && eq.temperature !== ''
         )
@@ -4104,6 +4420,11 @@ export default function TaskCompletionModal({
         } else {
           console.log('✅ TEMPERATURE TASK: Successfully captured', tempsWithReadings.length, 'temperature reading(s)')
         }
+      }
+      } // End of !isCertificateTask check for equipment list building
+      } else {
+        // For certificate tasks, set empty equipment list
+        equipmentList = [];
       }
 
       // Extract monitoring and callout details for compliance reporting
@@ -4628,6 +4949,42 @@ export default function TaskCompletionModal({
 
   if (!isOpen) return null
 
+  const taskData = task.task_data as any
+  
+  // Handle compliance gap tasks with custom panels
+  if (taskData?.task_type === 'training_no_expiry' || taskData?.task_type === 'document_no_expiry') {
+    return (
+      <SetExpiryPanel
+        task={task}
+        isOpen={isOpen}
+        onClose={onClose}
+        onComplete={onComplete}
+      />
+    )
+  }
+
+  if (taskData?.task_type === 'sop_no_review_date' || taskData?.task_type === 'ra_no_review_date') {
+    return (
+      <SetReviewDatePanel
+        task={task}
+        isOpen={isOpen}
+        onClose={onClose}
+        onComplete={onComplete}
+      />
+    )
+  }
+
+  if (taskData?.task_type === 'ppm_service_due' || taskData?.task_type === 'ppm_service_overdue' || taskData?.task_type === 'ppm_no_schedule') {
+    return (
+      <PPMServicePanel
+        task={task}
+        isOpen={isOpen}
+        onClose={onClose}
+        onComplete={onComplete}
+      />
+    )
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-white/[0.06] rounded-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
@@ -4688,7 +5045,16 @@ export default function TaskCompletionModal({
           )}
           
           {/* Show warning only if instructions are truly missing or very minimal (just equipment names) */}
+          {/* Don't show warning for certificate expiry tasks */}
           {(() => {
+            const taskData = task.task_data as any;
+            const isCertificateTask = taskData?.source_type === 'certificate_expiry' || taskData?.type === 'certificate_renewal';
+            
+            // Skip warning for certificate expiry tasks
+            if (isCertificateTask) {
+              return false;
+            }
+            
             const instructions = task.custom_instructions || task.template?.instructions || '';
             const hasInstructions = instructions && instructions.trim().length > 0;
             
@@ -6519,56 +6885,6 @@ export default function TaskCompletionModal({
                 )
               })}
 
-            {/* Notes Section - Only show if template doesn't already have a notes field */}
-            {(() => {
-              // Check if template already has a notes field (check multiple possible field names)
-              const hasNotesField = templateFields.some((f: any) => {
-                // Check by field name first (most reliable)
-                if (f.field_name === 'notes' || 
-                    f.field_name === 'text_note' || 
-                    f.field_name === 'additional_notes') {
-                  return true
-                }
-                // Check by field type and label
-                const isNotesType = f.field_type === 'text' || f.field_type === 'textarea' || f.field_type === 'text_note'
-                if (isNotesType) {
-                  const label = (f.label || f.field_label || '').toLowerCase()
-                  if (label.includes('note') || label.includes('comment')) {
-                    return true
-                  }
-                }
-                return false
-              });
-              
-              console.log('📝 [NOTES CHECK]', {
-                hasNotesField,
-                templateFields: templateFields.map((f: any) => ({ 
-                  name: f.field_name, 
-                  type: f.field_type, 
-                  label: f.label || f.field_label 
-                }))
-              })
-              
-              // Only show additional notes section if template doesn't have a notes field
-              if (hasNotesField) {
-                return null; // Template already has notes field, don't show duplicate
-              }
-              
-              return (
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Additional Notes
-                  </label>
-                  <textarea
-                    value={formData.notes || ''}
-                    onChange={(e) => handleFieldChange('notes', e.target.value)}
-                    placeholder="Add any additional notes or observations..."
-                    rows={4}
-                    className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:border-pink-500 transition-colors resize-none"
-                  />
-                </div>
-              );
-            })()}
 
             {/* Fire Alarm Specific Fields - Only show if this is a fire alarm task */}
             {templateFields.some((f: any) => f.field_name === 'fire_alarm_call_point') && (
@@ -6828,7 +7144,25 @@ export default function TaskCompletionModal({
                 }
                 
                 // Priority 3: Show notes fallback if no checklist items
-                const hasNotesField = templateFields.find((f: any) => f.field_type === 'text' && f.field_name === 'notes');
+                // Check if template already has a notes field (check multiple possible field names)
+                const hasNotesField = templateFields.some((f: any) => {
+                  // Check by field name first (most reliable)
+                  if (f.field_name === 'notes' || 
+                      f.field_name === 'text_note' || 
+                      f.field_name === 'additional_notes') {
+                    return true
+                  }
+                  // Check by field type and label
+                  const isNotesType = f.field_type === 'text' || f.field_type === 'textarea' || f.field_type === 'text_note'
+                  if (isNotesType) {
+                    const label = (f.label || f.field_label || '').toLowerCase()
+                    if (label.includes('note') || label.includes('comment')) {
+                      return true
+                    }
+                  }
+                  return false
+                });
+                
                 if (!hasNotesField) {
                   return (
                     <div>
@@ -7057,24 +7391,213 @@ export default function TaskCompletionModal({
               </div>
             )}
 
-            {/* Generic Task Navigation Section - Certificate, SOP, Document tasks */}
+            {/* Certificate Expiry Task Actions */}
+            {(() => {
+              const taskData = task.task_data as any
+              if (taskData?.source_type !== 'certificate_expiry' && taskData?.type !== 'certificate_renewal') return null
+              
+              const profileId = taskData.profile_id
+              const certificateTypeValue = taskData.certificate_type || ''
+              const profileName = taskData.profile_name || taskData.employee_name || 'Employee'
+              const level = taskData.level
+              
+              // Update state for use in modals
+              if (profileId !== certificateProfileId) {
+                setCertificateProfileId(profileId)
+              }
+              if (certificateTypeValue !== certificateType) {
+                setCertificateType(certificateTypeValue)
+              }
+              
+              // Update employee name state when task data changes
+              if (profileName !== employeeName && profileName !== 'Employee') {
+                setEmployeeName(profileName)
+              }
+              
+              // Fetch employee name if not in task_data (only once)
+              if (profileId && profileName === 'Employee' && !taskData._nameFetched) {
+                taskData._nameFetched = true // Mark as fetched to avoid multiple calls
+                supabase
+                  .from('profiles')
+                  .select('full_name')
+                  .eq('id', profileId)
+                  .single()
+                  .then(({ data }) => {
+                    if (data?.full_name) {
+                      setEmployeeName(data.full_name)
+                    }
+                  })
+                  .catch(() => {
+                    // Ignore errors, use fallback
+                  })
+              }
+              
+              if (!profileId) return null
+              
+              const courseCode = certificateTypeToCourseCode(certificateTypeValue, level)
+              const courseAvailable = isCourseAvailableInApp(certificateTypeValue, level)
+              
+              return (
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <FileText className="h-5 w-5 text-blue-400 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium text-sm mb-1">Certificate Renewal Actions</h3>
+                      <p className="text-white/70 text-xs">
+                        Update the certificate expiry date or book the candidate on the course
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={async () => {
+                        console.log('🔘 [UPDATE EXPIRY] Button clicked:', { profileId, certificateType: certificateTypeValue, level })
+                        try {
+                          // Load training record
+                          const record = await findTrainingRecordForCertificate(profileId, certificateTypeValue, level)
+                          console.log('📋 [UPDATE EXPIRY] Record result:', record)
+                          
+                          // Get course info for the modal
+                          const courseCode = certificateTypeToCourseCode(certificateTypeValue, level)
+                          let courseName = 'Course'
+                          if (courseCode) {
+                            const { data: courseData } = await supabase
+                              .from('training_courses')
+                              .select('name')
+                              .eq('code', courseCode)
+                              .eq('company_id', companyId)
+                              .limit(1)
+                              .maybeSingle()
+                            if (courseData) {
+                              courseName = courseData.name
+                            }
+                          }
+                          
+                          if (record) {
+                            // Record exists - use it
+                            setTrainingRecord({
+                              id: record.id,
+                              expiry_date: record.expiry_date,
+                              course: { name: record.course?.name || courseName }
+                            })
+                            setShowUpdateExpiryModal(true)
+                          } else {
+                            // No training record exists in the database
+                            // This means the certificate data is likely still in the old profiles table
+                            // We can't update a record that doesn't exist, so suggest booking the course instead
+                            console.warn('⚠️ [UPDATE EXPIRY] No training record found')
+                            showToast({
+                              title: 'No training record found',
+                              description: 'No training record exists for this certificate. Please use "Book Course" to create a new training assignment, or the record may need to be migrated from the legacy system.',
+                              type: 'error',
+                              duration: 6000
+                            })
+                          }
+                        } catch (error: any) {
+                          console.error('❌ [UPDATE EXPIRY] Error:', {
+                            error,
+                            message: error?.message,
+                            stack: error?.stack,
+                            profileId,
+                            certificateType: certificateTypeValue,
+                            level
+                          })
+                          showToast({
+                            title: 'Error loading training record',
+                            description: error?.message || 'An unexpected error occurred.',
+                            type: 'error'
+                          })
+                        }
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      Update Expiry Date
+                    </button>
+                    {courseAvailable && courseCode && (
+                      <button
+                        onClick={async () => {
+                          console.log('🔘 [BOOK COURSE] Button clicked:', { profileId, certificateType: certificateTypeValue, level, courseCode, companyId })
+                          try {
+                            // Find course by code and load training record
+                            const { data: courses, error: courseError } = await supabase
+                              .from('training_courses')
+                              .select('id, name')
+                              .eq('code', courseCode)
+                              .eq('company_id', companyId)
+                              .eq('is_active', true)
+                              .limit(1)
+                            
+                            if (courseError) {
+                              console.error('❌ [BOOK COURSE] Course query error:', courseError)
+                              showToast({
+                                title: 'Error finding course',
+                                description: courseError.message || 'Failed to find the course.',
+                                type: 'error'
+                              })
+                              return
+                            }
+                            
+                            if (courses && courses.length > 0) {
+                              console.log('✅ [BOOK COURSE] Course found:', courses[0])
+                              // Don't require training record for booking - it will be created on completion
+                              // Just set the course info
+                              setTrainingRecord({
+                                id: '',
+                                expiry_date: null,
+                                course: { name: courses[0].name }
+                              })
+                              setCourseId(courses[0].id)
+                              setShowBookCourseModal(true)
+                            } else {
+                              console.warn('⚠️ [BOOK COURSE] Course not found:', { courseCode, companyId })
+                              showToast({
+                                title: 'Course not available',
+                                description: `The course for ${certificateTypeValue} is not available in your company.`,
+                                type: 'error'
+                              })
+                            }
+                          } catch (error: any) {
+                            console.error('❌ [BOOK COURSE] Error:', {
+                              error,
+                              message: error?.message,
+                              stack: error?.stack,
+                              profileId,
+                              certificateType: certificateTypeValue,
+                              level,
+                              courseCode
+                            })
+                            showToast({
+                              title: 'Error booking course',
+                              description: error?.message || 'An unexpected error occurred.',
+                              type: 'error'
+                            })
+                          }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#EC4899]/20 border border-[#EC4899]/50 text-[#EC4899] rounded-lg hover:bg-[#EC4899]/30 transition-colors text-sm font-medium"
+                      >
+                        <BookOpen className="h-4 w-4" />
+                        Book Course
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Generic Task Navigation Section - SOP, Document tasks */}
             {(() => {
               const taskData = task.task_data as any
               if (!taskData?.source_type) return null
+              
+              // Skip certificate_expiry as it's handled above
+              if (taskData.source_type === 'certificate_expiry' || taskData.type === 'certificate_renewal') return null
               
               let link: string | null = null
               let label: string = ''
               let description: string = ''
               
               switch (taskData.source_type) {
-                case 'certificate_expiry':
-                  if (taskData.profile_id) {
-                    link = `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
-                    label = 'View Training Details'
-                    description = 'Update certificate expiry date and training records'
-                  }
-                  break
-                
                 case 'sop_review':
                   if (taskData.sop_id) {
                     link = `/dashboard/sops/list?sop_id=${taskData.sop_id}`
@@ -7417,6 +7940,98 @@ export default function TaskCompletionModal({
             setShowDocumentReviewModal(false)
             // Complete the task normally (skip document review check)
             await handleSubmit(true)
+          }}
+        />
+      )}
+
+      {/* Update Certificate Expiry Modal */}
+      {showUpdateExpiryModal && trainingRecord && (
+        <UpdateCertificateExpiryModal
+          isOpen={showUpdateExpiryModal}
+          onClose={() => {
+            setShowUpdateExpiryModal(false)
+            setTrainingRecord(null)
+          }}
+          trainingRecordId={trainingRecord.id}
+          currentExpiryDate={trainingRecord.expiry_date}
+          employeeName={employeeName}
+          courseName={trainingRecord.course.name}
+          profileId={certificateProfileId}
+          certificateType={certificateType}
+          onSuccess={async (newExpiryDate) => {
+            // Update task completion notes
+            const taskData = task.task_data as any
+            const completionNote = `Certificate expiry date updated to ${new Date(newExpiryDate).toLocaleDateString('en-GB')}`
+            
+            // Update formData with completion note
+            setFormData((prev) => ({
+              ...prev,
+              notes: prev.notes ? `${prev.notes}\n${completionNote}` : completionNote
+            }))
+            
+            setShowUpdateExpiryModal(false)
+            setTrainingRecord(null)
+            showToast({
+              title: 'Expiry date updated',
+              description: 'The certificate expiry date has been updated successfully.',
+              type: 'success'
+            })
+          }}
+        />
+      )}
+
+      {/* Book Course Modal */}
+      {showBookCourseModal && courseId && (
+        <BookCourseFromTaskModal
+          isOpen={showBookCourseModal}
+          onClose={() => {
+            setShowBookCourseModal(false)
+            setCourseId(null)
+          }}
+          taskId={task.id}
+          profileId={(task.task_data as any)?.profile_id || ''}
+          courseId={courseId}
+          courseName={trainingRecord?.course.name || 'Course'}
+          employeeName={employeeName}
+          companyId={companyId || ''}
+          siteId={siteId}
+          managerId={profile?.id || ''}
+          onSuccess={async (assignmentId) => {
+            // Update task completion notes
+            const taskData = task.task_data as any
+            const courseCode = certificateTypeToCourseCode(taskData.certificate_type || '', taskData.level)
+            const completionNote = `${employeeName} booked on ${courseCode || 'course'}. Follow-up task created.`
+            
+            // Update formData with completion note and assignment_id
+            setFormData((prev) => ({
+              ...prev,
+              notes: prev.notes ? `${prev.notes}\n${completionNote}` : completionNote,
+              assignment_id: assignmentId
+            }))
+            
+            // Update task_data to include assignment_id
+            const updatedTaskData = {
+              ...taskData,
+              assignment_id: assignmentId
+            }
+            
+            // Update task in database
+            try {
+              await supabase
+                .from('checklist_tasks')
+                .update({ task_data: updatedTaskData })
+                .eq('id', task.id)
+            } catch (error) {
+              console.error('Error updating task data:', error)
+            }
+            
+            setShowBookCourseModal(false)
+            setCourseId(null)
+            showToast({
+              title: 'Course booked',
+              description: 'The employee has been booked on the course and will receive a notification.',
+              type: 'success'
+            })
           }}
         />
       )}

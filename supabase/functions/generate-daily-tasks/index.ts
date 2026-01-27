@@ -17,7 +17,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // Global lock to prevent concurrent executions
 let isRunning = false;
 
-Deno.serve(async (req) => {
+Deno.serve(async (_req) => {
   // Prevent concurrent executions
   if (isRunning) {
     return new Response(
@@ -47,6 +47,8 @@ Deno.serve(async (req) => {
       sop_review_tasks_created: 0,
       ra_review_tasks_created: 0,
       document_expiry_tasks_created: 0,
+      compliance_gap_tasks_created: 0,
+      ppm_service_tasks_created: 0,
       errors: [] as string[],
     };
 
@@ -73,7 +75,7 @@ Deno.serve(async (req) => {
 
       if (generalTasks && generalTasks.length > 0) {
         // Get generic template
-        let { data: genericTemplate } = await supabase
+        const { data: genericTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "general-task-generic")
@@ -144,7 +146,7 @@ Deno.serve(async (req) => {
 
       if (calendarEntries && calendarEntries.length > 0) {
         // Get generic template
-        let { data: calendarTemplate } = await supabase
+        const { data: calendarTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "calendar-task-generic")
@@ -235,27 +237,45 @@ Deno.serve(async (req) => {
 
       if (ppmTasks && ppmTasks.length > 0) {
         // Get generic template
-        let { data: ppmTemplate } = await supabase
+        const { data: ppmTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "ppm-service-generic")
           .single();
 
         // Filter out archived assets - extract assets from joined data and filter
-        const assets = ppmTasks
-          .map((t: any) => t.assets)
-          .filter((a: any) => a && !a.archived);
+        // Supabase returns joined data with assets as a nested object
+        interface PPMAssetData {
+          id: string;
+          name: string;
+          site_id: string;
+          company_id: string;
+          archived: boolean;
+        }
+
+        interface PPMTaskWithAsset {
+          id: string;
+          asset_id: string;
+          next_service_date: string;
+          status: string;
+          assets: PPMAssetData;
+        }
+
+        // Type assertion for the Supabase response
+        const typedPpmTasks = ppmTasks as unknown as PPMTaskWithAsset[];
+
+        const assets = typedPpmTasks
+          .map((t) => t.assets)
+          .filter((a) => a && !a.archived);
         
         // Filter ppmTasks to only include those with non-archived assets
-        const filteredPpmTasks = ppmTasks.filter((ppm: any) => {
+        const filteredPpmTasks = typedPpmTasks.filter((ppm) => {
           const asset = ppm.assets;
           return asset && !asset.archived;
         });
 
-        const assetMap = new Map(assets.map((a: any) => [a.id, a]));
-
         // Get site GM assignments for PPM tasks
-        const ppmSiteIds = [...new Set(assets.map((a: any) => a.site_id))];
+        const ppmSiteIds = [...new Set(assets.map((a) => a.site_id))];
         const { data: ppmSites } = await supabase
           .from("sites")
           .select("id, gm_user_id")
@@ -267,7 +287,7 @@ Deno.serve(async (req) => {
         // Process only filtered PPM tasks (non-archived assets)
         for (const ppm of filteredPpmTasks) {
           // Asset is now nested in the ppm object from the join
-          const asset = (ppm as any).assets;
+          const asset = ppm.assets;
           // Skip if asset not found (shouldn't happen due to filter, but double-check)
           if (!asset) continue;
 
@@ -336,10 +356,6 @@ Deno.serve(async (req) => {
     // Generates tasks for SOPs with review_date = TODAY (or 30 days warning)
 
     try {
-      const thirtyDaysFromNow = new Date(today);
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      const thirtyDaysString = thirtyDaysFromNow.toISOString().split("T")[0];
-
       // We need to check JSON data for review_date usually, or a column if it exists.
       // Assuming 'sop_data->review_date' based on previous code.
 
@@ -352,14 +368,20 @@ Deno.serve(async (req) => {
       if (sopError) throw sopError;
 
       if (sops) {
-        let { data: sopTemplate } = await supabase
+        const { data: sopTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "sop-review-generic")
           .single();
 
+        interface SOPData {
+          review_date?: string;
+          next_review_date?: string;
+        }
+
         for (const sop of sops) {
-          const reviewDateStr = (sop.sop_data as any)?.review_date;
+          const sopData = sop.sop_data as SOPData | null;
+          const reviewDateStr = sopData?.review_date;
           if (!reviewDateStr) continue;
 
           const reviewDate = new Date(reviewDateStr);
@@ -431,7 +453,7 @@ Deno.serve(async (req) => {
       if (raError) throw raError;
 
       if (ras && ras.length > 0) {
-        let { data: raTemplate } = await supabase
+        const { data: raTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "ra-review-generic")
@@ -497,7 +519,7 @@ Deno.serve(async (req) => {
       if (docError) throw docError;
 
       if (docs && docs.length > 0) {
-        let { data: docTemplate } = await supabase
+        const { data: docTemplate } = await supabase
           .from("task_templates")
           .select("id")
           .eq("slug", "document-review-generic")
@@ -509,7 +531,7 @@ Deno.serve(async (req) => {
             .from("checklist_tasks")
             .select("id")
             .eq("company_id", doc.company_id)
-            .eq("site_id", doc.site_id)
+            .is("site_id", null) // Global docs don't have site_id
             .eq("due_date", todayString)
             .eq("task_data->>source_type", "document_expiry")
             .eq("task_data->>document_id", doc.id)
@@ -545,7 +567,602 @@ Deno.serve(async (req) => {
     }
 
     // ========================================================================
-    // 7. CONFIGURED CHECKLISTS (from site_checklists)
+    // 7. COMPLIANCE GAP DETECTION
+    // ========================================================================
+    // Creates tasks for records with missing expiry/review dates
+
+    try {
+      // Training records with no expiry date
+      const { data: trainingNoExpiry, error: trainingError } = await supabase
+        .from("training_records")
+        .select(`
+          id,
+          profile_id,
+          company_id,
+          course_id,
+          status,
+          completed_at,
+          expiry_date,
+          profiles!inner (
+            id,
+            full_name,
+            home_site,
+            company_id,
+            line_manager_id
+          )
+        `)
+        .is("expiry_date", null)
+        .eq("status", "completed");
+
+      if (trainingError) throw trainingError;
+
+      if (trainingNoExpiry && trainingNoExpiry.length > 0) {
+        const { data: gapTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "general-task-generic")
+          .single();
+
+        interface TrainingRecordWithProfile {
+          id: string;
+          profile_id: string;
+          company_id: string;
+          course_id: string;
+          status: string;
+          completed_at: string | null;
+          expiry_date: string | null;
+          profiles: {
+            id: string;
+            full_name: string;
+            home_site: string | null;
+            company_id: string;
+            line_manager_id: string | null;
+          };
+        }
+
+        for (const record of trainingNoExpiry) {
+          const typedRecord = record as unknown as TrainingRecordWithProfile;
+          const profile = typedRecord.profiles;
+          if (!profile) continue;
+
+          // Get site manager if home_site exists
+          let assignTo = profile.line_manager_id || null;
+          if (!assignTo && profile.home_site) {
+            const { data: site } = await supabase
+              .from("sites")
+              .select("manager_id")
+              .eq("id", profile.home_site)
+              .single();
+            assignTo = site?.manager_id || null;
+          }
+
+          // Get course info for training type
+          let course = null;
+          if (typedRecord.course_id) {
+            const { data: courseData } = await supabase
+              .from("training_courses")
+              .select("name, code")
+              .eq("id", typedRecord.course_id)
+              .single();
+            course = courseData;
+          }
+
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", profile.company_id)
+            .eq("task_data->>task_type", "training_no_expiry")
+            .eq("task_data->>target_record_id", typedRecord.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const courseName = course?.name || "Training";
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: gapTemplate?.id || null,
+            company_id: profile.company_id,
+            site_id: profile.home_site,
+            custom_name: `${profile.full_name} - ${courseName} - No expiry date`,
+            custom_instructions: "Training certificate has no expiry date recorded. Please update the record with the correct expiry date.",
+            due_date: todayString,
+            daypart: "anytime",
+            status: "pending",
+            priority: "high",
+            assigned_to_user_id: assignTo,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "training_no_expiry",
+              target_record_id: typedRecord.id,
+              target_table: "training_records",
+              staff_id: profile.id,
+              staff_name: profile.full_name,
+              course_name: courseName,
+              completed_date: typedRecord.completed_at,
+            },
+          });
+
+          if (!error) log.compliance_gap_tasks_created++;
+        }
+      }
+
+      // SOP entries with no review date (check sop_data JSONB)
+      const { data: sopsNoReview, error: sopGapError } = await supabase
+        .from("sop_entries")
+        .select("id, title, ref_code, company_id, version_number, category, created_by, sop_data")
+        .eq("status", "Published");
+
+      if (sopGapError) throw sopGapError;
+
+      if (sopsNoReview && sopsNoReview.length > 0) {
+        const { data: gapTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "general-task-generic")
+          .single();
+
+        interface SOPData {
+          review_date?: string;
+          next_review_date?: string;
+        }
+
+        for (const sop of sopsNoReview) {
+          // Check if review_date is in sop_data JSONB
+          const sopData = sop.sop_data as SOPData | null;
+          // Skip if review_date or next_review_date exists in sop_data
+          if (sopData?.review_date || sopData?.next_review_date) continue;
+
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", sop.company_id)
+            .eq("task_data->>task_type", "sop_no_review_date")
+            .eq("task_data->>target_record_id", sop.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: gapTemplate?.id || null,
+            company_id: sop.company_id,
+            custom_name: `SOP ${sop.ref_code} - No review date set`,
+            custom_instructions: `SOP "${sop.title}" has no review date set. Please set a review schedule.`,
+            due_date: todayString,
+            daypart: "anytime",
+            status: "pending",
+            priority: "medium",
+            assigned_to_user_id: sop.created_by,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "sop_no_review_date",
+              target_record_id: sop.id,
+              target_table: "sop_entries",
+              sop_title: sop.title,
+              sop_ref_code: sop.ref_code,
+              version_number: sop.version_number,
+              category: sop.category,
+            },
+          });
+
+          if (!error) log.compliance_gap_tasks_created++;
+        }
+      }
+
+      // Risk assessments with no review date
+      const { data: rasNoReview, error: raGapError } = await supabase
+        .from("risk_assessments")
+        .select("id, title, ref_code, company_id, site_id, template_type, highest_risk_level, created_by")
+        .eq("status", "Published")
+        .is("next_review_date", null)
+        .is("archived_at", null);
+
+      if (raGapError) throw raGapError;
+
+      if (rasNoReview && rasNoReview.length > 0) {
+        const { data: gapTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "general-task-generic")
+          .single();
+
+        for (const ra of rasNoReview) {
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", ra.company_id)
+            .eq("task_data->>task_type", "ra_no_review_date")
+            .eq("task_data->>target_record_id", ra.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const priority = ra.highest_risk_level === "high" ? "high" : "medium";
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: gapTemplate?.id || null,
+            company_id: ra.company_id,
+            site_id: ra.site_id,
+            custom_name: `RA ${ra.ref_code} - No review date set`,
+            custom_instructions: `Risk Assessment "${ra.title}" has no review date set. Please set a review schedule.`,
+            due_date: todayString,
+            daypart: "anytime",
+            status: "pending",
+            priority,
+            assigned_to_user_id: ra.created_by,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "ra_no_review_date",
+              target_record_id: ra.id,
+              target_table: "risk_assessments",
+              ra_title: ra.title,
+              ra_ref_code: ra.ref_code,
+              template_type: ra.template_type,
+              highest_risk_level: ra.highest_risk_level,
+            },
+          });
+
+          if (!error) log.compliance_gap_tasks_created++;
+        }
+      }
+
+      // Global documents with no expiry (where required)
+      const { data: docsNoExpiry, error: docGapError } = await supabase
+        .from("global_documents")
+        .select("id, name, category, company_id, uploaded_by")
+        .eq("is_archived", false)
+        .is("expiry_date", null)
+        .eq("requires_expiry", true);
+
+      if (docGapError) throw docGapError;
+
+      if (docsNoExpiry && docsNoExpiry.length > 0) {
+        const { data: gapTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "general-task-generic")
+          .single();
+
+        for (const doc of docsNoExpiry) {
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", doc.company_id)
+            .eq("task_data->>task_type", "document_no_expiry")
+            .eq("task_data->>target_record_id", doc.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: gapTemplate?.id || null,
+            company_id: doc.company_id,
+            custom_name: `${doc.name} - No expiry date`,
+            custom_instructions: `Document "${doc.name}" has no expiry date set. Please update with the correct expiry date.`,
+            due_date: todayString,
+            daypart: "anytime",
+            status: "pending",
+            priority: "medium",
+            assigned_to_user_id: doc.uploaded_by,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "document_no_expiry",
+              target_record_id: doc.id,
+              target_table: "global_documents",
+              document_title: doc.name,
+              document_type: doc.category,
+              file_name: doc.name,
+            },
+          });
+
+          if (!error) log.compliance_gap_tasks_created++;
+        }
+      }
+    } catch (e) {
+      log.errors.push(`Error processing compliance gap tasks: ${e}`);
+    }
+
+    // ========================================================================
+    // 8. PPM SERVICE TASKS (from assets table)
+    // ========================================================================
+    // Generates tasks for assets due for PPM service
+
+    try {
+      const fourteenDaysFromNow = new Date(today);
+      fourteenDaysFromNow.setDate(fourteenDaysFromNow.getDate() + 14);
+      const fourteenDaysString = fourteenDaysFromNow.toISOString().split("T")[0];
+
+      // PPM Service Overdue (past due date)
+      const { data: ppmOverdue, error: ppmOverdueError } = await supabase
+        .from("assets")
+        .select(`
+          id,
+          name,
+          category,
+          serial_number,
+          next_service_date,
+          last_service_date,
+          ppm_frequency_months,
+          ppm_contractor_id,
+          company_id,
+          site_id,
+          contractors:ppm_contractor_id (
+            id,
+            name
+          ),
+          sites (
+            id,
+            manager_id
+          )
+        `)
+        .eq("archived", false)
+        .not("ppm_frequency_months", "is", null)
+        .not("next_service_date", "is", null)
+        .lt("next_service_date", todayString);
+
+      if (ppmOverdueError) throw ppmOverdueError;
+
+      // Define interface for assets with relations (used by all PPM sections)
+      interface AssetWithRelations {
+        id: string;
+        name: string;
+        category: string | null;
+        serial_number: string | null;
+        next_service_date: string | null;
+        last_service_date: string | null;
+        ppm_frequency_months: number | null;
+        ppm_contractor_id: string | null;
+        company_id: string;
+        site_id: string | null;
+        contractors: { id: string; name: string } | null;
+        sites: { id: string; manager_id: string | null } | null;
+      }
+
+      if (ppmOverdue && ppmOverdue.length > 0) {
+        const { data: ppmTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "ppm-service-generic")
+          .single();
+
+        for (const asset of ppmOverdue) {
+          const typedAsset = asset as unknown as AssetWithRelations;
+          const contractor = typedAsset.contractors;
+          const site = typedAsset.sites;
+          const daysOverdue = Math.floor(
+            (new Date(todayString).getTime() - new Date(typedAsset.next_service_date!).getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
+
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", typedAsset.company_id)
+            .eq("task_data->>task_type", "ppm_service_overdue")
+            .eq("task_data->>target_record_id", typedAsset.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: ppmTemplate?.id || null,
+            company_id: typedAsset.company_id,
+            site_id: typedAsset.site_id,
+            custom_name: `OVERDUE: ${typedAsset.name} - PPM Service`,
+            custom_instructions: `PPM service for ${typedAsset.name} is ${daysOverdue} days overdue. Last service: ${typedAsset.last_service_date || "Never"}. Contractor: ${contractor?.name || "Not assigned"}`,
+            due_date: typedAsset.next_service_date!,
+            daypart: "anytime",
+            status: "pending",
+            priority: "urgent",
+            assigned_to_user_id: site?.manager_id || null,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "ppm_service_overdue",
+              target_record_id: typedAsset.id,
+              target_table: "assets",
+              asset_name: typedAsset.name,
+              asset_category: typedAsset.category,
+              serial_number: typedAsset.serial_number,
+              next_service_date: typedAsset.next_service_date,
+              last_service_date: typedAsset.last_service_date,
+              ppm_frequency_months: typedAsset.ppm_frequency_months,
+              ppm_contractor_id: typedAsset.ppm_contractor_id,
+              contractor_name: contractor?.name,
+              days_overdue: daysOverdue,
+            },
+          });
+
+          if (!error) log.ppm_service_tasks_created++;
+        }
+      }
+
+      // PPM Service Due (within 14 days)
+      const { data: ppmDue, error: ppmDueError } = await supabase
+        .from("assets")
+        .select(`
+          id,
+          name,
+          category,
+          serial_number,
+          next_service_date,
+          last_service_date,
+          ppm_frequency_months,
+          ppm_contractor_id,
+          company_id,
+          site_id,
+          contractors:ppm_contractor_id (
+            id,
+            name
+          ),
+          sites (
+            id,
+            manager_id
+          )
+        `)
+        .eq("archived", false)
+        .not("ppm_frequency_months", "is", null)
+        .not("next_service_date", "is", null)
+        .gte("next_service_date", todayString)
+        .lte("next_service_date", fourteenDaysString);
+
+      if (ppmDueError) throw ppmDueError;
+
+      if (ppmDue && ppmDue.length > 0) {
+        const { data: ppmTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "ppm-service-generic")
+          .single();
+
+        for (const asset of ppmDue) {
+          const typedAsset = asset as unknown as AssetWithRelations;
+          const contractor = typedAsset.contractors;
+          const site = typedAsset.sites;
+
+          // Check for existing task (overdue or due)
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", typedAsset.company_id)
+            .in("task_data->>task_type", ["ppm_service_due", "ppm_service_overdue"])
+            .eq("task_data->>target_record_id", typedAsset.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const daysUntil = Math.floor(
+            (new Date(typedAsset.next_service_date!).getTime() - new Date(todayString).getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
+          const priority = daysUntil <= 3 ? "high" : "medium";
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: ppmTemplate?.id || null,
+            company_id: typedAsset.company_id,
+            site_id: typedAsset.site_id,
+            custom_name: `${typedAsset.name} - PPM Service Due`,
+            custom_instructions: `PPM service for ${typedAsset.name} is due on ${typedAsset.next_service_date}. Contractor: ${contractor?.name || "Not assigned"}`,
+            due_date: typedAsset.next_service_date!,
+            daypart: "anytime",
+            status: "pending",
+            priority,
+            assigned_to_user_id: site?.manager_id || null,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "ppm_service_due",
+              target_record_id: typedAsset.id,
+              target_table: "assets",
+              asset_name: typedAsset.name,
+              asset_category: typedAsset.category,
+              serial_number: typedAsset.serial_number,
+              next_service_date: typedAsset.next_service_date,
+              last_service_date: typedAsset.last_service_date,
+              ppm_frequency_months: typedAsset.ppm_frequency_months,
+              ppm_contractor_id: typedAsset.ppm_contractor_id,
+              contractor_name: contractor?.name,
+            },
+          });
+
+          if (!error) log.ppm_service_tasks_created++;
+        }
+      }
+
+      // PPM No Schedule Set
+      const { data: ppmNoSchedule, error: ppmNoScheduleError } = await supabase
+        .from("assets")
+        .select(`
+          id,
+          name,
+          category,
+          serial_number,
+          last_service_date,
+          ppm_frequency_months,
+          ppm_contractor_id,
+          company_id,
+          site_id,
+          contractors:ppm_contractor_id (
+            id,
+            name
+          ),
+          sites (
+            id,
+            manager_id
+          )
+        `)
+        .eq("archived", false)
+        .not("ppm_frequency_months", "is", null)
+        .is("next_service_date", null);
+
+      if (ppmNoScheduleError) throw ppmNoScheduleError;
+
+      if (ppmNoSchedule && ppmNoSchedule.length > 0) {
+        const { data: ppmTemplate } = await supabase
+          .from("task_templates")
+          .select("id")
+          .eq("slug", "ppm-service-generic")
+          .single();
+
+        for (const asset of ppmNoSchedule) {
+          const typedAsset = asset as unknown as AssetWithRelations;
+          const contractor = typedAsset.contractors;
+          const site = typedAsset.sites;
+
+          // Check for existing task
+          const { data: existing } = await supabase
+            .from("checklist_tasks")
+            .select("id")
+            .eq("company_id", typedAsset.company_id)
+            .eq("task_data->>task_type", "ppm_no_schedule")
+            .eq("task_data->>target_record_id", typedAsset.id)
+            .in("status", ["pending", "in_progress"])
+            .limit(1);
+
+          if (existing && existing.length > 0) continue;
+
+          const { error } = await supabase.from("checklist_tasks").insert({
+            template_id: ppmTemplate?.id || null,
+            company_id: typedAsset.company_id,
+            site_id: typedAsset.site_id,
+            custom_name: `${typedAsset.name} - No PPM schedule set`,
+            custom_instructions: `Asset "${typedAsset.name}" has PPM frequency of ${typedAsset.ppm_frequency_months} months but no next service date is set.`,
+            due_date: todayString,
+            daypart: "anytime",
+            status: "pending",
+            priority: "medium",
+            assigned_to_user_id: site?.manager_id || null,
+            generated_at: today.toISOString(),
+            task_data: {
+              task_type: "ppm_no_schedule",
+              target_record_id: typedAsset.id,
+              target_table: "assets",
+              asset_name: typedAsset.name,
+              asset_category: typedAsset.category,
+              serial_number: typedAsset.serial_number,
+              last_service_date: typedAsset.last_service_date,
+              ppm_frequency_months: typedAsset.ppm_frequency_months,
+              ppm_contractor_id: typedAsset.ppm_contractor_id,
+              contractor_name: contractor?.name,
+            },
+          });
+
+          if (!error) log.ppm_service_tasks_created++;
+        }
+      }
+    } catch (e) {
+      log.errors.push(`Error processing PPM service tasks: ${e}`);
+    }
+
+    // ========================================================================
+    // 9. CONFIGURED CHECKLISTS (from site_checklists)
     // ========================================================================
     // These are the recurring tasks configured in "My Tasks" (dashboard/my_tasks).
     // We iterate site_checklists (NOT task_templates) to respect user configurations.
@@ -626,7 +1243,7 @@ Deno.serve(async (req) => {
 
           // Determine times/dayparts
           // daypart_times format: { "morning": "09:00", "evening": ["18:00", "20:00"] }
-          let tasksToCreate: { daypart: string; time: string | null }[] = [];
+          const tasksToCreate: { daypart: string; time: string | null }[] = [];
 
           if (
             checklist.daypart_times &&
@@ -666,10 +1283,17 @@ Deno.serve(async (req) => {
 
             // Extract selectedAssets from equipment_config for task completion modal
             let selectedAssets: string[] = [];
+            interface EquipmentConfigItem {
+              assetId?: string;
+              asset_id?: string;
+              value?: string;
+              id?: string;
+            }
+
             if (checklist.equipment_config && Array.isArray(checklist.equipment_config)) {
-              selectedAssets = checklist.equipment_config
-                .map((eq: any) => eq.assetId || eq.asset_id || eq.value || eq.id)
-                .filter(Boolean);
+              selectedAssets = (checklist.equipment_config as EquipmentConfigItem[])
+                .map((eq) => eq.assetId || eq.asset_id || eq.value || eq.id)
+                .filter(Boolean) as string[];
             }
             
             const { error } = await supabase.from("checklist_tasks").insert({
