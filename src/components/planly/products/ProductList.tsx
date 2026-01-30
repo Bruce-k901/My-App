@@ -83,22 +83,6 @@ export function ProductList({ siteId }: ProductListProps) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Loading products...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-500 dark:text-red-400">Error loading products</div>
-      </div>
-    );
-  }
-
   // Safely handle products data - ensure it's an array
   const productsList = Array.isArray(products) ? products : [];
 
@@ -120,7 +104,7 @@ export function ProductList({ siteId }: ProductListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header - Always visible */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
         <Button
@@ -141,45 +125,62 @@ export function ProductList({ siteId }: ProductListProps) {
         />
       )}
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-white/10">
-        <nav className="flex space-x-4" aria-label="Tabs">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
-                  isActive
-                    ? 'border-[#14B8A6] text-[#14B8A6]'
-                    : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center min-h-[300px]">
+          <div className="text-gray-500 dark:text-white/60">Loading products...</div>
+        </div>
+      )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
-        <Input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
-        />
-      </div>
+      {/* Error State */}
+      {error && !isLoading && (
+        <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+          <div className="text-red-500 dark:text-red-400">Error loading products. Please try again.</div>
+        </Card>
+      )}
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Content - Only show when not loading and no error */}
+      {!isLoading && !error && (
+        <>
+          {/* Tabs */}
+          <div className="border-b border-gray-200 dark:border-white/10">
+            <nav className="flex space-x-4" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
+                      isActive
+                        ? 'border-[#14B8A6] text-[#14B8A6]'
+                        : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+            <Input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+            />
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredProducts.map((product) => (
           <Card
             key={product.id}
@@ -303,17 +304,19 @@ export function ProductList({ siteId }: ProductListProps) {
         ))}
       </div>
 
-      {/* Empty state */}
-      {filteredProducts.length === 0 && (
-        <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
-          <div className="text-gray-500 dark:text-white/60">
-            {searchQuery
-              ? 'No products match your search'
-              : activeTab === 'archived'
-                ? 'No archived products'
-                : 'No products configured yet'}
-          </div>
-        </Card>
+        {/* Empty state */}
+        {filteredProducts.length === 0 && (
+          <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+            <div className="text-gray-500 dark:text-white/60">
+              {searchQuery
+                ? 'No products match your search'
+                : activeTab === 'archived'
+                  ? 'No archived products'
+                  : 'No products configured yet'}
+            </div>
+          </Card>
+        )}
+      </>
       )}
     </div>
   );
