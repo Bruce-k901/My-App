@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -15,19 +15,28 @@ export default function CutoffRulesPage() {
   const [bufferDays, setBufferDays] = useState(1);
   const [cutoffTime, setCutoffTime] = useState('14:00');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Load existing settings
-  useState(() => {
+  useEffect(() => {
     if (siteId) {
+      setInitialLoading(true);
       fetch(`/api/planly/cutoff-settings?siteId=${siteId}`)
         .then(res => res.json())
         .then(data => {
-          if (data.default_buffer_days) setBufferDays(data.default_buffer_days);
-          if (data.default_cutoff_time) setCutoffTime(data.default_cutoff_time);
+          if (data.default_buffer_days !== undefined) setBufferDays(data.default_buffer_days);
+          if (data.default_cutoff_time) {
+            // Handle time format - remove seconds if present
+            const time = data.default_cutoff_time.substring(0, 5);
+            setCutoffTime(time);
+          }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setInitialLoading(false));
+    } else {
+      setInitialLoading(false);
     }
-  });
+  }, [siteId]);
 
   const handleSave = async () => {
     if (!siteId) return;
@@ -67,7 +76,15 @@ export default function CutoffRulesPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Please select a site</div>
+        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+      </div>
+    );
+  }
+
+  if (initialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#14B8A6]" />
       </div>
     );
   }
@@ -75,16 +92,16 @@ export default function CutoffRulesPage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Cutoff Rules</h1>
-        <p className="text-white/50 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Cutoff Rules</h1>
+        <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
           Configure default order cutoff settings for this site
         </p>
       </div>
 
-      <Card className="p-6 max-w-2xl">
+      <Card className="p-6 max-w-2xl bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
         <div className="space-y-6">
           <div>
-            <Label htmlFor="bufferDays" className="text-white mb-2 block">
+            <Label htmlFor="bufferDays" className="text-gray-700 dark:text-white mb-2 block">
               Default Buffer Days
             </Label>
             <Input
@@ -93,15 +110,15 @@ export default function CutoffRulesPage() {
               min="0"
               value={bufferDays}
               onChange={(e) => setBufferDays(parseInt(e.target.value) || 0)}
-              className="bg-white/[0.03] border-white/[0.06] text-white"
+              className="w-32 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
             />
-            <p className="text-sm text-white/60 mt-1">
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
               Additional days before the first production stage
             </p>
           </div>
 
           <div>
-            <Label htmlFor="cutoffTime" className="text-white mb-2 block">
+            <Label htmlFor="cutoffTime" className="text-gray-700 dark:text-white mb-2 block">
               Default Cutoff Time
             </Label>
             <Input
@@ -109,16 +126,29 @@ export default function CutoffRulesPage() {
               type="time"
               value={cutoffTime}
               onChange={(e) => setCutoffTime(e.target.value)}
-              className="bg-white/[0.03] border-white/[0.06] text-white"
+              className="w-40 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
             />
-            <p className="text-sm text-white/60 mt-1">
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
               Time of day when orders lock (24-hour format)
             </p>
           </div>
 
-          <Button onClick={handleSave} disabled={loading}>
-            <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Saving...' : 'Save Settings'}
+          <Button
+            onClick={handleSave}
+            disabled={loading}
+            className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Settings
+              </>
+            )}
           </Button>
         </div>
       </Card>
