@@ -47,6 +47,21 @@ export default function MyTasksPage() {
       fetchConfigs();
     }
   }, [companyId, siteId]);
+  
+  // Refresh configs when page becomes visible (e.g., after redirect from task creation)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (companyId && document.visibilityState === 'visible') {
+        fetchConfigs();
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [companyId]);
 
   async function fetchConfigs() {
     if (!companyId) {
@@ -179,11 +194,11 @@ export default function MyTasksPage() {
   };
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">My Tasks</h1>
-        <p className="text-white/60">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">My Tasks</h1>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">
           Configure recurring tasks. These configurations generate daily, weekly, or monthly task instances.
         </p>
       </div>
@@ -192,13 +207,13 @@ export default function MyTasksPage() {
       {loading ? (
         <div className="mt-8 text-center py-12">
           <Loader2 className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-spin" />
-          <p className="text-white/60">Loading configurations...</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading configurations...</p>
         </div>
       ) : configs.length === 0 ? (
         <div className="mt-8 text-center py-12">
-          <AlertCircle className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60 mb-2">No task configurations yet</p>
-          <p className="text-white/40 text-sm">
+          <AlertCircle className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No task configurations yet</p>
+          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
             Create configurations from Compliance or Templates pages to generate recurring tasks
           </p>
         </div>
@@ -212,22 +227,22 @@ export default function MyTasksPage() {
             return (
               <div
                 key={config.id}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 hover:bg-white/[0.06] transition-colors"
+                className="bg-[rgb(var(--surface))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg p-5 hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/[0.06] transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                         {templateName}
                       </h3>
                       {config.template?.is_critical && (
-                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-500/20">
                           Critical
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-white/50 mb-2">
+                    <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50 mb-2">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>{getFrequencyLabel(config.frequency)}</span>
@@ -240,7 +255,7 @@ export default function MyTasksPage() {
                     </div>
 
                     {config.equipment_config && Array.isArray(config.equipment_config) && config.equipment_config.length > 0 && (
-                      <div className="text-xs text-white/40 mt-2">
+                      <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-2">
                         Equipment: {config.equipment_config.map((eq: any) => eq.nickname || eq.equipment).join(', ')}
                       </div>
                     )}
@@ -249,7 +264,7 @@ export default function MyTasksPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditConfig(config)}
-                      className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+                      className="p-2 rounded-lg hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60"
                       title="Edit Configuration"
                     >
                       <Edit2 className="h-4 w-4" />
@@ -257,7 +272,7 @@ export default function MyTasksPage() {
                     <button
                       onClick={() => handleDeleteConfig(config.id)}
                       disabled={deletingConfigId === config.id}
-                      className="p-2 rounded-lg hover:bg-red-500/10 text-red-400 disabled:opacity-50"
+                      className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 dark:text-red-400 disabled:opacity-50"
                       title="Delete Configuration"
                     >
                       <Trash2 className="h-4 w-4" />

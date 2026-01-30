@@ -62,7 +62,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
   async function loadSuppliers() {
     const { data } = await supabase
-      .schema('stockly')
       .from('suppliers')
       .select('id, name')
       .eq('company_id', companyId)
@@ -73,7 +72,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
   async function loadStockItems() {
     const { data } = await supabase
-      .schema('stockly')
       .from('stock_items')
       .select('id, name, stock_unit')
       .eq('company_id', companyId)
@@ -119,7 +117,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
     try {
       // Create delivery
       const { data: delivery, error: deliveryError } = await supabase
-        .schema('stockly')
         .from('deliveries')
         .insert({
           company_id: companyId,
@@ -148,7 +145,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
       }));
 
       const { error: itemsError } = await supabase
-        .schema('stockly')
         .from('delivery_items')
         .insert(items);
 
@@ -158,7 +154,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
       for (const line of lines) {
         // Get current stock level
         const { data: existing } = await supabase
-          .schema('stockly')
           .from('stock_levels')
           .select('id, quantity')
           .eq('stock_item_id', line.stock_item_id)
@@ -167,13 +162,11 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
         if (existing) {
           await supabase
-            .schema('stockly')
             .from('stock_levels')
             .update({ quantity: existing.quantity + line.quantity })
             .eq('id', existing.id);
         } else {
           await supabase
-            .schema('stockly')
             .from('stock_levels')
             .insert({
               stock_item_id: line.stock_item_id,
@@ -184,7 +177,6 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
         // Record movement
         await supabase
-          .schema('stockly')
           .from('stock_movements')
           .insert({
             company_id: companyId,

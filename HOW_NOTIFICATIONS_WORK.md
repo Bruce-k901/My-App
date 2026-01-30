@@ -301,3 +301,15 @@ ORDER BY count DESC;
 3. Trigger cron manually or wait for it to run
 4. Check `notifications` table
 5. View AlertsFeed on dashboard
+
+
+
+
+
+
+
+
+
+
+
+

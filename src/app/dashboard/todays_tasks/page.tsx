@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/Button'
 import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/temperature'
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
-import { buildTaskQueryFilter, isTaskDueNow } from '@/lib/shift-utils'
 import { calculateTaskTiming } from '@/utils/taskTiming'
 
 // Daypart chronological order (for sorting)
@@ -70,7 +69,7 @@ export default function DailyChecklistPage() {
   const [showCompleted, setShowCompleted] = useState(false)
   const [showUpcoming, setShowUpcoming] = useState(false)
   const [upcomingTasks, setUpcomingTasks] = useState<ChecklistTaskWithTemplate[]>([])
-  const { siteId, companyId } = useAppContext()
+  const { siteId, companyId, selectedSiteId } = useAppContext()
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
   // Use ref to store latest fetchTodaysTasks function
@@ -87,7 +86,7 @@ export default function DailyChecklistPage() {
 
   // Define loadBreachActions first (needed by fetchTodaysTasks)
   const loadBreachActions = useCallback(async () => {
-    if (!siteId) {
+    if (!siteId || siteId === 'all') {
       setBreachActions([])
       return
     }
@@ -124,7 +123,7 @@ export default function DailyChecklistPage() {
         .gte('created_at', weekAgo.toISOString())
         .order('created_at', { ascending: false })
 
-      if (siteId) {
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId)
       }
 
@@ -206,43 +205,178 @@ export default function DailyChecklistPage() {
       
       console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
       
-      // Apply shift-based filtering
-      const shiftFilter = await buildTaskQueryFilter()
-      console.log('🕐 Shift filter applied:', shiftFilter)
-      
-      // If staff is not on shift, return empty tasks array
-      if (!shiftFilter.showAll && !shiftFilter.siteId) {
-        console.log('⏸️ Staff not on shift - no tasks to show')
+      // Get user's home site - "Today's Tasks" should only show tasks from "My Tasks" (home site tasks)
+      // NOT tasks directly from templates or active tasks
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
         return
       }
       
-      // Fetch ONLY today's tasks that are pending or in_progress
-      // Completed and missed tasks are shown in the Completed Tasks page
+      // Get user profile to find home site
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('id, app_role, home_site')
+        .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
+        .maybeSingle();
+      
+      if (!userProfile) {
+        console.warn('⚠️ User profile not found')
+        setTasks([])
+        setCompletedTasks([])
+        setLoading(false)
+        return
+      }
+      
+      // Determine which site to filter by
+      let filterSiteId: string | null = null;
+      
+      // Managers/admins: can see all sites or filter by selected site
+      const managerRoles = ['manager', 'general_manager', 'admin', 'owner'];
+      const isManager = userProfile.app_role && managerRoles.includes(userProfile.app_role.toLowerCase());
+      
+      if (isManager) {
+        // Managers/admins: filter by selectedSiteId from header dropdown if set
+        if (selectedSiteId && selectedSiteId !== 'all') {
+          filterSiteId = selectedSiteId;
+          console.log('🔍 Manager: Filtering tasks by selected site:', filterSiteId);
+        } else {
+          // Show all company tasks for managers/admins when "All Sites" is selected
+          console.log('🔍 Manager: Showing all company tasks (All Sites selected)');
+        }
+      } else {
+        // Staff: always use their home site (same as "My Tasks")
+        filterSiteId = userProfile.home_site || null;
+        if (!filterSiteId) {
+          console.warn('⚠️ Staff member has no home site assigned - no tasks to show');
+          setTasks([])
+          setCompletedTasks([])
+          setLoading(false)
+          return
+        }
+        console.log('🔍 Staff: Filtering tasks by home site:', filterSiteId);
+      }
+      
+      // First, let's check what tasks exist for debugging
+      let debugQuery = supabase
+        .from('checklist_tasks')
+        .select('id, status, due_date, site_id, site_checklist_id, template_id, task_data, custom_name, company_id')
+        .eq('company_id', companyId)
+        .eq('due_date', todayStr)
+      
+      if (filterSiteId) {
+        debugQuery = debugQuery.eq('site_id', filterSiteId)
+      }
+      
+      const { data: debugTasks } = await debugQuery
+      console.log('🔍 DEBUG: All tasks for today (any status):', {
+        count: debugTasks?.length || 0,
+        tasks: debugTasks?.map(t => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source
+        })) || []
+      })
+      
+      // Also check for tasks in a wider date range to see if they exist with different dates
+      const { data: recentTasks } = await supabase
+        .from('checklist_tasks')
+        .select('id, status, due_date, site_id, site_checklist_id, template_id, custom_name, task_data, company_id')
+        .eq('company_id', companyId)
+        .gte('due_date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Last 7 days
+        .lte('due_date', new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Next 7 days
+        .order('due_date', { ascending: true })
+        .limit(50)
+      
+      console.log('🔍 DEBUG: Recent tasks (last 7 days to next 7 days):', {
+        count: recentTasks?.length || 0,
+        today: todayStr,
+        tasks: recentTasks?.map(t => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id ? 'YES' : 'NO',
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source,
+          isToday: t.due_date === todayStr,
+          isSelectedSite: t.site_id === filterSiteId
+        })) || []
+      })
+      
+      // Show summary of tasks by date
+      const tasksByDate = (recentTasks || []).reduce((acc: Record<string, number>, task: any) => {
+        const date = task.due_date;
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      }, {});
+      
+      console.log('📅 Tasks by date:', tasksByDate);
+      
+      // Show tasks for today specifically (if any)
+      const todayTasks = (recentTasks || []).filter((t: any) => t.due_date === todayStr);
+      console.log('📋 Tasks specifically for today:', {
+        count: todayTasks.length,
+        tasks: todayTasks.map((t: any) => ({
+          id: t.id,
+          status: t.status,
+          site_id: t.site_id,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data: t.task_data
+        }))
+      });
+      
+      // Show tasks for the selected site (any date)
+      const siteTasks = (recentTasks || []).filter((t: any) => t.site_id === filterSiteId);
+      console.log('🏢 Tasks for selected site (any date):', {
+        count: siteTasks.length,
+        site_id: filterSiteId,
+        tasks: siteTasks.map((t: any) => ({
+          id: t.id,
+          status: t.status,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id ? 'YES' : 'NO',
+          template_id: t.template_id,
+          custom_name: t.custom_name,
+          task_data_type: t.task_data?.type,
+          task_data_source_type: t.task_data?.source_type,
+          task_data_source: t.task_data?.source,
+          generated_at: t.generated_at
+        }))
+      });
+      
+      console.log('⚠️ ISSUE DETECTED: All tasks are from 2026-01-20, not today (2026-01-25). The cron job may not have run since then, or is creating tasks with the wrong date.');
+      
+      // Fetch today's tasks including completed ones (needed to match with completion records)
+      // These are task instances from "My Tasks", NOT templates or active tasks
+      // Completed tasks will be filtered out from active list but used for completion record matching
       let query = supabase
         .from('checklist_tasks')
         .select('*')
         // CRITICAL: Filter by company_id first
         .eq('company_id', companyId)
-        // Only show pending and in_progress tasks
-        .in('status', ['pending', 'in_progress'])
+        // Include pending, in_progress, AND completed tasks (completed needed for completion record matching)
+        .in('status', ['pending', 'in_progress', 'completed', 'missed'])
         // Only show tasks due TODAY
         .eq('due_date', todayStr)
       
-      // Apply shift-based site filtering
-      // Managers/admins see all sites, staff only see their current site when on shift
-      if (shiftFilter.showAll) {
-        // Managers/admins: filter by siteId from context if available, otherwise show all
-        if (siteId) {
-          query = query.eq('site_id', siteId)
-        }
-      } else {
-        // Staff on shift: only show tasks for their current site
-        if (shiftFilter.siteId) {
-          query = query.eq('site_id', shiftFilter.siteId)
-        }
+      // Apply site filtering (home site for staff, selected site for managers)
+      if (filterSiteId) {
+        query = query.eq('site_id', filterSiteId)
       }
       
       const { data: allTasks, error } = await query
@@ -277,15 +411,121 @@ export default function DailyChecklistPage() {
       
       console.log('📥 Raw tasks from database:', {
         total: allTasks?.length || 0,
-        tasks: allTasks?.map(t => ({ id: t.id, status: t.status, daypart: t.daypart, flag_reason: t.flag_reason }))
+        tasks: allTasks?.map(t => ({ 
+          id: t.id, 
+          status: t.status, 
+          daypart: t.daypart, 
+          flag_reason: t.flag_reason,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id,
+          template_id: t.template_id,
+          task_data: t.task_data,
+          site_id: t.site_id
+        }))
       })
+      
+      // Role-based task type filtering
+      // CRITICAL: Only show tasks from "My Tasks" (site_checklists), NOT directly from templates
+      // Templates should never appear in "Today's Tasks" - only task instances from site_checklists
+      let filteredTasks = allTasks || [];
+      
+      if (isManager) {
+        // Managers+: Template tasks + Expiry tasks + Monitoring tasks
+        // Template tasks MUST have site_checklist_id (from "My Tasks" configurations)
+        // Expiry tasks have source_type in (sop_review, ra_review, certificate_expiry, policy_expiry, document_expiry)
+        // Monitoring tasks have flag_reason = 'monitoring'
+        // Note: Approval tasks (stock counts, rotas, payroll) don't appear here - they go to calendar/msgly
+        
+        filteredTasks = (allTasks || []).filter((task: any) => {
+          // PRIORITY 1: Include monitoring tasks FIRST (they may have template_id but no site_checklist_id)
+          // Monitoring tasks are special - they're created from out-of-range temperatures and should always appear
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task:', task.id, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 2: Include expiry tasks (they may also have template_id but no site_checklist_id)
+          const sourceType = task.task_data?.source_type || task.task_data?.type;
+const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate', 'ppm_overdue', 'ppm_no_schedule', 'callout_followup', 'ppm_followup'];
+          if (expiryTypes.includes(sourceType)) {
+            console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 3: CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // These are templates that were incorrectly created as tasks
+          // BUT: Only exclude if they're NOT monitoring or expiry tasks (already handled above)
+          if (task.template_id && !task.site_checklist_id) {
+            console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              template_id: task.template_id,
+              site_checklist_id: task.site_checklist_id
+            });
+            return false;
+          }
+          
+          // PRIORITY 4: Include template tasks (have site_checklist_id - from "My Tasks")
+          if (task.site_checklist_id) {
+            console.log('✅ Including template task from "My Tasks":', task.id, task.custom_name || task.template?.name);
+            return true;
+          }
+          
+          // Log excluded tasks for debugging
+          if (task.task_data) {
+            console.log('❌ Excluding task (not template, monitoring, or expiry):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              flag_reason: task.flag_reason,
+              source_type: task.task_data?.source_type,
+              type: task.task_data?.type,
+              task_data: task.task_data
+            });
+          }
+          
+          // Exclude everything else (approval tasks, etc.)
+          return false;
+        });
+        
+        console.log(`Manager view: ${filteredTasks.length} template + monitoring + expiry tasks (filtered from ${allTasks?.length || 0} total)`);
+      } else {
+        // Staff: Template tasks (have site_checklist_id - from "My Tasks") + Monitoring tasks
+        filteredTasks = (allTasks || []).filter((task: any) => {
+          // PRIORITY 1: Include monitoring tasks FIRST (they may have template_id but no site_checklist_id)
+          // Monitoring tasks are special - they're created from out-of-range temperatures and should always appear
+          if (task.flag_reason === 'monitoring') {
+            console.log('✅ Including monitoring task for staff:', task.id, task.custom_name);
+            return true;
+          }
+          
+          // PRIORITY 2: CRITICAL: Exclude tasks that have template_id but no site_checklist_id
+          // These are templates that were incorrectly created as tasks
+          // BUT: Only exclude if they're NOT monitoring tasks (already handled above)
+          if (task.template_id && !task.site_checklist_id) {
+            console.log('❌ Excluding template without site_checklist_id (should not appear in Today\'s Tasks):', {
+              id: task.id,
+              custom_name: task.custom_name,
+              template_id: task.template_id,
+              site_checklist_id: task.site_checklist_id
+            });
+            return false;
+          }
+          
+          // PRIORITY 3: Include template tasks (have site_checklist_id - from "My Tasks")
+          if (task.site_checklist_id !== null) {
+            return true;
+          }
+          return false;
+        });
+        console.log(`Staff view: ${filteredTasks.length} template + monitoring tasks (filtered from ${allTasks?.length || 0} total)`);
+      }
       
       // Fetch templates separately if we have tasks
       // CRITICAL: Load ALL required fields needed by TaskCompletionModal
       // This includes: evidence_types, asset_id, repeatable_field_name, instructions, etc.
       let templatesMap: Record<string, any> = {}
-      if (allTasks && allTasks.length > 0) {
-        const templateIds = [...new Set(allTasks.map((t: any) => t.template_id).filter(Boolean))]
+      if (filteredTasks && filteredTasks.length > 0) {
+        const templateIds = [...new Set(filteredTasks.map((t: any) => t.template_id).filter(Boolean))]
         if (templateIds.length > 0) {
           const { data: templates, error: templatesError } = await supabase
             .from('task_templates')
@@ -332,7 +572,8 @@ export default function DailyChecklistPage() {
       
       // Filter tasks - only show tasks due TODAY
       // Database query already filters by due_date = today, but double-check here
-      const data = (allTasks || []).filter(task => {
+      // Use filteredTasks (already filtered by role) instead of allTasks
+      const data = (filteredTasks || []).filter((task: any) => {
         // CRITICAL: Only show tasks due TODAY (database should already filter, but verify)
         if (task.due_date !== todayStr) {
           console.log(`❌ Task ${task.id} filtered: due_date ${task.due_date} !== today ${todayStr}`)
@@ -344,26 +585,44 @@ export default function DailyChecklistPage() {
           return false
         }
         
-        // For staff on shift: only show tasks that are due now (within 2 hours window)
-        // Managers/admins see all tasks regardless of timing
-        if (!shiftFilter.showAll && shiftFilter.siteId) {
-          const isDueNow = isTaskDueNow(task)
-          if (!isDueNow) {
-            console.log(`⏰ Task ${task.id} filtered: not due now (due_time: ${task.due_time})`)
-            return false
-          }
-        }
-        
+        // No timing filter - show all tasks from "My Tasks" that are due today
+        // "Today's Tasks" is simply "My Tasks" filtered by due_date = today
         return true
       })
       
       if (!data || data.length === 0) {
-        console.log('⚠️ No tasks found for today')
+        console.log('⚠️ No tasks found for today after filtering', {
+          todayStr,
+          filteredTasksCount: filteredTasks?.length || 0,
+          allTasksCount: allTasks?.length || 0,
+          filterSiteId,
+          isManager,
+          sampleTask: allTasks?.[0] ? {
+            id: allTasks[0].id,
+            status: allTasks[0].status,
+            due_date: allTasks[0].due_date,
+            site_checklist_id: allTasks[0].site_checklist_id,
+            task_data_source_type: allTasks[0].task_data?.source_type,
+            site_id: allTasks[0].site_id
+          } : null
+        })
         setTasks([])
         setCompletedTasks([])
         setLoading(false)
         return
       }
+      
+      console.log('✅ Tasks after date filtering:', {
+        count: data.length,
+        tasks: data.map(t => ({
+          id: t.id,
+          name: t.custom_name || t.template?.name,
+          status: t.status,
+          due_date: t.due_date,
+          site_checklist_id: t.site_checklist_id,
+          task_data_source_type: t.task_data?.source_type
+        }))
+      })
       
       // Fetch full template details for remaining tasks that weren't in the initial fetch
       // (This handles edge cases where new templates were added between fetches)
@@ -396,24 +655,171 @@ export default function DailyChecklistPage() {
       }
       
       // Fetch assets to check which ones are archived
-      // Collect all unique asset_ids from templates
-      const assetIds = [...new Set(
+      // Collect all unique asset_ids from:
+      // 1. Templates (template.asset_id)
+      // 2. Task data (task_data.asset_id - for PPM tasks, etc.)
+      console.log('🔍 Checking for archived assets in tasks...')
+      const assetIdsFromTemplates = [...new Set(
         Object.values(templatesMap)
           .map((t: any) => t.asset_id)
           .filter((id): id is string => id !== null && id !== undefined)
       )]
       
+      // Extract asset IDs from task_data - handle multiple formats:
+      // 1. Direct asset_id (for PPM tasks, etc.)
+      // 2. From ppm_id (look up asset from ppm_schedule)
+      // 3. From callout_id (look up asset from callouts)
+      const assetIdsFromTaskData = new Set<string>()
+      const ppmIdsToLookup = new Set<string>()
+      const calloutIdsToLookup = new Set<string>()
+      
+      data.forEach((task: any) => {
+        const taskData = task.task_data || {}
+        
+        // Helper to safely extract string ID from potentially object value
+        const extractId = (value: any): string | null => {
+          if (!value) return null
+          if (typeof value === 'string') return value
+          if (typeof value === 'object' && value.id) return String(value.id)
+          return String(value)
+        }
+        
+        // Direct asset_id (if present)
+        const assetId = extractId(taskData.asset_id)
+        if (assetId) {
+          assetIdsFromTaskData.add(assetId)
+        }
+        
+        // PPM overdue tasks: source_id IS the asset_id directly
+        // (From TaskCompletionModal: "PPM tasks use source_id (not asset_id) - this is the asset ID")
+        const ppmSourceId = extractId(taskData.source_id)
+        if (taskData.source_type === 'ppm_overdue' && ppmSourceId) {
+          assetIdsFromTaskData.add(ppmSourceId)
+        }
+        
+        // PPM service tasks (from cron job): look up asset from ppm_schedule using ppm_id
+        if (taskData.source_type === 'ppm_service') {
+          const ppmId = extractId(taskData.ppm_id)
+          if (ppmId) {
+            ppmIdsToLookup.add(ppmId)
+          }
+          if (ppmSourceId) {
+            ppmIdsToLookup.add(ppmSourceId)
+          }
+        }
+        
+        // Callout follow-up tasks: source_id is the callout_id, need to look up asset from callouts
+        if (taskData.source_type === 'callout_followup' && ppmSourceId) {
+          calloutIdsToLookup.add(ppmSourceId)
+        }
+        
+        // Also check for direct callout_id (if present)
+        const calloutId = extractId(taskData.callout_id)
+        if (calloutId) {
+          calloutIdsToLookup.add(calloutId)
+        }
+      })
+      
+      // Log detailed task_data for PPM and callout tasks
+      const ppmTasks = data.filter((t: any) => t.task_data?.source_type === 'ppm_service' || t.custom_name?.includes('PPM Required'))
+      const calloutTasks = data.filter((t: any) => t.task_data?.callout_id || t.custom_name?.includes('Follow up'))
+      
+      console.log('📋 Asset IDs found (initial):', {
+        fromTemplates: assetIdsFromTemplates.length,
+        fromTaskDataDirect: assetIdsFromTaskData.size,
+        ppmIdsToLookup: ppmIdsToLookup.size,
+        calloutIdsToLookup: calloutIdsToLookup.size,
+        ppmTasksCount: ppmTasks.length,
+        calloutTasksCount: calloutTasks.length,
+        samplePPMTasks: ppmTasks.slice(0, 2).map((t: any) => ({
+          id: t.id,
+          name: t.custom_name,
+          source_type: t.task_data?.source_type,
+          task_data_asset_id: t.task_data?.asset_id,
+          task_data_ppm_id: t.task_data?.ppm_id,
+          full_task_data: JSON.stringify(t.task_data, null, 2)
+        })),
+        sampleCalloutTasks: calloutTasks.slice(0, 2).map((t: any) => ({
+          id: t.id,
+          name: t.custom_name,
+          task_data_callout_id: t.task_data?.callout_id,
+          full_task_data: JSON.stringify(t.task_data, null, 2)
+        })),
+        allTaskDataKeys: [...new Set(data.flatMap((t: any) => Object.keys(t.task_data || {})))]
+      })
+      
+      // Look up asset_ids from ppm_schedule for PPM tasks
+      if (ppmIdsToLookup.size > 0) {
+        console.log(`🔍 Looking up ${ppmIdsToLookup.size} PPM schedules to find asset_ids...`)
+        const { data: ppmSchedules, error: ppmError } = await supabase
+          .from('ppm_schedule')
+          .select('id, asset_id')
+          .in('id', Array.from(ppmIdsToLookup))
+        
+        if (ppmError) {
+          console.error('❌ Error fetching PPM schedules:', ppmError)
+        } else if (ppmSchedules) {
+          ppmSchedules.forEach((ppm: any) => {
+            if (ppm.asset_id) {
+              assetIdsFromTaskData.add(ppm.asset_id)
+              console.log(`✅ Found asset_id ${ppm.asset_id} for PPM ${ppm.id}`)
+            }
+          })
+        }
+      }
+      
+      // Look up asset_ids from callouts for callout follow-up tasks
+      // Also create a mapping of callout_id -> asset_id for filtering (needed for filter step)
+      const calloutToAssetMap = new Map<string, string>()
+      
+      if (calloutIdsToLookup.size > 0) {
+        console.log(`🔍 Looking up ${calloutIdsToLookup.size} callouts to find asset_ids...`)
+        const { data: callouts, error: calloutError } = await supabase
+          .from('callouts')
+          .select('id, asset_id')
+          .in('id', Array.from(calloutIdsToLookup))
+        
+        if (calloutError) {
+          console.error('❌ Error fetching callouts:', calloutError)
+        } else if (callouts) {
+          callouts.forEach((callout: any) => {
+            if (callout.asset_id) {
+              assetIdsFromTaskData.add(callout.asset_id)
+              calloutToAssetMap.set(callout.id, callout.asset_id)
+              console.log(`✅ Found asset_id ${callout.asset_id} for callout ${callout.id}`)
+            }
+          })
+        }
+      }
+      
+      const allAssetIdsFromTaskData = Array.from(assetIdsFromTaskData)
+      
+      console.log('📋 Asset IDs found (after lookups):', {
+        fromTemplates: assetIdsFromTemplates.length,
+        fromTaskData: allAssetIdsFromTaskData.length,
+        templateIds: assetIdsFromTemplates,
+        taskDataIds: allAssetIdsFromTaskData
+      })
+      
+      // Combine all asset IDs and ensure they're all strings (not objects)
+      const allAssetIds = [...new Set([
+        ...assetIdsFromTemplates.map(id => typeof id === 'string' ? id : String(id)),
+        ...allAssetIdsFromTaskData.map(id => typeof id === 'string' ? id : String(id))
+      ])].filter(id => id && id !== 'null' && id !== 'undefined' && id !== '[object Object]')
+      
       // Fetch assets to check archived status
       let archivedAssetIds = new Set<string>()
-      if (assetIds.length > 0) {
+      if (allAssetIds.length > 0) {
+        console.log(`🔍 Fetching ${allAssetIds.length} assets to check archived status...`, { assetIds: allAssetIds })
         const { data: assets, error: assetsError } = await supabase
           .from('assets')
           .select('id, archived, name')
-          .in('id', assetIds)
+          .in('id', allAssetIds)
         
         if (assetsError) {
           console.error('❌ Error fetching assets for archived check:', assetsError)
         } else if (assets) {
+          console.log(`✅ Fetched ${assets.length} assets for archived check`)
           // Build set of archived asset IDs
           assets.forEach(asset => {
             if (asset.archived) {
@@ -421,7 +827,12 @@ export default function DailyChecklistPage() {
               console.log(`🏷️ Asset "${asset.name}" (${asset.id}) is archived - will exclude related tasks`)
             }
           })
+          console.log(`📊 Archived assets found: ${archivedAssetIds.size} out of ${assets.length} total`)
+        } else {
+          console.warn('⚠️ No assets returned from query (might be RLS issue)')
         }
+      } else {
+        console.log('ℹ️ No asset IDs found in tasks - skipping archived asset check')
       }
       
       // Map tasks with templates
@@ -434,6 +845,13 @@ export default function DailyChecklistPage() {
       // NOTE: We're temporarily showing orphaned tasks with a warning instead of hiding them
       // This helps diagnose why templates aren't being found (RLS issue, missing templates, etc.)
       // Also filter out tasks linked to archived assets
+      console.log('🔍 Starting task filtering with archived assets:', {
+        archivedAssetIdsCount: archivedAssetIds.size,
+        archivedAssetIds: Array.from(archivedAssetIds),
+        calloutToAssetMapSize: calloutToAssetMap.size,
+        calloutToAssetMapEntries: Array.from(calloutToAssetMap.entries())
+      })
+      
       const validTasks = tasksWithTemplates.filter(task => {
         if (task.template_id && !task.template) {
           console.warn(`⚠️ Task has template_id but template not found: task_id=${task.id}, template_id=${task.template_id}`);
@@ -442,10 +860,41 @@ export default function DailyChecklistPage() {
           return true; // Include orphaned tasks for now
         }
         
-        // Exclude tasks linked to archived assets
+        // Exclude tasks linked to archived assets (check multiple sources)
+        // 1. Template asset_id
         if (task.template?.asset_id && archivedAssetIds.has(task.template.asset_id)) {
-          console.log(`🚫 Task ${task.id} filtered: linked to archived asset ${task.template.asset_id}`)
+          console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.template.asset_id} (from template)`)
           return false
+        }
+        
+        // 2. task_data.asset_id (direct asset reference)
+        if (task.task_data?.asset_id && archivedAssetIds.has(task.task_data.asset_id)) {
+          console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.task_data.asset_id} (from task_data.asset_id)`)
+          return false
+        }
+        
+        // 3. task_data.source_id for PPM overdue tasks (source_id IS the asset_id for ppm_overdue)
+        if (task.task_data?.source_type === 'ppm_overdue' && task.task_data?.source_id) {
+          const isArchived = archivedAssetIds.has(task.task_data.source_id)
+          console.log(`🔍 Checking PPM overdue task ${task.id}: source_id=${task.task_data.source_id}, isArchived=${isArchived}, archivedAssetIds has it: ${archivedAssetIds.has(task.task_data.source_id)}`)
+          if (isArchived) {
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${task.task_data.source_id} (from task_data.source_id for ppm_overdue)`)
+            return false
+          }
+        }
+        
+        // 4. For callout follow-up tasks, check if the callout's asset is archived
+        // Use the calloutToAssetMap to get the asset_id from the callout_id (source_id)
+        if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
+          const calloutAssetId = calloutToAssetMap.get(task.task_data.source_id)
+          if (calloutAssetId) {
+            const isArchived = archivedAssetIds.has(calloutAssetId)
+            console.log(`🔍 Checking callout task ${task.id}: callout_id=${task.task_data.source_id}, asset_id=${calloutAssetId}, isArchived=${isArchived}`)
+            if (isArchived) {
+              console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${task.task_data.source_id})`)
+              return false
+            }
+          }
         }
         
         return true;
@@ -761,8 +1210,41 @@ export default function DailyChecklistPage() {
       
       // CRITICAL: For tasks with multiple dayparts, we need to check completion per instance
       // Fetch ALL completion records (not just for completed tasks) to check per-daypart completion
+      // ALSO: Fetch completion records for tasks that might not be in tasksWithProfiles (e.g., completed tasks from different dates)
       const allTaskIds = tasksWithProfiles.map(t => t.id)
       let allCompletionRecords: any[] = []
+      
+      // Also fetch completion records for today's date even if task isn't in tasksWithProfiles
+      // This ensures we can display completed tasks with their completion records
+      let todayCompletionQuery = supabase
+        .from('task_completion_records')
+        .select('*')
+        .eq('company_id', companyId)
+        .gte('completed_at', `${todayStr}T00:00:00`)
+        .lt('completed_at', `${todayStr}T23:59:59`)
+        .order('completed_at', { ascending: false })
+      
+      if (filterSiteId) {
+        todayCompletionQuery = todayCompletionQuery.eq('site_id', filterSiteId)
+      }
+      
+      const { data: todayCompletionRecords } = await todayCompletionQuery
+      if (todayCompletionRecords && todayCompletionRecords.length > 0) {
+        console.log('📝 Found completion records for today:', todayCompletionRecords.length, todayCompletionRecords.map(r => ({ task_id: r.task_id, completed_at: r.completed_at })))
+        // Add these to allCompletionRecords immediately (they're for today, so we want them)
+        allCompletionRecords.push(...todayCompletionRecords)
+        
+        // Also add task IDs to fetch tasks if they're not in tasksWithProfiles
+        const existingTaskIds = new Set(allTaskIds)
+        todayCompletionRecords.forEach(record => {
+          if (!existingTaskIds.has(record.task_id)) {
+            // Task not in tasksWithProfiles - fetch it separately
+            allTaskIds.push(record.task_id)
+            existingTaskIds.add(record.task_id)
+            console.log('📥 Will fetch missing task:', record.task_id)
+          }
+        })
+      }
       
       if (allTaskIds.length > 0) {
         console.log('🔍 Fetching completion records for task IDs:', allTaskIds.slice(0, 5), '... (total:', allTaskIds.length, ')', 'siteId:', siteId)
@@ -797,8 +1279,15 @@ export default function DailyChecklistPage() {
           }
           
           if (filteredRecords.length > 0) {
-            allCompletionRecords = filteredRecords
-            console.log('📝 Completion records details:', filteredRecords.map(r => ({
+            // Merge with today's completion records (deduplicate by id)
+            const existingRecordIds = new Set(allCompletionRecords.map(r => r.id))
+            filteredRecords.forEach(record => {
+              if (!existingRecordIds.has(record.id)) {
+                allCompletionRecords.push(record)
+                existingRecordIds.add(record.id)
+              }
+            })
+            console.log('📝 Completion records details (merged):', allCompletionRecords.map(r => ({
               id: r.id,
               task_id: r.task_id,
               completed_at: r.completed_at,
@@ -906,13 +1395,19 @@ export default function DailyChecklistPage() {
           return true
         }
         
-        // Check 3: For single-daypart tasks (or tasks without daypart data), 
+        // Check 3: For single-daypart tasks (or tasks without daypart data),
         // skip if task has ANY completion record
         // This only applies to non-multi-daypart tasks
         if (tasksWithCompletionRecords.has(task.id)) {
           return false
         }
-        
+
+        // Check 4: Skip if task is completed with completion_notes (new flow)
+        // These tasks don't have task_completion_records but have data in completion_notes
+        if (task.status === 'completed' && task.completion_notes) {
+          return false
+        }
+
         return true
       })
       
@@ -924,18 +1419,81 @@ export default function DailyChecklistPage() {
       
       // Create one entry per completion record (not just one per task)
       // This ensures all completion records are shown, even for multi-daypart tasks
-      const completedTasksWithRecords = allCompletionRecords
-        .map(record => {
-          const task = tasksWithProfiles.find(t => t.id === record.task_id)
-          if (!task) return null
-          
-          return {
+      // CRITICAL: If task isn't in tasksWithProfiles, fetch it separately
+      const completedTasksWithRecords: any[] = []
+      const tasksToFetch: string[] = []
+      
+      for (const record of allCompletionRecords) {
+        let task = tasksWithProfiles.find(t => t.id === record.task_id)
+        
+        if (!task) {
+          // Task not in tasksWithProfiles - need to fetch it
+          tasksToFetch.push(record.task_id)
+        } else {
+          // Task found - add it with completion record
+          completedTasksWithRecords.push({
             ...task,
             completion_record: record
-          }
-        })
-        .filter((task): task is ChecklistTaskWithTemplate & { completion_record: any } => task !== null)
+          })
+        }
+      }
       
+      // Fetch missing tasks if any
+      if (tasksToFetch.length > 0) {
+        console.log('📥 Fetching missing tasks for completion records:', tasksToFetch.length, tasksToFetch)
+        const { data: missingTasks } = await supabase
+          .from('checklist_tasks')
+          .select('*, template: task_templates(*)')
+          .in('id', tasksToFetch)
+        
+        if (missingTasks) {
+          // Get templates for missing tasks
+          const missingTemplateIds = missingTasks.map(t => t.template_id).filter(Boolean)
+          const templatesMap = new Map()
+          if (missingTemplateIds.length > 0) {
+            const { data: templates } = await supabase
+              .from('task_templates')
+              .select('*')
+              .in('id', missingTemplateIds)
+            
+            if (templates) {
+              templates.forEach(t => templatesMap.set(t.id, t))
+            }
+          }
+          
+          // Match missing tasks with their completion records
+          missingTasks.forEach(task => {
+            const record = allCompletionRecords.find(r => r.task_id === task.id)
+            if (record) {
+              completedTasksWithRecords.push({
+                ...task,
+                template: templatesMap.get(task.template_id) || null,
+                completion_record: record
+              })
+            }
+          })
+        }
+      }
+
+      // CRITICAL: Also include tasks with status='completed' and completion_notes
+      // These are tasks completed via the new flow that don't have task_completion_records
+      const completedTaskIds = new Set(completedTasksWithRecords.map(t => t.id))
+      const tasksWithCompletionNotes = tasksWithProfiles.filter(task =>
+        task.status === 'completed' &&
+        task.completion_notes &&
+        !completedTaskIds.has(task.id)
+      )
+
+      if (tasksWithCompletionNotes.length > 0) {
+        console.log('📋 Adding tasks with completion_notes (new flow):', tasksWithCompletionNotes.length)
+        tasksWithCompletionNotes.forEach(task => {
+          completedTasksWithRecords.push({
+            ...task,
+            completion_record: null // No completion_record, data is in completion_notes
+          })
+        })
+      }
+
       // Sort both active and completed tasks chronologically
       // PRIMARY: Sort by due_time (actual time is the anchor) - this ensures tasks are sorted
       //          by their actual scheduled time, NOT by daypart order
@@ -1144,10 +1702,10 @@ export default function DailyChecklistPage() {
       {/* Simple Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
           {currentDate}
         </p>
         </div>
@@ -1157,7 +1715,7 @@ export default function DailyChecklistPage() {
             fetchTodaysTasks()
             fetchUpcomingTasks()
           }}
-          className="px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/50 text-magenta-400 rounded-lg transition-colors text-sm"
+          className="px-4 py-2 bg-[#EC4899]/10 dark:bg-magenta-500/20 hover:bg-[#EC4899]/20 dark:hover:bg-magenta-500/30 border border-[#EC4899]/50 dark:border-magenta-500/50 text-[#EC4899] dark:text-magenta-400 rounded-lg transition-colors text-sm"
         >
           🔄 Refresh Tasks
         </button>
@@ -1172,16 +1730,16 @@ export default function DailyChecklistPage() {
               }}
               className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
                 showUpcoming
-                  ? 'bg-orange-500/10 border-orange-500/50 text-orange-400'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                  ? 'bg-orange-500/10 border-orange-500/50 text-orange-600 dark:text-orange-400'
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
               }`}
             >
-              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-400' : 'text-white/60'}`} />
+              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-600 dark:text-orange-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
               {showUpcoming ? 'Hide' : 'Show'} Upcoming
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showUpcoming 
-                  ? 'bg-orange-500/20 text-orange-300' 
-                  : 'bg-white/10 text-white/80'
+                  ? 'bg-orange-500/20 text-orange-700 dark:text-orange-300' 
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
               }`}>
                 {upcomingTasks.length}
               </span>
@@ -1191,18 +1749,18 @@ export default function DailyChecklistPage() {
             onClick={() => setShowCompleted(!showCompleted)}
             className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
               showCompleted
-                ? 'bg-green-500/10 border-green-500/50 text-green-400'
-                : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                ? 'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400'
+                : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
             } ${completedTasks.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={completedTasks.length === 0}
           >
-            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-400' : 'text-white/60'}`} />
+            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-600 dark:text-green-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
             {showCompleted ? 'Hide' : 'Show'} Completed
             {completedTasks.length > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showCompleted 
-                  ? 'bg-green-500/20 text-green-300' 
-                  : 'bg-white/10 text-white/80'
+                  ? 'bg-green-500/20 text-green-700 dark:text-green-300' 
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
               }`}>
                 {completedTasks.length}
               </span>
@@ -1214,37 +1772,37 @@ export default function DailyChecklistPage() {
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
-            <Clock className="w-8 h-8 text-pink-400 animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
+            <Clock className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Loading tasks...</h3>
+          <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading tasks...</h3>
         </div>
       ) : tasks.length === 0 && completedTasks.length > 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-400" />
+              <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">All done for now! 🎉</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">All done for now! 🎉</h2>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
               You've completed all your tasks for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
               Check back later for new tasks or create a template to add more.
             </p>
           </div>
         </div>
       ) : tasks.length === 0 && completedTasks.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/10 mb-6">
-              <Calendar className="w-10 h-10 text-blue-400" />
+              <Calendar className="w-10 h-10 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">No tasks for today</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">No tasks for today</h2>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
               There are no tasks scheduled for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
               Check back later or create a template to add tasks.
             </p>
           </div>
@@ -1276,7 +1834,7 @@ export default function DailyChecklistPage() {
       {/* Upcoming Callout Follow-up Tasks Section */}
       {showUpcoming && upcomingTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Upcoming Callout Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Upcoming Callout Follow-ups</h2>
           <div className="space-y-3">
             {upcomingTasks.map((task, index) => {
               // Use task.id + index for unique keys (callout follow-up tasks)
@@ -1299,7 +1857,7 @@ export default function DailyChecklistPage() {
       {/* Completed Tasks Section */}
       {showCompleted && completedTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Completed Tasks</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Completed Tasks</h2>
           <div className="space-y-3">
             {completedTasks.map((task) => {
               // Use completion_record.id as key if available, otherwise use task.id + completion_record.id
@@ -1322,35 +1880,35 @@ export default function DailyChecklistPage() {
       {/* Temperature Breach Follow-up Section */}
       {breachActions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Temperature Breach Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4">Temperature Breach Follow-ups</h2>
           <div className="space-y-3">
             {breachActions.map((action) => {
               const log = action.temperature_log
               const evaluation = log?.meta?.evaluation
               return (
-                <div key={action.id} className="border border-white/10 rounded-lg p-3 text-sm text-white/70">
+                <div key={action.id} className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/10 rounded-lg p-3 text-sm text-[rgb(var(--text-secondary))] dark:text-white/70">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="font-semibold text-white">
+                    <div className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                       {action.action_type === 'monitor' ? 'Monitor temperature' : 'Callout contractor'}
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50">
                       Created {new Date(action.created_at).toLocaleString()}
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-white/60 space-x-3">
-                    <span>Status: <span className="text-white/80">{action.status}</span></span>
+                  <div className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 space-x-3">
+                    <span>Status: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{action.status}</span></span>
                     {action.due_at && (
-                      <span>Due: <span className="text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
+                      <span>Due: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
                     )}
                     {log?.recorded_at && (
-                      <span>Reading taken: <span className="text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
+                      <span>Reading taken: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
                     )}
                   </div>
                   {evaluation?.reason && (
-                    <p className="mt-2 text-xs text-white/60">Reason: {evaluation.reason}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Reason: {evaluation.reason}</p>
                   )}
                   {action.notes && (
-                    <p className="mt-2 text-xs text-white/60">Notes: {action.notes}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Notes: {action.notes}</p>
                   )}
                 </div>
               )

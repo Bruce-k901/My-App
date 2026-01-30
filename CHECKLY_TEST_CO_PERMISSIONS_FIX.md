@@ -150,3 +150,12 @@ WHERE id = 'USER_ID_HERE';
 2. Verify users have `company_id` set correctly
 3. Test all functionality
 4. Report any remaining issues
+
+
+
+
+
+
+
+
+

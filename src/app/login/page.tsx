@@ -50,6 +50,8 @@ export default function LoginPage() {
       console.log("✅ Sign in successful, waiting for session cookie...");
 
       // Wait for session cookie to be readable before navigating to avoid ping-pong
+      // Main login page always goes to main dashboard (/dashboard)
+      // Customer login is separate at /customer/login
       for (let i = 0; i < 10; i++) {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
@@ -71,7 +73,7 @@ export default function LoginPage() {
     <AuthLayout>
       <GlassCard className="mx-4 sm:mx-6 md:mx-auto">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-white">
-          Log in to Checkly
+          Log in to Opsly
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">

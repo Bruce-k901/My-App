@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, AlertCircle, X, ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Plus, Search, Edit2, Trash2, Package, AlertCircle, X, ArrowLeft, Upload, Download } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -10,6 +10,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import StockItemModal from './StockItemModal';
 
 interface StockItem {
   id: string;
@@ -29,6 +30,8 @@ interface StockItem {
   is_purchasable: boolean;
   costing_method: 'weighted_avg' | 'fifo' | 'last_price';
   current_cost?: number;
+  pack_size?: number;
+  pack_cost?: number;
   is_active: boolean;
   category?: {
     id: string;
@@ -66,10 +69,26 @@ const UK_ALLERGENS = [
 ];
 
 const COSTING_METHODS = [
-  { label: 'Weighted Average', value: 'weighted_avg' },
-  { label: 'FIFO', value: 'fifo' },
-  { label: 'Last Price', value: 'last_price' },
+  { label: 'Weighted Average', value: 'weighted_average' },
+  { label: 'FIFO (First In, First Out)', value: 'fifo' },
+  { label: 'LIFO (Last In, First Out)', value: 'lifo' },
+  { label: 'Fixed Price', value: 'fixed' },
 ];
+
+const BASE_UNIT_OPTIONS = [
+  { value: 'g', label: 'g (grams)' },
+  { value: 'kg', label: 'kg (kilograms)' },
+  { value: 'ml', label: 'ml (milliliters)' },
+  { value: 'l', label: 'l (liters)' },
+  { value: 'each', label: 'each (units)' },
+];
+
+// Section Header Component
+const SectionHeader = ({ children }: { children: React.ReactNode }) => (
+  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-white/40 border-b border-gray-200 dark:border-white/10 pb-2 mb-4">
+    {children}
+  </div>
+);
 
 export default function StockItemsPage() {
   const { companyId } = useAppContext();
@@ -80,9 +99,9 @@ export default function StockItemsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'basic' | 'inventory' | 'allergens'>('basic');
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const [saving, setSaving] = useState(false);
+  const csvInputRef = useRef<HTMLInputElement | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -99,6 +118,8 @@ export default function StockItemsPage() {
     is_purchasable: true,
     costing_method: 'weighted_avg' as 'weighted_avg' | 'fifo' | 'last_price',
     current_cost: '',
+    pack_size: '',
+    pack_cost: '',
     allergens: [] as string[],
   });
 
@@ -433,7 +454,6 @@ export default function StockItemsPage() {
 
   function openAddModal() {
     setEditingItem(null);
-    setActiveTab('basic');
     setFormData({
       name: '',
       description: '',
@@ -449,6 +469,8 @@ export default function StockItemsPage() {
       is_purchasable: true,
       costing_method: 'weighted_avg',
       current_cost: '',
+      pack_size: '',
+      pack_cost: '',
       allergens: [],
     });
     setIsModalOpen(true);
@@ -456,7 +478,6 @@ export default function StockItemsPage() {
 
   function openEditModal(item: StockItem) {
     setEditingItem(item);
-    setActiveTab('basic');
     setFormData({
       name: item.name || '',
       description: item.description || '',
@@ -472,6 +493,8 @@ export default function StockItemsPage() {
       is_purchasable: item.is_purchasable ?? true,
       costing_method: item.costing_method || 'weighted_avg',
       current_cost: item.current_cost?.toString() || '',
+      pack_size: item.pack_size?.toString() || '',
+      pack_cost: item.pack_cost?.toString() || '',
       allergens: item.allergens || [],
     });
     setIsModalOpen(true);
@@ -505,6 +528,16 @@ export default function StockItemsPage() {
     try {
       setSaving(true);
 
+      // Calculate current_cost from pack_cost / pack_size if both are provided
+      let calculatedCost = null;
+      if (formData.pack_cost && formData.pack_size) {
+        const packCost = parseFloat(formData.pack_cost);
+        const packSize = parseFloat(formData.pack_size);
+        if (packCost > 0 && packSize > 0) {
+          calculatedCost = packCost / packSize;
+        }
+      }
+
       const itemData: any = {
         company_id: companyId,
         name: formData.name.trim(),
@@ -517,38 +550,63 @@ export default function StockItemsPage() {
         reorder_qty: formData.reorder_qty ? parseFloat(formData.reorder_qty) : null,
         yield_percent: formData.yield_percent || null,
         yield_notes: formData.yield_notes.trim() || null,
+        allergens: formData.allergens.length > 0 ? formData.allergens : null,
         is_prep_item: formData.is_prep_item,
         is_purchasable: formData.is_purchasable,
         costing_method: formData.costing_method,
-        current_cost: formData.current_cost ? parseFloat(formData.current_cost) : null,
-        allergens: formData.allergens.length > 0 ? formData.allergens : null,
+        pack_size: formData.pack_size ? parseFloat(formData.pack_size) : null,
+        pack_cost: formData.pack_cost ? parseFloat(formData.pack_cost) : null,
+        current_cost: calculatedCost || (formData.current_cost ? parseFloat(formData.current_cost) : null),
         is_active: true,
       };
 
       if (editingItem) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('stock_items')
           .update(itemData)
-          .eq('id', editingItem.id);
+          .eq('id', editingItem.id)
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating stock item:', error);
+          const errorMessage = error?.message || error?.error?.message || 
+            (error?.code === 'PGRST204' ? 'Database schema cache issue. Please refresh the page.' : 'Failed to update stock item');
+          toast.error(errorMessage);
+          return;
+        }
         toast.success('Stock item updated successfully');
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('stock_items')
           .insert(itemData)
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error inserting stock item:', error);
+          const errorMessage = error?.message || error?.error?.message || 
+            (error?.code === 'PGRST204' ? 'Database schema cache issue. Please refresh the page.' : 'Failed to save stock item');
+          toast.error(errorMessage);
+          return;
+        }
         toast.success('Stock item added successfully');
       }
 
       setIsModalOpen(false);
       await fetchData();
     } catch (error: any) {
-      console.error('Error saving stock item:', error);
-      toast.error(error.message || 'Failed to save stock item');
+      console.error('Error saving stock item (catch):', error);
+      // Check if error is empty object
+      const errorKeys = error && typeof error === 'object' ? Object.keys(error) : [];
+      const isEmptyObject = errorKeys.length === 0;
+      
+      if (isEmptyObject) {
+        toast.error('An unknown error occurred. Please check the console for details and try again.');
+      } else {
+        const errorMessage = error?.message || error?.error?.message || 'Failed to save stock item';
+        toast.error(errorMessage);
+      }
     } finally {
       setSaving(false);
     }
@@ -590,6 +648,267 @@ export default function StockItemsPage() {
     return matchesSearch && matchesCategory;
   });
 
+  // CSV helpers
+  const CSV_HEADERS = [
+    'name',
+    'description',
+    'sku',
+    'category',
+    'base_unit',
+    'yield_percent',
+    'yield_notes',
+    'track_stock',
+    'par_level',
+    'reorder_qty',
+    'is_prep_item',
+    'is_purchasable',
+    'costing_method',
+    'current_cost'
+  ];
+
+  const escapeCSV = (value: any): string => {
+    if (value === null || value === undefined) return '';
+    const str = String(value);
+    if (/[",\n]/.test(str)) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  };
+
+  const toCSV = (rows: StockItem[]): string => {
+    const header = CSV_HEADERS.join(',');
+    const body = rows.map((r) => {
+      const obj: any = {
+        name: r.name ?? '',
+        description: r.description ?? '',
+        sku: r.sku ?? '',
+        category: r.category?.name ?? '',
+        base_unit: r.base_unit?.abbreviation ?? '',
+        yield_percent: r.yield_percent ?? '',
+        yield_notes: r.yield_notes ?? '',
+        track_stock: r.track_stock ? 'true' : 'false',
+        par_level: r.par_level ?? '',
+        reorder_qty: r.reorder_qty ?? '',
+        allergens: (r.allergens || []).join('; '),
+        is_prep_item: r.is_prep_item ? 'true' : 'false',
+        is_purchasable: r.is_purchasable ? 'true' : 'false',
+        costing_method: r.costing_method ?? '',
+        current_cost: r.current_cost ?? ''
+      };
+      return CSV_HEADERS.map((h) => escapeCSV(obj[h])).join(',');
+    }).join('\n');
+    return header + (body ? ('\n' + body) : '');
+  };
+
+  const handleDownloadCSV = () => {
+    const csv = toCSV(filteredItems.length ? filteredItems : stockItems);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'stock_items.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const parseCSV = (text: string): { headers: string[]; rows: string[][] } => {
+    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const parseLine = (line: string): string[] => {
+      const result: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (line[i + 1] === '"') { current += '"'; i++; } else { inQuotes = false; }
+          } else { current += ch; }
+        } else {
+          if (ch === ',') { result.push(current); current = ''; }
+          else if (ch === '"') { inQuotes = true; }
+          else { current += ch; }
+        }
+      }
+      result.push(current);
+      return result;
+    };
+    const headers = parseLine(lines[0] || '').map(h => h.trim());
+    const rows = lines.slice(1).filter(l => l.trim().length > 0).map(parseLine);
+    return { headers, rows };
+  };
+
+  const normaliseArrayCell = (cell: string): string[] => {
+    if (!cell) return [];
+    return cell.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+  };
+
+  const handleUploadClick = () => csvInputRef.current?.click();
+
+  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setLoading(true);
+      const text = await file.text();
+      const { headers, rows } = parseCSV(text);
+      if (!headers.length) throw new Error('CSV has no headers');
+      
+      // Check for required columns
+      const requiredColumns = ['name', 'base_unit'];
+      const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+      if (missingColumns.length > 0) {
+        throw new Error(`Missing required columns: ${missingColumns.join(', ')}. Please use the stock_items.csv template.`);
+      }
+      
+      const headerIndex: Record<string, number> = {};
+      headers.forEach((h, i) => { headerIndex[h] = i; });
+      
+      // Build category name to ID mapping
+      const categoryMap = new Map<string, string>();
+      categories.forEach(cat => {
+        categoryMap.set(cat.name.toLowerCase(), cat.id);
+      });
+
+      // Build UOM abbreviation to ID mapping
+      const uomMap = new Map<string, string>();
+      uoms.forEach(uom => {
+        uomMap.set(uom.abbreviation.toLowerCase(), uom.id);
+      });
+
+      const prepared: any[] = [];
+      for (const row of rows) {
+        const name = row[headerIndex['name']] ?? '';
+        if (!name.trim()) continue;
+
+        const categoryName = row[headerIndex['category']] ?? '';
+        const categoryId = categoryName ? categoryMap.get(categoryName.toLowerCase()) : null;
+
+        const baseUnitAbbr = row[headerIndex['base_unit']] ?? '';
+        const baseUnitId = baseUnitAbbr ? uomMap.get(baseUnitAbbr.toLowerCase()) : null;
+        
+        if (!baseUnitId) {
+          console.warn(`Skipping row: Base unit "${baseUnitAbbr}" not found`);
+          continue;
+        }
+
+        const trackStockRaw = row[headerIndex['track_stock']] ?? '';
+        const trackStock = trackStockRaw && (
+          trackStockRaw.toLowerCase() === 'true' || 
+          trackStockRaw.toLowerCase() === 'yes' || 
+          trackStockRaw === '1'
+        );
+
+        const isPrepItemRaw = row[headerIndex['is_prep_item']] ?? '';
+        const isPrepItem = isPrepItemRaw && (
+          isPrepItemRaw.toLowerCase() === 'true' || 
+          isPrepItemRaw.toLowerCase() === 'yes' || 
+          isPrepItemRaw === '1'
+        );
+
+        const isPurchasableRaw = row[headerIndex['is_purchasable']] ?? '';
+        const isPurchasable = isPurchasableRaw && (
+          isPurchasableRaw.toLowerCase() === 'true' || 
+          isPurchasableRaw.toLowerCase() === 'yes' || 
+          isPurchasableRaw === '1'
+        ) !== false; // Default to true if not specified
+
+        const yieldPercentRaw = row[headerIndex['yield_percent']];
+        const yieldPercent = yieldPercentRaw && yieldPercentRaw.trim() !== '' ? Number(yieldPercentRaw) : 100;
+
+        const parLevelRaw = row[headerIndex['par_level']];
+        const reorderQtyRaw = row[headerIndex['reorder_qty']];
+        const currentCostRaw = row[headerIndex['current_cost']];
+        const allergensRaw = row[headerIndex['allergens']];
+        const costingMethodRaw = row[headerIndex['costing_method']] ?? 'weighted_avg';
+
+        const itemData: any = {
+          company_id: companyId,
+          name: name.trim(),
+          description: row[headerIndex['description']]?.trim() || null,
+          sku: row[headerIndex['sku']]?.trim() || null,
+          category_id: categoryId || null,
+          base_unit_id: baseUnitId,
+          yield_percent: yieldPercent,
+          yield_notes: row[headerIndex['yield_notes']]?.trim() || null,
+          track_stock: trackStock,
+          par_level: parLevelRaw && parLevelRaw.trim() !== '' ? Number(parLevelRaw) : null,
+          reorder_qty: reorderQtyRaw && reorderQtyRaw.trim() !== '' ? Number(reorderQtyRaw) : null,
+          allergens: normaliseArrayCell(allergensRaw).length > 0 ? normaliseArrayCell(allergensRaw) : null,
+          is_prep_item: isPrepItem,
+          is_purchasable: isPurchasable,
+          costing_method: costingMethodRaw,
+          current_cost: currentCostRaw && currentCostRaw.trim() !== '' ? Number(currentCostRaw) : null,
+          is_active: true,
+        };
+
+        prepared.push(itemData);
+      }
+      if (!prepared.length) { 
+        toast.error('No valid rows to import. Check that base_unit values match existing units.');
+        return;
+      }
+
+      // Check for existing items to avoid unique constraint violations
+      const existingNames = new Set(stockItems.map(item => item.name.toLowerCase()));
+      const duplicates = prepared.filter(item => existingNames.has(item.name.toLowerCase()));
+      const newItems = prepared.filter(item => !existingNames.has(item.name.toLowerCase()));
+
+      if (duplicates.length > 0) {
+        const duplicateNames = duplicates.map(d => d.name).join(', ');
+        const shouldContinue = confirm(
+          `${duplicates.length} item(s) already exist and will be skipped:\n${duplicateNames}\n\nContinue importing ${newItems.length} new item(s)?`
+        );
+        if (!shouldContinue) {
+          setLoading(false);
+          if (csvInputRef.current) csvInputRef.current.value = '';
+          return;
+        }
+      }
+
+      if (newItems.length === 0) {
+        toast.error('All items already exist. No new items to import.');
+        setLoading(false);
+        if (csvInputRef.current) csvInputRef.current.value = '';
+        return;
+      }
+
+      const chunkSize = 500;
+      let imported = 0;
+      for (let i = 0; i < newItems.length; i += chunkSize) {
+        const chunk = newItems.slice(i, i + chunkSize);
+        const { data, error } = await supabase
+          .from('stock_items')
+          .insert(chunk)
+          .select('*');
+        if (error) {
+          console.error('CSV import error details:', error);
+          throw new Error(error.message || `Failed to import: ${JSON.stringify(error)}`);
+        }
+        imported += chunk.length;
+      }
+      toast.success(`Import complete: Imported ${imported} new item(s)${duplicates.length > 0 ? `, skipped ${duplicates.length} duplicate(s)` : ''}`);
+      await fetchData();
+    } catch (err: any) {
+      console.error('CSV import error:', err);
+      let errorMessage = err?.message || err?.error?.message || 'Failed to import CSV';
+      
+      // Provide helpful error message for schema cache issues
+      if (err?.code === 'PGRST204' || errorMessage.includes('schema cache')) {
+        errorMessage = 'Database schema cache issue. The column may not exist or PostgREST schema cache needs refreshing. Please contact support or try again later.';
+      }
+      
+      toast.error(errorMessage);
+      
+      // Log more details for debugging
+      if (err?.details) console.error('Error details:', err.details);
+      if (err?.hint) console.error('Error hint:', err.hint);
+      if (err?.code) console.error('Error code:', err.code);
+    } finally {
+      setLoading(false);
+      if (csvInputRef.current) csvInputRef.current.value = '';
+    }
+  };
+
   const itemsBelowPar = filteredItems.filter(item => 
     item.track_stock && 
     item.par_level !== null && 
@@ -598,45 +917,69 @@ export default function StockItemsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading stock items...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600 dark:text-white">Loading stock items...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Stock Items</h1>
-              <p className="text-slate-400 text-sm">Master list of all ingredients and products</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+                <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                Stock Items
+              </h1>
+              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">Master list of all ingredients and products</p>
             </div>
           </div>
-          <Button
-            onClick={openAddModal}
-            variant="secondary"
-            className="flex items-center gap-2"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
           >
-            <Plus size={18} />
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
+          <button
+            onClick={handleUploadClick}
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+          >
+            <Upload className="w-4 h-4" />
+            Import CSV
+          </button>
+          <input
+            ref={csvInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleUploadChange}
+            className="hidden"
+          />
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+          >
+            <Plus className="w-5 h-5" />
             Add Stock Item
-          </Button>
+          </button>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+      {/* Filters */}
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={18} />
             <Input
               type="text"
               placeholder="Search by name, SKU, or description..."
@@ -657,120 +1000,124 @@ export default function StockItemsPage() {
             />
           </div>
         </div>
+      </div>
 
-        {/* Stock Items List */}
-        {filteredItems.length === 0 ? (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-12 text-center">
-            <Package className="mx-auto text-slate-400 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {searchTerm || categoryFilter !== 'all' ? 'No items found' : 'No stock items yet'}
-            </h3>
-            <p className="text-slate-400 mb-6">
-              {searchTerm || categoryFilter !== 'all'
-                ? 'Try adjusting your filters'
-                : 'Get started by adding your first stock item'}
-            </p>
-            {!searchTerm && categoryFilter === 'all' && (
-              <Button onClick={openAddModal} variant="secondary">
-                <Plus size={18} className="mr-2" />
-                Add Stock Item
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl overflow-hidden">
+      {/* Stock Items List */}
+      {filteredItems.length === 0 ? (
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Package className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-4" />
+          <h3 className="text-gray-900 dark:text-white font-medium mb-2">
+            {searchTerm || categoryFilter !== 'all' ? 'No items found' : 'No stock items yet'}
+          </h3>
+          <p className="text-gray-600 dark:text-white/60 text-sm mb-4">
+            {searchTerm || categoryFilter !== 'all'
+              ? 'Try adjusting your filters'
+              : 'Get started by adding your first stock item'}
+          </p>
+          {!searchTerm && categoryFilter === 'all' && (
+            <button
+              onClick={openAddModal}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+            >
+              <Plus className="w-4 h-4" />
+              Add Stock Item
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/[0.05] border-b border-neutral-800">
+                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Category</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Unit</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Cost</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Par Level</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Allergens</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Unit</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Cost</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Par Level</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Allergens</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-800">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
                   {filteredItems.map((item) => (
                     <tr
                       key={item.id}
-                      className={`hover:bg-white/[0.02] transition-colors ${
+                      className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${
                         item.track_stock && item.par_level && item.par_level > 0
-                          ? 'bg-red-500/5' 
+                          ? 'bg-red-50 dark:bg-red-500/5' 
                           : ''
                       }`}
                     >
-                      <td className="px-4 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div>
-                            <div className="text-white font-medium">{item.name}</div>
+                            <div className="text-gray-900 dark:text-white font-medium">{item.name}</div>
                             {item.sku && (
-                              <div className="text-xs text-slate-400">SKU: {item.sku}</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40">SKU: {item.sku}</div>
                             )}
                           </div>
                           {item.is_prep_item && (
-                            <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                            <span className="px-2 py-0.5 text-xs bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-500/40">
                               Prep
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-slate-300 text-sm">
+                      <td className="px-4 py-4 text-gray-700 dark:text-white/80 text-sm">
                         {item.category?.name || '—'}
                       </td>
-                      <td className="px-4 py-4 text-slate-300 text-sm">
+                      <td className="px-4 py-4 text-gray-700 dark:text-white/80 text-sm">
                         {item.base_unit?.abbreviation || '—'}
                       </td>
-                      <td className="px-4 py-4 text-slate-300 text-sm">
+                      <td className="px-4 py-4 text-gray-700 dark:text-white/80 text-sm">
                         {formatCurrency(item.current_cost)}
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-300 text-sm">
+                          <span className="text-gray-700 dark:text-white/80 text-sm">
                             {item.par_level !== null && item.par_level !== undefined
                               ? item.par_level
                               : '—'}
                           </span>
                           {item.track_stock && item.par_level && item.par_level > 0 && (
-                            <AlertCircle className="text-red-400" size={14} />
+                            <AlertCircle className="text-red-600 dark:text-red-400" size={14} />
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
                           {item.allergens && item.allergens.length > 0 ? (
                             item.allergens.slice(0, 3).map((allergen) => (
                               <span
                                 key={allergen}
-                                className="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-300 rounded"
+                                className="px-2 py-0.5 text-xs bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded border border-amber-200 dark:border-amber-500/40"
                               >
                                 {allergen}
                               </span>
                             ))
                           ) : (
-                            <span className="text-slate-500 text-xs">—</span>
+                            <span className="text-gray-500 dark:text-white/40 text-xs">—</span>
                           )}
                           {item.allergens && item.allergens.length > 3 && (
-                            <span className="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-300 rounded">
+                            <span className="px-2 py-0.5 text-xs bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded border border-amber-200 dark:border-amber-500/40">
                               +{item.allergens.length - 3}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEditModal(item)}
-                            className="p-2 text-slate-400 hover:text-[#EC4899] transition-colors"
+                            className="p-2 text-gray-500 dark:text-white/40 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                             aria-label="Edit item"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(item)}
-                            className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                            className="p-2 text-gray-500 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             aria-label="Delete item"
                           >
                             <Trash2 size={16} />
@@ -786,262 +1133,15 @@ export default function StockItemsPage() {
         )}
 
         {/* Add/Edit Modal */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-white">
-                {editingItem ? 'Edit Stock Item' : 'Add Stock Item'}
-              </DialogTitle>
-            </DialogHeader>
-
-            {/* Tabs */}
-            <div className="flex gap-2 border-b border-neutral-800 mb-4">
-              <button
-                type="button"
-                onClick={() => setActiveTab('basic')}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
-                  activeTab === 'basic'
-                    ? 'text-[#EC4899] border-b-2 border-[#EC4899]'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Basic
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('inventory')}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
-                  activeTab === 'inventory'
-                    ? 'text-[#EC4899] border-b-2 border-[#EC4899]'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Inventory
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('allergens')}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
-                  activeTab === 'allergens'
-                    ? 'text-[#EC4899] border-b-2 border-[#EC4899]'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Allergens
-              </button>
-            </div>
-
-            <div className="space-y-4 mt-4">
-              {/* Basic Tab */}
-              {activeTab === 'basic' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">Item Name *</label>
-                      <Input
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g., Chicken Breast"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">SKU</label>
-                      <Input
-                        value={formData.sku}
-                        onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                        placeholder="Stock keeping unit"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-slate-300 mb-1">Description</label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Item description"
-                      className="w-full h-20 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 resize-none"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">Category</label>
-                      <Select
-                        value={formData.category_id}
-                        onValueChange={(val) => setFormData({ ...formData, category_id: val })}
-                        options={categories.map(cat => ({ label: cat.name, value: cat.id }))}
-                        placeholder="Select category"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">Base Unit *</label>
-                      <Select
-                        value={formData.base_unit_id}
-                        onValueChange={(val) => setFormData({ ...formData, base_unit_id: val })}
-                        options={uoms.map(uom => ({ 
-                          label: `${uom.name} (${uom.abbreviation})`, 
-                          value: uom.id 
-                        }))}
-                        placeholder="Select unit"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.is_prep_item}
-                        onChange={(e) => setFormData({ ...formData, is_prep_item: e.target.checked })}
-                        className="w-4 h-4 rounded bg-white/[0.06] border-white/[0.12] text-[#EC4899] focus:ring-[#EC4899]"
-                      />
-                      <span className="text-sm text-slate-300">Made in-house (prep item)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.is_purchasable}
-                        onChange={(e) => setFormData({ ...formData, is_purchasable: e.target.checked })}
-                        className="w-4 h-4 rounded bg-white/[0.06] border-white/[0.12] text-[#EC4899] focus:ring-[#EC4899]"
-                      />
-                      <span className="text-sm text-slate-300">Purchasable from suppliers</span>
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              {/* Inventory Tab */}
-              {activeTab === 'inventory' && (
-                <div className="space-y-4 border-t border-neutral-800 pt-4">
-                  <h3 className="text-sm font-semibold text-white mb-3">Inventory Settings</h3>
-                  
-                  <label className="flex items-center gap-2 cursor-pointer mb-4">
-                    <input
-                      type="checkbox"
-                      checked={formData.track_stock}
-                      onChange={(e) => setFormData({ ...formData, track_stock: e.target.checked })}
-                      className="w-4 h-4 rounded bg-white/[0.06] border-white/[0.12] text-[#EC4899] focus:ring-[#EC4899]"
-                    />
-                    <span className="text-sm text-slate-300">Track stock levels</span>
-                  </label>
-
-                  {formData.track_stock && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm text-slate-300 mb-1">Par Level</label>
-                        <Input
-                          type="number"
-                          step="0.001"
-                          value={formData.par_level}
-                          onChange={(e) => setFormData({ ...formData, par_level: e.target.value })}
-                          placeholder="Minimum stock level"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm text-slate-300 mb-1">Reorder Quantity</label>
-                        <Input
-                          type="number"
-                          step="0.001"
-                          value={formData.reorder_qty}
-                          onChange={(e) => setFormData({ ...formData, reorder_qty: e.target.value })}
-                          placeholder="Order this much when reordering"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">Yield %</label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        value={formData.yield_percent}
-                        onChange={(e) => setFormData({ ...formData, yield_percent: parseFloat(e.target.value) || 100 })}
-                        placeholder="100"
-                      />
-                      <p className="text-xs text-slate-400 mt-1">e.g., 85 for meat after trimming</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm text-slate-300 mb-1">Costing Method</label>
-                      <Select
-                        value={formData.costing_method}
-                        onValueChange={(val: any) => setFormData({ ...formData, costing_method: val })}
-                        options={COSTING_METHODS}
-                        placeholder="Select method"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-slate-300 mb-1">Yield Notes</label>
-                    <Input
-                      value={formData.yield_notes}
-                      onChange={(e) => setFormData({ ...formData, yield_notes: e.target.value })}
-                      placeholder="Notes about yield calculation"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-slate-300 mb-1">Current Cost (per base unit)</label>
-                    <Input
-                      type="number"
-                      step="0.0001"
-                      value={formData.current_cost}
-                      onChange={(e) => setFormData({ ...formData, current_cost: e.target.value })}
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Allergens Tab */}
-              {activeTab === 'allergens' && (
-                <div className="space-y-4 border-t border-neutral-800 pt-4">
-                  <h3 className="text-sm font-semibold text-white mb-3">UK Allergens</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {UK_ALLERGENS.map((allergen) => (
-                      <label
-                        key={allergen}
-                        className="flex items-center gap-2 p-2 rounded bg-white/[0.06] border border-neutral-800 hover:border-neutral-700 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.allergens.includes(allergen)}
-                          onChange={() => toggleAllergen(allergen)}
-                          className="w-4 h-4 rounded bg-white/[0.06] border-white/[0.12] text-[#EC4899] focus:ring-[#EC4899]"
-                        />
-                        <span className="text-sm text-slate-300 capitalize">{allergen}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-neutral-800">
-                <Button
-                  onClick={handleSave}
-                  disabled={saving || !formData.name.trim() || !formData.base_unit_id}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  {saving ? 'Saving...' : editingItem ? 'Update Item' : 'Add Item'}
-                </Button>
-                <Button
-                  onClick={() => setIsModalOpen(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <StockItemModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={fetchData}
+          editingItem={editingItem}
+          companyId={companyId || ''}
+          categories={categories}
+          uoms={uoms}
+        />
       </div>
     </div>
   );

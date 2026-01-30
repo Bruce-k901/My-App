@@ -8,7 +8,7 @@ import { useAppContext } from "@/context/AppContext";
 
 export interface AttendanceLog {
   id: string;
-  user_id: string;
+  profile_id: string;
   company_id: string;
   site_id: string | null;
   clock_in_time: string;
@@ -53,7 +53,7 @@ export async function clockIn(
     const { data: existing } = await supabase
       .from("staff_attendance")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("profile_id", user.id)
       .eq("shift_status", "on_shift")
       .is("clock_out_time", null)
       .order("clock_in_time", { ascending: false })
@@ -69,7 +69,7 @@ export async function clockIn(
 
     // Create attendance log
     const insertData = {
-      user_id: user.id,
+      profile_id: user.id,
       company_id: profile.company_id,
       site_id: siteId,
       shift_status: "on_shift" as const,
@@ -119,7 +119,7 @@ export async function clockOut(
     const { data: activeLog, error: findError } = await supabase
       .from("staff_attendance")
       .select("id, clock_in_time, site_id")
-      .eq("user_id", user.id)
+      .eq("profile_id", user.id)
       .eq("shift_status", "on_shift")
       .is("clock_out_time", null)
       .order("clock_in_time", { ascending: false })
@@ -141,7 +141,7 @@ export async function clockOut(
       const { data: allLogs } = await supabase
         .from("staff_attendance")
         .select("id, clock_in_time, clock_out_time, site_id")
-        .eq("user_id", user.id)
+        .eq("profile_id", user.id)
         .order("clock_in_time", { ascending: false })
         .limit(5);
 
@@ -191,7 +191,7 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
     let query = supabase
       .from("staff_attendance")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("profile_id", user.id)
       .eq("shift_status", "on_shift")
       .is("clock_out_time", null)
       .order("clock_in_time", { ascending: false })
@@ -241,7 +241,7 @@ export async function getCurrentAttendance(): Promise<AttendanceLog | null> {
     const { data, error } = await supabase
       .from("staff_attendance")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("profile_id", user.id)
       .eq("shift_status", "on_shift")
       .is("clock_out_time", null)
       .order("clock_in_time", { ascending: false })

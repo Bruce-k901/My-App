@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import { ModuleReferences } from '@/lib/module-references';
+import { StockItemSelector } from '@/components/stockly/StockItemSelector';
+import { toast } from 'sonner';
 import { 
   Trash2, 
-  Search, 
   Plus, 
   Loader2,
   Check,
@@ -30,85 +33,171 @@ interface WasteLine {
   total_value: number;
   reason: string;
   notes: string;
+  current_stock?: number; // Current stock level
+  stock_warning?: boolean; // True if quantity > current stock
 }
 
 const WASTE_REASONS = [
   { value: 'expired', label: 'Expired', icon: '📅' },
   { value: 'damaged', label: 'Damaged', icon: '💔' },
-  { value: 'spoiled', label: 'Spoiled', icon: '🤢' },
+  { value: 'quality', label: 'Quality/Spoiled', icon: '🤢' },
   { value: 'spillage', label: 'Spillage', icon: '💧' },
+  { value: 'overproduction', label: 'Overproduction', icon: '📦' },
+  { value: 'temperature_breach', label: 'Temperature Breach', icon: '🌡️' },
+  { value: 'pest_damage', label: 'Pest Damage', icon: '🐛' },
   { value: 'theft', label: 'Theft/Loss', icon: '🚨' },
+  { value: 'prep_waste', label: 'Prep Waste', icon: '🔪' },
+  { value: 'customer_return', label: 'Customer Return', icon: '↩️' },
   { value: 'other', label: 'Other', icon: '📝' },
 ];
+
+// Valid waste reasons according to database constraint
+const VALID_WASTE_REASONS = new Set([
+  'expired', 'damaged', 'spillage', 'overproduction', 
+  'quality', 'customer_return', 'temperature_breach', 
+  'pest_damage', 'theft', 'prep_waste', 'other'
+]);
+
+// Normalize old/invalid reason values to valid ones
+function normalizeWasteReason(reason: string): string {
+  // Map old/invalid values to valid ones
+  if (reason === 'spoiled') return 'quality';
+  if (VALID_WASTE_REASONS.has(reason)) return reason;
+  return 'other'; // Default fallback
+}
 
 interface QuickWastePanelProps {
   onComplete: () => void;
   onCancel: () => void;
+  taskId?: string; // Optional taskId for linking waste to tasks
 }
 
-export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePanelProps) {
-  const { companyId, siteId, userId } = useAppContext();
+export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickWastePanelProps) {
+  const { companyId, siteId, userId, profile } = useAppContext();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   
-  const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [lines, setLines] = useState<WasteLine[]>([]);
   const [wastageDate, setWastageDate] = useState(new Date().toISOString().split('T')[0]);
   
   const [showItemSearch, setShowItemSearch] = useState(false);
-  const [itemSearch, setItemSearch] = useState('');
 
-  useEffect(() => {
-    if (companyId) {
-      loadStockItems();
+  async function getStockItemDetails(stockItemId: string): Promise<StockItem | null> {
+    if (!companyId) return null;
+
+    try {
+      // Get stock item basic info
+      const { data: item, error: itemError } = await supabase
+        .from('stock_items')
+        .select('id, name, stock_unit')
+        .eq('id', stockItemId)
+        .eq('company_id', companyId)
+        .maybeSingle();
+
+      if (itemError) throw itemError;
+      if (!item) return null;
+
+      // Get stock level - filter by site_id only if it's not null
+      let stockLevelQuery = supabase
+        .from('stock_levels')
+        .select('quantity')
+        .eq('stock_item_id', stockItemId);
+      
+      if (siteId) {
+        stockLevelQuery = stockLevelQuery.eq('site_id', siteId);
+      }
+      
+      const { data: stockLevel } = await stockLevelQuery.maybeSingle();
+
+      // Get product variant price (preferred or first available)
+      // Use unit_cost or unit_price (actual columns in the table)
+      let price = 0;
+      try {
+        const { data: variants, error: variantError } = await supabase
+          .from('product_variants')
+          .select('unit_cost, unit_price, is_preferred')
+          .eq('stock_item_id', stockItemId)
+          .eq('is_active', true)
+          .order('is_preferred', { ascending: false })
+          .limit(1);
+
+        // Use unit_cost or unit_price
+        if (!variantError && variants && variants.length > 0) {
+          price = variants[0]?.unit_cost || variants[0]?.unit_price || 0;
+        }
+      } catch (error) {
+        // If product_variants table doesn't exist or isn't accessible, default to 0
+        console.warn('Could not fetch product variant price:', error);
+        price = 0;
+      }
+
+      return {
+        id: item.id,
+        name: item.name,
+        stock_unit: item.stock_unit,
+        current_quantity: stockLevel?.quantity || 0,
+        unit_cost: price
+      };
+    } catch (error) {
+      console.error('Error fetching stock item details:', error);
+      return null;
     }
-  }, [companyId]);
-
-  async function loadStockItems() {
-    // Load items with current stock levels and costs
-    const { data } = await supabase
-      .schema('stockly')
-      .from('stock_items')
-      .select(`
-        id, name, stock_unit,
-        stock_levels(quantity),
-        product_variants(unit_price)
-      `)
-      .eq('company_id', companyId)
-      .eq('is_active', true)
-      .order('name');
-    
-    const items = (data || []).map(item => ({
-      id: item.id,
-      name: item.name,
-      stock_unit: item.stock_unit,
-      current_quantity: item.stock_levels?.[0]?.quantity || 0,
-      unit_cost: item.product_variants?.[0]?.unit_price || 0
-    }));
-    
-    setStockItems(items);
   }
 
-  function addLine(item: StockItem) {
-    const newLine: WasteLine = {
-      stock_item_id: item.id,
-      name: item.name,
-      quantity: 1,
-      unit: item.stock_unit,
-      unit_cost: item.unit_cost || 0,
-      total_value: item.unit_cost || 0,
-      reason: 'spoiled',
-      notes: ''
-    };
-    setLines([...lines, newLine]);
+  async function handleItemSelect(stockItemId: string, stockItem: any) {
+    // Get full stock item details with current stock and cost
+    const itemDetails = await getStockItemDetails(stockItemId);
+    
+    if (!itemDetails) {
+      // Fallback to provided stockItem data
+      const newLine: WasteLine = {
+        stock_item_id: stockItemId,
+        name: stockItem.name || 'Unknown Item',
+        quantity: 1,
+        unit: stockItem.stock_unit || 'unit',
+        unit_cost: stockItem.unit_cost || 0,
+        total_value: stockItem.unit_cost || 0,
+        reason: 'quality', // Changed from 'spoiled' to 'quality' (matches DB constraint)
+        notes: '',
+        current_stock: 0,
+        stock_warning: false
+      };
+      setLines([...lines, newLine]);
+    } else {
+      const currentStock = itemDetails.current_quantity || 0;
+      const newLine: WasteLine = {
+        stock_item_id: itemDetails.id,
+        name: itemDetails.name,
+        quantity: 1,
+        unit: itemDetails.stock_unit,
+        unit_cost: itemDetails.unit_cost || 0,
+        total_value: itemDetails.unit_cost || 0,
+        reason: 'quality', // Changed from 'spoiled' to 'quality' (matches DB constraint)
+        notes: '',
+        current_stock: currentStock,
+        stock_warning: 1 > currentStock // Warn if trying to waste more than available
+      };
+      setLines([...lines, newLine]);
+    }
+    
     setShowItemSearch(false);
-    setItemSearch('');
   }
 
   function updateLine(index: number, updates: Partial<WasteLine>) {
     const updated = [...lines];
     updated[index] = { ...updated[index], ...updates };
+    
+    // Normalize reason if it's being updated
+    if (updates.reason !== undefined) {
+      updated[index].reason = normalizeWasteReason(updates.reason);
+    }
+    
     // Recalculate total
     updated[index].total_value = updated[index].quantity * updated[index].unit_cost;
+    // Update stock warning if quantity changes
+    if (updates.quantity !== undefined && updated[index].current_stock !== undefined) {
+      updated[index].stock_warning = updated[index].quantity > updated[index].current_stock!;
+    }
     setLines(updated);
   }
 
@@ -124,28 +213,37 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
 
     try {
       // Group lines by reason to create waste logs
-      const linesByReason = lines.reduce((acc, line) => {
-        if (!acc[line.reason]) {
-          acc[line.reason] = [];
+      // Normalize all reasons first to ensure they're valid
+      const normalizedLines = lines.map(line => ({
+        ...line,
+        reason: normalizeWasteReason(line.reason)
+      }));
+      
+      const linesByReason = normalizedLines.reduce((acc, line) => {
+        const normalizedReason = normalizeWasteReason(line.reason);
+        if (!acc[normalizedReason]) {
+          acc[normalizedReason] = [];
         }
-        acc[line.reason].push(line);
+        acc[normalizedReason].push(line);
         return acc;
-      }, {} as Record<string, typeof lines>);
+      }, {} as Record<string, typeof normalizedLines>);
 
       // Create a waste log for each reason
       for (const [reason, reasonLines] of Object.entries(linesByReason)) {
+        // Normalize reason to ensure it's valid for database constraint
+        const normalizedReason = normalizeWasteReason(reason);
+        
         // Calculate total cost for this reason
         const totalCost = reasonLines.reduce((sum, line) => sum + line.total_value, 0);
 
-        // Create waste log
+        // Create waste log (site_id is now nullable)
         const { data: wasteLog, error: logError } = await supabase
-          .schema('stockly')
           .from('waste_logs')
           .insert({
             company_id: companyId,
-            site_id: siteId,
+            site_id: siteId || null, // Explicitly set to null if not provided
             waste_date: wastageDate,
-            waste_reason: reason,
+            waste_reason: normalizedReason, // Use normalized reason
             total_cost: totalCost,
             recorded_by: userId,
             notes: reasonLines.map(l => l.notes).filter(Boolean).join('; ') || null
@@ -155,10 +253,34 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
 
         if (logError) throw logError;
 
+        // Link waste to task using module_references (if taskId exists)
+        if (wasteLog && taskId && companyId) {
+          try {
+            await ModuleReferences.linkEntities(
+              {
+                source_module: 'checkly',
+                source_table: 'checklist_tasks',
+                source_id: taskId,
+                target_module: 'stockly',
+                target_table: 'waste_logs',
+                target_id: wasteLog.id,
+                link_type: 'generated_waste',
+                metadata: {
+                  cost: totalCost,
+                },
+              },
+              companyId,
+              profile?.id || null
+            );
+          } catch (linkError) {
+            console.error('Error linking waste to task:', linkError);
+            // Don't throw - waste log was created successfully, linking is optional
+          }
+        }
+
         // Create waste log lines
         for (const line of reasonLines) {
           await supabase
-            .schema('stockly')
             .from('waste_log_lines')
             .insert({
               waste_log_id: wasteLog.id,
@@ -170,53 +292,79 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
               notes: line.notes || null
             });
 
-          // Update stock level
-          const { data: existing } = await supabase
-            .schema('stockly')
+          // Update stock level - only filter by site_id if it's not null
+          let stockLevelQuery = supabase
             .from('stock_levels')
             .select('id, quantity')
-            .eq('stock_item_id', line.stock_item_id)
-            .eq('site_id', siteId)
-            .single();
+            .eq('stock_item_id', line.stock_item_id);
+          
+          if (siteId) {
+            stockLevelQuery = stockLevelQuery.eq('site_id', siteId);
+          }
+          
+          const { data: existing } = await stockLevelQuery.maybeSingle();
 
           if (existing) {
             await supabase
-              .schema('stockly')
               .from('stock_levels')
               .update({ quantity: Math.max(0, existing.quantity - line.quantity) })
               .eq('id', existing.id);
+          } else if (siteId) {
+            // Create stock level entry if it doesn't exist (shouldn't happen, but handle it)
+            await supabase
+              .from('stock_levels')
+              .insert({
+                company_id: companyId,
+                site_id: siteId,
+                stock_item_id: line.stock_item_id,
+                quantity: Math.max(0, -line.quantity) // Negative if wasting more than available
+              });
           }
 
-          // Record movement
-          await supabase
-            .schema('stockly')
-            .from('stock_movements')
-            .insert({
-              company_id: companyId,
-              stock_item_id: line.stock_item_id,
-              movement_type: 'waste',
-              quantity: -line.quantity,
-              unit_cost: line.unit_cost,
-              reference_type: 'waste_log',
-              reference_id: wasteLog.id,
-              notes: `${line.reason}: ${line.notes || 'No notes'}`
-            });
+          // Record movement (use ref_type and ref_id, not reference_type/reference_id)
+          try {
+            const { error: movementError } = await supabase
+              .from('stock_movements')
+              .insert({
+                company_id: companyId,
+                stock_item_id: line.stock_item_id,
+                movement_type: 'waste',
+                quantity: -line.quantity,
+                unit_cost: line.unit_cost,
+                ref_type: 'waste_log',
+                ref_id: wasteLog.id,
+                notes: `${line.reason}: ${line.notes || 'No notes'}`
+              });
+            
+            if (movementError) {
+              console.error('Error recording stock movement:', movementError);
+              // Don't throw - waste log was created successfully, movement is optional
+            }
+          } catch (error) {
+            console.error('Error recording stock movement:', error);
+            // Don't throw - waste log was created successfully, movement is optional
+          }
         }
       }
 
+      // Show success message with link to view waste records
+      const totalWasteValue = lines.reduce((sum, line) => sum + line.total_value, 0);
+      toast.success(`Waste recorded successfully! Total: £${totalWasteValue.toFixed(2)}`, {
+        action: {
+          label: 'View Records',
+          onClick: () => router.push('/dashboard/stockly/waste')
+        }
+      });
+      
       onComplete();
     } catch (error) {
       console.error('Error saving wastage:', error);
-      alert('Failed to save wastage');
+      toast.error('Failed to save wastage. Please try again.');
     } finally {
       setSaving(false);
     }
   }
 
-  const filteredItems = stockItems.filter(item =>
-    item.name.toLowerCase().includes(itemSearch.toLowerCase()) &&
-    !lines.some(l => l.stock_item_id === item.id)
-  );
 
   return (
     <div className="flex flex-col h-full">
@@ -259,9 +407,18 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
           ) : (
             <div className="space-y-3">
               {lines.map((line, idx) => (
-                <div key={idx} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <div key={idx} className={`bg-white/[0.03] border rounded-lg p-3 ${
+                  line.stock_warning ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.06]'
+                }`}>
                   <div className="flex items-start justify-between mb-2">
-                    <p className="text-white font-medium">{line.name}</p>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">{line.name}</p>
+                      {line.current_stock !== undefined && (
+                        <p className="text-xs text-white/50 mt-0.5">
+                          Available: {line.current_stock.toFixed(2)} {line.unit}
+                        </p>
+                      )}
+                    </div>
                     <button
                       onClick={() => removeLine(idx)}
                       className="p-1 text-white/40 hover:text-red-400"
@@ -270,15 +427,25 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
                     </button>
                   </div>
                   
+                  {line.stock_warning && (
+                    <div className="mb-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-xs text-red-400 flex items-center gap-2">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>Waste quantity exceeds available stock</span>
+                    </div>
+                  )}
+                  
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     <div>
                       <label className="text-xs text-white/40">Quantity ({line.unit})</label>
                       <input
                         type="number"
                         step="0.01"
+                        min="0"
                         value={line.quantity}
                         onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-sm"
+                        className={`w-full px-2 py-1 bg-white/5 border rounded text-white text-sm ${
+                          line.stock_warning ? 'border-red-500/50' : 'border-white/10'
+                        }`}
                       />
                     </div>
                     <div>
@@ -361,41 +528,46 @@ export default function QuickWastePanel({ onComplete, onCancel }: QuickWastePane
 
       {/* Item Search Modal */}
       {showItemSearch && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
-          <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
-            <div className="p-4 border-b border-white/10 flex items-center gap-3">
-              <Search className="w-5 h-5 text-white/40" />
-              <input
-                type="text"
-                value={itemSearch}
-                onChange={(e) => setItemSearch(e.target.value)}
-                placeholder="Search stock items..."
-                autoFocus
-                className="flex-1 bg-transparent text-white placeholder:text-white/40 focus:outline-none"
-              />
-              <button onClick={() => setShowItemSearch(false)} className="text-white/40 hover:text-white">
+        <div 
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]"
+          onClick={(e) => {
+            // Close modal when clicking backdrop
+            if (e.target === e.currentTarget) {
+              setShowItemSearch(false);
+            }
+          }}
+        >
+          <div 
+            className="bg-[#1a1a2e] border border-white/20 rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Select Item from Libraries</h3>
+                <p className="text-sm text-white/60 mt-1">Search across all libraries or existing stock items</p>
+              </div>
+              <button 
+                onClick={() => setShowItemSearch(false)} 
+                className="text-white/40 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+                aria-label="Close"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="overflow-y-auto flex-1 p-2">
-              {filteredItems.slice(0, 20).map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => addLine(item)}
-                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
-                >
-                  <div>
-                    <span className="text-white">{item.name}</span>
-                    <span className="text-white/40 text-xs ml-2">
-                      {item.current_quantity} in stock
-                    </span>
-                  </div>
-                  <span className="text-white/40 text-sm">£{item.unit_cost?.toFixed(2)}/{item.stock_unit}</span>
-                </button>
-              ))}
-              {filteredItems.length === 0 && (
-                <p className="p-4 text-center text-white/40">No items found</p>
-              )}
+            <div className="overflow-y-auto flex-1 p-6 min-h-[500px]">
+              <div className="mb-4">
+                <p className="text-sm text-white/60 mb-2">
+                  Search existing stock items or create new ones from libraries
+                </p>
+              </div>
+              <StockItemSelector
+                onSelect={handleItemSelect}
+                allowCreateFromLibrary={true}
+                filterPurchasable={false}
+                selectedItems={lines.map(l => l.stock_item_id)}
+                className="w-full"
+                defaultMode="stock"
+              />
             </div>
           </div>
         </div>

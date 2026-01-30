@@ -1,573 +1,1090 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle2, Search, Check } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useAppContext } from '@/context/AppContext';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
+import { 
+  ArrowLeft, 
+  Printer, 
+  Download, 
+  FileText, 
+  Loader2,
+  CheckCircle,
+  Lock,
+  AlertCircle,
+  Edit,
+  Package,
+  Box,
+  Coffee,
+  Trash2
+} from 'lucide-react';
+import { StockCountWithDetails, StockCountItem, LibraryType } from '@/lib/types/stockly';
+import { generateCountSheetPDF, downloadPDF, openPDFInNewTab } from '@/lib/utils/pdf-generator';
+import CountDataEntry from '@/components/stockly/stock-counts/CountDataEntry';
+import VarianceReport from '@/components/stockly/stock-counts/VarianceReport';
+import FinalizeModal from '@/components/stockly/stock-counts/FinalizeModal';
+import LockModal from '@/components/stockly/stock-counts/LockModal';
+import Link from 'next/link';
+import React from 'react';
+import { useAppContext } from '@/context/AppContext';
+import { hasReviewManagers, getCurrentUserId } from '@/lib/stock-counts';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
-
-interface StorageArea {
-  id: string;
-  name: string;
-  area_type?: string;
-}
-
-interface StockItem {
-  id: string;
-  name: string;
-  base_unit?: { code: string; name: string };
-  current_cost?: number;
-}
-
-interface StockCountLine {
-  id: string;
-  stock_count_section_id: string;
-  stock_item_id: string;
-  storage_area_id: string;
-  expected_quantity: number;
-  expected_value: number;
-  counted_quantity?: number;
-  counted_value?: number;
-  variance_quantity: number;
-  variance_value: number;
-  variance_percent: number;
-  is_counted: boolean;
-  needs_recount: boolean;
-  notes?: string;
-  stock_item?: StockItem;
-}
-
-interface StockCountSection {
-  id: string;
-  stock_count_id: string;
-  storage_area_id: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  assigned_to?: string;
-  started_at?: string;
-  completed_at?: string;
-  item_count: number;
-  counted_count: number;
-  storage_area?: StorageArea;
-  lines?: StockCountLine[];
-}
-
-interface StockCount {
-  id: string;
-  company_id: string;
-  site_id: string;
-  count_number: string;
-  count_date: string;
-  count_type: string;
-  status: string;
-  total_items: number;
-  counted_items: number;
-  variance_count: number;
-  variance_value: number;
-  sections?: StockCountSection[];
-}
-
-const AREA_ICONS: Record<string, string> = {
-  chilled: '🧊',
-  frozen: '❄️',
-  dry: '📦',
-  ambient: '🌡️',
-  bar: '🍷',
-  cellar: '🍾',
-};
 
 export default function StockCountDetailPage() {
-  const router = useRouter();
   const params = useParams();
-  const countId = params.id as string;
-  const { companyId, siteId, userId } = useAppContext();
-
-  const [stockCount, setStockCount] = useState<StockCount | null>(null);
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
+  const { companyId } = useAppContext();
+  const [count, setCount] = useState<StockCountWithDetails | null>(null);
+  const [items, setItems] = useState<StockCountItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'print' | 'enter' | 'review'>('print');
+  const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+  const [showLockModal, setShowLockModal] = useState(false);
+  const [hasReviewers, setHasReviewers] = useState(false);
+  const [submittingForReview, setSubmittingForReview] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
-    if (countId && companyId) {
-      fetchStockCount();
+    if (params.id) {
+      fetchCountDetails();
     }
-  }, [countId, companyId]);
+  }, [params.id]);
 
-  async function fetchStockCount() {
+  useEffect(() => {
+    if (companyId) {
+      checkForReviewers();
+    }
+  }, [companyId]);
+
+  const checkForReviewers = async () => {
+    if (!companyId) return;
+    const hasReview = await hasReviewManagers(companyId);
+    setHasReviewers(hasReview);
+  };
+
+  const handleSubmitForReview = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      toast.error('Unable to identify current user');
+      return;
+    }
+
+    setSubmittingForReview(true);
     try {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from('stock_counts')
-        .select(`
-          *,
-          sections:stock_count_sections(
-            *,
-            storage_area:storage_areas(id, name, area_type),
-            lines:stock_count_lines(
-              *,
-              stock_item:stock_items(
-                id, name,
-                base_unit:uom!base_unit_id(code, name),
-                current_cost
-              )
-            )
-          )
-        `)
-        .eq('id', countId)
-        .single();
-
-      if (error) throw error;
-      setStockCount(data as StockCount);
-
-      // Auto-select first pending/in_progress section
-      if (data?.sections && data.sections.length > 0) {
-        const activeSection = data.sections.find(
-          (s: StockCountSection) => s.status === 'pending' || s.status === 'in_progress'
-        );
-        if (activeSection) {
-          setSelectedSectionId(activeSection.id);
-        } else if (data.sections[0]) {
-          setSelectedSectionId(data.sections[0].id);
-        }
-      }
-    } catch (error: any) {
-      console.error('Error fetching stock count:', error);
-      toast.error('Failed to load stock count');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateCountLine(lineId: string, quantity: number) {
-    try {
-      setSaving(true);
-
-      // Get line with stock item cost
-      const { data: line, error: lineError } = await supabase
-        .from('stock_count_lines')
-        .select('*, stock_item:stock_items(current_cost)')
-        .eq('id', lineId)
-        .single();
-
-      if (lineError) throw lineError;
-
-      const cost = (line.stock_item as any)?.current_cost || 0;
-      const countedValue = quantity * cost;
-      const varianceQty = quantity - line.expected_quantity;
-      const varianceVal = countedValue - line.expected_value;
-      const variancePct = line.expected_quantity > 0
-        ? (varianceQty / line.expected_quantity) * 100
-        : 0;
-
-      const { error: updateError } = await supabase
-        .from('stock_count_lines')
-        .update({
-          counted_quantity: quantity,
-          counted_value: countedValue,
-          variance_quantity: varianceQty,
-          variance_value: varianceVal,
-          variance_percent: variancePct,
-          is_counted: true,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', lineId);
-
-      if (updateError) throw updateError;
-
-      // Update section progress
-      await updateSectionProgress(line.stock_count_section_id);
-
-      // Refresh data
-      await fetchStockCount();
-    } catch (error: any) {
-      console.error('Error updating count line:', error);
-      toast.error('Failed to update count');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function updateSectionProgress(sectionId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('stock_count_lines')
-        .select('id', { count: 'exact', head: true })
-        .eq('stock_count_section_id', sectionId)
-        .eq('is_counted', true);
-
-      if (error) throw error;
-
-      await supabase
-        .from('stock_count_sections')
-        .update({
-          counted_count: data?.length || 0,
-          status: 'in_progress',
-          started_at: new Date().toISOString(),
-        })
-        .eq('id', sectionId);
-    } catch (error: any) {
-      console.error('Error updating section progress:', error);
-    }
-  }
-
-  async function completeSection(sectionId: string) {
-    try {
-      setSaving(true);
-
-      await supabase
-        .from('stock_count_sections')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', sectionId);
-
-      // Check if all sections complete
-      await checkAllSectionsComplete();
-
-      toast.success('Section completed');
-      await fetchStockCount();
-    } catch (error: any) {
-      console.error('Error completing section:', error);
-      toast.error('Failed to complete section');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function checkAllSectionsComplete() {
-    if (!stockCount) return;
-
-    const { data: sections, error } = await supabase
-      .from('stock_count_sections')
-      .select('id, status')
-      .eq('stock_count_id', stockCount.id);
-
-    if (error) throw error;
-
-    const allComplete = sections?.every(s => s.status === 'completed') || false;
-
-    if (allComplete) {
-      // Calculate totals
-      const { data: lines, error: linesError } = await supabase
-        .from('stock_count_lines')
-        .select('variance_quantity, variance_value')
-        .in('stock_count_section_id', sections?.map(s => s.id) || []);
-
-      if (linesError) throw linesError;
-
-      const varianceCount = lines?.filter(l => l.variance_quantity !== 0).length || 0;
-      const varianceValue = lines?.reduce((sum, l) => sum + (l.variance_value || 0), 0) || 0;
-      const countedItems = lines?.length || 0;
-
-      await supabase
+      const { error } = await supabase
         .from('stock_counts')
         .update({
           status: 'pending_review',
-          counted_items: countedItems,
-          variance_count: varianceCount,
-          variance_value: varianceValue,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq('id', countId);
+
+      if (error) throw error;
+
+      toast.success('Stock count submitted for review');
+      fetchCountDetails();
+    } catch (error: any) {
+      console.error('Error submitting for review:', error);
+      toast.error(error.message || 'Failed to submit for review');
+    } finally {
+      setSubmittingForReview(false);
+    }
+  };
+
+  const handleResubmitForReview = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    setSubmittingForReview(true);
+    try {
+      const { error } = await supabase
+        .from('stock_counts')
+        .update({
+          status: 'pending_review',
+          rejection_reason: null,
+          rejected_by: null,
+          rejected_at: null,
+        })
+        .eq('id', countId);
+
+      if (error) throw error;
+
+      toast.success('Stock count resubmitted for review');
+      fetchCountDetails();
+    } catch (error: any) {
+      console.error('Error resubmitting for review:', error);
+      toast.error(error.message || 'Failed to resubmit for review');
+    } finally {
+      setSubmittingForReview(false);
+    }
+  };
+
+  const handleCompleteCount = async () => {
+    if (!count || !params.id) return;
+    
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      toast.error('Unable to identify current user');
+      return;
+    }
+
+    setCompleting(true);
+    try {
+      const { error } = await supabase
+        .from('stock_counts')
+        .update({
+          status: 'completed',
           completed_at: new Date().toISOString(),
           completed_by: userId,
         })
-        .eq('id', stockCount.id);
+        .eq('id', countId);
 
-      toast.success('All sections completed! Ready for review.');
-    }
-  }
+      if (error) throw error;
 
-  async function completeCount() {
-    if (!stockCount) return;
-
-    try {
-      setSaving(true);
-
-      await checkAllSectionsComplete();
-      await fetchStockCount();
-
+      toast.success('Stock count marked as completed');
+      // Redirect to review page where "Mark Ready for Approval" button will be visible
       router.push(`/dashboard/stockly/stock-counts/${countId}/review`);
     } catch (error: any) {
       console.error('Error completing count:', error);
-      toast.error('Failed to complete count');
+      toast.error(error.message || 'Failed to complete count');
     } finally {
-      setSaving(false);
+      setCompleting(false);
     }
-  }
+  };
+
+  // Memoize countId to ensure stable reference
+  const countId = useMemo(() => {
+    return Array.isArray(params.id) ? params.id[0] : params.id;
+  }, [params.id]);
+
+  useEffect(() => {
+    // Auto-select appropriate tab based on status
+    // CRITICAL: Never redirect new counts (with 0 items) to review page
+    if (!count) return; // Don't do anything if count isn't loaded yet
+    
+    const itemsCounted = count.items_counted || 0;
+    const totalItems = count.total_items || 0;
+    const status = count.status;
+    
+    // DEBUG: Log what we're checking
+    console.log('[StockCountDetail] Redirect check:', {
+      status,
+      itemsCounted,
+      totalItems,
+      countId,
+    });
+    
+    // Draft counts: show print tab - NEVER redirect
+    if (status === 'draft') {
+      console.log('[StockCountDetail] Draft count - staying on print tab');
+      setActiveTab('print');
+      return;
+    } 
+    
+    // Active/in_progress counts: show enter tab - NEVER redirect these
+    // Even if they have items, they're still being worked on
+    if (status === 'active' || status === 'in_progress') {
+      console.log('[StockCountDetail] Active/in_progress count - staying on enter tab');
+      setActiveTab('enter');
+      return; // NEVER redirect in_progress counts, period
+    } 
+    
+    // Only redirect to review for counts that:
+    // 1. Are in a review/approval state (completed, ready_for_approval, etc.)
+    // 2. AND have actually been worked on (items_counted > 0 AND total_items > 0)
+    // 3. AND are NOT in_progress (double-check)
+    const hasBeenWorkedOn = itemsCounted > 0 && totalItems > 0;
+    const isReviewState = 
+      status === 'completed' || 
+      status === 'ready_for_approval' || 
+      status === 'pending_review' || 
+      status === 'approved' ||
+      status === 'rejected' ||
+      status === 'finalized' || 
+      status === 'locked';
+    
+    // CRITICAL: Never redirect if status is still in_progress or active
+    if (status === 'in_progress' || status === 'active') {
+      console.log('[StockCountDetail] Status is in_progress/active - NOT redirecting');
+      setActiveTab('enter');
+      return;
+    }
+    
+    if (isReviewState && hasBeenWorkedOn) {
+      console.log('[StockCountDetail] Redirecting to review page');
+      // Navigate to review page
+      if (countId) {
+        router.push(`/dashboard/stockly/stock-counts/${countId}/review`);
+      }
+    } else {
+      // For any other state, default to print tab (safe default)
+      console.log('[StockCountDetail] Defaulting to print tab');
+      setActiveTab('print');
+    }
+  }, [count?.status, count?.items_counted, count?.total_items, countId, router, count]);
+
+  const fetchCountDetails = async () => {
+    if (!params.id) return;
+    
+    // Ensure id is a string (Next.js params can be string | string[])
+    const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+    
+    setLoading(true);
+
+    // Fetch count (no longer fetching areas)
+    const { data: countData, error: countError } = await supabase
+      .from('stock_counts')
+      .select('*')
+      .eq('id', countId)
+      .single();
+
+    if (countError) {
+      console.error('Error fetching count:', countError);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch items - use simple query without specifying foreign key names
+    const { data: itemsData, error: itemsError } = await supabase
+      .from('stock_count_items')
+      .select('*')
+      .eq('stock_count_id', countId)
+      .order('created_at');
+
+    if (itemsError) {
+      console.error('Error fetching items:', itemsError);
+      setItems([]);
+    } else {
+      console.log(`Fetched ${itemsData?.length || 0} items for count ${countId}`, {
+        items: itemsData,
+        count: countData,
+      });
+      
+      // Fetch storage areas separately (only if items exist)
+      const itemsWithRelations = (itemsData || []).length > 0
+        ? await Promise.all((itemsData || []).map(async (item: any) => {
+            const relations: any = {};
+            
+            // Fetch assigned storage area if exists
+            if (item.storage_area_id) {
+              const { data: storageArea } = await supabase
+                .from('storage_areas')
+                .select('*')
+                .eq('id', item.storage_area_id)
+                .maybeSingle();
+              relations.storage_area = storageArea;
+            }
+            
+            // Fetch counted storage area if exists
+            if (item.counted_storage_area_id) {
+              const { data: countedStorageArea } = await supabase
+                .from('storage_areas')
+                .select('*')
+                .eq('id', item.counted_storage_area_id)
+                .maybeSingle();
+              relations.counted_storage_area = countedStorageArea;
+            }
+            
+            return { ...item, ...relations };
+          }))
+        : [];
+      
+      // Fetch item names from library tables
+      const itemsWithNames = itemsWithRelations.length > 0
+        ? await fetchItemNames(itemsWithRelations)
+        : [];
+      
+      console.log(`Items with names: ${itemsWithNames.length}`, {
+        itemsWithNames,
+        libraryTypes: itemsWithNames.map(i => i.library_type),
+      });
+      
+      setItems(itemsWithNames);
+    }
+
+    setCount(countData as StockCountWithDetails);
+    setLoading(false);
+  };
+
+  // Fetch item names from library tables based on library_type
+  const fetchItemNames = async (items: any[]): Promise<StockCountItem[]> => {
+    if (!items || items.length === 0) {
+      return [];
+    }
+
+    const libraryTableMap: Record<string, string> = {
+      ingredients: 'ingredients_library',
+      packaging: 'packaging_library',
+      disposables: 'disposables_library',
+      drinks: 'drinks_library',
+      ppe: 'ppe_library',
+      chemicals: 'chemicals_library',
+      glassware: 'glassware_library',
+      first_aid: 'first_aid_supplies_library', // Database stores 'first_aid'
+      first_aid_supplies: 'first_aid_supplies_library', // Handle variations
+      firstaid: 'first_aid_supplies_library', // Handle variations
+      // Handle any variations
+      'first_aid_supplies_library': 'first_aid_supplies_library',
+    };
+
+    const nameColumnMap: Record<string, string> = {
+      ingredients_library: 'ingredient_name',
+      packaging_library: 'item_name',
+      disposables_library: 'item_name',
+      drinks_library: 'item_name',
+      ppe_library: 'item_name',
+      chemicals_library: 'product_name',
+      glassware_library: 'item_name',
+      first_aid_supplies_library: 'item_name',
+    };
+
+    // Map which columns each library table has (for supplier/pack_size)
+    // PPE doesn't have pack_size, so we'll only fetch supplier for it
+    const libraryColumnsMap: Record<string, string[]> = {
+      ingredients_library: ['supplier', 'pack_size'],
+      packaging_library: ['supplier', 'pack_size'],
+      disposables_library: ['supplier', 'pack_size'],
+      chemicals_library: ['supplier', 'pack_size'],
+      ppe_library: ['supplier'], // PPE doesn't have pack_size
+      drinks_library: ['supplier', 'pack_size'],
+      glassware_library: ['supplier', 'pack_size'],
+      first_aid_supplies_library: ['supplier', 'pack_size'],
+    };
+
+    // Group items by library type
+    const itemsByLibrary: Record<string, any[]> = {};
+    items.forEach((item: any) => {
+      const libType = item.library_type;
+      if (!itemsByLibrary[libType]) {
+        itemsByLibrary[libType] = [];
+      }
+      itemsByLibrary[libType].push(item);
+    });
+
+    const result: StockCountItem[] = [];
+
+    // Fetch names for each library type
+    for (const [libType, libItems] of Object.entries(itemsByLibrary)) {
+      const tableName = libraryTableMap[libType];
+      const nameColumn = nameColumnMap[tableName] || 'item_name';
+      
+      if (!tableName || libItems.length === 0) {
+        // Add items without names if library table not found
+        libItems.forEach((item: any) => {
+          result.push({
+            ...item,
+            ingredient: { id: item.ingredient_id, name: 'Unknown' } as any,
+          });
+        });
+        continue;
+      }
+
+      const itemIds = libItems.map((item: any) => item.ingredient_id);
+      
+      try {
+        // Fetch name, supplier, and pack_size for PDF count sheets
+        // Only fetch columns that exist for this library table
+        const additionalColumns = libraryColumnsMap[tableName] || ['supplier', 'pack_size'];
+        const selectColumns = ['id', nameColumn, ...additionalColumns].join(', ');
+        const { data: libraryItems, error: fetchError } = await supabase
+          .from(tableName)
+          .select(selectColumns)
+          .in('id', itemIds);
+
+        if (fetchError) {
+          console.warn(`Error fetching ${tableName} items with supplier/pack_size:`, fetchError);
+          // Fallback: try without supplier/pack_size
+          const { data: fallbackItems } = await supabase
+            .from(tableName)
+            .select(`id, ${nameColumn}`)
+            .in('id', itemIds);
+          
+          if (fallbackItems) {
+            // Create map with just names
+            const libraryItemMap = new Map(
+              fallbackItems.map((libItem: any) => [
+                libItem.id,
+                {
+                  name: libItem[nameColumn] || 'Unknown',
+                  supplier: null,
+                  pack_size: null,
+                }
+              ])
+            );
+
+            libItems.forEach((item: any) => {
+              const libItemData = libraryItemMap.get(item.ingredient_id) || {
+                name: 'Unknown',
+                supplier: null,
+                pack_size: null,
+              };
+              result.push({
+                ...item,
+                ingredient: {
+                  id: item.ingredient_id,
+                  name: libItemData.name,
+                  ingredient_name: libItemData.name,
+                  supplier: libItemData.supplier,
+                  pack_size: libItemData.pack_size,
+                } as any,
+              });
+            });
+          }
+          continue;
+        }
+
+        // Create a map of id -> library item data
+        const libraryItemMap = new Map(
+          (libraryItems || []).map((libItem: any) => [
+            libItem.id,
+            {
+              name: libItem[nameColumn] || 'Unknown',
+              supplier: libItem.supplier || null,
+              pack_size: libItem.pack_size || null,
+            }
+          ])
+        );
+
+        // Add names and additional fields to items
+        libItems.forEach((item: any) => {
+          const libItemData = libraryItemMap.get(item.ingredient_id) || {
+            name: 'Unknown',
+            supplier: null,
+            pack_size: null,
+          };
+          result.push({
+            ...item,
+            ingredient: {
+              id: item.ingredient_id,
+              name: libItemData.name,
+              ingredient_name: libItemData.name, // For compatibility
+              supplier: libItemData.supplier,
+              pack_size: libItemData.pack_size,
+            } as any,
+          });
+        });
+      } catch (err) {
+        // If fetch fails, add items without names
+        libItems.forEach((item: any) => {
+          result.push({
+            ...item,
+            ingredient: {
+              id: item.ingredient_id,
+              name: 'Unknown',
+            } as any,
+          });
+        });
+      }
+    }
+
+    return result;
+  };
+
+  const getLibraryName = (type: string): string => {
+    const nameMap: Record<string, string> = {
+      ingredients: 'Ingredients Library',
+      packaging: 'Packaging Library',
+      disposables: 'Disposables Library',
+      drinks: 'Drinks Library',
+      ppe: 'PPE Library',
+      chemicals: 'Chemicals Library',
+      glassware: 'Glassware Library',
+      first_aid_supplies: 'First Aid Supplies',
+    };
+    return nameMap[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const getLibraryIcon = (type: string) => {
+    const iconMap: Record<string, any> = {
+      ingredients: Package,
+      packaging: Box,
+      disposables: Coffee,
+      drinks: Coffee,
+      ppe: Package,
+      chemicals: Package,
+      glassware: Package,
+      first_aid_supplies: Package,
+    };
+    return iconMap[type] || Package;
+  };
+
+  const handlePrintSheet = async (libraryType: string) => {
+    const libraryItems = items.filter(item => item.library_type === libraryType);
+    if (!count) return;
+
+    console.log(`Printing sheet for ${libraryType}:`, {
+      totalItems: items.length,
+      libraryItems: libraryItems.length,
+      libraryType,
+      items: libraryItems,
+    });
+
+    const pdf = generateCountSheetPDF({
+      countName: count.name,
+      countDate: count.count_date,
+      libraryType: libraryType as LibraryType,
+      libraryName: getLibraryName(libraryType),
+      items: libraryItems,
+    });
+
+    openPDFInNewTab(pdf);
+  };
+
+  const handleDownloadSheet = async (libraryType: string) => {
+    const libraryItems = items.filter(item => item.library_type === libraryType);
+    if (!count) return;
+
+    const pdf = generateCountSheetPDF({
+      countName: count.name,
+      countDate: count.count_date,
+      libraryType: libraryType as LibraryType,
+      libraryName: getLibraryName(libraryType),
+      items: libraryItems,
+    });
+
+    const filename = `${getLibraryName(libraryType).replace(/\s+/g, '_')}_Count_${count.count_date}.pdf`;
+    downloadPDF(pdf, filename);
+  };
+
+  const handleDownloadAll = async () => {
+    if (!count) return;
+    
+    // Derive libraries from items if libraries_included is not set
+    const libraries = count.libraries_included && count.libraries_included.length > 0
+      ? count.libraries_included
+      : [...new Set(items.map(item => item.library_type).filter(Boolean))];
+    
+    if (libraries.length === 0) return;
+
+    libraries.forEach(libraryType => {
+      handleDownloadSheet(libraryType);
+    });
+  };
+
+  const handleStartEntering = async () => {
+    if (!params.id || !count) return;
+    
+    try {
+      // Ensure id is a string (Next.js params can be string | string[])
+      const countId = Array.isArray(params.id) ? params.id[0] : params.id;
+      
+      // Update status to in_progress - database constraint uses 'in_progress' not 'active'
+      const { data, error } = await supabase
+        .from('stock_counts')
+        .update({ status: 'in_progress' })
+        .eq('id', countId)
+        .select()
+        .single();
+
+      if (error) {
+        // Enhanced error logging
+        const errorInfo = {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        };
+        
+        console.error('Error updating stock count status:', errorInfo);
+        console.error('Count object:', count);
+        
+        // Show user-friendly error
+        const errorMessage = error.message || 
+          error.details || 
+          error.hint ||
+          'Failed to update status. Please check your permissions and try again.';
+        
+        alert(`Failed to update status: ${errorMessage}`);
+        return;
+      }
+
+      if (data) {
+        // Wait a brief moment for any triggers/views to sync
+        await new Promise(resolve => setTimeout(resolve, 100));
+        fetchCountDetails();
+        setActiveTab('enter');
+      }
+    } catch (err) {
+      console.error('Unexpected error updating status:', err);
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : typeof err === 'object' && err !== null
+          ? JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+          : String(err);
+      alert(`Unexpected error: ${errorMessage}`);
+    }
+  };
+
+  const getStatusBadge = () => {
+    if (!count) return null;
+
+    switch (count.status) {
+      case 'draft':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
+            <FileText className="h-4 w-4 mr-2" />
+            Draft
+          </span>
+        );
+      case 'active':
+      case 'in_progress':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-amber-50 dark:bg-amber-600/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-600/40 text-sm font-medium">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            In Progress
+          </span>
+        );
+      case 'finalized':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm font-medium">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Finalized
+          </span>
+        );
+      case 'locked':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/40 text-sm font-medium">
+            <Lock className="h-4 w-4 mr-2" />
+            Locked
+          </span>
+        );
+      case 'completed':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-50 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Completed
+          </span>
+        );
+      case 'ready_for_approval':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/40 text-sm font-medium">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Ready for Approval
+          </span>
+        );
+      case 'approved':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm font-medium">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Approved
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-red-50 dark:bg-red-600/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-600/40 text-sm font-medium">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Rejected
+          </span>
+        );
+    }
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading...</div>
-        </div>
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-[#0B0D13]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
       </div>
     );
   }
 
-  if (!stockCount) {
+  if (!count) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Stock count not found</div>
-        </div>
-      </div>
-    );
-  }
-
-  const selectedSection = stockCount.sections?.find(s => s.id === selectedSectionId);
-  const progress = stockCount.total_items > 0
-    ? Math.round((stockCount.counted_items / stockCount.total_items) * 100)
-    : 0;
-
-  const filteredLines = selectedSection?.lines?.filter(line => {
-    if (!searchTerm) return true;
-    const searchLower = searchTerm.toLowerCase();
-    return line.stock_item?.name.toLowerCase().includes(searchLower);
-  }) || [];
-
-  return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <button
-            onClick={() => router.push('/dashboard/stockly/stock-counts')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-4 transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to Stock Counts
-          </button>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                {stockCount.count_number} - {stockCount.count_type.charAt(0).toUpperCase() + stockCount.count_type.slice(1)} Count
-              </h1>
-              <p className="text-slate-400 text-sm">
-                {new Date(stockCount.count_date).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            </div>
-            <Button
-              onClick={completeCount}
-              disabled={saving || stockCount.status === 'completed'}
-              variant="secondary"
+      <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+        <div className="container mx-auto py-8 px-4">
+          <div className="text-center">
+            <AlertCircle className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Count Not Found</h2>
+            <Button 
+              onClick={() => router.push('/dashboard/stockly/stock-counts')}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              Complete Count
+              Back to Counts
             </Button>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Progress Bar */}
-        <div className="mb-6 bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-slate-400">Progress</span>
-            <span className="text-sm text-white font-medium">
-              {stockCount.counted_items}/{stockCount.total_items} items ({progress}%)
-            </span>
-          </div>
-          <div className="w-full bg-neutral-800 rounded-full h-3">
-            <div
-              className="bg-blue-500 h-3 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+  return (
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        {/* Header */}
+        <div className="mb-8">
+          <Link
+            href="/dashboard/stockly/stock-counts"
+            className="inline-flex items-center mb-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Counts
+          </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sections List */}
-          <div className="lg:col-span-1 space-y-3">
-            <h2 className="text-lg font-semibold text-white mb-3">Sections</h2>
-            {stockCount.sections?.map((section) => {
-              const sectionProgress = section.item_count > 0
-                ? Math.round((section.counted_count / section.item_count) * 100)
-                : 0;
-              const icon = section.storage_area?.area_type
-                ? AREA_ICONS[section.storage_area.area_type] || '📦'
-                : '📦';
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{count.name}</h1>
+                {getStatusBadge()}
+              </div>
+              <p className="text-gray-600 dark:text-gray-400">
+                Count Date: {new Date(count.count_date).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </p>
+              {count.notes && (
+                <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">{count.notes}</p>
+              )}
+              {count.status === 'rejected' && count.rejection_reason && (
+                <div className="mt-2 p-3 bg-red-50 dark:bg-red-600/10 border border-red-200 dark:border-red-600/30 rounded-lg">
+                  <p className="text-sm font-semibold text-red-800 dark:text-red-400 mb-1">Rejection Reason:</p>
+                  <p className="text-sm text-red-700 dark:text-red-300">{count.rejection_reason}</p>
+                </div>
+              )}
+            </div>
 
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => setSelectedSectionId(section.id)}
-                  className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedSectionId === section.id
-                      ? 'border-[#EC4899] bg-[#EC4899]/10'
-                      : 'border-neutral-800 bg-white/[0.03] hover:border-neutral-700'
-                  }`}
+          {/* Action buttons based on status */}
+          <div className="flex gap-2">
+            {count.status === 'draft' && (
+              <Button
+                onClick={handleStartEntering}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Start Entering Data
+              </Button>
+            )}
+            
+            {count.status !== 'locked' && (
+              <Button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!confirm(`Are you sure you want to delete "${count.name}"? This action cannot be undone.`)) {
+                    return;
+                  }
+                  try {
+                    // Delete items first
+                    await supabase
+                      .from('stock_count_items')
+                      .delete()
+                      .eq('stock_count_id', count.id);
+                    // Delete the count
+                    await supabase
+                      .from('stock_counts')
+                      .delete()
+                      .eq('id', count.id);
+                    router.push('/dashboard/stockly/stock-counts');
+                  } catch (error: any) {
+                    console.error('Error deleting count:', error);
+                    alert(error.message || 'Failed to delete count');
+                  }
+                }}
+                variant="outline"
+                className="border-red-600/50 text-red-400 hover:bg-red-600/10 hover:border-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            )}
+            
+            {count.status === 'finalized' && (
+              <Button
+                onClick={() => setShowLockModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Lock className="mr-2 h-4 w-4" />
+                Lock Count
+              </Button>
+            )}
+            
+            {(count.status === 'active' || count.status === 'in_progress') && count.items_counted > 0 && (
+              <>
+                <Button
+                  onClick={handleCompleteCount}
+                  disabled={completing}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{icon}</span>
-                      <span className="text-white font-medium">{section.storage_area?.name || 'Unknown'}</span>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      section.status === 'completed'
-                        ? 'bg-green-500/20 text-green-400'
-                        : section.status === 'in_progress'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-gray-500/20 text-gray-400'
-                    }`}>
-                      {section.status === 'completed' ? 'Completed' : section.status === 'in_progress' ? 'In Progress' : 'Pending'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-neutral-800 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{ width: `${sectionProgress}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-slate-400">
-                      {section.counted_count}/{section.item_count} ({sectionProgress}%)
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Counting Interface */}
-          <div className="lg:col-span-2">
-            {selectedSection ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-white">
-                    {selectedSection.storage_area?.name || 'Unknown Area'}
-                  </h2>
-                  {selectedSection.status !== 'completed' && (
-                    <Button
-                      onClick={() => completeSection(selectedSection.id)}
-                      disabled={saving}
-                      variant="secondary"
-                      size="sm"
-                    >
-                      Complete Section
-                    </Button>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  {completing ? 'Completing...' : 'Complete Count'}
+                </Button>
+                {hasReviewers && (
+                  <Button
+                    onClick={handleSubmitForReview}
+                    disabled={submittingForReview}
+                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    {submittingForReview ? 'Submitting...' : 'Submit for Review'}
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setShowFinalizeModal(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  disabled={count.status !== 'approved'}
+                  title={count.status !== 'approved' ? 'Count must be approved before finalization' : 'Finalize and adjust stock levels'}
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Finalize & Adjust Stock
+                  {count.items_counted < count.total_items && (
+                    <span className="ml-2 text-xs opacity-90">({count.items_counted}/{count.total_items})</span>
                   )}
-                </div>
-
-                {/* Search */}
-                <div className="relative mb-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                  <Input
-                    type="text"
-                    placeholder="Search items..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                {/* Count Lines */}
-                <div className="space-y-3">
-                  {filteredLines.length === 0 ? (
-                    <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-8 text-center">
-                      <p className="text-slate-400">No items found</p>
-                    </div>
-                  ) : (
-                    filteredLines.map((line) => {
-                      const hasVariance = line.variance_quantity !== 0;
-                      const unit = line.stock_item?.base_unit?.code || '';
-
-                      return (
-                        <div
-                          key={line.id}
-                          className={`bg-white/[0.03] border rounded-xl p-4 ${
-                            hasVariance ? 'border-amber-500/30' : 'border-neutral-800'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                {line.is_counted && (
-                                  <CheckCircle2 className="text-green-400" size={18} />
-                                )}
-                                <span className="text-white font-medium">{line.stock_item?.name || 'Unknown Item'}</span>
-                              </div>
-                              <div className="text-sm text-slate-400">
-                                Expected: {line.expected_quantity} {unit}
-                              </div>
-                            </div>
-                            {hasVariance && (
-                              <div className={`text-sm font-medium ${
-                                line.variance_quantity > 0 ? 'text-green-400' : 'text-red-400'
-                              }`}>
-                                {line.variance_quantity > 0 ? '+' : ''}
-                                {line.variance_quantity} {unit}
-                                {line.variance_value !== 0 && (
-                                  <span className="ml-2">
-                                    ({line.variance_value > 0 ? '+' : ''}£{Math.abs(line.variance_value).toFixed(2)})
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <label className="block text-xs text-slate-400 mb-1">Counted Quantity</label>
-                              <Input
-                                type="number"
-                                step="0.001"
-                                value={line.counted_quantity ?? ''}
-                                onChange={(e) => {
-                                  const value = parseFloat(e.target.value) || 0;
-                                  updateCountLine(line.id, value);
-                                }}
-                                placeholder="0"
-                                className="bg-white/[0.05]"
-                              />
-                            </div>
-                            <div className="pt-6">
-                              <span className="text-slate-400 text-sm">{unit}</span>
-                            </div>
-                            <div className="pt-6">
-                              {line.is_counted && !hasVariance && (
-                                <span className="text-green-400 text-sm">✓ Match</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-8 text-center">
-                <p className="text-slate-400">Select a section to start counting</p>
-              </div>
+                </Button>
+              </>
+            )}
+            {count.status === 'rejected' && (
+              <Button
+                onClick={handleResubmitForReview}
+                disabled={submittingForReview}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                {submittingForReview ? 'Resubmitting...' : 'Resubmit for Review'}
+              </Button>
             )}
           </div>
+          </div>
         </div>
 
-        {/* Variance Summary */}
-        {stockCount.variance_count > 0 && (
-          <div className="mt-6 bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Variance Summary (so far)</span>
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-400">
-                  Items with variance: <span className="text-white font-medium">{stockCount.variance_count}</span>
-                </span>
-                <span className={`text-sm font-medium ${
-                  stockCount.variance_value < 0 ? 'text-red-400' : 'text-green-400'
+        {/* Summary Stats */}
+        {(() => {
+          // Calculate summary values from items array to ensure accuracy
+          const countedItems = items.filter(item => item.is_counted === true || item.counted_quantity !== null);
+          const itemsWithVariance = countedItems.filter(item => {
+            const varianceQty = item.variance_quantity ?? (item.counted_quantity ?? 0) - (item.expected_quantity ?? item.theoretical_closing ?? 0);
+            return Math.abs(varianceQty) > 0.001; // More than 0.001 variance
+          });
+          const totalVarianceValue = countedItems.reduce((sum, item) => {
+            const varianceValue = item.variance_value ?? 
+              ((item.counted_quantity ?? 0) - (item.expected_quantity ?? item.theoretical_closing ?? 0)) * (item.unit_cost ?? 0);
+            return sum + (varianceValue ?? 0);
+          }, 0);
+          const itemsCounted = countedItems.length;
+          const totalItems = count.total_items ?? items.length;
+          
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Total Items</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{totalItems}</p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Items Counted</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {itemsCounted}
+                  <span className="text-sm text-gray-500 dark:text-gray-500 ml-2">
+                    ({totalItems > 0 ? Math.round((itemsCounted / totalItems) * 100) : 0}%)
+                  </span>
+                </p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Variances</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{itemsWithVariance.length}</p>
+              </div>
+              
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Variance Value</p>
+                <p className={`text-2xl font-bold mt-1 ${
+                  totalVarianceValue < 0 ? 'text-red-600 dark:text-red-400' : 
+                  totalVarianceValue > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
                 }`}>
-                  Total variance: {stockCount.variance_value > 0 ? '+' : ''}£{Math.abs(stockCount.variance_value).toFixed(2)}
-                </span>
+                  {totalVarianceValue < 0 ? '-' : totalVarianceValue > 0 ? '+' : ''}
+                  £{Math.abs(totalVarianceValue).toFixed(2)}
+                </p>
               </div>
             </div>
+          );
+        })()}
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-white/[0.06] mb-6">
+        <div className="flex gap-4">
+          <button
+            onClick={() => setActiveTab('print')}
+            className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
+              activeTab === 'print'
+                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
+                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            <Printer className="inline-block mr-2 h-4 w-4" />
+            Print Sheets
+          </button>
+          
+          <button
+            onClick={() => {
+              // If count is in draft status, automatically start entering data
+              if (count?.status === 'draft') {
+                handleStartEntering();
+              } else {
+                setActiveTab('enter');
+              }
+            }}
+            className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
+              activeTab === 'enter'
+                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
+                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            <Edit className="inline-block mr-2 h-4 w-4" />
+            Enter Data
+          </button>
+          
+          <button
+            onClick={() => router.push(`/dashboard/stockly/stock-counts/${params.id}/review`)}
+            className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
+              activeTab === 'review'
+                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
+                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            <FileText className="inline-block mr-2 h-4 w-4" />
+            Review Report
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'print' && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Count Sheets by Library</h2>
+            <Button
+              onClick={handleDownloadAll}
+              variant="outline"
+              className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download All PDFs
+            </Button>
           </div>
-        )}
+
+          {(() => {
+            // Derive libraries from items if libraries_included is not set
+            const libraries = count.libraries_included && count.libraries_included.length > 0
+              ? count.libraries_included
+              : [...new Set(items.map(item => item.library_type).filter(Boolean))];
+            
+            return libraries.length > 0 ? (
+              libraries.map((libraryType) => {
+                const libraryItems = items.filter(item => item.library_type === libraryType);
+                const libraryName = getLibraryName(libraryType);
+                const LibraryIcon = getLibraryIcon(libraryType);
+
+              return (
+                <div
+                  key={libraryType}
+                  className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        {LibraryIcon && <LibraryIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {libraryName}
+                        </h3>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        {libraryItems.length} items to count
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleDownloadSheet(libraryType)}
+                        variant="outline"
+                        size="sm"
+                        className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Download PDF
+                      </Button>
+                      <Button
+                        onClick={() => handlePrintSheet(libraryType)}
+                        size="sm"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <Printer className="mr-2 h-4 w-4" />
+                        Print
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+            ) : (
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 text-center">
+                <AlertCircle className="h-8 w-8 text-gray-400 dark:text-gray-600 mx-auto mb-2" />
+                <p className="text-gray-600 dark:text-gray-400">
+                  {items.length === 0 
+                    ? 'No items found for this count. Items will appear here once they are loaded.' 
+                    : 'No libraries included in this count'}
+                </p>
+              </div>
+            );
+          })()}
+
+          {count.status === 'draft' && (
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-6 mt-8">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ready to Start?</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Once you've printed the count sheets and handed them out, click below to start entering data.
+              </p>
+              <Button
+                onClick={handleStartEntering}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                Start Entering Data
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'enter' && (
+        <>
+          {count.status === 'draft' ? (
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-6 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">
+                Starting data entry...
+              </p>
+            </div>
+          ) : (
+            <CountDataEntry
+              countId={count.id}
+              items={items}
+              librariesIncluded={count.libraries_included || []}
+              onUpdate={fetchCountDetails}
+            />
+          )}
+        </>
+      )}
+
+      {/* Modals */}
+      <FinalizeModal
+        isOpen={showFinalizeModal}
+        onClose={() => setShowFinalizeModal(false)}
+        count={count}
+        onSuccess={fetchCountDetails}
+      />
+
+      <LockModal
+        isOpen={showLockModal}
+        onClose={() => setShowLockModal(false)}
+        count={count}
+        onSuccess={fetchCountDetails}
+      />
       </div>
     </div>
   );
 }
-

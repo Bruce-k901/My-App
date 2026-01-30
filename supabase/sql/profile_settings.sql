@@ -1,5 +1,22 @@
 -- Profile-level notification and digest preferences
-create table if not exists public.profile_settings (
+-- First, check if profile_settings exists as a VIEW and drop it if so
+-- (Views cannot have triggers, RLS, or indexes - we need a table)
+
+DO $$
+BEGIN
+  -- Drop view if it exists (views cannot be converted to tables)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.views 
+    WHERE table_schema = 'public' 
+    AND table_name = 'profile_settings'
+  ) THEN
+    DROP VIEW IF EXISTS public.profile_settings CASCADE;
+    RAISE NOTICE 'Dropped existing profile_settings VIEW';
+  END IF;
+END $$;
+
+-- Create the table (will not error if it already exists as a table)
+CREATE TABLE IF NOT EXISTS public.profile_settings (
   user_id uuid primary key references public.profiles(id) on delete cascade,
   company_id uuid not null references public.companies(id) on delete cascade,
   site_id uuid null references public.sites(id) on delete set null,
@@ -28,28 +45,32 @@ for each row execute function public.profile_settings_set_updated_at();
 alter table public.profile_settings enable row level security;
 
 -- Users can view and manage their own settings
-create policy if not exists profile_settings_select_own
+drop policy if exists profile_settings_select_own on public.profile_settings;
+create policy profile_settings_select_own
   on public.profile_settings for select
   using (auth.uid() = user_id);
 
-create policy if not exists profile_settings_insert_own
+drop policy if exists profile_settings_insert_own on public.profile_settings;
+create policy profile_settings_insert_own
   on public.profile_settings for insert
   with check (auth.uid() = user_id);
 
-create policy if not exists profile_settings_update_own
+drop policy if exists profile_settings_update_own on public.profile_settings;
+create policy profile_settings_update_own
   on public.profile_settings for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
 -- Company isolation: admins/managers can read within company (optional)
-create policy if not exists profile_settings_select_company
+drop policy if exists profile_settings_select_company on public.profile_settings;
+create policy profile_settings_select_company
   on public.profile_settings for select
   using (
     exists (
       select 1 from public.profiles p
       where p.id = auth.uid()
         and p.company_id = profile_settings.company_id
-        and p.role in ('manager','admin')
+        and p.app_role in ('Admin', 'Owner', 'Manager')
     )
   );
 

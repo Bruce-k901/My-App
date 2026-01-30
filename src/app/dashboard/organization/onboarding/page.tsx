@@ -249,10 +249,10 @@ export default function OnboardingPage() {
             </div>
 
             <h1 className="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-[1.4] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-8 sm:mb-12 pb-3 overflow-visible px-2">
-              Setting Up Your Checkly Platform
+              Setting Up Your Opsly Platform
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed pt-2 px-4">
-              A comprehensive guide to configuring Checkly for maximum compliance, efficiency, and operational excellence. 
+              A comprehensive guide to configuring Opsly for maximum compliance, efficiency, and operational excellence. 
               Proper setup is the foundation of a successful deployment.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-0 px-4 relative z-10">
@@ -297,7 +297,7 @@ export default function OnboardingPage() {
               <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition">
                 <h3 className="text-xl font-semibold text-white mb-2">Immediate ROI</h3>
                 <p className="text-gray-300">
-                  Complete setup unlocks the full power of Checkly: automated compliance, real-time alerts, comprehensive reporting, and data-driven insights that improve operations.
+                  Complete setup unlocks the full power of Opsly: automated compliance, real-time alerts, comprehensive reporting, and data-driven insights that improve operations.
                 </p>
               </div>
 
@@ -473,8 +473,8 @@ export default function OnboardingPage() {
                     video tutorials, and comprehensive documentation to ensure your success.
                   </p>
                   <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
-                    <a href="mailto:support@checkly.app" className="text-blue-400 hover:text-blue-300 transition-colors">
-                      support@checkly.app
+                    <a href="mailto:support@opsly.app" className="text-blue-400 hover:text-blue-300 transition-colors">
+                      support@opsly.app
                     </a>
                     <span className="text-gray-600">•</span>
                     <a href="tel:+441234567890" className="text-blue-400 hover:text-blue-300 transition-colors">

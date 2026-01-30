@@ -16,6 +16,8 @@ interface AppContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   setCompany: (company: any | null) => void;
+  setSelectedSite: (siteId: string | null) => void;
+  selectedSiteId: string | null;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -30,6 +32,8 @@ const AppContext = createContext<AppContextType>({
   loading: true,
   signOut: async () => {},
   setCompany: () => {},
+  setSelectedSite: () => {},
+  selectedSiteId: null,
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -42,6 +46,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [viewingAsCompanyId, setViewingAsCompanyId] = useState<string | null>(null);
+  // Global selected site - persists in localStorage and overrides profile.site_id
+  const [selectedSiteId, setSelectedSiteIdState] = useState<string | null>(null);
+
+  // Load selected site from localStorage on mount
+  useEffect(() => {
+    if (!isMounted) return;
+    try {
+      const stored = localStorage.getItem('selectedSiteId');
+      if (stored) {
+        setSelectedSiteIdState(stored);
+      }
+    } catch (error) {
+      console.warn('Failed to load selected site from localStorage:', error);
+    }
+  }, [isMounted]);
+
+  // Initialize selected site from profile if not already set
+  useEffect(() => {
+    if (!isMounted || !profile) return;
+    // If no site is selected and profile has a site, use it
+    if (!selectedSiteId && (profile.home_site || profile.site_id)) {
+      const defaultSite = profile.home_site || profile.site_id;
+      setSelectedSiteIdState(defaultSite);
+      console.log('🏢 [AppContext] Initializing selected site from profile:', defaultSite);
+    }
+  }, [profile, isMounted, selectedSiteId]);
+
+  // Persist selected site to localStorage when it changes
+  useEffect(() => {
+    if (!isMounted) return;
+    try {
+      if (selectedSiteId) {
+        localStorage.setItem('selectedSiteId', selectedSiteId);
+      } else {
+        localStorage.removeItem('selectedSiteId');
+      }
+    } catch (error) {
+      console.warn('Failed to save selected site to localStorage:', error);
+    }
+  }, [selectedSiteId, isMounted]);
+
+  // Function to set selected site
+  const setSelectedSite = (siteId: string | null) => {
+    setSelectedSiteIdState(siteId);
+    console.log('🏢 [AppContext] Selected site changed:', siteId);
+  };
 
   useEffect(() => {
     // Mark as mounted to prevent hydration issues
@@ -59,13 +109,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state changed:', event, session?.user?.id);
+      // console.log('🔄 Auth state changed:', event, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         // Force a fresh profile fetch on SIGNED_IN event (e.g., after setup-account)
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          console.log('🔄 Forcing profile refresh after auth event:', event);
+          // console.log('🔄 Forcing profile refresh after auth event:', event);
           // Small delay to ensure session is fully established
           setTimeout(() => {
             fetchProfile(session.user.id);
@@ -94,7 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         try {
           const { id } = JSON.parse(viewingAs);
           setViewingAsCompanyId(id);
-          console.log('👁️ Admin viewing as company:', id);
+          // console.log('👁️ Admin viewing as company:', id);
           
           // Fetch the company data for the viewed company
           fetchCompanyById(id);
@@ -133,13 +183,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (profile?.company_id) {
         // User has a company - reload it if it's different from current company
         if (company?.id !== profile.company_id) {
-          console.log('🔄 Reloading user\'s own company after exiting View As mode');
+          // console.log('🔄 Reloading user\'s own company after exiting View As mode');
           fetchCompanyById(profile.company_id);
         }
       } else {
         // User has no company - clear company state
         if (company) {
-          console.log('🔄 Clearing company state (user has no company)');
+          // console.log('🔄 Clearing company state (user has no company)');
           setCompany(null);
         }
       }
@@ -157,7 +207,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      console.log('🔄 AppContext loading company (View As):', companyId);
+      // console.log('🔄 AppContext loading company (View As):', companyId);
       
       // Always use API route to bypass RLS
       let companyData = null;
@@ -177,7 +227,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (!companyError && companyData && companyData.id) {
-        console.log('✅ AppContext company loaded (View As):', companyData.name);
+        // console.log('✅ AppContext company loaded (View As):', companyData.name);
         setCompany(companyData);
         // Remove from failed set if we succeeded
         failedCompanyFetches.current.delete(companyId);
@@ -201,7 +251,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   async function fetchProfile(userId: string) {
     try {
-      console.log('🔍 AppContext fetchProfile:', userId);
+      // console.log('🔍 AppContext fetchProfile:', userId);
       setLoading(true); // Set loading to true when starting to fetch
       
       if (!userId) {
@@ -217,13 +267,39 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       let error = null;
       
       try {
-        const result = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-        data = result.data;
-        error = result.error;
+        // Try RPC function first (bypasses RLS, no recursion)
+        const rpcResult = await supabase.rpc('get_own_profile');
+        if (rpcResult.data && !rpcResult.error) {
+          // Function returns JSONB, so data is the object directly
+          const profileData = typeof rpcResult.data === 'object' && !Array.isArray(rpcResult.data) 
+            ? rpcResult.data 
+            : (Array.isArray(rpcResult.data) && rpcResult.data.length > 0 ? rpcResult.data[0] : null);
+          
+          if (profileData && Object.keys(profileData).length > 0) {
+            data = profileData;
+            error = null;
+            // console.log('✅ Profile loaded via RPC function');
+          } else {
+            // Fallback to direct query
+            const result = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .maybeSingle();
+            data = result.data;
+            error = result.error;
+          }
+        } else {
+          // RPC failed, fallback to direct query
+          console.warn('RPC function failed, using direct query:', rpcResult.error);
+          const result = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
+          data = result.data;
+          error = result.error;
+        }
         
         // If we get a 406 error (RLS blocking), fall back to API route
         // Check for various 406 error indicators
@@ -243,7 +319,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             if (apiResponse.ok) {
               data = await apiResponse.json();
               error = null; // Clear error since API route succeeded
-              console.log('✅ Profile loaded via API route fallback');
+              // console.log('✅ Profile loaded via API route fallback');
             } else {
               const errorText = await apiResponse.text();
               error = new Error(`API route failed: ${errorText}`);
@@ -259,15 +335,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       
       // DEBUG: Log profile query result
-      console.log('Profile query result (AppContext):', { 
-        data, 
-        error, 
-        userId,
-        hasData: !!data,
-        hasError: !!error,
-        errorCode: error?.code,
-        errorMessage: error?.message,
-      });
+      // console.log('Profile query result (AppContext):', { 
+      //   data, 
+      //   error, 
+      //   userId,
+      //   hasData: !!data,
+      //   hasError: !!error,
+      //   errorCode: error?.code,
+      //   errorMessage: error?.message,
+      // });
       
       // If we got null data but no error, it might be RLS blocking silently
       // Try API route fallback
@@ -277,7 +353,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
           if (apiResponse.ok) {
             data = await apiResponse.json();
-            console.log('✅ Profile loaded via API route (null data fallback)');
+            // console.log('✅ Profile loaded via API route (null data fallback)');
           } else {
             const errorText = await apiResponse.text();
             console.error('❌ API route failed:', errorText);
@@ -417,11 +493,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       
-      console.log('✅ AppContext profile loaded:', { 
-        id: data?.id, 
-        company_id: data?.company_id,
-        email: data?.email 
-      });
+      // console.log('✅ AppContext profile loaded:', { 
+      //   id: data?.id, 
+      //   company_id: data?.company_id,
+      //   email: data?.email 
+      // });
       setProfile(data);
       
       // Check if admin is viewing as another company
@@ -430,7 +506,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         try {
           const { id } = JSON.parse(viewingAs);
           setViewingAsCompanyId(id);
-          console.log('👁️ Admin viewing as company (from fetchProfile):', id);
+          // console.log('👁️ Admin viewing as company (from fetchProfile):', id);
           // Don't load user's own company - the viewingAsCompanyId useEffect will load the viewed company
           setLoading(false);
           return;
@@ -439,54 +515,100 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
       
-      // Load company data if profile has company_id (only if not in View As mode)
-      if (data?.company_id && !viewingAsCompanyId) {
-        console.log('🔄 AppContext loading company:', data.company_id);
-        
-        // Always use API route to bypass RLS
-        let companyData = null;
-        let companyError = null;
-        
+      // Load company data from user_companies primary company (only if not in View As mode)
+      if (data?.id && !viewingAsCompanyId) {
         try {
-          const response = await fetch(`/api/company/get?id=${data.company_id}`);
-          if (response.ok) {
-            companyData = await response.json();
-            console.log('✅ AppContext company found via API route:', companyData.name);
-          } else {
-            // Try with userId as fallback
-            const fallbackResponse = await fetch(`/api/company/get?userId=${userId}`);
-            if (fallbackResponse.ok) {
-              companyData = await fallbackResponse.json();
-              console.log('✅ AppContext company found via API route (userId):', companyData.name);
-            } else {
-              const errorText = await response.text();
-              companyError = new Error(`API route failed: ${errorText}`);
-              console.error('❌ AppContext: Error fetching company via API route:', {
-                message: companyError.message,
-                errorText
-              });
+          // First, try to load primary company from user_companies
+          // Use simple query if table exists, otherwise fallback to profile.company_id
+          const { data: primaryCompany, error: userCompaniesError } = await supabase
+            .from('user_companies')
+            .select(`
+              company_id,
+              companies (
+                id,
+                name
+              )
+            `)
+            .eq('profile_id', data.id)
+            .eq('is_primary', true)
+            .maybeSingle();
+          
+          let companyData = null;
+          
+          // If 404 (table doesn't exist) or other error, skip user_companies and use fallback
+          const isTableNotFound = userCompaniesError && (
+            userCompaniesError.code === 'PGRST116' ||
+            userCompaniesError.code === '42P01' || // relation does not exist
+            userCompaniesError.message?.includes('404') ||
+            userCompaniesError.message?.includes('relation') ||
+            userCompaniesError.message?.includes('does not exist') ||
+            (userCompaniesError as any)?.status === 404
+          );
+          
+          // Silently handle table not found (migration not run yet)
+          if (isTableNotFound) {
+            console.debug('⚠️ user_companies table not found, falling back to profile.company_id');
+          }
+          
+          if (!isTableNotFound && !userCompaniesError && primaryCompany) {
+            const company = Array.isArray(primaryCompany.companies) 
+              ? primaryCompany.companies[0] 
+              : primaryCompany.companies;
+            
+            if (company && company.id) {
+              companyData = { id: company.id, name: company.name };
             }
           }
-        } catch (apiError) {
-          console.error('API route error:', apiError);
-          companyError = apiError instanceof Error ? apiError : new Error('Unknown API error');
-        }
-        
-        if (!companyError && companyData && companyData.id) {
-          console.log('✅ AppContext company loaded:', companyData.name);
-          setCompany(companyData);
-        } else {
-          console.warn('⚠️ AppContext: No company found', {
-            hasError: !!companyError,
-            errorMessage: companyError?.message,
-            errorCode: companyError?.code,
-            hasData: !!companyData,
-            company_id: data.company_id
-          });
-          setCompany(null);
+          
+          // Fallback to profile.company_id using API route (existing logic)
+          if (!companyData && data.company_id) {
+            try {
+              const response = await fetch(`/api/company/get?id=${data.company_id}`);
+              if (response.ok) {
+                companyData = await response.json();
+              } else {
+                // Try with userId as fallback
+                const fallbackResponse = await fetch(`/api/company/get?userId=${userId}`);
+                if (fallbackResponse.ok) {
+                  companyData = await fallbackResponse.json();
+                }
+              }
+            } catch (apiError) {
+              console.error('API route error:', apiError);
+            }
+          }
+          
+          if (companyData && companyData.id) {
+            setCompany(companyData);
+          } else {
+            setCompany(null);
+          }
+        } catch (error) {
+          console.error('Error loading primary company:', error);
+          // Final fallback: try API route with profile.company_id
+          if (data.company_id) {
+            try {
+              const response = await fetch(`/api/company/get?id=${data.company_id}`);
+              if (response.ok) {
+                const companyData = await response.json();
+                if (companyData && companyData.id) {
+                  setCompany(companyData);
+                } else {
+                  setCompany(null);
+                }
+              } else {
+                setCompany(null);
+              }
+            } catch (apiError) {
+              console.error('Fallback API route error:', apiError);
+              setCompany(null);
+            }
+          } else {
+            setCompany(null);
+          }
         }
       } else {
-        console.log('ℹ️ AppContext: No company_id in profile');
+        // No profile id or in View As mode
         setCompany(null);
       }
       
@@ -619,9 +741,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut() {
+    // Clear selected site on logout
+    setSelectedSiteIdState(null);
+    try {
+      localStorage.removeItem('selectedSiteId');
+    } catch (error) {
+      console.warn('Failed to clear selected site from localStorage:', error);
+    }
     await supabase.auth.signOut();
     window.location.href = '/login';
   }
+
+  // siteId: Use selectedSiteId if available (from header selector), otherwise fall back to profile.site_id
+  // This allows users to override their default site by selecting one in the header
+  const effectiveSiteId = selectedSiteId || profile?.site_id || user?.user_metadata?.site_id || null;
 
   const value = {
     user,
@@ -630,12 +763,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Use viewingAsCompanyId if admin is viewing as another company, otherwise use profile's company_id
     companyId: viewingAsCompanyId || profile?.company_id || user?.user_metadata?.company_id || null,
     company,
-    siteId: profile?.site_id || user?.user_metadata?.site_id || null,
+    // Use selected site from header if available, otherwise use profile's site_id
+    siteId: effectiveSiteId,
     role: profile?.app_role || user?.user_metadata?.app_role || 'Staff',
     userId: user?.id || null,
     loading,
     signOut,
     setCompany,
+    setSelectedSite,
+    selectedSiteId,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

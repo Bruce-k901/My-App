@@ -119,12 +119,25 @@ export default function UserEntityCard({
 
               {/* Site */}
               <div>
-                <label className="text-xs text-neutral-400">Site</label>
+                <label className="text-xs text-neutral-400">Site Assignment</label>
                 <Select
-                  value={editForm.home_site}
-                  options={siteOptions}
-                  onValueChange={(val: string) => onEditFormChange({ home_site: val })}
+                  value={editForm.home_site || 'HEAD_OFFICE'}
+                  options={[
+                    { label: '🏢 Head Office (No Site)', value: 'HEAD_OFFICE' },
+                    ...siteOptions
+                  ]}
+                  onValueChange={(val: string) => {
+                    // If "Head Office" is selected, set both site fields to null
+                    if (val === 'HEAD_OFFICE') {
+                      onEditFormChange({ home_site: null, site_id: null });
+                    } else {
+                      onEditFormChange({ home_site: val });
+                    }
+                  }}
                 />
+                <p className="text-xs text-neutral-500 mt-1">
+                  {editForm.home_site ? 'Site-based employee' : 'Head office / Executive'}
+                </p>
               </div>
 
               {/* BOH/FOH */}
@@ -138,6 +151,21 @@ export default function UserEntityCard({
                     { value: "not_specified", label: "Not specified" }
                   ]}
                   onValueChange={(val: string) => onEditFormChange({ boh_foh: val })}
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="text-xs text-neutral-400">Status</label>
+                <Select
+                  value={editForm.status || 'onboarding'}
+                  options={[
+                    { value: "onboarding", label: "🔵 Onboarding" },
+                    { value: "active", label: "✅ Active" },
+                    { value: "inactive", label: "⏸️ Inactive" },
+                    { value: "on_leave", label: "🏖️ On Leave" }
+                  ]}
+                  onValueChange={(val: string) => onEditFormChange({ status: val })}
                 />
               </div>
 

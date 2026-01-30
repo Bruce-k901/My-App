@@ -9,8 +9,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import type { Message, Conversation, TopicCategory } from '@/types/messaging';
-import ConvertToTaskModal from './ConvertToTaskModal';
-import CreateTaskModal from './CreateTaskModal';
+import CreateTaskModal, { type ModalContext } from '@/components/tasks/CreateTaskModal';
 import ConvertToCalloutModal from './ConvertToCalloutModal';
 import ForwardMessageModal from './ForwardMessageModal';
 import TopicTagModal from './TopicTagModal';
@@ -25,7 +24,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string }> = [
   { label: '👥 HR', value: 'hr', color: 'text-pink-500' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-500' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-600' },
-  { label: '💬 General', value: 'general', color: 'text-gray-400' },
+  { label: '💬 General', value: 'general', color: 'text-white/60' },
 ];
 
 const getTopicLabel = (topic: TopicCategory): string => {
@@ -33,7 +32,7 @@ const getTopicLabel = (topic: TopicCategory): string => {
 };
 
 const getTopicColor = (topic: TopicCategory): string => {
-  return TOPICS.find(t => t.value === topic)?.color || 'text-gray-400';
+  return TOPICS.find(t => t.value === topic)?.color || 'text-white/60';
 };
 
 // File attachment display component
@@ -79,16 +78,16 @@ function FileAttachmentDisplay({ file }: { file: { url: string; name: string; si
       onClick={handleDownload}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center gap-3 p-3 rounded-lg border border-white/[0.06] hover:bg-white/[0.06] transition max-w-sm"
+      className="group flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.06] transition max-w-sm"
     >
       <span className="text-2xl flex-shrink-0">{getFileIcon(file.type)}</span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-pink-400 truncate group-hover:text-pink-300">
+        <div className="text-sm font-medium text-pink-600 dark:text-pink-400 truncate group-hover:text-pink-700 dark:group-hover:text-pink-300">
           {file.name}
         </div>
-        <div className="text-xs text-white/40">{formatFileSize(file.size)}</div>
+        <div className="text-xs text-gray-500 dark:text-white/40">{formatFileSize(file.size)}</div>
       </div>
-      <span className="text-white/40 group-hover:text-white/60 transition">↗</span>
+      <span className="text-gray-500 dark:text-white/40 group-hover:text-gray-700 dark:group-hover:text-white/60 transition">↗</span>
     </a>
   );
 }
@@ -115,6 +114,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   const [dismissedActions, setDismissedActions] = useState<Set<string>>(new Set());
   const [topicTagMessage, setTopicTagMessage] = useState<Message | null>(null);
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  // Track which messages we've already tried to mark as read to avoid redundant upserts
+  const processedReadMessageIds = useRef<Set<string>>(new Set());
 
   // Fetch conversation details for context
   useEffect(() => {
@@ -155,18 +156,66 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
     if (messages.length > 0 && user?.id) {
       // Get unread messages (messages not sent by current user)
       const unreadMessageIds = messages
-        .filter((msg) => msg.sender_id !== user.id)
+        .filter((msg) => {
+          const senderId = msg.sender_profile_id || msg.sender_id;
+          return senderId !== user.id;
+        })
         .map((msg) => msg.id);
 
-      if (unreadMessageIds.length > 0) {
+      console.log('[DEBUG MessageThread] Extracting message IDs:', {
+        totalMessages: messages.length,
+        unreadMessageIds,
+        messageDetails: messages
+          .filter((msg) => {
+            const senderId = msg.sender_profile_id || msg.sender_id;
+            return senderId !== user.id;
+          })
+          .map((msg) => ({
+            id: msg.id,
+            sender_id: msg.sender_profile_id || msg.sender_id,
+            content: msg.content?.substring(0, 50),
+            created_at: msg.created_at,
+          })),
+      });
+
+      // Filter out messages we've already processed to avoid redundant upserts
+      const newUnreadMessageIds = unreadMessageIds.filter(
+        (id) => !processedReadMessageIds.current.has(id)
+      );
+
+      if (newUnreadMessageIds.length > 0) {
+        console.log('[DEBUG MessageThread] Calling markAsRead with:', {
+          messageIds: newUnreadMessageIds,
+          count: newUnreadMessageIds.length,
+        });
+
+        // Mark these messages as processed
+        newUnreadMessageIds.forEach((id) => {
+          processedReadMessageIds.current.add(id);
+        });
+
         // Mark as delivered first (when message appears in UI)
         // Then mark as read (when user actually views it)
-        markAsRead(unreadMessageIds);
+        markAsRead(newUnreadMessageIds).catch((err) => {
+          console.error('[DEBUG MessageThread] markAsRead failed:', err);
+          // If marking as read fails, remove from processed set so we can retry
+          newUnreadMessageIds.forEach((id) => {
+            processedReadMessageIds.current.delete(id);
+          });
+        });
       }
     }
   }, [messages, user, markAsRead]);
 
-  const isOwnMessage = (message: Message) => message.sender_id === user?.id;
+  // Reset processed messages when conversation changes
+  useEffect(() => {
+    processedReadMessageIds.current.clear();
+  }, [conversationId]);
+
+  const isOwnMessage = (message: Message) => {
+    const senderId = message.sender_profile_id || message.sender_id;
+    return senderId === user?.id;
+  };
 
 
   // Close menu when clicking outside
@@ -245,6 +294,9 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   };
 
   const handleQuickAction = (message: Message, actionType: 'callout' | 'task') => {
+    // Dismiss the suggestion immediately when user clicks "Create Task" or "Create Callout"
+    handleDismissAction(message.id);
+    
     if (actionType === 'callout') {
       setCalloutModalMessage(message);
     } else {
@@ -275,23 +327,23 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   if (loading && messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full relative">
-        <div className="text-white/60">Loading messages...</div>
+        <div className="text-gray-600 dark:text-white/60">Loading messages...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white/[0.02] overflow-hidden">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0B0D13] overflow-hidden">
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
-        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-white/20 scrollbar-track-transparent"
         style={{ scrollbarWidth: 'thin' }}
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-white/40 text-sm mb-2">No messages yet</div>
-            <div className="text-white/20 text-xs">Start the conversation!</div>
+            <div className="text-gray-500 dark:text-white/40 text-sm mb-2">No messages yet</div>
+            <div className="text-gray-400 dark:text-white/20 text-xs">Start the conversation!</div>
           </div>
         ) : (
           messages.map((message, index) => {
@@ -304,19 +356,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 new Date(prevMessage.created_at).getTime() >
                 300000; // 5 minutes
 
-            // Debug logging for tags (remove after debugging)
-            if (isOwn && (showAvatar || message.reply_to)) {
-              console.log('🔍 TAG DEBUG for message:', {
-                messageId: message.id,
-                showAvatar,
-                hasReplyTo: !!message.reply_to,
-                replyToId: message.reply_to?.id,
-                prevMessageSenderId: prevMessage?.sender_id,
-                currentSenderId: message.sender_id,
-                timeDiff: prevMessage ? new Date(message.created_at).getTime() - new Date(prevMessage.created_at).getTime() : 'N/A',
-                senderName: message.sender?.full_name || message.sender?.email,
-              });
-            }
+            // Debug logging for tags (removed for production)
 
             return (
               <div
@@ -325,7 +365,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 className={`flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-400">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-600 dark:text-pink-400">
                     {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
@@ -337,14 +377,14 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   }`}
                 >
                   {showAvatar && message.sender && (message.sender.full_name || message.sender.email) && (
-                    <div className="text-xs text-white/40 mb-1 px-2">
+                    <div className="text-xs text-gray-500 dark:text-white/40 mb-1 px-2">
                       {message.sender.full_name || message.sender.email?.split('@')[0]}
                     </div>
                   )}
 
                   {message.reply_to && message.reply_to.id && (
                     <div
-                      className={`mb-2 px-3 py-2 bg-white/[0.08] border-l-3 border-pink-500/70 rounded text-xs ${
+                      className={`mb-2 px-3 py-2 bg-pink-50 dark:bg-white/[0.08] border-l-3 border-pink-500 dark:border-pink-500/70 rounded text-xs ${
                         isOwn ? 'ml-auto' : ''
                       }`}
                       onClick={(e) => {
@@ -363,12 +403,12 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Reply className="w-3 h-3 text-pink-400 flex-shrink-0" />
-                        <div className="text-xs text-white/50 font-medium">
+                        <Reply className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                        <div className="text-xs text-gray-600 dark:text-white/50 font-medium">
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-white/70 truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
+                      <div className="text-gray-900 dark:text-white truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (
@@ -380,11 +420,21 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     </div>
                   )}
 
+                  {/* Forwarded message indicator */}
+                  {message.metadata?.forwarded_from_message_id && (
+                    <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 dark:text-white/50">
+                      <Forward className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                      <span>
+                        Forwarded from {message.metadata?.forwarded_from_sender || 'Unknown'}
+                      </span>
+                    </div>
+                  )}
+
                   <div
                     className={`group relative px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
                       isOwn
-                        ? 'bg-pink-500/20 text-white'
-                        : 'bg-white/[0.05] text-white/90'
+                        ? 'bg-pink-100 dark:bg-white/[0.03] border border-pink-200 dark:border-white/[0.06] text-gray-900 dark:text-white'
+                        : 'bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white'
                     }`}
                   >
                     {message.message_type === 'image' && message.file_url ? (
@@ -406,13 +456,13 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         }}
                       />
                     ) : (
-                      <p className="text-sm whitespace-pre-wrap break-words">
+                      <p className="text-sm whitespace-pre-wrap break-words text-gray-900 dark:text-white">
                         {message.content}
                       </p>
                     )}
 
                     {message.edited_at && (
-                      <span className="text-xs text-white/30 italic ml-2">
+                      <span className="text-xs text-gray-600 dark:text-white/60 italic ml-2">
                         (edited)
                       </span>
                     )}
@@ -429,21 +479,21 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
                     <div className="flex items-center justify-between mt-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-white/40">
+                        <span className="text-xs text-gray-600 dark:text-white/60">
                           {formatMessageTime(message.created_at)}
                         </span>
                         {isOwn && (
                           <div className="flex items-center">
                             {message.receipt_status === 'read' ? (
-                              <span className="text-xs text-blue-400" title="Read">
+                              <span className="text-xs text-blue-600 dark:text-blue-400" title="Read">
                                 ✓✓
                               </span>
                             ) : message.receipt_status === 'delivered' ? (
-                              <span className="text-xs text-white/60" title="Delivered">
+                              <span className="text-xs text-gray-600 dark:text-white/70" title="Delivered">
                                 ✓✓
                               </span>
                             ) : (
-                              <span className="text-xs text-white/40" title="Sent">
+                              <span className="text-xs text-gray-600 dark:text-white/60" title="Sent">
                                 ✓
                               </span>
                             )}
@@ -458,7 +508,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                             e.stopPropagation();
                             setActiveMenuId(activeMenuId === message.id ? null : message.id);
                           }}
-                          className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                          className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
                           title="Message actions"
                         >
                           <MoreVertical className="w-4 h-4" />
@@ -469,7 +519,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                             ref={(el) => {
                               if (el) menuRefs.current.set(message.id, el);
                             }}
-                            className="absolute right-0 bottom-full mb-2 bg-white/[0.95] backdrop-blur-sm rounded-lg shadow-lg border border-white/20 py-1 min-w-[160px] z-50"
+                            className="absolute right-0 bottom-full mb-2 bg-white dark:bg-white/[0.95] backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-white/20 py-1 min-w-[160px] z-50"
                           >
                             <button
                               onClick={(e) => {
@@ -477,7 +527,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleReply(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                             >
                               <Reply className="w-4 h-4" />
                               Reply
@@ -488,7 +538,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleForward(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                             >
                               <Forward className="w-4 h-4" />
                               Forward
@@ -499,12 +549,12 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleCopy(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                             >
                               {copiedMessageId === message.id ? (
                                 <>
-                                  <Check className="w-4 h-4 text-green-500" />
-                                  <span className="text-green-500">Copied!</span>
+                                  <Check className="w-4 h-4 text-green-600 dark:text-green-500" />
+                                  <span className="text-green-600 dark:text-green-500">Copied!</span>
                                 </>
                               ) : (
                                 <>
@@ -519,7 +569,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 setCreateTaskModalMessage(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                             >
                               <CheckSquare className="w-4 h-4" />
                               Create Task
@@ -531,7 +581,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                   setTaskModalMessage(message);
                                   setActiveMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                               >
                                 <CheckSquare className="w-4 h-4" />
                                 Convert to Task
@@ -598,18 +648,18 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
           <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
-              <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center">
+              <div className="w-2 h-2 bg-pink-600 dark:bg-pink-400 rounded-full animate-pulse" />
             </div>
-            <div className="px-4 py-2 bg-white/[0.05] rounded-lg">
+            <div className="px-4 py-2 bg-gray-100 dark:bg-white/[0.05] rounded-lg">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-500 dark:bg-white/40 rounded-full animate-bounce" />
                 <div
-                  className="w-2 h-2 bg-white/40 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-gray-500 dark:bg-white/40 rounded-full animate-bounce"
                   style={{ animationDelay: '0.1s' }}
                 />
                 <div
-                  className="w-2 h-2 bg-white/40 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-gray-500 dark:bg-white/40 rounded-full animate-bounce"
                   style={{ animationDelay: '0.2s' }}
                 />
               </div>
@@ -620,34 +670,84 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Create Task Modal */}
+      {/* Unified Create Task/Meeting Modal */}
       {createTaskModalMessage && (
         <CreateTaskModal
-          message={createTaskModalMessage}
-          conversationContext={{
-            site_id: conversation?.site_id || undefined,
-            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
-          }}
+          isOpen={!!createTaskModalMessage}
           onClose={() => setCreateTaskModalMessage(null)}
-          onSuccess={(taskId) => {
+          context={{
+            source: 'message',
+            messageId: createTaskModalMessage.id,
+            messageContent: createTaskModalMessage.content,
+            channelId: conversationId,
+            preSelectedParticipants: conversation?.type === 'direct' && conversation?.participants
+              ? conversation.participants
+                  .filter(p => (p.profile_id || p.user_id) !== user?.id)
+                  .map(p => p.profile_id || p.user_id || '')
+                  .filter(Boolean)
+              : undefined,
+          }}
+          onTaskCreated={(task) => {
+            // Dismiss any action prompt for this message
+            handleDismissAction(createTaskModalMessage.id);
             setCreateTaskModalMessage(null);
             toast.success('Task created successfully!');
           }}
         />
       )}
 
-      {/* Convert to Task Modal */}
+      {/* Unified Create Task/Meeting Modal (Convert to Task) */}
       {taskModalMessage && (
-        <ConvertToTaskModal
-          message={taskModalMessage}
-          conversationContext={{
-            site_id: conversation?.site_id || undefined,
-            asset_id: conversation?.context_type === 'asset' ? conversation.context_id || undefined : undefined,
-          }}
+        <CreateTaskModal
+          isOpen={!!taskModalMessage}
           onClose={() => setTaskModalMessage(null)}
-          onSuccess={(taskId) => {
+          context={{
+            source: 'message',
+            messageId: taskModalMessage.id,
+            messageContent: taskModalMessage.content,
+            channelId: conversationId,
+            preSelectedParticipants: conversation?.type === 'direct' && conversation?.participants
+              ? conversation.participants
+                  .filter(p => (p.profile_id || p.user_id) !== user?.id)
+                  .map(p => p.profile_id || p.user_id || '')
+                  .filter(Boolean)
+              : undefined,
+          }}
+          onTaskCreated={(task) => {
+            // Update the message to mark it as converted to task
+            supabase
+              .from('messaging_messages')
+              .update({
+                metadata: {
+                  ...taskModalMessage.metadata,
+                  is_task: true,
+                  task_id: task.id,
+                  action_taken: true,
+                  action_type: 'task_created',
+                  action_entity_id: task.id
+                }
+              })
+              .eq('id', taskModalMessage.id);
+
+            // Add a system message to the conversation
+            if (user?.id) {
+              supabase.from('messaging_messages').insert({
+                channel_id: taskModalMessage.channel_id,
+                sender_profile_id: user.id,
+                content: `Created task: "${task.title}"`,
+                message_type: 'text',
+                metadata: {
+                  type: 'task_created',
+                  task_id: task.id,
+                  original_message_id: taskModalMessage.id,
+                }
+              });
+            }
+
+            // Dismiss any action prompt for this message
+            handleDismissAction(taskModalMessage.id);
             setTaskModalMessage(null);
-            // Messages will update automatically via real-time subscription
+            toast.success('Message converted to task successfully!');
           }}
         />
       )}

@@ -94,14 +94,14 @@ export default function WelcomeHeader() {
   // Always render the same structure - server and client must match
   // CRITICAL: suppressHydrationWarning on root div to prevent Suspense wrapper mismatch
   return (
-    <div className="text-white" suppressHydrationWarning>
+    <div className="text-[rgb(var(--text-primary))] dark:text-white" suppressHydrationWarning>
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold" suppressHydrationWarning>
             Welcome{firstName ? `, ${firstName}` : ""}
           </h1>
           <p 
-            className="text-white/60 text-xs sm:text-sm md:text-base"
+            className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs sm:text-sm md:text-base"
             suppressHydrationWarning
           >
             {formattedDate || "\u00A0"}

@@ -40,7 +40,11 @@ const CONTACT_TYPE_ICONS = {
 };
 
 export default function EmergencyContactsPage() {
-  const { profile, companyId } = useAppContext();
+  const { profile, companyId, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId || profile?.company_id;
+  
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +64,7 @@ export default function EmergencyContactsPage() {
   });
 
   const loadContacts = useCallback(async () => {
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       console.warn('No companyId available for loading emergency contacts');
       setLoading(false);
       return;
@@ -71,7 +75,7 @@ export default function EmergencyContactsPage() {
       const { data, error } = await supabase
         .from('emergency_contacts')
         .select('*')
-        .eq('company_id', companyId)
+        .eq('company_id', effectiveCompanyId)
         .order('display_order', { ascending: true })
         .order('name', { ascending: true });
 
@@ -106,16 +110,16 @@ export default function EmergencyContactsPage() {
     } finally {
       setLoading(false);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
-    if (companyId) {
+    if (effectiveCompanyId) {
       loadContacts();
     } else {
       setLoading(false);
       setContacts([]);
     }
-  }, [companyId, loadContacts]);
+  }, [effectiveCompanyId, loadContacts]);
 
   const handleSave = async () => {
     if (!companyId) return;
@@ -143,7 +147,7 @@ export default function EmergencyContactsPage() {
           .from('emergency_contacts')
           .insert({
             ...formData,
-            company_id: companyId,
+            company_id: effectiveCompanyId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });

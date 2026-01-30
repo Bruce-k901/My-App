@@ -101,3 +101,15 @@ const handleClickOutside = (e: MouseEvent) => {
 2. Should navigate immediately on first click
 3. No double-click required
 4. Navigation should be smooth and instant
+
+
+
+
+
+
+
+
+
+
+
+

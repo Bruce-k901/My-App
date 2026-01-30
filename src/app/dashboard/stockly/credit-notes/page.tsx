@@ -276,63 +276,60 @@ export default function CreditNotesPage() {
 
   if (loading && creditNotes.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading credit notes...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white">Loading credit notes...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link 
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link 
               href="/dashboard/stockly"
               className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Credit Note Requests</h1>
-              <p className="text-slate-400 text-sm">Manage credit note requests and track supplier responses</p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Credit Note Requests</h1>
+            <p className="text-white/60 text-sm mt-1">Manage credit note requests and track supplier responses</p>
           </div>
-          <Button
-            onClick={() => setIsNewModalOpen(true)}
-            variant="secondary"
-            className="flex items-center gap-2"
-          >
-            <Plus size={18} />
-            New CN Request
-          </Button>
         </div>
+        <button
+          onClick={() => setIsNewModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+        >
+          <Plus className="w-5 h-5" />
+          New CN Request
+        </button>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">Draft</div>
-            <div className="text-2xl font-bold text-white">{summary.draft}</div>
-          </div>
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">Submitted</div>
-            <div className="text-2xl font-bold text-white">{summary.submitted}</div>
-          </div>
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">Awaiting</div>
-            <div className="text-2xl font-bold text-white">{formatCurrency(summary.awaiting)}</div>
-          </div>
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-4">
-            <div className="text-sm text-slate-400 mb-1">This Month</div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+          <div className="text-sm text-white/60 mb-1">Draft</div>
+          <div className="text-2xl font-bold text-white">{summary.draft}</div>
+        </div>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+          <div className="text-sm text-white/60 mb-1">Submitted</div>
+          <div className="text-2xl font-bold text-white">{summary.submitted}</div>
+        </div>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+          <div className="text-sm text-white/60 mb-1">Awaiting</div>
+          <div className="text-2xl font-bold text-white">{formatCurrency(summary.awaiting)}</div>
+        </div>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+          <div className="text-sm text-white/60 mb-1">This Month</div>
             <div className="text-2xl font-bold text-white">{formatCurrency(summary.thisMonthTotal)}</div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Filters */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <Input
@@ -375,30 +372,33 @@ export default function CreditNotesPage() {
 
         {/* Credit Notes Table */}
         {filteredCreditNotes.length === 0 ? (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-12 text-center">
-            <FileX className="mx-auto text-slate-400 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
-                ? 'No credit notes found'
-                : 'No credit notes yet'}
-            </h3>
-            <p className="text-slate-400 mb-6">
-              {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
-                ? 'Try adjusting your filters'
-                : 'Get started by creating your first credit note request'}
-            </p>
-            {!searchTerm && statusFilter === 'all' && supplierFilter === 'all' && !startDate && !endDate && (
-              <Button onClick={() => setIsNewModalOpen(true)} variant="secondary">
-                <Plus size={18} className="mr-2" />
-                New CN Request
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="bg-white/[0.03] border border-neutral-800 rounded-xl overflow-hidden">
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
+          <FileX className="w-12 h-12 text-white/20 mx-auto mb-4" />
+          <h3 className="text-white font-medium mb-2">
+            {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
+              ? 'No credit notes found'
+              : 'No credit notes yet'}
+          </h3>
+          <p className="text-white/60 text-sm mb-4">
+            {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
+              ? 'Try adjusting your filters'
+              : 'Get started by creating your first credit note request'}
+          </p>
+          {!searchTerm && statusFilter === 'all' && supplierFilter === 'all' && !startDate && !endDate && (
+            <button
+              onClick={() => setIsNewModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+            >
+              <Plus className="w-4 h-4" />
+              New CN Request
+            </button>
+          )}
+        </div>
+      ) : (
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/[0.05] border-b border-neutral-800">
+                <thead className="bg-white/[0.05] border-b border-white/[0.06]">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                       CN#
@@ -467,8 +467,8 @@ export default function CreditNotesPage() {
           </div>
         )}
 
-        {/* New CN Modal */}
-        <NewCreditNoteModal
+      {/* New CN Modal */}
+      <NewCreditNoteModal
           isOpen={isNewModalOpen}
           onClose={() => setIsNewModalOpen(false)}
           onSuccess={(cnId) => {

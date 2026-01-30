@@ -53,3 +53,12 @@ CREATE POLICY uom_service_only ON uom FOR ALL USING (auth.role() = 'service_role
 
 COMMIT;
 
+
+
+
+
+
+
+
+
+

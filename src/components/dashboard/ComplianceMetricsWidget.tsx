@@ -44,6 +44,7 @@ export default function ComplianceMetricsWidget() {
   const lastLoadRef = useRef<{ siteId: string | null; companyId: string | null }>({ siteId: null, companyId: null })
   const hasLoadedRef = useRef(false) // Track if we've successfully loaded at least once
   const errorCountRef = useRef(0) // Track consecutive errors to prevent infinite retries
+  const contextLoadingHandledRef = useRef(false) // Track if we've already handled the initial context loading
 
   // Cleanup on unmount
   useEffect(() => {
@@ -53,8 +54,9 @@ export default function ComplianceMetricsWidget() {
   }, [])
 
   const loadComplianceMetrics = useCallback(async () => {
-    if (!siteId || !companyId) {
-      console.warn('⚠️ ComplianceMetricsWidget: Cannot load - missing siteId or companyId', { siteId, companyId })
+    // Handle "all" sites case - widget needs a specific site
+    if (siteId === 'all' || !siteId || !companyId) {
+      console.warn('⚠️ ComplianceMetricsWidget: Cannot load - missing siteId or companyId, or "all" sites selected', { siteId, companyId })
       if (mountedRef.current) {
         setLoading(false)
         setTodayStats(null)
@@ -79,10 +81,11 @@ export default function ComplianceMetricsWidget() {
     }
 
     try {
+      console.log('1️⃣ ComplianceMetricsWidget: Fetching today\'s tasks...')
       const today = new Date().toISOString().split('T')[0]
       
-      // Fetch today's tasks
-      const { data: todayTasks, error: tasksError } = await supabase
+      // Fetch today's tasks - only filter by site_id if siteId is valid (not "all")
+      let tasksQuery = supabase
         .from('checklist_tasks')
         .select(`
           id,
@@ -94,14 +97,26 @@ export default function ComplianceMetricsWidget() {
             is_critical
           )
         `)
-        .eq('site_id', siteId)
         .eq('due_date', today)
+      
+      // Only add site_id filter if siteId is not "all"
+      if (siteId && siteId !== 'all') {
+        tasksQuery = tasksQuery.eq('site_id', siteId)
+      }
+      
+      const { data: todayTasks, error: tasksError } = await tasksQuery
+
+      console.log('2️⃣ ComplianceMetricsWidget: Today\'s tasks response received', { 
+        recordCount: todayTasks?.length,
+        hasError: !!tasksError 
+      })
 
       if (tasksError) {
         console.error('❌ ComplianceMetricsWidget: Error fetching tasks:', tasksError)
         throw tasksError
       }
 
+      console.log('3️⃣ ComplianceMetricsWidget: Calculating today\'s stats...')
       // Calculate today's stats
       const total = todayTasks?.length || 0
       const completed = todayTasks?.filter(t => t.status === 'completed').length || 0
@@ -127,8 +142,10 @@ export default function ComplianceMetricsWidget() {
           completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
           criticalCompletionRate: critical > 0 ? Math.round((criticalCompleted / critical) * 100) : 0
         })
+        console.log('4️⃣ ComplianceMetricsWidget: Today\'s stats set', { total, completed, pending, overdue })
       }
 
+      console.log('5️⃣ ComplianceMetricsWidget: Fetching recent completions...')
       // Fetch recent completions (last 5)
       // First get completion records, then fetch task details separately
       const { data: recentData, error: recentError } = await supabase
@@ -145,7 +162,7 @@ export default function ComplianceMetricsWidget() {
       if (!recentError && recentData && recentData.length > 0) {
         // Fetch task details for completed tasks
         const taskIds = recentData.map(r => r.task_id).filter(Boolean)
-        const { data: tasksData } = await supabase
+        let tasksQuery = supabase
           .from('checklist_tasks')
           .select(`
             id,
@@ -156,7 +173,13 @@ export default function ComplianceMetricsWidget() {
             )
           `)
           .in('id', taskIds)
-          .eq('site_id', siteId)
+        
+        // Only add site_id filter if siteId is not "all"
+        if (siteId && siteId !== 'all') {
+          tasksQuery = tasksQuery.eq('site_id', siteId)
+        }
+        
+        const { data: tasksData } = await tasksQuery
 
         // Fetch user profiles
         const userIds = [...new Set(recentData.map(r => r.completed_by).filter(Boolean))]
@@ -193,23 +216,38 @@ export default function ComplianceMetricsWidget() {
         
         if (mountedRef.current) {
           setRecentCompletions(completions)
+          console.log('6️⃣ ComplianceMetricsWidget: Recent completions set', { count: completions.length })
         }
       } else if (recentError) {
-        console.warn('Failed to fetch recent completions:', recentError)
+        console.warn('⚠️ ComplianceMetricsWidget: Failed to fetch recent completions:', recentError)
+      } else {
+        console.log('6️⃣ ComplianceMetricsWidget: No recent completions found')
       }
 
+      console.log('7️⃣ ComplianceMetricsWidget: Fetching compliance trend...')
       // Calculate compliance score on-the-fly if no historical data exists
       // First try to fetch historical scores
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
       
-      const { data: scoreData, error: scoreError } = await supabase
+      // Only fetch compliance score if siteId and companyId are valid (not "all")
+      let scoreQuery = supabase
         .from('site_compliance_score')
         .select('score_date, score')
-        .eq('site_id', siteId)
         .gte('score_date', sevenDaysAgo.toISOString().split('T')[0])
         .order('score_date', { ascending: true })
         .limit(7)
+      
+      // Add tenant_id filter for RLS if companyId is available
+      if (companyId) {
+        scoreQuery = scoreQuery.eq('tenant_id', companyId)
+      }
+      
+      if (siteId && siteId !== 'all') {
+        scoreQuery = scoreQuery.eq('site_id', siteId)
+      }
+      
+      const { data: scoreData, error: scoreError } = await scoreQuery
 
       if (scoreError) {
         console.warn('Failed to fetch compliance trend:', scoreError)
@@ -241,36 +279,48 @@ export default function ComplianceMetricsWidget() {
             windowStart.setDate(windowStart.getDate() - 6)
             
             // Fetch data for this date with error handling
+            // Build queries with conditional site_id filter
+            const buildQuery = (baseQuery: any) => {
+              if (siteId && siteId !== 'all') {
+                return baseQuery.eq('site_id', siteId)
+              }
+              return baseQuery
+            }
+            
             const [incidentsResult, overdueResult, missedResult, breachesResult] = await Promise.allSettled([
               // Critical incidents
-              supabase
-                .from('incidents')
-                .select('id')
-                .eq('site_id', siteId)
-                .in('severity', ['high', 'critical'])
-                .neq('status', 'closed'),
+              buildQuery(
+                supabase
+                  .from('incidents')
+                  .select('id')
+                  .in('severity', ['high', 'critical'])
+                  .neq('status', 'closed')
+              ),
               // Overdue tasks
-              supabase
-                .from('checklist_tasks')
-                .select('id')
-                .eq('site_id', siteId)
-                .in('status', ['pending', 'in_progress'])
-                .lt('due_date', dateStr),
+              buildQuery(
+                supabase
+                  .from('checklist_tasks')
+                  .select('id')
+                  .in('status', ['pending', 'in_progress'])
+                  .lt('due_date', dateStr)
+              ),
               // Missed tasks (yesterday's incomplete)
-              supabase
-                .from('checklist_tasks')
-                .select('id')
-                .eq('site_id', siteId)
-                .in('status', ['pending', 'in_progress'])
-                .eq('due_date', new Date(date.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]),
+              buildQuery(
+                supabase
+                  .from('checklist_tasks')
+                  .select('id')
+                  .in('status', ['pending', 'in_progress'])
+                  .eq('due_date', new Date(date.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+              ),
               // Temperature breaches (last 7 days from this date)
-              supabase
-                .from('temperature_breach_actions')
-                .select('id')
-                .eq('site_id', siteId)
-                .in('status', ['pending', 'acknowledged'])
-                .gte('created_at', windowStart.toISOString())
-                .lt('created_at', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString())
+              buildQuery(
+                supabase
+                  .from('temperature_breach_actions')
+                  .select('id')
+                  .in('status', ['pending', 'acknowledged'])
+                  .gte('created_at', windowStart.toISOString())
+                  .lt('created_at', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString())
+              )
             ])
             
             // Extract data from settled promises, defaulting to empty arrays on error
@@ -300,6 +350,7 @@ export default function ComplianceMetricsWidget() {
         
         if (mountedRef.current) {
           setComplianceTrend(trend)
+          console.log('8️⃣ ComplianceMetricsWidget: Compliance trend set', { trendLength: trend.length })
         }
         
         // Optionally trigger the function to store today's score
@@ -307,17 +358,27 @@ export default function ComplianceMetricsWidget() {
           const todayScore = trend[trend.length - 1]
           // Store today's score via RPC call (if function exists)
           try {
+            console.log('9️⃣ ComplianceMetricsWidget: Storing compliance score...')
             await supabase.rpc('compute_site_compliance_score', { target_date: today.toISOString().split('T')[0] })
+            console.log('✅ ComplianceMetricsWidget: Score stored successfully')
           } catch (err) {
             // Silently fail - function might not be accessible or might not exist yet
-            console.debug('Could not store compliance score:', err)
+            console.debug('⚠️ ComplianceMetricsWidget: Could not store compliance score:', err)
           }
         }
       }
 
+      console.log('✅ ComplianceMetricsWidget: All data loaded successfully')
+
     } catch (err: any) {
       errorCountRef.current += 1
       console.error('❌ ComplianceMetricsWidget: Error loading compliance metrics:', err, `(Error count: ${errorCountRef.current})`)
+      console.error('❌ ComplianceMetricsWidget: Error details:', {
+        message: err?.message,
+        code: err?.code,
+        details: err?.details,
+        stack: err?.stack
+      })
       if (mountedRef.current) {
         setError(err.message || 'Failed to load compliance metrics')
         // If we've had multiple consecutive errors, stop trying to prevent infinite loops
@@ -326,11 +387,20 @@ export default function ComplianceMetricsWidget() {
         }
       }
     } finally {
+      // ✅ THIS ALWAYS RUNS - even if there's an error!
+      console.log('🏁 ComplianceMetricsWidget: Finally block executing - clearing loading flag')
       loadingRef.current = false
       hasLoadedRef.current = true // Mark as successfully attempted
-      if (mountedRef.current) {
-        setLoading(false)
-        console.log('✅ ComplianceMetricsWidget: Load complete')
+      
+      // Always clear loading state, even if component appears unmounted
+      // React state updates are safe even after unmount (they just get ignored)
+      console.log('🔄 ComplianceMetricsWidget: Calling setLoading(false)...')
+      setLoading(false)
+      console.log('✅ ComplianceMetricsWidget: setLoading(false) called, component should re-render')
+      
+      // Double-check mounted state for logging purposes
+      if (!mountedRef.current) {
+        console.warn('⚠️ ComplianceMetricsWidget: Component appears unmounted, but setLoading was called anyway')
       }
     }
   }, [siteId, companyId])
@@ -342,10 +412,18 @@ export default function ComplianceMetricsWidget() {
   }, [loadComplianceMetrics])
 
   useEffect(() => {
-    // Don't try to load while AppContext is still loading
-    if (contextLoading) {
-      console.log('⏳ ComplianceMetricsWidget: Waiting for AppContext to finish loading')
+    // Only wait for contextLoading on initial load (before we've loaded successfully)
+    // After initial load, ignore contextLoading flickers during Fast Refresh
+    // Also, if we already have siteId/companyId, don't wait (they're already available)
+    const hasRequiredValues = siteId && companyId
+    if (contextLoading && !contextLoadingHandledRef.current && !hasRequiredValues) {
+      console.log('⏳ ComplianceMetricsWidget: Waiting for AppContext to finish loading', { siteId, companyId })
       return
+    }
+
+    // Mark that we've handled context loading at least once
+    if (!contextLoading) {
+      contextLoadingHandledRef.current = true
     }
 
     // Don't trigger if a load is already in progress
@@ -359,12 +437,10 @@ export default function ComplianceMetricsWidget() {
     const prevCompanyId = lastLoadRef.current.companyId
     const hasChanged = prevSiteId !== siteId || prevCompanyId !== companyId
     
-    // Only proceed if values have actually changed
-    if (!hasChanged) {
+    // Only proceed if values have actually changed OR if this is the first load
+    if (!hasChanged && hasLoadedRef.current) {
       // Only log if we've loaded before (to reduce console spam)
-      if (hasLoadedRef.current) {
-        console.log('⏭️ ComplianceMetricsWidget: No change detected, skipping', { siteId, companyId })
-      }
+      console.log('⏭️ ComplianceMetricsWidget: No change detected, skipping', { siteId, companyId })
       return
     }
     
@@ -383,7 +459,8 @@ export default function ComplianceMetricsWidget() {
         prevSiteId, 
         prevCompanyId,
         hasLoadedBefore: hasLoadedRef.current,
-        errorCount: errorCountRef.current
+        errorCount: errorCountRef.current,
+        isInitialLoad: !hasLoadedRef.current
       })
       loadComplianceMetricsRef.current()
     } else if (errorCountRef.current >= 3) {
@@ -398,40 +475,57 @@ export default function ComplianceMetricsWidget() {
         setComplianceTrend([])
         setError(null)
         hasLoadedRef.current = false // Reset since we didn't successfully load
+        contextLoadingHandledRef.current = false // Reset so we wait for context again
       }
     }
   }, [siteId, companyId, contextLoading]) // Include contextLoading to wait for AppContext to finish loading
 
   // Show loading state while context is loading or while we're fetching data
   if (contextLoading || (!siteId && !companyId)) {
+    console.log('🔄 ComplianceMetricsWidget: Rendering context loading state', { contextLoading, siteId, companyId })
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400"></div>
-          <span className="ml-3 text-white/60">Loading...</span>
+          <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Loading...</span>
         </div>
       </div>
     )
   }
 
-  if (!siteId) {
+  if (!siteId || siteId === 'all') {
+    console.log('🔄 ComplianceMetricsWidget: Rendering "select site" state', { siteId, companyId })
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <p className="text-white/60 text-center">Select a site to view compliance metrics</p>
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+        <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] text-center">Select a specific site to view compliance metrics</p>
       </div>
     )
   }
 
   if (loading) {
+    console.log('🔄 ComplianceMetricsWidget: Rendering loading spinner', { 
+      loading, 
+      loadingRef: loadingRef.current,
+      hasTodayStats: !!todayStats,
+      hasRecentCompletions: recentCompletions.length > 0
+    })
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400"></div>
-          <span className="ml-3 text-white/60">Loading compliance metrics...</span>
+          <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Loading compliance metrics...</span>
         </div>
       </div>
     )
   }
+
+  console.log('✅ ComplianceMetricsWidget: Rendering metrics content', {
+    loading,
+    loadingRef: loadingRef.current,
+    todayStats: !!todayStats,
+    recentCompletionsCount: recentCompletions.length,
+    trendLength: complianceTrend.length
+  })
 
   if (error) {
     return (
@@ -446,16 +540,16 @@ export default function ComplianceMetricsWidget() {
     : 0
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-6">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Compliance Metrics</h2>
-          <p className="text-sm text-white/60 mt-1">Today's performance overview</p>
+          <h2 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Compliance Metrics</h2>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] mt-1">Today's performance overview</p>
         </div>
         <Link 
           href="/dashboard/my_tasks"
-          className="text-sm text-pink-400 hover:text-pink-300 transition-colors"
+          className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-300 transition-colors"
         >
           View All Tasks →
         </Link>
@@ -464,73 +558,73 @@ export default function ComplianceMetricsWidget() {
       {/* Today's Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* Completion Rate */}
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+        <div className="bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="w-4 h-4 text-green-400" />
-            <span className="text-xs text-white/60">Completion Rate</span>
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Completion Rate</span>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {todayStats?.completionRate ?? 0}%
           </div>
-          <div className="text-xs text-white/40 mt-1">
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] mt-1">
             {todayStats?.completed ?? 0} of {todayStats?.total ?? 0} tasks
           </div>
         </div>
 
         {/* Overdue Tasks */}
-        <div className={`bg-white/[0.05] border rounded-lg p-4 ${
+        <div className={`bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border rounded-lg p-4 ${
           (todayStats?.overdue ?? 0) > 0 
             ? 'border-red-500/40 bg-red-500/10' 
-            : 'border-white/[0.1]'
+            : 'border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))]'
         }`}>
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className={`w-4 h-4 ${
-              (todayStats?.overdue ?? 0) > 0 ? 'text-red-400' : 'text-white/60'
+              (todayStats?.overdue ?? 0) > 0 ? 'text-red-400' : 'text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]'
             }`} />
-            <span className="text-xs text-white/60">Overdue</span>
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Overdue</span>
           </div>
           <div className={`text-2xl font-bold ${
-            (todayStats?.overdue ?? 0) > 0 ? 'text-red-400' : 'text-white'
+            (todayStats?.overdue ?? 0) > 0 ? 'text-red-400' : 'text-[rgb(var(--text-primary))] dark:text-white'
           }`}>
             {todayStats?.overdue ?? 0}
           </div>
-          <div className="text-xs text-white/40 mt-1">Tasks past due</div>
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] mt-1">Tasks past due</div>
         </div>
 
         {/* Critical Tasks */}
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+        <div className="bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-4 h-4 text-orange-400" />
-            <span className="text-xs text-white/60">Critical</span>
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Critical</span>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {todayStats?.criticalCompleted ?? 0}/{todayStats?.critical ?? 0}
           </div>
-          <div className="text-xs text-white/40 mt-1">
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] mt-1">
             {todayStats?.criticalCompletionRate ?? 0}% complete
           </div>
         </div>
 
         {/* Pending Tasks */}
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+        <div className="bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs text-white/60">Pending</span>
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Pending</span>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {todayStats?.pending ?? 0}
           </div>
-          <div className="text-xs text-white/40 mt-1">Awaiting completion</div>
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] mt-1">Awaiting completion</div>
         </div>
       </div>
 
       {/* Current Compliance Score */}
       {complianceTrend.length > 0 && (
-        <div className="bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+        <div className="bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <span className="text-sm font-medium text-white/60">Current Compliance Score</span>
-              <div className="text-3xl font-bold text-white mt-1">
+              <span className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Current Compliance Score</span>
+              <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mt-1">
                 {complianceTrend[complianceTrend.length - 1]?.score.toFixed(1) || '0.0'}%
               </div>
             </div>
@@ -547,8 +641,8 @@ export default function ComplianceMetricsWidget() {
                 </>
               ) : (
                 <>
-                  <Minus className="w-5 h-5 text-white/60" />
-                  <span className="text-sm text-white/60">No change</span>
+                  <Minus className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]" />
+                  <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">No change</span>
                 </>
               )}
             </div>
@@ -557,7 +651,7 @@ export default function ComplianceMetricsWidget() {
           {/* Compliance Score Trend Chart */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-white/60">7-Day Trend</span>
+              <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">7-Day Trend</span>
             </div>
             <div className="flex items-end gap-1 h-16">
               {complianceTrend.map((entry) => (
@@ -569,7 +663,7 @@ export default function ComplianceMetricsWidget() {
                 />
               ))}
             </div>
-            <div className="flex justify-between mt-2 text-xs text-white/40">
+            <div className="flex justify-between mt-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))]">
               <span>{format(new Date(complianceTrend[0]?.date || new Date()), 'MMM dd')}</span>
               <span>{format(new Date(complianceTrend[complianceTrend.length - 1]?.date || new Date()), 'MMM dd')}</span>
             </div>
@@ -580,17 +674,17 @@ export default function ComplianceMetricsWidget() {
       {/* Recent Completions */}
       {recentCompletions.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-white mb-3">Recent Completions</h3>
+          <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white mb-3">Recent Completions</h3>
           <div className="space-y-2">
             {recentCompletions.map((completion) => (
               <div
                 key={completion.id}
-                className="flex items-center justify-between bg-white/[0.05] border border-white/[0.1] rounded-lg p-3"
+                className="flex items-center justify-between bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] rounded-lg p-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
-                    <span className="text-sm text-white truncate">
+                    <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white truncate">
                       {completion.task_name}
                     </span>
                     {completion.is_critical && (
@@ -599,7 +693,7 @@ export default function ComplianceMetricsWidget() {
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-white/60 mt-1">
+                  <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] mt-1">
                     {completion.completed_by_name && (
                       <span>by {completion.completed_by_name} • </span>
                     )}
@@ -615,10 +709,10 @@ export default function ComplianceMetricsWidget() {
       {/* Empty State */}
       {todayStats && todayStats.total === 0 && (
         <div className="text-center py-8">
-          <p className="text-white/60">No tasks scheduled for today</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">No tasks scheduled for today</p>
           <Link 
             href="/dashboard/tasks/compliance-templates"
-            className="text-sm text-pink-400 hover:text-pink-300 mt-2 inline-block"
+            className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-300 mt-2 inline-block"
           >
             Create a compliance template →
           </Link>

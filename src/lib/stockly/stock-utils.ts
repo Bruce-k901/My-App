@@ -66,10 +66,35 @@ export async function createStockItemFromLibrary(
   // Get name from library item
   const name = getLibraryItemName(libraryItem, libraryType);
 
-  // Get unit from library item if available
-  const unitId = libraryItem.unit_id || libraryItem.base_unit_id || null;
+  // Get unit as text abbreviation from library item (stock_unit uses text, not UUID)
+  let stockUnit = libraryItem.unit || libraryItem.stock_unit || libraryItem.unit_of_measurement || null;
+  
+  // If no unit found, get default UOM abbreviation (try "each" or first available)
+  if (!stockUnit) {
+    const { data: uoms } = await supabase
+      .from('uom')
+      .select('abbreviation')
+      .or('abbreviation.eq.each,abbreviation.eq.EA,abbreviation.eq.ea')
+      .limit(1);
+    
+    if (uoms && uoms.length > 0) {
+      stockUnit = uoms[0].abbreviation;
+    } else {
+      // Fallback to first available UOM abbreviation
+      const { data: firstUom } = await supabase
+        .from('uom')
+        .select('abbreviation')
+        .limit(1)
+        .single();
+      stockUnit = firstUom?.abbreviation || 'ea';
+    }
+  }
 
-  // Create stock item
+  if (!stockUnit) {
+    throw new Error('No unit of measure found. Please configure units of measure first.');
+  }
+
+  // Create stock item (using stock_unit text instead of base_unit_id UUID)
   const { data: stockItem, error: createError } = await supabase
     .from('stock_items')
     .insert({
@@ -77,9 +102,8 @@ export async function createStockItemFromLibrary(
       name,
       library_item_id: libraryItemId,
       library_type: libraryType,
-      base_unit_id: unitId,
-      is_purchasable: true,
-      track_stock: true,
+      stock_unit: stockUnit, // Text unit (e.g., "kg", "L", "ea")
+      is_active: true, // Use is_active instead of track_stock
       ...additionalData,
     })
     .select('id')

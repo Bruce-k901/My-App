@@ -44,9 +44,8 @@ export default function DeliveryScheduleInfo({
 
   async function loadSupplier() {
     const { data } = await supabase
-      .schema('stockly')
       .from('suppliers')
-      .select('name, delivery_days, minimum_order_value')
+      .select('name, delivery_days, minimum_order_value, order_cutoff_time')
       .eq('id', supplierId)
       .single();
     
@@ -58,44 +57,34 @@ export default function DeliveryScheduleInfo({
     setLoading(true);
     
     try {
-      // Try to use the delivery date function
-      const { data, error } = await supabase.rpc('get_next_delivery_date', {
-        p_supplier_id: supplierId,
-        p_site_id: siteId
-      });
-
-      if (error) {
-        console.error('Error loading delivery info:', error);
-        // Fallback: just use lead time
-        const { data: supplierData } = await supabase
-          .schema('stockly')
-          .from('suppliers')
-          .select('lead_time_days, delivery_days')
-          .eq('id', supplierId)
-          .single();
+      // Calculate delivery date based on supplier lead time
+      // RPC function get_next_delivery_date may not exist, so use direct calculation
+      const { data: supplierData } = await supabase
+        .from('suppliers')
+        .select('lead_time_days, delivery_days, order_cutoff_time')
+        .eq('id', supplierId)
+        .single();
+      
+      if (supplierData) {
+        const leadTime = supplierData.lead_time_days || 1;
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + leadTime);
         
-        if (supplierData) {
-          const leadTime = supplierData.lead_time_days || 1;
-          const deliveryDate = new Date();
-          deliveryDate.setDate(deliveryDate.getDate() + leadTime);
-          
-          setDeliveryInfo({
-            next_delivery_date: deliveryDate.toISOString().split('T')[0],
-            order_by_date: new Date().toISOString().split('T')[0],
-            order_by_time: '14:00',
-            lead_time_days: leadTime,
-            area_name: 'Default',
-            uses_third_party: false
-          });
-          
-          if (onDeliveryDateChange) {
-            onDeliveryDateChange(deliveryDate.toISOString().split('T')[0]);
-          }
-        }
-      } else if (data && data.length > 0) {
-        setDeliveryInfo(data[0]);
-        if (onDeliveryDateChange && data[0].next_delivery_date) {
-          onDeliveryDateChange(data[0].next_delivery_date);
+        // Calculate order by date (typically same day, cutoff at supplier's order_cutoff_time or default 14:00)
+        const orderByDate = new Date();
+        const orderByTime = supplierData.order_cutoff_time || '14:00';
+        
+        setDeliveryInfo({
+          next_delivery_date: deliveryDate.toISOString().split('T')[0],
+          order_by_date: orderByDate.toISOString().split('T')[0],
+          order_by_time: orderByTime,
+          lead_time_days: leadTime,
+          area_name: 'Default',
+          uses_third_party: false
+        });
+        
+        if (onDeliveryDateChange) {
+          onDeliveryDateChange(deliveryDate.toISOString().split('T')[0]);
         }
       }
     } catch (error) {
@@ -132,7 +121,7 @@ export default function DeliveryScheduleInfo({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-white/40 text-sm">
+      <div className="flex items-center gap-2 text-gray-500 dark:text-white/40 text-sm">
         <Loader2 className="w-4 h-4 animate-spin" />
         Loading delivery schedule...
       </div>
@@ -144,21 +133,29 @@ export default function DeliveryScheduleInfo({
   const cutoffPassed = isOrderCutoffPassed();
 
   return (
-    <div className={`rounded-lg p-4 ${
+    <div className={`rounded-lg p-4 border ${
       cutoffPassed 
-        ? 'bg-orange-500/10 border border-orange-500/30' 
-        : 'bg-white/[0.03] border border-white/[0.06]'
+        ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30' 
+        : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]'
     }`}>
       <div className="flex items-start gap-3">
-        <div className={`p-2 rounded-lg ${cutoffPassed ? 'bg-orange-500/20' : 'bg-blue-500/20'}`}>
-          <Truck className={`w-5 h-5 ${cutoffPassed ? 'text-orange-400' : 'text-blue-400'}`} />
+        <div className={`p-2 rounded-lg ${
+          cutoffPassed 
+            ? 'bg-amber-100 dark:bg-amber-500/20' 
+            : 'bg-blue-50 dark:bg-blue-500/20'
+        }`}>
+          <Truck className={`w-5 h-5 ${
+            cutoffPassed 
+              ? 'text-amber-600 dark:text-amber-400' 
+              : 'text-blue-600 dark:text-blue-400'
+          }`} />
         </div>
         
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-white font-medium">Delivery Schedule</span>
+            <span className="text-gray-900 dark:text-white font-medium">Delivery Schedule</span>
             {deliveryInfo.uses_third_party && (
-              <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+              <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-xs rounded">
                 3rd Party Logistics
               </span>
             )}
@@ -166,35 +163,39 @@ export default function DeliveryScheduleInfo({
           
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="flex items-center gap-1.5 text-white/60 mb-1">
+              <div className="flex items-center gap-1.5 text-gray-600 dark:text-white/60 mb-1">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Next Delivery</span>
               </div>
-              <p className="text-white font-medium">
+              <p className="text-gray-900 dark:text-white font-medium">
                 {formatDate(deliveryInfo.next_delivery_date)}
               </p>
             </div>
             
             <div>
-              <div className="flex items-center gap-1.5 text-white/60 mb-1">
+              <div className="flex items-center gap-1.5 text-gray-600 dark:text-white/60 mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Order By</span>
               </div>
-              <p className={`font-medium ${cutoffPassed ? 'text-orange-400' : 'text-white'}`}>
+              <p className={`font-medium ${
+                cutoffPassed 
+                  ? 'text-amber-700 dark:text-amber-400' 
+                  : 'text-gray-900 dark:text-white'
+              }`}>
                 {formatDate(deliveryInfo.order_by_date)} at {formatTime(deliveryInfo.order_by_time)}
               </p>
             </div>
           </div>
           
           {cutoffPassed && (
-            <div className="flex items-center gap-2 mt-3 text-orange-400 text-sm">
+            <div className="flex items-center gap-2 mt-3 text-amber-700 dark:text-amber-400 text-sm">
               <AlertTriangle className="w-4 h-4" />
               <span>Cutoff passed - delivery will be later than shown</span>
             </div>
           )}
           
           {deliveryInfo.uses_third_party && (
-            <div className="flex items-center gap-2 mt-3 text-yellow-400/80 text-xs">
+            <div className="flex items-center gap-2 mt-3 text-yellow-700 dark:text-yellow-400/80 text-xs">
               <Info className="w-3.5 h-3.5" />
               <span>Delivered via 3rd party - times may vary</span>
             </div>
@@ -202,8 +203,8 @@ export default function DeliveryScheduleInfo({
 
           {/* Delivery days if available */}
           {supplier?.delivery_days && supplier.delivery_days.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-white/[0.06]">
-              <p className="text-white/40 text-xs mb-1">Delivery days:</p>
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/[0.06]">
+              <p className="text-gray-500 dark:text-white/40 text-xs mb-1">Delivery days:</p>
               <div className="flex gap-1">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
                   const dayLower = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'][i];
@@ -213,8 +214,8 @@ export default function DeliveryScheduleInfo({
                       key={day}
                       className={`px-2 py-0.5 rounded text-xs ${
                         isDeliveryDay 
-                          ? 'bg-green-500/20 text-green-400' 
-                          : 'bg-white/5 text-white/20'
+                          ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' 
+                          : 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-white/20'
                       }`}
                     >
                       {day}

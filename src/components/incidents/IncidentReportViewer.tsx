@@ -120,34 +120,34 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
     switch (severity?.toLowerCase()) {
       case 'critical':
       case 'fatality':
-        return 'text-red-400';
+        return 'text-red-700 dark:text-red-400';
       case 'major':
       case 'high':
-        return 'text-orange-400';
+        return 'text-orange-700 dark:text-orange-400';
       case 'moderate':
       case 'medium':
-        return 'text-yellow-400';
+        return 'text-yellow-700 dark:text-yellow-400';
       case 'minor':
       case 'low':
       case 'near_miss':
-        return 'text-blue-400';
+        return 'text-blue-700 dark:text-blue-400';
       default:
-        return 'text-gray-400';
+        return 'text-gray-600 dark:text-gray-400';
     }
   }
 
   function getStatusColor(status: string) {
     switch (status?.toLowerCase()) {
       case 'open':
-        return 'text-red-400';
+        return 'text-red-700 dark:text-red-400';
       case 'investigating':
-        return 'text-orange-400';
+        return 'text-orange-700 dark:text-orange-400';
       case 'resolved':
-        return 'text-green-400';
+        return 'text-green-700 dark:text-green-400';
       case 'closed':
-        return 'text-gray-400';
+        return 'text-gray-600 dark:text-gray-400';
       default:
-        return 'text-gray-400';
+        return 'text-gray-600 dark:text-gray-400';
     }
   }
 
@@ -155,12 +155,12 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#14161c] border-gray-200 dark:border-white/[0.1]">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <DialogTitle className="text-2xl mb-2">{fullIncident.title}</DialogTitle>
-              <div className="flex items-center gap-4 text-sm text-white/60">
+              <DialogTitle className="text-2xl mb-2 text-gray-900 dark:text-white">{fullIncident.title}</DialogTitle>
+              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-white/60">
                 <span className={`font-medium ${getSeverityColor(fullIncident.severity)}`}>
                   {fullIncident.severity?.toUpperCase() || 'UNKNOWN'}
                 </span>
@@ -169,12 +169,12 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
                   {fullIncident.status?.toUpperCase() || 'UNKNOWN'}
                 </span>
                 <span>•</span>
-                <span className="capitalize">{fullIncident.incident_type?.replace('_', ' ') || 'Unknown Type'}</span>
+                <span className="capitalize text-gray-900 dark:text-white">{fullIncident.incident_type?.replace('_', ' ') || 'Unknown Type'}</span>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-white/60 hover:text-white transition-colors p-1"
+              className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -183,53 +183,53 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
         {loading ? (
           <div className="text-center py-8">
-            <p className="text-white/60">Loading incident details...</p>
+            <p className="text-gray-600 dark:text-white/60">Loading incident details...</p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Incident Details */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
+            <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-700 dark:text-white" />
                 Incident Details
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-3">
-                  <FileText className="w-4 h-4 text-white/40 mt-1 flex-shrink-0" />
+                  <FileText className="w-4 h-4 text-gray-500 dark:text-white/40 mt-1 flex-shrink-0" />
                   <div className="flex-1">
-                    <div className="text-white/60 mb-1">Description</div>
-                    <div className="text-white">{fullIncident.description || 'No description provided'}</div>
+                    <div className="text-gray-600 dark:text-white/60 mb-1">Description</div>
+                    <div className="text-gray-900 dark:text-white">{fullIncident.description || 'No description provided'}</div>
                   </div>
                 </div>
                 {fullIncident.location && (
                   <div className="flex items-start gap-3">
-                    <MapPin className="w-4 h-4 text-white/40 mt-1 flex-shrink-0" />
+                    <MapPin className="w-4 h-4 text-gray-500 dark:text-white/40 mt-1 flex-shrink-0" />
                     <div className="flex-1">
-                      <div className="text-white/60 mb-1">Location</div>
-                      <div className="text-white">{fullIncident.location}</div>
+                      <div className="text-gray-600 dark:text-white/60 mb-1">Location</div>
+                      <div className="text-gray-900 dark:text-white">{fullIncident.location}</div>
                     </div>
                   </div>
                 )}
                 <div className="flex items-start gap-3">
-                  <Calendar className="w-4 h-4 text-white/40 mt-1 flex-shrink-0" />
+                  <Calendar className="w-4 h-4 text-gray-500 dark:text-white/40 mt-1 flex-shrink-0" />
                   <div className="flex-1">
-                    <div className="text-white/60 mb-1">Incident Date & Time</div>
-                    <div className="text-white">{formatDate(fullIncident.incident_date || fullIncident.reported_date || fullIncident.reported_at)}</div>
+                    <div className="text-gray-600 dark:text-white/60 mb-1">Incident Date & Time</div>
+                    <div className="text-gray-900 dark:text-white">{formatDate(fullIncident.incident_date || fullIncident.reported_date || fullIncident.reported_at)}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <User className="w-4 h-4 text-white/40 mt-1 flex-shrink-0" />
+                  <User className="w-4 h-4 text-gray-500 dark:text-white/40 mt-1 flex-shrink-0" />
                   <div className="flex-1">
-                    <div className="text-white/60 mb-1">Reported By</div>
-                    <div className="text-white">{fullIncident.reported_by_name || fullIncident.reported_by || 'Unknown'}</div>
+                    <div className="text-gray-600 dark:text-white/60 mb-1">Reported By</div>
+                    <div className="text-gray-900 dark:text-white">{fullIncident.reported_by_name || fullIncident.reported_by || 'Unknown'}</div>
                   </div>
                 </div>
                 {fullIncident.site_name && (
                   <div className="flex items-start gap-3">
-                    <MapPin className="w-4 h-4 text-white/40 mt-1 flex-shrink-0" />
+                    <MapPin className="w-4 h-4 text-gray-500 dark:text-white/40 mt-1 flex-shrink-0" />
                     <div className="flex-1">
-                      <div className="text-white/60 mb-1">Site</div>
-                      <div className="text-white">{fullIncident.site_name}</div>
+                      <div className="text-gray-600 dark:text-white/60 mb-1">Site</div>
+                      <div className="text-gray-900 dark:text-white">{fullIncident.site_name}</div>
                     </div>
                   </div>
                 )}
@@ -238,37 +238,37 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
             {/* Casualties */}
             {fullIncident.casualties && Array.isArray(fullIncident.casualties) && fullIncident.casualties.length > 0 && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5" />
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-gray-700 dark:text-white" />
                   Casualties ({fullIncident.casualties.length})
                 </h3>
                 <div className="space-y-3">
                   {fullIncident.casualties.map((casualty: any, index: number) => (
-                    <div key={index} className="bg-white/[0.05] rounded p-3">
+                    <div key={index} className="bg-white dark:bg-white/[0.05] rounded p-3 border border-gray-200 dark:border-white/[0.06]">
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <span className="text-white/60">Name: </span>
-                          <span className="text-white">{casualty.name || 'Not specified'}</span>
+                          <span className="text-gray-600 dark:text-white/60">Name: </span>
+                          <span className="text-gray-900 dark:text-white">{casualty.name || 'Not specified'}</span>
                         </div>
                         {casualty.age && (
                           <div>
-                            <span className="text-white/60">Age: </span>
-                            <span className="text-white">{casualty.age}</span>
+                            <span className="text-gray-600 dark:text-white/60">Age: </span>
+                            <span className="text-gray-900 dark:text-white">{casualty.age}</span>
                           </div>
                         )}
                         <div>
-                          <span className="text-white/60">Injury: </span>
-                          <span className="text-white">{casualty.injury_type || 'Not specified'}</span>
+                          <span className="text-gray-600 dark:text-white/60">Injury: </span>
+                          <span className="text-gray-900 dark:text-white">{casualty.injury_type || 'Not specified'}</span>
                         </div>
                         <div>
-                          <span className="text-white/60">Severity: </span>
-                          <span className="text-white">{casualty.severity || 'Not specified'}</span>
+                          <span className="text-gray-600 dark:text-white/60">Severity: </span>
+                          <span className="text-gray-900 dark:text-white">{casualty.severity || 'Not specified'}</span>
                         </div>
                         {casualty.treatment_required && (
                           <div className="col-span-2">
-                            <span className="text-white/60">Treatment: </span>
-                            <span className="text-white">{casualty.treatment_required}</span>
+                            <span className="text-gray-600 dark:text-white/60">Treatment: </span>
+                            <span className="text-gray-900 dark:text-white">{casualty.treatment_required}</span>
                           </div>
                         )}
                       </div>
@@ -280,29 +280,29 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
             {/* Witnesses */}
             {fullIncident.witnesses && Array.isArray(fullIncident.witnesses) && fullIncident.witnesses.length > 0 && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <User className="w-5 h-5" />
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-gray-700 dark:text-white" />
                   Witnesses ({fullIncident.witnesses.length})
                 </h3>
                 <div className="space-y-3">
                   {fullIncident.witnesses.map((witness: any, index: number) => (
-                    <div key={index} className="bg-white/[0.05] rounded p-3">
+                    <div key={index} className="bg-white dark:bg-white/[0.05] rounded p-3 border border-gray-200 dark:border-white/[0.06]">
                       <div className="text-sm space-y-2">
                         <div>
-                          <span className="text-white/60">Name: </span>
-                          <span className="text-white">{witness.name || 'Not specified'}</span>
+                          <span className="text-gray-600 dark:text-white/60">Name: </span>
+                          <span className="text-gray-900 dark:text-white">{witness.name || 'Not specified'}</span>
                         </div>
                         {witness.contact && (
                           <div>
-                            <span className="text-white/60">Contact: </span>
-                            <span className="text-white">{witness.contact}</span>
+                            <span className="text-gray-600 dark:text-white/60">Contact: </span>
+                            <span className="text-gray-900 dark:text-white">{witness.contact}</span>
                           </div>
                         )}
                         {witness.statement && (
                           <div>
-                            <span className="text-white/60">Statement: </span>
-                            <div className="text-white mt-1">{witness.statement}</div>
+                            <span className="text-gray-600 dark:text-white/60">Statement: </span>
+                            <div className="text-gray-900 dark:text-white mt-1">{witness.statement}</div>
                           </div>
                         )}
                       </div>
@@ -314,38 +314,38 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
             {/* Emergency Response */}
             {(fullIncident.emergency_services_called || fullIncident.first_aid_provided || fullIncident.scene_preserved) && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <Phone className="w-5 h-5" />
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Phone className="w-5 h-5 text-gray-700 dark:text-white" />
                   Emergency Response
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     {fullIncident.emergency_services_called ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                     ) : (
-                      <XCircle className="w-4 h-4 text-red-400" />
+                      <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                     )}
-                    <span className="text-white">
+                    <span className="text-gray-900 dark:text-white">
                       Emergency Services Called: {fullIncident.emergency_services_called ? 'Yes' : 'No'}
                       {fullIncident.emergency_services_type && ` (${fullIncident.emergency_services_type})`}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     {fullIncident.first_aid_provided ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                     ) : (
-                      <XCircle className="w-4 h-4 text-red-400" />
+                      <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                     )}
-                    <span className="text-white">First Aid Provided: {fullIncident.first_aid_provided ? 'Yes' : 'No'}</span>
+                    <span className="text-gray-900 dark:text-white">First Aid Provided: {fullIncident.first_aid_provided ? 'Yes' : 'No'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {fullIncident.scene_preserved ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                     ) : (
-                      <XCircle className="w-4 h-4 text-red-400" />
+                      <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                     )}
-                    <span className="text-white">Scene Preserved: {fullIncident.scene_preserved ? 'Yes' : 'No'}</span>
+                    <span className="text-gray-900 dark:text-white">Scene Preserved: {fullIncident.scene_preserved ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
               </div>
@@ -353,40 +353,40 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
             {/* Immediate Actions */}
             {fullIncident.immediate_actions_taken && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Immediate Actions Taken</h3>
-                <div className="text-white text-sm whitespace-pre-wrap">{fullIncident.immediate_actions_taken}</div>
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Immediate Actions Taken</h3>
+                <div className="text-gray-900 dark:text-white text-sm whitespace-pre-wrap">{fullIncident.immediate_actions_taken}</div>
               </div>
             )}
 
             {/* RIDDOR Information */}
             {fullIncident.riddor_reportable && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-orange-400" />
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   RIDDOR Reportable
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-white/60">Reportable: </span>
-                    <span className="text-orange-400 font-medium">Yes</span>
+                    <span className="text-gray-600 dark:text-white/60">Reportable: </span>
+                    <span className="text-orange-600 dark:text-orange-400 font-medium">Yes</span>
                   </div>
                   {fullIncident.riddor_reported && (
                     <>
                       <div>
-                        <span className="text-white/60">Reported: </span>
-                        <span className="text-white">Yes</span>
+                        <span className="text-gray-600 dark:text-white/60">Reported: </span>
+                        <span className="text-gray-900 dark:text-white">Yes</span>
                       </div>
                       {fullIncident.riddor_reported_date && (
                         <div>
-                          <span className="text-white/60">Reported Date: </span>
-                          <span className="text-white">{formatDate(fullIncident.riddor_reported_date)}</span>
+                          <span className="text-gray-600 dark:text-white/60">Reported Date: </span>
+                          <span className="text-gray-900 dark:text-white">{formatDate(fullIncident.riddor_reported_date)}</span>
                         </div>
                       )}
                       {fullIncident.riddor_reference && (
                         <div>
-                          <span className="text-white/60">Reference: </span>
-                          <span className="text-white">{fullIncident.riddor_reference}</span>
+                          <span className="text-gray-600 dark:text-white/60">Reference: </span>
+                          <span className="text-gray-900 dark:text-white">{fullIncident.riddor_reference}</span>
                         </div>
                       )}
                     </>
@@ -397,12 +397,12 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
 
             {/* Evidence */}
             {((fullIncident.photos && fullIncident.photos.length > 0) || (fullIncident.documents && fullIncident.documents.length > 0)) && (
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Evidence</h3>
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Evidence</h3>
                 <div className="space-y-3">
                   {fullIncident.photos && fullIncident.photos.length > 0 && (
                     <div>
-                      <div className="text-white/60 text-sm mb-2">Photos ({fullIncident.photos.length})</div>
+                      <div className="text-gray-600 dark:text-white/60 text-sm mb-2">Photos ({fullIncident.photos.length})</div>
                       <div className="grid grid-cols-2 gap-2">
                         {fullIncident.photos.map((photo: string, index: number) => (
                           <a
@@ -410,7 +410,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
                             href={photo}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 text-sm break-all"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm break-all"
                           >
                             Photo {index + 1}
                           </a>
@@ -420,7 +420,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
                   )}
                   {fullIncident.documents && fullIncident.documents.length > 0 && (
                     <div>
-                      <div className="text-white/60 text-sm mb-2">Documents ({fullIncident.documents.length})</div>
+                      <div className="text-gray-600 dark:text-white/60 text-sm mb-2">Documents ({fullIncident.documents.length})</div>
                       <div className="space-y-1">
                         {fullIncident.documents.map((doc: string, index: number) => (
                           <a
@@ -428,7 +428,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
                             href={doc}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block text-blue-400 hover:text-blue-300 text-sm break-all"
+                            className="block text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm break-all"
                           >
                             Document {index + 1}
                           </a>
@@ -441,18 +441,18 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
               <Button
                 onClick={onClose}
                 variant="outline"
-                className="text-white border-white/20 hover:bg-white/10"
+                className="text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 Close
               </Button>
               {onDownload && (
                 <Button
                   onClick={() => onDownload(fullIncident)}
-                  className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+                  className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-transparent dark:text-[#EC4899] dark:border-[#EC4899] dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download PDF
@@ -465,6 +465,18 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload }: 
     </Dialog>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

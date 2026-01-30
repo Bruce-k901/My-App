@@ -1,6 +1,7 @@
 -- ============================================
 -- UPDATE PRICING CALCULATION FUNCTION
 -- Handles new pricing model: 1 site = £40, Multiple sites = £55 flat
+-- Note: Functions can be created independently, but triggers require tables to exist
 -- ============================================
 
 -- Drop old function and recreate with new logic
@@ -53,12 +54,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Recreate trigger (drop first if exists)
-DROP TRIGGER IF EXISTS calculate_monthly_amount_trigger ON public.company_subscriptions;
-CREATE TRIGGER calculate_monthly_amount_trigger
-  BEFORE INSERT OR UPDATE ON public.company_subscriptions
-  FOR EACH ROW
-  EXECUTE FUNCTION calculate_monthly_amount();
+-- Recreate trigger (drop first if exists) - only if table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_subscriptions') THEN
+    DROP TRIGGER IF EXISTS calculate_monthly_amount_trigger ON public.company_subscriptions;
+    CREATE TRIGGER calculate_monthly_amount_trigger
+      BEFORE INSERT OR UPDATE ON public.company_subscriptions
+      FOR EACH ROW
+      EXECUTE FUNCTION calculate_monthly_amount();
+  ELSE
+    RAISE NOTICE '⚠️ company_subscriptions table does not exist yet - skipping trigger creation';
+  END IF;
+END $$;
 
 -- Function to auto-update plan based on site count
 -- If 1 site -> Starter, if 2+ sites -> Pro
@@ -101,13 +109,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger to auto-update plan when site count changes (drop first if exists)
-DROP TRIGGER IF EXISTS auto_update_plan_by_site_count_trigger ON public.company_subscriptions;
-CREATE TRIGGER auto_update_plan_by_site_count_trigger
-  BEFORE INSERT OR UPDATE ON public.company_subscriptions
-  FOR EACH ROW
-  EXECUTE FUNCTION auto_update_plan_by_site_count();
+-- Trigger to auto-update plan when site count changes (drop first if exists) - only if table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_subscriptions') THEN
+    DROP TRIGGER IF EXISTS auto_update_plan_by_site_count_trigger ON public.company_subscriptions;
+    CREATE TRIGGER auto_update_plan_by_site_count_trigger
+      BEFORE INSERT OR UPDATE ON public.company_subscriptions
+      FOR EACH ROW
+      EXECUTE FUNCTION auto_update_plan_by_site_count();
+  ELSE
+    RAISE NOTICE '⚠️ company_subscriptions table does not exist yet - skipping auto-update trigger creation';
+  END IF;
+END $$;
 
+-- Add comments (functions can be commented even if triggers don't exist yet)
 COMMENT ON FUNCTION calculate_monthly_amount() IS 'Calculates monthly subscription amount based on pricing model (per-site, flat-rate, or custom)';
 COMMENT ON FUNCTION auto_update_plan_by_site_count() IS 'Automatically switches between Starter (1 site) and Pro (2+ sites) based on site count';
 

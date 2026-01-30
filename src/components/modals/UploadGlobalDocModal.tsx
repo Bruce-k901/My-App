@@ -10,9 +10,21 @@ type Props = {
   onClose?: () => void;
   // Provide the newly inserted document id so the caller can highlight it
   onSuccess?: (newDocId?: string) => void;
+  // Optional: replace an existing placeholder/global doc record instead of creating a new one
+  existingDocumentId?: string;
+  initialCategory?: string;
+  initialName?: string;
+  initialNotes?: string;
 };
 
-export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
+export default function UploadGlobalDocModal({
+  onClose,
+  onSuccess,
+  existingDocumentId,
+  initialCategory,
+  initialName,
+  initialNotes,
+}: Props) {
   const { companyId } = useAppContext();
   const [form, setForm] = useState<{
     documentType: string;
@@ -23,12 +35,12 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     notes: string;
     file: File | null;
   }>({
-    documentType: "",
-    category: "",
-    name: "",
+    documentType: existingDocumentId || initialCategory || initialName ? "Other" : "",
+    category: initialCategory || "",
+    name: initialName || "",
     version: "v1",
     expiry_date: "",
-    notes: "",
+    notes: initialNotes || "",
     file: null,
   });
   const [loading, setLoading] = useState(false);
@@ -36,6 +48,29 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
 
   // EHO Document Types - These map directly to readiness requirements
   const documentTypes = [
+    // === ONBOARDING DOCUMENTS ===
+    // Employment Contracts
+    { value: "Employment Contract - FOH Hourly", category: "Onboarding - Contracts", required: true },
+    { value: "Employment Contract - FOH Salaried", category: "Onboarding - Contracts", required: true },
+    { value: "Employment Contract - BOH Hourly", category: "Onboarding - Contracts", required: true },
+    { value: "Employment Contract - BOH Salaried", category: "Onboarding - Contracts", required: true },
+    
+    // Onboarding Policies
+    { value: "Staff Handbook", category: "Onboarding - Policies", required: true },
+    
+    // Onboarding Forms
+    { value: "New Starter Details Form", category: "Onboarding - Forms", required: true },
+    { value: "Uniform Issued Record", category: "Onboarding - Forms", required: false },
+    { value: "Wage Deduction Authorisation", category: "Onboarding - Forms", required: false },
+    { value: "Right to Work Verification", category: "Onboarding - Forms", required: true },
+    { value: "Health Declaration Form", category: "Onboarding - Forms", required: true },
+    { value: "GDPR & Data Protection Consent", category: "Onboarding - Forms", required: true },
+    
+    // Onboarding Training
+    { value: "Food Hygiene Certificate", category: "Onboarding - Training", required: true },
+    { value: "Training Acknowledgment", category: "Onboarding - Training", required: true },
+    
+    // === COMPANY COMPLIANCE DOCUMENTS ===
     // Food Safety
     { value: "Food Safety Policy", category: "Food Safety & Hygiene", required: true },
     { value: "HACCP Plan", category: "Food Safety & Hygiene", required: true },
@@ -45,15 +80,19 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     { value: "Health & Safety Policy", category: "Health & Safety", required: true },
     { value: "Competent Person Appointment Letter", category: "Health & Safety", required: true },
     { value: "COSHH Register", category: "Health & Safety", required: true },
+    { value: "Risk Assessments", category: "Health & Safety", required: true },
     
     // Fire Safety
     { value: "Fire Safety Policy", category: "Fire & Premises", required: true },
+    { value: "Fire Risk Assessment", category: "Fire & Premises", required: true },
     
     // Training
     { value: "Training Matrix", category: "Training & Competency", required: true },
+    { value: "Training Records", category: "Training & Competency", required: false },
     
     // Cleaning
     { value: "Cleaning Schedule", category: "Cleaning & Hygiene", required: true },
+    { value: "Deep Clean Records", category: "Cleaning & Hygiene", required: false },
     
     // Legal & Insurance
     { value: "Public Liability Insurance", category: "Legal & Certificates", required: true },
@@ -63,15 +102,19 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     { value: "Gas Safety Certificate", category: "Legal & Certificates", required: false },
     { value: "Electrical Installation Certificate", category: "Legal & Certificates", required: false },
     
-    // Compliance
+    // Environmental
     { value: "Waste Management Policy", category: "Environmental & Waste", required: true },
-    { value: "Staff Handbook", category: "Compliance", required: true },
+    { value: "Waste Transfer Notes", category: "Environmental & Waste", required: false },
     
     // Other
     { value: "Other", category: "Other", required: false },
   ];
 
   const categories = [
+    "Onboarding - Contracts",
+    "Onboarding - Policies",
+    "Onboarding - Forms",
+    "Onboarding - Training",
     "Food Safety & Hygiene",
     "Health & Safety",
     "Fire & Premises",
@@ -79,7 +122,6 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     "Cleaning & Hygiene",
     "Legal & Certificates",
     "Environmental & Waste",
-    "Compliance",
     "Other",
   ];
 
@@ -154,7 +196,9 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
     // Sanitize the filename before upload
     const sanitizedFileName = sanitizeFileName(form.file.name);
     // Company-scoped path to satisfy storage RLS and keep tenants isolated
-    const filePath = `${companyId}/${folder}/${sanitizedFileName}`;
+    const filePath = existingDocumentId
+      ? `${companyId}/${folder}/${existingDocumentId}_${Date.now()}_${sanitizedFileName}`
+      : `${companyId}/${folder}/${sanitizedFileName}`;
 
     // Quick check: ensure we have an authenticated user
     const { data: authData } = await supabase.auth.getUser();
@@ -176,12 +220,59 @@ export default function UploadGlobalDocModal({ onClose, onSuccess }: Props) {
       return;
     }
 
-    // 2. insert metadata and return the inserted id for highlight
+    // 2. insert/update metadata and return the document id for highlight
     // Store document type in name field (standardized) and also in notes for reference
     const documentName = form.documentType && form.documentType !== "Other" 
       ? form.documentType 
       : form.name
     
+    if (existingDocumentId) {
+      // Replace an existing placeholder/global doc record
+      const updatePayload: Record<string, any> = {
+        category: finalCategory,
+        name: documentName,
+        version: form.version,
+        expiry_date: form.expiry_date || null,
+        notes: form.documentType ? `${form.documentType}${form.notes ? ` - ${form.notes}` : ''}` : form.notes,
+        file_path: filePath,
+        uploaded_by: authData?.user?.id || null,
+        uploaded_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_placeholder: false,
+      };
+
+      // If the DB hasn't been migrated yet (missing is_placeholder), retry without it.
+      const { error: updateError } = await supabase
+        .from("global_documents")
+        .update(updatePayload)
+        .eq("id", existingDocumentId);
+
+      if (updateError && (updateError.message?.includes("is_placeholder") || updateError.code === "PGRST204")) {
+        delete updatePayload.is_placeholder;
+        const { error: retryError } = await supabase
+          .from("global_documents")
+          .update(updatePayload)
+          .eq("id", existingDocumentId);
+        if (retryError) {
+          setError(retryError.message);
+          console.error(`Metadata update failed: ${retryError.message}`);
+          setLoading(false);
+          return;
+        }
+      } else if (updateError) {
+        setError(updateError.message);
+        console.error(`Metadata update failed: ${updateError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      console.log("Document replaced successfully!");
+      onSuccess?.(existingDocumentId);
+      onClose?.();
+      return;
+    }
+
     const { data: inserted, error: insertError } = await supabase
       .from("global_documents")
       .insert({

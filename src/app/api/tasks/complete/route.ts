@@ -31,15 +31,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'completed_by is required' }, { status: 400 })
     }
 
-    const { data: profile } = await serviceClient
+    // Try to find profile by id first, then by auth_user_id
+    // Use .or() with proper syntax: "field1.eq.value,field2.eq.value"
+    const { data: profile, error: profileError } = await serviceClient
       .from('profiles')
-      .select('id, company_id')
-      .eq('id', completionRecord.completed_by)
-      .or(`auth_user_id.eq.${completionRecord.completed_by}`)
-      .single()
+      .select('id, company_id, auth_user_id')
+      .or(`id.eq.${completionRecord.completed_by},auth_user_id.eq.${completionRecord.completed_by}`)
+      .maybeSingle()
+
+    if (profileError) {
+      console.error('❌ Profile lookup error:', profileError)
+      return NextResponse.json({ 
+        error: 'Failed to lookup profile',
+        details: profileError.message
+      }, { status: 500 })
+    }
 
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found for completed_by' }, { status: 404 })
+      console.error('❌ Profile lookup failed:', {
+        completed_by: completionRecord.completed_by,
+        searched_by_id: true,
+        searched_by_auth_user_id: true
+      })
+      return NextResponse.json({ 
+        error: 'Profile not found for completed_by',
+        details: `No profile found with id or auth_user_id matching: ${completionRecord.completed_by}`
+      }, { status: 404 })
+    }
+
+    // If found by auth_user_id, update completed_by to use the profile id
+    if (profile.auth_user_id === completionRecord.completed_by && profile.id !== completionRecord.completed_by) {
+      console.log('🔄 Updating completed_by from auth_user_id to profile id:', {
+        from: completionRecord.completed_by,
+        to: profile.id
+      })
+      completionRecord.completed_by = profile.id
     }
 
     // Verify company_id matches profile's company

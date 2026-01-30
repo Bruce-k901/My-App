@@ -23,8 +23,8 @@ export function AppHeader({
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="/assets/logo.svg"
-          alt="Checkly"
+          src="/favicon.svg"
+          alt="Opsly"
           className="h-11 w-auto"
         />
       </Link>

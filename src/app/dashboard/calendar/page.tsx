@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
+import CreateTaskModal, { type ModalContext } from "@/components/tasks/CreateTaskModal";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface TaskItem {
   id: string;
@@ -50,10 +52,15 @@ interface TaskTemplate {
 }
 
 interface CalendarEvent {
+  id?: string;
   date: string;
-  type: "task" | "reminder" | "message";
+  type: "task" | "reminder" | "message" | "meeting" | "call" | "note";
   title: string;
   color: string;
+  dueTime?: string;
+  priority?: string;
+  metadata?: any;
+  source?: "handover" | "tasks_table";
 }
 
 export default function ManagerCalendarPage() {
@@ -62,6 +69,7 @@ export default function ManagerCalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [tasksFromTable, setTasksFromTable] = useState<any[]>([]); // Tasks from tasks table
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [sentMessages, setSentMessages] = useState<MessageItem[]>([]);
@@ -73,6 +81,8 @@ export default function ManagerCalendarPage() {
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [showMessageForm, setShowMessageForm] = useState(false);
   const [showMessageHistory, setShowMessageHistory] = useState(false);
+  const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
+  const [modalContext, setModalContext] = useState<ModalContext | undefined>();
   
   // Form states
   const [newTask, setNewTask] = useState<Partial<TaskItem>>({
@@ -150,16 +160,40 @@ export default function ManagerCalendarPage() {
     if (!companyId) return;
     
     try {
-      // Load ALL handover data (not just current month) so tasks/reminders from widget appear regardless of date
-      // Tasks and reminders have their own dueDate/date properties, so we need all data to show them correctly
-      const { data } = await supabase
-        .from("profile_settings")
-        .select("key,value")
-        .eq("company_id", companyId)
-        .like("key", "handover:%")
-        .order("key", { ascending: false });
+      const date = getCurrentDate();
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
       
-      if (data) {
+      // Calculate date range for current month plus some buffer
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of week
+      const endDate = new Date(lastDay);
+      endDate.setDate(endDate.getDate() + (6 - endDate.getDay())); // End of week
+      
+      // Load handover data from profile_settings
+      // Get all handover entries for the date range (tasks can have any dueDate)
+      console.log('📅 Starting to load handover data for company:', companyId);
+      const { data: handoverData, error: handoverError } = await supabase
+        .from("profile_settings")
+        .select("key, value")
+        .eq("company_id", companyId)
+        .like("key", "handover:%");
+      
+      if (handoverError) {
+        console.error("❌ Error loading handover data:", handoverError);
+      } else {
+        console.log('📅 Handover data query result:', {
+          found: handoverData?.length || 0,
+          keys: handoverData?.map((h: any) => h.key) || [],
+        });
+      }
+      
+      const data: any[] = handoverData || [];
+      console.log('📅 Processing handover data array, length:', data.length);
+      
+      if (data && data.length > 0) {
         const allNotes: Record<string, string> = {};
         const allTasks: TaskItem[] = [];
         const allReminders: ReminderItem[] = [];
@@ -174,8 +208,20 @@ export default function ManagerCalendarPage() {
               allNotes[dateKey] = handoverData.notes;
             }
             // Tasks have their own dueDate, so include all tasks regardless of which date they were created on
+            // Filter tasks by assignedTo to show only tasks assigned to current user (or unassigned if admin/manager)
             if (handoverData.tasks && Array.isArray(handoverData.tasks)) {
-              allTasks.push(...handoverData.tasks);
+              const userTasks = handoverData.tasks.filter((task: any) => {
+                // Show task if:
+                // 1. Assigned to current user
+                // 2. Not assigned (empty string or null)
+                // 3. User is admin/manager (show all)
+                if (!task.assignedTo || task.assignedTo === '') return true; // Unassigned tasks
+                if (task.assignedTo === userProfile?.id) return true; // Assigned to current user
+                // For admins/managers, show all tasks
+                const isAdminOrManager = userProfile?.app_role === 'admin' || userProfile?.app_role === 'manager';
+                return isAdminOrManager;
+              });
+              allTasks.push(...userTasks);
             }
             // Reminders have their own date, so include all reminders regardless of which date they were created on
             if (handoverData.reminders && Array.isArray(handoverData.reminders)) {
@@ -190,10 +236,51 @@ export default function ManagerCalendarPage() {
           }
         });
         
+        // Merge handover tasks with existing tasks (don't overwrite, append)
         setNotes(allNotes);
-        setTasks(allTasks);
+        setTasks(prevTasks => {
+          // Combine previous tasks with new handover tasks, avoiding duplicates
+          const combined = [...prevTasks];
+          allTasks.forEach(newTask => {
+            if (!combined.find(t => t.id === newTask.id)) {
+              combined.push(newTask);
+            }
+          });
+          return combined;
+        });
         setReminders(allReminders);
         setMessages(allMessages);
+        
+        console.log('📅✅ Loaded handover data:', {
+          notesCount: Object.keys(allNotes).length,
+          tasksCount: allTasks.length,
+          remindersCount: allReminders.length,
+          messagesCount: allMessages.length,
+          userProfileId: userProfile?.id,
+          filteredTasks: allTasks.filter(t => t.assignedTo === userProfile?.id).length,
+          allTaskIds: allTasks.map(t => ({ id: t.id, title: t.title, assignedTo: t.assignedTo })),
+        });
+      } else {
+        console.log('📅 No handover data found in profile_settings');
+      }
+
+      // Load tasks from tasks table
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = endDate.toISOString().split("T")[0];
+      
+      const { data: tasksData, error: tasksError } = await supabase
+        .from("tasks")
+        .select("id, title, due_date, due_time, metadata, status, priority, assigned_to")
+        .eq("company_id", companyId)
+        .gte("due_date", startDateStr)
+        .lte("due_date", endDateStr)
+        .order("due_date", { ascending: true })
+        .order("due_time", { ascending: true });
+      
+      if (tasksError) {
+        console.error("Error loading tasks from table:", tasksError);
+      } else {
+        setTasksFromTable(tasksData || []);
       }
 
       // Load sent messages
@@ -616,21 +703,69 @@ export default function ManagerCalendarPage() {
     const dateStr = date.toISOString().split("T")[0];
     const events: CalendarEvent[] = [];
     
+    // Handover tasks
     tasks.filter(t => t.dueDate === dateStr).forEach(task => {
       events.push({
+        id: task.id,
         date: dateStr,
         type: "task",
         title: task.title,
         color: task.priority === "high" ? "red" : task.priority === "medium" ? "yellow" : "blue",
+        dueTime: task.dueTime,
+        priority: task.priority,
+        source: "handover",
       });
     });
     
+    // Tasks from tasks table
+    tasksFromTable.filter(t => t.due_date === dateStr).forEach(task => {
+      const taskType = task.metadata?.task_type || "task";
+      let color = "blue";
+      let type: "task" | "meeting" | "call" | "note" = "task";
+      
+      switch (taskType) {
+        case "meeting":
+          type = "meeting";
+          color = "purple";
+          break;
+        case "call":
+          type = "call";
+          color = "green";
+          break;
+        case "note":
+          type = "note";
+          color = "gray";
+          break;
+        default:
+          type = "task";
+          color = task.priority === "high" || task.priority === "urgent" ? "red" 
+            : task.priority === "medium" ? "yellow" 
+            : "blue";
+      }
+      
+      events.push({
+        id: task.id,
+        date: dateStr,
+        type,
+        title: task.title,
+        color,
+        dueTime: task.due_time || undefined,
+        priority: task.priority || undefined,
+        metadata: task.metadata,
+        source: "tasks_table",
+      });
+    });
+    
+    // Handover reminders
     reminders.filter(r => r.date === dateStr).forEach(reminder => {
       events.push({
+        id: reminder.id,
         date: dateStr,
         type: "reminder",
         title: reminder.title,
         color: "purple",
+        dueTime: reminder.time,
+        source: "handover",
       });
     });
     
@@ -642,10 +777,64 @@ export default function ManagerCalendarPage() {
     setCurrentDate(new Date(date.getFullYear(), date.getMonth() + (direction === "next" ? 1 : -1), 1));
   };
 
+  // Handle task click to open modal with existing task data
+  const handleTaskClick = (event: CalendarEvent) => {
+    if (!event.id) return;
+    
+    // Find the task in either tasksFromTable or tasks
+    const taskFromTable = tasksFromTable.find(t => t.id === event.id);
+    const taskFromHandover = tasks.find(t => t.id === event.id);
+    
+    if (taskFromTable) {
+      // Open modal with task from tasks table
+      const taskDate = taskFromTable.due_date ? new Date(taskFromTable.due_date) : new Date();
+      setModalContext({
+        source: 'calendar',
+        taskId: event.id,
+        existingData: taskFromTable,
+      });
+      setCreateTaskModalOpen(true);
+    } else if (taskFromHandover) {
+      // For handover tasks, we can still open modal but may need different handling
+      const taskDate = taskFromHandover.dueDate ? new Date(taskFromHandover.dueDate) : new Date();
+      setModalContext({
+        source: 'calendar',
+        preSelectedDate: taskDate,
+      });
+      setCreateTaskModalOpen(true);
+    }
+  };
+
+  // Add real-time subscription for tasks table
+  useEffect(() => {
+    if (!companyId) return;
+    
+    const channel = supabase
+      .channel('calendar-tasks')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `company_id=eq.${companyId}`
+        },
+        () => {
+          loadCalendarData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId, loadCalendarData]);
+
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const selectedDateTasks = tasks.filter(t => t.dueDate === selectedDate);
+  const selectedDateTasksFromTable = tasksFromTable.filter(t => t.due_date === selectedDate);
   const selectedDateReminders = reminders.filter(r => r.date === selectedDate);
   const selectedDateNotes = selectedDate ? notes[selectedDate] || "" : "";
 
@@ -742,10 +931,9 @@ export default function ManagerCalendarPage() {
                 const events = getEventsForDate(date);
                 
                 return (
-                  <button
+                  <div
                     key={dateStr}
-                    onClick={() => setSelectedDate(dateStr)}
-                    className={`aspect-square p-2 rounded-lg border transition-all ${
+                    className={`aspect-square p-2 rounded-lg border transition-all relative group ${
                       isSelected
                         ? "bg-pink-500/20 border-pink-500/50 shadow-[0_0_12px_rgba(236,72,153,0.3)]"
                         : isToday
@@ -753,29 +941,98 @@ export default function ManagerCalendarPage() {
                         : "bg-black/20 border-white/10 hover:border-white/20"
                     }`}
                   >
-                    <div className={`text-sm font-medium mb-1 ${isToday ? "text-blue-400" : "text-slate-300"}`}>
-                      {date.getDate()}
+                    <div className="flex items-center justify-between mb-1">
+                      <button
+                        onClick={() => setSelectedDate(dateStr)}
+                        className={`text-sm font-medium ${isToday ? "text-blue-400" : "text-slate-300"}`}
+                      >
+                        {date.getDate()}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModalContext({
+                            source: 'calendar',
+                            preSelectedDate: date
+                          });
+                          setCreateTaskModalOpen(true);
+                        }}
+                        className="
+                          opacity-0 group-hover:opacity-100
+                          transition-opacity duration-200
+                          w-6 h-6 
+                          rounded-full 
+                          bg-[#EC4899] hover:bg-[#EC4899]/80
+                          flex items-center justify-center
+                          text-white
+                          shadow-sm hover:shadow-md
+                        "
+                        aria-label="Create new task"
+                        title="Create task or meeting"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
                     </div>
-                    <div className="space-y-0.5">
-                      {events.slice(0, 3).map((event, eIdx) => (
-                        <div
-                          key={eIdx}
-                          className={`text-xs truncate px-1 py-0.5 rounded ${
-                            event.color === "red" ? "bg-red-500/20 text-red-400"
-                            : event.color === "yellow" ? "bg-yellow-500/20 text-yellow-400"
-                            : event.color === "blue" ? "bg-blue-500/20 text-blue-400"
-                            : "bg-purple-500/20 text-purple-400"
-                          }`}
-                          title={event.title}
-                        >
-                          {event.title}
-                        </div>
-                      ))}
+                    <div 
+                      className="space-y-0.5"
+                    >
+                      {events.slice(0, 3).map((event, eIdx) => {
+                        // Get icon based on type
+                        const getEventIcon = () => {
+                          switch (event.type) {
+                            case "meeting":
+                              return <Users className="w-2.5 h-2.5" />;
+                            case "call":
+                              return <Phone className="w-2.5 h-2.5" />;
+                            case "note":
+                              return <FileText className="w-2.5 h-2.5" />;
+                            default:
+                              return <CheckSquare className="w-2.5 h-2.5" />;
+                          }
+                        };
+                        
+                        // Determine color classes based on event type and color
+                        const getColorClasses = () => {
+                          if (event.color === "red") return "bg-red-500/20 text-red-400 border-red-500/30";
+                          if (event.color === "yellow") return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                          if (event.color === "blue") return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                          if (event.color === "purple") return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+                          if (event.color === "green") return "bg-green-500/20 text-green-400 border-green-500/30";
+                          return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+                        };
+                        
+                        return (
+                          <div
+                            key={eIdx}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (event.id) {
+                                handleTaskClick(event);
+                              } else {
+                                setSelectedDate(dateStr);
+                              }
+                            }}
+                            className={`text-xs truncate px-1 py-0.5 rounded border cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 ${getColorClasses()}`}
+                            title={`${event.title}${event.dueTime ? ` at ${event.dueTime}` : ''}`}
+                          >
+                            {getEventIcon()}
+                            <span className="truncate">{event.title}</span>
+                            {event.dueTime && (
+                              <span className="text-[10px] opacity-75 ml-auto">{event.dueTime}</span>
+                            )}
+                          </div>
+                        );
+                      })}
                       {events.length > 3 && (
-                        <div className="text-xs text-slate-400">+{events.length - 3} more</div>
+                        <div 
+                          className="text-xs text-slate-400 cursor-pointer hover:text-slate-300"
+                          onClick={() => setSelectedDate(dateStr)}
+                        >
+                          +{events.length - 3} more
+                        </div>
                       )}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -802,29 +1059,100 @@ export default function ManagerCalendarPage() {
                 </div>
 
                 {/* Tasks for selected date */}
-                {selectedDateTasks.length > 0 && (
+                {(selectedDateTasks.length > 0 || selectedDateTasksFromTable.length > 0) && (
                   <div className="mb-4">
                     <h4 className="text-sm font-semibold text-slate-300 mb-2">Tasks</h4>
                     <div className="space-y-2">
+                      {/* Handover tasks */}
                       {selectedDateTasks.map(task => (
-                        <div key={task.id} className="bg-black/30 border border-white/10 rounded-lg p-3 flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="text-sm text-white">{task.title}</div>
-                            {task.dueTime && (
-                              <div className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                <Clock className="w-3 h-3" />
-                                {task.dueTime}
-                              </div>
-                            )}
+                        <div 
+                          key={task.id} 
+                          className="bg-black/30 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-black/40 transition-colors cursor-pointer"
+                          onClick={() => {
+                            const taskDate = task.dueDate ? new Date(task.dueDate) : new Date();
+                            setModalContext({
+                              source: 'calendar',
+                              preSelectedDate: taskDate,
+                            });
+                            setCreateTaskModalOpen(true);
+                          }}
+                        >
+                          <div className="flex-1 flex items-center gap-2">
+                            <CheckSquare className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="text-sm text-white">{task.title}</div>
+                              {task.dueTime && (
+                                <div className="text-xs text-slate-400 flex items-center gap-1 mt-1">
+                                  <Clock className="w-3 h-3" />
+                                  {task.dueTime}
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <button
-                            onClick={() => createTaskInSystem(task)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              createTaskInSystem(task);
+                            }}
                             className="px-2 py-1 text-xs rounded bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20"
                           >
                             Create
                           </button>
                         </div>
                       ))}
+                      {/* Tasks from tasks table */}
+                      {selectedDateTasksFromTable.map(task => {
+                        const taskType = task.metadata?.task_type || "task";
+                        const getTaskIcon = () => {
+                          switch (taskType) {
+                            case "meeting":
+                              return <Users className="w-4 h-4 text-purple-400 flex-shrink-0" />;
+                            case "call":
+                              return <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />;
+                            case "note":
+                              return <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />;
+                            default:
+                              return <CheckSquare className="w-4 h-4 text-blue-400 flex-shrink-0" />;
+                          }
+                        };
+                        
+                        return (
+                          <div 
+                            key={task.id} 
+                            className="bg-black/30 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-black/40 transition-colors cursor-pointer"
+                            onClick={() => handleTaskClick({
+                              id: task.id,
+                              date: task.due_date,
+                              type: taskType as any,
+                              title: task.title,
+                              color: task.priority === "high" ? "red" : "blue",
+                              metadata: task.metadata,
+                              source: "tasks_table",
+                            })}
+                          >
+                            <div className="flex-1 flex items-center gap-2">
+                              {getTaskIcon()}
+                              <div className="flex-1">
+                                <div className="text-sm text-white">{task.title}</div>
+                                <div className="flex items-center gap-3 mt-1">
+                                  {task.due_time && (
+                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      {task.due_time}
+                                    </div>
+                                  )}
+                                  {task.metadata?.participants && Array.isArray(task.metadata.participants) && task.metadata.participants.length > 0 && (
+                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                      <Users className="w-3 h-3" />
+                                      {task.metadata.participants.length} participant{task.metadata.participants.length > 1 ? 's' : ''}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -974,11 +1302,10 @@ export default function ManagerCalendarPage() {
                       onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
                       className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
-                    <input
-                      type="time"
+                    <TimePicker
                       value={newTask.dueTime}
-                      onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      onChange={(value) => setNewTask({ ...newTask, dueTime: value })}
+                      className="w-full"
                     />
                   </div>
                   <select
@@ -1093,11 +1420,10 @@ export default function ManagerCalendarPage() {
                       onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
                       className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
                     />
-                    <input
-                      type="time"
+                    <TimePicker
                       value={newReminder.time}
-                      onChange={(e) => setNewReminder({ ...newReminder, time: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      onChange={(value) => setNewReminder({ ...newReminder, time: value })}
+                      className="w-full"
                     />
                   </div>
                   <select
@@ -1298,6 +1624,46 @@ export default function ManagerCalendarPage() {
           </div>
         )}
       </div>
+
+      {/* Unified Create Task/Meeting Modal */}
+      <CreateTaskModal
+        isOpen={createTaskModalOpen}
+        onClose={() => {
+          setCreateTaskModalOpen(false);
+          setModalContext(undefined);
+        }}
+        context={modalContext}
+        onTaskCreated={(task) => {
+          // Refresh calendar data
+          loadCalendarData();
+          toast.success(`${task.metadata?.task_type || 'Task'} created successfully!`);
+          setCreateTaskModalOpen(false);
+          setModalContext(undefined);
+        }}
+      />
+
+      {/* Floating Action Button (FAB) for quick task creation */}
+      <button
+        onClick={() => {
+          setModalContext({ source: 'manual' });
+          setCreateTaskModalOpen(true);
+        }}
+        className="
+          fixed bottom-8 right-8
+          w-14 h-14
+          rounded-full
+          bg-[#EC4899] hover:bg-[#EC4899]/80
+          shadow-lg hover:shadow-xl
+          flex items-center justify-center
+          text-white
+          transition-all duration-200
+          z-50
+        "
+        aria-label="Create task"
+        title="Create task, meeting, call, or note"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
     </div>
   );
 }

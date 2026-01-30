@@ -15,10 +15,38 @@ import {
   AlertCircle,
   Headphones,
   Mail,
-  Phone
+  Phone,
+  RotateCcw,
+  Plus,
+  History,
+  Thermometer,
+  FileText,
+  Bell,
+  AlertTriangle,
+  Receipt,
+  ClipboardList,
+  Calculator,
+  TrendingUp,
+  Calendar,
+  Clock,
+  DollarSign,
+  GraduationCap,
+  Factory,
+  ShoppingCart,
+  Truck,
+  Wrench,
+  Package,
+  Megaphone,
+  Users,
+  Paperclip,
+  HelpCircle,
+  Lightbulb
 } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { usePathname, useRouter } from 'next/navigation';
+import { captureScreenshot, blobToDataURL } from './ScreenshotCapture';
+import { Camera, Save } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 // ============================================================================
 // TYPES
@@ -44,31 +72,80 @@ interface QuickAction {
 }
 
 // ============================================================================
-// QUICK ACTIONS (Suggested questions)
+// MODULE DETECTION
 // ============================================================================
 
-const QUICK_ACTIONS: QuickAction[] = [
-  {
-    label: 'Fridge temperatures',
-    query: 'What temperature should my fridge be at?',
-    icon: <span className="text-lg">🌡️</span>
-  },
-  {
-    label: 'Task not showing',
-    query: "My task isn't showing in Today's Tasks. How do I fix it?",
-    icon: <span className="text-lg">❓</span>
-  },
-  {
-    label: 'Create an SOP',
-    query: 'How do I create a Standard Operating Procedure in Checkly?',
-    icon: <span className="text-lg">📝</span>
-  },
-  {
-    label: 'Fire alarm testing',
-    query: 'How often do I need to test fire alarms and what should I check?',
-    icon: <span className="text-lg">🔔</span>
+function detectModule(pathname: string): string {
+  if (pathname?.startsWith('/dashboard/todays_tasks') || 
+      pathname?.startsWith('/dashboard/tasks') || 
+      pathname?.startsWith('/dashboard/checklists') || 
+      pathname?.startsWith('/dashboard/incidents') || 
+      pathname?.startsWith('/dashboard/sops') || 
+      pathname?.startsWith('/dashboard/risk-assessments') || 
+      pathname?.startsWith('/dashboard/logs')) {
+    return 'checkly';
   }
-];
+  if (pathname?.startsWith('/dashboard/stockly')) return 'stockly';
+  if (pathname?.startsWith('/dashboard/people') || pathname?.startsWith('/dashboard/courses')) return 'teamly';
+  if (pathname?.startsWith('/dashboard/planly')) return 'planly';
+  if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return 'assetly';
+  if (pathname?.startsWith('/dashboard/messaging')) return 'msgly';
+  return 'dashboard';
+}
+
+// ============================================================================
+// QUICK ACTIONS (Module-specific)
+// ============================================================================
+
+const MODULE_QUICK_ACTIONS: Record<string, QuickAction[]> = {
+  checkly: [
+    { label: 'Fridge temperatures', query: 'How do I log fridge temperatures?', icon: <Thermometer className="w-4 h-4" /> },
+    { label: 'Create an SOP', query: 'Help me create an SOP', icon: <FileText className="w-4 h-4" /> },
+    { label: 'Fire alarm testing', query: 'What are the fire alarm testing requirements?', icon: <Bell className="w-4 h-4" /> },
+    { label: 'Report an issue', query: 'I need to report an issue', icon: <AlertTriangle className="w-4 h-4" /> }
+  ],
+  stockly: [
+    { label: 'Process an invoice', query: 'How do I process an invoice?', icon: <Receipt className="w-4 h-4" /> },
+    { label: 'Stock count help', query: 'Help with stock counts', icon: <ClipboardList className="w-4 h-4" /> },
+    { label: 'Recipe costing', query: 'How does recipe costing work?', icon: <Calculator className="w-4 h-4" /> },
+    { label: 'GP calculation', query: 'Explain GP calculations', icon: <TrendingUp className="w-4 h-4" /> }
+  ],
+  teamly: [
+    { label: 'Rota help', query: 'Help me with the rota', icon: <Calendar className="w-4 h-4" /> },
+    { label: 'Leave request', query: 'How do leave requests work?', icon: <Clock className="w-4 h-4" /> },
+    { label: 'Payroll query', query: 'I have a payroll question', icon: <DollarSign className="w-4 h-4" /> },
+    { label: 'Training courses', query: 'How do training courses work?', icon: <GraduationCap className="w-4 h-4" /> }
+  ],
+  planly: [
+    { label: 'Production planning', query: 'Help with production planning', icon: <Factory className="w-4 h-4" /> },
+    { label: 'Order management', query: 'How do I manage orders?', icon: <ShoppingCart className="w-4 h-4" /> },
+    { label: 'Delivery scheduling', query: 'Help with delivery scheduling', icon: <Truck className="w-4 h-4" /> },
+    { label: 'Cutoff rules', query: 'Explain cutoff rules', icon: <Clock className="w-4 h-4" /> }
+  ],
+  assetly: [
+    { label: 'Log an issue', query: 'I need to log an asset issue', icon: <AlertTriangle className="w-4 h-4" /> },
+    { label: 'PPM scheduling', query: 'How does PPM scheduling work?', icon: <Wrench className="w-4 h-4" /> },
+    { label: 'Asset tracking', query: 'Help with asset tracking', icon: <Package className="w-4 h-4" /> },
+    { label: 'Contractor callout', query: 'How do I request a contractor?', icon: <Phone className="w-4 h-4" /> }
+  ],
+  msgly: [
+    { label: 'Send announcement', query: 'How do I send an announcement?', icon: <Megaphone className="w-4 h-4" /> },
+    { label: 'Create group', query: 'How do I create a group chat?', icon: <Users className="w-4 h-4" /> },
+    { label: 'File sharing', query: 'How does file sharing work?', icon: <Paperclip className="w-4 h-4" /> },
+    { label: 'Team communication', query: 'Tips for team communication', icon: <MessageCircle className="w-4 h-4" /> }
+  ],
+  dashboard: [
+    { label: 'Create an SOP', query: 'Help me create an SOP', icon: <FileText className="w-4 h-4" /> },
+    { label: 'Report an issue', query: 'I need to report an issue', icon: <AlertTriangle className="w-4 h-4" /> },
+    { label: 'Platform help', query: 'How do I use Opsly?', icon: <HelpCircle className="w-4 h-4" /> },
+    { label: 'Submit an idea', query: 'I have an idea for improvement', icon: <Lightbulb className="w-4 h-4" /> }
+  ]
+};
+
+function getQuickActionsForModule(pathname: string): QuickAction[] {
+  const module = detectModule(pathname);
+  return MODULE_QUICK_ACTIONS[module] || MODULE_QUICK_ACTIONS.dashboard;
+}
 
 // ============================================================================
 // MAIN COMPONENT
@@ -87,6 +164,16 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showContactOptions, setShowContactOptions] = useState(false);
+  const [ticketMode, setTicketMode] = useState<'none' | 'issue' | 'idea' | 'question' | null>(null);
+  const [ticketDescription, setTicketDescription] = useState('');
+  const [capturingScreenshot, setCapturingScreenshot] = useState(false);
+  const [pendingTicketData, setPendingTicketData] = useState<{title: string, description: string, type: string} | null>(null);
+  const [generationMode, setGenerationMode] = useState<'none' | 'sop' | 'risk-assessment' | null>(null);
+  const [generationData, setGenerationData] = useState<{procedure?: string, activity?: string, requirements?: string, isCoshh?: boolean, content?: string, type: 'sop' | 'risk-assessment'} | null>(null);
+  const [pendingSave, setPendingSave] = useState(false);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<Array<{id: string, title: string | null, updated_at: string, last_message?: string}>>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -123,6 +210,14 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Debug: Log current module when pathname changes
+  useEffect(() => {
+    if (isOpen && pathname) {
+      const currentModule = detectModule(pathname);
+      console.log('[Opsly Assistant] Current module:', currentModule, 'Pathname:', pathname);
+    }
+  }, [pathname, isOpen]);
   
   // Track scroll position to show/hide scroll button
   const handleScroll = useCallback(() => {
@@ -132,9 +227,320 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     setShowScrollButton(!isNearBottom && messages.length > 2);
   }, [messages.length]);
   
+  // Check if message is ticket-related
+  const isTicketQuery = (content: string): {isTicket: boolean, type?: 'issue' | 'idea' | 'question'} => {
+    const lower = content.toLowerCase();
+    if (lower.includes('report an issue') || lower.includes('report issue') || lower.includes('i want to report')) {
+      return { isTicket: true, type: 'issue' };
+    }
+    if (lower.includes('submit an idea') || lower.includes('submit idea') || lower.includes('i want to submit')) {
+      return { isTicket: true, type: 'idea' };
+    }
+    if (lower.includes('i have a question') || lower.includes('question about')) {
+      return { isTicket: true, type: 'question' };
+    }
+    return { isTicket: false };
+  };
+
+  // Check if message is SOP/RA generation request
+  const isGenerationQuery = (content: string): {isGeneration: boolean, type?: 'sop' | 'risk-assessment'} => {
+    const lower = content.toLowerCase();
+    if (lower.includes('create an sop') || lower.includes('create a sop') || lower.includes('i need an sop') || lower.includes('generate an sop') || lower.includes('sop for') || lower.includes('need to create a standard operating procedure')) {
+      return { isGeneration: true, type: 'sop' };
+    }
+    if (lower.includes('create a risk assessment') || lower.includes('create risk assessment') || lower.includes('i need a risk assessment') || lower.includes('generate a risk assessment') || lower.includes('risk assessment for')) {
+      return { isGeneration: true, type: 'risk-assessment' };
+    }
+    return { isGeneration: false };
+  };
+
+  // Generate SOP
+  const generateSOP = async (procedure: string, requirements?: string) => {
+    try {
+      const response = await fetch('/api/assistant/generate-sop', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          procedure_description: procedure,
+          requirements: requirements || '',
+          company_id: companyId,
+          site_id: siteId || null
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate SOP');
+      }
+
+      const data = await response.json();
+      return data.sop;
+    } catch (error: any) {
+      console.error('Error generating SOP:', error);
+      throw error;
+    }
+  };
+
+  // Generate Risk Assessment
+  const generateRiskAssessment = async (activity: string, isCoshh?: boolean) => {
+    try {
+      const response = await fetch('/api/assistant/generate-risk-assessment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          activity_description: activity,
+          is_coshh: isCoshh || false,
+          company_id: companyId,
+          site_id: siteId || null
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate Risk Assessment');
+      }
+
+      const data = await response.json();
+      return { content: data.riskAssessment, isCoshh: data.isCoshh };
+    } catch (error: any) {
+      console.error('Error generating Risk Assessment:', error);
+      throw error;
+    }
+  };
+
+  // Save SOP to database
+  const saveSOP = async (title: string, content: string) => {
+    if (!companyId || !profile?.id || !profile?.full_name) {
+      throw new Error('Missing required information');
+    }
+
+    // Generate ref code (SOP-YYYY-XXX format)
+    const year = new Date().getFullYear();
+    const { data: existingSOPs } = await supabase
+      .from('sop_entries')
+      .select('ref_code')
+      .eq('company_id', companyId)
+      .like('ref_code', `SOP-${year}-%`)
+      .order('ref_code', { ascending: false })
+      .limit(1);
+
+    let refCode = `SOP-${year}-001`;
+    if (existingSOPs && existingSOPs.length > 0) {
+      const lastRef = existingSOPs[0].ref_code;
+      const match = lastRef.match(/SOP-\d{4}-(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10) + 1;
+        refCode = `SOP-${year}-${num.toString().padStart(3, '0')}`;
+      }
+    }
+
+    // Determine category based on title/content (simplified - could be enhanced with AI)
+    let category = 'Cleaning'; // Default
+    const lowerTitle = title.toLowerCase();
+    const lowerContent = content.toLowerCase();
+    const combined = `${lowerTitle} ${lowerContent}`;
+    
+    if (combined.includes('food prep') || combined.includes('prep') || combined.includes('prepare') || combined.includes('ingredient')) {
+      category = 'Food Prep';
+    } else if (combined.includes('cook') || combined.includes('cooking') || combined.includes('kitchen')) {
+      category = 'Food Prep';
+    } else if (combined.includes('service') || combined.includes('foh') || combined.includes('front of house') || combined.includes('serving')) {
+      category = 'Service (FOH)';
+    } else if (combined.includes('drink') || combined.includes('beverage') || combined.includes('cocktail') || combined.includes('bar')) {
+      category = 'Drinks';
+    } else if (combined.includes('hot beverage') || combined.includes('coffee') || combined.includes('tea') || combined.includes('hot drink')) {
+      category = 'Hot Beverages';
+    } else if (combined.includes('cold beverage') || combined.includes('cold drink') || combined.includes('juice') || combined.includes('soft drink')) {
+      category = 'Cold Beverages';
+    } else if (combined.includes('opening') || combined.includes('open') || combined.includes('start of day')) {
+      category = 'Opening';
+    } else if (combined.includes('closing') || combined.includes('close') || combined.includes('end of day') || combined.includes('shut down')) {
+      category = 'Closing';
+    } else if (combined.includes('clean') || combined.includes('cleaning') || combined.includes('sanitize')) {
+      category = 'Cleaning';
+    }
+
+    const { error } = await supabase
+      .from('sop_entries')
+      .insert({
+        company_id: companyId,
+        title,
+        ref_code: refCode,
+        version: '1.0',
+        status: 'Draft',
+        author: profile.full_name,
+        category,
+        sop_data: { content },
+        created_by: profile.id
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return refCode;
+  };
+
+  // Save Risk Assessment to database
+  const saveRiskAssessment = async (title: string, content: string, isCoshh: boolean) => {
+    if (!companyId || !profile?.id) {
+      throw new Error('Missing required information');
+    }
+
+    // Generate ref code (RA-YYYY-XXX format)
+    const year = new Date().getFullYear();
+    const { data: existingRAs } = await supabase
+      .from('risk_assessments')
+      .select('ref_code')
+      .eq('company_id', companyId)
+      .like('ref_code', `RA-${year}-%`)
+      .order('ref_code', { ascending: false })
+      .limit(1);
+
+    let refCode = `RA-${year}-001`;
+    if (existingRAs && existingRAs.length > 0) {
+      const lastRef = existingRAs[0].ref_code;
+      const match = lastRef.match(/RA-\d{4}-(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10) + 1;
+        refCode = `RA-${year}-${num.toString().padStart(3, '0')}`;
+      }
+    }
+
+    const { error } = await supabase
+      .from('risk_assessments')
+      .insert({
+        company_id: companyId,
+        site_id: siteId || null,
+        template_type: isCoshh ? 'coshh' : 'general',
+        title,
+        ref_code: refCode,
+        assessment_date: new Date().toISOString().split('T')[0],
+        assessor_name: profile.full_name || 'Unknown',
+        status: 'Draft',
+        assessment_data: { content },
+        created_by: profile.id
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return refCode;
+  };
+
+  // Extract ticket title using AI
+  const extractTicketTitle = async (description: string): Promise<string> => {
+    try {
+      const response = await fetch('/api/assistant/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Extract a concise title (max 60 characters) for this support request: "${description}"`,
+          conversationHistory: [],
+          userContext: {
+            userId: profile?.id,
+            companyId: companyId,
+            siteId: siteId,
+            role: profile?.app_role || 'Staff',
+            currentPage: pathname
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Extract title from response (remove quotes if present)
+        let title = data.message.trim();
+        title = title.replace(/^["']|["']$/g, ''); // Remove surrounding quotes
+        if (title.length > 60) {
+          title = title.substring(0, 57) + '...';
+        }
+        return title || description.substring(0, 60);
+      }
+    } catch (error) {
+      console.error('Error extracting title:', error);
+    }
+    // Fallback to first 60 chars of description
+    return description.substring(0, 60);
+  };
+
+  // Create ticket
+  const createTicket = async (title: string, description: string, type: string, screenshot?: string) => {
+    if (!companyId || !profile?.id) {
+      throw new Error('Missing company or user information');
+    }
+
+    const module = detectModule(pathname);
+    
+    const response = await fetch('/api/assistant/tickets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type,
+        module,
+        title,
+        description,
+        page_url: pathname,
+        screenshot,
+        company_id: companyId,
+        site_id: siteId || null,
+        user_id: profile.id
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to create ticket');
+    }
+
+    return await response.json();
+  };
+
+  // Handle screenshot capture
+  const handleScreenshotCapture = async () => {
+    setCapturingScreenshot(true);
+    try {
+      const blob = await captureScreenshot();
+      const dataURL = await blobToDataURL(blob);
+      return dataURL;
+    } catch (error) {
+      console.error('Error capturing screenshot:', error);
+      throw error;
+    } finally {
+      setCapturingScreenshot(false);
+    }
+  };
+
   // Send message to API
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
+    
+    // Ensure we have a conversation before proceeding
+    let conversationId = currentConversationId;
+    if (!conversationId && profile?.id && companyId) {
+      conversationId = await createNewConversation();
+      if (!conversationId) {
+        setIsLoading(false);
+        const errorMessage: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: 'Sorry, I couldn\'t start a new conversation. Please try again.',
+          timestamp: new Date(),
+          isError: true
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        return;
+      }
+      // Update currentConversationId state (will be used in saveMessagesAfterResponse)
+      setCurrentConversationId(conversationId);
+    }
     
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -144,12 +550,223 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     };
     
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = content.trim();
     setInputValue('');
     setIsLoading(true);
     
+    // Use the conversation ID we have (either existing or newly created)
+    const activeConversationId = conversationId || currentConversationId;
+    
     try {
-      // Build conversation history for context
-      const conversationHistory = messages.map(m => ({
+      // Check if this is a ticket query
+      const ticketCheck = isTicketQuery(currentInput);
+      
+      if (ticketCheck.isTicket && ticketCheck.type) {
+        // Start ticket flow
+        setTicketMode(ticketCheck.type);
+        setTicketDescription(currentInput);
+        
+        // Ask for more details if needed
+        const assistantMessage: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: `I'd be happy to help you ${ticketCheck.type === 'issue' ? 'report this issue' : ticketCheck.type === 'idea' ? 'submit this idea' : 'with this question'}. Could you provide more details about what you're experiencing or what you'd like to share?`,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // If in ticket mode and user provides description
+      if (ticketMode && ticketMode !== 'none') {
+        const fullDescription = ticketDescription ? `${ticketDescription}\n\n${currentInput}` : currentInput;
+        setTicketDescription(fullDescription);
+        
+        // Extract title
+        const title = await extractTicketTitle(fullDescription);
+        setPendingTicketData({ title, description: fullDescription, type: ticketMode });
+        
+        // Ask about screenshot
+        const assistantMessage: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: `I'll create a ticket for: "${title}". Would you like to attach a screenshot?`,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if this is a generation query
+      const generationCheck = isGenerationQuery(currentInput);
+      
+      if (generationCheck.isGeneration && generationCheck.type) {
+        // Start generation flow
+        setGenerationMode(generationCheck.type);
+        
+        if (generationCheck.type === 'sop') {
+          // Extract procedure from query or ask
+          const procedureMatch = currentInput.match(/sop (?:for )?(.+)/i) || currentInput.match(/create (?:an? )?sop (?:for )?(.+)/i);
+          if (procedureMatch && procedureMatch[1]) {
+            const procedure = procedureMatch[1].trim();
+            setGenerationData({ procedure, type: 'sop' });
+            
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `I'll create an SOP for "${procedure}". Any specific requirements or hazards to include?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          } else {
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `What procedure do you need an SOP for?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          }
+        } else if (generationCheck.type === 'risk-assessment') {
+          // Extract activity from query or ask
+          const activityMatch = currentInput.match(/risk assessment (?:for )?(.+)/i) || currentInput.match(/create (?:a )?risk assessment (?:for )?(.+)/i);
+          if (activityMatch && activityMatch[1]) {
+            const activity = activityMatch[1].trim();
+            setGenerationData({ activity, type: 'risk-assessment' });
+            
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `I'll create a risk assessment for "${activity}". Is this a COSHH assessment (chemical/substance)?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          } else {
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `What activity or hazard do you need a risk assessment for?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+
+      // If in generation mode, collect details and generate
+      if (generationMode && generationMode !== 'none') {
+        if (generationMode === 'sop') {
+          if (!generationData?.procedure) {
+            // User provided procedure
+            setGenerationData({ procedure: currentInput, type: 'sop' });
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `Any specific requirements or hazards to include?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          } else if (!generationData.requirements) {
+            // User provided requirements (or none)
+            const requirements = currentInput.toLowerCase().includes('no') || currentInput.toLowerCase().includes('none') ? '' : currentInput;
+            setGenerationData({ ...generationData, requirements });
+            
+            // Generate SOP
+            setIsLoading(true);
+            try {
+              const sopContent = await generateSOP(generationData.procedure, requirements);
+              setGenerationData({ ...generationData, requirements, content: sopContent });
+              
+              const assistantMessage: Message = {
+                id: crypto.randomUUID(),
+                role: 'assistant',
+                content: `Here's your SOP:\n\n${sopContent}\n\nWould you like me to save this to your SOP library?`,
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, assistantMessage]);
+              setPendingSave(true);
+            } catch (error: any) {
+              const errorMessage: Message = {
+                id: crypto.randomUUID(),
+                role: 'assistant',
+                content: `Sorry, I couldn't generate the SOP: ${error.message}. Please try again.`,
+                timestamp: new Date(),
+                isError: true
+              };
+              setMessages(prev => [...prev, errorMessage]);
+              setGenerationMode(null);
+              setGenerationData(null);
+            } finally {
+              setIsLoading(false);
+            }
+            return;
+          }
+        } else if (generationMode === 'risk-assessment') {
+          if (!generationData?.activity) {
+            // User provided activity
+            setGenerationData({ activity: currentInput, type: 'risk-assessment' });
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              content: `Is this a COSHH assessment (chemical/substance)?`,
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsLoading(false);
+            return;
+          } else if (generationData.isCoshh === undefined) {
+            // User answered COSHH question
+            const isCoshh = currentInput.toLowerCase().includes('yes') || currentInput.toLowerCase().includes('yep') || currentInput.toLowerCase().includes('yeah');
+            setGenerationData({ ...generationData, isCoshh });
+            
+            // Generate Risk Assessment
+            setIsLoading(true);
+            try {
+              const raResult = await generateRiskAssessment(generationData.activity, isCoshh);
+              setGenerationData({ ...generationData, isCoshh, content: raResult.content });
+              
+              const assistantMessage: Message = {
+                id: crypto.randomUUID(),
+                role: 'assistant',
+                content: `Here's your Risk Assessment:\n\n${raResult.content}\n\nWould you like me to save this to your Risk Assessments?`,
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, assistantMessage]);
+              setPendingSave(true);
+            } catch (error: any) {
+              const errorMessage: Message = {
+                id: crypto.randomUUID(),
+                role: 'assistant',
+                content: `Sorry, I couldn't generate the Risk Assessment: ${error.message}. Please try again.`,
+                timestamp: new Date(),
+                isError: true
+              };
+              setMessages(prev => [...prev, errorMessage]);
+              setGenerationMode(null);
+              setGenerationData(null);
+            } finally {
+              setIsLoading(false);
+            }
+            return;
+          }
+        }
+      }
+      
+      // Normal chat flow
+      // Build conversation history for context (last 10 messages as per brief)
+      const conversationHistory = messages.slice(-10).map(m => ({
         role: m.role,
         content: m.content
       }));
@@ -171,7 +788,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: content.trim(),
+          message: currentInput,
           conversationHistory,
           userContext
         })
@@ -194,6 +811,12 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
       
       setMessages(prev => [...prev, assistantMessage]);
       
+      // Save messages to database (non-blocking)
+      const convId = activeConversationId;
+      if (convId) {
+        saveMessagesAfterResponse(currentInput, data.message, convId);
+      }
+      
     } catch (error: any) {
       console.error('Assistant error:', error);
       
@@ -205,6 +828,53 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
         isError: true
       };
       
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle ticket creation with optional screenshot
+  const handleCreateTicket = async (withScreenshot: boolean) => {
+    if (!pendingTicketData) return;
+    
+    setIsLoading(true);
+    try {
+      let screenshot: string | undefined;
+      
+      if (withScreenshot) {
+        screenshot = await handleScreenshotCapture();
+      }
+      
+      const result = await createTicket(
+        pendingTicketData.title,
+        pendingTicketData.description,
+        pendingTicketData.type,
+        screenshot
+      );
+      
+      const successMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `✅ Ticket ${result.ticketNumber} created and assigned to ${result.assignedTo}. We'll get back to you soon!`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, successMessage]);
+      
+      // Reset ticket state
+      setTicketMode(null);
+      setTicketDescription('');
+      setPendingTicketData(null);
+      
+    } catch (error: any) {
+      const errorMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Sorry, I couldn't create the ticket: ${error.message}. Please try again.`,
+        timestamp: new Date(),
+        isError: true
+      };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -228,6 +898,254 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     // Auto-scroll to bottom to show contact options
     setTimeout(() => scrollToBottom(), 100);
   };
+
+  // Create new conversation
+  const createNewConversation = async () => {
+    if (!companyId || !profile?.id) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('assistant_conversations')
+        .insert({
+          user_id: profile.id,
+          company_id: companyId,
+          title: null // Will be auto-generated after first exchange
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCurrentConversationId(data.id);
+      setMessages([]);
+      setTicketMode(null);
+      setTicketDescription('');
+      setPendingTicketData(null);
+      setGenerationMode(null);
+      setGenerationData(null);
+      setPendingSave(false);
+      setShowContactOptions(false);
+      setInputValue('');
+      sessionIdRef.current = crypto.randomUUID();
+      setShowHistory(false);
+      
+      return data.id;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      return null;
+    }
+  };
+
+  // Load conversation history
+  const loadConversations = async () => {
+    if (!profile?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('assistant_conversations')
+        .select('id, title, updated_at')
+        .eq('user_id', profile.id)
+        .eq('is_archived', false)
+        .order('updated_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      // Get last message for each conversation
+      const conversationsWithMessages = await Promise.all(
+        (data || []).map(async (conv) => {
+          const { data: lastMessage } = await supabase
+            .from('assistant_messages')
+            .select('content')
+            .eq('conversation_id', conv.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          return {
+            ...conv,
+            last_message: lastMessage?.content?.substring(0, 60) || ''
+          };
+        })
+      );
+
+      setConversations(conversationsWithMessages);
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    }
+  };
+
+  // Load a specific conversation
+  const loadConversation = async (conversationId: string) => {
+    if (!profile?.id) return;
+
+    try {
+      // Load messages
+      const { data: messagesData, error: messagesError } = await supabase
+        .from('assistant_messages')
+        .select('*')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+
+      if (messagesError) throw messagesError;
+
+      // Convert to Message format
+      const loadedMessages: Message[] = (messagesData || []).map((msg) => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
+        timestamp: new Date(msg.created_at)
+      }));
+
+      setMessages(loadedMessages);
+      setCurrentConversationId(conversationId);
+      setTicketMode(null);
+      setTicketDescription('');
+      setPendingTicketData(null);
+      setGenerationMode(null);
+      setGenerationData(null);
+      setPendingSave(false);
+      setShowContactOptions(false);
+      setShowHistory(false);
+      sessionIdRef.current = crypto.randomUUID();
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+    }
+  };
+
+  // Archive a conversation
+  const archiveConversation = async (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent loading the conversation
+    
+    try {
+      const { error } = await supabase
+        .from('assistant_conversations')
+        .update({ is_archived: true })
+        .eq('id', conversationId);
+
+      if (error) throw error;
+
+      // Reload conversations list
+      loadConversations();
+      
+      // If this was the current conversation, create a new one
+      if (currentConversationId === conversationId) {
+        createNewConversation();
+      }
+    } catch (error) {
+      console.error('Error archiving conversation:', error);
+    }
+  };
+
+  // Save messages after assistant responds (called separately to avoid blocking)
+  const saveMessagesAfterResponse = async (userMessage: string, assistantMessage: string, conversationId?: string) => {
+    const convId = conversationId || currentConversationId;
+    if (!convId) return;
+    
+    // Save both messages
+    await Promise.all([
+      saveMessageToConversation('user', userMessage, convId),
+      saveMessageToConversation('assistant', assistantMessage, convId)
+    ]);
+
+    // Generate title after first exchange if conversation has no title
+    const { data: conv } = await supabase
+      .from('assistant_conversations')
+      .select('title')
+      .eq('id', convId)
+      .single();
+
+    if (conv && !conv.title) {
+      await generateConversationTitle(userMessage, assistantMessage, convId);
+      // Reload conversations to update title in history
+      loadConversations();
+    }
+  };
+
+  // Save message to specific conversation
+  const saveMessageToConversation = async (role: 'user' | 'assistant', content: string, conversationId: string) => {
+    if (!profile?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('assistant_messages')
+        .insert({
+          conversation_id: conversationId,
+          role,
+          content
+        });
+
+      if (error) {
+        console.error('Error saving message:', error);
+      }
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  };
+
+  // Generate conversation title
+  const generateConversationTitle = async (userMessage: string, assistantResponse: string, conversationId?: string): Promise<string | null> => {
+    const convId = conversationId || currentConversationId;
+    if (!convId) return null;
+
+    try {
+      const response = await fetch('/api/assistant/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Generate a 3-5 word title for this conversation. Just the title, nothing else.
+
+User: "${userMessage.slice(0, 200)}"
+Assistant: "${assistantResponse.slice(0, 200)}"
+
+Examples: Stock count reassignment, Fridge temperature logging, Adding new team member, SOP for fryer cleaning`,
+          conversationHistory: [],
+          userContext: {
+            userId: profile?.id,
+            companyId: companyId,
+            siteId: siteId
+          }
+        })
+      });
+
+      if (!response.ok) return null;
+
+      const data = await response.json();
+      const title = data.message.trim().replace(/^["']|["']$/g, ''); // Remove quotes
+
+      // Update conversation with title
+      await supabase
+        .from('assistant_conversations')
+        .update({ title })
+        .eq('id', convId);
+
+      return title;
+    } catch (error) {
+      console.error('Error generating title:', error);
+      return null;
+    }
+  };
+
+  // Reset chat - clear messages and state (creates new conversation)
+  const handleResetChat = () => {
+    createNewConversation();
+  };
+
+  // Load conversations when history panel opens
+  useEffect(() => {
+    if (showHistory) {
+      loadConversations();
+    }
+  }, [showHistory, profile?.id]);
+
+  // Create conversation on mount if none exists (only once)
+  useEffect(() => {
+    if (isOpen && !currentConversationId && profile?.id && companyId && messages.length === 0) {
+      createNewConversation();
+    }
+  }, [isOpen]);
   
   // Navigate to support page
   const goToSupportPage = () => {
@@ -237,7 +1155,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   
   // Open email client
   const openEmailSupport = () => {
-    window.location.href = 'mailto:support@checkly.com?subject=Support Request from AI Assistant';
+    window.location.href = 'mailto:support@opsly.app?subject=Support Request from Opsly Assistant';
   };
   
   // Format message content (basic markdown-like formatting)
@@ -287,6 +1205,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
           
           {/* Chat Panel */}
           <div 
+            data-assistant-widget
             className={`${position === 'top-right' 
               ? 'fixed inset-0 sm:inset-auto sm:top-20 sm:right-4' 
               : 'fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6'
@@ -297,17 +1216,35 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
             onClick={(e) => e.stopPropagation()}
           >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 sm:py-3 border-b border-white/[0.06] bg-white/[0.03] flex-shrink-0">
+          <div className="relative flex items-center justify-between px-4 py-3 sm:py-3 border-b border-white/[0.06] bg-white/[0.03] flex-shrink-0">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div className="p-1.5 sm:p-2 bg-white/[0.06] rounded-lg border border-[#EC4899]/20 flex-shrink-0">
                 <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899]" />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-white text-sm sm:text-base truncate">Checkly Assistant</h3>
-                <p className="text-xs text-white/60 hidden sm:block">Compliance & app support</p>
+                <h3 className="font-semibold text-white text-sm sm:text-base truncate">Opsly Assistant</h3>
+                <p className="text-xs text-white/60 hidden sm:block">Your operations copilot</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              {/* New Chat Button */}
+              <button
+                onClick={createNewConversation}
+                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                aria-label="New Chat"
+                title="Start new chat"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              {/* History Button */}
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                aria-label="Chat History"
+                title="View chat history"
+              >
+                <History className="w-4 h-4" />
+              </button>
               {/* Contact Human Button */}
               <button
                 onClick={handleContactHuman}
@@ -325,11 +1262,69 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
                 onClick={() => setIsOpen(false)}
                 className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
                 aria-label="Close"
+                title="Close assistant"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
+
+          {/* History Panel */}
+          {showHistory && (
+            <div className="absolute top-full left-0 right-0 bg-[#0f1220] border-b border-white/[0.06] z-[10001] max-h-[300px] overflow-y-auto shadow-2xl">
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-white">Chat History</h4>
+                  <button
+                    onClick={() => setShowHistory(false)}
+                    className="p-1 rounded hover:bg-white/[0.06] text-white/60 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                {conversations.length === 0 ? (
+                  <p className="text-xs text-white/60 text-center py-4">No previous conversations</p>
+                ) : (
+                  <div className="space-y-2">
+                    {conversations.map((conv) => (
+                      <div
+                        key={conv.id}
+                        className={`group relative w-full text-left p-3 rounded-lg border transition-colors ${
+                          currentConversationId === conv.id
+                            ? 'bg-[#EC4899]/10 border-[#EC4899]/40'
+                            : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        <button
+                          onClick={() => loadConversation(conv.id)}
+                          className="w-full text-left"
+                        >
+                          <div className="font-medium text-white text-sm mb-1">
+                            {conv.title || 'New conversation'}
+                          </div>
+                          {conv.last_message && (
+                            <div className="text-xs text-white/60 truncate">
+                              {conv.last_message}
+                            </div>
+                          )}
+                          <div className="text-xs text-white/40 mt-1">
+                            {new Date(conv.updated_at).toLocaleDateString()} {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </button>
+                        <button
+                          onClick={(e) => archiveConversation(conv.id, e)}
+                          className="absolute top-2 right-2 p-1 rounded hover:bg-white/[0.1] text-white/40 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Archive conversation"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           
           {/* Messages Area */}
           <div 
@@ -347,12 +1342,21 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
                   How can I help?
                 </h4>
                 <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-xs mx-auto px-2">
-                  Ask me about UK compliance regulations, how to use Checkly, or creating SOPs and Risk Assessments.
+                  Ask me about any module - compliance, inventory, staffing, production, assets, or messaging.
                 </p>
+                
+                {/* Module indicator */}
+                {pathname && (
+                  <div className="mb-3 text-center">
+                    <span className="inline-block px-2 py-1 rounded text-xs bg-white/[0.06] border border-white/[0.1] text-white/60">
+                      {detectModule(pathname).charAt(0).toUpperCase() + detectModule(pathname).slice(1)} Module
+                    </span>
+                  </div>
+                )}
                 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {QUICK_ACTIONS.map((action, index) => (
+                  {getQuickActionsForModule(pathname || '').map((action, index) => (
                     <button
                       key={index}
                       onClick={() => handleQuickAction(action.query)}
@@ -444,7 +1448,130 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
                 </div>
                 <div className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06]">
                   <Loader2 className="w-4 h-4 text-[#EC4899] animate-spin" />
-                  <span className="text-sm text-white/60">Thinking...</span>
+                  <span className="text-sm text-white/60">
+                    {capturingScreenshot ? 'Capturing screenshot...' : 'Thinking...'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Ticket creation prompt with screenshot option */}
+            {pendingTicketData && !isLoading && (
+              <div className="flex gap-3 mt-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-[#EC4899]" />
+                </div>
+                <div className="flex-1 max-w-[280px]">
+                  <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06] border border-[#EC4899]/20">
+                    <p className="text-sm text-white/90 mb-3">
+                      Would you like to attach a screenshot?
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleCreateTicket(true)}
+                        disabled={capturingScreenshot}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
+                          bg-transparent border border-[#EC4899] text-[#EC4899] text-xs font-medium
+                          hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
+                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                      >
+                        <Camera className="w-4 h-4" />
+                        <span>Yes, with screenshot</span>
+                      </button>
+                      <button
+                        onClick={() => handleCreateTicket(false)}
+                        disabled={capturingScreenshot}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
+                          bg-transparent border border-white/[0.2] text-white/80 text-xs font-medium
+                          hover:bg-white/[0.08] hover:border-white/[0.3]
+                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                      >
+                        <span>No, create ticket</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Save SOP/RA prompt */}
+            {pendingSave && generationData && !isLoading && (
+              <div className="flex gap-3 mt-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-[#EC4899]" />
+                </div>
+                <div className="flex-1 max-w-[280px]">
+                  <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06] border border-[#EC4899]/20">
+                    <p className="text-sm text-white/90 mb-3">
+                      Would you like me to save this to your {generationData.type === 'sop' ? 'SOP library' : 'Risk Assessments'}?
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={async () => {
+                          if (!generationData.content) return;
+                          setIsLoading(true);
+                          try {
+                            let refCode: string;
+                            const title = generationData.type === 'sop' 
+                              ? (generationData.procedure || 'SOP')
+                              : (generationData.activity || 'Risk Assessment');
+                            
+                            if (generationData.type === 'sop') {
+                              refCode = await saveSOP(title, generationData.content);
+                            } else {
+                              refCode = await saveRiskAssessment(title, generationData.content, generationData.isCoshh || false);
+                            }
+                            
+                            const successMessage: Message = {
+                              id: crypto.randomUUID(),
+                              role: 'assistant',
+                              content: `✅ Saved! Reference code: ${refCode}. You can find it in your ${generationData.type === 'sop' ? 'SOPs' : 'Risk Assessments'} page.`,
+                              timestamp: new Date()
+                            };
+                            setMessages(prev => [...prev, successMessage]);
+                            
+                            // Reset state
+                            setGenerationMode(null);
+                            setGenerationData(null);
+                            setPendingSave(false);
+                          } catch (error: any) {
+                            const errorMessage: Message = {
+                              id: crypto.randomUUID(),
+                              role: 'assistant',
+                              content: `Sorry, I couldn't save it: ${error.message}. Please try again.`,
+                              timestamp: new Date(),
+                              isError: true
+                            };
+                            setMessages(prev => [...prev, errorMessage]);
+                          } finally {
+                            setIsLoading(false);
+                          }
+                        }}
+                        disabled={isLoading}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
+                          bg-transparent border border-[#EC4899] text-[#EC4899] text-xs font-medium
+                          hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
+                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>Yes, save it</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPendingSave(false);
+                          setGenerationMode(null);
+                          setGenerationData(null);
+                        }}
+                        disabled={isLoading}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
+                          bg-transparent border border-white/[0.2] text-white/80 text-xs font-medium
+                          hover:bg-white/[0.08] hover:border-white/[0.3]
+                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                      >
+                        <span>No, thanks</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -469,7 +1596,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
                           transition-all duration-200 ease-in-out"
                       >
                         <Mail className="w-4 h-4" />
-                        <span>Email: support@checkly.com</span>
+                        <span>Email: support@opsly.app</span>
                       </button>
                       <button
                         onClick={goToSupportPage}
@@ -522,7 +1649,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask about compliance, tasks, or Checkly..."
+                placeholder="Ask about any module or feature..."
                 disabled={isLoading}
                 className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-white/[0.06] border border-white/[0.1] 
                   text-white placeholder-white/40 text-xs sm:text-sm

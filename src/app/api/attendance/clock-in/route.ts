@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const { data: activeShift } = await supabase
       .from('staff_attendance')
       .select('id')
-      .eq('user_id', profile.id)
+      .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .maybeSingle();
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     const { data: attendance, error: insertError } = await supabase
       .from('staff_attendance')
       .insert({
-        user_id: profile.id,
+        profile_id: profile.id,
         company_id: profile.company_id,
         site_id: siteId,
         clock_in_time: new Date().toISOString(),

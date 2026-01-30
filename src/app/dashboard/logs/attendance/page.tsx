@@ -162,10 +162,10 @@ export default function AttendanceLogsPage() {
 
       // Apply user filter (if manager/admin viewing)
       if (selectedUserId) {
-        query = query.eq('user_id', selectedUserId);
-      } else if (profile?.app_role === 'Staff') {
+        query = query.eq('profile_id', selectedUserId);
+      } else if (profile?.app_role?.toLowerCase() === 'staff') {
         // Staff can only see their own records
-        query = query.eq('user_id', profile.id);
+        query = query.eq('profile_id', profile.id);
       }
 
       console.log('📊 Executing query with filters:', {
@@ -222,7 +222,7 @@ export default function AttendanceLogsPage() {
     }
   }
 
-  const isManager = profile?.app_role && ['Manager', 'General Manager', 'Admin', 'Owner'].includes(profile.app_role);
+  const isManager = profile?.app_role && ['manager', 'general_manager', 'admin', 'owner'].includes(profile.app_role.toLowerCase());
 
   return (
     <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">

@@ -205,7 +205,7 @@ export default async function FoodSafetyCoursePage() {
 
   const actions = (
     <Link
-      href="/training/courses/l2-food-hygiene/start"
+      href="/learn/uk-l2-food-safety"
       className="inline-flex items-center gap-2 rounded-lg border border-[#EC4899] bg-transparent px-6 py-2.5 text-sm font-medium text-[#EC4899] transition-all duration-200 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
     >
       <Play className="h-4 w-4" />

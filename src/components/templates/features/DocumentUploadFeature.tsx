@@ -121,11 +121,11 @@ export function DocumentUploadFeature({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-sm font-medium text-gray-200 mb-1">
+        <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">
           {label}
         </label>
         {helpText && (
-          <p className="text-xs text-gray-400 mb-2">{helpText}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{helpText}</p>
         )}
       </div>
 
@@ -153,7 +153,7 @@ export function DocumentUploadFeature({
           disabled={uploading || uploads.length >= maxFiles}
         />
         {uploads.length > 0 && (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-600 dark:text-gray-400">
             {uploads.length} / {maxFiles} files
           </span>
         )}
@@ -165,21 +165,23 @@ export function DocumentUploadFeature({
           {uploads.map((upload, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-2 bg-gray-800/50 rounded border border-gray-700"
+              className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700"
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                {getFileIcon(upload.fileType)}
+                <div className="text-gray-600 dark:text-gray-400">
+                  {getFileIcon(upload.fileType)}
+                </div>
                 <div className="flex-1 min-w-0">
                   <a
                     href={upload.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-400 hover:text-blue-300 truncate block"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 truncate block"
                     title={upload.fileName}
                   >
                     {upload.fileName}
                   </a>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {formatFileSize(upload.fileSize)}
                   </p>
                 </div>
@@ -189,7 +191,7 @@ export function DocumentUploadFeature({
                 variant="ghost"
                 size="sm"
                 onClick={() => onRemove(index)}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>

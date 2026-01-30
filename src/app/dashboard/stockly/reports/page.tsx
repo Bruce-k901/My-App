@@ -91,7 +91,8 @@ export default function StocklyReportsPage() {
         .select('value')
         .eq('company_id', companyId);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         stockQuery = stockQuery.eq('site_id', siteId);
       }
       
@@ -135,7 +136,8 @@ export default function StocklyReportsPage() {
         .eq('status', 'confirmed')
         .gte('delivery_date', startDate.toISOString().split('T')[0]);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         spendQuery = spendQuery.eq('site_id', siteId);
       }
       
@@ -157,7 +159,8 @@ export default function StocklyReportsPage() {
         .gte('delivery_date', prevStartDate.toISOString().split('T')[0])
         .lte('delivery_date', prevEndDate.toISOString().split('T')[0]);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         prevSpendQuery = prevSpendQuery.eq('site_id', siteId);
       }
       
@@ -168,33 +171,32 @@ export default function StocklyReportsPage() {
       // Get wastage data (views don't support foreign key relationships)
       let totalWastage = 0;
       try {
-        // Fetch waste log lines
-        const { data: linesData } = await supabase
-          .from('waste_log_lines')
-          .select('line_cost, waste_log_id')
-          .gte('created_at', startDate.toISOString());
+        // First, fetch waste logs filtered by date, company_id, and site_id
+        let logsQuery = supabase
+          .from('waste_logs')
+          .select('id, company_id, site_id')
+          .eq('company_id', companyId)
+          .gte('waste_date', startDate.toISOString().split('T')[0]);
         
-        if (linesData && linesData.length > 0) {
-          // Fetch waste logs to filter by company_id and site_id
-          const wasteLogIds = [...new Set(linesData.map(l => l.waste_log_id).filter(Boolean))];
-          if (wasteLogIds.length > 0) {
-            let logsQuery = supabase
-              .from('waste_logs')
-              .select('id, company_id, site_id')
-              .in('id', wasteLogIds)
-              .eq('company_id', companyId)
-              .gte('waste_date', startDate.toISOString().split('T')[0]);
-            
-            if (siteId) {
-              logsQuery = logsQuery.eq('site_id', siteId);
-            }
-            
-            const { data: logsData } = await logsQuery;
-            const validLogIds = new Set((logsData || []).map(l => l.id));
-            
+        // Only filter by site_id if it's a valid UUID (not "all")
+        if (siteId && siteId !== 'all') {
+          logsQuery = logsQuery.eq('site_id', siteId);
+        }
+        
+        const { data: logsData } = await logsQuery;
+        
+        if (logsData && logsData.length > 0) {
+          const validLogIds = logsData.map(l => l.id);
+          
+          // Then fetch waste log lines for those waste log IDs
+          const { data: linesData } = await supabase
+            .from('waste_log_lines')
+            .select('line_cost, waste_log_id')
+            .in('waste_log_id', validLogIds);
+        
+          if (linesData && linesData.length > 0) {
             // Sum line costs for valid waste logs
             totalWastage = linesData
-              .filter(l => validLogIds.has(l.waste_log_id))
               .reduce((sum, w) => sum + (w.line_cost || 0), 0);
           }
         }
@@ -213,7 +215,8 @@ export default function StocklyReportsPage() {
           .eq('company_id', companyId)
           .gte('week', startDate.toISOString().split('T')[0]);
         
-        if (siteId) {
+        // Only filter by site_id if it's a valid UUID (not "all")
+        if (siteId && siteId !== 'all') {
           catSpendQuery = catSpendQuery.eq('site_id', siteId);
         }
         
@@ -251,7 +254,8 @@ export default function StocklyReportsPage() {
                 .eq('status', 'confirmed')
                 .gte('delivery_date', startDate.toISOString().split('T')[0]);
               
-              if (siteId) {
+              // Only filter by site_id if it's a valid UUID (not "all")
+              if (siteId && siteId !== 'all') {
                 deliveriesQuery = deliveriesQuery.eq('site_id', siteId);
               }
               
@@ -346,7 +350,8 @@ export default function StocklyReportsPage() {
             .eq('status', 'confirmed')
             .gte('delivery_date', startDate.toISOString().split('T')[0]);
 
-          if (siteId) {
+          // Only filter by site_id if it's a valid UUID (not "all")
+          if (siteId && siteId !== 'all') {
             supplierQuery = supplierQuery.eq('site_id', siteId);
           }
 
@@ -528,7 +533,7 @@ export default function StocklyReportsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -540,27 +545,27 @@ export default function StocklyReportsPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Reports</h1>
-            <p className="text-white/60 text-sm mt-1">Stock analytics and insights</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Reports</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Stock analytics and insights</p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
           {/* Date Range Selector */}
-          <div className="flex bg-white/5 rounded-lg p-1">
+          <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1">
             {(['week', 'month', 'quarter'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   dateRange === range
-                    ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                    : 'text-white/60 hover:text-white'
+                    ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
                 }`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -572,7 +577,7 @@ export default function StocklyReportsPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -582,14 +587,14 @@ export default function StocklyReportsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Stock Value */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Package className="w-5 h-5 text-blue-400" />
+              <Package className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             </div>
             {metrics.stockValueChange !== 0 && (
               <div className={`flex items-center gap-1 text-sm ${
-                metrics.stockValueChange > 0 ? 'text-green-400' : 'text-red-400'
+                metrics.stockValueChange > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {metrics.stockValueChange > 0 ? (
                   <ArrowUpRight className="w-4 h-4" />
@@ -600,19 +605,19 @@ export default function StocklyReportsPage() {
               </div>
             )}
           </div>
-          <p className="text-2xl font-bold text-white">{formatCurrency(metrics.stockValue)}</p>
-          <p className="text-sm text-white/60 mt-1">Stock Value</p>
+          <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(metrics.stockValue)}</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Stock Value</p>
         </div>
 
         {/* Monthly Spend */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-green-500/10 rounded-lg">
-              <DollarSign className="w-5 h-5 text-green-400" />
+              <DollarSign className="w-5 h-5 text-green-500 dark:text-green-400" />
             </div>
             {metrics.spendChange !== 0 && (
               <div className={`flex items-center gap-1 text-sm ${
-                metrics.spendChange > 0 ? 'text-red-400' : 'text-green-400'
+                metrics.spendChange > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
               }`}>
                 {metrics.spendChange > 0 ? (
                   <ArrowUpRight className="w-4 h-4" />
@@ -623,55 +628,55 @@ export default function StocklyReportsPage() {
               </div>
             )}
           </div>
-          <p className="text-2xl font-bold text-white">{formatCurrency(metrics.monthlySpend)}</p>
-          <p className="text-sm text-white/60 mt-1">{dateRange === 'week' ? 'Weekly' : dateRange === 'quarter' ? 'Quarterly' : 'Monthly'} Spend</p>
+          <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(metrics.monthlySpend)}</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">{dateRange === 'week' ? 'Weekly' : dateRange === 'quarter' ? 'Quarterly' : 'Monthly'} Spend</p>
         </div>
 
         {/* Variance */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-orange-500/10 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-orange-400" />
+              <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400" />
             </div>
           </div>
-          <p className={`text-2xl font-bold ${metrics.varianceValue < 0 ? 'text-red-400' : 'text-white'}`}>
+          <p className={`text-2xl font-bold ${metrics.varianceValue < 0 ? 'text-red-600 dark:text-red-400' : 'text-[rgb(var(--text-primary))] dark:text-white'}`}>
             {formatCurrency(metrics.varianceValue)}
           </p>
-          <p className="text-sm text-white/60 mt-1">Stock Variance</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Stock Variance</p>
         </div>
 
         {/* Wastage */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-red-500/10 rounded-lg">
-              <TrendingDown className="w-5 h-5 text-red-400" />
+              <TrendingDown className="w-5 h-5 text-red-500 dark:text-red-400" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-red-400">{formatCurrency(metrics.wastageValue)}</p>
-          <p className="text-sm text-white/60 mt-1">Wastage</p>
+          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(metrics.wastageValue)}</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Wastage</p>
         </div>
       </div>
 
       {/* Quick Reports Grid */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Quick Reports</h2>
+      <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Quick Reports</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickReports.map((report) => (
             <Link
               key={report.title}
               href={report.href}
-              className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] hover:border-white/[0.1] transition-colors group"
+              className="flex items-center gap-4 p-4 bg-theme-button dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-lg hover:bg-theme-button-hover dark:hover:bg-white/[0.06] hover:border-theme dark:hover:border-white/[0.1] transition-colors group"
             >
-              <div className={`p-3 rounded-lg bg-white/5`}>
+              <div className={`p-3 rounded-lg bg-theme-button dark:bg-white/5`}>
                 <report.icon className={`w-5 h-5 ${report.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-white group-hover:text-[#EC4899] transition-colors">
+                <h3 className="font-medium text-[rgb(var(--text-primary))] dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#EC4899] transition-colors">
                   {report.title}
                 </h3>
-                <p className="text-sm text-white/50 truncate">{report.description}</p>
+                <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/50 truncate">{report.description}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-colors" />
+              <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/30 group-hover:text-[rgb(var(--text-secondary))] dark:group-hover:text-white/60 transition-colors" />
             </Link>
           ))}
         </div>
@@ -680,14 +685,14 @@ export default function StocklyReportsPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Spend by Category */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Spend by Category</h2>
-            <PieChart className="w-5 h-5 text-white/40" />
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">Spend by Category</h2>
+            <PieChart className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
           </div>
           
           {categorySpend.length === 0 ? (
-            <div className="text-center py-8 text-white/40">
+            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
               <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No spend data for this period</p>
             </div>
@@ -701,10 +706,10 @@ export default function StocklyReportsPage() {
                 return (
                   <div key={cat.category_name}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-white/80">{cat.category_name}</span>
-                      <span className="text-sm font-medium text-white">{formatCurrency(cat.total)}</span>
+                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white/80">{cat.category_name}</span>
+                      <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(cat.total)}</span>
                     </div>
-                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
                       <div 
                         className={`h-full ${colors[index % colors.length]} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -718,14 +723,14 @@ export default function StocklyReportsPage() {
         </div>
 
         {/* Top Suppliers */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Top Suppliers</h2>
-            <Users className="w-5 h-5 text-white/40" />
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">Top Suppliers</h2>
+            <Users className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
           </div>
           
           {supplierSpend.length === 0 ? (
-            <div className="text-center py-8 text-white/40">
+            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
               <Truck className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No supplier data for this period</p>
             </div>
@@ -734,15 +739,15 @@ export default function StocklyReportsPage() {
               {supplierSpend.map((sup, index) => {
                 const maxValue = supplierSpend[0]?.total || 1;
                 const percentage = (sup.total / maxValue) * 100;
-                const colors = ['bg-[#EC4899]', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500'];
+                const colors = ['bg-emerald-500 dark:bg-[#EC4899]', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500'];
                 
                 return (
                   <div key={sup.supplier_name}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-white/80">{sup.supplier_name}</span>
-                      <span className="text-sm font-medium text-white">{formatCurrency(sup.total)}</span>
+                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white/80">{sup.supplier_name}</span>
+                      <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(sup.total)}</span>
                     </div>
-                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
                       <div 
                         className={`h-full ${colors[index % colors.length]} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -757,24 +762,24 @@ export default function StocklyReportsPage() {
       </div>
 
       {/* Export Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Export Reports</h2>
+      <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Export Reports</h2>
         <div className="flex flex-wrap gap-3">
           <button 
             onClick={handleExcelExport}
-            className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 hover:bg-green-500/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-500/10 dark:bg-green-500/10 border border-green-500/30 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-500/20 dark:hover:bg-green-500/20 transition-colors"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Export to Excel
           </button>
           <button 
             onClick={handlePdfExport}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors"
           >
             <FileText className="w-4 h-4" />
             Export to PDF
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 hover:bg-blue-500/20 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 dark:hover:bg-blue-500/20 transition-colors">
             <Download className="w-4 h-4" />
             Download All Data
           </button>

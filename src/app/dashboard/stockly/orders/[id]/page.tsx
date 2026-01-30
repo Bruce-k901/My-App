@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
@@ -30,9 +30,12 @@ import DeliveryScheduleInfo from '@/components/stockly/DeliveryScheduleInfo';
 interface Supplier {
   id: string;
   name: string;
-  lead_time_days: number;
+  code?: string;
+  lead_time_days: number | null;
   minimum_order_value: number | null;
-  order_email: string | null;
+  email: string | null;
+  phone?: string | null;
+  ordering_method?: string | null;
 }
 
 interface StockItem {
@@ -41,6 +44,21 @@ interface StockItem {
   stock_unit: string;
   last_order_price: number | null;
   current_quantity: number;
+}
+
+interface SupplierStockItem {
+  stock_item_id: string;
+  stock_item_name: string;
+  stock_unit: string;
+  product_variant_id: string;
+  product_name: string;
+  supplier_code: string | null;
+  current_price: number | null;
+  pack_size: number;
+  pack_unit: string;
+  min_order_qty: number;
+  order_multiple: number;
+  is_preferred: boolean;
 }
 
 interface POItem {
@@ -98,9 +116,12 @@ export default function PurchaseOrderDetailPage() {
   const isNew = params.id === 'new';
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const isMountedRef = useRef(true);
   
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
+  const [supplierItems, setSupplierItems] = useState<SupplierStockItem[]>([]);
+  const [loadingSupplierItems, setLoadingSupplierItems] = useState(false);
   
   const [order, setOrder] = useState<PurchaseOrder>({
     id: '',
@@ -116,12 +137,17 @@ export default function PurchaseOrderDetailPage() {
     items: []
   });
   
-  const [showItemSearch, setShowItemSearch] = useState(false);
-  const [itemSearch, setItemSearch] = useState('');
   const [showActions, setShowActions] = useState(false);
 
   useEffect(() => {
-    if (companyId) {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (companyId && isMountedRef.current) {
       loadSuppliers();
       loadStockItems();
       if (!isNew) {
@@ -130,40 +156,205 @@ export default function PurchaseOrderDetailPage() {
     }
   }, [companyId, params.id]);
 
+  useEffect(() => {
+    // Load supplier items when supplier is selected
+    if (order.supplier_id && companyId && isMountedRef.current) {
+      loadSupplierItems(order.supplier_id);
+    } else {
+      if (isMountedRef.current) {
+        setSupplierItems([]);
+      }
+    }
+  }, [order.supplier_id, companyId]);
+
   async function loadSuppliers() {
-    const { data } = await supabase
-      .from('suppliers')
-      .select('id, name, lead_time_days, minimum_order_value, order_email')
-      .eq('company_id', companyId)
-      .eq('is_active', true)
-      .order('name');
-    setSuppliers(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('suppliers')
+        .select('id, name, code, lead_time_days, minimum_order_value, email, phone, ordering_method')
+        .eq('company_id', companyId)
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) {
+        console.error('Error loading suppliers:', error);
+        return;
+      }
+      
+      if (isMountedRef.current) {
+        setSuppliers(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading suppliers:', error);
+    }
   }
 
   async function loadStockItems() {
-    const { data } = await supabase
-      .from('stock_items')
-      .select(`
-        id, name, stock_unit, last_order_price,
-        stock_levels(quantity),
-        product_variants(unit_price)
-      `)
-      .eq('company_id', companyId)
-      .eq('is_active', true)
-      .order('name');
+    try {
+      const { data, error } = await supabase
+        .from('stock_items')
+        .select(`
+          id, 
+          name, 
+          stock_unit
+        `)
+        .eq('company_id', companyId)
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) {
+        console.error('Error loading stock items:', error);
+        return;
+      }
     
-    const items = (data || []).map(item => ({
-      id: item.id,
-      name: item.name,
-      stock_unit: item.stock_unit,
-      last_order_price: item.last_order_price || item.product_variants?.[0]?.unit_price || 0,
-      current_quantity: item.stock_levels?.[0]?.quantity || 0
-    }));
-    
-    setStockItems(items);
+      if (!isMountedRef.current) return;
+      
+      const items = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        stock_unit: item.stock_unit,
+        last_order_price: 0, // Not available in stock_items table
+        current_quantity: 0 // Will be loaded separately if needed
+      }));
+      
+      setStockItems(items);
+    } catch (error) {
+      console.error('Error loading stock items:', error);
+    }
+  }
+
+  async function loadSupplierItems(supplierId: string) {
+    if (!supplierId || !companyId || !isMountedRef.current) {
+      if (isMountedRef.current) {
+        setSupplierItems([]);
+      }
+      return;
+    }
+
+    setLoadingSupplierItems(true);
+    try {
+      console.log('Loading supplier items for supplier:', supplierId);
+      
+      // First, get the supplier name
+      const { data: supplierData, error: supplierError } = await supabase
+        .from('suppliers')
+        .select('name')
+        .eq('id', supplierId)
+        .single();
+
+      if (supplierError || !supplierData) {
+        console.error('Error loading supplier:', supplierError);
+        setSupplierItems([]);
+        return;
+      }
+
+      const supplierName = supplierData.name;
+      console.log('Supplier name:', supplierName);
+
+      // Query all library tables for items with this supplier
+      // Select actual column names, then map to common format in JavaScript
+      const libraryQueries = [
+        // Ingredients Library
+        supabase
+          .from('ingredients_library')
+          .select('id, ingredient_name, unit_cost, unit, pack_size, supplier')
+          .eq('company_id', companyId)
+          .ilike('supplier', supplierName),
+        
+        // Chemicals Library
+        supabase
+          .from('chemicals_library')
+          .select('id, product_name, unit_cost, pack_size, supplier')
+          .eq('company_id', companyId)
+          .ilike('supplier', supplierName),
+        
+        // First Aid Library
+        supabase
+          .from('first_aid_supplies_library')
+          .select('id, item_name, unit_cost, pack_size, supplier')
+          .eq('company_id', companyId)
+          .ilike('supplier', supplierName),
+        
+        // Disposables Library (uses pack_cost instead of unit_cost)
+        supabase
+          .from('disposables_library')
+          .select('id, item_name, pack_cost, pack_size, supplier')
+          .eq('company_id', companyId)
+          .ilike('supplier', supplierName),
+        
+        // PPE Library
+        supabase
+          .from('ppe_library')
+          .select('id, item_name, unit_cost, supplier')
+          .eq('company_id', companyId)
+          .ilike('supplier', supplierName),
+      ];
+
+      // Execute all queries in parallel
+      const results = await Promise.all(libraryQueries.map(q => q));
+
+      // Combine all results
+      const allItems: SupplierStockItem[] = [];
+      
+      results.forEach((result, index) => {
+        if (result.error) {
+          console.error(`Error loading library ${index}:`, result.error);
+          return;
+        }
+
+        const items = (result.data || []).map((item: any) => {
+          // Map different column names to common format
+          // ingredients_library uses 'ingredient_name'
+          // chemicals_library uses 'product_name'
+          // others use 'item_name'
+          const itemName = item.ingredient_name || item.product_name || item.item_name || 'Unknown';
+          
+          // Handle different price column names
+          // disposables_library uses 'pack_cost', others use 'unit_cost'
+          const price = item.unit_cost || item.pack_cost || 0;
+          
+          return {
+            stock_item_id: null, // Libraries don't have stock_item_id
+            stock_item_name: itemName,
+            stock_unit: item.unit || 'ea',
+            product_variant_id: item.id,
+            product_name: itemName,
+            supplier_code: null,
+            current_price: price,
+            pack_size: item.pack_size || 1,
+            pack_unit: item.unit || 'ea',
+            min_order_qty: 1,
+            order_multiple: 1,
+            is_preferred: false
+          };
+        });
+
+        allItems.push(...items);
+      });
+
+      // Sort by name
+      allItems.sort((a, b) => 
+        (a.product_name || a.stock_item_name).localeCompare(b.product_name || b.stock_item_name)
+      );
+
+      console.log(`Loaded ${allItems.length} items from libraries for supplier: ${supplierName}`);
+      if (isMountedRef.current) {
+        setSupplierItems(allItems);
+      }
+    } catch (error) {
+      console.error('Error loading supplier items:', error);
+      if (isMountedRef.current) {
+        setSupplierItems([]);
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setLoadingSupplierItems(false);
+      }
+    }
   }
 
   async function loadOrder() {
+    if (!isMountedRef.current) return;
     setLoading(true);
     try {
       const { data: po } = await supabase
@@ -182,7 +373,9 @@ export default function PurchaseOrderDetailPage() {
         .eq('id', params.id)
         .single();
       
-      if (po) {
+      if (!isMountedRef.current) return;
+      
+      if (po && isMountedRef.current) {
         setOrder({
           id: po.id,
           order_number: po.order_number,
@@ -198,7 +391,7 @@ export default function PurchaseOrderDetailPage() {
             id: item.id,
             stock_item_id: item.product_variants?.stock_item_id || '',
             product_variant_id: item.product_variant_id,
-            name: item.product_variants?.stock_items?.name || 'Unknown',
+            name: item.product_variants?.stock_items?.name || item.product_variants?.product_name || 'Unknown',
             ordered_quantity: item.quantity_ordered,
             unit: 'ea', // Default unit
             unit_price: item.unit_price || 0,
@@ -207,17 +400,23 @@ export default function PurchaseOrderDetailPage() {
             status: 'pending'
           }))
         });
+
+        // Load supplier items for this order's supplier
+        if (po.supplier_id && isMountedRef.current) {
+          loadSupplierItems(po.supplier_id);
+        }
       }
     } catch (error) {
       console.error('Error loading order:', error);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }
 
   async function findProductVariant(stockItemId: string, supplierId: string): Promise<string | null> {
     const { data } = await supabase
-      .schema('stockly')
       .from('product_variants')
       .select('id')
       .eq('stock_item_id', stockItemId)
@@ -230,25 +429,6 @@ export default function PurchaseOrderDetailPage() {
     return data?.id || null;
   }
 
-  function addItem(item: StockItem) {
-    const newItem: POItem = {
-      stock_item_id: item.id,
-      name: item.name,
-      ordered_quantity: 1,
-      unit: item.stock_unit,
-      unit_price: item.last_order_price || 0,
-      line_total: item.last_order_price || 0,
-      received_quantity: 0,
-      status: 'pending'
-    };
-    setOrder(prev => ({
-      ...prev,
-      items: [...prev.items, newItem]
-    }));
-    setShowItemSearch(false);
-    setItemSearch('');
-    recalculateTotals([...order.items, newItem]);
-  }
 
   function updateItem(index: number, updates: Partial<POItem>) {
     const newItems = [...order.items];
@@ -275,21 +455,175 @@ export default function PurchaseOrderDetailPage() {
     }));
   }
 
-  function handleSupplierChange(supplierId: string) {
-    const supplier = suppliers.find(s => s.id === supplierId);
-    let expectedDate = null;
-    
-    if (supplier?.lead_time_days) {
-      const date = new Date();
-      date.setDate(date.getDate() + supplier.lead_time_days);
-      expectedDate = date.toISOString().split('T')[0];
+  async function calculateNextDeliveryDate(supplierId: string): Promise<string | null> {
+    try {
+      // Fetch supplier details including cutoff time and delivery days
+      const { data: supplierData } = await supabase
+        .from('suppliers')
+        .select('lead_time_days, delivery_days, order_cutoff_time')
+        .eq('id', supplierId)
+        .single();
+
+      if (!supplierData) return null;
+
+      const leadTimeDays = supplierData.lead_time_days || 1;
+      const deliveryDays = supplierData.delivery_days || [];
+      const cutoffTime = supplierData.order_cutoff_time || '14:00';
+
+      const now = new Date();
+      const [cutoffHours, cutoffMinutes] = cutoffTime.split(':').map(Number);
+      const cutoffTimeToday = new Date();
+      cutoffTimeToday.setHours(cutoffHours, cutoffMinutes, 0, 0);
+
+      // Check if we've passed today's cutoff time
+      let startDate = new Date(now);
+      if (now > cutoffTimeToday) {
+        // Past cutoff, start from tomorrow
+        startDate.setDate(startDate.getDate() + 1);
+      }
+
+      // If no delivery days specified, just use lead time
+      if (deliveryDays.length === 0) {
+        const deliveryDate = new Date(startDate);
+        deliveryDate.setDate(deliveryDate.getDate() + leadTimeDays);
+        return deliveryDate.toISOString().split('T')[0];
+      }
+
+      // Map delivery day names to day numbers (0 = Sunday, 6 = Saturday)
+      const dayNameMap: Record<string, number> = {
+        'sunday': 0,
+        'monday': 1,
+        'tuesday': 2,
+        'wednesday': 3,
+        'thursday': 4,
+        'friday': 5,
+        'saturday': 6
+      };
+
+      const deliveryDayNumbers = deliveryDays
+        .map(day => dayNameMap[day.toLowerCase()])
+        .filter(day => day !== undefined)
+        .sort((a, b) => a - b);
+
+      if (deliveryDayNumbers.length === 0) {
+        // Fallback to lead time if no valid days
+        const deliveryDate = new Date(startDate);
+        deliveryDate.setDate(deliveryDate.getDate() + leadTimeDays);
+        return deliveryDate.toISOString().split('T')[0];
+      }
+
+      // Find the next delivery day
+      let currentDate = new Date(startDate);
+      let daysAdded = 0;
+      const maxDaysToCheck = 14; // Don't search more than 2 weeks ahead
+
+      while (daysAdded < maxDaysToCheck) {
+        const dayOfWeek = currentDate.getDay();
+        
+        if (deliveryDayNumbers.includes(dayOfWeek)) {
+          // Found a delivery day, now add lead time
+          const deliveryDate = new Date(currentDate);
+          deliveryDate.setDate(deliveryDate.getDate() + leadTimeDays);
+          return deliveryDate.toISOString().split('T')[0];
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+        daysAdded++;
+      }
+
+      // Fallback: if we couldn't find a delivery day, use lead time from start date
+      const deliveryDate = new Date(startDate);
+      deliveryDate.setDate(deliveryDate.getDate() + leadTimeDays);
+      return deliveryDate.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error calculating delivery date:', error);
+      return null;
     }
+  }
+
+  async function handleSupplierChange(supplierId: string) {
+    if (!isMountedRef.current) return;
+    
+    const supplier = suppliers.find(s => s.id === supplierId);
+    
+    // Calculate next realistic delivery date based on cutoff time and delivery schedule
+    const expectedDate = await calculateNextDeliveryDate(supplierId);
+    
+    // Check if still mounted before updating state
+    if (!isMountedRef.current) return;
     
     setOrder(prev => ({
       ...prev,
       supplier_id: supplierId,
-      expected_delivery_date: expectedDate
+      expected_delivery_date: expectedDate,
+      items: [] // Clear items when supplier changes
     }));
+
+    // Load items available from this supplier
+    if (isMountedRef.current) {
+      loadSupplierItems(supplierId);
+    }
+  }
+
+  function handleQuantityChange(item: SupplierStockItem, quantity: number) {
+    // Validate quantity against min_order_qty and order_multiple
+    const minQty = item.min_order_qty || 1;
+    const multiple = item.order_multiple || 1;
+    
+    if (quantity < minQty) {
+      quantity = minQty;
+    }
+    
+    // Round to nearest multiple
+    if (multiple > 1) {
+      quantity = Math.round(quantity / multiple) * multiple;
+    }
+
+    // Check if item already exists in order
+    const existingIndex = order.items.findIndex(
+      i => i.product_variant_id === item.product_variant_id
+    );
+
+    if (quantity > 0) {
+      const unitPrice = item.current_price || 0;
+      const lineTotal = quantity * unitPrice;
+
+      if (existingIndex >= 0) {
+        // Update existing item
+        updateItem(existingIndex, {
+          ordered_quantity: quantity,
+          unit_price: unitPrice,
+          line_total: lineTotal
+        });
+      } else {
+        // Add new item
+        const newItem: POItem = {
+          stock_item_id: item.stock_item_id,
+          product_variant_id: item.product_variant_id,
+          name: item.product_name || item.stock_item_name,
+          ordered_quantity: quantity,
+          unit: item.pack_unit,
+          unit_price: unitPrice,
+          line_total: lineTotal,
+          received_quantity: 0,
+          status: 'pending'
+        };
+        
+        const newItems = [...order.items, newItem];
+        setOrder(prev => ({ ...prev, items: newItems }));
+        recalculateTotals(newItems);
+      }
+    } else if (existingIndex >= 0) {
+      // Remove item if quantity is 0
+      removeItem(existingIndex);
+    }
+  }
+
+  function getItemQuantity(item: SupplierStockItem): number {
+    const existingItem = order.items.find(
+      i => i.product_variant_id === item.product_variant_id
+    );
+    return existingItem?.ordered_quantity || 0;
   }
 
   async function handleSave() {
@@ -435,10 +769,6 @@ export default function PurchaseOrderDetailPage() {
     }
   }
 
-  const filteredItems = stockItems.filter(item =>
-    item.name.toLowerCase().includes(itemSearch.toLowerCase()) &&
-    !order.items.some(i => i.stock_item_id === item.id)
-  );
 
   const selectedSupplier = suppliers.find(s => s.id === order.supplier_id);
   const canEdit = ['draft', 'pending_approval'].includes(order.status);
@@ -447,52 +777,53 @@ export default function PurchaseOrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/stockly/orders"
-            className="p-2 hover:bg-white/5 rounded-lg text-white/60 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-white">
-              {isNew ? 'New Purchase Order' : order.order_number}
-            </h1>
-            {!isNew && (
-              <p className="text-white/60 text-sm mt-1">
-                {selectedSupplier?.name} • {order.order_date}
-              </p>
-            )}
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard/stockly/orders"
+              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {isNew ? 'New Purchase Order' : order.order_number}
+              </h1>
+              {!isNew && (
+                <p className="text-gray-600 dark:text-white/60 text-sm">
+                  {selectedSupplier?.name} • {order.order_date}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
         
         <div className="flex items-center gap-3">
           {!isNew && statusActions.length > 0 && (
             <div className="relative">
               <button
                 onClick={() => setShowActions(!showActions)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white rounded-lg transition-colors"
               >
                 <MoreVertical className="w-5 h-5" />
                 Actions
               </button>
               
               {showActions && (
-                <div className="absolute right-0 mt-2 w-48 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-xl z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-lg shadow-xl z-10">
                   {statusActions.map((action) => (
                     <button
                       key={action.next}
                       onClick={() => handleStatusChange(action.next)}
-                      className="w-full px-4 py-2 flex items-center gap-2 text-white hover:bg-white/5 first:rounded-t-lg last:rounded-b-lg"
+                      className="w-full px-4 py-2 flex items-center gap-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 first:rounded-t-lg last:rounded-b-lg"
                     >
                       <action.icon className="w-4 h-4" />
                       {action.label}
@@ -507,7 +838,7 @@ export default function PurchaseOrderDetailPage() {
             <button
               onClick={handleSave}
               disabled={saving || !order.supplier_id || order.items.length === 0}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               {isNew ? 'Create Order' : 'Save Changes'}
@@ -516,21 +847,23 @@ export default function PurchaseOrderDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Details */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Order Details</h2>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Supplier *</label>
+                <label htmlFor="supplier-select" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Supplier *</label>
                 <select
+                  id="supplier-select"
+                  name="supplier_id"
                   value={order.supplier_id}
                   onChange={(e) => handleSupplierChange(e.target.value)}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 >
                   <option value="">Select supplier...</option>
                   {suppliers.map(s => (
@@ -540,27 +873,31 @@ export default function PurchaseOrderDetailPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Order Date</label>
+                <label htmlFor="order-date" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Order Date</label>
                 <input
+                  id="order-date"
+                  name="order_date"
                   type="date"
                   value={order.order_date}
                   onChange={(e) => setOrder(prev => ({ ...prev, order_date: e.target.value }))}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Expected Delivery</label>
+                <label htmlFor="expected-delivery-date" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Expected Delivery</label>
                 <input
+                  id="expected-delivery-date"
+                  name="expected_delivery_date"
                   type="date"
                   value={order.expected_delivery_date || ''}
                   onChange={(e) => setOrder(prev => ({ ...prev, expected_delivery_date: e.target.value || null }))}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 />
                 {selectedSupplier?.lead_time_days && (
-                  <p className="text-white/40 text-xs mt-1">
+                  <p className="text-gray-500 dark:text-white/40 text-xs mt-1">
                     Lead time: {selectedSupplier.lead_time_days} days
                   </p>
                 )}
@@ -569,118 +906,172 @@ export default function PurchaseOrderDetailPage() {
           </div>
 
           {/* Items */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Items</h2>
-              {canEdit && (
-                <button
-                  onClick={() => setShowItemSearch(true)}
-                  className="flex items-center gap-1 text-sm text-[#EC4899] hover:text-[#EC4899]/80"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Item
-                </button>
-              )}
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Items</h2>
             </div>
             
-            {order.items.length === 0 ? (
-              <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
-                <Package className="w-10 h-10 text-white/20 mx-auto mb-2" />
-                <p className="text-white/40 text-sm">No items added yet</p>
-                {canEdit && (
-                  <button
-                    onClick={() => setShowItemSearch(true)}
-                    className="mt-2 text-[#EC4899] text-sm hover:underline"
-                  >
-                    Add your first item
-                  </button>
-                )}
+            {!order.supplier_id ? (
+              <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+                <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
+                <p className="text-gray-600 dark:text-white/40 text-sm">Select a supplier to view available items</p>
+              </div>
+            ) : loadingSupplierItems ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 animate-spin" />
+                <span className="ml-2 text-gray-600 dark:text-white/60">Loading items...</span>
+              </div>
+            ) : supplierItems.length === 0 ? (
+              <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+                <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
+                <p className="text-gray-600 dark:text-white/40 text-sm">No items available from this supplier</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {order.items.map((item, idx) => (
-                  <div key={idx} className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <p className="text-white font-medium">{item.name}</p>
-                        {item.received_quantity > 0 && (
-                          <p className="text-green-400 text-xs">
-                            {item.received_quantity} of {item.ordered_quantity} received
+              <div className="space-y-2">
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-3 pb-2 border-b border-gray-200 dark:border-white/10 text-xs font-medium text-gray-600 dark:text-white/60">
+                  <div className="col-span-5">Item</div>
+                  <div className="col-span-2 text-center">Pack Size</div>
+                  <div className="col-span-2 text-right">Price</div>
+                  <div className="col-span-2 text-center">Quantity</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {/* Items List */}
+                {supplierItems.map((item) => {
+                  const quantity = getItemQuantity(item);
+                  const existingItem = order.items.find(i => i.product_variant_id === item.product_variant_id);
+                  
+                  return (
+                    <div 
+                      key={item.product_variant_id} 
+                      className={`grid grid-cols-12 gap-3 items-center py-3 px-2 rounded-lg transition-colors ${
+                        quantity > 0 
+                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20' 
+                          : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <div className="col-span-5">
+                        <div className="flex items-center gap-2">
+                          <p className="text-gray-900 dark:text-white font-medium text-sm">
+                            {item.product_name || item.stock_item_name}
+                          </p>
+                          {item.is_preferred && (
+                            <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-xs rounded">
+                              Preferred
+                            </span>
+                          )}
+                        </div>
+                        {item.supplier_code && (
+                          <p className="text-gray-500 dark:text-white/40 text-xs mt-0.5">
+                            Code: {item.supplier_code}
                           </p>
                         )}
                       </div>
+                      
+                      <div className="col-span-2 text-center text-sm text-gray-700 dark:text-white/80">
+                        {item.pack_size} {item.pack_unit}
+                      </div>
+                      
+                      <div className="col-span-2 text-right text-sm text-gray-900 dark:text-white font-medium">
+                        {item.current_price ? `£${item.current_price.toFixed(2)}` : '—'}
+                      </div>
+                      
+                      <div className="col-span-2">
+                        <label htmlFor={`quantity-${item.product_variant_id}`} className="sr-only">
+                          Quantity for {item.product_name || item.stock_item_name}
+                        </label>
+                        <input
+                          id={`quantity-${item.product_variant_id}`}
+                          name={`quantity-${item.product_variant_id}`}
+                          type="number"
+                          step={item.order_multiple || 1}
+                          min={item.min_order_qty || 0}
+                          value={quantity || ''}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            handleQuantityChange(item, val);
+                          }}
+                          disabled={!canEdit}
+                          placeholder="0"
+                          aria-label={`Quantity for ${item.product_name || item.stock_item_name}`}
+                          className="w-full px-2 py-1.5 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded text-gray-900 dark:text-white text-sm text-center disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+                        />
+                        {item.min_order_qty > 1 && (
+                          <p className="text-xs text-gray-500 dark:text-white/40 mt-0.5 text-center">
+                            Min: {item.min_order_qty}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="col-span-1 flex justify-end">
+                        {quantity > 0 && existingItem && (
+                          <button
+                            onClick={() => handleQuantityChange(item, 0)}
+                            disabled={!canEdit}
+                            className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                            title="Remove item"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Selected Items Summary */}
+            {order.items.length > 0 && (
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/10">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Order Items ({order.items.length})</h3>
+                <div className="space-y-2">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg">
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900 dark:text-white font-medium">{item.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-white/40">
+                          {item.ordered_quantity} {item.unit} × £{item.unit_price.toFixed(2)} = £{item.line_total.toFixed(2)}
+                        </p>
+                      </div>
                       {canEdit && (
                         <button
-                          onClick={() => removeItem(idx)}
-                          className="p-1 text-white/40 hover:text-red-400"
+                          onClick={() => {
+                            const supplierItem = supplierItems.find(si => si.product_variant_id === item.product_variant_id);
+                            if (supplierItem) {
+                              handleQuantityChange(supplierItem, 0);
+                            } else {
+                              removeItem(idx);
+                            }
+                          }}
+                          className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 ml-2"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
                     </div>
-                    
-                    <div className="grid grid-cols-4 gap-3">
-                      <div>
-                        <label className="text-xs text-white/40">Quantity</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={item.ordered_quantity}
-                          onChange={(e) => updateItem(idx, { ordered_quantity: parseFloat(e.target.value) || 0 })}
-                          disabled={!canEdit}
-                          className="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm disabled:opacity-50"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs text-white/40">Unit</label>
-                        <input
-                          type="text"
-                          value={item.unit}
-                          onChange={(e) => updateItem(idx, { unit: e.target.value })}
-                          disabled={!canEdit}
-                          className="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm disabled:opacity-50"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs text-white/40">Unit Price</label>
-                        <div className="relative">
-                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-white/40 text-sm">£</span>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={item.unit_price}
-                            onChange={(e) => updateItem(idx, { unit_price: parseFloat(e.target.value) || 0 })}
-                            disabled={!canEdit}
-                            className="w-full pl-5 pr-2 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm disabled:opacity-50"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-xs text-white/40">Line Total</label>
-                        <p className="px-2 py-1.5 text-white font-medium">
-                          £{item.line_total.toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
           {/* Notes */}
           {canEdit && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Notes</h2>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notes</h2>
               
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-1">Internal Notes</label>
+                <label htmlFor="order-notes" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Internal Notes</label>
                 <textarea
+                  id="order-notes"
+                  name="notes"
                   value={order.notes || ''}
                   onChange={(e) => setOrder(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="Internal notes..."
                   rows={3}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 resize-none"
                 />
               </div>
             </div>
@@ -716,13 +1107,13 @@ export default function PurchaseOrderDetailPage() {
         <div className="space-y-6">
           {/* Status */}
           {!isNew && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-sm font-medium text-white/60 mb-3">Status</h2>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-3">Status</h2>
               <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
-                order.status === 'received' ? 'bg-green-500/20 text-green-400' :
-                order.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
-                order.status === 'draft' ? 'bg-gray-500/20 text-gray-400' :
-                'bg-blue-500/20 text-blue-400'
+                order.status === 'received' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30' :
+                order.status === 'cancelled' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30' :
+                order.status === 'draft' ? 'bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30' :
+                'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30'
               }`}>
                 {order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
               </div>
@@ -730,27 +1121,27 @@ export default function PurchaseOrderDetailPage() {
           )}
 
           {/* Totals */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-sm font-medium text-white/60 mb-4">Order Total</h2>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-4">Order Total</h2>
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-white/60">Subtotal</span>
-                <span className="text-white">£{order.subtotal.toFixed(2)}</span>
+                <span className="text-gray-600 dark:text-white/60">Subtotal</span>
+                <span className="text-gray-900 dark:text-white">£{order.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/60">VAT (20%)</span>
-                <span className="text-white">£{order.tax.toFixed(2)}</span>
+                <span className="text-gray-600 dark:text-white/60">VAT (20%)</span>
+                <span className="text-gray-900 dark:text-white">£{order.tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-lg font-semibold border-t border-white/10 pt-2 mt-2">
-                <span className="text-white">Total</span>
-                <span className="text-white">£{order.total.toFixed(2)}</span>
+              <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-white/10 pt-2 mt-2">
+                <span className="text-gray-900 dark:text-white">Total</span>
+                <span className="text-gray-900 dark:text-white">£{order.total.toFixed(2)}</span>
               </div>
             </div>
             
             {selectedSupplier?.minimum_order_value && order.subtotal < selectedSupplier.minimum_order_value && (
-              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p className="text-yellow-400 text-sm flex items-center gap-2">
+              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-700 dark:text-yellow-400 text-sm flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" />
                   Below minimum order (£{selectedSupplier.minimum_order_value})
                 </p>
@@ -760,14 +1151,17 @@ export default function PurchaseOrderDetailPage() {
 
           {/* Supplier Info */}
           {selectedSupplier && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-sm font-medium text-white/60 mb-3">Supplier</h2>
-              <p className="text-white font-medium">{selectedSupplier.name}</p>
-              {selectedSupplier.order_email && (
-                <p className="text-white/60 text-sm">{selectedSupplier.order_email}</p>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-3">Supplier</h2>
+              <p className="text-gray-900 dark:text-white font-medium">{selectedSupplier.name}</p>
+              {selectedSupplier.email && (
+                <p className="text-gray-600 dark:text-white/60 text-sm">{selectedSupplier.email}</p>
+              )}
+              {selectedSupplier.code && (
+                <p className="text-gray-500 dark:text-white/40 text-xs">Code: {selectedSupplier.code}</p>
               )}
               {selectedSupplier.lead_time_days && (
-                <p className="text-white/40 text-xs mt-2">
+                <p className="text-gray-500 dark:text-white/40 text-xs mt-2">
                   Lead time: {selectedSupplier.lead_time_days} days
                 </p>
               )}
@@ -787,50 +1181,8 @@ export default function PurchaseOrderDetailPage() {
           )}
         </div>
       </div>
+      </div>
 
-      {/* Item Search Modal */}
-      {showItemSearch && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20 z-50">
-          <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
-            <div className="p-4 border-b border-white/10 flex items-center gap-3">
-              <Search className="w-5 h-5 text-white/40" />
-              <input
-                type="text"
-                value={itemSearch}
-                onChange={(e) => setItemSearch(e.target.value)}
-                placeholder="Search stock items..."
-                autoFocus
-                className="flex-1 bg-transparent text-white placeholder:text-white/40 focus:outline-none"
-              />
-              <button onClick={() => setShowItemSearch(false)} className="text-white/40 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="overflow-y-auto flex-1 p-2">
-              {filteredItems.slice(0, 20).map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => addItem(item)}
-                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
-                >
-                  <div>
-                    <span className="text-white">{item.name}</span>
-                    <span className="text-white/40 text-xs ml-2">
-                      {item.current_quantity} in stock
-                    </span>
-                  </div>
-                  <span className="text-white/40 text-sm">
-                    £{item.last_order_price?.toFixed(2)}/{item.stock_unit}
-                  </span>
-                </button>
-              ))}
-              {filteredItems.length === 0 && (
-                <p className="p-4 text-center text-white/40">No items found</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -43,3 +43,12 @@ SELECT EXISTS (
     AND column_name = 'waste_date'
 ) as has_new_schema;
 
+
+
+
+
+
+
+
+
+

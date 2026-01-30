@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SiteSelector from "@/components/ui/SiteSelector";
+import { useSiteFilter } from '@/hooks/useSiteFilter';
 import Link from "next/link";
 import { Plus, Upload, Download, Archive } from "lucide-react";
 
@@ -42,10 +43,10 @@ type Asset = {
 
 export default function AssetsPage() {
   const { companyId, loading: authLoading, session } = useAppContext();
+  const { applySiteFilter, createRecord, selectedSiteId, isAllSites } = useSiteFilter();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [query, setQuery] = useState("");
-  const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
@@ -64,12 +65,13 @@ export default function AssetsPage() {
     
     // Use direct query approach for better reliability
     console.log("Fetching assets with direct query...");
-    const { data: assetsData, error: assetsError } = await supabase
-      .from('assets')
-      .select('*')
-      .eq('company_id', companyId)
-      .eq('archived', false)
-      .order('name');
+    const { data: assetsData, error: assetsError } = await applySiteFilter(
+      supabase
+        .from('assets')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('archived', false)
+    ).order('name');
       
       console.log("Direct query result:", { data: assetsData, error: assetsError });
       
@@ -110,17 +112,12 @@ export default function AssetsPage() {
         warranty_contractor_name: asset.warranty_contractor_id ? contractorsMap.get(asset.warranty_contractor_id) || null : null,
       }));
       
-      // Filter by site if selected
-      let filteredData = transformedData;
-      if (selectedSite) {
-        filteredData = transformedData.filter((asset: any) => asset.site_id === selectedSite);
-      }
-      
-      return filteredData as Asset[];
+      // Site filtering is now handled by applySiteFilter in the query
+      return transformedData as Asset[];
   };
 
   const { data: assets = [], isLoading, isError, error } = useQuery({
-    queryKey: ["assets", companyId, selectedSite],
+    queryKey: ["assets", companyId, selectedSiteId],
     queryFn: fetchAssets,
     staleTime: 1000 * 60 * 5, // cache for 5 min
     enabled: !authLoading && !!companyId && !!session?.user?.id,
@@ -356,13 +353,10 @@ export default function AssetsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <h1 className="text-3xl font-bold text-white">Assets</h1>
-          {/* Site Selector and Search Bar next to Assets header */}
-          <SiteSelector
-            value={selectedSite}
-            onChange={setSelectedSite}
-            placeholder="All Sites"
-            className="h-11 min-w-[120px]"
-          />
+          {/* Site filtering is handled by SiteContext - see header SiteFilter component */}
+          {isAllSites && (
+            <span className="text-sm text-gray-400">(Viewing all sites)</span>
+          )}
           <input 
             value={query} 
             onChange={(e) => setQuery(e.target.value)} 

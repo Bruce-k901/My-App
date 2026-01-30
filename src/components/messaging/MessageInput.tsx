@@ -52,14 +52,14 @@ export function MessageInput({
         // Load conversation participants
         const { data: participantsData } = await supabase
           .from('messaging_channel_members')
-          .select('user_id')
+          .select('profile_id')
           .eq('channel_id', conversationId)
           .is('left_at', null);
 
         // Fetch profiles for participants
         let participants: MentionUser[] = [];
         if (participantsData && participantsData.length > 0) {
-          const userIds = participantsData.map((m: any) => m.user_id);
+          const userIds = participantsData.map((m: any) => m.profile_id || m.user_id);
           const { data: profilesData } = await supabase
             .from('profiles')
             .select('id, full_name, email')
@@ -394,20 +394,20 @@ export function MessageInput({
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-white/[0.1] bg-white/[0.03] p-2 sm:p-2 md:p-3">
+    <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#0B0D13] p-2 sm:p-2 md:p-3">
       {/* Reply Preview - Fixed height to prevent layout shift */}
       <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
-          <div className="px-3 py-2 bg-white/[0.05] border-l-2 border-pink-500/50 rounded flex items-center justify-between h-full">
+          <div className="px-3 py-2 bg-pink-50 dark:bg-white/[0.05] border-l-2 border-pink-500 dark:border-pink-500/50 rounded flex items-center justify-between h-full">
             <div className="flex-1 min-w-0 overflow-hidden">
-              <div className="text-xs text-white/60 mb-1 truncate">Replying to {replyTo.senderName}</div>
-              <div className="text-sm text-white/80 truncate break-words">{replyTo.content}</div>
+              <div className="text-xs text-gray-600 dark:text-white/60 mb-1 truncate">Replying to {replyTo.senderName}</div>
+              <div className="text-sm text-gray-700 dark:text-white/80 truncate break-words">{replyTo.content}</div>
             </div>
             <button
               onClick={onCancelReply}
-              className="flex-shrink-0 ml-2 p-1 hover:bg-white/10 rounded transition-colors"
+              className="flex-shrink-0 ml-2 p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors"
             >
-              <X className="w-4 h-4 text-white/60" />
+              <X className="w-4 h-4 text-gray-600 dark:text-white/60" />
             </button>
           </div>
         )}
@@ -418,7 +418,7 @@ export function MessageInput({
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="flex-shrink-0 p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+          className="flex-shrink-0 p-2 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
           title="Attach file"
         >
           <Paperclip className="w-5 h-5" />
@@ -429,8 +429,8 @@ export function MessageInput({
             onClick={toggleDictation}
             className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
               isDictating
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 animate-pulse'
-                : 'text-white/60 hover:text-white hover:bg-white/10'
+                ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/30 animate-pulse'
+                : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'
             }`}
             title={isDictating ? 'Stop dictation' : 'Start voice dictation'}
           >
@@ -467,7 +467,7 @@ export function MessageInput({
             }}
             placeholder="Type a message... (use @ to mention someone)"
             rows={1}
-            className="w-full h-full px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm leading-tight"
+            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm leading-tight"
             style={{
               minHeight: '44px',
               maxHeight: '44px',
@@ -478,31 +478,31 @@ export function MessageInput({
           {showMentions && filteredMentionUsers.length > 0 && (
             <div
               ref={mentionDropdownRef}
-              className="absolute bottom-full left-0 mb-2 w-64 max-h-60 overflow-y-auto bg-[#0f1220] border border-white/[0.1] rounded-lg shadow-xl z-50"
+              className="absolute bottom-full left-0 mb-2 w-64 max-h-60 overflow-y-auto bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-xl z-50"
               onMouseDown={(e) => e.preventDefault()} // Prevent textarea blur
             >
               {filteredMentionUsers.map((user, index) => (
                 <button
                   key={user.id}
                   onClick={() => selectMention(user)}
-                  className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-white/[0.05] transition-colors ${
-                    index === mentionIndex ? 'bg-white/[0.08]' : ''
-                  } ${user.isParticipant ? 'border-l-2 border-pink-500/50' : ''}`}
+                  className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors ${
+                    index === mentionIndex ? 'bg-gray-100 dark:bg-white/[0.08]' : ''
+                  } ${user.isParticipant ? 'border-l-2 border-pink-500 dark:border-pink-500/50' : ''}`}
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center">
-                    <User className="w-4 h-4 text-pink-400" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-white truncate">
+                    <div className="text-sm text-gray-900 dark:text-white truncate">
                       {user.full_name || user.email?.split('@')[0] || 'User'}
                     </div>
                     {user.full_name && user.email && (
-                      <div className="text-xs text-white/50 truncate">
+                      <div className="text-xs text-gray-500 dark:text-white/50 truncate">
                         {user.email}
                       </div>
                     )}
                     {user.isParticipant && (
-                      <div className="text-xs text-pink-400/70 mt-0.5">
+                      <div className="text-xs text-pink-600 dark:text-pink-400/70 mt-0.5">
                         In this conversation
                       </div>
                     )}
@@ -516,7 +516,7 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-pink-100 dark:bg-pink-500/20 hover:bg-pink-200 dark:hover:bg-pink-500/30 text-pink-600 dark:text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Send message"
         >
           <Send className="w-5 h-5" />
@@ -526,11 +526,11 @@ export function MessageInput({
       {/* Status indicators - Fixed height to prevent layout shift */}
       <div className={`h-[20px] transition-all duration-200 flex items-center gap-3 ${(uploading || isDictating) ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
         {uploading && (
-          <div className="text-xs text-white/60">Uploading file...</div>
+          <div className="text-xs text-gray-600 dark:text-white/60">Uploading file...</div>
         )}
         {isDictating && (
-          <div className="flex items-center gap-2 text-xs text-red-400">
-            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+          <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400">
+            <div className="w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full animate-pulse"></div>
             <span>Listening...</span>
           </div>
         )}

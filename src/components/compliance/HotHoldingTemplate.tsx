@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { Thermometer, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -26,7 +27,7 @@ interface HotHoldingTemplateProps {
 }
 
 export function HotHoldingTemplate({ editTemplateId, onSave }: HotHoldingTemplateProps = {}) {
-  const { profile } = useAppContext();
+  const { profile, selectedSiteId, siteId } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [equipmentRows, setEquipmentRows] = useState<EquipmentRow[]>([
@@ -69,7 +70,14 @@ export function HotHoldingTemplate({ editTemplateId, onSave }: HotHoldingTemplat
       };
       initialize();
     }
-  }, [profile?.company_id, profile?.site_id, editTemplateId]);
+  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (profile?.company_id) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
 
   // Generate default instructions when equipment is selected (for new templates only, on first load)
   useEffect(() => {
@@ -113,9 +121,10 @@ ${validEquipment.map(eq => {
       .eq("archived", false)
       .order("name");
 
-    // If user has a site_id, filter by site
-    if (profile.site_id) {
-      query = query.eq("site_id", profile.site_id);
+    // Use selectedSiteId from header if available, otherwise fall back to siteId
+    const effectiveSiteId = selectedSiteId || siteId || profile?.site_id;
+    if (effectiveSiteId) {
+      query = query.eq("site_id", effectiveSiteId);
     }
 
     const { data, error } = await query;
@@ -1359,11 +1368,10 @@ ${validEquipment.map(eq => {
                     <label className="block text-xs text-slate-400 mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "12:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}

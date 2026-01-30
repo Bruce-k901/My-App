@@ -19,6 +19,7 @@ export async function generatePPMSchedulesForAllAssets(companyId: string) {
         ppm_status
       `)
       .eq('company_id', companyId)
+      .eq('archived', false)  // Exclude archived assets
       .not('ppm_frequency_months', 'is', null)
       .not('next_service_date', 'is', null);
 

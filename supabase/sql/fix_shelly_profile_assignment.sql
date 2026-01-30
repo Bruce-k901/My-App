@@ -207,3 +207,12 @@ COMMIT;
 -- 3. Have Shelly log in again - business page should now work
 -- ============================================================================
 
+
+
+
+
+
+
+
+
+

@@ -47,6 +47,21 @@ const nextConfig: NextConfig = {
     return config;
   },
 
+  // Permanent redirects: old food safety (PlayerShell, selfstudy, learn stub) → Learn course only (never show old version)
+  async redirects() {
+    const learnFoodSafety = "/learn/uk-l2-food-safety";
+    return [
+      { source: "/learn/uk-l2-food-safety-v3", destination: learnFoodSafety, permanent: true },
+      { source: "/training/courses/l2-food-hygiene/start", destination: learnFoodSafety, permanent: true },
+      { source: "/training/courses/uk-l2-food-hygiene/start", destination: learnFoodSafety, permanent: true },
+      { source: "/training/courses/l2-food-hygiene/certificate", destination: "/dashboard/courses", permanent: true },
+      { source: "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0", destination: learnFoodSafety, permanent: true },
+      { source: "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0/:path*", destination: learnFoodSafety, permanent: true },
+      { source: "/selfstudy/uk-l2-food-hygiene", destination: learnFoodSafety, permanent: true },
+      { source: "/selfstudy/uk-l2-food-hygiene/:path*", destination: learnFoodSafety, permanent: true },
+    ];
+  },
+
   // Add headers for static assets to prevent cache issues
   async headers() {
     return [

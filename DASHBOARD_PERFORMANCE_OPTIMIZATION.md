@@ -237,3 +237,15 @@ console.log(dashboardCache.getStats());
 1. Cache automatically cleans up after `gcTime`
 2. Use `dashboardCache.clear()` to manually clear if needed
 3. Monitor cache size with `getStats()`
+
+
+
+
+
+
+
+
+
+
+
+

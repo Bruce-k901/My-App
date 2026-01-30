@@ -41,7 +41,6 @@ export async function PUT(request: Request) {
       'logo_url',
       'status',
       'onboarding_step',
-      'user_id',        // Valid column
       'created_by',     // Valid column
       'setup_status',   // Valid column
     ];

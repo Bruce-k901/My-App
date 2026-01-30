@@ -138,23 +138,23 @@ export default function PurchaseOrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft':
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
       case 'pending_approval':
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30';
       case 'approved':
-        return 'bg-blue-500/20 text-blue-400';
+        return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30';
       case 'sent':
-        return 'bg-purple-500/20 text-purple-400';
+        return 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30';
       case 'acknowledged':
-        return 'bg-indigo-500/20 text-indigo-400';
+        return 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30';
       case 'partial_received':
-        return 'bg-orange-500/20 text-orange-400';
+        return 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30';
       case 'received':
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30';
       case 'cancelled':
-        return 'bg-red-500/20 text-red-400';
+        return 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
     }
   };
 
@@ -169,159 +169,170 @@ export default function PurchaseOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link 
-            href="/dashboard/stockly"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Purchase Orders</h1>
-            <p className="text-white/60 text-sm mt-1">
-              Manage your supplier orders
-            </p>
-          </div>
-        </div>
-        <Link
-          href="/dashboard/stockly/orders/new"
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out"
-        >
-          <Plus className="w-5 h-5" />
-          New Order
-        </Link>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by order number or supplier..."
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
-            />
-          </div>
-          <div className="sm:w-48">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/dashboard/stockly"
+              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              {STATUS_OPTIONS.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Orders List */}
-      {filteredOrders.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-white font-medium mb-2">No purchase orders found</h3>
-          <p className="text-white/60 text-sm mb-4">
-            {searchTerm || statusFilter !== 'all' 
-              ? 'Try adjusting your filters'
-              : 'Create your first purchase order to get started'}
-          </p>
-          {!searchTerm && statusFilter === 'all' && (
-            <Link
-              href="/dashboard/stockly/orders/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out"
-            >
-              <Plus className="w-4 h-4" />
-              Create Order
+              <ArrowLeft className="w-5 h-5" />
             </Link>
-          )}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+                <FileText className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                Purchase Orders
+              </h1>
+              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
+                Manage your supplier orders
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/stockly/orders/new"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+          >
+            <Plus className="w-5 h-5" />
+            New Order
+          </Link>
         </div>
-      ) : (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white/[0.02] border-b border-white/[0.06]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Order Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Supplier
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Order Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Expected Delivery
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-white font-medium">{order.order_number}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-white">{order.supplier.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-white/80">{formatDate(order.order_date)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-white/80">
-                        {order.expected_delivery ? formatDate(order.expected_delivery) : '-'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                        {order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="text-white font-medium">
-                        £{order.total?.toFixed(2) || '0.00'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <Link
-                        href={`/dashboard/stockly/orders/${order.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-[#EC4899] hover:text-[#EC4899]/80 hover:bg-white/5 rounded-lg transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </Link>
-                    </td>
-                  </tr>
+
+        {/* Filters */}
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <label htmlFor="order-search" className="sr-only">Search orders</label>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40" />
+              <input
+                id="order-search"
+                name="order_search"
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by order number or supplier..."
+                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+              />
+            </div>
+            <div className="sm:w-48">
+              <label htmlFor="status-filter" className="sr-only">Filter by status</label>
+              <select
+                id="status-filter"
+                name="status_filter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+              >
+                {STATUS_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
-              </tbody>
-            </table>
+              </select>
+            </div>
           </div>
         </div>
-      )}
+
+        {/* Orders List */}
+        {filteredOrders.length === 0 ? (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+            <Package className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-4" />
+            <h3 className="text-gray-900 dark:text-white font-medium mb-2">No purchase orders found</h3>
+            <p className="text-gray-600 dark:text-white/60 text-sm mb-4">
+              {searchTerm || statusFilter !== 'all' 
+                ? 'Try adjusting your filters'
+                : 'Create your first purchase order to get started'}
+            </p>
+            {!searchTerm && statusFilter === 'all' && (
+              <Link
+                href="/dashboard/stockly/orders/new"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              >
+                <Plus className="w-4 h-4" />
+                Create Order
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Order Number
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Supplier
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Order Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Expected Delivery
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+                  {filteredOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-900 dark:text-white font-medium">{order.order_number}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-900 dark:text-white">{order.supplier.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-700 dark:text-white/80">{formatDate(order.order_date)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-700 dark:text-white/80">
+                          {order.expected_delivery ? formatDate(order.expected_delivery) : '-'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                          {order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="text-gray-900 dark:text-white font-medium">
+                          £{order.total?.toFixed(2) || '0.00'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <Link
+                          href={`/dashboard/stockly/orders/${order.id}`}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                          <Eye className="w-4 h-4" />
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

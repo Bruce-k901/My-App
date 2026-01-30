@@ -1,6 +1,6 @@
 import React from 'react';
 import { CourseLayout } from '@/components/course-v3/CourseLayout';
-import courseData from '@/data/courses/level2-food-safety.json';
+import foodSafetyData from '@/data/courses/level2-food-safety.json';
 import healthSafetyData from '@/data/courses/level2-health-and-safety.json';
 import allergensData from '@/data/courses/level2-allergens.json';
 import { Course } from '@/data/courses/schema';
@@ -11,25 +11,33 @@ interface PageProps {
   }>;
 }
 
+/**
+ * Learn page for v3 CourseLayout courses.
+ * Food Safety, Health & Safety, and Allergen Awareness use Learn flow only.
+ * Old PlayerShell (/training/courses/l2-food-hygiene/start) and selfstudy redirect → /learn/uk-l2-food-safety.
+ */
 export default async function CoursePage({ params }: PageProps) {
   const { courseId } = await params;
 
-  // In a real app, we would fetch from DB or API based on courseId
-  // For now, we just use the imported JSON if the ID matches, or default to it for testing
-  let course = courseData as unknown as Course;
-  
-  if (courseId === 'uk-l2-health-and-safety') {
+  let course: Course;
+  if (courseId === 'uk-l2-food-safety') {
+    course = foodSafetyData as unknown as Course;
+  } else if (courseId === 'uk-l2-health-and-safety') {
     course = healthSafetyData as unknown as Course;
   } else if (courseId === 'uk-l2-allergens') {
     course = allergensData as unknown as Course;
-  }
-
-  if (courseId !== course.id) {
-      // Handle 404 or redirect
-      // For prototype, we'll just render it anyway if it matches known IDs
-      if (courseId !== 'uk-l2-food-safety-v3' && courseId !== 'uk-l2-health-and-safety' && courseId !== 'uk-l2-allergens') {
-          return <div>Course not found: {courseId}</div>;
-      }
+  } else {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[rgb(var(--background))] dark:bg-slate-900 text-[rgb(var(--text-primary))] dark:text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Course not found</h1>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-4">{courseId}</p>
+          <a href="/dashboard/courses" className="text-pink-600 dark:text-pink-500 hover:underline">
+            Return to Courses
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return <CourseLayout course={course} />;

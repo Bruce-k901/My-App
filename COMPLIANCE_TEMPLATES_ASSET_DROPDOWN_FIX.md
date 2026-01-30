@@ -67,3 +67,15 @@ Both fields must be set for the asset dropdown to appear in `TaskFromTemplateMod
 - `src/lib/template-features.ts` - Feature detection logic
 - `src/components/templates/TaskFromTemplateModal.tsx` - Asset dropdown UI
 - `supabase/migrations/20250221000004_add_asset_type_to_temperature_templates.sql` - Previous migration (may not have been applied)
+
+
+
+
+
+
+
+
+
+
+
+

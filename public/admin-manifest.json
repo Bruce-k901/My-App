@@ -1,7 +1,7 @@
 {
-  "name": "Checkly Admin - Platform Control",
-  "short_name": "Checkly Admin",
-  "description": "Platform administration portal for Checkly",
+  "name": "Opsly Admin - Platform Control",
+  "short_name": "Opsly Admin",
+  "description": "Platform administration portal for Opsly",
   "start_url": "/admin/login",
   "display": "standalone",
   "background_color": "#0B0D13",

@@ -2,11 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { LinkButton } from "@/components/ui";
-
-// Use static path instead of import to prevent Next.js preload warning
-const LOGO_PATH = "/assets/checkly_logo_touching_blocks.svg";
+import { OpslyLogo } from "@/components/ui/opsly-logo";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,13 +11,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <header className="flex items-center justify-between px-10 py-5 bg-gradient-to-b from-[#0b0d13]/95 to-[#0b0d13]/80 backdrop-blur border-b border-neutral-800 shadow-sm">
         <div className="flex items-center space-x-4">
           <Link href="/">
-            <Image
-              src={LOGO_PATH}
-              alt="Checkly logo"
-              width={468}
-              height={144}
-              priority
-              className="object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
+            <OpslyLogo 
+              variant="horizontal" 
+              size="lg" 
+              className="text-white"
             />
           </Link>
         </div>
@@ -44,7 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
 
       <footer className="bg-[#0b0d13] text-gray-400 text-center text-sm py-6 border-t border-neutral-800">
-        <p>© {new Date().getFullYear()} Checkly. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Opsly. All rights reserved.</p>
       </footer>
     </div>
   );

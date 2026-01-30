@@ -15,6 +15,7 @@ interface TemperatureInputProps {
   disabled?: boolean;
   id?: string;
   name?: string;
+  fontSize?: string; // Allow custom font size override
 }
 
 /**
@@ -33,6 +34,7 @@ export function TemperatureInput({
   disabled = false,
   id,
   name,
+  fontSize,
 }: TemperatureInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
@@ -173,13 +175,14 @@ export function TemperatureInput({
         id={id}
         name={name}
         className={cn(
-          "w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2",
+          "w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-3 py-2",
           "placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50",
           "hover:bg-neutral-700 hover:border-neutral-600 transition-colors",
           className
         )}
-        // Prevent zoom on iOS when focusing
-        style={{ fontSize: '16px' }}
+        // Use fontSize prop if provided, otherwise prevent zoom on iOS (16px) or use default 14px
+        // Important: fontSize must be in style to override any className font-size
+        style={{ fontSize: fontSize ? fontSize : (isMobile ? '16px' : '14px'), fontFamily: 'inherit' }}
       />
       {isMobile && (
         <NumericKeyboard

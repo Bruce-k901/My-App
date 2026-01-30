@@ -173,3 +173,15 @@ Potential improvements:
 - Add haptic feedback on button press
 - Add keyboard animations
 - Support for other numeric inputs (not just temperature)
+
+
+
+
+
+
+
+
+
+
+
+

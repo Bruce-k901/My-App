@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // Get active shift using the helper function
     const { data: activeShift, error: shiftError } = await supabase
-      .rpc('get_active_shift', { p_user_id: profile.id });
+      .rpc('get_active_shift', { p_profile_id: profile.id });
 
     if (shiftError) {
       console.error('Error fetching active shift:', shiftError);
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       const { data: fallbackShift } = await supabase
         .from('staff_attendance')
         .select('*, site:sites(name)')
-        .eq('user_id', profile.id)
+        .eq('profile_id', profile.id)
         .eq('shift_status', 'on_shift')
         .is('clock_out_time', null)
         .order('clock_in_time', { ascending: false })

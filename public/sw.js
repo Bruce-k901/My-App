@@ -242,7 +242,7 @@ self.addEventListener('push', function(event) {
   console.log('[SW] Push notification received');
   
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'Checkly Notification';
+  const title = data.title || 'Opsly Notification';
   const options = {
     body: data.message || 'You have a new notification',
     icon: '/icon-192x192.png',

@@ -163,3 +163,12 @@ The migrations must be run in this order:
 - Check Supabase CLI docs: https://supabase.com/docs/guides/cli
 - Review migration files in `supabase/migrations/`
 - See `STOCKLY_INTEGRATION_MIGRATIONS.md` for full details
+
+
+
+
+
+
+
+
+

@@ -142,3 +142,12 @@ FROM public.profiles p
 WHERE p.company_id = 'fae1b377-859d-4ba6-bce2-d8aaf0044517'
 ORDER BY p.app_role, p.full_name;
 
+
+
+
+
+
+
+
+
+

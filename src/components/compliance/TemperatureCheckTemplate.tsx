@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { Thermometer, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -26,7 +27,7 @@ interface TemperatureCheckTemplateProps {
 }
 
 export function TemperatureCheckTemplate({ editTemplateId, onSave }: TemperatureCheckTemplateProps = {}) {
-  const { profile } = useAppContext();
+  const { profile, selectedSiteId, siteId } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [equipmentRows, setEquipmentRows] = useState<EquipmentRow[]>([
@@ -53,13 +54,23 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
         loadDraftData(editTemplateId);
       }
     }
-  }, [profile?.company_id, profile?.site_id, editTemplateId]);
+  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (profile?.company_id) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
 
   const loadAssets = async () => {
     if (!profile?.company_id) return;
 
 
-    // Load all active assets from the user's company (and site if available)
+    // Load all active assets from the user's company (filter by selected site from header)
+    // Use selectedSiteId from header if available, otherwise fall back to siteId
+    const effectiveSiteId = selectedSiteId || siteId || profile?.site_id;
+    
     let query = supabase
       .from("assets")
       .select("id, name, category, site_id, company_id, status")
@@ -68,9 +79,9 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
       .eq("archived", false)
       .order("name");
 
-    // If user has a site_id, filter by site
-    if (profile.site_id) {
-      query = query.eq("site_id", profile.site_id);
+    // Filter by selected site from header
+    if (effectiveSiteId) {
+      query = query.eq("site_id", effectiveSiteId);
     }
 
     const { data, error } = await query;
@@ -1115,11 +1126,10 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                     <label className="block text-xs text-slate-400 mb-1 capitalize">
                       {dayPart}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "09:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}

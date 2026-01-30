@@ -28,55 +28,55 @@ const topicConfig: Record<TopicCategory | 'all' | 'pinned', {
   all: {
     label: 'All Topics',
     icon: MessageSquare,
-    color: 'text-white',
+    color: 'text-gray-700 dark:text-white',
     description: 'Show all conversations'
   },
   pinned: {
     label: 'Pinned',
     icon: Pin,
-    color: 'text-yellow-400',
+    color: 'text-yellow-600 dark:text-yellow-400',
     description: 'Important conversations'
   },
   safety: {
     label: 'Safety',
     icon: Shield,
-    color: 'text-red-400',
+    color: 'text-red-600 dark:text-red-400',
     description: 'Safety incidents and protocols'
   },
   maintenance: {
     label: 'Maintenance',
     icon: Wrench,
-    color: 'text-blue-400',
+    color: 'text-blue-600 dark:text-blue-400',
     description: 'Equipment and facility maintenance'
   },
   operations: {
     label: 'Operations',
     icon: Briefcase,
-    color: 'text-green-400',
+    color: 'text-green-600 dark:text-green-400',
     description: 'Day-to-day operations'
   },
   hr: {
     label: 'HR',
     icon: Users,
-    color: 'text-purple-400',
+    color: 'text-purple-600 dark:text-purple-400',
     description: 'Staff and scheduling'
   },
   compliance: {
     label: 'Compliance',
     icon: FileCheck,
-    color: 'text-cyan-400',
+    color: 'text-cyan-600 dark:text-cyan-400',
     description: 'Compliance and documentation'
   },
   incidents: {
     label: 'Incidents',
     icon: AlertTriangle,
-    color: 'text-orange-400',
+    color: 'text-orange-600 dark:text-orange-400',
     description: 'Incident reports'
   },
   general: {
     label: 'General',
     icon: MessageSquare,
-    color: 'text-gray-400',
+    color: 'text-gray-600 dark:text-gray-400',
     description: 'General discussions'
   }
 };
@@ -132,21 +132,21 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap
                 ${active 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
-                  : 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06]'
+                  : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                 }
               `}
               title={config.description}
             >
               <Icon className={`h-4 w-4 ${active ? 'text-[#EC4899]' : config.color}`} />
-              <span className={`text-sm font-medium ${active ? 'text-[#EC4899]' : 'text-white/70'}`}>
+              <span className={`text-sm font-medium ${active ? 'text-[#EC4899]' : 'text-gray-700 dark:text-white/70'}`}>
                 {config.label}
               </span>
               {count > 0 && (
                 <span className={`
                   text-xs px-2 py-0.5 rounded-full
                   ${active 
-                    ? 'bg-[#EC4899]/30 text-[#EC4899]' 
-                    : 'bg-white/[0.1] text-white/60'
+                    ? 'bg-pink-100 dark:bg-[#EC4899]/30 text-pink-700 dark:text-[#EC4899]' 
+                    : 'bg-gray-200 dark:bg-white/[0.1] text-gray-600 dark:text-white/60'
                   }
                 `}>
                   {count}
@@ -160,7 +160,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
       {/* Active filter indicator */}
       {(currentFilters.topicCategory || currentFilters.isPinned) && (
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs text-white/40">Showing:</span>
+          <span className="text-xs text-gray-500 dark:text-white/40">Showing:</span>
           <span className="text-xs text-[#EC4899] font-medium">
             {currentFilters.isPinned 
               ? 'Pinned Conversations' 
@@ -169,7 +169,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
           </span>
           <button
             onClick={() => onFilterChange({ ...currentFilters, topicCategory: undefined, isPinned: undefined })}
-            className="text-xs text-white/40 hover:text-white/60 underline"
+            className="text-xs text-gray-500 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/60 underline"
           >
             Clear
           </button>

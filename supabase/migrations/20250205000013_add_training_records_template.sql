@@ -1,20 +1,36 @@
 -- ============================================================================
 -- Migration: 20250205000012_add_training_records_template.sql
 -- Description: Smart training records with user data integration
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 -- ============================================================================
 
--- Clean up existing template if it exists
-DELETE FROM template_repeatable_labels 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'training_records_review');
+-- Clean up existing template if it exists (only if tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Delete repeatable labels if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_repeatable_labels') THEN
+      DELETE FROM template_repeatable_labels 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'training_records_review');
+    END IF;
+    
+    -- Delete template fields if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      DELETE FROM template_fields 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'training_records_review');
+    END IF;
+    
+    -- Delete template
+    DELETE FROM task_templates 
+    WHERE slug = 'training_records_review';
+  END IF;
+END $$;
 
-DELETE FROM template_fields 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'training_records_review');
-
-DELETE FROM task_templates 
-WHERE slug = 'training_records_review';
-
--- Create smart training records template
-INSERT INTO task_templates (
+-- Create smart training records template (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    INSERT INTO task_templates (
   company_id,
   name,
   slug,
@@ -120,114 +136,152 @@ Use the fields below to:
   FALSE,
   NULL,
   TRUE,
-  FALSE,
-  FALSE
-);
+      FALSE,
+      FALSE
+    );
+  END IF;
+END $$;
 
 -- ============================================================================
 -- TRAINING COMPLIANCE FIELDS
 -- ============================================================================
+-- Add template fields (only if both tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'review_date', 'date', 'Compliance Review Date', TRUE, 1, 
+      'Date when this training compliance review was conducted.'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'review_date');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'review_date', 'date', 'Compliance Review Date', TRUE, 1, 
-  'Date when this training compliance review was conducted.'
-FROM task_templates WHERE slug = 'training_records_review';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'reviewed_by', 'text', 'Reviewed By', TRUE, 2,
+      'Manager conducting the training compliance review.'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'reviewed_by');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'reviewed_by', 'text', 'Reviewed By', TRUE, 2,
-  'Manager conducting the training compliance review.'
-FROM task_templates WHERE slug = 'training_records_review';
+    -- Staff Training Status (Will be auto-populated from user data)
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'staff_training_summary', 'text', 'Staff Training Status Summary', TRUE, 10,
+      'Auto-populated summary of all staff training status from user profiles. Edit to add notes or observations.',
+      'e.g., "3 staff need Food Safety refresher, 1 staff missing Allergen training, all Fire Marshals current..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'staff_training_summary');
 
--- Staff Training Status (Will be auto-populated from user data)
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'staff_training_summary', 'text', 'Staff Training Status Summary', TRUE, 10,
-  'Auto-populated summary of all staff training status from user profiles. Edit to add notes or observations.',
-  'e.g., "3 staff need Food Safety refresher, 1 staff missing Allergen training, all Fire Marshals current..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    -- New Training Records Section
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'new_training_completed', 'text', 'New Training Completed This Month', FALSE, 20,
+      'Record any new training sessions completed by staff this month.',
+      'e.g., "Sarah completed Fire Marshal training on 15/11, John attended Allergen update on 20/11..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'new_training_completed');
 
--- New Training Records Section
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'new_training_completed', 'text', 'New Training Completed This Month', FALSE, 20,
-  'Record any new training sessions completed by staff this month.',
-  'e.g., "Sarah completed Fire Marshal training on 15/11, John attended Allergen update on 20/11..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'certificate_updates', 'text', 'Certificate Updates Made', FALSE, 21,
+      'List any certificate expiry dates updated in user profiles.',
+      'e.g., "Updated Mike''s Food Safety expiry to 15/03/2025, Sarah''s First Aid to 22/06/2025..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'certificate_updates');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'certificate_updates', 'text', 'Certificate Updates Made', FALSE, 21,
-  'List any certificate expiry dates updated in user profiles.',
-  'e.g., "Updated Mike''s Food Safety expiry to 15/03/2025, Sarah''s First Aid to 22/06/2025..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    -- Training Gap Analysis
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'training_gaps_identified', 'text', 'Training Gaps Identified', TRUE, 30,
+      'List any training gaps or certificates requiring renewal.',
+      'e.g., "2 staff need Food Safety refresher by Jan 2025, 1 staff missing manual handling training..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'training_gaps_identified');
 
--- Training Gap Analysis
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'training_gaps_identified', 'text', 'Training Gaps Identified', TRUE, 30,
-  'List any training gaps or certificates requiring renewal.',
-  'e.g., "2 staff need Food Safety refresher by Jan 2025, 1 staff missing manual handling training..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'training_priority', 'select', 'Training Priority Level', TRUE, 31,
+      'Overall priority for addressing training gaps identified.',
+      jsonb_build_array(
+        jsonb_build_object('value', 'low', 'label', '🟢 Low Priority - All training current'),
+        jsonb_build_object('value', 'medium', 'label', '🟡 Medium - Some refreshers needed within 3 months'),
+        jsonb_build_object('value', 'high', 'label', '🟠 High - Multiple certificates expiring soon'),
+        jsonb_build_object('value', 'critical', 'label', '🔴 Critical - Expired certificates or legal requirements missing')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'training_priority');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'training_priority', 'select', 'Training Priority Level', TRUE, 31,
-  'Overall priority for addressing training gaps identified.',
-  jsonb_build_array(
-    jsonb_build_object('value', 'low', 'label', '🟢 Low Priority - All training current'),
-    jsonb_build_object('value', 'medium', 'label', '🟡 Medium - Some refreshers needed within 3 months'),
-    jsonb_build_object('value', 'high', 'label', '🟠 High - Multiple certificates expiring soon'),
-    jsonb_build_object('value', 'critical', 'label', '🔴 Critical - Expired certificates or legal requirements missing')
-  )
-FROM task_templates WHERE slug = 'training_records_review';
+    -- Follow-up Actions
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'scheduled_refreshers', 'text', 'Scheduled Refresher Training', FALSE, 40,
+      'List any refresher training that has been scheduled.',
+      'e.g., "Food Safety refresher booked for 15/01/2025, First Aid course scheduled for 22/02/2025..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'scheduled_refreshers');
 
--- Follow-up Actions
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'scheduled_refreshers', 'text', 'Scheduled Refresher Training', FALSE, 40,
-  'List any refresher training that has been scheduled.',
-  'e.g., "Food Safety refresher booked for 15/01/2025, First Aid course scheduled for 22/02/2025..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'generate_training_tasks', 'pass_fail', 'Generate Training Tasks', TRUE, 41,
+      'YES to automatically create follow-up tasks for required training and certificate renewals.'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'generate_training_tasks');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'generate_training_tasks', 'pass_fail', 'Generate Training Tasks', TRUE, 41,
-  'YES to automatically create follow-up tasks for required training and certificate renewals.'
-FROM task_templates WHERE slug = 'training_records_review';
+    -- Overall Compliance
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'compliance_met', 'pass_fail', 'Training Compliance Met', TRUE, 50,
+      'PASS if all required training is current or scheduled. FAIL if critical training gaps exist.'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'compliance_met');
 
--- Overall Compliance
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'compliance_met', 'pass_fail', 'Training Compliance Met', TRUE, 50,
-  'PASS if all required training is current or scheduled. FAIL if critical training gaps exist.'
-FROM task_templates WHERE slug = 'training_records_review';
-
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'next_review_focus', 'text', 'Next Review Focus Areas', FALSE, 51,
-  'Note any specific areas that need attention in the next monthly review.',
-  'e.g., "Focus on Fire Marshal renewals, check new staff induction training..."'
-FROM task_templates WHERE slug = 'training_records_review';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'next_review_focus', 'text', 'Next Review Focus Areas', FALSE, 51,
+      'Note any specific areas that need attention in the next monthly review.',
+      'e.g., "Focus on Fire Marshal renewals, check new staff induction training..."'
+    FROM task_templates t
+    WHERE t.slug = 'training_records_review'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'next_review_focus');
+  END IF;
+END $$;
 
 -- ============================================================================
 -- VERIFICATION
 -- ============================================================================
-
+-- Verification (only if tables exist)
 DO $$
 DECLARE
   template_record RECORD;
   field_count INTEGER;
 BEGIN
-  SELECT * INTO template_record
-  FROM task_templates 
-  WHERE slug = 'training_records_review';
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    SELECT * INTO template_record
+    FROM task_templates 
+    WHERE slug = 'training_records_review';
+    
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      SELECT COUNT(*) INTO field_count
+      FROM template_fields
+      WHERE template_id = template_record.id;
+    ELSE
+      field_count := 0;
+    END IF;
   
-  SELECT COUNT(*) INTO field_count
-  FROM template_fields
-  WHERE template_id = template_record.id;
-  
-  IF template_record.id IS NOT NULL THEN
-    RAISE NOTICE '✅ Training Records Review template created successfully';
-    RAISE NOTICE '   Template ID: %', template_record.id;
-    RAISE NOTICE '   Features: User data integration + Certificate tracking + Auto-task generation';
-    RAISE NOTICE '   Template fields: %', field_count;
-    RAISE NOTICE '   ✅ Designed for Phase 1 (auto-population ready)';
-    RAISE NOTICE '   ✅ Structured for Phase 2/3 smart features';
-    RAISE NOTICE '   ✅ Integration points for user profile data';
-    RAISE NOTICE '   ✅ Training gap analysis and prioritization';
+    IF template_record.id IS NOT NULL THEN
+      RAISE NOTICE '✅ Training Records Review template created successfully';
+      RAISE NOTICE '   Template ID: %', template_record.id;
+      RAISE NOTICE '   Features: User data integration + Certificate tracking + Auto-task generation';
+      RAISE NOTICE '   Template fields: %', field_count;
+      RAISE NOTICE '   ✅ Designed for Phase 1 (auto-population ready)';
+      RAISE NOTICE '   ✅ Structured for Phase 2/3 smart features';
+      RAISE NOTICE '   ✅ Integration points for user profile data';
+      RAISE NOTICE '   ✅ Training gap analysis and prioritization';
+    ELSE
+      RAISE NOTICE '⚠️ Template not found (may not exist yet)';
+    END IF;
   ELSE
-    RAISE WARNING '⚠️ Template creation may have failed. Template not found.';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 

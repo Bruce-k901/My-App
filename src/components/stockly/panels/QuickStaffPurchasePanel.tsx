@@ -104,7 +104,6 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
 
   async function loadStockItems() {
     const { data } = await supabase
-      .schema('stockly')
       .from('stock_items')
       .select(`
         id, name, stock_unit,
@@ -187,7 +186,6 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
 
       // Create transfer record
       const { data: transfer, error: transferError } = await supabase
-        .schema('stockly')
         .from('stock_transfers')
         .insert({
           company_id: companyId,
@@ -224,14 +222,12 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
       }));
 
       await supabase
-        .schema('stockly')
         .from('stock_transfer_items')
         .insert(items);
 
       // Update stock levels
       for (const line of lines) {
         const { data: existing } = await supabase
-          .schema('stockly')
           .from('stock_levels')
           .select('id, quantity')
           .eq('stock_item_id', line.stock_item_id)
@@ -240,7 +236,6 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
 
         if (existing) {
           await supabase
-            .schema('stockly')
             .from('stock_levels')
             .update({ quantity: Math.max(0, existing.quantity - line.quantity) })
             .eq('id', existing.id);
@@ -248,7 +243,6 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
 
         // Record movement
         await supabase
-          .schema('stockly')
           .from('stock_movements')
           .insert({
             company_id: companyId,

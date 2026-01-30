@@ -334,6 +334,66 @@ export async function POST(req: Request) {
 
     console.log(`✅ User ${isUpdate ? 'updated' : 'saved'}: ${email} (${profileId})${invitationSent ? ' - Email sent' : ' - No email sent (check logs)'}`);
     
+    // Step 3: Ensure user has messaging access (add to default company channel)
+    if (company_id && profileId) {
+      try {
+        // Find or create default company channel
+        const { data: defaultChannel } = await admin
+          .from("messaging_channels")
+          .select("id")
+          .eq("company_id", company_id)
+          .eq("channel_type", "site")
+          .eq("is_auto_created", true)
+          .limit(1)
+          .maybeSingle();
+        
+        let channelId = defaultChannel?.id;
+        
+        if (!channelId) {
+          // Create default channel if it doesn't exist
+          const { data: newChannel, error: channelError } = await admin
+            .from("messaging_channels")
+            .insert({
+              company_id,
+              channel_type: "site",
+              name: "General",
+              description: "Company-wide messaging channel",
+              created_by: profileId,
+              is_auto_created: true,
+            })
+            .select("id")
+            .single();
+          
+          if (!channelError && newChannel) {
+            channelId = newChannel.id;
+            console.log(`✅ Created default messaging channel: ${channelId}`);
+          }
+        }
+        
+        // Add user to channel if channel exists
+        if (channelId) {
+          const { error: memberError } = await admin
+            .from("messaging_channel_members")
+            .upsert({
+              channel_id: channelId,
+              profile_id: profileId,
+              member_role: roleValue === "Admin" || roleValue === "Owner" ? "admin" : "member",
+            }, {
+              onConflict: "channel_id,profile_id",
+            });
+          
+          if (memberError) {
+            console.warn(`⚠️ Failed to add user to messaging channel:`, memberError);
+          } else {
+            console.log(`✅ Added user to messaging channel`);
+          }
+        }
+      } catch (messagingError) {
+        // Non-critical - log but don't fail user creation
+        console.warn(`⚠️ Messaging access setup failed (non-critical):`, messagingError);
+      }
+    }
+    
     // Return response with email status
     const response: any = { 
       ok: true, 

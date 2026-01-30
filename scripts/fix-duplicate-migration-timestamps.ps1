@@ -3,64 +3,68 @@
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔧 Fixing Duplicate Migration Timestamps" -ForegroundColor Cyan
+Write-Host "Fixing duplicate migration timestamps..." -ForegroundColor Cyan
 Write-Host ""
 
 $migrationsPath = "supabase\migrations"
 
-# Get all migration files
-$migrationFiles = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
-    Where-Object { $_.Name -match '^\d{14}_' } | 
-    Sort-Object Name
+# Find all migration files
+$allMigrations = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
+    Where-Object { $_.Name -match '^(\d{14})_' }
 
-# Group by timestamp (first 14 digits)
-$grouped = $migrationFiles | Group-Object { ($_.Name -split '_')[0] } | 
-    Where-Object { $_.Count -gt 1 }
+# Group by timestamp
+$grouped = $allMigrations | Group-Object { 
+    if ($_.Name -match '^(\d{14})_') { 
+        $matches[1] 
+    } 
+} | Where-Object { $_.Count -gt 1 }
 
 if ($grouped.Count -eq 0) {
-    Write-Host "✅ No duplicate timestamps found!" -ForegroundColor Green
+    Write-Host "No duplicate timestamps found!" -ForegroundColor Green
     exit 0
 }
 
-Write-Host "Found $($grouped.Count) duplicate timestamp groups:" -ForegroundColor Yellow
+Write-Host "Found $($grouped.Count) duplicate timestamp groups" -ForegroundColor Yellow
 Write-Host ""
 
-$renamedCount = 0
-
 foreach ($group in $grouped) {
-    $timestamp = $group.Name
+    Write-Host "Processing timestamp: $($group.Name)" -ForegroundColor Cyan
     $files = $group.Group | Sort-Object Name
-    $fileCount = $files.Count
     
-    Write-Host "Timestamp: $timestamp - $fileCount files" -ForegroundColor Cyan
-    
-    # Keep the first file as-is, rename the rest
+    # Keep the first file, rename the rest
     for ($i = 1; $i -lt $files.Count; $i++) {
         $file = $files[$i]
-        $baseTimestamp = [long]$timestamp
+        $oldName = $file.Name
+        $timestamp = $group.Name
         
-        # Add 1 second (or more if needed) to make it unique
-        $newTimestamp = ($baseTimestamp + $i).ToString()
+        # Increment timestamp by 1 second for each duplicate
+        $year = $timestamp.Substring(0, 4)
+        $month = $timestamp.Substring(4, 2)
+        $day = $timestamp.Substring(6, 2)
+        $hour = $timestamp.Substring(8, 2)
+        $minute = $timestamp.Substring(10, 2)
+        $second = [int]$timestamp.Substring(12, 2)
         
-        # Extract the rest of the filename (everything after timestamp_)
-        $prefix = "$timestamp" + "_"
-        $restOfName = $file.Name.Substring($prefix.Length)
-        $newName = "$newTimestamp" + "_" + "$restOfName"
-        $newPath = Join-Path $migrationsPath $newName
+        # Add i seconds to make it unique
+        $newSecond = $second + $i
+        if ($newSecond -ge 60) {
+            $newSecond = $newSecond - 60
+            $minute = [int]$minute + 1
+            if ($minute -ge 60) {
+                $minute = $minute - 60
+                $hour = [int]$hour + 1
+            }
+        }
         
-        Write-Host "  Renaming: $($file.Name)" -ForegroundColor Gray
-        Write-Host "       To:  $newName" -ForegroundColor Green
+        $newTimestamp = "{0}{1}{2}{3}{4:D2}{5:D2}" -f $year, $month, $day, $hour, [int]$minute, $newSecond
+        $newName = $oldName -replace '^\d{14}', $newTimestamp
         
-        # Rename the file
+        Write-Host "  Renaming: $oldName -> $newName" -ForegroundColor Yellow
         Rename-Item -Path $file.FullName -NewName $newName -ErrorAction Stop
-        $renamedCount++
     }
     Write-Host ""
 }
 
-Write-Host "✅ Renamed $renamedCount migration files" -ForegroundColor Green
+Write-Host "✅ Done! All duplicate timestamps have been fixed." -ForegroundColor Green
 Write-Host ""
-Write-Host "📋 Next Steps:" -ForegroundColor Yellow
-Write-Host "1. Run the SQL fix: supabase/sql/fix_duplicate_migrations.sql" -ForegroundColor White
-Write-Host "2. Then run: supabase db push --include-all" -ForegroundColor White
-Write-Host ""
+Write-Host "You can now run: supabase db push --include-all" -ForegroundColor White

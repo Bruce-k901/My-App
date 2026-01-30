@@ -142,7 +142,7 @@ export default function PriceTrackingReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -154,13 +154,13 @@ export default function PriceTrackingReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Price Tracking</h1>
-            <p className="text-white/60 text-sm mt-1">Item price history and change alerts</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Price Tracking</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Item price history and change alerts</p>
           </div>
         </div>
         
@@ -197,7 +197,7 @@ export default function PriceTrackingReportPage() {
                 toast.error('Failed to export PDF file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -207,11 +207,11 @@ export default function PriceTrackingReportPage() {
 
       {/* Alert Banner */}
       {significantIncreases.length > 0 && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-medium text-red-400">Price Increase Alerts</h3>
-            <p className="text-red-400/80 text-sm mt-1">
+            <h3 className="font-medium text-red-600 dark:text-red-400">Price Increase Alerts</h3>
+            <p className="text-red-600/80 dark:text-red-400/80 text-sm mt-1">
               {significantIncreases.length} item(s) have increased more than 10% in the last 30 days
             </p>
           </div>
@@ -226,57 +226,57 @@ export default function PriceTrackingReportPage() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${
               filter === f
-                ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                : 'text-white/60 hover:text-white'
+                ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
             }`}
           >
-            {f === 'increases' && <TrendingUp className="w-4 h-4 text-red-400" />}
-            {f === 'decreases' && <TrendingDown className="w-4 h-4 text-green-400" />}
+            {f === 'increases' && <TrendingUp className="w-4 h-4 text-red-600 dark:text-red-400" />}
+            {f === 'decreases' && <TrendingDown className="w-4 h-4 text-green-600 dark:text-green-400" />}
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Price Changes Table */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
-                <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Date</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Item</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Supplier</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Previous</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-white/60">New Price</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Change</th>
+              <tr className="border-b border-theme dark:border-white/[0.06]">
+                <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Date</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Item</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Supplier</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Previous</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">New Price</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Change</th>
               </tr>
             </thead>
             <tbody>
               {filteredChanges.slice(0, 50).map((item, index) => (
                 <tr 
                   key={`${item.stock_item_id}-${item.delivery_date}-${index}`}
-                  className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                  className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                 >
-                  <td className="px-4 py-3 text-white/60 text-sm">
+                  <td className="px-4 py-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">
                     {formatDate(item.delivery_date)}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-white font-medium">{item.item_name}</span>
+                    <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{item.item_name}</span>
                   </td>
-                  <td className="px-4 py-3 text-white/70">{item.supplier_name}</td>
-                  <td className="px-4 py-3 text-right text-white/60">
+                  <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white/70">{item.supplier_name}</td>
+                  <td className="px-4 py-3 text-right text-[rgb(var(--text-secondary))] dark:text-white/60">
                     {item.previous_price ? formatCurrency(item.previous_price) : '-'}
                   </td>
-                  <td className="px-4 py-3 text-right text-white font-medium">
+                  <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium">
                     {formatCurrency(item.unit_price)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm font-medium ${
                       item.price_change_pct > 0 
-                        ? 'bg-red-500/10 text-red-400' 
+                        ? 'bg-red-500/10 text-red-600 dark:text-red-400' 
                         : item.price_change_pct < 0 
-                          ? 'bg-green-500/10 text-green-400'
-                          : 'bg-gray-500/10 text-gray-400'
+                          ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                          : 'bg-gray-500/10 text-gray-600 dark:text-gray-400'
                     }`}>
                       {item.price_change_pct > 0 ? (
                         <TrendingUp className="w-3 h-3" />
@@ -294,9 +294,9 @@ export default function PriceTrackingReportPage() {
         
         {filteredChanges.length === 0 && (
           <div className="p-12 text-center">
-            <TrendingUp className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No price changes</h3>
-            <p className="text-white/60">No price changes recorded in the last 30 days</p>
+            <TrendingUp className="w-12 h-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[rgb(var(--text-primary))] dark:text-white mb-2">No price changes</h3>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">No price changes recorded in the last 30 days</p>
           </div>
         )}
       </div>

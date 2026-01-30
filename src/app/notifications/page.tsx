@@ -17,6 +17,8 @@ type Notification = {
   severity: "info" | "warning" | "critical" | string;
   read: boolean;
   recipient_role: "staff" | "manager" | "admin" | string;
+  user_id?: string;
+  metadata?: any;
   created_at: string;
   status?: string;
 };
@@ -62,10 +64,11 @@ function timeAgo(iso: string) {
 }
 
 function NotificationsInner() {
-  const { companyId, siteId, role } = useAppContext();
+  const { companyId, siteId, role, userId } = useAppContext();
   const { showToast } = useToast();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
   const limit = useMemo(() => 50, []);
 
   useEffect(() => {
@@ -85,6 +88,10 @@ function NotificationsInner() {
         .limit(limit);
       // For non-admin roles, prefer site-scoped view if available
       if (siteId && role !== "Admin") q = q.eq("site_id", siteId);
+      // Filter by user_id if available (show user-specific notifications)
+      if (userId) {
+        q = q.or(`user_id.eq.${userId},user_id.is.null`);
+      }
       const { data } = await q;
       if (!mounted) return;
       setItems((data || []) as Notification[]);
@@ -101,6 +108,8 @@ function NotificationsInner() {
         (payload) => {
           const note = payload.new as Notification;
           if (note.company_id !== companyId) return;
+          // Only show toast for notifications assigned to current user or unassigned
+          if (userId && note.user_id && note.user_id !== userId) return;
           setItems((prev) => [note, ...prev].slice(0, limit));
           showToast(`${note.title}: ${note.message}`, note.severity === "critical" ? "error" : note.severity === "warning" ? "warning" : "info");
         },
@@ -110,11 +119,36 @@ function NotificationsInner() {
       supabase.removeChannel(channel);
       mounted = false;
     };
-  }, [companyId, siteId, role, limit, showToast]);
+  }, [companyId, siteId, role, userId, limit, showToast]);
 
   const markSeen = async (id: string) => {
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
     await supabase.from("notifications").update({ read: true }).eq("id", id);
+  };
+
+  const acceptOpenShift = async (note: Notification) => {
+    const meta = note?.metadata || {};
+    const isOffer = meta?.kind === "open_shift_offer" && typeof meta?.shift_id === "string";
+    if (!isOffer) return;
+
+    setAcceptingId(note.id);
+    try {
+      const { data, error } = await (supabase as any).rpc("claim_open_shift", {
+        p_shift_id: meta.shift_id,
+      });
+      if (error) throw error;
+
+      await markSeen(note.id);
+      showToast("Shift accepted and added to your rota.", "info");
+      // Optional: if the server returned details, you could display them
+      console.debug("claim_open_shift result:", data);
+    } catch (err: any) {
+      const msg = err?.message || "Failed to accept shift";
+      showToast(msg, "error");
+      console.error("Failed to accept open shift:", err);
+    } finally {
+      setAcceptingId(null);
+    }
   };
 
   return (
@@ -142,6 +176,16 @@ function NotificationsInner() {
                 </div>
                 <p className="text-sm text-slate-300 mt-1 whitespace-pre-line">{n.message}</p>
                 <div className="mt-2 flex items-center gap-3">
+                  {n?.metadata?.kind === "open_shift_offer" && typeof n?.metadata?.shift_id === "string" && (
+                    <button
+                      disabled={acceptingId === n.id}
+                      onClick={() => acceptOpenShift(n)}
+                      className="text-xs px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:hover:shadow-none"
+                      title="Accept this open shift"
+                    >
+                      {acceptingId === n.id ? "Accepting…" : "Accept shift"}
+                    </button>
+                  )}
                   {!n.read && (
                     <button onClick={() => markSeen(n.id)} className="text-xs text-slate-300 hover:text-white underline">
                       Mark as read

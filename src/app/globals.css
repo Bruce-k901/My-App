@@ -2,6 +2,170 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme CSS Variables */
+:root {
+  --background: 10 10 10;
+  --foreground: 255 255 255;
+  --surface: 26 26 26;
+  --surface-elevated: 42 42 42;
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255 / 0.8;
+  --text-tertiary: 255 255 255 / 0.6;
+  --text-disabled: 255 255 255 / 0.4;
+  --border: 255 255 255 / 0.06;
+  --border-hover: 255 255 255 / 0.12;
+}
+
+.light {
+  --background: 250 250 247; /* Warm light gray #FAFAF7 */
+  --foreground: 17 17 19; /* Darker, richer dark gray #111113 */
+  --surface: 255 255 255; /* Pure white for cards */
+  --surface-elevated: 255 255 255; /* White for elevated surfaces */
+  --text-primary: 17 17 19; /* Darker, richer dark gray #111113 for better contrast */
+  --text-secondary: 55 55 55; /* Darker medium gray #373737 for better readability */
+  --text-tertiary: 82 82 82; /* Medium gray #525252 */
+  --text-disabled: 163 163 163; /* Disabled gray */
+  --border: 0 0 0 / 0.12; /* Slightly more visible borders */
+  --border-hover: 0 0 0 / 0.18; /* More visible hover borders */
+}
+
+/* Theme-Aware Utility Classes */
+/* Use these classes instead of hardcoded colors for automatic light/dark mode support */
+@layer utilities {
+  /* Text Colors */
+  .text-theme-primary {
+    color: rgb(var(--text-primary));
+  }
+  .dark .text-theme-primary {
+    color: rgb(var(--text-primary));
+  }
+
+  .text-theme-secondary {
+    color: rgb(var(--text-secondary));
+  }
+  .dark .text-theme-secondary {
+    color: rgb(var(--text-secondary));
+  }
+
+  .text-theme-tertiary {
+    color: rgb(var(--text-tertiary));
+  }
+  .dark .text-theme-tertiary {
+    color: rgb(var(--text-tertiary));
+  }
+
+  /* Background Colors */
+  .bg-theme-surface {
+    background-color: rgb(var(--surface));
+  }
+  .dark .bg-theme-surface {
+    background-color: rgb(var(--surface));
+  }
+
+  .bg-theme-surface-elevated {
+    background-color: rgb(var(--surface-elevated));
+  }
+  .dark .bg-theme-surface-elevated {
+    background-color: rgb(var(--surface-elevated));
+  }
+
+  /* Border Colors */
+  .border-theme {
+    border-color: rgb(var(--border));
+  }
+  .dark .border-theme {
+    border-color: rgb(var(--border));
+  }
+
+  .border-theme-hover {
+    border-color: rgb(var(--border-hover));
+  }
+  .dark .border-theme-hover {
+    border-color: rgb(var(--border-hover));
+  }
+
+  /* Button Backgrounds (subtle) */
+  .bg-theme-button {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  .dark .bg-theme-button {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+
+  .bg-theme-button-hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  .dark .bg-theme-button-hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Safe area for mobile bottom nav */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Global Select/Dropdown Styling - Theme-aware */
+/* Note: Native select option styling is limited by browser, but we ensure the select itself is styled */
+select {
+  color: rgb(var(--text-primary)) !important;
+  background-color: rgb(var(--surface)) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23111113' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em 1em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid rgb(var(--border));
+  border-radius: 0.375rem;
+}
+
+.dark select {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+select:focus {
+  outline: none;
+  border-color: #ec4899;
+  box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.5);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Style option elements for better theme support */
+select option {
+  background-color: rgb(var(--surface-elevated)) !important;
+  color: rgb(var(--text-primary)) !important;
+  padding: 0.5rem;
+}
+
+.dark select option {
+  background-color: #0b0d13 !important;
+  color: white !important;
+}
+
+/* Firefox specific option styling */
+@-moz-document url-prefix() {
+  select option {
+    background-color: rgb(var(--surface-elevated));
+    color: rgb(var(--text-primary));
+  }
+  .dark select option {
+    background-color: #0b0d13;
+    color: white;
+  }
+}
+
+/* Note: Some browsers (especially Safari) have limited option styling support */
+/* The browser's native dropdown may use system defaults, but the select input itself will be theme-aware */
+
 /* iOS Safari Sticky Header Fix */
 .ios-sticky-header {
   position: fixed; /* Fixed positioning for mobile app-like feel */
@@ -266,8 +430,25 @@
 /* ----------------------------- */
 
 body {
-  @apply font-sans text-white;
+  @apply font-sans;
+  font-family: var(--font-poppins), "Poppins", "Century Gothic", system-ui, sans-serif;
+  color: rgb(var(--text-primary));
+  background: rgb(var(--background));
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Dark mode body background (radial gradient) */
+.dark body {
   background: radial-gradient(circle at 20% 30%, #0b0d13 0%, #090a0f 80%);
+  color: rgb(var(--text-primary));
+}
+
+/* Light mode body background (solid warm gray) */
+.light body {
+  background: rgb(var(--background));
+  color: rgb(var(--text-primary));
 }
 
 /* Disable browser autofill overlay and preserve dark theme styling */
@@ -284,6 +465,79 @@ input:-webkit-autofill:focus {
 /* Smooth scrollbar behaviour; hide when not needed */
 html {
   overflow-y: auto;
+}
+
+/* Stockly Sidebar - Emerald Green Scrollbar */
+.stockly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.stockly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Firefox scrollbar for Stockly sidebar */
+.stockly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent;
+}
+
+/* Stockly Pages - Emerald Green Scrollbar for main content */
+.stockly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stockly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stockly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 3px;
+}
+
+.stockly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+
+/* Firefox scrollbar for Stockly pages */
+.stockly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.3) transparent;
+}
+
+/* Order Book scrollbar - emerald green */
+.order-book-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.order-book-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.order-book-scrollbar::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.order-book-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Firefox scrollbar for Order Book */
+.order-book-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent;
 }
 
 /* Prevent body scrolling on dashboard pages - app-like experience */
@@ -328,7 +582,7 @@ h3 {
 
 p {
   font-weight: 400;
-  color: #cbd5e1;
+  color: rgb(var(--text-secondary));
 }
 
 /* ----------------------------- */
@@ -498,20 +752,241 @@ body:has(.marketing-page) .global-footer {
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
-/* Custom scrollbar for dashboard content (optional - can be hidden) */
+/* Module-specific scrollbar styles */
+
+/* Checkly - Pink/Magenta (#EC4899) */
+.checkly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #ec4899;
+  border-radius: 4px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #db2777;
+}
+.checkly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ec4899 transparent;
+}
+
+.checkly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.3);
+  border-radius: 3px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.5);
+}
+.checkly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(236, 72, 153, 0.3) transparent;
+}
+
+/* Stockly - Emerald Green (#10B981) - Already exists, keeping for reference */
+.stockly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 4px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+.stockly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent;
+}
+
+.stockly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 3px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+.stockly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.3) transparent;
+}
+
+/* Teamly - Blue (#2563EB) */
+.teamly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 4px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8;
+}
+.teamly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb transparent;
+}
+
+.teamly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.3);
+  border-radius: 3px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.5);
+}
+.teamly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37, 99, 235, 0.3) transparent;
+}
+
+/* Assetly - Sky Blue (#0284C7) */
+.assetly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 4px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0369a1;
+}
+.assetly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #0284c7 transparent;
+}
+
+.assetly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(2, 132, 199, 0.3);
+  border-radius: 3px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(2, 132, 199, 0.5);
+}
+.assetly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(2, 132, 199, 0.3) transparent;
+}
+
+/* Planly - Teal (#14B8A6) */
+.planly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #14b8a6;
+  border-radius: 4px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
+}
+.planly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #14b8a6 transparent;
+}
+
+.planly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.3);
+  border-radius: 3px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 184, 166, 0.5);
+}
+.planly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 184, 166, 0.3) transparent;
+}
+
+/* Forecastly - Purple (#7C3AED) */
+.forecastly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #7c3aed;
+  border-radius: 4px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6d28d9;
+}
+.forecastly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #7c3aed transparent;
+}
+
+.forecastly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 3px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
+}
+.forecastly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+/* Default dashboard scrollbar (for non-module pages) */
 .dashboard-page main::-webkit-scrollbar {
   width: 6px;
 }
-
 .dashboard-page main::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .dashboard-page main::-webkit-scrollbar-thumb {
   background: rgba(236, 72, 153, 0.3);
   border-radius: 3px;
 }
-
 .dashboard-page main::-webkit-scrollbar-thumb:hover {
   background: rgba(236, 72, 153, 0.5);
 }
@@ -702,4 +1177,57 @@ input[type="number"] {
 
 .animate-slideInRight {
   animation: slideInRight 0.3s ease-out;
+}
+
+/* ----------------------------- */
+/* Planly Print Styles           */
+/* ----------------------------- */
+
+@media print {
+  /* Hide non-print elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print\:block {
+    display: block !important;
+  }
+
+  /* Reset page margins */
+  @page {
+    margin: 1cm;
+    size: A4 portrait;
+  }
+
+  /* Ensure tables don't break across pages */
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Section breaks */
+  .print-section {
+    page-break-after: auto;
+  }
+
+  /* Compact spacing for print */
+  .print-compact {
+    padding: 0.25rem !important;
+    margin: 0.25rem !important;
+  }
+
+  /* Delivery notes - 4 per A4 page */
+  .delivery-note-print {
+    width: 50%;
+    height: 50%;
+    float: left;
+    box-sizing: border-box;
+    padding: 0.5cm;
+    border: 1px solid #000;
+  }
+
+  /* Production worksheet print */
+  .production-worksheet-print {
+    page-break-after: always;
+  }
 }

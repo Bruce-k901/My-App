@@ -233,6 +233,7 @@ if (typeof window !== 'undefined') {
       console.error('⚠️ Fetch interceptor error:', error);
     }
     
+    // Pass through all other requests without modification
     return originalFetch.call(window, input, init);
   };
 }

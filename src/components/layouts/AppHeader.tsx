@@ -85,7 +85,7 @@ function NotificationBell() {
         const { data } = await supabase
           .from("profile_settings")
           .select("sound_vibration")
-          .eq("user_id", userId)
+          .eq("profile_id", userId)
           .limit(1);
         const v = data?.[0]?.sound_vibration ?? false;
         setSvEnabled(Boolean(v));

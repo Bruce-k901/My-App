@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { Thermometer, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -26,7 +27,7 @@ interface ProbeCalibrationTemplateProps {
 }
 
 export function ProbeCalibrationTemplate({ editTemplateId, onSave }: ProbeCalibrationTemplateProps = {}) {
-  const { profile } = useAppContext();
+  const { profile, selectedSiteId, siteId } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [equipmentRows, setEquipmentRows] = useState<EquipmentRow[]>([
@@ -48,7 +49,14 @@ export function ProbeCalibrationTemplate({ editTemplateId, onSave }: ProbeCalibr
       };
       initialize();
     }
-  }, [profile?.company_id, profile?.site_id, editTemplateId]);
+  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (profile?.company_id) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
 
   useEffect(() => {
     if (!editingTemplateId && equipmentRows.length > 0 && assets.length > 0 && instructions === "") {
@@ -87,6 +95,9 @@ ${validEquipment.map(eq => {
 
   const loadAssets = async () => {
     if (!profile?.company_id) return;
+    // Use selectedSiteId from header if available, otherwise fall back to siteId
+    const effectiveSiteId = selectedSiteId || siteId || profile?.site_id;
+    
     let query = supabase
       .from("assets")
       .select("id, name, category, site_id, company_id, status")
@@ -94,7 +105,7 @@ ${validEquipment.map(eq => {
       .eq("company_id", profile.company_id)
       .eq("archived", false)
       .order("name");
-    if (profile.site_id) query = query.eq("site_id", profile.site_id);
+    if (effectiveSiteId) query = query.eq("site_id", effectiveSiteId);
     const { data, error } = await query;
     if (error) {
       console.error("Error loading assets:", error);
@@ -668,11 +679,10 @@ ${validEquipment.map(eq => {
                     <label className="block text-xs text-slate-400 mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "09:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}

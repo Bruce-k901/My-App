@@ -59,3 +59,15 @@
 - `src/components/admin/AdminPWAProvider.tsx` - No longer needed (can be deleted)
 
 **Note:** The main `sw.js` already handles admin routes, so no changes needed there.
+
+
+
+
+
+
+
+
+
+
+
+

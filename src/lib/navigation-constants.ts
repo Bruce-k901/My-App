@@ -8,6 +8,8 @@ export interface Course {
   duration: string;
   level: string;
   badge: string;
+  /** Learn page URL. Use this for sidebar and course links to avoid 404s. */
+  href: string;
 }
 
 export interface Library {
@@ -17,15 +19,18 @@ export interface Library {
 }
 
 // Courses list - add new courses here and they'll appear in the sidebar automatically
+// href must point to an existing route (e.g. /learn/[courseId] or /training/courses/...)
+// Food Safety: Learn flow only (/learn/uk-l2-food-safety). Old PlayerShell and selfstudy redirect here.
 export const COURSES: Course[] = [
   {
     slug: "food-safety",
     title: "Food Safety Level 2 (UK)",
     description:
-      "Self-study, mobile-friendly flow with interactive content, module quizzes, and a 30-question final assessment aligned to UK hygiene law.",
+      "Self-study, mobile-friendly flow with interactive content aligned to UK hygiene law.",
     duration: "Approx. 4 hours",
     level: "Level 2 • Self-study",
-    badge: "Updated"
+    badge: "Updated",
+    href: "/learn/uk-l2-food-safety",
   },
   {
     slug: "health-and-safety",
@@ -34,7 +39,8 @@ export const COURSES: Course[] = [
       "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
     duration: "Approx. 4 hours",
     level: "Level 2 • Self-study",
-    badge: "New"
+    badge: "New",
+    href: "/learn/uk-l2-health-and-safety",
   },
   {
     slug: "allergens",
@@ -43,7 +49,8 @@ export const COURSES: Course[] = [
       "Essential training on the 14 major allergens, legal responsibilities (Natasha's Law), and preventing cross-contamination.",
     duration: "Approx. 3 hours",
     level: "Level 2 • Self-study",
-    badge: "New"
+    badge: "New",
+    href: "/learn/uk-l2-allergens",
   },
 ];
 
@@ -60,6 +67,18 @@ export const LIBRARIES: Library[] = [
   { id: 'appliances', name: 'Appliances', href: '/dashboard/libraries/appliances' },
   { id: 'first-aid', name: 'First Aid Supplies', href: '/dashboard/libraries/first-aid' },
 ];
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

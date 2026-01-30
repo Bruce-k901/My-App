@@ -43,3 +43,15 @@ Restored the `severity` field in all notification insert operations.
 - [ ] Verify shift handover reminders work
 - [ ] Verify calendar notifications work
 - [ ] Check browser console for 400 errors on notification creation
+
+
+
+
+
+
+
+
+
+
+
+

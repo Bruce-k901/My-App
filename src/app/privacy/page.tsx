@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">1. Overview</h2>
           <p className="text-gray-300">
-            Checkly (“we”, “our”, “us”) provides digital tools that help hospitality businesses
+            Opsly (“we”, “our”, “us”) provides digital tools that help hospitality businesses
             stay compliant, organised, and productive. This Privacy Policy explains how we collect,
             use, and protect your information when you use our website and app.
           </p>
@@ -81,11 +81,11 @@ export default function PrivacyPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">6. Sharing Information</h2>
           <p className="text-gray-300">
-            We may share limited data with service providers who help us run Checkly (for example,
+            We may share limited data with service providers who help us run Opsly (for example,
             hosting, email delivery, analytics). Each acts under strict data-processing terms.
           </p>
           <p className="text-gray-300">
-            If Checkly is ever acquired or merges with another business, we’ll ensure your rights
+            If Opsly is ever acquired or merges with another business, we’ll ensure your rights
             remain protected and notify you before any transfer.
           </p>
         </div>
@@ -102,8 +102,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="text-gray-300">
             Contact us at {" "}
-            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:privacy@checkly.app">
-              privacy@checkly.app
+            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:privacy@opsly.app">
+              privacy@opsly.app
             </a>{" "}
             to exercise any of these rights.
           </p>
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold mb-2">9. Cookies</h2>
           <p className="text-gray-300">
             We use cookies for authentication, preferences, and analytics. You can adjust your
-            browser to refuse cookies, but some parts of Checkly may not function properly.
+            browser to refuse cookies, but some parts of Opsly may not function properly.
           </p>
         </div>
 
@@ -132,8 +132,8 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold mb-2">10. Contact</h2>
           <p className="text-gray-300">
             If you have questions or complaints about this policy, email {" "}
-            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:privacy@checkly.app">
-              privacy@checkly.app
+            <a className="text-magenta-400 hover:text-magenta-300" href="mailto:privacy@opsly.app">
+              privacy@opsly.app
             </a>
             .
           </p>

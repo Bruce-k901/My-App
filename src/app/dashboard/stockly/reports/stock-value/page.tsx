@@ -78,7 +78,8 @@ export default function StockValueReportPage() {
         .eq('company_id', companyId)
         .gt('quantity', 0);
       
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
       
@@ -376,7 +377,7 @@ export default function StockValueReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
       </div>
     );
   }
@@ -388,13 +389,13 @@ export default function StockValueReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly/reports"
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Stock Valuation Report</h1>
-            <p className="text-white/60 text-sm mt-1">Current stock value by category and storage area</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Stock Valuation Report</h1>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Current stock value by category and storage area</p>
           </div>
         </div>
         
@@ -402,7 +403,7 @@ export default function StockValueReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -448,7 +449,7 @@ export default function StockValueReportPage() {
                 toast.error('Failed to export PDF file');
               }
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 dark:bg-red-500/10 border border-red-500/30 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -458,47 +459,47 @@ export default function StockValueReportPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Package className="w-5 h-5 text-blue-400" />
+              <Package className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             </div>
-            <span className="text-white/60 text-sm">Total Stock Value</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Total Stock Value</span>
           </div>
-          <p className="text-3xl font-bold text-white">{formatCurrency(totalValue)}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(totalValue)}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-green-500/10 rounded-lg">
               <Tag className="w-5 h-5 text-green-400" />
             </div>
-            <span className="text-white/60 text-sm">Categories</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Categories</span>
           </div>
-          <p className="text-3xl font-bold text-white">{byCategory.length}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{byCategory.length}</p>
         </div>
         
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-purple-500/10 rounded-lg">
-              <Warehouse className="w-5 h-5 text-purple-400" />
+              <Warehouse className="w-5 h-5 text-purple-500 dark:text-purple-400" />
             </div>
-            <span className="text-white/60 text-sm">Stock Lines</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Stock Lines</span>
           </div>
-          <p className="text-3xl font-bold text-white">{formatNumber(totalItems)}</p>
+          <p className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatNumber(totalItems)}</p>
         </div>
       </div>
 
       {/* View Toggle */}
-      <div className="flex bg-white/5 rounded-lg p-1 w-fit">
+      <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1 w-fit">
         {(['category', 'storage', 'items'] as const).map((mode) => (
           <button
             key={mode}
             onClick={() => setViewMode(mode)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               viewMode === mode
-                ? 'bg-[#EC4899]/20 text-[#EC4899]'
-                : 'text-white/60 hover:text-white'
+                    ? 'bg-emerald-500/20 dark:bg-[#EC4899]/20 text-emerald-600 dark:text-[#EC4899]'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
             }`}
           >
             {mode === 'category' ? 'By Category' : mode === 'storage' ? 'By Storage Area' : 'All Items'}
@@ -512,17 +513,17 @@ export default function StockValueReportPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Items</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">% of Total</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">% of Total</th>
                 </tr>
               </thead>
               <tbody>
                 {byCategory.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-white/40">
+                    <td colSpan={4} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40">
                       No stock data available
                     </td>
                   </tr>
@@ -544,15 +545,15 @@ export default function StockValueReportPage() {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
                               {isExpanded ? (
-                                <ChevronUp className="w-4 h-4 text-white/40" />
+                                <ChevronUp className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
                               ) : (
-                                <ChevronDown className="w-4 h-4 text-white/40" />
+                                <ChevronDown className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
                               )}
-                              <span className="text-white font-medium">{cat.category_name}</span>
+                              <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{cat.category_name}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-right text-white/80">{cat.item_count}</td>
-                          <td className="px-4 py-3 text-right text-white font-medium">
+                          <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">{cat.item_count}</td>
+                          <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium">
                             {formatCurrency(cat.total_value)}
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -572,7 +573,7 @@ export default function StockValueReportPage() {
                         {isExpanded && categoryItems.map((item) => (
                           <tr 
                             key={item.id}
-                            className="border-b border-white/[0.02] bg-white/[0.01]"
+                            className="border-b border-theme dark:border-white/[0.02] bg-theme-surface-elevated dark:bg-white/[0.01]"
                           >
                             <td className="px-4 py-2 pl-10">
                               <span className="text-white/70 text-sm">{item.name}</span>
@@ -595,13 +596,13 @@ export default function StockValueReportPage() {
               </tbody>
               {byCategory.length > 0 && (
                 <tfoot>
-                  <tr className="bg-white/[0.03]">
-                    <td className="px-4 py-3 font-semibold text-white">Total</td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">{totalItems}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">
+                  <tr className="bg-theme-surface-elevated dark:bg-white/[0.03]">
+                    <td className="px-4 py-3 font-semibold text-[rgb(var(--text-primary))] dark:text-white">Total</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">{totalItems}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                       {formatCurrency(totalValue)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">100%</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">100%</td>
                   </tr>
                 </tfoot>
               )}
@@ -611,16 +612,16 @@ export default function StockValueReportPage() {
       )}
 
       {viewMode === 'storage' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Storage Area</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Type</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Items</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">% of Total</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Storage Area</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Type</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">% of Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -637,29 +638,29 @@ export default function StockValueReportPage() {
                     return (
                       <tr 
                         key={area.storage_area_id || 'unassigned'}
-                        className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                        className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                       >
                         <td className="px-4 py-3">
-                          <span className="text-white font-medium">{area.storage_area_name}</span>
+                          <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{area.storage_area_name}</span>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAreaTypeColor(area.area_type)}`}>
                             {area.area_type.replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right text-white/80">{area.item_count}</td>
-                        <td className="px-4 py-3 text-right text-white font-medium">
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">{area.item_count}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium">
                           {formatCurrency(area.total_value)}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="w-20 h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className="w-20 h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-purple-500 rounded-full"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
-                            <span className="text-white/60 text-sm w-12">
+                            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-12">
                               {percentage.toFixed(1)}%
                             </span>
                           </div>
@@ -671,14 +672,14 @@ export default function StockValueReportPage() {
               </tbody>
               {byStorage.length > 0 && (
                 <tfoot>
-                  <tr className="bg-white/[0.03]">
-                    <td className="px-4 py-3 font-semibold text-white">Total</td>
+                  <tr className="bg-theme-surface-elevated dark:bg-white/[0.03]">
+                    <td className="px-4 py-3 font-semibold text-[rgb(var(--text-primary))] dark:text-white">Total</td>
                     <td className="px-4 py-3"></td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">{totalItems}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">{totalItems}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                       {formatCurrency(totalValue)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-white">100%</td>
+                    <td className="px-4 py-3 text-right font-semibold text-[rgb(var(--text-primary))] dark:text-white">100%</td>
                   </tr>
                 </tfoot>
               )}
@@ -688,22 +689,22 @@ export default function StockValueReportPage() {
       )}
 
       {viewMode === 'items' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Item</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Location</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Quantity</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Value</th>
+                    <tr className="border-b border-theme dark:border-white/[0.06]">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Item</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Location</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Quantity</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
                 </tr>
               </thead>
               <tbody>
                 {stockItems.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-white/40">
+                    <td colSpan={5} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40">
                       No stock items available
                     </td>
                   </tr>
@@ -711,17 +712,17 @@ export default function StockValueReportPage() {
                   stockItems.slice(0, 50).map((item) => (
                     <tr 
                       key={item.id}
-                      className="border-b border-white/[0.03] hover:bg-white/[0.02]"
+                      className="border-b border-theme dark:border-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.02]"
                     >
                       <td className="px-4 py-3">
-                        <span className="text-white font-medium">{item.name}</span>
+                        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{item.name}</span>
                       </td>
-                      <td className="px-4 py-3 text-white/70">{item.category_name}</td>
-                      <td className="px-4 py-3 text-white/70">{item.storage_area_name}</td>
-                      <td className="px-4 py-3 text-right text-white/80">
+                      <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white/70">{item.category_name}</td>
+                      <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white/70">{item.storage_area_name}</td>
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white/80">
                         {formatNumber(item.quantity)} {item.unit}
                       </td>
-                      <td className="px-4 py-3 text-right text-white font-medium">
+                      <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium">
                         {formatCurrency(item.value)}
                       </td>
                     </tr>
@@ -731,7 +732,7 @@ export default function StockValueReportPage() {
               {stockItems.length > 50 && (
                 <tfoot>
                   <tr>
-                    <td colSpan={5} className="px-4 py-3 text-center text-white/40 text-sm">
+                    <td colSpan={5} className="px-4 py-3 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
                       Showing 50 of {stockItems.length} items. Export to see all.
                     </td>
                   </tr>

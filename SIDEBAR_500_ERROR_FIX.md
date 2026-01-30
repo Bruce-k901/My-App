@@ -70,3 +70,15 @@
 - Never use `suppressHydrationWarning` on Next.js `Link` components
 - Only use it on elements with truly dynamic content that differs between server and client
 - Use it on container elements if needed, but not on interactive navigation elements
+
+
+
+
+
+
+
+
+
+
+
+

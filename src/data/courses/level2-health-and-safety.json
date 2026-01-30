@@ -3,12 +3,333 @@
   "title": "Health and Safety Level 2 (UK)",
   "description": "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards.",
   "version": "1.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-hs",
   "modules": [
     {
       "id": "m1",
       "title": "Introduction",
       "description": "Introduction to Health and Safety.",
-      "lessons": []
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Health and Safety",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Health and Safety Level 2 (UK)\n\nThis course covers workplace safety essentials including risk assessment, fire safety, manual handling, and kitchen-specific hazards.\n\n### What you'll learn\n- **Risk assessment** – Identifying and controlling workplace hazards.\n- **Fire safety** – Prevention, evacuation, and use of equipment.\n- **Manual handling** – Safe techniques to avoid injury.\n- **Kitchen hazards** – Slips, trips, cuts, burns, and chemical safety.\n\nUse **Next** to move through the course."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Risk Assessment",
+      "description": "Identifying and controlling workplace hazards.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Understanding Risk Assessment",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "What is Risk Assessment?",
+              "content": "## A Legal Duty\n\nUnder the **Health and Safety at Work etc. Act 1974** and the **Management of Health and Safety at Work Regulations 1999**, employers must assess risks to employees and others (including visitors and customers).\n\n### The 5 Steps\n1. **Identify hazards** – What could cause harm?\n2. **Decide who might be harmed** – Staff, contractors, public?\n3. **Evaluate the risk** – How likely? How serious?\n4. **Record findings** – Write it down if you have 5+ employees.\n5. **Review and update** – When things change."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Hazard vs Risk",
+              "content": "## Know the Difference\n\n### Hazard\nSomething with the **potential** to cause harm (e.g. hot oil, wet floors, sharp knives, cleaning chemicals).\n\n### Risk\nThe **likelihood** that someone could be harmed by the hazard, and **how serious** that harm could be.\n\n### Example\n- **Hazard**: Wet floor.\n- **Risk**: Slip and fall → broken bones. **Control**: Clear signage, mop promptly, use non-slip mats."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Controlling Risks",
+              "content": "## The Hierarchy of Control\n\n1. **Eliminate** – Remove the hazard (e.g. use a different process).\n2. **Substitute** – Use something less harmful.\n3. **Engineering controls** – Guarding, extraction, safety devices.\n4. **Administrative controls** – Procedures, training, supervision.\n5. **PPE** – Personal protective equipment (last resort, not a substitute for other controls).\n\n**In the kitchen**: Non-slip flooring, extraction over ranges, safe knife storage, COSHH for chemicals, and training."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Spill in the Kitchen",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Someone has spilled oil on the floor near the fryers. What should you do first?",
+                    "options": [
+                      { "label": "Put up a 'Wet Floor' sign and carry on.", "nextNodeId": "wrong" },
+                      {
+                        "label": "Clean it up promptly, then put a sign if still wet.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** A sign alone does not remove the hazard. You must clean the spill to reduce the risk of someone slipping.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Eliminate or reduce the hazard first (clean the spill), then use signage if the area remains slippery.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Fire Safety",
+      "description": "Prevention, evacuation, and use of equipment.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Fire Prevention and Evacuation",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "The Fire Triangle",
+              "content": "## Three Things Need to Be Present\n\n1. **Fuel** – Something that burns (oil, packaging, paper, fat).\n2. **Oxygen** – In the air.\n3. **Heat** – Ignition source (flames, sparks, hot surfaces).\n\n**Remove one** and the fire goes out. Fire extinguishers work by smothering (removing oxygen) or cooling (removing heat)."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Kitchen-Specific Risks",
+              "content": "## Common Causes of Kitchen Fires\n\n- **Grease and fat** – Never use water on a fat fire. Use a fire blanket or appropriate extinguisher.\n- **Cooking left unattended** – Stay nearby when cooking.\n- **Blocked extraction** – Grease build-up in filters can ignite.\n- **Electrical** – Faulty equipment, overloaded sockets.\n- **Clutter** – Combustibles near hobs or fryers."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Evacuation",
+              "content": "## If There's a Fire\n\n1. **Raise the alarm** – Do not assume someone else has.\n2. **Evacuate** – Use the nearest safe exit. Close doors behind you.\n3. **Do not use lifts.**\n4. **Assemble at the meeting point** – So you can be accounted for.\n5. **Do not re-enter** until the fire service says it's safe.\n\nKnow your escape routes and the location of fire extinguishers and blankets **before** an emergency."
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Pan Fire",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Oil in a pan has caught fire on the stove. A colleague reaches for a jug of water. What should you do?",
+                    "options": [
+                      {
+                        "label": "Let them use the water – it will cool the fire.",
+                        "nextNodeId": "wrong"
+                      },
+                      {
+                        "label": "Stop them. Use a fire blanket or wet chemical extinguisher.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Water on a fat fire causes violent splashing and spreads the fire. Never use water on oil or fat fires.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Smother the fire with a fire blanket or use a wet chemical extinguisher designed for cooking oil fires.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Manual Handling",
+      "description": "Safe techniques to avoid injury.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Safe Lifting and Carrying",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Why It Matters",
+              "content": "## The Statistics\n\nManual handling (lifting, carrying, pushing, pulling) causes a large proportion of workplace injuries. Back pain, hernias, and muscle strains are common.\n\n### In the Kitchen\n- Carrying sacks of flour, boxes of produce, or kegs.\n- Lifting heavy pans, stock pots, or trays.\n- Moving delivery crates and bins.\n\n**Good technique** and **asking for help** when loads are heavy or awkward can prevent injury."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Key Principles",
+              "content": "## Think Before You Lift\n\n- **Can you avoid it?** Use a trolley or mechanical aid.\n- **Is it too heavy?** Get help or split the load.\n- **Clear the route** – No obstructions or trip hazards.\n\n### When Lifting\n- **Feet** – Shoulder-width apart, one slightly forward.\n- **Bend your knees**, not your back.\n- **Keep the load close** to your body.\n- **Avoid twisting** – Move your feet instead.\n- **Look ahead** – Keep your head up."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Team Lifting",
+              "content": "## When You Need Help\n\n- **One person leads** – Calls \"Ready, steady, lift.\"\n- **Lift together** – At the same time.\n- **Same height** – Don't lift above shoulder height.\n- **Communicate** – Especially when putting the load down.\n\n**Never** attempt to lift something that feels too heavy or unstable. Your safety comes first."
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Heavy Delivery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A heavy crate has been delivered. You're not sure you can lift it safely on your own. What do you do?",
+                    "options": [
+                      {
+                        "label": "Try to lift it quickly to get it over with.",
+                        "nextNodeId": "wrong"
+                      },
+                      {
+                        "label": "Get help or use a trolley / pallet truck.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** Lifting a load that's too heavy or awkward can cause serious injury. Never risk it.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Use mechanical aids or team lifting when loads are heavy or awkward. Avoid manual handling if you can.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Kitchen Hazards",
+      "description": "Slips, trips, cuts, burns, and chemical safety.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Slips, Trips, and Falls",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Slips and Trips",
+              "content": "## Among the Most Common Accidents\n\n- **Wet or greasy floors** – Clean spills promptly. Use appropriate signage.\n- **Obstacles** – Boxes, cables, bags. Keep walkways clear.\n- **Uneven surfaces** – Report damaged flooring.\n- **Poor lighting** – Ensure all areas are well lit.\n\n**Wear suitable footwear** – Non-slip, closed-toe. Avoid trailing laces."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Cuts and Burns",
+              "content": "## Sharp and Hot\n\n### Cuts\n- **Knives** – Use the right knife for the job. Keep them sharp (dull knives slip). Store safely.\n- **Blades** – Use a guard when opening boxes or using graters.\n- **Broken glass** – Sweep up carefully. Use a bin, not bare hands.\n\n### Burns\n- **Hot surfaces** – Use dry cloths or oven gloves. Assume pans and hobs are hot.\n- **Steam** – Open lids away from you. Stand back from boiling pots.\n- **First aid** – Cool burns under cold running water for at least 10 minutes."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "Chemicals (COSHH)",
+              "content": "## Control of Substances Hazardous to Health\n\nCleaning chemicals, oven cleaners, and sanitisers can cause skin irritation, burns, or breathing problems.\n\n### Safe Use\n- **Read the label** and follow instructions.\n- **Use PPE** – Gloves, goggles, aprons as advised.\n- **Never mix** chemicals (e.g. bleach and other products can produce toxic gas).\n- **Store correctly** – Original containers, out of reach of food and heat.\n- **Report** spills or exposure. Use eye wash or first aid if needed."
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Chemical Spill",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A bottle of cleaning product has tipped over. What should you do first?",
+                    "options": [
+                      { "label": "Wipe it up quickly with a cloth.", "nextNodeId": "wrong" },
+                      {
+                        "label": "Put on gloves, ventilate if needed, then clean according to the product's safety info.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "wrong": {
+                    "text": "❌ **Incorrect.** You could harm your skin or inhale fumes. Use PPE and follow COSHH procedures.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "✅ **Correct.** Protect yourself first, ensure ventilation, and follow the safety data for the product.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Knowledge check.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m6-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What are the three elements of the fire triangle?",
+        "options": [
+          "Fuel, oxygen, heat",
+          "Smoke, flames, water",
+          "Fire blanket, extinguisher, alarm"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q2",
+        "text": "What should you never use on a fat or oil fire?",
+        "options": ["Fire blanket", "Wet chemical extinguisher", "Water"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q3",
+        "text": "When lifting a heavy load, you should:",
+        "options": [
+          "Bend your back and keep legs straight",
+          "Bend your knees and keep the load close to your body",
+          "Lift quickly to reduce strain"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "Under the hierarchy of control, PPE is:",
+        "options": [
+          "The first thing you should use",
+          "A last resort when other controls are not enough",
+          "Not required in kitchens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "Who has a legal duty to assess risks in the workplace?",
+        "options": ["Only employees", "Only the fire service", "Employers"],
+        "correctAnswer": 2
+      }
+    ]
+  }
 }
