@@ -143,9 +143,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Basic Information */}
         <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
           <div className="space-y-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Customer Name *</Label>
@@ -191,10 +189,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
               />
             </div>
-          </div>
 
-          {/* Right Column */}
-          <div className="space-y-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Address</Label>
               <Textarea
@@ -202,7 +197,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Delivery address"
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                rows={4}
+                rows={3}
               />
             </div>
 
@@ -217,14 +212,11 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      {/* Delivery Settings */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Settings</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
+        {/* Delivery Settings */}
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Settings</h2>
           <div className="space-y-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
@@ -297,10 +289,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 </label>
               </div>
             </div>
-          </div>
 
-          {/* Right Column */}
-          <div className="space-y-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Delivery Instructions</Label>
               <Textarea
@@ -308,18 +297,15 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 onChange={(e) => setDeliveryInstructions(e.target.value)}
                 placeholder="Special delivery instructions (e.g., use back entrance, call on arrival)..."
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                rows={6}
+                rows={3}
               />
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      {/* Finance Settings */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Finance Settings</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
+        {/* Finance Settings */}
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Finance Settings</h2>
           <div className="space-y-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Payment Terms</Label>
@@ -361,11 +347,8 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
               />
             </div>
-          </div>
 
-          {/* Right Column - Finance Contact */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Finance Contact</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white pt-2">Finance Contact</h3>
             <div>
               <Label className="text-gray-700 dark:text-white/80">Name</Label>
               <Input
@@ -397,14 +380,11 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      {/* Options */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Options</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Left Column */}
+        {/* Options */}
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Options</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
               <div>
@@ -427,10 +407,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 onChange={setFrozenOnly}
               />
             </div>
-          </div>
 
-          {/* Right Column */}
-          <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
               <div>
                 <span className="font-medium text-gray-900 dark:text-white">Active</span>
@@ -453,8 +430,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
       </div>
 
       {/* Portal Users (only in edit mode with portal enabled) */}
