@@ -150,7 +150,7 @@ BEGIN
         company_id IN (
           SELECT company_id FROM profiles 
           WHERE auth_user_id = auth.uid() 
-          AND LOWER(app_role) IN ('admin', 'owner', 'manager')
+          AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
 
@@ -234,7 +234,7 @@ BEGIN
     BEGIN
       IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
          AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'leave_blackout_dates') THEN
-        SELECT company_id, site_id, LOWER(app_role) as app_role
+        SELECT company_id, site_id, LOWER(app_role::text) as app_role
         INTO v_company_id, v_site_id, v_role
         FROM profiles WHERE id = p_profile_id;
         

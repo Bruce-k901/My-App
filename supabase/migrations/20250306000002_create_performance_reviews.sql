@@ -166,7 +166,7 @@ BEGIN
       company_id IN (
         SELECT company_id FROM profiles 
         WHERE auth_user_id = auth.uid() 
-        AND LOWER(app_role) IN ('admin', 'owner')
+        AND LOWER(app_role::text) IN ('admin', 'owner')
       )
     );
 
@@ -178,7 +178,7 @@ BEGIN
       OR company_id IN (
         SELECT company_id FROM profiles 
         WHERE auth_user_id = auth.uid() 
-        AND LOWER(app_role) IN ('admin', 'owner')
+        AND LOWER(app_role::text) IN ('admin', 'owner')
       )
     );
 
