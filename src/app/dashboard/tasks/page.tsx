@@ -172,7 +172,7 @@ function TasksDashboardContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Checkly Dashboard</h1>
+          <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Task Management</h1>
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Task management overview</p>
         </div>
         <Link

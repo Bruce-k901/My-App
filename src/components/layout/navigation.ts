@@ -53,6 +53,7 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
       { id: 'messages', label: 'Messages', path: '/dashboard/messaging' },
       { id: 'reports', label: 'Reports', path: '/dashboard/reports' },
       { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report' },
+      { id: 'archive', label: 'Archive Center', path: '/dashboard/archive' },
     ]
   },
   {
@@ -115,8 +116,8 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
       if (section.id === 'workspace') {
         return {
           ...section,
-          items: section.items.filter(item => 
-            ['messages', 'reports', 'eho-readiness'].includes(item.id)
+          items: section.items.filter(item =>
+            ['messages', 'reports', 'eho-readiness', 'archive'].includes(item.id)
           )
         }
       }

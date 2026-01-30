@@ -77,6 +77,7 @@ const iconMap: Record<string, any> = {
   suppliers: Briefcase,
   'stock-counts': ClipboardList,
   'manager-calendar': CalendarDays,
+  archive: Archive,
 }
 
 export function BurgerMenu({

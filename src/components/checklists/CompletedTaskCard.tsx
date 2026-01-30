@@ -7,6 +7,15 @@ import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+// Toggle this to enable/disable debug logging
+const DEBUG_LOGS = false;
+
+const debugLog = (...args: any[]) => {
+  if (DEBUG_LOGS) {
+    console.log(...args);
+  }
+};
+
 interface CompletedTaskCardProps {
   task: ChecklistTaskWithTemplate & {
     assets_map?: Map<string, { id: string; name: string }>
@@ -69,7 +78,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           // Only log errors that aren't expected (like RLS blocking or no data)
           // PGRST301 = RLS policy violation, PGRST116 = no rows returned (not really an error)
           if (error.code !== 'PGRST116' && !error.message?.includes('permission') && !error.message?.includes('policy')) {
-            console.warn('⚠️ Error fetching temperature_logs (non-critical):', error.message || error.code)
+            debugLog('⚠️ Error fetching temperature_logs (non-critical):', error.message || error.code)
           }
           // Silently handle expected errors (no data, RLS blocking)
         } else if (data && data.length > 0) {
@@ -98,7 +107,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       } catch (error: any) {
         // Only log unexpected errors
         if (error?.code !== 'PGRST116' && !error?.message?.includes('permission')) {
-          console.warn('⚠️ Error in fetchTemperatureLogs (non-critical):', error?.message || error)
+          debugLog('⚠️ Error in fetchTemperatureLogs (non-critical):', error?.message || error)
         }
       }
     }
@@ -106,8 +115,50 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     fetchTemperatureLogs()
   }, [completionRecord?.completed_by, completionRecord?.completed_at, completionRecord?.completion_data, task.site_id])
 
-  // Check both completion_data and task_data for recorded information
-  const completionData = completionRecord?.completion_data || {}
+  // Read from completion_notes (new format) or completion_data (old format)
+  const completionData = useMemo(() => {
+    // Try new format first (completion_notes as JSON)
+    if (task.completion_notes) {
+      try {
+        const parsed = typeof task.completion_notes === 'string'
+          ? JSON.parse(task.completion_notes)
+          : task.completion_notes;
+
+        debugLog('✅ [DISPLAY] Reading from completion_notes:', parsed);
+        return parsed || {};
+      } catch (e) {
+        // If it's not JSON, treat it as plain text
+        console.log('📝 [DISPLAY] completion_notes is plain text, not JSON');
+        return { notes: task.completion_notes };
+      }
+    }
+
+    // Fallback to old format
+    if (completionRecord?.completion_data) {
+      debugLog('✅ [DISPLAY] Reading from completion_data (old format)');
+      return completionRecord.completion_data;
+    }
+
+    debugLog('⚠️ [DISPLAY] No completion data found');
+    return {};
+  }, [task.completion_notes, completionRecord?.completion_data]);
+
+  // DEBUG: Log what data sources are available
+  debugLog('🔍 [COMPLETION DATA DEBUG]:', {
+    taskId: task.id,
+    taskName: task.custom_name || task.template?.name,
+    hasTaskCompletionNotes: !!task.completion_notes,
+    taskCompletionNotesType: typeof task.completion_notes,
+    taskCompletionNotesPreview: typeof task.completion_notes === 'string'
+      ? task.completion_notes.substring(0, 200) + '...'
+      : task.completion_notes,
+    hasCompletionRecord: !!completionRecord,
+    completionRecordData: completionRecord?.completion_data,
+    finalCompletionData: completionData,
+    equipmentListInCompletionData: completionData?.equipment_list,
+    temperaturesInCompletionData: completionData?.temperatures
+  });
+
   const taskData = task.task_data || {}
   
   // Merge data from both sources (completion_data takes precedence)
@@ -122,7 +173,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       )
     : []
   
-  console.log('🔍 RAW COMPLETION DATA STRUCTURE:', {
+  debugLog('🔍 RAW COMPLETION DATA STRUCTURE:', {
     taskId: task.id,
     taskName: task.custom_name || task.template?.name,
     hasCompletionRecord: !!completionRecord,
@@ -135,7 +186,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     equipment_list_with_temps_count: equipmentListWithTemps.length,
     equipment_list_with_temps: equipmentListWithTemps.map((eq: any) => ({
       asset_id: eq.asset_id || eq.assetId || eq.id || eq.value,
-      asset_name: eq.asset_name || eq.name || eq.label,
+      asset_name: eq.asset_name || eq.assetName || eq.name || eq.label,
       temperature: eq.temperature,
       reading: eq.reading,
       temp: eq.temp,
@@ -144,7 +195,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     equipment_list_details: Array.isArray(completionData.equipment_list) ? completionData.equipment_list.map((eq: any, idx: number) => ({
       index: idx,
       asset_id: eq.asset_id || eq.assetId || eq.id || eq.value,
-      asset_name: eq.asset_name || eq.name || eq.label,
+      asset_name: eq.asset_name || eq.assetName || eq.name || eq.label,
       temperature: eq.temperature,
       reading: eq.reading,
       temp: eq.temp,
@@ -166,12 +217,6 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
                             task.template?.name?.toLowerCase().includes('fridge') ||
                             task.template?.name?.toLowerCase().includes('freezer')
   
-  if (isTemperatureTask && Array.isArray(completionData.equipment_list) && completionData.equipment_list.length > 0 && equipmentListWithTemps.length === 0) {
-    console.warn('⚠️ DISPLAY WARNING: Temperature task has equipment_list but NO temperatures found!', {
-      equipment_list: completionData.equipment_list,
-      taskId: task.id
-    })
-  }
   
   // Handle checklist items - can be in different formats
   let checklistItems: any[] = []
@@ -230,9 +275,9 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   
   // METHOD 1: From equipment_list (preferred format) - check multiple possible field names for temperature
   if (completionData.equipment_list && Array.isArray(completionData.equipment_list)) {
-    console.log('🔍 METHOD 1: Processing equipment_list with', completionData.equipment_list.length, 'items')
+    debugLog('🔍 METHOD 1: Processing equipment_list with', completionData.equipment_list.length, 'items')
     completionData.equipment_list.forEach((eq: any, index: number) => {
-      console.log(`🔍 METHOD 1: Processing equipment_list item ${index}:`, eq)
+      debugLog(`🔍 METHOD 1: Processing equipment_list item ${index}:`, eq)
       
       // Try multiple possible asset ID field names and ensure it's a string
       // CRITICAL: Handle "[object Object]" which can occur if asset_id was incorrectly saved
@@ -255,11 +300,12 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
                 }
               }
             }
-            // If still no valid ID, try to match by asset_name
-            if (!assetId && eq.asset_name) {
+            // If still no valid ID, try to match by asset_name or assetName
+            const eqName = eq.asset_name || eq.assetName
+            if (!assetId && eqName) {
               // Try to find asset by name in assetsMap
               for (const [id, asset] of assetsMap.entries()) {
-                if (asset.name === eq.asset_name) {
+                if (asset.name === eqName) {
                   assetId = id
                   break
                 }
@@ -277,7 +323,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         }
       }
       
-      console.log(`🔍 METHOD 1: Extracted assetId: ${assetId} (type: ${typeof assetId}, rawId: ${rawId})`)
+      debugLog(`🔍 METHOD 1: Extracted assetId: ${assetId} (type: ${typeof assetId}, rawId: ${rawId})`)
       
       // Skip if assetId is invalid
       if (assetId && typeof assetId === 'string' && !assetId.includes('[object')) {
@@ -285,7 +331,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         // Check multiple possible field names for temperature value
         // IMPORTANT: Check for 0 as a valid temperature reading
         let tempValue = null
-        console.log(`🔍 METHOD 1: Checking temperature fields for ${assetId}:`, {
+        debugLog(`🔍 METHOD 1: Checking temperature fields for ${assetId}:`, {
           temperature: eq.temperature,
           reading: eq.reading,
           temp: eq.temp,
@@ -294,19 +340,19 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         
         if (eq.temperature !== undefined && eq.temperature !== null && eq.temperature !== '') {
           tempValue = eq.temperature
-          console.log(`✅ METHOD 1: Found temperature from 'temperature' field: ${tempValue}`)
+          debugLog(`✅ METHOD 1: Found temperature from 'temperature' field: ${tempValue}`)
         } else if (eq.reading !== undefined && eq.reading !== null && eq.reading !== '') {
           tempValue = eq.reading
-          console.log(`✅ METHOD 1: Found temperature from 'reading' field: ${tempValue}`)
+          debugLog(`✅ METHOD 1: Found temperature from 'reading' field: ${tempValue}`)
         } else if (eq.temp !== undefined && eq.temp !== null && eq.temp !== '') {
           tempValue = eq.temp
-          console.log(`✅ METHOD 1: Found temperature from 'temp' field: ${tempValue}`)
+          debugLog(`✅ METHOD 1: Found temperature from 'temp' field: ${tempValue}`)
         }
         
         // Handle 0 as a valid temperature (fridge/freezer can be 0°C)
         if (tempValue === 0 || tempValue === '0') {
           tempValue = 0
-          console.log(`✅ METHOD 1: Temperature is 0 (valid reading)`)
+          debugLog(`✅ METHOD 1: Temperature is 0 (valid reading)`)
         }
         
         if (tempValue !== null && tempValue !== undefined && tempValue !== '') {
@@ -316,22 +362,22 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
               temp: numValue,
               status: eq.status || 'ok',
               time: eq.recorded_at || completionRecord?.completed_at,
-              asset_name: assetFromDb?.name || eq.asset_name || eq.name || 'Unknown Equipment',
+              asset_name: assetFromDb?.name || eq.asset_name || eq.assetName || eq.name || 'Unknown Equipment',
               nickname: eq.nickname || null
             })
-            console.log(`✅ METHOD 1: SUCCESS - Set temperature ${numValue}°C for asset ${assetId} (${eq.asset_name || assetFromDb?.name || 'Unknown'})`)
+            debugLog(`✅ METHOD 1: SUCCESS - Set temperature ${numValue}°C for asset ${assetId} (${eq.asset_name || eq.assetName || assetFromDb?.name || 'Unknown'})`)
           } else {
-            console.log(`⚠️ METHOD 1: Temperature value ${tempValue} is not a valid number`)
+            debugLog(`⚠️ METHOD 1: Temperature value ${tempValue} is not a valid number`)
           }
         } else {
-          console.log(`⚠️ METHOD 1: No temperature value found in equipment_list item for asset ${assetId}. Full item:`, JSON.stringify(eq, null, 2))
+          debugLog(`⚠️ METHOD 1: No temperature value found in equipment_list item for asset ${assetId}. Full item:`, JSON.stringify(eq, null, 2))
         }
       } else {
-        console.log(`⚠️ METHOD 1: Could not extract valid assetId from equipment_list item:`, eq)
+        debugLog(`⚠️ METHOD 1: Could not extract valid assetId from equipment_list item:`, eq)
       }
     })
   } else {
-    console.log('⚠️ METHOD 1: equipment_list is not an array or does not exist:', {
+    debugLog('⚠️ METHOD 1: equipment_list is not an array or does not exist:', {
       exists: !!completionData.equipment_list,
       type: typeof completionData.equipment_list,
       isArray: Array.isArray(completionData.equipment_list),
@@ -500,7 +546,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
             asset_name: matchingAsset.asset_name,
             nickname: matchingAsset.nickname || null
           })
-          console.log(`✅ METHOD 6: Found temperature ${numValue}°C for asset ${key} (${matchingAsset.asset_name})`)
+          debugLog(`✅ METHOD 6: Found temperature ${numValue}°C for asset ${key} (${matchingAsset.asset_name})`)
         }
       }
     }
@@ -509,7 +555,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   // METHOD 7: Final fallback - check if formData was spread into completionData
   // Sometimes temperatures are stored directly in formData keys
   if (assetsFromTaskData.length > 0 && recordedTemps.size === 0) {
-    console.log('⚠️ No temperatures found via previous methods, checking formData keys...')
+    debugLog('⚠️ No temperatures found via previous methods, checking formData keys...')
     assetsFromTaskData.forEach((asset) => {
       const assetIdStr = typeof asset.asset_id === 'string' ? asset.asset_id : String(asset.asset_id)
       if (!recordedTemps.has(assetIdStr)) {
@@ -527,7 +573,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
                   asset_name: asset.asset_name,
                   nickname: asset.nickname || null
                 })
-                console.log(`✅ METHOD 7: Found temperature ${numValue}°C for asset ${assetIdStr} via key ${key}`)
+                debugLog(`✅ METHOD 7: Found temperature ${numValue}°C for asset ${assetIdStr} via key ${key}`)
               }
             }
           }
@@ -537,7 +583,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   }
   
   // Debug logging for temperature extraction - COMPREHENSIVE
-  console.log('🌡️ Temperature Extraction Debug:', {
+  debugLog('🌡️ Temperature Extraction Debug:', {
     taskId: task.id,
     assetsFromTaskData: assetsFromTaskData.length,
     assetsFromTaskDataIds: assetsFromTaskData.map(a => a.asset_id),
@@ -589,7 +635,22 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       }
     })
   }
-  
+
+  // Check equipment_list in completionData (new flow - ranges saved with completion)
+  if (completionData.equipment_list && Array.isArray(completionData.equipment_list)) {
+    completionData.equipment_list.forEach((item: any) => {
+      const assetId = item.assetId || item.asset_id || item.value || item.id
+      if (assetId && !tempRanges.has(assetId)) {
+        const tempMin = item.temp_min !== undefined && item.temp_min !== null ? item.temp_min : null
+        const tempMax = item.temp_max !== undefined && item.temp_max !== null ? item.temp_max : null
+        if (tempMin !== null || tempMax !== null) {
+          tempRanges.set(assetId, { min: tempMin, max: tempMax })
+          debugLog(`✅ [RANGE] Got range from equipment_list for ${assetId}: ${tempMin} to ${tempMax}`)
+        }
+      }
+    })
+  }
+
   // Helper function to check if temperature is out of range
   // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
   const checkTemperatureRange = (temp: number | null, assetId: string): 'ok' | 'warning' | 'failed' => {
@@ -623,12 +684,12 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   // CRITICAL: Always show temperatures from equipment_list, even if they don't match task_data assets
   let temperatures: any[] = []
   
-  console.log('🔍 Before combining: recordedTemps.size =', recordedTemps.size, 'assetsFromTaskData.length =', assetsFromTaskData.length)
+  debugLog('🔍 Before combining: recordedTemps.size =', recordedTemps.size, 'assetsFromTaskData.length =', assetsFromTaskData.length)
   
   // FIRST PRIORITY: If we have equipment_list with temperatures, use those directly
   // This ensures we ALWAYS show recorded temperatures, even if asset IDs don't match
   if (completionData.equipment_list && Array.isArray(completionData.equipment_list) && completionData.equipment_list.length > 0) {
-    console.log('🔍 PRIORITY: Using equipment_list directly to ensure all temperatures are shown')
+    debugLog('🔍 PRIORITY: Using equipment_list directly to ensure all temperatures are shown')
     temperatures = completionData.equipment_list.map((eq: any, idx: number) => {
       // Extract asset ID
       let assetId: string | null = null
@@ -664,7 +725,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         : null
       
       // Get asset name
-      const assetName = eq.asset_name || eq.name || eq.label || 'Unknown Equipment'
+      const assetName = eq.asset_name || eq.assetName || eq.name || eq.label || 'Unknown Equipment'
       const assetNickname = eq.nickname || null
       const equipmentDisplay = assetNickname ? `${assetName} | ${assetNickname}` : assetName
       
@@ -685,6 +746,8 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       return {
         asset_id: assetId || `eq_${idx}`,
         equipment: finalEquipmentDisplay,
+        asset_name: finalAssetName,
+        nickname: assetNickname,
         temp: (!isNaN(numValue) && numValue !== null) ? numValue : null,
         status: status,
         time: eq.recorded_at || completionRecord?.completed_at,
@@ -692,12 +755,12 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       }
     })
     
-    console.log('✅ PRIORITY: Created temperatures array from equipment_list:', temperatures.length, 'items')
+    debugLog('✅ PRIORITY: Created temperatures array from equipment_list:', temperatures.length, 'items')
     
     // CRITICAL: If equipment_list has no temperatures, try to get them from temperature_logs
     const tempsWithValues = temperatures.filter(t => t.temp !== null && t.temp !== undefined)
     if (tempsWithValues.length === 0 && temperatureLogs.length > 0) {
-      console.log('⚠️ Equipment_list has no temperatures, but temperature_logs found. Merging temperature_logs data...')
+      debugLog('⚠️ Equipment_list has no temperatures, but temperature_logs found. Merging temperature_logs data...')
       temperatureLogs.forEach((log: any) => {
         const assetId = log.asset_id
         const assetName = log.assets?.name || 'Unknown Equipment'
@@ -714,18 +777,20 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           temperatures[existingIndex].temp = reading
           temperatures[existingIndex].status = log.status || temperatures[existingIndex].status
           temperatures[existingIndex].time = log.recorded_at || temperatures[existingIndex].time
-          console.log(`✅ Updated temperature for ${assetName} from temperature_logs: ${reading}°C`)
+          debugLog(`✅ Updated temperature for ${assetName} from temperature_logs: ${reading}°C`)
         } else {
           // Add new entry from temperature_logs
           temperatures.push({
             asset_id: assetId,
             equipment: assetName,
+            asset_name: assetName,
+            nickname: null,
             temp: reading,
             status: log.status || 'ok',
             time: log.recorded_at || completionRecord?.completed_at,
             range: assetId ? tempRanges.get(assetId) || null : null
           })
-          console.log(`✅ Added temperature for ${assetName} from temperature_logs: ${reading}°C`)
+          debugLog(`✅ Added temperature for ${assetName} from temperature_logs: ${reading}°C`)
         }
       })
     }
@@ -739,7 +804,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       
       // If no direct match, try to find by asset name or ID in equipment_list
       if (!recorded.temp && completionData.equipment_list && Array.isArray(completionData.equipment_list)) {
-        console.log(`🔍 Searching equipment_list for asset ${asset.asset_name} (ID: ${assetIdStr})`)
+        debugLog(`🔍 Searching equipment_list for asset ${asset.asset_name} (ID: ${assetIdStr})`)
         const matchingEq = completionData.equipment_list.find((eq: any) => {
           // Extract and normalize asset ID from equipment_list item
           let eqAssetId: string | null = null
@@ -758,7 +823,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
             }
           }
           
-          const eqAssetName = eq.asset_name || eq.name || eq.label || ''
+          const eqAssetName = eq.asset_name || eq.assetName || eq.name || eq.label || ''
           const assetNameMatch = eqAssetName === asset.asset_name || 
                                  eqAssetName?.includes(asset.asset_name) ||
                                  asset.asset_name?.includes(eqAssetName)
@@ -767,7 +832,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           
           const matches = idMatch || assetNameMatch || nicknameMatch
           if (matches) {
-            console.log(`✅ Found match in equipment_list:`, {
+            debugLog(`✅ Found match in equipment_list:`, {
               eqAssetId,
               eqAssetName,
               assetIdStr,
@@ -782,7 +847,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
         })
         
         if (matchingEq) {
-          console.log(`🔍 Matching equipment_list item found:`, matchingEq)
+          debugLog(`🔍 Matching equipment_list item found:`, matchingEq)
           // Try multiple field names for temperature
           let tempValue = null
           if (matchingEq.temperature !== undefined && matchingEq.temperature !== null && matchingEq.temperature !== '') {
@@ -798,7 +863,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
             tempValue = 0
           }
           
-          console.log(`🔍 Extracted tempValue: ${tempValue} (type: ${typeof tempValue})`)
+          debugLog(`🔍 Extracted tempValue: ${tempValue} (type: ${typeof tempValue})`)
           
           // Also check if temperature is 0 (valid reading)
           if (tempValue !== null && tempValue !== undefined && tempValue !== '') {
@@ -808,21 +873,21 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
                 temp: numValue,
                 status: matchingEq.status || 'ok',
                 time: matchingEq.recorded_at || completionRecord?.completed_at,
-                asset_name: matchingEq.asset_name || asset.asset_name,
+                asset_name: matchingEq.asset_name || matchingEq.assetName || asset.asset_name,
                 nickname: matchingEq.nickname || asset.nickname || null
               }
-              console.log(`✅ SUCCESS: Found temperature for ${asset.asset_name}: ${numValue}°C from equipment_list`)
+              debugLog(`✅ SUCCESS: Found temperature for ${asset.asset_name}: ${numValue}°C from equipment_list`)
             } else {
-              console.log(`⚠️ Temperature value ${tempValue} is not a valid number`)
+              debugLog(`⚠️ Temperature value ${tempValue} is not a valid number`)
             }
           } else {
-            console.log(`⚠️ No temperature value found in equipment_list for ${asset.asset_name}. Full item:`, JSON.stringify(matchingEq, null, 2))
+            debugLog(`⚠️ No temperature value found in equipment_list for ${asset.asset_name}. Full item:`, JSON.stringify(matchingEq, null, 2))
           }
         } else {
-          console.log(`⚠️ No matching equipment_list item found for asset ${asset.asset_name} (ID: ${assetIdStr})`)
-          console.log(`🔍 Available equipment_list items:`, completionData.equipment_list.map((eq: any) => ({
+          debugLog(`⚠️ No matching equipment_list item found for asset ${asset.asset_name} (ID: ${assetIdStr})`)
+          debugLog(`🔍 Available equipment_list items:`, completionData.equipment_list.map((eq: any) => ({
             asset_id: eq.asset_id || eq.assetId || eq.id || eq.value,
-            asset_name: eq.asset_name || eq.name || eq.label,
+            asset_name: eq.asset_name || eq.assetName || eq.name || eq.label,
             temperature: eq.temperature,
             reading: eq.reading,
             temp: eq.temp
@@ -832,10 +897,12 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
       
       const tempValue = recorded.temp !== undefined && recorded.temp !== null ? recorded.temp : null
       const status = recorded.status || checkTemperatureRange(tempValue, assetIdStr)
-      
+
       return {
         asset_id: assetIdStr,
         equipment: asset.nickname ? `${asset.asset_name} | ${asset.nickname}` : asset.asset_name,
+        asset_name: asset.asset_name,
+        nickname: asset.nickname || recorded.nickname || null,
         temp: tempValue,
         status: status,
         time: recorded.time || completionRecord?.completed_at,
@@ -846,7 +913,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
     // CRITICAL FALLBACK: If still no temperatures, check temperature_logs
     const tempsWithValues = temperatures.filter(t => t.temp !== null && t.temp !== undefined)
     if (tempsWithValues.length === 0 && temperatureLogs.length > 0) {
-      console.log('⚠️ No temperatures from task_data/equipment_list, but temperature_logs found. Using temperature_logs...')
+      debugLog('⚠️ No temperatures from task_data/equipment_list, but temperature_logs found. Using temperature_logs...')
       temperatureLogs.forEach((log: any) => {
         const assetId = log.asset_id
         const assetName = log.assets?.name || 'Unknown Equipment'
@@ -866,6 +933,8 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           temperatures.push({
             asset_id: assetId,
             equipment: assetName,
+            asset_name: assetName,
+            nickname: null,
             temp: reading,
             status: log.status || 'ok',
             time: log.recorded_at || completionRecord?.completed_at,
@@ -873,35 +942,40 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
           })
         }
       })
-      console.log(`✅ Added ${temperatureLogs.length} temperature(s) from temperature_logs table`)
+      debugLog(`✅ Added ${temperatureLogs.length} temperature(s) from temperature_logs table`)
     }
   } else if (temperatureLogs.length > 0) {
     // LAST RESORT: If no equipment_list and no task_data assets, use temperature_logs directly
-    console.log('⚠️ No equipment_list or task_data assets, using temperature_logs directly...')
+    debugLog('⚠️ No equipment_list or task_data assets, using temperature_logs directly...')
     temperatures = temperatureLogs.map((log: any) => {
       const assetId = log.asset_id
       const assetName = log.assets?.name || 'Unknown Equipment'
       const reading = log.reading
-      
+
       return {
         asset_id: assetId,
         equipment: assetName,
+        asset_name: assetName,
+        nickname: null,
         temp: reading,
         status: log.status || 'ok',
         time: log.recorded_at || completionRecord?.completed_at,
         range: assetId ? tempRanges.get(assetId) || null : null
       }
     })
-    console.log(`✅ Created temperatures array from temperature_logs: ${temperatures.length} items`)
+    debugLog(`✅ Created temperatures array from temperature_logs: ${temperatures.length} items`)
   } else if (recordedTemps.size > 0) {
     // Fallback: if no task_data assets, use what we have from completion_data
     recordedTemps.forEach((recorded, assetId) => {
       const assetFromDb = assetsMap.get(assetId)
+      const assetName = recorded.asset_name || assetFromDb?.name || 'Unknown Equipment'
       const status = recorded.status || checkTemperatureRange(recorded.temp, assetId)
-      
+
       temperatures.push({
         asset_id: assetId,
-        equipment: recorded.asset_name || assetFromDb?.name || 'Unknown Equipment',
+        equipment: assetName,
+        asset_name: assetName,
+        nickname: recorded.nickname || null,
         temp: recorded.temp,
         status: status,
         time: recorded.time,
@@ -911,7 +985,7 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
   }
   
   // Final summary log
-  console.log('🌡️ Final Temperature Summary:', {
+  debugLog('🌡️ Final Temperature Summary:', {
     taskId: task.id,
     totalTemperatures: temperatures.length,
     temperaturesWithReadings: temperatures.filter(t => t.temp !== null && t.temp !== undefined).length,
@@ -1013,15 +1087,13 @@ export default function CompletedTaskCard({ task, completionRecord }: CompletedT
             equipment: assetName,
             asset_id: assetId
           }
-          console.log('✅ Found new temperature for monitoring task from completion_data:', newTemperatureFromCompletion)
+          debugLog('✅ Found new temperature for monitoring task from completion_data:', newTemperatureFromCompletion)
         } else {
-          console.warn('⚠️ Monitoring task: Temperature value is not a valid number:', tempValue)
+          debugLog('⚠️ Monitoring task: Temperature value is not a valid number:', tempValue)
         }
-      } else {
-        console.warn('⚠️ Monitoring task: No temperature value found in equipment_list item:', matchingEquipment)
       }
     } else {
-      console.warn('⚠️ Monitoring task: No matching equipment found in equipment_list:', {
+      debugLog('⚠️ Monitoring task: No matching equipment found in equipment_list:', {
         equipment_list: completionData.equipment_list,
         originalAssetId: originalAssetId
       })
@@ -1337,124 +1409,125 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
             {temperatures.length > 0 ? (
               <div>
-                <h4 className="text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white mb-4 flex items-center gap-2">
-                  <Thermometer className="w-5 h-5" />
-                  Assets Checked with Temperature Readings
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <Thermometer className="w-5 h-5 text-blue-400" />
+                  Temperature Readings
                 </h4>
-                <div className="space-y-3">
-                  {temperatures.map((temp: any, idx: number) => {
-                    const statusColor = temp.status === 'failed' 
-                      ? 'border-red-300 dark:border-red-500/50 bg-red-50 dark:bg-red-500/10' 
-                      : temp.status === 'warning' 
-                      ? 'border-orange-300 dark:border-orange-500/50 bg-orange-50 dark:bg-orange-500/10' 
-                      : 'border-green-300 dark:border-green-500/50 bg-green-50 dark:bg-green-500/10'
-                    
-                    const statusText = temp.status === 'failed' 
-                      ? 'OUT OF RANGE' 
-                      : temp.status === 'warning' 
-                      ? 'WARNING' 
-                      : 'OK'
-                    
-                    const statusIconColor = temp.status === 'failed' 
-                      ? 'text-red-400' 
-                      : temp.status === 'warning' 
-                      ? 'text-orange-400' 
-                      : 'text-green-400'
-                    
-                    return (
-                      <div key={idx} className={`rounded-lg p-4 border-2 ${
-                        temp.status === 'failed' 
-                          ? 'border-red-300 dark:border-red-500/50 bg-red-50 dark:bg-red-500/10' 
-                          : temp.status === 'warning' 
-                          ? 'border-orange-300 dark:border-orange-500/50 bg-orange-50 dark:bg-orange-500/10' 
-                          : 'border-green-300 dark:border-green-500/50 bg-green-50 dark:bg-green-500/10'
-                      }`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-3">
-                            <Thermometer className={`w-6 h-6 ${
-                              temp.status === 'failed' 
-                                ? 'text-red-600 dark:text-red-400' 
-                                : temp.status === 'warning' 
-                                ? 'text-orange-600 dark:text-orange-400' 
-                                : 'text-green-600 dark:text-green-400'
-                            }`} />
-                            <div>
-                              <p className={`text-base font-bold ${
-                                temp.status === 'failed' 
-                                  ? 'text-red-900 dark:text-white' 
-                                  : temp.status === 'warning' 
-                                  ? 'text-orange-900 dark:text-white' 
-                                  : 'text-green-900 dark:text-white'
-                              }`}>{temp.equipment || 'Unknown Equipment'}</p>
-                            </div>
-                          </div>
-                          <span className={`text-sm px-3 py-1 rounded-full font-bold ${
-                            temp.status === 'failed' 
-                              ? 'bg-red-500/30 dark:bg-red-500/30 text-red-800 dark:text-red-300 border border-red-500/50 dark:border-red-500/50' 
-                              : temp.status === 'warning' 
-                              ? 'bg-orange-500/30 dark:bg-orange-500/30 text-orange-800 dark:text-orange-300 border border-orange-500/50 dark:border-orange-500/50' 
-                              : 'bg-green-500/30 dark:bg-green-500/30 text-green-800 dark:text-green-300 border border-green-500/50 dark:border-green-500/50'
+
+                <div className="bg-white/[0.02] border border-white/[0.08] rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-white/[0.04] border-b border-white/[0.08]">
+                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Equipment</th>
+                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Reading</th>
+                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Expected Range</th>
+                        <th className="text-center px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {temperatures.map((temp: any, idx: number) => {
+                        const isOutOfRange = temp.status === 'failed' || temp.status === 'critical';
+                        const isWarning = temp.status === 'warning';
+
+                        return (
+                          <tr key={idx} className={`border-b border-white/[0.05] transition-colors ${
+                            isOutOfRange ? 'bg-red-500/5' : ''
                           }`}>
-                            {statusText}
-                          </span>
-                        </div>
-                        <div className="mt-3">
-                          <p className={`text-xs mb-1 ${
-                            temp.status === 'failed' 
-                              ? 'text-red-700 dark:text-white/60' 
-                              : temp.status === 'warning' 
-                              ? 'text-orange-700 dark:text-white/60' 
-                              : 'text-green-700 dark:text-white/60'
-                          }`}>Temperature Reading</p>
-                          <p className={`text-2xl font-bold ${
-                            temp.status === 'failed' 
-                              ? 'text-red-700 dark:text-red-300' 
-                              : temp.status === 'warning' 
-                              ? 'text-orange-700 dark:text-orange-300' 
-                              : 'text-green-700 dark:text-white'
-                          }`}>
-                            {temp.temp !== undefined && temp.temp !== null && temp.temp !== '' ? `${temp.temp}°C` : (
-                              <span className="text-gray-500 dark:text-white/40 italic text-lg">No reading recorded</span>
-                            )}
-                          </p>
-                          {temp.range && (
-                            <p className={`text-xs mt-1 ${
-                              temp.status === 'failed' 
-                                ? 'text-red-600 dark:text-white/60' 
-                                : temp.status === 'warning' 
-                                ? 'text-orange-600 dark:text-white/60' 
-                                : 'text-green-600 dark:text-white/60'
-                            }`}>
-                              Expected range: {temp.range.min !== null ? `${temp.range.min}°C` : 'No min'} - {temp.range.max !== null ? `${temp.range.max}°C` : 'No max'}
-                            </p>
-                          )}
-                          {temp.status === 'failed' && temp.range && temp.temp !== null && (
-                            <div className="mt-3 p-3 bg-red-100 dark:bg-red-500/20 border-2 border-red-300 dark:border-red-500/50 rounded-lg">
-                              <div className="flex items-start gap-2">
-                                <AlertTriangle className="w-5 h-5 text-red-700 dark:text-red-300 flex-shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                  <p className="text-sm font-bold text-red-800 dark:text-red-200 mb-1">
-                                    Temperature Out of Range
-                                  </p>
-                                  {temp.range.min !== null && temp.temp < temp.range.min && (
-                                    <p className="text-red-800 dark:text-red-200 text-sm">
-                                      <span className="font-bold text-red-900 dark:text-red-100">{temp.temp}°C</span> is <span className="font-bold">below minimum</span> of {temp.range.min}°C
-                                    </p>
-                                  )}
-                                  {temp.range.max !== null && temp.temp > temp.range.max && (
-                                    <p className="text-red-800 dark:text-red-200 text-sm">
-                                      <span className="font-bold text-red-900 dark:text-red-100">{temp.temp}°C</span> is <span className="font-bold">above maximum</span> of {temp.range.max}°C
-                                    </p>
+                            {/* Equipment Column */}
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <Thermometer className={`w-4 h-4 flex-shrink-0 ${
+                                  isOutOfRange ? 'text-red-400' : isWarning ? 'text-orange-400' : 'text-green-400'
+                                }`} />
+                                <div className="min-w-0">
+                                  <div className="text-sm font-semibold text-white truncate">
+                                    {temp.nickname || temp.asset_name || temp.equipment || 'Unknown'}
+                                  </div>
+                                  {temp.nickname && temp.asset_name && (
+                                    <div className="text-xs text-neutral-500 truncate">
+                                      {temp.asset_name}
+                                    </div>
                                   )}
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
+                            </td>
+
+                            {/* Reading Column */}
+                            <td className="px-4 py-3">
+                              {temp.temp !== null && temp.temp !== undefined && temp.temp !== '' ? (
+                                <div className={`text-lg font-bold tabular-nums ${
+                                  isOutOfRange ? 'text-red-400' : isWarning ? 'text-orange-400' : 'text-green-400'
+                                }`}>
+                                  {temp.temp}°C
+                                </div>
+                              ) : (
+                                <span className="text-sm text-neutral-500 italic">No reading</span>
+                              )}
+                            </td>
+
+                            {/* Range Column */}
+                            <td className="px-4 py-3">
+                              {temp.range && temp.range.min !== null && temp.range.max !== null ? (
+                                <div className="text-sm text-neutral-400 tabular-nums">
+                                  {temp.range.min}°C to {temp.range.max}°C
+                                </div>
+                              ) : (
+                                <span className="text-sm text-neutral-500">—</span>
+                              )}
+                            </td>
+
+                            {/* Status Column */}
+                            <td className="px-4 py-3">
+                              <div className="flex justify-center">
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                  isOutOfRange
+                                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                    : isWarning
+                                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                    : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                }`}>
+                                  {isOutOfRange ? (
+                                    <>
+                                      <AlertTriangle className="w-3 h-3" />
+                                      Out of Range
+                                    </>
+                                  ) : isWarning ? (
+                                    <>
+                                      <AlertTriangle className="w-3 h-3" />
+                                      Warning
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckCircle2 className="w-3 h-3" />
+                                      In Range
+                                    </>
+                                  )}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
+
+                {/* Out of Range Summary */}
+                {temperatures.some((t: any) => t.status === 'failed' || t.status === 'critical') && (
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-red-400 mb-1">
+                          Action Required
+                        </p>
+                        <p className="text-xs text-red-300">
+                          {temperatures.filter((t: any) => t.status === 'failed' || t.status === 'critical').length} equipment reading(s) out of acceptable range. Follow-up actions may have been triggered.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               // Show message if no temperatures were recorded (for temperature tasks)

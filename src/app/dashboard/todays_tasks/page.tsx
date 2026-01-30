@@ -446,7 +446,7 @@ export default function DailyChecklistPage() {
           
           // PRIORITY 2: Include expiry tasks (they may also have template_id but no site_checklist_id)
           const sourceType = task.task_data?.source_type || task.task_data?.type;
-          const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate'];
+const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate', 'ppm_overdue', 'ppm_no_schedule', 'callout_followup', 'ppm_followup'];
           if (expiryTypes.includes(sourceType)) {
             console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
             return true;
@@ -1395,13 +1395,19 @@ export default function DailyChecklistPage() {
           return true
         }
         
-        // Check 3: For single-daypart tasks (or tasks without daypart data), 
+        // Check 3: For single-daypart tasks (or tasks without daypart data),
         // skip if task has ANY completion record
         // This only applies to non-multi-daypart tasks
         if (tasksWithCompletionRecords.has(task.id)) {
           return false
         }
-        
+
+        // Check 4: Skip if task is completed with completion_notes (new flow)
+        // These tasks don't have task_completion_records but have data in completion_notes
+        if (task.status === 'completed' && task.completion_notes) {
+          return false
+        }
+
         return true
       })
       
@@ -1468,7 +1474,26 @@ export default function DailyChecklistPage() {
           })
         }
       }
-      
+
+      // CRITICAL: Also include tasks with status='completed' and completion_notes
+      // These are tasks completed via the new flow that don't have task_completion_records
+      const completedTaskIds = new Set(completedTasksWithRecords.map(t => t.id))
+      const tasksWithCompletionNotes = tasksWithProfiles.filter(task =>
+        task.status === 'completed' &&
+        task.completion_notes &&
+        !completedTaskIds.has(task.id)
+      )
+
+      if (tasksWithCompletionNotes.length > 0) {
+        console.log('📋 Adding tasks with completion_notes (new flow):', tasksWithCompletionNotes.length)
+        tasksWithCompletionNotes.forEach(task => {
+          completedTasksWithRecords.push({
+            ...task,
+            completion_record: null // No completion_record, data is in completion_notes
+          })
+        })
+      }
+
       // Sort both active and completed tasks chronologically
       // PRIMARY: Sort by due_time (actual time is the anchor) - this ensures tasks are sorted
       //          by their actual scheduled time, NOT by daypart order
