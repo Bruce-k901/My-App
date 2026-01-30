@@ -1,26 +1,92 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Search, Package } from 'lucide-react';
+import { Plus, Search, Package, Archive, Sparkles, PauseCircle, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
+import Switch from '@/components/ui/Switch';
 import { useProducts } from '@/hooks/planly/useProducts';
 import { PlanlyProduct } from '@/types/planly';
+import { AddProductModal } from './AddProductModal';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { mutate } from 'swr';
 
 interface ProductListProps {
   siteId: string;
 }
 
+type TabType = 'active' | 'archived';
+
 export function ProductList({ siteId }: ProductListProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('active');
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: products, isLoading, error } = useProducts(siteId, true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const { data: products, isLoading, error } = useProducts(siteId, {
+    archived: activeTab === 'archived'
+  });
+
+  const updateProduct = async (productId: string, updates: Partial<PlanlyProduct>) => {
+    setUpdatingId(productId);
+    try {
+      const res = await fetch(`/api/planly/products/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (res.ok) {
+        mutate(`/api/planly/products?siteId=${siteId}&archived=${activeTab === 'archived'}`);
+      }
+    } catch (err) {
+      console.error('Error updating product:', err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const archiveProduct = async (productId: string) => {
+    setUpdatingId(productId);
+    try {
+      const res = await fetch(`/api/planly/products/${productId}?archive=true`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        mutate(`/api/planly/products?siteId=${siteId}&archived=false`);
+        mutate(`/api/planly/products?siteId=${siteId}&archived=true`);
+      }
+    } catch (err) {
+      console.error('Error archiving product:', err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const restoreProduct = async (productId: string) => {
+    setUpdatingId(productId);
+    try {
+      const res = await fetch(`/api/planly/products/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archived_at: null }),
+      });
+      if (res.ok) {
+        mutate(`/api/planly/products?siteId=${siteId}&archived=false`);
+        mutate(`/api/planly/products?siteId=${siteId}&archived=true`);
+      }
+    } catch (err) {
+      console.error('Error restoring product:', err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Loading products...</div>
+        <div className="text-gray-500 dark:text-white/60">Loading products...</div>
       </div>
     );
   }
@@ -28,84 +94,224 @@ export function ProductList({ siteId }: ProductListProps) {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-400">Error loading products</div>
+        <div className="text-red-500 dark:text-red-400">Error loading products</div>
       </div>
     );
   }
 
-  const filteredProducts = (products as PlanlyProduct[] || []).filter((product) =>
-    product.stockly_product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.stockly_product?.sku?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Safely handle products data - ensure it's an array
+  const productsList = Array.isArray(products) ? products : [];
+
+  const filteredProducts = (productsList as PlanlyProduct[]).filter((product) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      product.stockly_product?.name?.toLowerCase().includes(query) ||
+      product.stockly_product?.sku?.toLowerCase().includes(query) ||
+      product.category?.name?.toLowerCase().includes(query) ||
+      product.bake_group?.name?.toLowerCase().includes(query)
+    );
+  });
+
+  const tabs = [
+    { id: 'active' as const, label: 'Active', icon: Package },
+    { id: 'archived' as const, label: 'Archived', icon: Archive },
+  ];
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Products</h1>
-        <Link href="/dashboard/planly/products/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Button>
-        </Link>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
+        <Button
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Product
+        </Button>
       </div>
 
+      {/* Add Product Modal - only render when open to avoid unnecessary API calls */}
+      {isAddModalOpen && (
+        <AddProductModal
+          siteId={siteId}
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+        />
+      )}
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-white/10">
+        <nav className="flex space-x-4" aria-label="Tabs">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
+                  isActive
+                    ? 'border-[#14B8A6] text-[#14B8A6]'
+                    : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
         <Input
           type="text"
           placeholder="Search products..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white/[0.03] border-white/[0.06] text-white"
+          className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
         />
       </div>
 
+      {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredProducts.map((product) => (
-          <Link key={product.id} href={`/dashboard/planly/products/${product.id}`}>
-            <Card className="p-4 hover:border-[#14B8A6]/50 transition-colors cursor-pointer">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-white mb-1">
-                    {product.stockly_product?.name || 'Unknown Product'}
+          <Card
+            key={product.id}
+            className={cn(
+              "p-4 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 transition-all",
+              updatingId === product.id && "opacity-50"
+            )}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                    {product.stockly_product?.name || product.category?.name || `Product ${product.id.slice(0, 8)}`}
                   </h3>
-                  {product.stockly_product?.sku && (
-                    <div className="text-xs text-white/40 mb-2">SKU: {product.stockly_product.sku}</div>
+                  {product.is_new && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded">
+                      <Sparkles className="h-3 w-3" />
+                      New!
+                    </span>
+                  )}
+                  {product.is_paused && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 rounded">
+                      <PauseCircle className="h-3 w-3" />
+                      Paused
+                    </span>
                   )}
                 </div>
-                <Package className="h-5 w-5 text-[#14B8A6] flex-shrink-0" />
-              </div>
-
-              <div className="space-y-1 text-sm text-white/60">
-                {product.category && (
-                  <div>Category: {product.category.name}</div>
+                {product.stockly_product?.sku ? (
+                  <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                    SKU: {product.stockly_product.sku}
+                  </div>
+                ) : product.stockly_product_id && (
+                  <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                    ID: {product.stockly_product_id.slice(0, 8)}...
+                  </div>
                 )}
-                {product.bake_group && (
-                  <div>Bake Group: {product.bake_group.name}</div>
-                )}
-                <div>Items per tray: {product.items_per_tray}</div>
-                <div>Tray type: {product.tray_type}</div>
               </div>
+              <Package className="h-5 w-5 text-[#14B8A6] flex-shrink-0" />
+            </div>
 
-              <div className="mt-3 pt-3 border-t border-white/10">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  product.is_active
-                    ? 'bg-[#14B8A6]/20 text-[#14B8A6] border border-[#14B8A6]/30'
-                    : 'bg-white/10 text-white/60 border border-white/20'
-                }`}>
-                  {product.is_active ? 'Active' : 'Inactive'}
-                </span>
+            {/* Product details */}
+            <div className="space-y-1 text-sm text-gray-600 dark:text-white/60 mb-3">
+              {product.category && (
+                <div>Category: {product.category.name}</div>
+              )}
+              {product.bake_group && (
+                <div>Bake Group: {product.bake_group.name}</div>
+              )}
+              <div>Items per tray: {product.items_per_tray}</div>
+            </div>
+
+            {/* Description if present */}
+            {product.description && (
+              <p className="text-sm text-gray-500 dark:text-white/50 mb-3 line-clamp-2">
+                {product.description}
+              </p>
+            )}
+
+            {/* Toggles & Actions */}
+            {activeTab === 'active' ? (
+              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-white/10">
+                {/* Toggle switches */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 dark:text-white/60">Show "New!" badge</span>
+                  <Switch
+                    checked={product.is_new}
+                    onChange={(checked) => updateProduct(product.id, { is_new: checked })}
+                    disabled={updatingId === product.id}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 dark:text-white/60">Pause ordering</span>
+                  <Switch
+                    checked={product.is_paused}
+                    onChange={(checked) => updateProduct(product.id, { is_paused: checked })}
+                    disabled={updatingId === product.id}
+                  />
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center justify-between pt-2">
+                  <Link href={`/dashboard/planly/products/${product.id}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                    >
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => archiveProduct(product.id)}
+                    disabled={updatingId === product.id}
+                    className="text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                  >
+                    <Archive className="h-4 w-4 mr-1" />
+                    Archive
+                  </Button>
+                </div>
               </div>
-            </Card>
-          </Link>
+            ) : (
+              <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-white/10">
+                <div className="text-xs text-gray-500 dark:text-white/40">
+                  Archived {product.archived_at ? new Date(product.archived_at).toLocaleDateString() : ''}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => restoreProduct(product.id)}
+                  disabled={updatingId === product.id}
+                  className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                >
+                  <RotateCcw className="h-4 w-4 mr-1" />
+                  Restore
+                </Button>
+              </div>
+            )}
+          </Card>
         ))}
       </div>
 
+      {/* Empty state */}
       {filteredProducts.length === 0 && (
-        <Card className="p-12 text-center">
-          <div className="text-white/60">
-            {searchQuery ? 'No products match your search' : 'No products configured yet'}
+        <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+          <div className="text-gray-500 dark:text-white/60">
+            {searchQuery
+              ? 'No products match your search'
+              : activeTab === 'archived'
+                ? 'No archived products'
+                : 'No products configured yet'}
           </div>
         </Card>
       )}
