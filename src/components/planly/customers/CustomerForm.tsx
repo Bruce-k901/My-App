@@ -140,8 +140,9 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         </div>
       )}
 
-      {/* Basic Information */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Basic Information */}
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column */}
@@ -454,6 +455,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
           </div>
         </div>
       </Card>
+      </div>
 
       {/* Portal Users (only in edit mode with portal enabled) */}
       {isEdit && portalEnabled && (
