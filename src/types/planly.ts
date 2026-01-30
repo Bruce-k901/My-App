@@ -137,6 +137,8 @@ export interface DestinationGroup {
 // CUSTOMERS
 // ============================================================================
 
+export type PaymentTerms = 'prepaid' | 'net_7' | 'net_14' | 'net_30' | 'net_60';
+
 export interface PlanlyCustomer {
   id: string;
   name: string;
@@ -157,10 +159,37 @@ export interface PlanlyCustomer {
   created_at: string;
   updated_at: string;
   created_by?: string;
+  // New fields from spec
+  delivery_instructions?: string;
+  finance_contact_name?: string;
+  finance_contact_email?: string;
+  finance_contact_phone?: string;
+  default_payment_terms?: PaymentTerms;
+  portal_enabled: boolean;
   // Relations
   destination_group?: DestinationGroup;
   orders?: PlanlyOrder[];
   prices?: CustomerProductPrice[];
+  portal_users?: CustomerPortalUser[];
+}
+
+// ============================================================================
+// CUSTOMER PORTAL USERS
+// ============================================================================
+
+export interface CustomerPortalUser {
+  id: string;
+  customer_id: string;
+  email: string;
+  name: string;
+  is_primary: boolean;
+  is_active: boolean;
+  last_login_at?: string;
+  invited_at: string;
+  invited_by?: string;
+  accepted_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // ============================================================================
@@ -183,17 +212,24 @@ export interface PlanlyProduct {
   site_id: string;
   created_at: string;
   updated_at: string;
+  // New fields from spec
+  description?: string;
+  is_new: boolean;
+  is_paused: boolean;
+  archived_at?: string;
   // Relations
   category?: PlanlyCategory;
   process_template?: ProcessTemplate;
   bake_group?: BakeGroup;
   list_prices?: ProductListPrice[];
-  // From Stockly (joined)
+  // From Stockly/Ingredients Library (joined)
   stockly_product?: {
     id: string;
-    name: string;
-    sku: string;
-    // Add other Stockly fields as needed
+    name?: string;
+    ingredient_name?: string;
+    sku?: string;
+    category?: string;
+    unit?: string;
   };
 }
 

@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const siteId = searchParams.get('siteId');
     const isActive = searchParams.get('isActive');
+    const archived = searchParams.get('archived');
 
     let query = supabase
       .from('planly_products')
@@ -22,18 +23,53 @@ export async function GET(request: NextRequest) {
       query = query.eq('site_id', siteId);
     }
 
-    if (isActive !== null) {
+    // Only filter by isActive if explicitly provided
+    if (isActive === 'true' || isActive === 'false') {
       query = query.eq('is_active', isActive === 'true');
     }
 
-    const { data, error } = await query;
+    // Filter by archived status
+    if (archived === 'true') {
+      query = query.not('archived_at', 'is', null);
+    } else if (archived === 'false') {
+      query = query.is('archived_at', null);
+    }
+
+    const { data: products, error } = await query;
 
     if (error) {
       console.error('Error fetching products:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data);
+    // Fetch ingredient names for all products (no foreign key, so manual join)
+    if (products && products.length > 0) {
+      const stocklyProductIds = products
+        .map(p => p.stockly_product_id)
+        .filter(Boolean);
+
+      if (stocklyProductIds.length > 0) {
+        const { data: ingredients } = await supabase
+          .from('ingredients_library')
+          .select('id, ingredient_name, category, unit')
+          .in('id', stocklyProductIds);
+
+        // Create a lookup map
+        const ingredientMap = new Map(
+          (ingredients || []).map(i => [i.id, i])
+        );
+
+        // Attach stockly_product to each product
+        const productsWithNames = products.map(product => ({
+          ...product,
+          stockly_product: ingredientMap.get(product.stockly_product_id) || null
+        }));
+
+        return NextResponse.json(productsWithNames);
+      }
+    }
+
+    return NextResponse.json(products || []);
   } catch (error) {
     console.error('Error in GET /api/planly/products:', error);
     return NextResponse.json(

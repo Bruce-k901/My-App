@@ -8,8 +8,7 @@ import { Card } from '@/components/ui/Card';
 import Switch from '@/components/ui/Switch';
 import { useProducts } from '@/hooks/planly/useProducts';
 import { PlanlyProduct } from '@/types/planly';
-import { AddProductModal } from './AddProductModal';
-import Link from 'next/link';
+import { ProductModal } from './ProductModal';
 import { cn } from '@/lib/utils';
 import { mutate } from 'swr';
 
@@ -23,7 +22,8 @@ export function ProductList({ siteId }: ProductListProps) {
   const [activeTab, setActiveTab] = useState<TabType>('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<PlanlyProduct | null>(null);
 
   const { data: products, isLoading, error } = useProducts(siteId, {
     archived: activeTab === 'archived'
@@ -86,16 +86,40 @@ export function ProductList({ siteId }: ProductListProps) {
   // Safely handle products data - ensure it's an array
   const productsList = Array.isArray(products) ? products : [];
 
+  // Helper to get product name from joined data
+  const getProductName = (product: PlanlyProduct) => {
+    return product.stockly_product?.ingredient_name ||
+           product.stockly_product?.name ||
+           product.category?.name ||
+           'Unknown Product';
+  };
+
   const filteredProducts = (productsList as PlanlyProduct[]).filter((product) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
+    const productName = getProductName(product);
     return (
-      product.stockly_product?.name?.toLowerCase().includes(query) ||
-      product.stockly_product?.sku?.toLowerCase().includes(query) ||
+      productName.toLowerCase().includes(query) ||
       product.category?.name?.toLowerCase().includes(query) ||
       product.bake_group?.name?.toLowerCase().includes(query)
     );
   });
+
+  // Handlers for modal
+  const handleAddNew = () => {
+    setEditingProduct(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (product: PlanlyProduct) => {
+    setEditingProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+  };
 
   const tabs = [
     { id: 'active' as const, label: 'Active', icon: Package },
@@ -108,7 +132,7 @@ export function ProductList({ siteId }: ProductListProps) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
         <Button
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={handleAddNew}
           className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -116,12 +140,13 @@ export function ProductList({ siteId }: ProductListProps) {
         </Button>
       </div>
 
-      {/* Add Product Modal - only render when open to avoid unnecessary API calls */}
-      {isAddModalOpen && (
-        <AddProductModal
+      {/* Product Modal - for both adding and editing */}
+      {isModalOpen && (
+        <ProductModal
           siteId={siteId}
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          editingProduct={editingProduct}
         />
       )}
 
@@ -193,7 +218,7 @@ export function ProductList({ siteId }: ProductListProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                    {product.stockly_product?.name || product.category?.name || `Product ${product.id.slice(0, 8)}`}
+                    {getProductName(product)}
                   </h3>
                   {product.is_new && (
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded">
@@ -208,13 +233,9 @@ export function ProductList({ siteId }: ProductListProps) {
                     </span>
                   )}
                 </div>
-                {product.stockly_product?.sku ? (
+                {product.stockly_product?.category && (
                   <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
-                    SKU: {product.stockly_product.sku}
-                  </div>
-                ) : product.stockly_product_id && (
-                  <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
-                    ID: {product.stockly_product_id.slice(0, 8)}...
+                    {product.stockly_product.category}
                   </div>
                 )}
               </div>
@@ -262,15 +283,14 @@ export function ProductList({ siteId }: ProductListProps) {
 
                 {/* Action buttons */}
                 <div className="flex items-center justify-between pt-2">
-                  <Link href={`/dashboard/planly/products/${product.id}`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
-                    >
-                      Edit
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(product)}
+                    className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                  >
+                    Edit
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
