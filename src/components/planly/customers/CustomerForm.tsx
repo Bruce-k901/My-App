@@ -8,11 +8,15 @@ import { Card } from '@/components/ui/Card';
 import Label from '@/components/ui/Label';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import Switch from '@/components/ui/Switch';
 import { useDestinationGroups } from '@/hooks/planly/useDestinationGroups';
 import { usePortalUsers, usePortalUserMutations } from '@/hooks/planly/usePortalUsers';
 import { usePortalInvite } from '@/hooks/planly/usePortalInvite';
 import { PortalUserRow } from './PortalUserRow';
+import { cn } from '@/lib/utils';
 import type { PlanlyCustomer, ShipState, PaymentTerms } from '@/types/planly';
+
+type FulfillmentType = 'delivery' | 'collection';
 
 interface CustomerFormProps {
   siteId: string;
@@ -43,9 +47,11 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
   const [phone, setPhone] = useState(customer?.phone || '');
   const [address, setAddress] = useState(customer?.address || '');
   const [postcode, setPostcode] = useState(customer?.postcode || '');
-  const [notes, setNotes] = useState(customer?.notes || '');
 
   // Delivery
+  const [defaultFulfillment, setDefaultFulfillment] = useState<FulfillmentType>(
+    (customer as any)?.default_fulfillment || 'delivery'
+  );
   const [destinationGroupId, setDestinationGroupId] = useState(customer?.destination_group_id || '');
   const [defaultShipState, setDefaultShipState] = useState<ShipState>(customer?.default_ship_state || 'baked');
   const [deliveryInstructions, setDeliveryInstructions] = useState(customer?.delivery_instructions || '');
@@ -85,7 +91,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         phone: phone.trim() || null,
         address: address.trim() || null,
         postcode: postcode.trim() || null,
-        notes: notes.trim() || null,
+        default_fulfillment: defaultFulfillment,
         destination_group_id: destinationGroupId || null,
         default_ship_state: defaultShipState,
         delivery_instructions: deliveryInstructions.trim() || null,
@@ -137,20 +143,21 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
       {/* Basic Information */}
       <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-        <div className="space-y-4">
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Customer Name *</Label>
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., ABC Bakery"
-              className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-              required
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Customer Name *</Label>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., ABC Bakery"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                required
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-gray-700 dark:text-white/80">Contact Name</Label>
               <Input
@@ -161,6 +168,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
               />
             </div>
+
             <div>
               <Label className="text-gray-700 dark:text-white/80">Phone</Label>
               <Input
@@ -171,39 +179,42 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
               />
             </div>
+
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Email</Label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
+            </div>
           </div>
 
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Email</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@example.com"
-              className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-            />
-          </div>
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Address</Label>
+              <Textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Delivery address"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                rows={4}
+              />
+            </div>
 
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Address</Label>
-            <Textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Delivery address"
-              className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-              rows={2}
-            />
-          </div>
-
-          <div className="w-1/3">
-            <Label className="text-gray-700 dark:text-white/80">Postcode</Label>
-            <Input
-              type="text"
-              value={postcode}
-              onChange={(e) => setPostcode(e.target.value)}
-              placeholder="e.g., SW1A 1AA"
-              className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-            />
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Postcode</Label>
+              <Input
+                type="text"
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+                placeholder="e.g., SW1A 1AA"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
+            </div>
           </div>
         </div>
       </Card>
@@ -211,58 +222,94 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
       {/* Delivery Settings */}
       <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Settings</h2>
-        <div className="space-y-4">
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Destination Group</Label>
-            <select
-              value={destinationGroupId}
-              onChange={(e) => setDestinationGroupId(e.target.value)}
-              className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
-            >
-              <option value="" className="bg-white dark:bg-neutral-900">No group</option>
-              {(destinationGroups || []).map((group: any) => (
-                <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
-                  {group.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
+              <div className="mt-2 flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">
+                <button
+                  type="button"
+                  onClick={() => setDefaultFulfillment('delivery')}
+                  className={cn(
+                    'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
+                    defaultFulfillment === 'delivery'
+                      ? 'bg-[#14B8A6] text-white'
+                      : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                  )}
+                >
+                  Delivery
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDefaultFulfillment('collection')}
+                  className={cn(
+                    'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-gray-200 dark:border-white/[0.06]',
+                    defaultFulfillment === 'collection'
+                      ? 'bg-[#14B8A6] text-white'
+                      : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                  )}
+                >
+                  Collection
+                </button>
+              </div>
+            </div>
 
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
-            <div className="mt-2 flex gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="shipState"
-                  checked={defaultShipState === 'baked'}
-                  onChange={() => setDefaultShipState('baked')}
-                  className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
-                />
-                <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="shipState"
-                  checked={defaultShipState === 'frozen'}
-                  onChange={() => setDefaultShipState('frozen')}
-                  className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
-                />
-                <span className="text-gray-900 dark:text-white">Frozen</span>
-              </label>
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Destination Group</Label>
+              <select
+                value={destinationGroupId}
+                onChange={(e) => setDestinationGroupId(e.target.value)}
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+              >
+                <option value="" className="bg-white dark:bg-neutral-900">No group</option>
+                {(destinationGroups || []).map((group: any) => (
+                  <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
+              <div className="mt-2 flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="shipState"
+                    checked={defaultShipState === 'baked'}
+                    onChange={() => setDefaultShipState('baked')}
+                    className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                  />
+                  <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="shipState"
+                    checked={defaultShipState === 'frozen'}
+                    onChange={() => setDefaultShipState('frozen')}
+                    className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                  />
+                  <span className="text-gray-900 dark:text-white">Frozen</span>
+                </label>
+              </div>
             </div>
           </div>
 
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Delivery Instructions</Label>
-            <Textarea
-              value={deliveryInstructions}
-              onChange={(e) => setDeliveryInstructions(e.target.value)}
-              placeholder="Special delivery instructions (e.g., use back entrance, call on arrival)..."
-              className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-              rows={2}
-            />
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Delivery Instructions</Label>
+              <Textarea
+                value={deliveryInstructions}
+                onChange={(e) => setDeliveryInstructions(e.target.value)}
+                placeholder="Special delivery instructions (e.g., use back entrance, call on arrival)..."
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                rows={6}
+              />
+            </div>
           </div>
         </div>
       </Card>
@@ -270,8 +317,24 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
       {/* Finance Settings */}
       <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Finance Settings</h2>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Payment Terms</Label>
+              <select
+                value={defaultPaymentTerms}
+                onChange={(e) => setDefaultPaymentTerms(e.target.value as PaymentTerms)}
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+              >
+                <option value="prepaid" className="bg-white dark:bg-neutral-900">Prepaid</option>
+                <option value="net_7" className="bg-white dark:bg-neutral-900">Net 7</option>
+                <option value="net_14" className="bg-white dark:bg-neutral-900">Net 14</option>
+                <option value="net_30" className="bg-white dark:bg-neutral-900">Net 30</option>
+                <option value="net_60" className="bg-white dark:bg-neutral-900">Net 60</option>
+              </select>
+            </div>
+
             <div>
               <Label className="text-gray-700 dark:text-white/80">Minimum Order Value (GBP)</Label>
               <Input
@@ -284,6 +347,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
               />
             </div>
+
             <div>
               <Label className="text-gray-700 dark:text-white/80">Below Minimum Charge (GBP)</Label>
               <Input
@@ -298,56 +362,38 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
             </div>
           </div>
 
-          <div>
-            <Label className="text-gray-700 dark:text-white/80">Payment Terms</Label>
-            <select
-              value={defaultPaymentTerms}
-              onChange={(e) => setDefaultPaymentTerms(e.target.value as PaymentTerms)}
-              className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
-            >
-              <option value="prepaid" className="bg-white dark:bg-neutral-900">Prepaid</option>
-              <option value="net_7" className="bg-white dark:bg-neutral-900">Net 7</option>
-              <option value="net_14" className="bg-white dark:bg-neutral-900">Net 14</option>
-              <option value="net_30" className="bg-white dark:bg-neutral-900">Net 30</option>
-              <option value="net_60" className="bg-white dark:bg-neutral-900">Net 60</option>
-            </select>
-          </div>
-
-          <div className="border-t border-gray-200 dark:border-white/10 pt-4 mt-4">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Finance Contact</h3>
-            <div className="space-y-3">
-              <div>
-                <Label className="text-gray-700 dark:text-white/80">Name</Label>
-                <Input
-                  type="text"
-                  value={financeContactName}
-                  onChange={(e) => setFinanceContactName(e.target.value)}
-                  placeholder="Accounts contact name"
-                  className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-700 dark:text-white/80">Email</Label>
-                  <Input
-                    type="email"
-                    value={financeContactEmail}
-                    onChange={(e) => setFinanceContactEmail(e.target.value)}
-                    placeholder="accounts@example.com"
-                    className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-700 dark:text-white/80">Phone</Label>
-                  <Input
-                    type="tel"
-                    value={financeContactPhone}
-                    onChange={(e) => setFinanceContactPhone(e.target.value)}
-                    placeholder="Phone number"
-                    className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
+          {/* Right Column - Finance Contact */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Finance Contact</h3>
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Name</Label>
+              <Input
+                type="text"
+                value={financeContactName}
+                onChange={(e) => setFinanceContactName(e.target.value)}
+                placeholder="Accounts contact name"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Email</Label>
+              <Input
+                type="email"
+                value={financeContactEmail}
+                onChange={(e) => setFinanceContactEmail(e.target.value)}
+                placeholder="accounts@example.com"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <Label className="text-gray-700 dark:text-white/80">Phone</Label>
+              <Input
+                type="tel"
+                value={financeContactPhone}
+                onChange={(e) => setFinanceContactPhone(e.target.value)}
+                placeholder="Phone number"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+              />
             </div>
           </div>
         </div>
@@ -356,58 +402,56 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
       {/* Options */}
       <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Options</h2>
-        <div className="space-y-4">
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-            <input
-              type="checkbox"
-              checked={isAdHoc}
-              onChange={(e) => setIsAdHoc(e.target.checked)}
-              className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
-            />
-            <div>
-              <span className="font-medium text-gray-900 dark:text-white">Ad-hoc Customer</span>
-              <p className="text-sm text-gray-500 dark:text-white/60">One-time or occasional orders only</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div>
+                <span className="font-medium text-gray-900 dark:text-white">Ad-hoc Customer</span>
+                <p className="text-sm text-gray-500 dark:text-white/60">One-time or occasional orders only</p>
+              </div>
+              <Switch
+                checked={isAdHoc}
+                onChange={setIsAdHoc}
+              />
             </div>
-          </label>
 
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-            <input
-              type="checkbox"
-              checked={frozenOnly}
-              onChange={(e) => setFrozenOnly(e.target.checked)}
-              className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
-            />
-            <div>
-              <span className="font-medium text-gray-900 dark:text-white">Frozen Only</span>
-              <p className="text-sm text-gray-500 dark:text-white/60">Customer can only receive frozen products</p>
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div>
+                <span className="font-medium text-gray-900 dark:text-white">Frozen Only</span>
+                <p className="text-sm text-gray-500 dark:text-white/60">Customer can only receive frozen products</p>
+              </div>
+              <Switch
+                checked={frozenOnly}
+                onChange={setFrozenOnly}
+              />
             </div>
-          </label>
+          </div>
 
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-            <input
-              type="checkbox"
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-              className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
-            />
-            <div>
-              <span className="font-medium text-gray-900 dark:text-white">Active</span>
-              <p className="text-sm text-gray-500 dark:text-white/60">Customer can receive orders</p>
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div>
+                <span className="font-medium text-gray-900 dark:text-white">Active</span>
+                <p className="text-sm text-gray-500 dark:text-white/60">Customer can receive orders</p>
+              </div>
+              <Switch
+                checked={isActive}
+                onChange={setIsActive}
+              />
             </div>
-          </label>
 
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-            <input
-              type="checkbox"
-              checked={portalEnabled}
-              onChange={(e) => setPortalEnabled(e.target.checked)}
-              className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
-            />
-            <div>
-              <span className="font-medium text-gray-900 dark:text-white">Portal Access</span>
-              <p className="text-sm text-gray-500 dark:text-white/60">Allow customer to log in and place orders via portal</p>
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div>
+                <span className="font-medium text-gray-900 dark:text-white">Portal Access</span>
+                <p className="text-sm text-gray-500 dark:text-white/60">Allow customer to log in and place orders via portal</p>
+              </div>
+              <Switch
+                checked={portalEnabled}
+                onChange={setPortalEnabled}
+              />
             </div>
-          </label>
+          </div>
         </div>
       </Card>
 
@@ -541,18 +585,6 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
           )}
         </Card>
       )}
-
-      {/* Notes */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notes</h2>
-        <Textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Any additional notes about this customer..."
-          className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-          rows={3}
-        />
-      </Card>
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
