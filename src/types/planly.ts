@@ -46,10 +46,22 @@ export interface ProcessStage {
   is_overnight: boolean;
   instructions?: string;
   sop_id?: string;
+  // Deprecated single-group columns (keep for backwards compatibility)
+  bake_group_id?: string | null;
+  destination_group_id?: string | null;
+  // New multi-group columns
+  bake_group_ids?: string[];
+  destination_group_ids?: string[];
+  time_constraint?: string | null;
   created_at: string;
   updated_at: string;
   // Relations
   equipment?: StageEquipment[];
+  bake_group?: BakeGroup;
+  destination_group?: DestinationGroup;
+  // Relations (arrays for multi-group)
+  bake_groups?: BakeGroup[];
+  destination_groups?: DestinationGroup[];
 }
 
 export interface StageEquipment {
@@ -76,6 +88,19 @@ export interface BakeGroup {
   priority: number;
   min_trays_for_efficiency?: number;
   site_id: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  products?: PlanlyProduct[];
+}
+
+// Simplified bake group for the settings page (grouping only, no bake settings)
+export interface PlanlyBakeGroup {
+  id: string;
+  site_id: string;
+  name: string;
+  priority: number; // Used as sort_order
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -478,4 +503,86 @@ export interface MonthlySalesProduct {
   total_quantity: number;
   unit_price: number;
   total_value: number;
+}
+
+// ============================================================================
+// PRODUCTION PLANNING
+// ============================================================================
+
+export interface ProductionPlan {
+  date: string;
+  is_past_cutoff: boolean;
+  delivery_orders: DeliveryOrderSummary[];
+  production_tasks: ProductionTask[];
+  dough_ingredients: IngredientRequirement[];
+  tray_setup: TrayRequirement[];
+  cookie_layout: CookieRequirement[];
+}
+
+export interface DeliveryOrderSummary {
+  order_id: string;
+  customer_name: string;
+  destination_group_id?: string;
+  destination_group_name?: string;
+  lines: DeliveryOrderLine[];
+}
+
+export interface DeliveryOrderLine {
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  bake_group_id?: string;
+  bake_group_name?: string;
+}
+
+export interface ProductionTask {
+  delivery_date: string;
+  product_id: string;
+  product_name: string;
+  template_name: string;
+  stage_name: string;
+  day_offset: number;
+  quantity: number;
+  bake_group_id?: string;
+  bake_group_name?: string;
+  destination_group_id?: string;
+  destination_group_name?: string;
+}
+
+export interface IngredientRequirement {
+  ingredient_name: string;
+  unit: string;
+  calculated_quantity: number;
+  override_quantity?: number;
+  final_quantity: number;
+}
+
+export interface TrayRequirement {
+  product_id: string;
+  product_name: string;
+  total_quantity: number;
+  items_per_tray: number;
+  trays_needed: number;
+  tray_start: number;
+  tray_end: number;
+  bake_group_name?: string;
+  destination_group_name?: string;
+}
+
+export interface CookieRequirement {
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  destination_group_name?: string;
+}
+
+export interface ProductionPlanOverride {
+  id: string;
+  site_id: string;
+  production_date: string;
+  ingredient_name: string;
+  override_quantity: number;
+  reason?: string;
+  created_at: string;
+  created_by?: string;
 }
