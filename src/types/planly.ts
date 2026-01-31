@@ -191,6 +191,7 @@ export interface PlanlyCustomer {
   finance_contact_phone?: string;
   default_payment_terms?: PaymentTerms;
   portal_enabled: boolean;
+  archived_at?: string | null;
   // Relations
   destination_group?: DestinationGroup;
   orders?: PlanlyOrder[];

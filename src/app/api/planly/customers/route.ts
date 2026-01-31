@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const siteId = searchParams.get('siteId');
     const isActive = searchParams.get('isActive');
+    const showArchived = searchParams.get('showArchived');
 
     let query = supabase
       .from('planly_customers')
@@ -22,6 +23,11 @@ export async function GET(request: NextRequest) {
 
     if (isActive !== null) {
       query = query.eq('is_active', isActive === 'true');
+    }
+
+    // Filter out archived customers by default
+    if (showArchived !== 'true') {
+      query = query.is('archived_at', null);
     }
 
     const { data, error } = await query;
