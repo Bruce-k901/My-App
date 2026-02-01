@@ -60,9 +60,9 @@ export default function DayCard({
   
   // Variance badge color
   function getVarianceColor(variance: number): string {
-    if (variance === 0) return 'text-zinc-400';
-    if (variance > 0) return 'text-green-400';
-    return 'text-red-400';
+    if (variance === 0) return 'text-gray-500 dark:text-white/60';
+    if (variance > 0) return 'text-green-600 dark:text-green-400';
+    return 'text-red-600 dark:text-red-400';
   }
   
   // Status badge
@@ -70,26 +70,26 @@ export default function DayCard({
     switch (status) {
       case 'missing_attendance':
         return (
-          <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span className="text-xs bg-red-500/20 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full flex items-center gap-1">
             <AlertTriangle className="w-3 h-3" />
             Missing
           </span>
         );
       case 'late_arrival':
         return (
-          <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">
+          <span className="text-xs bg-yellow-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">
             Late
           </span>
         );
       case 'early_departure':
         return (
-          <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">
+          <span className="text-xs bg-yellow-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">
             Early
           </span>
         );
       case 'unscheduled_shift':
         return (
-          <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">
+          <span className="text-xs bg-blue-500/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full">
             Extra
           </span>
         );
@@ -100,26 +100,26 @@ export default function DayCard({
 
   return (
     <div className={`
-      bg-white/[0.03] border rounded-xl overflow-hidden
-      ${allSignedOff ? 'border-green-500/30' : hasIssues ? 'border-amber-500/30' : 'border-white/[0.06]'}
+      bg-white dark:bg-white/[0.03] border rounded-xl overflow-hidden
+      ${allSignedOff ? 'border-green-200 dark:border-green-500/30' : hasIssues ? 'border-yellow-200 dark:border-amber-500/30' : 'border-gray-200 dark:border-white/[0.06]'}
     `}>
       {/* Day Header */}
       <div 
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
           {allSignedOff ? (
-            <CheckCircle className="w-5 h-5 text-green-400" />
+            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
           ) : hasIssues ? (
             <AlertTriangle className="w-5 h-5 text-amber-400" />
           ) : (
-            <Clock className="w-5 h-5 text-zinc-400" />
+            <Clock className="w-5 h-5 text-gray-500 dark:text-white/60" />
           )}
           
           <div>
             <h3 className="font-semibold">{day.dayName}</h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-gray-500 dark:text-white/60">
               {new Date(day.date).toLocaleDateString('en-GB', { 
                 day: 'numeric', 
                 month: 'long' 
@@ -131,7 +131,7 @@ export default function DayCard({
         <div className="flex items-center gap-4">
           {/* Day summary */}
           <div className="text-right text-sm">
-            <p className="text-zinc-400">
+            <p className="text-gray-500 dark:text-white/60">
               {day.signedOffCount}/{day.totalCount} signed off
             </p>
             <p className={getVarianceColor(day.totalVariance)}>
@@ -146,37 +146,37 @@ export default function DayCard({
                 e.stopPropagation();
                 onSignOffDay(day.date, true);
               }}
-              className="text-xs bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] px-3 py-1.5 rounded-lg transition-all duration-200 ease-in-out"
+              className="text-xs bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all duration-200 ease-in-out"
             >
               Sign Off All
             </button>
           )}
           
           {expanded ? (
-            <ChevronUp className="w-5 h-5 text-zinc-400" />
+            <ChevronUp className="w-5 h-5 text-gray-500 dark:text-white/60" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-zinc-400" />
+            <ChevronDown className="w-5 h-5 text-gray-500 dark:text-white/60" />
           )}
         </div>
       </div>
       
       {/* Records Table */}
       {expanded && (
-        <div className="border-t border-white/[0.06]">
+        <div className="border-t border-gray-200 dark:border-white/[0.06]">
           {day.records.length === 0 ? (
-            <div className="p-6 text-center text-zinc-500">
+            <div className="p-6 text-center text-gray-500 dark:text-white/50">
               <p>No scheduled shifts for this day</p>
               <button
                 onClick={() => onAddRecord(null)}
-                className="mt-2 text-sm text-[#EC4899] hover:text-[#EC4899]/80"
+                className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               >
                 + Add attendance record
               </button>
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-white/[0.05]">
-                <tr className="text-left text-zinc-400">
+              <thead className="bg-gray-50 dark:bg-white/[0.05]">
+                <tr className="text-left text-gray-500 dark:text-white/60">
                   <th className="px-4 py-2 font-medium">Staff</th>
                   <th className="px-4 py-2 font-medium">Scheduled</th>
                   <th className="px-4 py-2 font-medium">Actual</th>
@@ -186,15 +186,15 @@ export default function DayCard({
                   <th className="px-4 py-2 font-medium text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                 {day.records.map((record, idx) => (
-                  <tr key={`${record.staffId}-${idx}`} className="hover:bg-white/[0.02]">
+                  <tr key={`${record.staffId}-${idx}`} className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                     {/* Staff Name */}
                     <td className="px-4 py-3">
                       <div>
                         <p className="font-medium">{record.staffName}</p>
                         {record.positionTitle && (
-                          <p className="text-xs text-zinc-500">{record.positionTitle}</p>
+                          <p className="text-xs text-gray-500 dark:text-white/50">{record.positionTitle}</p>
                         )}
                       </div>
                     </td>
@@ -202,13 +202,13 @@ export default function DayCard({
                     {/* Scheduled */}
                     <td className="px-4 py-3">
                       <p>{formatTime(record.scheduledStart)} - {formatTime(record.scheduledEnd)}</p>
-                      <p className="text-xs text-zinc-500">{formatHours(record.scheduledHours)}</p>
+                      <p className="text-xs text-gray-500 dark:text-white/50">{formatHours(record.scheduledHours)}</p>
                     </td>
                     
                     {/* Actual */}
                     <td className="px-4 py-3">
                       <p>{formatTime(record.actualClockIn)} - {formatTime(record.actualClockOut)}</p>
-                      <p className="text-xs text-zinc-500">{formatHours(record.actualHours)}</p>
+                      <p className="text-xs text-gray-500 dark:text-white/50">{formatHours(record.actualHours)}</p>
                     </td>
                     
                     {/* Variance */}
@@ -234,16 +234,16 @@ export default function DayCard({
                             w-6 h-6 rounded border-2 flex items-center justify-center transition-colors
                             ${record.signedOff 
                               ? 'bg-green-500 border-green-500' 
-                              : 'border-zinc-600 hover:border-[#EC4899]'
+                              : 'border-gray-400 dark:border-white/40 hover:border-blue-600 dark:border-blue-400'
                             }
                           `}
                         >
                           {record.signedOff && <Check className="w-4 h-4 text-white" />}
                         </button>
                       ) : record.signedOff ? (
-                        <Check className="w-5 h-5 text-green-400 mx-auto" />
+                        <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                       ) : (
-                        <span className="text-zinc-600">—</span>
+                        <span className="text-gray-400 dark:text-white/40">—</span>
                       )}
                     </td>
                     
@@ -254,7 +254,7 @@ export default function DayCard({
                           <button
                             onClick={() => onEditRecord(record)}
                             disabled={isLocked}
-                            className="p-1 text-zinc-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1 text-gray-500 dark:text-white/60 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Edit times"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -263,7 +263,7 @@ export default function DayCard({
                           <button
                             onClick={() => onAddRecord(record.staffId)}
                             disabled={isLocked}
-                            className="p-1 text-[#EC4899] hover:text-[#EC4899]/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Add attendance"
                           >
                             <Plus className="w-4 h-4" />
@@ -278,8 +278,8 @@ export default function DayCard({
           )}
           
           {/* Day totals footer */}
-          <div className="bg-white/[0.05] px-4 py-3 flex items-center justify-between text-sm border-t border-white/[0.06]">
-            <span className="text-zinc-400">Day Total</span>
+          <div className="bg-gray-50 dark:bg-white/[0.05] px-4 py-3 flex items-center justify-between text-sm border-t border-gray-200 dark:border-white/[0.06]">
+            <span className="text-gray-500 dark:text-white/60">Day Total</span>
             <div className="flex items-center gap-6">
               <span>Scheduled: <strong>{day.totalScheduledHours.toFixed(2)}h</strong></span>
               <span>Actual: <strong>{day.totalActualHours.toFixed(2)}h</strong></span>

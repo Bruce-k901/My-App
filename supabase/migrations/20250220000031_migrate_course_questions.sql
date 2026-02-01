@@ -1,4 +1,4 @@
-﻿-- =====================================================
+-- =====================================================
 -- MIGRATE COURSE QUESTIONS FROM JSON FILES
 -- This migration imports quiz questions from course JSON files
 -- into the course_questions and course_question_options tables

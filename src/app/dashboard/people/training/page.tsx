@@ -209,8 +209,8 @@ export default function TrainingPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-theme-primary">Training & Certifications</h1>
-          <p className="text-theme-secondary">Track compliance and certification expiry</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Training & Certifications</h1>
+          <p className="text-gray-600 dark:text-white/70">Track compliance and certification expiry</p>
         </div>
         <div className="flex gap-3">
           <Link
@@ -226,31 +226,31 @@ export default function TrainingPage() {
       {/* Overview Stats */}
       {overview && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-theme-button border border-theme rounded-lg p-4">
-            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
               <Users className="w-4 h-4" />
               Total Staff
             </div>
-            <p className="text-2xl font-bold text-theme-primary">{overview.total_employees}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{overview.total_employees}</p>
           </div>
-          <div className="bg-theme-button border border-theme rounded-lg p-4">
-            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
               <CheckCircle className="w-4 h-4" />
               Fully Compliant
             </div>
             <p className="text-2xl font-bold text-green-600 dark:text-green-400">{overview.fully_compliant}</p>
           </div>
-          <div className="bg-theme-button border border-theme rounded-lg p-4">
-            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
               <Clock className="w-4 h-4" />
               Expiring (30d)
             </div>
-            <p className={`text-2xl font-bold ${overview.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-theme-primary'}`}>
+            <p className={`text-2xl font-bold ${overview.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>
               {overview.expiring_30_days}
             </p>
           </div>
-          <div className="bg-theme-button border border-theme rounded-lg p-4">
-            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
               <AlertTriangle className="w-4 h-4" />
               Expired
             </div>
@@ -272,8 +272,8 @@ export default function TrainingPage() {
             {expiring.slice(0, 5).map((item) => (
               <div key={item.record_id} className="flex items-center justify-between text-sm">
                 <div>
-                  <span className="text-theme-primary">{item.employee_name}</span>
-                  <span className="text-theme-secondary"> - {item.course_name}</span>
+                  <span className="text-gray-900 dark:text-white">{item.employee_name}</span>
+                  <span className="text-gray-600 dark:text-white/70"> - {item.course_name}</span>
                 </div>
                 <span className={item.is_expired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>
                   {item.is_expired 
@@ -295,13 +295,13 @@ export default function TrainingPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/50" />
           <input
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-blue-300 dark:border-blue-500/50 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -312,7 +312,7 @@ export default function TrainingPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat 
                   ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
-                  : 'bg-theme-button border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
+                  : 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
               }`}
             >
               {cat === 'all' ? 'All Categories' : cat}
@@ -327,7 +327,7 @@ export default function TrainingPage() {
           <Link
             key={course.course_id}
             href={`/dashboard/people/training/course/${course.course_id}`}
-            className="block bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-theme-button-hover transition-colors"
+            className="block bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -338,12 +338,12 @@ export default function TrainingPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-theme-primary font-medium">{course.course_name}</p>
+                    <p className="text-gray-900 dark:text-white font-medium">{course.course_name}</p>
                     {course.is_mandatory && (
                       <span className="px-2 py-0.5 bg-red-500/20 dark:bg-red-500/20 text-red-700 dark:text-red-400 text-xs rounded font-medium">Required</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-theme-secondary">
+                  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-white/70">
                     <span>{course.course_code}</span>
                     <span>•</span>
                     <span>{course.category}</span>
@@ -356,19 +356,19 @@ export default function TrainingPage() {
                 <div className="hidden md:flex items-center gap-4 text-sm">
                   <div className="text-center">
                     <p className="text-green-600 dark:text-green-400 font-medium">{course.completed_valid}</p>
-                    <p className="text-theme-tertiary text-xs">Valid</p>
+                    <p className="text-gray-500 dark:text-white/50 text-xs">Valid</p>
                   </div>
                   <div className="text-center">
-                    <p className={`font-medium ${course.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-theme-tertiary'}`}>
+                    <p className={`font-medium ${course.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-white/50'}`}>
                       {course.expiring_30_days}
                     </p>
-                    <p className="text-theme-tertiary text-xs">Expiring</p>
+                    <p className="text-gray-500 dark:text-white/50 text-xs">Expiring</p>
                   </div>
                   <div className="text-center">
-                    <p className={`font-medium ${course.expired > 0 ? 'text-red-600 dark:text-red-400' : 'text-theme-tertiary'}`}>
+                    <p className={`font-medium ${course.expired > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-white/50'}`}>
                       {course.expired}
                     </p>
-                    <p className="text-theme-tertiary text-xs">Expired</p>
+                    <p className="text-gray-500 dark:text-white/50 text-xs">Expired</p>
                   </div>
                 </div>
                 
@@ -377,10 +377,10 @@ export default function TrainingPage() {
                   <p className={`text-lg font-bold ${getComplianceColor(course.compliance_percentage || 0)}`}>
                     {course.compliance_percentage || 0}%
                   </p>
-                  <p className="text-theme-tertiary text-xs">Compliance</p>
+                  <p className="text-gray-500 dark:text-white/50 text-xs">Compliance</p>
                 </div>
                 
-                <ChevronRight className="w-5 h-5 text-theme-tertiary" />
+                <ChevronRight className="w-5 h-5 text-gray-500 dark:text-white/50" />
               </div>
             </div>
           </Link>
@@ -388,10 +388,10 @@ export default function TrainingPage() {
       </div>
 
       {filteredStats.length === 0 && (
-        <div className="bg-theme-button border border-theme rounded-lg p-12 text-center">
-          <GraduationCap className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
-          <p className="text-theme-primary font-medium">No courses found</p>
-          <p className="text-theme-secondary text-sm mt-1">Try adjusting your filters</p>
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
+          <GraduationCap className="w-12 h-12 text-gray-500 dark:text-white/50 mx-auto mb-4" />
+          <p className="text-gray-900 dark:text-white font-medium">No courses found</p>
+          <p className="text-gray-600 dark:text-white/70 text-sm mt-1">Try adjusting your filters</p>
         </div>
       )}
     </div>

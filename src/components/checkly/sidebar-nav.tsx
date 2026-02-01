@@ -279,7 +279,7 @@ export function ChecklySidebar() {
   return (
     <aside className="w-64 bg-blue-50 dark:bg-neutral-900 border-r border-[rgb(var(--border))] dark:border-neutral-800 flex flex-col h-full" suppressHydrationWarning>
       {/* Header */}
-      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-neutral-800">
+      <div className="px-4 py-5 bg-gray-50 dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-neutral-800">
         <Link href="/dashboard/tasks" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img
             src="/assets/checkly_logo_touching_blocks.svg"

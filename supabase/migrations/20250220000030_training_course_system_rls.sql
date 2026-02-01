@@ -2,16 +2,14 @@
 -- TRAINING COURSE SYSTEM - RLS POLICIES
 -- Row Level Security policies for all new tables
 -- =====================================================
--- Note: This migration will be skipped if required tables don't exist yet
+-- Note: Each table's RLS policies are only created if the table exists
 
 DO $$
 BEGIN
-  -- Only proceed if required tables exist
+  -- =====================================================
+  -- COURSE ASSIGNMENTS RLS
+  -- =====================================================
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'course_assignments') THEN
-
-    -- =====================================================
-    -- COURSE ASSIGNMENTS RLS
-    -- =====================================================
     ALTER TABLE course_assignments ENABLE ROW LEVEL SECURITY;
 
     -- Users can view their own assignments
@@ -21,7 +19,7 @@ BEGIN
       USING (
         profile_id IN (SELECT id FROM profiles WHERE auth_user_id = auth.uid())
         OR company_id IN (
-          SELECT company_id FROM profiles 
+          SELECT company_id FROM profiles
           WHERE auth_user_id = auth.uid()
         )
       );
@@ -32,8 +30,8 @@ BEGIN
       ON course_assignments FOR INSERT
       WITH CHECK (
         company_id IN (
-          SELECT company_id FROM profiles 
-          WHERE auth_user_id = auth.uid() 
+          SELECT company_id FROM profiles
+          WHERE auth_user_id = auth.uid()
           AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
@@ -53,15 +51,21 @@ BEGIN
       ON course_assignments FOR UPDATE
       USING (
         company_id IN (
-          SELECT company_id FROM profiles 
-          WHERE auth_user_id = auth.uid() 
+          SELECT company_id FROM profiles
+          WHERE auth_user_id = auth.uid()
           AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
 
-    -- =====================================================
-    -- COURSE PROGRESS RLS
-    -- =====================================================
+    RAISE NOTICE 'Created RLS policies for course_assignments';
+  ELSE
+    RAISE NOTICE '⚠️ course_assignments table does not exist - skipping RLS';
+  END IF;
+
+  -- =====================================================
+  -- COURSE PROGRESS RLS
+  -- =====================================================
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'course_progress') THEN
     ALTER TABLE course_progress ENABLE ROW LEVEL SECURITY;
 
     -- Users can view their own progress
@@ -71,7 +75,7 @@ BEGIN
       USING (
         profile_id IN (SELECT id FROM profiles WHERE auth_user_id = auth.uid())
         OR company_id IN (
-          SELECT company_id FROM profiles 
+          SELECT company_id FROM profiles
           WHERE auth_user_id = auth.uid()
         )
       );
@@ -84,9 +88,15 @@ BEGIN
         profile_id IN (SELECT id FROM profiles WHERE auth_user_id = auth.uid())
       );
 
-    -- =====================================================
-    -- COURSE QUESTIONS RLS
-    -- =====================================================
+    RAISE NOTICE 'Created RLS policies for course_progress';
+  ELSE
+    RAISE NOTICE '⚠️ course_progress table does not exist - skipping RLS';
+  END IF;
+
+  -- =====================================================
+  -- COURSE QUESTIONS RLS
+  -- =====================================================
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'course_questions') THEN
     ALTER TABLE course_questions ENABLE ROW LEVEL SECURITY;
 
     -- All authenticated users can view active questions
@@ -96,7 +106,7 @@ BEGIN
       USING (
         is_active = true
         AND (
-          company_id IS NULL 
+          company_id IS NULL
           OR company_id IN (
             SELECT company_id FROM profiles WHERE auth_user_id = auth.uid()
           )
@@ -109,15 +119,21 @@ BEGIN
       ON course_questions FOR ALL
       USING (
         company_id IN (
-          SELECT company_id FROM profiles 
-          WHERE auth_user_id = auth.uid() 
+          SELECT company_id FROM profiles
+          WHERE auth_user_id = auth.uid()
           AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
 
-    -- =====================================================
-    -- COURSE QUESTION OPTIONS RLS
-    -- =====================================================
+    RAISE NOTICE 'Created RLS policies for course_questions';
+  ELSE
+    RAISE NOTICE '⚠️ course_questions table does not exist - skipping RLS';
+  END IF;
+
+  -- =====================================================
+  -- COURSE QUESTION OPTIONS RLS
+  -- =====================================================
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'course_question_options') THEN
     ALTER TABLE course_question_options ENABLE ROW LEVEL SECURITY;
 
     -- Users can view options for questions they can view
@@ -126,10 +142,10 @@ BEGIN
       ON course_question_options FOR SELECT
       USING (
         question_id IN (
-          SELECT id FROM course_questions 
+          SELECT id FROM course_questions
           WHERE is_active = true
           AND (
-            company_id IS NULL 
+            company_id IS NULL
             OR company_id IN (
               SELECT company_id FROM profiles WHERE auth_user_id = auth.uid()
             )
@@ -143,18 +159,24 @@ BEGIN
       ON course_question_options FOR ALL
       USING (
         question_id IN (
-          SELECT id FROM course_questions 
+          SELECT id FROM course_questions
           WHERE company_id IN (
-            SELECT company_id FROM profiles 
-            WHERE auth_user_id = auth.uid() 
+            SELECT company_id FROM profiles
+            WHERE auth_user_id = auth.uid()
             AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
           )
         )
       );
 
-    -- =====================================================
-    -- COURSE CHARGES RLS
-    -- =====================================================
+    RAISE NOTICE 'Created RLS policies for course_question_options';
+  ELSE
+    RAISE NOTICE '⚠️ course_question_options table does not exist - skipping RLS';
+  END IF;
+
+  -- =====================================================
+  -- COURSE CHARGES RLS
+  -- =====================================================
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'course_charges') THEN
     ALTER TABLE course_charges ENABLE ROW LEVEL SECURITY;
 
     -- Users can view their own charges
@@ -164,7 +186,7 @@ BEGIN
       USING (
         profile_id IN (SELECT id FROM profiles WHERE auth_user_id = auth.uid())
         OR company_id IN (
-          SELECT company_id FROM profiles 
+          SELECT company_id FROM profiles
           WHERE auth_user_id = auth.uid()
         )
       );
@@ -175,8 +197,8 @@ BEGIN
       ON course_charges FOR SELECT
       USING (
         company_id IN (
-          SELECT company_id FROM profiles 
-          WHERE auth_user_id = auth.uid() 
+          SELECT company_id FROM profiles
+          WHERE auth_user_id = auth.uid()
           AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
@@ -190,15 +212,15 @@ BEGIN
       ON course_charges FOR UPDATE
       USING (
         company_id IN (
-          SELECT company_id FROM profiles 
-          WHERE auth_user_id = auth.uid() 
+          SELECT company_id FROM profiles
+          WHERE auth_user_id = auth.uid()
           AND LOWER(app_role::text) IN ('admin', 'owner', 'manager')
         )
       );
 
-    RAISE NOTICE 'Created RLS policies for training course system tables';
-
+    RAISE NOTICE 'Created RLS policies for course_charges';
   ELSE
-    RAISE NOTICE '⚠️ Required tables do not exist yet - skipping RLS policy creation';
+    RAISE NOTICE '⚠️ course_charges table does not exist - skipping RLS';
   END IF;
+
 END $$;

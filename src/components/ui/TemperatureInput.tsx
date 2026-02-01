@@ -175,9 +175,9 @@ export function TemperatureInput({
         id={id}
         name={name}
         className={cn(
-          "w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-3 py-2",
-          "placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50",
-          "hover:bg-neutral-700 hover:border-neutral-600 transition-colors",
+          "w-full rounded-lg bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white px-3 py-2",
+          "placeholder:text-gray-400 dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50",
+          "hover:bg-gray-50 dark:hover:bg-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600 transition-colors",
           className
         )}
         // Use fontSize prop if provided, otherwise prevent zoom on iOS (16px) or use default 14px

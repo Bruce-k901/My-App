@@ -335,7 +335,7 @@ export default function CandidateProfilePage() {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+        <Loader2 className="w-6 h-6 text-gray-900 dark:text-white/40 animate-spin" />
       </div>
     )
   }
@@ -343,7 +343,7 @@ export default function CandidateProfilePage() {
   if (!candidate) {
     return (
       <div className="p-6">
-        <div className="text-white/60 text-center">Candidate not found</div>
+        <div className="text-gray-900 dark:text-white/60 text-center">Candidate not found</div>
       </div>
     )
   }
@@ -354,19 +354,19 @@ export default function CandidateProfilePage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/people/recruitment/candidates"
-          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+          className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-white">{candidate.full_name}</h1>
-          <p className="text-sm text-white/60 mt-1">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{candidate.full_name}</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
             Applied {new Date(candidate.created_at).toLocaleDateString()}
           </p>
         </div>
         <button
           onClick={() => window.open(`mailto:${candidate.email}`, '_blank')}
-          className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all flex items-center gap-2"
+          className="px-4 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2"
         >
           <Mail className="w-4 h-4" />
           Send Email
@@ -377,37 +377,37 @@ export default function CandidateProfilePage() {
         {/* Left: Candidate Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Contact Info */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-white font-semibold mb-4">Contact Information</h2>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-gray-900 dark:text-white font-semibold mb-4">Contact Information</h2>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
-                <Mail className="w-4 h-4 text-white/40 flex-shrink-0" />
-                <a href={`mailto:${candidate.email}`} className="text-[#EC4899] hover:underline">
+                <Mail className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
+                <a href={`mailto:${candidate.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                   {candidate.email}
                 </a>
               </div>
               {candidate.phone && (
                 <div className="flex items-center gap-3 text-sm">
-                  <Phone className="w-4 h-4 text-white/40 flex-shrink-0" />
-                  <a href={`tel:${candidate.phone}`} className="text-white/80">
+                  <Phone className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
+                  <a href={`tel:${candidate.phone}`} className="text-gray-900 dark:text-white/80">
                     {candidate.phone}
                   </a>
                 </div>
               )}
               {candidate.address && (
                 <div className="flex items-center gap-3 text-sm">
-                  <MapPin className="w-4 h-4 text-white/40 flex-shrink-0" />
-                  <span className="text-white/80">{candidate.address}</span>
+                  <MapPin className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
+                  <span className="text-gray-900 dark:text-white/80">{candidate.address}</span>
                 </div>
               )}
               {candidate.linkedin_url && (
                 <div className="flex items-center gap-3 text-sm">
-                  <ExternalLink className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  <ExternalLink className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
                   <a
                     href={candidate.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#EC4899] hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     LinkedIn Profile
                   </a>
@@ -418,19 +418,19 @@ export default function CandidateProfilePage() {
 
           {/* Cover Letter */}
           {candidate.cover_letter && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-white font-semibold mb-3">Cover Letter</h2>
-              <p className="text-white/70 text-sm whitespace-pre-wrap">{candidate.cover_letter}</p>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <h2 className="text-gray-900 dark:text-white font-semibold mb-3">Cover Letter</h2>
+              <p className="text-gray-900 dark:text-white/70 text-sm whitespace-pre-wrap">{candidate.cover_letter}</p>
             </div>
           )}
 
           {/* Applications */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-white font-semibold mb-4">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-gray-900 dark:text-white font-semibold mb-4">
               Applications ({applications.length})
             </h2>
             {applications.length === 0 ? (
-              <div className="text-white/40 text-sm text-center py-4">
+              <div className="text-gray-900 dark:text-white/40 text-sm text-center py-4">
                 No applications yet
               </div>
             ) : (
@@ -438,11 +438,11 @@ export default function CandidateProfilePage() {
                 {applications.map((app) => (
                   <div
                     key={app.id}
-                    className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]"
+                    className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]"
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex-1">
-                        <h3 className="text-white font-medium text-sm mb-1">
+                        <h3 className="text-gray-900 dark:text-white font-medium text-sm mb-1">
                           {app.job.title}
                         </h3>
                         <div className="flex items-center gap-2">
@@ -459,9 +459,9 @@ export default function CandidateProfilePage() {
 
                     {/* Interview Confirmation Status */}
                     {app.interview_scheduled_at && app.status === 'interview' && (
-                      <div className="mt-3 p-3 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+                      <div className="mt-3 p-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.05]">
                         <div className="flex items-center justify-between gap-3 mb-2">
-                          <div className="text-xs text-white/60">
+                          <div className="text-xs text-gray-900 dark:text-white/60">
                             📅 Interview: {new Date(app.interview_scheduled_at).toLocaleString('en-GB', {
                               day: 'numeric',
                               month: 'short',
@@ -474,7 +474,7 @@ export default function CandidateProfilePage() {
                         
                         {/* Confirmation Status */}
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-white/50">Attendance:</span>
+                          <span className="text-xs text-gray-900 dark:text-white/50">Attendance:</span>
                           {!app.interview_confirmation_status || app.interview_confirmation_status === 'pending' ? (
                             <div className="flex gap-1.5">
                               <button
@@ -584,7 +584,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to reset')
                                   }
                                 }}
-                                className="text-xs text-white/40 hover:text-white/60 underline"
+                                className="text-xs text-gray-900 dark:text-white/40 hover:text-gray-900 dark:hover:text-white/60 underline"
                               >
                                 reset
                               </button>
@@ -645,9 +645,9 @@ export default function CandidateProfilePage() {
 
                     {/* Trial Confirmation Status */}
                     {app.trial_scheduled_at && app.status === 'trial' && (
-                      <div className="mt-3 p-3 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+                      <div className="mt-3 p-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.05]">
                         <div className="flex items-center justify-between gap-3 mb-2">
-                          <div className="text-xs text-white/60">
+                          <div className="text-xs text-gray-900 dark:text-white/60">
                             👔 Trial: {new Date(app.trial_scheduled_at).toLocaleString('en-GB', {
                               day: 'numeric',
                               month: 'short',
@@ -661,18 +661,18 @@ export default function CandidateProfilePage() {
                         {/* Trial Details */}
                         <div className="space-y-1 mb-2 text-xs">
                           {(app as any).sites?.name && (
-                            <div className="text-white/50">
-                              📍 Site: <span className="text-white/70">{(app as any).sites.name}</span>
+                            <div className="text-gray-900 dark:text-white/50">
+                              📍 Site: <span className="text-gray-900 dark:text-white/70">{(app as any).sites.name}</span>
                             </div>
                           )}
                           {(app as any).trial_contact_person && (
-                            <div className="text-white/50">
-                              👤 Contact: <span className="text-white/70">{(app as any).trial_contact_person}</span>
+                            <div className="text-gray-900 dark:text-white/50">
+                              👤 Contact: <span className="text-gray-900 dark:text-white/70">{(app as any).trial_contact_person}</span>
                             </div>
                           )}
                           {(app as any).trial_duration_hours && (
-                            <div className="text-white/50">
-                              ⏱️ Duration: <span className="text-white/70">{(app as any).trial_duration_hours} hours</span>
+                            <div className="text-gray-900 dark:text-white/50">
+                              ⏱️ Duration: <span className="text-gray-900 dark:text-white/70">{(app as any).trial_duration_hours} hours</span>
                             </div>
                           )}
                           {!(app as any).sites?.name && !(app as any).trial_contact_person && (
@@ -684,7 +684,7 @@ export default function CandidateProfilePage() {
                         
                         {/* Confirmation Status */}
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-white/50">Attendance:</span>
+                          <span className="text-xs text-gray-900 dark:text-white/50">Attendance:</span>
                           {!app.trial_confirmation_status || app.trial_confirmation_status === 'pending' ? (
                             <div className="flex gap-1.5">
                               <button
@@ -794,7 +794,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to reset')
                                   }
                                 }}
-                                className="text-xs text-white/40 hover:text-white/60 underline"
+                                className="text-xs text-gray-900 dark:text-white/40 hover:text-gray-900 dark:hover:text-white/60 underline"
                               >
                                 reset
                               </button>
@@ -891,8 +891,8 @@ export default function CandidateProfilePage() {
 
                     {/* Offers Section */}
                     {(app.status === 'offer' || app.status === 'accepted' || offersByApplication.has(app.id)) && (
-                      <div className="mt-4 pt-4 border-t border-white/[0.05]">
-                        <h4 className="text-white/70 font-medium text-xs mb-3 uppercase tracking-wide">
+                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.05]">
+                        <h4 className="text-gray-900 dark:text-white/70 font-medium text-xs mb-3 uppercase tracking-wide">
                           Offer Letters
                         </h4>
                         {(() => {
@@ -900,7 +900,7 @@ export default function CandidateProfilePage() {
                           
                           if (offers.length === 0) {
                             return (
-                              <div className="text-white/40 text-xs p-3 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+                              <div className="text-gray-900 dark:text-white/40 text-xs p-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.05]">
                                 No offers found. This may be due to RLS policies. Please run the SQL fix: supabase/sql/fix_offer_letters_rls.sql
                               </div>
                             )
@@ -911,7 +911,7 @@ export default function CandidateProfilePage() {
                               {offers.map((offer) => (
                                 <div
                                   key={offer.id}
-                                  className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]"
+                                  className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]"
                                 >
                                   <div className="flex items-start justify-between gap-3 mb-2">
                                     <div className="flex-1">
@@ -927,7 +927,7 @@ export default function CandidateProfilePage() {
                                         }`}>
                                           {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
                                         </span>
-                                        <span className="text-xs text-white/50">
+                                        <span className="text-xs text-gray-900 dark:text-white/50">
                                           {new Date(offer.created_at).toLocaleDateString('en-GB', {
                                             day: 'numeric',
                                             month: 'short',
@@ -937,18 +937,18 @@ export default function CandidateProfilePage() {
                                           })}
                                         </span>
                                       </div>
-                                      <div className="text-xs text-white/70 space-y-1">
+                                      <div className="text-xs text-gray-900 dark:text-white/70 space-y-1">
                                         <div>
-                                          <span className="text-white/50">Start Date: </span>
+                                          <span className="text-gray-900 dark:text-white/50">Start Date: </span>
                                           <strong>{offer.start_date ? new Date(offer.start_date).toLocaleDateString('en-GB') : 'Not set'}</strong>
                                         </div>
                                         <div>
-                                          <span className="text-white/50">Pay Rate: </span>
+                                          <span className="text-gray-900 dark:text-white/50">Pay Rate: </span>
                                           <strong>£{offer.pay_rate}{offer.pay_frequency === 'hourly' ? '/hr' : '/year'}</strong>
                                         </div>
                                         {offer.contract_type && (
                                           <div>
-                                            <span className="text-white/50">Contract: </span>
+                                            <span className="text-gray-900 dark:text-white/50">Contract: </span>
                                             <strong>{offer.contract_type.replace('_', ' ')}{offer.contract_hours ? ` (${offer.contract_hours} hrs/week)` : ''}</strong>
                                           </div>
                                         )}
@@ -1033,8 +1033,8 @@ export default function CandidateProfilePage() {
 
                     {/* Recruitment History Timeline */}
                     {app.status_history && app.status_history.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-white/[0.05]">
-                        <h4 className="text-white/70 font-medium text-xs mb-3 uppercase tracking-wide">
+                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.05]">
+                        <h4 className="text-gray-900 dark:text-white/70 font-medium text-xs mb-3 uppercase tracking-wide">
                           Recruitment History
                         </h4>
                         <div className="space-y-3">
@@ -1046,8 +1046,8 @@ export default function CandidateProfilePage() {
                             </div>
                             <div className="flex-1 pb-3">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-white/80">Applied</span>
-                                <span className="text-xs text-white/50">
+                                <span className="text-xs font-medium text-gray-900 dark:text-white/80">Applied</span>
+                                <span className="text-xs text-gray-900 dark:text-white/50">
                                   {new Date(app.applied_at).toLocaleDateString('en-GB', {
                                     day: 'numeric',
                                     month: 'short',
@@ -1057,7 +1057,7 @@ export default function CandidateProfilePage() {
                                   })}
                                 </span>
                               </div>
-                              <p className="text-xs text-white/60">
+                              <p className="text-xs text-gray-900 dark:text-white/60">
                                 Application submitted for {app.job.title}
                               </p>
                             </div>
@@ -1097,10 +1097,10 @@ export default function CandidateProfilePage() {
                                 </div>
                                 <div className="flex-1 pb-3">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs font-medium text-white/80">
+                                    <span className="text-xs font-medium text-gray-900 dark:text-white/80">
                                       {statusLabels[entry.status] || entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
                                     </span>
-                                    <span className="text-xs text-white/50">
+                                    <span className="text-xs text-gray-900 dark:text-white/50">
                                       {new Date(entry.changed_at).toLocaleDateString('en-GB', {
                                         day: 'numeric',
                                         month: 'short',
@@ -1111,12 +1111,12 @@ export default function CandidateProfilePage() {
                                     </span>
                                   </div>
                                   {entry.from_status && entry.from_status !== 'applied' && (
-                                    <p className="text-xs text-white/50 mb-1">
+                                    <p className="text-xs text-gray-900 dark:text-white/50 mb-1">
                                       Changed from {statusLabels[entry.from_status] || entry.from_status}
                                     </p>
                                   )}
                                   {entry.notes && (
-                                    <p className="text-xs text-white/60 italic">
+                                    <p className="text-xs text-gray-900 dark:text-white/60 italic">
                                       {entry.notes}
                                     </p>
                                   )}
@@ -1129,7 +1129,7 @@ export default function CandidateProfilePage() {
                     )}
 
                     {/* Action Buttons */}
-                    <div className="mt-4 pt-4 border-t border-white/[0.05] space-y-2">
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.05] space-y-2">
                       {(app.status === 'applied' || app.status === 'screening') && (
                         <>
                           <button
@@ -1197,7 +1197,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowSendOffer(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
                           >
                             💼 Send Offer
                           </button>
@@ -1221,7 +1221,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowSendOffer(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
                           >
                             💼 Send New Offer
                           </button>
@@ -1350,7 +1350,7 @@ export default function CandidateProfilePage() {
                       
                       {/* Show status for debugging */}
                       {!['applied', 'interview', 'trial', 'offer', 'accepted', 'rejected', 'withdrawn'].includes(app.status) && (
-                        <div className="text-white/60 text-xs p-2">
+                        <div className="text-gray-900 dark:text-white/60 text-xs p-2">
                           Unknown status: {app.status}
                         </div>
                       )}
@@ -1358,7 +1358,7 @@ export default function CandidateProfilePage() {
 
                     {/* Interview Notes */}
                     {app.interview_notes && (
-                      <div className="mt-3 p-2 bg-white/[0.02] rounded text-xs text-white/60">
+                      <div className="mt-3 p-2 bg-gray-50 dark:bg-white/[0.02] rounded text-xs text-gray-900 dark:text-white/60">
                         <strong>Interview:</strong> {app.interview_notes}
                         {app.interview_rating && (
                           <span className="ml-2">
@@ -1378,8 +1378,8 @@ export default function CandidateProfilePage() {
         <div className="space-y-6">
           {/* CV Download */}
           {candidate.cv_file_path && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-              <h3 className="text-white font-semibold mb-3 text-sm">CV/Resume</h3>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+              <h3 className="text-gray-900 dark:text-white font-semibold mb-3 text-sm">CV/Resume</h3>
               <button
                 onClick={async () => {
                   try {
@@ -1405,12 +1405,12 @@ export default function CandidateProfilePage() {
                     }
                   }
                 }}
-                className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all flex items-center justify-center gap-2"
+                className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download CV
               </button>
-              <p className="text-xs text-white/40 mt-2 text-center">
+              <p className="text-xs text-gray-900 dark:text-white/40 mt-2 text-center">
                 {candidate.cv_file_path.split('/').pop()}
               </p>
             </div>
@@ -1418,15 +1418,15 @@ export default function CandidateProfilePage() {
 
           {/* Source */}
           {candidate.source && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-              <h3 className="text-white font-semibold mb-2 text-sm">Source</h3>
-              <p className="text-white/70 text-sm">{candidate.source}</p>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+              <h3 className="text-gray-900 dark:text-white font-semibold mb-2 text-sm">Source</h3>
+              <p className="text-gray-900 dark:text-white/70 text-sm">{candidate.source}</p>
             </div>
           )}
 
           {/* Tags */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-            <h3 className="text-white font-semibold mb-3 text-sm">Tags</h3>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+            <h3 className="text-gray-900 dark:text-white font-semibold mb-3 text-sm">Tags</h3>
             {candidate.tags && candidate.tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {candidate.tags.map((tag, idx) => (
@@ -1439,18 +1439,18 @@ export default function CandidateProfilePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-white/40 text-xs">No tags yet</p>
+              <p className="text-gray-900 dark:text-white/40 text-xs">No tags yet</p>
             )}
           </div>
 
           {/* Internal Notes */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white font-semibold text-sm">Internal Notes</h3>
+              <h3 className="text-gray-900 dark:text-white font-semibold text-sm">Internal Notes</h3>
               {!editingNotes && (
                 <button
                   onClick={() => setEditingNotes(true)}
-                  className="text-xs text-[#EC4899] hover:underline"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   Edit
                 </button>
@@ -1463,13 +1463,13 @@ export default function CandidateProfilePage() {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add internal notes about this candidate..."
                   rows={5}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm resize-none"
+                  className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm resize-none"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveNotes}
                     disabled={savingNotes}
-                    className="flex-1 px-3 py-1.5 rounded text-xs bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:bg-[#EC4899]/30 disabled:opacity-50"
+                    className="flex-1 px-3 py-1.5 rounded text-xs bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30 hover:bg-[#EC4899]/30 disabled:opacity-50"
                   >
                     {savingNotes ? 'Saving...' : 'Save'}
                   </button>
@@ -1478,14 +1478,14 @@ export default function CandidateProfilePage() {
                       setEditingNotes(false)
                       setNotes(candidate.internal_notes || '')
                     }}
-                    className="px-3 py-1.5 rounded text-xs bg-white/5 text-white/70 border border-white/10 hover:bg-white/10"
+                    className="px-3 py-1.5 rounded text-xs bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/70 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <p className="text-white/70 text-sm whitespace-pre-wrap">
+              <p className="text-gray-900 dark:text-white/70 text-sm whitespace-pre-wrap">
                 {candidate.internal_notes || 'No notes yet'}
               </p>
             )}

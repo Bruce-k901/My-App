@@ -426,7 +426,7 @@ export default function TeamlyDashboard() {
   if (loading && !profile) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
       </div>
     );
   }
@@ -435,20 +435,20 @@ export default function TeamlyDashboard() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-theme-primary">People Dashboard</h1>
-          <p className="text-theme-secondary mt-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">People Dashboard</h1>
+          <p className="text-gray-600 dark:text-white/70 mt-2">
             Your profile is not linked to a company. Please contact an administrator to get access.
           </p>
         </div>
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-6">
+        <div className="bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-lg p-6">
           <div className="flex items-start gap-4">
-            <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-amber-700 dark:text-amber-200 mb-2">Account Setup Required</h3>
-              <p className="text-theme-secondary text-sm mb-4">
+              <h3 className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">Account Setup Required</h3>
+              <p className="text-gray-600 dark:text-white/70 text-sm mb-4">
                 Your account needs to be linked to a company before you can access the People dashboard.
               </p>
-              <div className="text-sm text-theme-secondary">
+              <div className="text-sm text-gray-600 dark:text-white/70">
                 <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
                 <p><strong>Email:</strong> {profile?.email || 'Not loaded'}</p>
                 <p><strong>Company ID:</strong> {profile?.company_id || 'Not set'}</p>
@@ -466,8 +466,8 @@ export default function TeamlyDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-theme-primary">People Dashboard</h1>
-        <p className="text-theme-secondary">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">People Dashboard</h1>
+        <p className="text-gray-600 dark:text-white/70">
           Welcome back, {profile?.full_name?.split(' ')[0]}. Here's what's happening with your team.
         </p>
       </div>
@@ -481,23 +481,23 @@ export default function TeamlyDashboard() {
               href={alert.href || '#'}
               className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                 alert.type === 'warning'
-                  ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50'
+                  ? 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 hover:border-yellow-300 dark:hover:border-yellow-500/30'
                   : alert.type === 'info'
-                  ? 'bg-blue-500/10 border-blue-500/30 hover:border-blue-500/50'
-                  : 'bg-green-500/10 border-green-500/30 hover:border-green-500/50'
+                  ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 hover:border-blue-300 dark:hover:border-blue-500/30'
+                  : 'bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 hover:border-green-300 dark:hover:border-green-500/30'
               }`}
             >
               <AlertTriangle className={`w-5 h-5 flex-shrink-0 ${
-                alert.type === 'warning' ? 'text-amber-400' :
-                alert.type === 'info' ? 'text-blue-400' : 'text-green-400'
+                alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
+                alert.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'
               }`} />
               <span className={`flex-1 ${
-                alert.type === 'warning' ? 'text-amber-700 dark:text-amber-200' :
-                alert.type === 'info' ? 'text-blue-700 dark:text-blue-200' : 'text-green-700 dark:text-green-200'
+                alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
+                alert.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'
               }`}>
                 {alert.message}
               </span>
-              <ArrowRight className="w-4 h-4 text-theme-tertiary" />
+              <ArrowRight className="w-4 h-4 text-gray-500 dark:text-white/50" />
             </Link>
           ))}
         </div>
@@ -507,56 +507,56 @@ export default function TeamlyDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link 
           href="/dashboard/people/employees"
-          className="bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors"
+          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
             <Users className="w-4 h-4" />
             Total Employees
           </div>
-          <p className="text-2xl font-bold text-theme-primary">{stats?.active_employees || 0}</p>
-          <p className="text-xs text-theme-tertiary mt-1">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.active_employees || 0}</p>
+          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
             {stats?.total_employees || 0} total records
           </p>
         </Link>
 
         <Link 
           href="/dashboard/people/leave"
-          className="bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors"
+          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
             <CalendarDays className="w-4 h-4" />
             On Leave Today
           </div>
-          <p className="text-2xl font-bold text-theme-primary">{stats?.on_leave_today || 0}</p>
-          <p className="text-xs text-theme-tertiary mt-1">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.on_leave_today || 0}</p>
+          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
             {stats?.pending_leave_requests || 0} pending requests
           </p>
         </Link>
 
         <Link 
           href="/dashboard/people/training"
-          className="bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors"
+          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
             <GraduationCap className="w-4 h-4" />
             Training
           </div>
-          <p className={`text-2xl font-bold ${stats?.expiring_training ? 'text-amber-400' : 'text-theme-primary'}`}>
+          <p className={`text-2xl font-bold ${stats?.expiring_training ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-900 dark:text-white'}`}>
             {stats?.expiring_training || 0}
           </p>
-          <p className="text-xs text-theme-tertiary mt-1">expiring in 30 days</p>
+          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">expiring in 30 days</p>
         </Link>
 
         <Link 
           href="/dashboard/people/recruitment"
-          className="bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors"
+          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
             <Briefcase className="w-4 h-4" />
             Open Positions
           </div>
-          <p className="text-2xl font-bold text-theme-primary">{stats?.open_jobs || 0}</p>
-          <p className="text-xs text-theme-tertiary mt-1">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.open_jobs || 0}</p>
+          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
             {stats?.pending_applications || 0} new applicants
           </p>
         </Link>
@@ -565,19 +565,19 @@ export default function TeamlyDashboard() {
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Employee Quick Actions */}
-        <div className="bg-theme-button border border-theme rounded-lg p-4">
-          <h2 className="font-semibold text-theme-primary mb-4">Quick Actions</h2>
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 shadow-sm dark:shadow-none">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex flex-col items-center gap-2 p-4 bg-theme-surface-elevated rounded-lg hover:bg-theme-button-hover transition-colors"
+                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-white/[0.03] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
               >
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center`}>
                   <action.icon className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-sm text-theme-secondary text-center">{action.label}</span>
+                <span className="text-sm text-gray-600 dark:text-white/70 text-center">{action.label}</span>
               </Link>
             ))}
           </div>
@@ -585,19 +585,19 @@ export default function TeamlyDashboard() {
 
         {/* Manager Quick Actions */}
         {isManager && (
-          <div className="bg-theme-button border border-theme rounded-lg p-4">
-            <h2 className="font-semibold text-theme-primary mb-4">Manager Actions</h2>
+          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 shadow-sm dark:shadow-none">
+            <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Manager Actions</h2>
             <div className="grid grid-cols-2 gap-3">
               {managerActions.map((action) => (
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="flex flex-col items-center gap-2 p-4 bg-theme-surface-elevated rounded-lg hover:bg-theme-button-hover transition-colors"
+                  className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-white/[0.03] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
                 >
                   <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center`}>
                     <action.icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-sm text-theme-secondary text-center">{action.label}</span>
+                  <span className="text-sm text-gray-600 dark:text-white/70 text-center">{action.label}</span>
                 </Link>
               ))}
             </div>
@@ -608,9 +608,9 @@ export default function TeamlyDashboard() {
       {/* Bottom Grid */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* Recent Joiners */}
-        <div className="bg-theme-button border border-theme rounded-lg">
-          <div className="p-4 border-b border-theme flex items-center justify-between">
-            <h2 className="font-semibold text-theme-primary">Recent Joiners</h2>
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 dark:text-white">Recent Joiners</h2>
             <Link href="/dashboard/people/employees?sort=start_date" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
               View all
             </Link>
@@ -622,14 +622,14 @@ export default function TeamlyDashboard() {
                   <Link
                     key={joiner.id || joiner.profile_id}
                     href={`/dashboard/people/${joiner.id || joiner.profile_id}`}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-theme-button-hover transition-colors group"
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-theme-primary truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {joiner.full_name || joiner.name || 'Unknown'}
                       </p>
                       {joiner.start_date && (
-                        <p className="text-xs text-theme-secondary">
+                        <p className="text-xs text-gray-600 dark:text-white/70">
                           Started {new Date(joiner.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                         </p>
                       )}
@@ -638,16 +638,16 @@ export default function TeamlyDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-theme-tertiary text-sm text-center py-4">No recent joiners</p>
+              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No recent joiners</p>
             )}
           </div>
         </div>
 
         {/* Upcoming Birthdays */}
-        <div className="bg-theme-button border border-theme rounded-lg">
-          <div className="p-4 border-b border-theme flex items-center justify-between">
-            <h2 className="font-semibold text-theme-primary">🎂 Birthdays</h2>
-            <span className="text-sm text-theme-tertiary">This week</span>
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 dark:text-white">🎂 Birthdays</h2>
+            <span className="text-sm text-gray-500 dark:text-white/50">This week</span>
           </div>
           <div className="p-4">
             {birthdays.length > 0 ? (
@@ -663,13 +663,13 @@ export default function TeamlyDashboard() {
                     <Link
                       key={person.id || person.profile_id}
                       href={`/dashboard/people/${person.id || person.profile_id}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-theme-button-hover transition-colors group"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-theme-primary truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {person.full_name || person.name || 'Unknown'}
                         </p>
-                        <p className="text-xs text-theme-secondary">
+                        <p className="text-xs text-gray-600 dark:text-white/70">
                           {isToday ? 'Today!' : birthdayStr}
                         </p>
                       </div>
@@ -678,16 +678,16 @@ export default function TeamlyDashboard() {
                 })}
               </div>
             ) : (
-              <p className="text-theme-tertiary text-sm text-center py-4">No birthdays this week</p>
+              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No birthdays this week</p>
             )}
           </div>
         </div>
 
         {/* Anniversaries */}
-        <div className="bg-theme-button border border-theme rounded-lg">
-          <div className="p-4 border-b border-theme flex items-center justify-between">
-            <h2 className="font-semibold text-theme-primary">🎉 Anniversaries</h2>
-            <span className="text-sm text-theme-tertiary">This month</span>
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 dark:text-white">🎉 Anniversaries</h2>
+            <span className="text-sm text-gray-500 dark:text-white/50">This month</span>
           </div>
           <div className="p-4">
             {anniversaries.length > 0 ? (
@@ -717,13 +717,13 @@ export default function TeamlyDashboard() {
                     <Link
                       key={person.id || person.profile_id}
                       href={`/dashboard/people/${person.id || person.profile_id}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-theme-button-hover transition-colors group"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-theme-primary truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {person.full_name || person.name || 'Unknown'}
                         </p>
-                        <p className="text-xs text-theme-secondary">
+                        <p className="text-xs text-gray-600 dark:text-white/70">
                           {isToday ? `${yearsOfService} year${yearsOfService !== 1 ? 's' : ''} today!` : `${anniversaryStr} (${yearsOfService} year${yearsOfService !== 1 ? 's' : ''})`}
                         </p>
                       </div>
@@ -732,7 +732,7 @@ export default function TeamlyDashboard() {
                 })}
               </div>
             ) : (
-              <p className="text-theme-tertiary text-sm text-center py-4">No anniversaries this month</p>
+              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No anniversaries this month</p>
             )}
           </div>
         </div>
@@ -787,19 +787,19 @@ export default function TeamlyDashboard() {
           <Link
             key={module.href}
             href={module.href}
-            className="group bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors"
+            className="group bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
           >
             <div className="flex items-start gap-4">
               <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${module.color} flex items-center justify-center flex-shrink-0`}>
                 <module.icon className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-theme-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {module.title}
                 </h3>
-                <p className="text-sm text-theme-tertiary mt-1">{module.description}</p>
+                <p className="text-sm text-gray-500 dark:text-white/50 mt-1">{module.description}</p>
               </div>
-              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
+              <ArrowRight className="w-5 h-5 text-gray-500 dark:text-white/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
             </div>
           </Link>
         ))}

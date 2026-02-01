@@ -65,17 +65,17 @@ export default function EditableField({
 
   if (!editing) {
     return (
-      <div className={`flex justify-between items-center border-b border-neutral-800 pb-1 group ${className}`}>
-        <span className="text-sm text-neutral-400">{label}</span>
+      <div className={`flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1 group ${className}`}>
+        <span className="text-sm text-gray-500 dark:text-neutral-400">{label}</span>
         <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setEditing(true)} 
-            className="text-neutral-500 hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
+          <button
+            onClick={() => setEditing(true)}
+            className="text-gray-400 dark:text-neutral-500 hover:text-pink-500 dark:hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
             title="Edit"
           >
             <Edit3 size={14} />
           </button>
-          <span className="text-white font-medium text-sm">
+          <span className="text-gray-900 dark:text-white font-medium text-sm">
             {type === 'textarea' && value ? (
               <div className="max-w-xs truncate" title={value}>
                 {value}
@@ -90,14 +90,14 @@ export default function EditableField({
   }
 
   return (
-    <div className={`flex justify-between items-center border-b border-neutral-800 pb-1 ${className}`}>
-      <span className="text-sm text-neutral-400">{label}</span>
+    <div className={`flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1 ${className}`}>
+      <span className="text-sm text-gray-500 dark:text-neutral-400">{label}</span>
       <div className="flex items-center gap-2">
         {type === 'select' ? (
           <select
             value={temp}
             onChange={(e) => setTemp(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
+            className="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-900 dark:text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
             disabled={loading}
           >
             <option value="">Select {label.toLowerCase()}...</option>
@@ -111,7 +111,7 @@ export default function EditableField({
           <textarea
             value={temp}
             onChange={(e) => setTemp(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40 resize-none w-64"
+            className="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-900 dark:text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40 resize-none w-64"
             rows={2}
             placeholder={placeholder}
           />
@@ -120,7 +120,7 @@ export default function EditableField({
             type={type}
             value={temp}
             onChange={(e) => setTemp(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
+            className="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-900 dark:text-white px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
             placeholder={placeholder}
           />
         )}
@@ -134,7 +134,7 @@ export default function EditableField({
         </button>
         <button
           onClick={handleCancel}
-          className="text-neutral-500 hover:text-neutral-400"
+          className="text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-400"
           title="Cancel"
         >
           <X size={14} />

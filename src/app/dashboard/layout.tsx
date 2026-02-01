@@ -97,7 +97,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           style={showModuleSidebar ? {
             width: 'calc(100vw - 256px)',
             maxWidth: 'calc(100vw - 256px)',
-            overflow: 'hidden'
           } : {}}
         >
           <div className={`${paddingClass}`} style={{ paddingBottom: '80px' }}>

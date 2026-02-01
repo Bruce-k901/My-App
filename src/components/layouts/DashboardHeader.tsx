@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX } from "lucide-react";
+import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX, Sparkles } from "lucide-react";
+import { usePanelStore } from "@/lib/stores/panel-store";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
@@ -33,6 +34,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   
   // Get unread message count (lightweight - doesn't load all conversations)
   const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
+  const { setAiAssistantOpen } = usePanelStore();
   const incidentsButtonRef = useRef<HTMLButtonElement>(null);
   const incidentsMenuRef = useRef<HTMLDivElement>(null);
   const burgerMenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -201,7 +203,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-2 sm:px-4 md:px-6 bg-white/[0.05] backdrop-blur-lg border-b border-white/[0.1]">
+    <header className="flex items-center justify-between h-[72px] px-2 sm:px-4 md:px-6 bg-white dark:bg-white/[0.05] backdrop-blur-lg border-b border-gray-200 dark:border-white/[0.1]">
       {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1" suppressHydrationWarning>
         {/* Mobile Menu Button - Only visible on mobile */}
@@ -433,13 +435,21 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           )}
         </Link>
 
-        {/* Clock In Button */}
-        <div className="hidden md:block">
-          <ClockInButton />
-        </div>
+        {/* Ask AI Button */}
+        <button
+          onClick={() => setAiAssistantOpen(true)}
+          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#EC4899]/10 border border-[#EC4899]/50 text-[#EC4899] hover:bg-[#EC4899]/20 hover:shadow-[0_0_12px_rgba(236,72,153,0.5)] transition-all h-9 md:h-10"
+          aria-label="Ask AI Assistant"
+        >
+          <Sparkles className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+          <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden sm:inline">Ask AI</span>
+        </button>
+
+        {/* Clock In Button - Always visible */}
+        <ClockInButton />
 
         {/* Clock - Hidden on mobile and tablet */}
-        <div className="hidden md:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10" suppressHydrationWarning>
+        <div className="hidden lg:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10" suppressHydrationWarning>
           <Clock className="w-4 h-4 md:w-5 md:h-5 text-pink-400 flex-shrink-0" />
           <div className="font-mono text-xs md:text-sm text-white whitespace-nowrap" suppressHydrationWarning>
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}

@@ -525,20 +525,20 @@ export default function PayrollPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white">Loading payroll data...</div>
+        <div className="text-gray-900 dark:text-white">Loading payroll data...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6">
+    <div className="min-h-screen bg-white dark:bg-[#0B0D13] p-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">Payroll</h1>
-            <p className="text-white/60 text-sm">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payroll</h1>
+            <p className="text-gray-600 dark:text-white/60 text-sm">
               Review and process employee pay
             </p>
           </div>
@@ -557,7 +557,7 @@ export default function PayrollPage() {
             />
             
             <Link href="/dashboard/people/payroll/settings">
-              <Button className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]">
+              <Button className="bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
@@ -567,10 +567,10 @@ export default function PayrollPage() {
 
         {/* Status Badge */}
         <div className="flex items-center gap-4 mb-6">
-          <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/20 text-yellow-400">
+          <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400">
             Pending Review
           </span>
-          <span className="text-white/60">
+          <span className="text-gray-600 dark:text-white/60">
             Pay Date: {payDate.toLocaleDateString('en-GB', { 
               day: 'numeric', 
               month: 'short', 
@@ -589,7 +589,7 @@ export default function PayrollPage() {
 
         {/* Approve Button */}
         <div className="mb-6">
-          <Button className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]">
+          <Button className="bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]">
             <CheckCircle className="w-4 h-4 mr-2" />
             Approve Payroll Run
           </Button>
@@ -602,24 +602,24 @@ export default function PayrollPage() {
             placeholder="Search employees..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-2 text-sm w-64 text-white placeholder-white/40"
+            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm w-64 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
           />
-          
+
           <select
             value={selectedSite}
             onChange={(e) => setSelectedSite(e.target.value)}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-2 text-sm text-white"
+            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-white"
           >
             <option value="all">All Sites</option>
             {sites.map(site => (
               <option key={site.id} value={site.id}>{site.name}</option>
             ))}
           </select>
-          
+
           <select
             value={selectedPayType}
             onChange={(e) => setSelectedPayType(e.target.value)}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-2 text-sm text-white"
+            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-white"
           >
             <option value="all">All Pay Types</option>
             <option value="hourly">Hourly</option>
@@ -637,7 +637,7 @@ export default function PayrollPage() {
 
         {/* No results */}
         {sitePayrolls.length === 0 && (
-          <div className="text-center py-12 text-white/60">
+          <div className="text-center py-12 text-gray-600 dark:text-white/60">
             No employees found matching your filters
           </div>
         )}
@@ -652,12 +652,12 @@ export default function PayrollPage() {
         />
 
         {/* Disclaimer */}
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mt-6">
+        <div className="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-xl p-4 mt-6">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-yellow-400 font-medium">Estimated Costs</p>
-              <p className="text-sm text-white/60 mt-1">
+              <p className="text-yellow-600 dark:text-yellow-400 font-medium">Estimated Costs</p>
+              <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
                 The costs shown are estimates for manager review. Your accounting software 
                 will calculate the actual tax deductions and National Insurance. Please review 
                 the hours and rates before approving.

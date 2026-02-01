@@ -140,27 +140,27 @@ export default function MyPayslipsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#EC4899]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6">
+    <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href="/dashboard/people/payroll">
-              <Button variant="ghost" className="text-white/60 hover:text-white">
+              <Button variant="ghost" className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Payroll
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">My Payslips</h1>
-              <p className="text-white/60 text-sm">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Payslips</h1>
+              <p className="text-gray-900 dark:text-white/60 text-sm">
                 View and download your payslips
               </p>
             </div>
@@ -170,19 +170,19 @@ export default function MyPayslipsPage() {
         {/* Filters */}
         <div className="flex gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-900 dark:text-white/40" />
             <input
               type="text"
               placeholder="Search payslips..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-[#1A1D26] border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#EC4899]"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 bg-[#1A1D26] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+            className="px-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
           >
             <option value="all">All Status</option>
             <option value="draft">Draft</option>
@@ -194,9 +194,9 @@ export default function MyPayslipsPage() {
 
         {/* Payslips Grid */}
         {filteredPayslips.length === 0 ? (
-          <div className="bg-[#1A1D26] rounded-lg border border-white/10 p-12 text-center">
-            <FileText className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <p className="text-white/60">
+          <div className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 p-12 text-center">
+            <FileText className="w-12 h-12 text-gray-900 dark:text-white/20 mx-auto mb-4" />
+            <p className="text-gray-900 dark:text-white/60">
               {searchTerm || statusFilter !== 'all' 
                 ? 'No payslips match your filters'
                 : 'No payslips found. Payslips will appear here once they are generated.'}
@@ -207,20 +207,20 @@ export default function MyPayslipsPage() {
             {filteredPayslips.map((payslip) => (
               <div
                 key={payslip.id}
-                className="bg-[#1A1D26] rounded-lg border border-white/10 p-6 hover:border-[#EC4899]/50 transition-colors cursor-pointer"
+                className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 p-6 hover:border-[#EC4899]/50 transition-colors cursor-pointer"
                 onClick={() => setSelectedPayslip(payslip)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="w-4 h-4 text-white/40" />
-                      <span className="text-sm text-white/60">
+                      <Calendar className="w-4 h-4 text-gray-900 dark:text-white/40" />
+                      <span className="text-sm text-gray-900 dark:text-white/60">
                         {formatDate(payslip.period_start)} - {formatDate(payslip.period_end)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-white/40" />
-                      <span className="text-lg font-bold text-white">
+                      <DollarSign className="w-4 h-4 text-gray-900 dark:text-white/40" />
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
                         {formatCurrency(payslip.net_pay_pounds || 0)}
                       </span>
                     </div>
@@ -231,20 +231,20 @@ export default function MyPayslipsPage() {
                 </div>
 
                 <div className="space-y-2 text-sm mb-4">
-                  <div className="flex justify-between text-white/80">
+                  <div className="flex justify-between text-gray-800 dark:text-white/80">
                     <span>Gross Pay:</span>
                     <span className="font-medium">{formatCurrency(payslip.gross_pay_pounds || 0)}</span>
                   </div>
-                  <div className="flex justify-between text-white/60">
+                  <div className="flex justify-between text-gray-900 dark:text-white/60">
                     <span>Tax:</span>
                     <span>{formatCurrency(payslip.tax_pounds || 0)}</span>
                   </div>
-                  <div className="flex justify-between text-white/60">
+                  <div className="flex justify-between text-gray-900 dark:text-white/60">
                     <span>NI:</span>
                     <span>{formatCurrency(payslip.ni_pounds || 0)}</span>
                   </div>
                   {payslip.pay_date && (
-                    <div className="flex justify-between text-white/60 text-xs pt-2 border-t border-white/10">
+                    <div className="flex justify-between text-gray-900 dark:text-white/60 text-xs pt-2 border-t border-gray-300 dark:border-white/10">
                       <span>Pay Date:</span>
                       <span>{formatDate(payslip.pay_date)}</span>
                     </div>
@@ -258,7 +258,7 @@ export default function MyPayslipsPage() {
                     e.stopPropagation();
                     handleDownload(payslip);
                   }}
-                  className="w-full text-white/60 hover:text-white hover:bg-white/5"
+                  className="w-full text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download
@@ -275,16 +275,16 @@ export default function MyPayslipsPage() {
             onClick={() => setSelectedPayslip(null)}
           >
             <div 
-              className="bg-[#1A1D26] rounded-lg border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-white/10">
+              <div className="p-6 border-b border-gray-300 dark:border-white/10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-white">Payslip Details</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Payslip Details</h2>
                   <Button
                     variant="ghost"
                     onClick={() => setSelectedPayslip(null)}
-                    className="text-white/60 hover:text-white"
+                    className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
                   >
                     ×
                   </Button>
@@ -293,16 +293,16 @@ export default function MyPayslipsPage() {
               
               <div className="p-6 space-y-6">
                 <div>
-                  <h3 className="text-sm text-white/60 mb-2">Pay Period</h3>
-                  <p className="text-white">
+                  <h3 className="text-sm text-gray-900 dark:text-white/60 mb-2">Pay Period</h3>
+                  <p className="text-gray-900 dark:text-white">
                     {formatDate(selectedPayslip.period_start)} - {formatDate(selectedPayslip.period_end)}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm text-white/60 mb-2">Earnings</h3>
+                  <h3 className="text-sm text-gray-900 dark:text-white/60 mb-2">Earnings</h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-white">
+                    <div className="flex justify-between text-gray-900 dark:text-white">
                       <span>Gross Pay:</span>
                       <span className="font-medium">{formatCurrency(selectedPayslip.gross_pay_pounds || 0)}</span>
                     </div>
@@ -310,46 +310,46 @@ export default function MyPayslipsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm text-white/60 mb-2">Deductions</h3>
+                  <h3 className="text-sm text-gray-900 dark:text-white/60 mb-2">Deductions</h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-white/80">
+                    <div className="flex justify-between text-gray-800 dark:text-white/80">
                       <span>Tax (PAYE):</span>
                       <span>{formatCurrency(selectedPayslip.tax_pounds || 0)}</span>
                     </div>
-                    <div className="flex justify-between text-white/80">
+                    <div className="flex justify-between text-gray-800 dark:text-white/80">
                       <span>National Insurance:</span>
                       <span>{formatCurrency(selectedPayslip.ni_pounds || 0)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10">
-                  <div className="flex justify-between text-lg font-bold text-white">
+                <div className="pt-4 border-t border-gray-300 dark:border-white/10">
+                  <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
                     <span>Net Pay:</span>
                     <span>{formatCurrency(selectedPayslip.net_pay_pounds || 0)}</span>
                   </div>
                 </div>
 
                 {selectedPayslip.pay_date && (
-                  <div className="pt-4 border-t border-white/10">
-                    <p className="text-sm text-white/60">
+                  <div className="pt-4 border-t border-gray-300 dark:border-white/10">
+                    <p className="text-sm text-gray-900 dark:text-white/60">
                       Pay Date: {formatDate(selectedPayslip.pay_date)}
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-white/10 flex justify-end gap-3">
+              <div className="p-6 border-t border-gray-300 dark:border-white/10 flex justify-end gap-3">
                 <Button
                   variant="ghost"
                   onClick={() => setSelectedPayslip(null)}
-                  className="text-white/60 hover:text-white"
+                  className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white"
                 >
                   Close
                 </Button>
                 <Button
                   onClick={() => handleDownload(selectedPayslip)}
-                  className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white"
+                  className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-600 dark:bg-blue-500/90 text-gray-900 dark:text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download PDF

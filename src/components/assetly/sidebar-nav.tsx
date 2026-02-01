@@ -68,7 +68,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-[#0284C7] tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-cyan-600 dark:text-cyan-400 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>
@@ -80,15 +80,15 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
     const isActive = item.href === '/dashboard/assets'
       ? pathname === item.href || pathname === '/dashboard/assets'
       : pathname === item.href || pathname.startsWith(item.href + '/');
-    
+
     const IconComponent = item.icon;
     return (
       <Link
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-[#0284C7]/20 text-[#0284C7]'
-            : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
+            ? 'text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-500/10 font-medium'
+            : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
         }`}
       >
         <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
@@ -106,9 +106,9 @@ export function AssetlySidebar() {
   const { profile } = useAppContext();
 
   return (
-    <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full overflow-y-auto" suppressHydrationWarning>
+    <aside className="w-64 bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col h-full overflow-y-auto" suppressHydrationWarning>
       {/* Header */}
-      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-neutral-800">
+      <div className="px-4 py-5 bg-gray-50 dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <Link href="/dashboard/assets" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img
             src="/module_logos/assetly.png"
@@ -126,15 +126,15 @@ export function AssetlySidebar() {
       </nav>
 
       {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-neutral-800">
+      <div className="p-4 border-t border-gray-200 dark:border-neutral-800">
         <Link
           href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:bg-neutral-800 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <UserCircle className="w-5 h-5" />
           <div className="flex-1 min-w-0">
-            <p className="truncate text-white">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-neutral-500">{profile?.position_title || 'Employee'}</p>
+            <p className="truncate text-gray-900 dark:text-white">{profile?.full_name || 'My Profile'}</p>
+            <p className="truncate text-xs text-gray-500 dark:text-white/50">{profile?.position_title || 'Employee'}</p>
           </div>
         </Link>
       </div>

@@ -12,9 +12,7 @@ import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
-import { MessagingPanel } from "@/components/messaging/messaging-panel";
-import { CalendarPanel } from "@/components/calendar/calendar-panel";
-import { GlobalActions } from "@/components/layout/global-actions";
+import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlobalComponents";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -81,7 +79,24 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: `
               (function() {
                 try {
-                  // Get theme from localStorage or system preference
+                  const currentPath = window.location.pathname;
+                  
+                  // Force dark mode on all non-dashboard pages (marketing, login, signup, etc.)
+                  // Light mode should only be available once users land on the dashboard
+                  const isDashboardPage = currentPath.startsWith('/dashboard') || 
+                                         currentPath.startsWith('/api') ||
+                                         currentPath.startsWith('/_next') ||
+                                         currentPath.startsWith('/learn');
+                  
+                  if (!isDashboardPage) {
+                    // Marketing/auth pages - always dark
+                    const root = document.documentElement;
+                    root.classList.add('dark');
+                    root.classList.remove('light');
+                    return;
+                  }
+                  
+                  // For dashboard pages, get theme from localStorage or system preference
                   const stored = localStorage.getItem('theme');
                   let theme = 'dark'; // default
                   
@@ -254,12 +269,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <Footer />
                   <Toaster position="top-right" richColors />
                   
-                  {/* Global slide-in panels */}
-                  <MessagingPanel />
-                  <CalendarPanel />
-                  
-                  {/* Middle-right trigger buttons - always visible */}
-                  <GlobalActions />
+                  {/* Global components - only shown on dashboard pages */}
+                  <ConditionalGlobalComponents />
                 </SiteContextProvider>
               </AppProvider>
             </QueryProvider>

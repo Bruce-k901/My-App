@@ -29,9 +29,9 @@ export default async function ScheduleReviewPage() {
 
   if (!isManager) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-12 text-center">
-        <p className="text-white font-medium">Access Restricted</p>
-        <p className="text-neutral-400 text-sm mt-1">You need manager permissions to schedule reviews</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
+        <p className="text-gray-900 dark:text-white font-medium">Access Restricted</p>
+        <p className="text-gray-500 dark:text-white/60 text-sm mt-1">You need manager permissions to schedule reviews</p>
       </div>
     );
   }
@@ -99,12 +99,12 @@ async function ScheduleContent({ profile }: { profile: any }) {
 function ScheduleSkeleton() {
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="h-8 w-48 bg-white/[0.05] rounded animate-pulse" />
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-6">
+      <div className="h-8 w-48 bg-gray-100 dark:bg-white/[0.05] rounded animate-pulse" />
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="space-y-2">
-            <div className="h-5 w-32 bg-white/[0.05] rounded animate-pulse" />
-            <div className="h-10 w-full bg-white/[0.05] rounded animate-pulse" />
+            <div className="h-5 w-32 bg-gray-100 dark:bg-white/[0.05] rounded animate-pulse" />
+            <div className="h-10 w-full bg-gray-100 dark:bg-white/[0.05] rounded animate-pulse" />
           </div>
         ))}
       </div>

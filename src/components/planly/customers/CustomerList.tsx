@@ -11,6 +11,10 @@ import {
   Pencil,
   Trash2,
   Package,
+  Mail,
+  Lock,
+  KeyRound,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -170,11 +174,15 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(customer);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isSendingInvite, setIsSendingInvite] = useState(false);
 
-  const isArchived = !!customer.archived_at;
+  const isArchived = !!(customer as any).archived_at;
+  const hasPortalAccess = !!(customer as any).portal_enabled;
+  const hasBeenInvited = !!(customer as any).portal_invited_at;
 
   const handleSave = useCallback(async () => {
     setIsSaving(true);
@@ -191,9 +199,12 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
           phone: formData.phone || null,
           destination_group_id: formData.destination_group_id || null,
           default_ship_state: formData.default_ship_state,
-          delivery_instructions: formData.delivery_instructions || null,
+          notes: (formData as any).notes || null,
+          minimum_order_value: formData.minimum_order_value || null,
+          below_minimum_delivery_charge: formData.below_minimum_delivery_charge || null,
           is_ad_hoc: formData.is_ad_hoc,
           frozen_only: formData.frozen_only,
+          portal_enabled: (formData as any).portal_enabled || false,
         }),
       });
 
@@ -260,6 +271,44 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
     }
   }, [customer.id, onRefresh]);
 
+  const handleSendPortalInvite = useCallback(async () => {
+    setIsSendingInvite(true);
+    try {
+      const response = await fetch(`/api/planly/customers/${customer.id}/portal-invite`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setShowInviteDialog(false);
+        onRefresh();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to send portal invite');
+      }
+    } catch (error) {
+      console.error('Error sending portal invite:', error);
+      alert('Failed to send portal invite');
+    } finally {
+      setIsSendingInvite(false);
+    }
+  }, [customer.id, onRefresh]);
+
+  const handleDisablePortal = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/planly/customers/${customer.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portal_enabled: false }),
+      });
+
+      if (response.ok) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error('Error disabling portal:', error);
+    }
+  }, [customer.id, onRefresh]);
+
   return (
     <>
       <div
@@ -276,13 +325,19 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
         >
           <div className="flex items-center justify-between">
             {/* Customer Info Grid */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-4">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
                   {customer.name}
                   {isArchived && (
                     <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
                       Archived
+                    </span>
+                  )}
+                  {hasPortalAccess && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20 flex items-center gap-1">
+                      <KeyRound className="w-3 h-3" />
+                      Portal
                     </span>
                   )}
                 </p>
@@ -307,6 +362,26 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                     <Package className="w-3 h-3" />
                     {customer.destination_group.name}
                   </span>
+                )}
+                <div className="flex gap-1 flex-wrap mt-1">
+                  {customer.is_ad_hoc && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      Ad-hoc
+                    </span>
+                  )}
+                  {customer.frozen_only && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      Frozen
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="hidden lg:block text-right">
+                {customer.minimum_order_value && customer.minimum_order_value > 0 && (
+                  <p className="text-sm font-medium text-gray-700 dark:text-white/80">
+                    Min: £{customer.minimum_order_value.toFixed(2)}
+                  </p>
                 )}
               </div>
             </div>
@@ -343,7 +418,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                       Delivery Notes
                     </p>
                     <p className="text-sm text-gray-700 dark:text-white/80">
-                      {customer.delivery_instructions || 'No delivery notes'}
+                      {(customer as any).notes || 'No delivery notes'}
                     </p>
                   </div>
 
@@ -358,29 +433,63 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
 
                   <div>
                     <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-1">
-                      Settings
+                      Order Settings
                     </p>
-                    <div className="flex gap-2">
-                      {customer.is_ad_hoc && (
-                        <span className="text-xs px-2 py-1 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
-                          Ad-hoc
-                        </span>
+                    <div className="space-y-1">
+                      {customer.minimum_order_value && customer.minimum_order_value > 0 ? (
+                        <p className="text-sm text-gray-700 dark:text-white/80">
+                          Min order: £{customer.minimum_order_value.toFixed(2)}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-400 dark:text-white/40">No minimum order</p>
                       )}
-                      {customer.frozen_only && (
-                        <span className="text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
-                          Frozen Only
-                        </span>
-                      )}
-                      {!customer.is_ad_hoc && !customer.frozen_only && (
-                        <span className="text-sm text-gray-400 dark:text-white/40">None</span>
+                      {customer.below_minimum_delivery_charge && customer.below_minimum_delivery_charge > 0 && (
+                        <p className="text-sm text-gray-700 dark:text-white/80">
+                          Below min fee: £{customer.below_minimum_delivery_charge.toFixed(2)}
+                        </p>
                       )}
                     </div>
                   </div>
                 </div>
 
+                {/* Portal Status Section */}
+                <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                  <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-2">
+                    Customer Portal Access
+                  </p>
+                  <div className="flex items-center gap-4">
+                    {hasPortalAccess ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20 flex items-center gap-1">
+                          <KeyRound className="w-3 h-3" />
+                          Portal Enabled
+                        </span>
+                        {(customer as any).portal_last_login && (
+                          <span className="text-xs text-gray-500 dark:text-white/50">
+                            Last login: {new Date((customer as any).portal_last_login).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    ) : hasBeenInvited ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
+                          Invited {new Date((customer as any).portal_invited_at).toLocaleDateString()}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-white/50">
+                          Waiting for customer to activate
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400 dark:text-white/40">
+                        Not invited to portal
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -393,6 +502,39 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                       <Pencil className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
+
+                    {/* Portal Invite Button */}
+                    {!hasPortalAccess && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowInviteDialog(true);
+                        }}
+                        disabled={!customer.email}
+                        className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                      >
+                        <Mail className="w-4 h-4 mr-2" />
+                        {hasBeenInvited ? 'Resend Invite' : 'Invite to Portal'}
+                      </Button>
+                    )}
+
+                    {/* Disable Portal (if enabled) */}
+                    {hasPortalAccess && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDisablePortal();
+                        }}
+                        className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                      >
+                        <Lock className="w-4 h-4 mr-2" />
+                        Disable Portal
+                      </Button>
+                    )}
 
                     <Button
                       variant="outline"
@@ -427,6 +569,29 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
           </div>
         )}
       </div>
+
+      {/* Portal Invite Dialog */}
+      <ConfirmDialog
+        open={showInviteDialog}
+        onClose={() => setShowInviteDialog(false)}
+        onConfirm={handleSendPortalInvite}
+        title="Invite to Customer Portal"
+        description={
+          <>
+            Send an email invitation to <strong>{customer.email}</strong> to access the customer portal.
+            <br /><br />
+            They will be able to:
+            <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+              <li>View their order history</li>
+              <li>Place new orders</li>
+              <li>Track deliveries</li>
+              <li>Manage their account</li>
+            </ul>
+          </>
+        }
+        confirmText={isSendingInvite ? 'Sending...' : hasBeenInvited ? 'Resend Invitation' : 'Send Invitation'}
+        variant="default"
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
@@ -475,8 +640,8 @@ function EditCustomerForm({
 
   return (
     <div className="space-y-4">
+      {/* Row 1: Basic Info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Customer Name */}
         <div>
           <Label htmlFor="name" className="text-gray-700 dark:text-white/80">
             Customer Name *
@@ -490,7 +655,6 @@ function EditCustomerForm({
           />
         </div>
 
-        {/* Contact Name */}
         <div>
           <Label htmlFor="contact_name" className="text-gray-700 dark:text-white/80">
             Contact Name
@@ -502,8 +666,10 @@ function EditCustomerForm({
             className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
           />
         </div>
+      </div>
 
-        {/* Address */}
+      {/* Row 2: Address */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="address" className="text-gray-700 dark:text-white/80">
             Address *
@@ -517,7 +683,6 @@ function EditCustomerForm({
           />
         </div>
 
-        {/* Postcode */}
         <div>
           <Label htmlFor="postcode" className="text-gray-700 dark:text-white/80">
             Postcode *
@@ -530,8 +695,10 @@ function EditCustomerForm({
             required
           />
         </div>
+      </div>
 
-        {/* Email */}
+      {/* Row 3: Contact Details */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="email" className="text-gray-700 dark:text-white/80">
             Email
@@ -545,7 +712,6 @@ function EditCustomerForm({
           />
         </div>
 
-        {/* Phone */}
         <div>
           <Label htmlFor="phone" className="text-gray-700 dark:text-white/80">
             Phone
@@ -557,8 +723,10 @@ function EditCustomerForm({
             className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
           />
         </div>
+      </div>
 
-        {/* Destination Group */}
+      {/* Row 4: Destination & Ship State */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="destination_group" className="text-gray-700 dark:text-white/80">
             Destination Group
@@ -579,7 +747,6 @@ function EditCustomerForm({
           </StyledSelect>
         </div>
 
-        {/* Default Ship State */}
         <div>
           <Label htmlFor="ship_state" className="text-gray-700 dark:text-white/80">
             Default Ship State
@@ -597,15 +764,63 @@ function EditCustomerForm({
         </div>
       </div>
 
+      {/* Row 5: Order Settings */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="minimum_order" className="text-gray-700 dark:text-white/80">
+            Minimum Order Value (£)
+          </Label>
+          <Input
+            id="minimum_order"
+            type="number"
+            step="0.01"
+            min="0"
+            value={data.minimum_order_value || ''}
+            onChange={(e) =>
+              onChange({
+                ...data,
+                minimum_order_value: e.target.value ? parseFloat(e.target.value) : undefined,
+              })
+            }
+            placeholder="0.00"
+            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="below_min_charge" className="text-gray-700 dark:text-white/80">
+            Below Minimum Delivery Charge (£)
+          </Label>
+          <Input
+            id="below_min_charge"
+            type="number"
+            step="0.01"
+            min="0"
+            value={data.below_minimum_delivery_charge || ''}
+            onChange={(e) =>
+              onChange({
+                ...data,
+                below_minimum_delivery_charge: e.target.value ? parseFloat(e.target.value) : undefined,
+              })
+            }
+            placeholder="0.00"
+            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+          />
+          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+            Charge applied when order is below minimum
+          </p>
+        </div>
+      </div>
+
       {/* Delivery Notes */}
       <div>
-        <Label htmlFor="delivery_notes" className="text-gray-700 dark:text-white/80">
+        <Label htmlFor="notes" className="text-gray-700 dark:text-white/80">
           Delivery Notes
         </Label>
         <Textarea
-          id="delivery_notes"
-          value={data.delivery_instructions || ''}
-          onChange={(e) => onChange({ ...data, delivery_instructions: e.target.value })}
+          id="notes"
+          value={(data as any).notes || ''}
+          onChange={(e) => onChange({ ...data, notes: e.target.value } as any)}
           placeholder="Keys provided, code is 1234..."
           rows={3}
           className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
@@ -613,7 +828,7 @@ function EditCustomerForm({
       </div>
 
       {/* Checkboxes */}
-      <div className="flex gap-6">
+      <div className="space-y-3">
         <div className="flex items-center space-x-2">
           <Checkbox
             id="is_ad_hoc"
@@ -621,7 +836,7 @@ function EditCustomerForm({
             onCheckedChange={(checked) => onChange({ ...data, is_ad_hoc: checked as boolean })}
           />
           <Label htmlFor="is_ad_hoc" className="text-sm text-gray-700 dark:text-white/80">
-            Ad-hoc customer
+            Ad-hoc customer (not on regular delivery schedule)
           </Label>
         </div>
 
@@ -632,7 +847,20 @@ function EditCustomerForm({
             onCheckedChange={(checked) => onChange({ ...data, frozen_only: checked as boolean })}
           />
           <Label htmlFor="frozen_only" className="text-sm text-gray-700 dark:text-white/80">
-            Frozen only
+            Frozen only (this customer only receives frozen products)
+          </Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="portal_enabled"
+            checked={(data as any).portal_enabled || false}
+            onCheckedChange={(checked) =>
+              onChange({ ...data, portal_enabled: checked as boolean } as any)
+            }
+          />
+          <Label htmlFor="portal_enabled" className="text-sm text-gray-700 dark:text-white/80">
+            Enable customer portal access
           </Label>
         </div>
       </div>

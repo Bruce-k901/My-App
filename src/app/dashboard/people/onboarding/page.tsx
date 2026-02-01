@@ -20,6 +20,7 @@ type Assignment = {
 type Pack = {
   id: string
   name: string
+  staff_type?: 'head_office' | 'site_staff'
   boh_foh: 'FOH' | 'BOH' | 'BOTH'
   pay_type: 'hourly' | 'salaried'
 }
@@ -82,16 +83,27 @@ export default function PeopleToOnboardPage() {
       // Load employees
       const { data: empData, error: empErr } = await supabase.rpc('get_company_profiles', { p_company_id: companyId })
       if (empErr) throw empErr
-      setEmployees((empData || []) as Employee[])
+      // Map profile_id to id to match Employee type
+      const mappedEmployees = (empData || []).map((emp: any) => ({
+        id: emp.profile_id,
+        full_name: emp.full_name,
+        email: emp.email,
+      }))
+      setEmployees(mappedEmployees)
 
       // Load packs
       const { data: packData, error: packErr } = await supabase
         .from('company_onboarding_packs')
-        .select('id, name, boh_foh, pay_type')
+        .select('id, name, staff_type, boh_foh, pay_type')
         .eq('company_id', companyId)
         .order('name')
       if (packErr) throw packErr
-      setPacks((packData || []) as Pack[])
+      // Map with fallback for existing records
+      const mappedPacks = (packData || []).map((p: any) => ({
+        ...p,
+        staff_type: p.staff_type || 'site_staff',
+      }))
+      setPacks(mappedPacks as Pack[])
 
       // Load assignments
       const { data: asData, error: asErr } = await supabase
@@ -160,13 +172,13 @@ export default function PeopleToOnboardPage() {
 
   useEffect(() => {
     if (companyId) void load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId])
 
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -178,8 +190,8 @@ export default function PeopleToOnboardPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">People to Onboard</h1>
-          <p className="text-sm text-white/60">This page is for managers/admins only.</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
         </div>
         <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#EC4899] hover:underline">
           View My Onboarding Docs
@@ -193,8 +205,8 @@ export default function PeopleToOnboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">People to Onboard</h1>
-          <p className="text-sm text-white/60">Assign onboarding packs to employees and track their progress</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">Assign onboarding packs to employees and track their progress</p>
         </div>
         <Link href="/dashboard/people" className="text-sm text-[#EC4899] hover:underline">
           Back to People
@@ -209,35 +221,35 @@ export default function PeopleToOnboardPage() {
       <div className="flex items-center gap-2">
         <Link
           href="/dashboard/people/onboarding/company-docs"
-          className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 rounded-lg"
+          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-800 dark:text-white/80 rounded-lg"
         >
           Manage Docs
         </Link>
         <Link
           href="/dashboard/people/onboarding/packs"
-          className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 rounded-lg"
+          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-800 dark:text-white/80 rounded-lg"
         >
           Manage Packs
         </Link>
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading…
         </div>
       ) : (
         <>
           {/* Assign Pack Section */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-5 h-5 text-[#EC4899]" />
-              <h2 className="text-lg font-semibold text-white">Assign Onboarding Pack</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assign Onboarding Pack</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-xs text-white/50 block mb-1">Employee</label>
+                <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Employee</label>
                 <Select
                   value={assignEmployeeId}
                   onValueChange={setAssignEmployeeId}
@@ -253,17 +265,21 @@ export default function PeopleToOnboardPage() {
               </div>
 
               <div>
-                <label className="text-xs text-white/50 block mb-1">Onboarding Pack</label>
-                <Select
-                  value={assignPackId}
-                  onValueChange={setAssignPackId}
-                  options={packs.map((p) => ({
-                    label: `${p.name} (${p.boh_foh} ${p.pay_type})`,
-                    value: p.id,
-                  }))}
-                  placeholder="Select pack…"
-                  className="w-full"
-                />
+                <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Onboarding Pack</label>
+                  <Select
+                    value={assignPackId}
+                    onValueChange={setAssignPackId}
+                    options={packs.map((p) => {
+                      const staffTypeLabel = p.staff_type === 'head_office' ? 'Head Office' : 'Site Staff'
+                      const bohFohLabel = p.staff_type === 'site_staff' ? `${p.boh_foh} ` : ''
+                      return {
+                        label: `${p.name} (${staffTypeLabel}${bohFohLabel}${p.pay_type})`,
+                        value: p.id,
+                      }
+                    })}
+                    placeholder="Select pack…"
+                    className="w-full"
+                  />
               </div>
 
               <div className="flex items-end">
@@ -278,26 +294,26 @@ export default function PeopleToOnboardPage() {
             </div>
 
             <div className="mt-4">
-              <label className="text-xs text-white/50 block mb-1">Optional Message (sent with pack)</label>
+              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Optional Message (sent with pack)</label>
               <textarea
                 value={assignMessage}
                 onChange={(e) => setAssignMessage(e.target.value)}
                 placeholder="e.g., Welcome to the team! Please review these documents..."
                 rows={2}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/40"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/40"
               />
             </div>
           </div>
 
           {/* Assignments List */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <Users className="w-5 h-5 text-[#EC4899]" />
-              <h2 className="text-lg font-semibold text-white">Assigned Onboarding ({assignments.length})</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assigned Onboarding ({assignments.length})</h2>
             </div>
 
             {assignments.length === 0 ? (
-              <div className="text-center py-8 text-white/60">
+              <div className="text-center py-8 text-gray-900 dark:text-white/60">
                 No onboarding assignments yet. Assign a pack to get started!
               </div>
             ) : (
@@ -310,13 +326,13 @@ export default function PeopleToOnboardPage() {
                   return (
                     <div
                       key={a.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.03] transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] hover:bg-white dark:hover:bg-white/[0.03] transition-colors"
                     >
                       <div className="flex-1">
-                        <div className="text-white font-medium">
+                        <div className="text-gray-900 dark:text-white font-medium">
                           {employee?.full_name || employee?.email || 'Unknown Employee'}
                         </div>
-                        <div className="text-xs text-white/50 mt-1">
+                        <div className="text-xs text-gray-900 dark:text-white/50 mt-1">
                           {pack?.name || 'Unknown Pack'} • Assigned {new Date(a.sent_at).toLocaleDateString()}
                         </div>
                       </div>

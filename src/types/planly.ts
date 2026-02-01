@@ -190,7 +190,12 @@ export interface PlanlyCustomer {
   finance_contact_email?: string;
   finance_contact_phone?: string;
   default_payment_terms?: PaymentTerms;
+  // Portal fields
   portal_enabled: boolean;
+  portal_invited_at?: string | null;
+  portal_last_login?: string | null;
+  portal_access_token?: string | null;
+  // Archive field
   archived_at?: string | null;
   // Relations
   destination_group?: DestinationGroup;

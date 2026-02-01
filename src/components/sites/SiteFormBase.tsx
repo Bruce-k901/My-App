@@ -739,9 +739,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="relative z-[10000] bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative z-[10000] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-neutral-800">
+        <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
           <h2 className="text-2xl font-semibold text-white">
             {mode === "new" ? "Add New Site" : "Edit Site"}
           </h2>
@@ -818,7 +818,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   type="text"
                   value={formData.city || ""}
                   readOnly
-                  className="bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
                   placeholder="Auto-filled from postcode"
                 />
               </div>
@@ -828,7 +828,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   type="text"
                   value={formData.region || ""}
                   readOnly
-                  className="bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
                   placeholder="Auto-filled from postcode"
                 />
               </div>
@@ -851,7 +851,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* Management Contact */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {/* Header with Update GM button on the left */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -916,11 +916,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* Operating Schedule */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {mode === "edit" ? (
               <div>
                 <h3 className="text-xl font-semibold mb-3 text-white">Operating Schedule</h3>
-                <div className="border border-neutral-800 rounded-xl p-4">
+                <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
                   <div className="space-y-2">
                     {WEEKDAYS.map((day, index) => {
                       const dayData = formData.operating_schedule[day];
@@ -1019,7 +1019,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 </button>
                 
                 {operatingScheduleOpen && (
-                  <div className="border border-neutral-800 rounded-xl p-4">
+                  <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
                     <div className="space-y-2">
                       {WEEKDAYS.map((day, index) => {
                         const dayData = formData.operating_schedule[day];
@@ -1109,7 +1109,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* D. Planned Closures */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             <h3 className="text-xl font-semibold text-white mb-4">Planned Closures</h3>
             
             <div className="flex gap-2 items-center mb-3">
@@ -1120,7 +1120,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   start: date?.toISOString().split("T")[0] || ""
                 }))}
                 placeholderText="Start date"
-                className="bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
                 popperClassName="z-50"
                 calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
               />
@@ -1134,7 +1134,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 minDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 openToDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 placeholderText="End date"
-                className="bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
                 popperClassName="z-50"
                 calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
               />
@@ -1167,13 +1167,13 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 ))}
               </div>
             ) : (
-              <p className="text-neutral-500 text-sm">No planned closures yet.</p>
+              <p className="text-gray-400 dark:text-neutral-500 text-sm">No planned closures yet.</p>
             )}
           </section>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-neutral-800 flex justify-between">
+        <div className="p-6 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
           {/* Delete button - only show in edit mode */}
           {mode === "edit" && onDelete && (
             <button

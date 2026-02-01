@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from('planly_process_templates')
@@ -15,7 +15,9 @@ export async function GET(
         *,
         stages:planly_process_stages(
           *,
-          equipment:planly_stage_equipment(*)
+          equipment:planly_stage_equipment(*),
+          bake_group:planly_bake_groups(*),
+          destination_group:planly_destination_groups(*)
         )
       `)
       .eq('id', id)
@@ -42,11 +44,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -73,11 +75,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
     const { error } = await supabase
       .from('planly_process_templates')

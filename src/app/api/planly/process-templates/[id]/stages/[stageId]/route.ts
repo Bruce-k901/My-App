@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; stageId: string } }
+  { params }: { params: Promise<{ id: string; stageId: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { stageId } = params;
+    const { stageId } = await params;
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -34,11 +34,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; stageId: string } }
+  { params }: { params: Promise<{ id: string; stageId: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { stageId } = params;
+    const { stageId } = await params;
 
     const { error } = await supabase
       .from('planly_process_stages')

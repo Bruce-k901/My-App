@@ -63,7 +63,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
       <div className="p-8 text-white">
         <h1>Access Denied</h1>
         <p>You don't have permission to view this review.</p>
-        <p className="text-sm text-neutral-400 mt-2">
+        <p className="text-sm text-gray-500 dark:text-white/60 mt-2">
           Review ID: {id}<br />
           Your Profile ID: {profile.id}<br />
           Employee ID: {review.employee_id}<br />

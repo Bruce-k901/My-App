@@ -94,9 +94,9 @@ export function ReviewComparisonQuestion({
       border: 'border-white/10',
       bg: 'bg-white/[0.02]',
       icon: HelpCircle,
-      iconColor: 'text-neutral-400',
+      iconColor: 'text-gray-500 dark:text-white/60',
       label: 'Incomplete',
-      labelBg: 'bg-white/10 text-neutral-400',
+      labelBg: 'bg-white/10 text-gray-500 dark:text-white/60',
     },
   };
   
@@ -178,7 +178,7 @@ export function ReviewComparisonQuestion({
           </div>
           <h4 className="font-medium text-white">{question.question_text}</h4>
           {question.helper_text && (
-            <p className="text-sm text-neutral-400 mt-1">{question.helper_text}</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{question.helper_text}</p>
           )}
         </div>
         
@@ -224,7 +224,7 @@ export function ReviewComparisonQuestion({
         <div className="pt-2 border-t border-white/5">
           <button
             onClick={() => setShowPrompt(!showPrompt)}
-            className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/60 hover:text-white transition-colors"
           >
             <MessageSquare className="w-4 h-4" />
             {showPrompt ? 'Hide' : 'Show'} Discussion Prompt

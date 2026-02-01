@@ -125,7 +125,7 @@ export function ReviewComparisonView({
           
           {/* Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-neutral-400" />
+            <Filter className="w-4 h-4 text-gray-500 dark:text-white/60" />
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as FilterType)}
@@ -154,7 +154,7 @@ export function ReviewComparisonView({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm text-gray-500 dark:text-white/60">
             Complete rating questions to see alignment stats
           </p>
         )}
@@ -181,7 +181,7 @@ export function ReviewComparisonView({
                   <div>
                     <h3 className="font-medium text-white">{section.title}</h3>
                     {section.description && (
-                      <p className="text-sm text-neutral-400 mt-0.5">{section.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-white/60 mt-0.5">{section.description}</p>
                     )}
                   </div>
                 </div>

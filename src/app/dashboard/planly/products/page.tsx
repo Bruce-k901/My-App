@@ -9,7 +9,7 @@ export default function ProductsPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Please select a site</div>
+        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
       </div>
     );
   }

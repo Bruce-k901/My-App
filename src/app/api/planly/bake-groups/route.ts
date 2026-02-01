@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('planly_bake_groups')
       .select('*')
-      .order('priority, name');
+      .eq('is_active', true)
+      .order('priority', { ascending: true });
 
     if (siteId) {
       query = query.eq('site_id', siteId);

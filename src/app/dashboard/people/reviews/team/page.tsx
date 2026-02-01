@@ -162,10 +162,10 @@ export default function TeamReviewsPage() {
 
   if (!isManager) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-12 text-center">
-        <Users className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-        <p className="text-white font-medium">Access Restricted</p>
-        <p className="text-neutral-400 text-sm mt-1">You need manager permissions to view team reviews</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
+        <Users className="w-12 h-12 text-gray-500 dark:text-white/50 mx-auto mb-4" />
+        <p className="text-gray-900 dark:text-white font-medium">Access Restricted</p>
+        <p className="text-gray-500 dark:text-white/60 text-sm mt-1">You need manager permissions to view team reviews</p>
       </div>
     );
   }
@@ -173,7 +173,7 @@ export default function TeamReviewsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
       </div>
     );
   }
@@ -182,8 +182,8 @@ export default function TeamReviewsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Team Reviews</h1>
-          <p className="text-neutral-400">Manage reviews for your team members</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Team Reviews</h1>
+          <p className="text-gray-500 dark:text-white/60">Manage reviews for your team members</p>
         </div>
         <Link
           href="/dashboard/people/reviews/schedule"
@@ -195,10 +195,10 @@ export default function TeamReviewsPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-12 text-center">
-          <Users className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-          <p className="text-white font-medium">No team reviews</p>
-          <p className="text-neutral-400 text-sm mt-1">Schedule a review to get started</p>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
+          <Users className="w-12 h-12 text-gray-500 dark:text-white/50 mx-auto mb-4" />
+          <p className="text-gray-900 dark:text-white font-medium">No team reviews</p>
+          <p className="text-gray-500 dark:text-white/60 text-sm mt-1">Schedule a review to get started</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -211,10 +211,10 @@ export default function TeamReviewsPage() {
               <Link
                 key={`${item.type}-${item.id}`}
                 href={href}
-                className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.1] transition-colors"
+                className="block bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-gray-300 dark:hover:border-white/[0.1] transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white font-medium flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 dark:from-blue-400 to-blue-500 flex items-center justify-center text-gray-900 dark:text-white font-medium flex-shrink-0">
                     {item.employee?.avatar_url ? (
                       <img src={item.employee.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -223,22 +223,22 @@ export default function TeamReviewsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-white font-medium">{item.employee?.full_name || 'Employee'}</h3>
+                      <h3 className="text-gray-900 dark:text-white font-medium">{item.employee?.full_name || 'Employee'}</h3>
                       {item.type === 'schedule' && (
-                        <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-xs border border-blue-500/30">
+                        <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded text-xs border border-blue-200 dark:border-blue-500/30">
                           Scheduled
                         </span>
                       )}
                       {item.type === 'review' && (
-                        <span className="px-2 py-0.5 bg-[#EC4899]/10 text-[#EC4899] rounded text-xs border border-[#EC4899]/30">
+                        <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded text-xs border border-blue-200 dark:border-blue-500/30">
                           {item.status === 'completed' ? 'Completed' : 'In Progress'}
                         </span>
                       )}
                     </div>
-                    <p className="text-neutral-400 text-sm">{item.template?.name || 'Review'}</p>
+                    <p className="text-gray-500 dark:text-white/60 text-sm">{item.template?.name || 'Review'}</p>
                     <div className="flex items-center gap-4 mt-1">
                       {item.scheduled_date && (
-                        <p className="text-neutral-500 text-xs flex items-center gap-1">
+                        <p className="text-gray-500 dark:text-white/50 text-xs flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {new Date(item.scheduled_date).toLocaleDateString('en-GB', { 
                             day: 'numeric', 
@@ -248,14 +248,14 @@ export default function TeamReviewsPage() {
                         </p>
                       )}
                       {item.type === 'schedule' && item.status === 'scheduled' && (
-                        <p className="text-neutral-500 text-xs flex items-center gap-1">
+                        <p className="text-gray-500 dark:text-white/50 text-xs flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           Upcoming
                         </p>
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-neutral-500" />
+                  <ChevronRight className="w-5 h-5 text-gray-500 dark:text-white/50" />
                 </div>
               </Link>
             );

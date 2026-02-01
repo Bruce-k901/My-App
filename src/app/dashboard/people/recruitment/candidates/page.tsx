@@ -188,14 +188,14 @@ export default function CandidatesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">Candidates</h1>
-          <p className="text-sm text-white/60 mt-1">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Candidates</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
             Track applications and manage candidates
           </p>
         </div>
         <Link
           href="/dashboard/people/recruitment"
-          className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+          className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
         >
           View Jobs
         </Link>
@@ -209,14 +209,14 @@ export default function CandidatesPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by name, email, or phone..."
-            className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/30"
+            className="flex-1 px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/30"
           />
           
           {/* Job Filter */}
           <select
             value={filterJob}
             onChange={(e) => setFilterJob(e.target.value)}
-            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899] [&>option]:bg-[#1a1d24] [&>option]:text-white min-w-[200px]"
+            className="px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 [&>option]:bg-[#1a1d24] [&>option]:text-gray-900 [&>option]:dark:text-white min-w-[200px]"
           >
             <option value="all">All Jobs</option>
             {jobs.map(job => (
@@ -230,8 +230,8 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('all')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'all'
-                ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30'
-                : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             All ({candidates.length})
@@ -240,8 +240,8 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('active')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'active'
-                ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30'
-                : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             Active ({candidates.filter((c) => c.overall_status === 'active').length})
@@ -250,8 +250,8 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('hired')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'hired'
-                ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30'
-                : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             Hired ({candidates.filter((c) => c.overall_status === 'hired').length})
@@ -262,13 +262,13 @@ export default function CandidatesPage() {
       {/* Candidates List */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+          <Loader2 className="w-6 h-6 text-gray-900 dark:text-white/40 animate-spin" />
         </div>
       ) : filteredCandidates.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Users className="w-12 h-12 text-white/30 mx-auto mb-4" />
-          <div className="text-white font-semibold text-lg">No candidates yet</div>
-          <div className="text-white/60 text-sm mt-2 mb-4">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Users className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
+          <div className="text-gray-900 dark:text-white font-semibold text-lg">No candidates yet</div>
+          <div className="text-gray-900 dark:text-white/60 text-sm mt-2 mb-4">
             {searchTerm
               ? 'No candidates match your search'
               : filterStatus === 'all'
@@ -282,22 +282,22 @@ export default function CandidatesPage() {
             <Link
               key={candidate.id}
               href={`/dashboard/people/recruitment/candidates/${candidate.id}`}
-              className="block bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.05] transition-all"
+              className="block bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-all"
             >
               <div className="flex items-start justify-between gap-4">
                 {/* Left: Candidate Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-white font-semibold text-base">{candidate.full_name}</h3>
+                    <h3 className="text-gray-900 dark:text-white font-semibold text-base">{candidate.full_name}</h3>
                     {getStatusBadge(candidate.overall_status)}
                   </div>
 
                   {/* Job Applied For */}
                   {candidate.latest_application && (
                     <div className="mb-3">
-                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#EC4899]/10 border border-[#EC4899]/30">
-                        <FileText className="w-3.5 h-3.5 text-[#EC4899]" />
-                        <span className="text-xs font-medium text-[#EC4899]">
+                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-500/10 border border-[#EC4899]/30">
+                        <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
                           {candidate.latest_application.job_title}
                         </span>
                       </div>
@@ -306,14 +306,14 @@ export default function CandidatesPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                     {/* Email */}
-                    <div className="flex items-center gap-2 text-xs text-white/60">
+                    <div className="flex items-center gap-2 text-xs text-gray-900 dark:text-white/60">
                       <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                       <span className="truncate">{candidate.email}</span>
                     </div>
 
                     {/* Phone */}
                     {candidate.phone && (
-                      <div className="flex items-center gap-2 text-xs text-white/60">
+                      <div className="flex items-center gap-2 text-xs text-gray-900 dark:text-white/60">
                         <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                         <span>{candidate.phone}</span>
                       </div>
@@ -321,14 +321,14 @@ export default function CandidatesPage() {
 
                     {/* Source */}
                     {candidate.source && (
-                      <div className="flex items-center gap-2 text-xs text-white/60">
+                      <div className="flex items-center gap-2 text-xs text-gray-900 dark:text-white/60">
                         <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
                         <span>{candidate.source}</span>
                       </div>
                     )}
 
                     {/* Applied Date */}
-                    <div className="flex items-center gap-2 text-xs text-white/60">
+                    <div className="flex items-center gap-2 text-xs text-gray-900 dark:text-white/60">
                       <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
                       <span>Applied {new Date(candidate.created_at).toLocaleDateString()}</span>
                     </div>
@@ -337,9 +337,9 @@ export default function CandidatesPage() {
                   {/* Latest Application */}
                   {candidate.latest_application && (
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-white/50">Latest:</span>
-                      <span className="text-white/70">{candidate.latest_application.job_title}</span>
-                      <span className="px-2 py-0.5 rounded bg-white/10 text-white/70">
+                      <span className="text-gray-900 dark:text-white/50">Latest:</span>
+                      <span className="text-gray-900 dark:text-white/70">{candidate.latest_application.job_title}</span>
+                      <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
                         {candidate.latest_application.status}
                       </span>
                     </div>
@@ -357,7 +357,7 @@ export default function CandidatesPage() {
                         </span>
                       ))}
                       {candidate.tags.length > 3 && (
-                        <span className="text-xs text-white/50">+{candidate.tags.length - 3} more</span>
+                        <span className="text-xs text-gray-900 dark:text-white/50">+{candidate.tags.length - 3} more</span>
                       )}
                     </div>
                   )}
@@ -370,12 +370,12 @@ export default function CandidatesPage() {
                       e.preventDefault()
                       window.open(`mailto:${candidate.email}`, '_blank')
                     }}
-                    className="px-3 py-1.5 rounded text-xs bg-white/10 hover:bg-white/15 border border-white/10 text-white"
+                    className="px-3 py-1.5 rounded text-xs bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
                   >
                     <Mail className="w-3.5 h-3.5 inline mr-1" />
                     Email
                   </button>
-                  <div className="text-xs text-white/40 text-right">
+                  <div className="text-xs text-gray-900 dark:text-white/40 text-right">
                     View profile →
                   </div>
                 </div>

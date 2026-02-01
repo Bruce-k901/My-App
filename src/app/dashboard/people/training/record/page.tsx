@@ -154,7 +154,7 @@ export default function RecordTrainingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
       </div>
     );
   }
@@ -162,10 +162,10 @@ export default function RecordTrainingPage() {
   if (success) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-8 text-center">
-          <Check className="w-16 h-16 text-green-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Training Recorded</h2>
-          <p className="text-neutral-400">Redirecting...</p>
+        <div className="bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-lg p-8 text-center">
+          <Check className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Training Recorded</h2>
+          <p className="text-gray-600 dark:text-white/70">Redirecting...</p>
         </div>
       </div>
     );
@@ -175,29 +175,29 @@ export default function RecordTrainingPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/people/training" className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors">
-          <ArrowLeft className="w-5 h-5 text-neutral-400" />
+        <Link href="/dashboard/people/training" className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors">
+          <ArrowLeft className="w-5 h-5 text-gray-500 dark:text-white/60" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Record Training</h1>
-          <p className="text-neutral-400">Log completed training or certification</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Record Training</h1>
+          <p className="text-gray-600 dark:text-white/70">Log completed training or certification</p>
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400">
+        <div className="mb-6 p-4 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-6">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
           
           {/* Employee */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
               <User className="w-4 h-4 inline mr-2" />
               Employee <span className="text-red-400">*</span>
             </label>
@@ -211,7 +211,7 @@ export default function RecordTrainingPage() {
                     type="text"
                     value={employees[0]?.full_name || ''}
                     disabled
-                    className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-neutral-400 cursor-not-allowed"
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-500 dark:text-white/60 cursor-not-allowed"
                   />
                 );
               }
@@ -221,7 +221,7 @@ export default function RecordTrainingPage() {
                 <select
                   value={formData.profile_id}
                   onChange={(e) => setFormData(prev => ({ ...prev, profile_id: e.target.value }))}
-                  className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Select employee...</option>
                   {employees.map(emp => (
@@ -234,14 +234,14 @@ export default function RecordTrainingPage() {
 
           {/* Course */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
               <GraduationCap className="w-4 h-4 inline mr-2" />
               Training Course <span className="text-red-400">*</span>
             </label>
             <select
               value={formData.course_id}
               onChange={(e) => setFormData(prev => ({ ...prev, course_id: e.target.value }))}
-              className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select course...</option>
               {Object.entries(
@@ -262,7 +262,7 @@ export default function RecordTrainingPage() {
 
           {/* Completion Date */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
               <Calendar className="w-4 h-4 inline mr-2" />
               Completion Date <span className="text-red-400">*</span>
             </label>
@@ -270,14 +270,14 @@ export default function RecordTrainingPage() {
               type="date"
               value={formData.completed_at}
               onChange={(e) => setFormData(prev => ({ ...prev, completed_at: e.target.value }))}
-              className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Score (if assessment required) */}
           {selectedCourse?.assessment_required && (
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                 Score (%)
               </label>
               <input
@@ -287,7 +287,7 @@ export default function RecordTrainingPage() {
                 value={formData.score}
                 onChange={(e) => setFormData(prev => ({ ...prev, score: e.target.value }))}
                 placeholder={`Pass mark: ${selectedCourse.pass_mark_percentage}%`}
-                className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           )}
@@ -296,7 +296,7 @@ export default function RecordTrainingPage() {
           {selectedCourse?.results_in_certification && (
             <>
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                   <Award className="w-4 h-4 inline mr-2" />
                   Certificate Number
                 </label>
@@ -305,22 +305,22 @@ export default function RecordTrainingPage() {
                   value={formData.certificate_number}
                   onChange={(e) => setFormData(prev => ({ ...prev, certificate_number: e.target.value }))}
                   placeholder="e.g., CERT-12345"
-                  className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                  className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                   Expiry Date
                 </label>
                 <input
                   type="date"
                   value={formData.expiry_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, expiry_date: e.target.value }))}
-                  className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                  className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 {selectedCourse.certification_validity_months && (
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
                     Auto-calculated: {selectedCourse.certification_validity_months} months from completion
                   </p>
                 )}
@@ -330,7 +330,7 @@ export default function RecordTrainingPage() {
 
           {/* Trainer */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
               Trainer / Provider
             </label>
             <input
@@ -338,13 +338,13 @@ export default function RecordTrainingPage() {
               value={formData.trainer_name}
               onChange={(e) => setFormData(prev => ({ ...prev, trainer_name: e.target.value }))}
               placeholder="e.g., John Smith / Highfield"
-              className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
               Notes
             </label>
             <textarea
@@ -352,19 +352,19 @@ export default function RecordTrainingPage() {
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
               placeholder="Any additional notes..."
-              className="w-full px-3 py-2 bg-[#0B0D13] border border-white/[0.06] rounded-lg text-white placeholder-neutral-400 resize-none focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/60 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
-            <Link href="/dashboard/people/training" className="px-4 py-2 text-neutral-400 hover:text-white transition-colors">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+            <Link href="/dashboard/people/training" className="px-4 py-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors">
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-gray-300 dark:border-white/[0.1] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
             >
               {submitting ? (
                 <>

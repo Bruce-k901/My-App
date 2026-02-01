@@ -1,3 +1,31 @@
+/**
+ * @ai-knowledge
+ * @title Module Navigation Bar
+ * @category Components
+ * @subcategory Navigation
+ * @tags navigation, modules, header, checkly, stockly, teamly, assetly, planly
+ *
+ * The ModuleBar is the second header bar that displays application modules.
+ *
+ * Available Modules:
+ * - Checkly (/dashboard/tasks): Task management and checklists
+ * - Stockly (/dashboard/stockly): Inventory and stock management
+ * - Teamly (/dashboard/people): HR, attendance, scheduling, payroll
+ * - Assetly (/dashboard/assets): Asset tracking and maintenance
+ * - Planly (/dashboard/planly): Production planning and orders
+ * - Forecastly (/dashboard/forecastly): Sales forecasting (Coming Soon)
+ *
+ * Features:
+ * - Active module is highlighted with its brand color
+ * - Disabled modules show "Coming Soon" badge
+ * - ClockInButton is positioned on the right side for quick access
+ *
+ * Styling:
+ * - Fixed position below DashboardHeader (top-16, z-30)
+ * - 56px height (h-14)
+ * - Light blue background in light mode, dark gray in dark mode
+ */
+
 "use client";
 
 import Link from "next/link";
@@ -11,6 +39,7 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClockInButton } from "@/components/notifications/ClockInButton";
 
 interface Module {
   name: string;
@@ -66,7 +95,7 @@ export function ModuleBar() {
   const pathname = usePathname();
 
   return (
-    <div className="h-14 bg-blue-50 dark:bg-[#1a1a1a] border-b border-[rgb(var(--border))] dark:border-white/[0.06] px-6 flex items-center gap-2 fixed top-16 left-0 right-0 z-30 overflow-x-auto">
+    <div className="h-14 bg-blue-50 dark:bg-[#1a1a1a] border-b border-[rgb(var(--border))] dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-16 left-0 right-0 z-30">
       <div className="flex items-center gap-2 overflow-x-auto">
         {modules.map((module) => {
           const Icon = module.icon;
@@ -124,6 +153,11 @@ export function ModuleBar() {
             </Link>
           );
         })}
+      </div>
+
+      {/* Clock In Button */}
+      <div className="flex-shrink-0 ml-4">
+        <ClockInButton />
       </div>
     </div>
   );

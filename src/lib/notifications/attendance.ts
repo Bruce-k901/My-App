@@ -1,4 +1,33 @@
 /**
+ * @ai-knowledge
+ * @title Clock In/Out Service
+ * @category Features
+ * @subcategory Attendance
+ * @tags attendance, time-tracking, clock-in, clock-out, employees, shifts
+ *
+ * The Clock In/Out service manages employee time tracking functionality.
+ *
+ * Key Functions:
+ * - clockIn(siteId, location?, notes?): Start a new shift for the current user
+ * - clockOut(notes?): End the current active shift
+ * - isClockedIn(siteId?): Check if user has an active shift
+ * - getCurrentAttendance(): Get the current active attendance log
+ *
+ * Database Table: staff_attendance
+ * - Tracks clock_in_time, clock_out_time, site_id, shift_status
+ * - shift_status: "on_shift" (active) or "off_shift" (completed)
+ * - total_hours: Auto-calculated by database trigger on clock out
+ *
+ * UI Components:
+ * - ClockInButton (src/components/notifications/ClockInButton.tsx): Quick clock in/out toggle
+ * - TimeClock (src/components/time-clock.tsx): Full time clock with site selection
+ *
+ * Locations:
+ * - ClockInButton appears in ModuleBar (second header) and DashboardHeader
+ * - Full TimeClock available on the attendance signoff page
+ */
+
+/**
  * Attendance / Clock-in Service
  * Handles clock-in and clock-out functionality
  */

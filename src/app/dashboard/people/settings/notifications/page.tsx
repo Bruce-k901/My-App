@@ -134,7 +134,7 @@ export default function NotificationsPage() {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
-          <p className="text-white/60">Loading notification settings...</p>
+          <p className="text-gray-900 dark:text-white/60">Loading notification settings...</p>
         </div>
       </div>
     );
@@ -147,23 +147,23 @@ export default function NotificationsPage() {
         <div>
           <Link
             href="/dashboard/people/settings"
-            className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-4"
+            className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Settings
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-            <Bell className="w-6 h-6 text-[#EC4899]" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <Bell className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             Notification Settings
           </h1>
-          <p className="text-neutral-400">
+          <p className="text-gray-500 dark:text-white/60">
             Configure alerts for shifts, approvals, and deadlines
           </p>
         </div>
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-2 border-b border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-2 border-b border-gray-300 dark:border-white/[0.1] overflow-x-auto">
         {categories.map((category) => {
           const isActive = activeCategory === category.id;
           const count = category.id === 'all' 
@@ -177,15 +177,15 @@ export default function NotificationsPage() {
               className={`
                 px-4 py-3 flex items-center gap-2 text-sm font-medium transition-colors border-b-2
                 ${isActive
-                  ? "border-[#EC4899] text-[#EC4899]"
-                  : "border-transparent text-white/60 hover:text-white/80"
+                  ? "border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80"
                 }
               `}
             >
               {category.label}
               {count > 0 && (
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
-                  isActive ? 'bg-[#EC4899]/20 text-[#EC4899]' : 'bg-white/10 text-white/60'
+                  isActive ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : 'bg-white/10 text-gray-900 dark:text-white/60'
                 }`}>
                   {count}
                 </span>
@@ -198,8 +198,8 @@ export default function NotificationsPage() {
       {/* Notification Settings List */}
       <div className="space-y-4">
         {displayTypes.length === 0 ? (
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-            <p className="text-white/60">No notifications in this category</p>
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+            <p className="text-gray-900 dark:text-white/60">No notifications in this category</p>
           </div>
         ) : (
           displayTypes.map((type) => {
@@ -209,55 +209,55 @@ export default function NotificationsPage() {
             return (
               <div
                 key={type.id}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6"
+                className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">{type.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{type.name}</h3>
                       <Switch
                         checked={setting.enabled ?? true}
                         onChange={() => toggleEnabled(type.id)}
                       />
                     </div>
                     {type.description && (
-                      <p className="text-sm text-white/60">{type.description}</p>
+                      <p className="text-sm text-gray-900 dark:text-white/60">{type.description}</p>
                     )}
                   </div>
                 </div>
 
                 {setting.enabled && (
-                  <div className="space-y-4 mt-4 pt-4 border-t border-white/[0.06]">
+                  <div className="space-y-4 mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
                     {/* Delivery Channels */}
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-3">
+                      <label className="block text-sm font-medium text-gray-900 dark:text-gray-800 dark:text-white/80 mb-3">
                         Delivery Channels
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                           <div className="flex items-center gap-2">
-                            <MessageSquare className="w-4 h-4 text-white/60" />
-                            <span className="text-sm text-white">In-App</span>
+                            <MessageSquare className="w-4 h-4 text-gray-900 dark:text-white/60" />
+                            <span className="text-sm text-gray-900 dark:text-white">In-App</span>
                           </div>
                           <Switch
                             checked={setting.channels?.in_app ?? true}
                             onChange={() => toggleChannel(type.id, 'in_app')}
                           />
                         </div>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                           <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-white/60" />
-                            <span className="text-sm text-white">Email</span>
+                            <Mail className="w-4 h-4 text-gray-900 dark:text-white/60" />
+                            <span className="text-sm text-gray-900 dark:text-white">Email</span>
                           </div>
                           <Switch
                             checked={setting.channels?.email ?? false}
                             onChange={() => toggleChannel(type.id, 'email')}
                           />
                         </div>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                           <div className="flex items-center gap-2">
-                            <Smartphone className="w-4 h-4 text-white/60" />
-                            <span className="text-sm text-white">Push</span>
+                            <Smartphone className="w-4 h-4 text-gray-900 dark:text-white/60" />
+                            <span className="text-sm text-gray-900 dark:text-white">Push</span>
                           </div>
                           <Switch
                             checked={setting.channels?.push ?? false}
@@ -270,7 +270,7 @@ export default function NotificationsPage() {
                     {/* Timing Configuration */}
                     {hasTiming && (
                       <div>
-                        <label className="block text-sm font-medium text-white/80 mb-3">
+                        <label className="block text-sm font-medium text-gray-900 dark:text-gray-800 dark:text-white/80 mb-3">
                           Timing Configuration
                         </label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -281,7 +281,7 @@ export default function NotificationsPage() {
                             
                             return (
                               <div key={key}>
-                                <label className="block text-xs text-white/60 mb-1">
+                                <label className="block text-xs text-gray-900 dark:text-white/60 mb-1">
                                   {label}
                                 </label>
                                 <Input

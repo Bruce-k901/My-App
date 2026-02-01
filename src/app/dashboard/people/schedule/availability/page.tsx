@@ -273,7 +273,7 @@ export default function MyAvailabilityPage() {
     <div className="space-y-4">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-white">Weekly Availability Pattern</h2>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
           Set your regular weekly availability. This will apply to all weeks unless overridden.
         </p>
       </div>
@@ -309,7 +309,7 @@ export default function MyAvailabilityPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-white">Availability Calendar</h2>
-            <p className="text-sm text-neutral-400 mt-1">
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
               View and manage specific date overrides and time-off requests.
             </p>
           </div>
@@ -328,7 +328,7 @@ export default function MyAvailabilityPage() {
             onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-colors"
+            className="text-gray-500 dark:text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -339,7 +339,7 @@ export default function MyAvailabilityPage() {
             onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-colors"
+            className="text-gray-500 dark:text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
@@ -392,7 +392,7 @@ export default function MyAvailabilityPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">My Availability</h1>
-          <p className="text-neutral-400 mt-1">
+          <p className="text-gray-500 dark:text-white/60 mt-1">
             Manage your work availability and request time off
           </p>
         </div>
@@ -427,7 +427,7 @@ export default function MyAvailabilityPage() {
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'patterns'
               ? 'bg-[#EC4899] text-white'
-              : 'text-neutral-400 hover:text-white'
+              : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
           <Calendar className="w-4 h-4 inline mr-2" />
@@ -438,7 +438,7 @@ export default function MyAvailabilityPage() {
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'calendar'
               ? 'bg-[#EC4899] text-white'
-              : 'text-neutral-400 hover:text-white'
+              : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
           <Clock className="w-4 h-4 inline mr-2" />
@@ -620,7 +620,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
 
         {/* Notes - always visible */}
         <div>
-          <label className="text-xs text-neutral-400 block mb-1">Notes (optional)</label>
+          <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">Notes (optional)</label>
           <input
             type="text"
             value={notes}
@@ -678,7 +678,7 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
 
   let status: 'available' | 'unavailable' | 'pending' | 'approved' = 'available';
   let displayText = '';
-  let statusColor = 'text-neutral-400';
+  let statusColor = 'text-gray-500 dark:text-white/60';
 
   if (override) {
     if (override.override_type === 'time_off_request') {
@@ -713,7 +713,7 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
       } ${isPast ? 'opacity-50' : ''}`}
     >
       <div className="text-center mb-2">
-        <div className="text-xs text-neutral-400 uppercase">{format(date, 'EEE')}</div>
+        <div className="text-xs text-gray-500 dark:text-white/60 uppercase">{format(date, 'EEE')}</div>
         <div className={`text-lg font-semibold ${isToday ? 'text-[#EC4899]' : 'text-white'}`}>
           {format(date, 'd')}
         </div>
@@ -728,7 +728,7 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
           onClick={onRequestTimeOff}
           size="sm"
           variant="ghost"
-          className="w-full mt-2 text-xs text-neutral-400 hover:text-[#EC4899]"
+          className="w-full mt-2 text-xs text-gray-500 dark:text-white/60 hover:text-[#EC4899]"
         >
           Request Time Off
         </Button>
@@ -780,7 +780,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
           <h2 className="text-xl font-semibold text-white">Request Time Off</h2>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-gray-500 dark:text-white/60 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -789,7 +789,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Date */}
           <div>
-            <label className="text-sm text-neutral-400 block mb-2">Date</label>
+            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Date</label>
             <input
               type="date"
               value={date}
@@ -801,7 +801,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
 
           {/* Type */}
           <div>
-            <label className="text-sm text-neutral-400 block mb-2">Type</label>
+            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Type</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as 'time_off_request' | 'leave')}
@@ -830,7 +830,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
           {isPartialDay && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-neutral-400 block mb-1">Start Time</label>
+                <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">Start Time</label>
                 <TimePicker
                   value={startTime}
                   onChange={(value) => setStartTime(value)}
@@ -839,7 +839,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-400 block mb-1">End Time</label>
+                <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">End Time</label>
                 <TimePicker
                   value={endTime}
                   onChange={(value) => setEndTime(value)}
@@ -852,7 +852,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
 
           {/* Reason */}
           <div>
-            <label className="text-sm text-neutral-400 block mb-2">Reason</label>
+            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Reason</label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -869,7 +869,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               type="button"
               onClick={onClose}
               variant="ghost"
-              className="flex-1 text-neutral-400"
+              className="flex-1 text-gray-500 dark:text-white/60"
               disabled={submitting}
             >
               Cancel

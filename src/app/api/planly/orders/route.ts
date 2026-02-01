@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const customerId = searchParams.get('customerId');
     const deliveryDate = searchParams.get('deliveryDate');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     const status = searchParams.get('status');
 
     let query = supabase
@@ -28,6 +30,15 @@ export async function GET(request: NextRequest) {
 
     if (deliveryDate) {
       query = query.eq('delivery_date', deliveryDate);
+    }
+
+    // Date range filtering
+    if (startDate) {
+      query = query.gte('delivery_date', startDate);
+    }
+
+    if (endDate) {
+      query = query.lte('delivery_date', endDate);
     }
 
     if (status) {

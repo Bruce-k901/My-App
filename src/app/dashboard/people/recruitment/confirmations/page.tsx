@@ -147,8 +147,8 @@ export default function ConfirmationsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Confirmation Responses</h1>
-        <p className="text-white/60">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Confirmation Responses</h1>
+        <p className="text-gray-900 dark:text-white/60">
           Candidate responses to interview, trial, and offer invitations
         </p>
       </div>
@@ -159,8 +159,8 @@ export default function ConfirmationsPage() {
           onClick={() => setFilter('unprocessed')}
           className={`px-4 py-2 rounded-lg text-sm transition-all ${
             filter === 'unprocessed'
-              ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30'
-              : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+              ? 'bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+              : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
           }`}
         >
           Unprocessed ({responses.filter(r => !r.processed).length})
@@ -169,8 +169,8 @@ export default function ConfirmationsPage() {
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg text-sm transition-all ${
             filter === 'all'
-              ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30'
-              : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+              ? 'bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+              : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
           }`}
         >
           All ({responses.length})
@@ -180,13 +180,13 @@ export default function ConfirmationsPage() {
       {/* Responses List */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+          <Loader2 className="w-6 h-6 text-gray-900 dark:text-white/40 animate-spin" />
         </div>
       ) : responses.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-          <Mail className="w-12 h-12 text-white/30 mx-auto mb-4" />
-          <div className="text-white font-semibold text-lg">No responses yet</div>
-          <div className="text-white/60 text-sm mt-2">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <Mail className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
+          <div className="text-gray-900 dark:text-white font-semibold text-lg">No responses yet</div>
+          <div className="text-gray-900 dark:text-white/60 text-sm mt-2">
             Candidate responses will appear here when they click confirmation links in emails
           </div>
         </div>
@@ -195,8 +195,8 @@ export default function ConfirmationsPage() {
           {responses.map((response) => (
             <div
               key={response.id}
-              className={`bg-white/[0.03] border rounded-xl p-5 ${
-                response.processed ? 'border-white/[0.03] opacity-60' : 'border-white/[0.06]'
+              className={`bg-white dark:bg-white/[0.03] border rounded-xl p-5 ${
+                response.processed ? 'border-gray-200 dark:border-white/[0.03] opacity-60' : 'border-gray-200 dark:border-white/[0.06]'
               }`}
             >
               <div className="flex items-start justify-between gap-4 mb-4">
@@ -204,17 +204,17 @@ export default function ConfirmationsPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <Link
                       href={`/dashboard/people/recruitment/candidates/${(response.candidate as any).id}`}
-                      className="text-white font-semibold hover:text-[#EC4899] transition-colors"
+                      className="text-gray-900 dark:text-white font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       {(response.candidate as any).full_name}
                     </Link>
                     {getTypeBadge(response.response_type)}
                     {getActionBadge(response.action)}
                   </div>
-                  <div className="text-white/60 text-sm">
+                  <div className="text-gray-900 dark:text-white/60 text-sm">
                     {(response.application as any).jobs.title}
                   </div>
-                  <div className="text-white/40 text-xs mt-1">
+                  <div className="text-gray-900 dark:text-white/40 text-xs mt-1">
                     Responded: {new Date(response.responded_at).toLocaleString('en-GB', {
                       day: 'numeric',
                       month: 'short',
@@ -232,18 +232,18 @@ export default function ConfirmationsPage() {
                     🔄 Reschedule Request
                   </div>
                   {response.requested_date && (
-                    <div className="text-white/70 text-sm">
+                    <div className="text-gray-900 dark:text-white/70 text-sm">
                       Preferred Date: <strong>{new Date(response.requested_date).toLocaleDateString('en-GB')}</strong>
                       {response.requested_time && ` at ${response.requested_time}`}
                     </div>
                   )}
                   {response.requested_start_date && (
-                    <div className="text-white/70 text-sm">
+                    <div className="text-gray-900 dark:text-white/70 text-sm">
                       Preferred Start Date: <strong>{new Date(response.requested_start_date).toLocaleDateString('en-GB')}</strong>
                     </div>
                   )}
                   {response.reschedule_reason && (
-                    <div className="text-white/60 text-sm mt-2">
+                    <div className="text-gray-900 dark:text-white/60 text-sm mt-2">
                       Reason: {response.reschedule_reason}
                     </div>
                   )}
@@ -255,7 +255,7 @@ export default function ConfirmationsPage() {
                   <div className="text-red-400 font-medium text-sm mb-2">
                     ✗ Decline Reason
                   </div>
-                  <div className="text-white/70 text-sm">
+                  <div className="text-gray-900 dark:text-white/70 text-sm">
                     {response.decline_reason}
                   </div>
                 </div>
@@ -266,13 +266,13 @@ export default function ConfirmationsPage() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/dashboard/people/recruitment/candidates/${(response.candidate as any).id}`}
-                    className="px-3 py-1.5 text-xs rounded-lg bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/30 hover:bg-[#EC4899]/20"
+                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30 hover:bg-blue-100 dark:hover:bg-blue-500/20"
                   >
                     View Candidate
                   </Link>
                   <button
                     onClick={() => markProcessed(response.id)}
-                    className="px-3 py-1.5 text-xs rounded-lg bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                    className="px-3 py-1.5 text-xs rounded-lg bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10"
                   >
                     Mark as Processed
                   </button>

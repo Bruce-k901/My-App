@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from('planly_bake_groups')
@@ -36,11 +36,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const { data, error } = await supabase
@@ -67,12 +67,19 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
+    // First, unassign all products from this group
+    await supabase
+      .from('planly_products')
+      .update({ bake_group_id: null })
+      .eq('bake_group_id', id);
+
+    // Then delete the group
     const { error } = await supabase
       .from('planly_bake_groups')
       .delete()

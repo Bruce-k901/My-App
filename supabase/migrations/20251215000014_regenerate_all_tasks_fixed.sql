@@ -22,6 +22,12 @@ DECLARE
   v_daypart_times JSONB;
   v_time_array JSONB;
 BEGIN
+  -- Skip if required tables don't exist
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_checklists') THEN
+    RAISE NOTICE '⚠️ site_checklists table does not exist - skipping task generation';
+    RETURN;
+  END IF;
+
   RAISE NOTICE 'Generating tasks from site_checklists...';
   
   FOR v_checklist IN
@@ -251,6 +257,12 @@ DECLARE
   v_ra_count INTEGER := 0;
   v_closure_count INTEGER := 0;
 BEGIN
+  -- Skip if required tables don't exist
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+    RAISE NOTICE '⚠️ profiles table does not exist - skipping certificate/document task generation';
+    RETURN;
+  END IF;
+
   RAISE NOTICE 'Generating tasks from certificates, documents, PPM, SOPs, RAs...';
   
   -- ===== CERTIFICATES =====
@@ -716,6 +728,12 @@ DECLARE
   v_site_checklist_tasks INTEGER;
   v_cron_tasks INTEGER;
 BEGIN
+  -- Skip if required tables don't exist
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'checklist_tasks') THEN
+    RAISE NOTICE '⚠️ checklist_tasks table does not exist - skipping verification';
+    RETURN;
+  END IF;
+
   SELECT COUNT(*) INTO v_total_tasks FROM checklist_tasks WHERE due_date = CURRENT_DATE;
   SELECT COUNT(*) INTO v_site_checklist_tasks FROM checklist_tasks WHERE due_date = CURRENT_DATE AND task_data->>'source_type' = 'site_checklist';
   SELECT COUNT(*) INTO v_cron_tasks FROM checklist_tasks WHERE due_date = CURRENT_DATE AND task_data->>'source' = 'cron';

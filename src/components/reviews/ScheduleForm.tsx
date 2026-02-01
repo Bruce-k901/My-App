@@ -151,20 +151,20 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/people/reviews">
-          <Button variant="ghost" className="text-neutral-400 hover:text-white">
+          <Button variant="ghost" className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white">
             <ArrowLeft className="h-4 w-4 mr-2" />Back
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Schedule Review</h1>
-          <p className="text-neutral-400 mt-1">Set up a new review for an employee</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Schedule Review</h1>
+          <p className="text-gray-600 dark:text-white/60 mt-1">Set up a new review for an employee</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-white">
-            <User className="h-4 w-4" />Employee <span className="text-[#EC4899]">*</span>
+          <Label className="flex items-center gap-2 text-gray-900 dark:text-white">
+            <User className="h-4 w-4" />Employee <span className="text-blue-600 dark:text-blue-400">*</span>
           </Label>
           <Select
             value={formData.employee_id || undefined}
@@ -193,11 +193,11 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
             options={groupedTemplateOptions}
             className="w-full"
           />
-          {selectedTemplate && <p className="text-sm text-neutral-400">{selectedTemplate.description}</p>}
+          {selectedTemplate && <p className="text-sm text-gray-500 dark:text-white/60">{selectedTemplate.description}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label className="text-white">Custom Title (optional)</Label>
+          <Label className="text-gray-900 dark:text-white">Custom Title (optional)</Label>
           <Input
             placeholder={selectedTemplate?.name || 'e.g., Q4 Performance Review'}
             value={formData.title}
@@ -219,7 +219,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-white">
+          <Label className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Clock className="h-4 w-4" />Due Date (optional)
           </Label>
           <Input
@@ -230,25 +230,25 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-white/[0.02] rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <Repeat className="h-5 w-5 text-neutral-400" />
+            <Repeat className="h-5 w-5 text-gray-500 dark:text-white/60" />
             <div>
-              <Label className="text-white">Make this a recurring review</Label>
-              <p className="text-sm text-neutral-400">Automatically reschedule after completion</p>
+              <Label className="text-gray-900 dark:text-white">Make this a recurring review</Label>
+              <p className="text-sm text-gray-600 dark:text-white/60">Automatically reschedule after completion</p>
             </div>
           </div>
           <input
             type="checkbox"
             checked={formData.is_recurring}
             onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
-            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#EC4899]"
+            className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.06] bg-white dark:bg-white/[0.05] text-blue-600 dark:text-blue-400 focus:ring-blue-500 focus:ring-2"
           />
         </div>
 
         {formData.is_recurring && (
           <div className="space-y-2">
-            <Label className="text-white">Recurrence Pattern</Label>
+            <Label className="text-gray-900 dark:text-white">Recurrence Pattern</Label>
             <Select
               value={formData.recurrence_pattern || undefined}
               onValueChange={(value) => setFormData({ ...formData, recurrence_pattern: value as RecurrencePattern })}
@@ -273,7 +273,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
             type="submit"
             variant="primary"
             disabled={isPending}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-0 shadow-sm dark:shadow-none"
           >
             {isPending ? 'Scheduling...' : 'Schedule Review'}
           </Button>

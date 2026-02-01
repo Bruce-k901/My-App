@@ -120,27 +120,27 @@ export default function PayRatesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#EC4899]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6">
+    <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href="/dashboard/people/payroll">
-              <Button variant="ghost" className="text-white/60 hover:text-white">
+              <Button variant="ghost" className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Payroll
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">Pay Rates</h1>
-              <p className="text-white/60 text-sm">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pay Rates</h1>
+              <p className="text-gray-900 dark:text-white/60 text-sm">
                 Manage employee compensation rates
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function PayRatesPage() {
           
           <Button
             onClick={() => setShowAddModal(true)}
-            className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white"
+            className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-600 dark:bg-blue-500/90 text-gray-900 dark:text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Pay Rate
@@ -158,19 +158,19 @@ export default function PayRatesPage() {
         {/* Filters */}
         <div className="flex gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-900 dark:text-white/40" />
             <input
               type="text"
               placeholder="Search employees..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-[#1A1D26] border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#EC4899]"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
             />
           </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2 bg-[#1A1D26] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+            className="px-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
           >
             <option value="all">All Types</option>
             <option value="hourly">Hourly</option>
@@ -180,30 +180,30 @@ export default function PayRatesPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-[#1A1D26] rounded-lg border border-white/10 overflow-hidden">
+        <div className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#0B0D13] border-b border-white/10">
+              <thead className="bg-white dark:bg-[#0B0D13] border-b border-gray-300 dark:border-white/10">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Employee
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Overtime
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Effective From
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-900 dark:text-white/60 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -211,7 +211,7 @@ export default function PayRatesPage() {
               <tbody className="divide-y divide-white/10">
                 {filteredRates.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-white/60">
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-900 dark:text-white/60">
                       {searchTerm || filterType !== 'all' 
                         ? 'No pay rates match your filters'
                         : 'No pay rates found. Add one to get started.'}
@@ -222,8 +222,8 @@ export default function PayRatesPage() {
                     <tr key={rate.id} className="hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4">
                         <div>
-                          <div className="font-medium text-white">{rate.employee_name}</div>
-                          <div className="text-sm text-white/60">{rate.position_title || 'No title'}</div>
+                          <div className="font-medium text-gray-900 dark:text-white">{rate.employee_name}</div>
+                          <div className="text-sm text-gray-900 dark:text-white/60">{rate.position_title || 'No title'}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -231,16 +231,16 @@ export default function PayRatesPage() {
                           {rate.pay_type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-white">
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">
                         {rate.pay_type === 'salary' 
                           ? formatCurrency(rate.base_rate) + '/year'
                           : formatCurrency(rate.base_rate) + (rate.pay_type === 'hourly' ? '/hr' : '/day')
                         }
                       </td>
-                      <td className="px-6 py-4 text-white/80">
+                      <td className="px-6 py-4 text-gray-900 dark:text-white/80">
                         {rate.overtime_multiplier ? `${rate.overtime_multiplier}x` : 'N/A'}
                       </td>
-                      <td className="px-6 py-4 text-white/80">
+                      <td className="px-6 py-4 text-gray-900 dark:text-white/80">
                         {formatDate(rate.effective_from)}
                       </td>
                       <td className="px-6 py-4">
@@ -260,7 +260,7 @@ export default function PayRatesPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => setEditingRate(rate)}
-                            className="text-white/60 hover:text-white"
+                            className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>

@@ -16,6 +16,34 @@ interface StepCardProps {
   onDelete: () => void;
 }
 
+// Format group names as compact text with dividers
+function formatGroupsList(
+  groupIds: string[] | undefined,
+  allGroups: { id: string; name: string }[],
+  legacyGroupId: string | undefined,
+  maxShow: number = 3
+): string | null {
+  // Check for legacy single-group field first
+  if (legacyGroupId && (!groupIds || groupIds.length === 0)) {
+    const legacyGroup = allGroups.find(g => g.id === legacyGroupId);
+    return legacyGroup?.name || null;
+  }
+
+  if (!groupIds || groupIds.length === 0) return null;
+
+  const names = groupIds
+    .map(id => allGroups.find(g => g.id === id)?.name)
+    .filter(Boolean) as string[];
+
+  if (names.length === 0) return null;
+
+  if (names.length <= maxShow) {
+    return names.join(' · ');
+  }
+
+  return `${names.slice(0, maxShow).join(' · ')} +${names.length - maxShow} more`;
+}
+
 export function StepCard({
   stage,
   isExpanded,
@@ -40,21 +68,23 @@ export function StepCard({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Find group names for display (supports both old single-group and new multi-group)
-  const selectedBakeGroups = bakeGroups.filter((g) =>
-    stage.bake_group_ids?.includes(g.id)
+  // Format group text for compact display
+  const bakeGroupText = formatGroupsList(
+    stage.bake_group_ids,
+    bakeGroups,
+    stage.bake_group_id,
+    3
   );
-  const selectedDestGroups = destinationGroups.filter((g) =>
-    stage.destination_group_ids?.includes(g.id)
+  const destGroupText = formatGroupsList(
+    stage.destination_group_ids,
+    destinationGroups,
+    stage.destination_group_id,
+    2
   );
 
-  // Fallback to legacy single-group fields if multi-group arrays are empty
-  const legacyBakeGroupName = stage.bake_group_id && selectedBakeGroups.length === 0
-    ? bakeGroups.find((g) => g.id === stage.bake_group_id)?.name
-    : null;
-  const legacyDestGroupName = stage.destination_group_id && selectedDestGroups.length === 0
-    ? destinationGroups.find((g) => g.id === stage.destination_group_id)?.name
-    : null;
+  const hasBakeGroups = bakeGroupText !== null;
+  const hasDestGroups = destGroupText !== null;
+  const isAllGroups = !hasBakeGroups && !hasDestGroups;
 
   return (
     <div
@@ -66,110 +96,92 @@ export function StepCard({
       )}
     >
       {/* Collapsed Header */}
-      <div
-        className="flex items-center gap-2 p-3 cursor-pointer hover:bg-white/[0.02] transition-colors"
-        onClick={onToggle}
-      >
-        {/* Drag Handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          onClick={(e) => e.stopPropagation()}
-          className="p-1 rounded hover:bg-white/[0.05] text-white/40 hover:text-white/60 cursor-grab active:cursor-grabbing"
+      <div className="p-3">
+        {/* Top Row: Drag Handle, Sequence, Name, Chevron */}
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:bg-white/[0.02] transition-colors -m-3 p-3 mb-0"
+          onClick={onToggle}
         >
-          <GripVertical className="h-4 w-4" />
-        </button>
+          {/* Drag Handle */}
+          <button
+            {...attributes}
+            {...listeners}
+            onClick={(e) => e.stopPropagation()}
+            className="p-1 rounded hover:bg-white/[0.05] text-white/40 hover:text-white/60 cursor-grab active:cursor-grabbing shrink-0"
+          >
+            <GripVertical className="h-4 w-4" />
+          </button>
 
-        {/* Sequence Number */}
-        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/[0.05] text-xs font-medium text-white/60">
-          {stage.sequence}
-        </div>
+          {/* Sequence Number */}
+          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/[0.05] text-xs font-medium text-white/60 shrink-0">
+            {stage.sequence}
+          </div>
 
-        {/* Step Name */}
-        <div className="flex-1 min-w-0">
-          <span className={cn('text-sm font-medium', stage.name ? 'text-white' : 'text-white/40 italic')}>
-            {stage.name || 'Untitled step'}
-          </span>
-        </div>
-
-        {/* Badges */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {/* Bake Group Badges */}
-          {selectedBakeGroups.length === 0 && !legacyBakeGroupName ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/40 border border-white/[0.1]">
-              <Flame className="h-3 w-3" />
-              All
+          {/* Step Name */}
+          <div className="flex-1 min-w-0">
+            <span className={cn('text-sm font-medium leading-tight', stage.name ? 'text-white' : 'text-white/40 italic')}>
+              {stage.name || 'Untitled step'}
             </span>
-          ) : selectedBakeGroups.length > 3 ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
-              <Flame className="h-3 w-3" />
-              {selectedBakeGroups.length} groups
-            </span>
-          ) : selectedBakeGroups.length > 0 ? (
-            selectedBakeGroups.map((group) => (
-              <span key={group.id} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                <Flame className="h-3 w-3" />
-                {group.name}
+          </div>
+
+          {/* Time/Overnight Badges - Keep inline for quick scanning */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {stage.time_constraint && (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/60">
+                <Clock className="h-3 w-3" />
+                {stage.time_constraint}
               </span>
-            ))
-          ) : legacyBakeGroupName ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
-              <Flame className="h-3 w-3" />
-              {legacyBakeGroupName}
-            </span>
-          ) : null}
-
-          {/* Destination Group Badges */}
-          {selectedDestGroups.length === 0 && !legacyDestGroupName ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/40 border border-white/[0.1]">
-              <Package className="h-3 w-3" />
-              All
-            </span>
-          ) : selectedDestGroups.length > 3 ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <Package className="h-3 w-3" />
-              {selectedDestGroups.length} groups
-            </span>
-          ) : selectedDestGroups.length > 0 ? (
-            selectedDestGroups.map((group) => (
-              <span key={group.id} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                <Package className="h-3 w-3" />
-                {group.name}
+            )}
+            {stage.is_overnight && (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <Moon className="h-3 w-3" />
               </span>
-            ))
-          ) : legacyDestGroupName ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <Package className="h-3 w-3" />
-              {legacyDestGroupName}
-            </span>
-          ) : null}
+            )}
+          </div>
 
-          {stage.time_constraint && (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/60">
-              <Clock className="h-3 w-3" />
-              {stage.time_constraint}
-            </span>
-          )}
-          {stage.is_overnight && (
-            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              <Moon className="h-3 w-3" />
-            </span>
-          )}
+          {/* Expand/Collapse */}
+          <div className="text-white/40 shrink-0">
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </div>
         </div>
 
-        {/* Expand/Collapse */}
-        <div className="text-white/40">
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
+        {/* Group Tags - Compact Layout Below */}
+        <div className="ml-[3.25rem] mt-2 space-y-1">
+          {isAllGroups ? (
+            <p className="text-xs text-white/40 italic">
+              Applies to all groups
+            </p>
           ) : (
-            <ChevronRight className="h-4 w-4" />
+            <>
+              {hasBakeGroups && (
+                <div className="flex items-center gap-1.5">
+                  <Flame className="w-3 h-3 text-orange-400 shrink-0" />
+                  <span className="text-xs text-white/60">
+                    {bakeGroupText}
+                  </span>
+                </div>
+              )}
+
+              {hasDestGroups && (
+                <div className="flex items-center gap-1.5">
+                  <Package className="w-3 h-3 text-blue-400 shrink-0" />
+                  <span className="text-xs text-white/60">
+                    {destGroupText}
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* Expanded Editor */}
       {isExpanded && (
-        <div className="px-3 pb-3">
+        <div className="border-t border-white/[0.06] bg-white/[0.01] px-3 py-3">
           <StepEditor
             stage={stage}
             bakeGroups={bakeGroups}

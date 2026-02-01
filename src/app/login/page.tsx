@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
@@ -28,6 +28,15 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Track component mount status
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Note: We redirect only after an explicit successful sign-in to avoid loops
 
@@ -36,6 +45,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isMountedRef.current) return;
+    
     setError("");
     setLoading(true);
 
@@ -53,6 +64,7 @@ export default function LoginPage() {
       // Main login page always goes to main dashboard (/dashboard)
       // Customer login is separate at /customer/login
       for (let i = 0; i < 10; i++) {
+        if (!isMountedRef.current) return; // Component unmounted, stop processing
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           window.location.href = "/dashboard";
@@ -61,11 +73,16 @@ export default function LoginPage() {
         await new Promise((r) => setTimeout(r, 200));
       }
       // Fallback navigate anyway
-      window.location.href = "/dashboard";
+      if (isMountedRef.current) {
+        window.location.href = "/dashboard";
+      }
     } catch (err: any) {
-      console.error("Login error:", err);
-      setError(err.message || "Failed to sign in");
-      setLoading(false);
+      // Only update state if component is still mounted
+      if (isMountedRef.current) {
+        console.error("Login error:", err);
+        setError(err.message || "Failed to sign in");
+        setLoading(false);
+      }
     }
   };
 

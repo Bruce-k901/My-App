@@ -12,15 +12,15 @@ interface Site {
 }
 
 export function SiteFilter() {
-  const { company, setSelectedSite, profile } = useAppContext();
+  const { company, setSelectedSite, profile, selectedSiteId: contextSelectedSiteId } = useAppContext();
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   const [sites, setSites] = useState<Site[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [currentView, setCurrentView] = useState<"business" | "site">("business");
+  const [loading, setLoading] = useState(true);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   // Check if user is staff - staff should not see site selector
   const userRole = profile?.app_role?.toLowerCase() || 'staff';
   const isStaff = userRole === 'staff';
@@ -28,21 +28,26 @@ export function SiteFilter() {
 
   useEffect(() => {
     setMounted(true);
-    // Load current view from localStorage only after mount
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("currentView");
-      if (stored === "site" || stored === "business") {
-        setCurrentView(stored);
-      }
-    }
   }, []);
 
+  // Sync local state with context state
   useEffect(() => {
-    // Load sites for the company
+    setSelectedSiteId(contextSelectedSiteId);
+  }, [contextSelectedSiteId]);
+
+  useEffect(() => {
+    // Load sites for the selected company
     // Staff: only load their home site
-    // Managers/Admins/Owners: load all sites
+    // Managers/Admins/Owners/Platform Admins: load all sites for selected company
     const loadSites = async () => {
-      if (!company?.id) return;
+      if (!company?.id) {
+        setSites([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      console.log('🏢 [SiteFilter] Loading sites for company:', company.id, company.name);
 
       try {
         if (isStaff && homeSiteId) {
@@ -60,7 +65,7 @@ export function SiteFilter() {
             setSelectedSite(homeSiteId);
           }
         } else {
-          // Managers/Admins/Owners: load all sites
+          // Managers/Admins/Owners/Platform Admins: load all sites for selected company
           const { data, error } = await supabase
             .from("sites")
             .select("id, name")
@@ -69,20 +74,38 @@ export function SiteFilter() {
 
           if (!error && data) {
             setSites(data);
+            console.log('🏢 [SiteFilter] Loaded', data.length, 'sites for company', company.name);
+
+            // If the currently selected site doesn't belong to this company, clear it
+            if (selectedSiteId) {
+              const siteExistsInCompany = data.some(s => s.id === selectedSiteId);
+              if (!siteExistsInCompany) {
+                console.log('🏢 [SiteFilter] Selected site not in new company, clearing selection');
+                setSelectedSiteId(null);
+                setSelectedSite(null);
+                localStorage.removeItem("selectedSiteId");
+              }
+            }
+          } else if (error) {
+            console.error("Error loading sites:", error);
+            setSites([]);
           }
         }
       } catch (error) {
         console.error("Error loading sites:", error);
+        setSites([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadSites();
   }, [company?.id, isStaff, homeSiteId]);
 
-  // Load selected site from localStorage and sync with AppContext - only after mount to prevent hydration mismatch
+  // Load selected site from localStorage on mount - only after mount to prevent hydration mismatch
   useEffect(() => {
-    if (!mounted) return;
-    
+    if (!mounted || !sites.length) return;
+
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("selectedSiteId");
       if (stored && sites.length > 0) {
@@ -99,20 +122,15 @@ export function SiteFilter() {
 
   const handleSiteSelect = (siteId: string | null) => {
     console.log('🏢 [SiteFilter] handleSiteSelect called with siteId:', siteId);
-    console.log('🏢 [SiteFilter] Current selectedSiteId before change:', selectedSiteId);
     setSelectedSiteId(siteId);
     // Update AppContext so other components can react to the change
-    console.log('🏢 [SiteFilter] Calling setSelectedSite from AppContext with:', siteId);
     setSelectedSite(siteId);
     if (siteId) {
       localStorage.setItem("selectedSiteId", siteId);
-      console.log('🏢 [SiteFilter] Saved to localStorage:', siteId);
     } else {
       localStorage.removeItem("selectedSiteId");
-      console.log('🏢 [SiteFilter] Removed from localStorage');
     }
     setIsOpen(false);
-    console.log('🏢 [SiteFilter] Site selection complete');
   };
 
   // Close on click outside
@@ -140,15 +158,16 @@ export function SiteFilter() {
 
   const buttonRect = buttonRef.current?.getBoundingClientRect();
 
-  // Only show when in business view - use CSS class to hide instead of inline style to avoid hydration mismatch
-  // Staff: hide the site selector completely (they can only see their home site)
-  // Managers/Admins/Owners: show the selector
-  const shouldShow = mounted && currentView === "business" && !isStaff;
+  // Don't show if no company is selected
+  if (!company?.id) {
+    return null;
+  }
 
   // For staff, just show their home site name (read-only, no dropdown)
   if (isStaff && homeSiteId && selectedSite) {
     return (
       <div className="h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px] bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06]">
+        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
         <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left">{selectedSite.name}</span>
       </div>
     );
@@ -162,22 +181,25 @@ export function SiteFilter() {
         className={`
           h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px]
           transition-all
-          ${!shouldShow ? "opacity-0 pointer-events-none invisible" : "visible"}
           ${isOpen
             ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#EC4899]"
             : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
+        disabled={loading}
         suppressHydrationWarning
       >
-        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left" suppressHydrationWarning>{displayText}</span>
-        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left truncate" suppressHydrationWarning>
+          {loading ? "Loading..." : displayText}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && mounted && buttonRect && createPortal(
         <div
           ref={menuRef}
-          className="fixed bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1a1a] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg shadow-lg min-w-[240px] py-2 z-50"
+          className="fixed bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1a1a] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg shadow-lg min-w-[240px] max-h-[400px] overflow-y-auto py-2 z-50"
           style={{
             top: `${buttonRect.bottom + 8}px`,
             left: `${buttonRect.left}px`,
@@ -207,6 +229,12 @@ export function SiteFilter() {
               {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#EC4899]" />}
             </button>
           ))}
+
+          {sites.length === 0 && !loading && (
+            <div className="px-4 py-2 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">
+              No sites available
+            </div>
+          )}
         </div>,
         document.body
       )}

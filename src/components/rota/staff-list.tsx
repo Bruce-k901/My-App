@@ -81,7 +81,7 @@ function DraggableStaffCard({
       {contracted > 0 && (
         <div className="mt-2">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-neutral-400">{scheduledHours}h / {contracted}h</span>
+            <span className="text-gray-500 dark:text-white/60">{scheduledHours}h / {contracted}h</span>
             <span className={hoursDiff > 0 ? 'text-amber-400' : hoursDiff < -4 ? 'text-blue-400' : 'text-green-400'}>
               {hoursDiff > 0 ? `+${hoursDiff}` : hoursDiff}h
             </span>
@@ -164,7 +164,7 @@ export function StaffList({
             className="w-full pl-8 pr-3 py-1.5 bg-neutral-800 border border-neutral-700 rounded text-sm text-white placeholder-neutral-500"
           />
         </div>
-        <label className="flex items-center gap-2 mt-2 text-xs text-neutral-400">
+        <label className="flex items-center gap-2 mt-2 text-xs text-gray-500 dark:text-white/60">
           <input
             type="checkbox"
             checked={showAllStaff}

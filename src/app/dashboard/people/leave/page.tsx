@@ -261,13 +261,13 @@ export default function LeaveManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-theme-primary">Leave Management</h1>
-          <p className="text-theme-secondary">Request time off and view team calendar</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Leave Management</h1>
+          <p className="text-gray-600 dark:text-white/70">Request time off and view team calendar</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/dashboard/people/leave/balances"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-theme text-theme-secondary rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 ease-in-out"
           >
             <Calendar className="w-5 h-5" />
             Balances
@@ -287,18 +287,18 @@ export default function LeaveManagementPage() {
         {myBalances.map((balance) => (
           <div
             key={balance.id}
-            className="bg-theme-button border border-theme rounded-lg p-4"
+            className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4"
           >
             <div className="flex items-center gap-2 mb-2">
               <div 
                 className="w-3 h-3 rounded-full" 
                 style={{ backgroundColor: balance.leave_type_color }}
               />
-              <span className="text-sm text-theme-secondary">{balance.leave_type_name}</span>
+              <span className="text-sm text-gray-600 dark:text-white/70">{balance.leave_type_name}</span>
             </div>
-            <div className="text-2xl font-bold text-theme-primary">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {balance.remaining_days}
-              <span className="text-sm font-normal text-theme-secondary"> / {balance.entitled_days}</span>
+              <span className="text-sm font-normal text-gray-600 dark:text-white/70"> / {balance.entitled_days}</span>
             </div>
             {balance.pending_days > 0 && (
               <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">{balance.pending_days} pending</p>
@@ -314,7 +314,7 @@ export default function LeaveManagementPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeView === 'calendar' 
               ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
-              : 'bg-theme-button border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
+              : 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.08]'
           }`}
         >
           <Calendar className="w-4 h-4 inline mr-2" />
@@ -325,7 +325,7 @@ export default function LeaveManagementPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeView === 'requests' 
               ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
-              : 'bg-theme-button border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
+              : 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.08]'
           }`}
         >
           <Clock className="w-4 h-4 inline mr-2" />
@@ -340,24 +340,24 @@ export default function LeaveManagementPage() {
 
       {/* Calendar View */}
       {activeView === 'calendar' && (
-        <div className="bg-theme-button border border-theme rounded-lg p-6">
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
-            <button onClick={prevMonth} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
-              <ChevronLeft className="w-5 h-5 text-theme-secondary" />
+            <button onClick={prevMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-white/70" />
             </button>
-            <h2 className="text-lg font-semibold text-theme-primary">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
             </h2>
-            <button onClick={nextMonth} className="p-2 hover:bg-theme-button-hover rounded-lg transition-colors">
-              <ChevronRight className="w-5 h-5 text-theme-secondary" />
+            <button onClick={nextMonth} className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors">
+              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-white/70" />
             </button>
           </div>
 
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center text-sm text-theme-secondary py-2">{day}</div>
+              <div key={day} className="text-center text-sm text-gray-600 dark:text-white/70 py-2">{day}</div>
             ))}
             
             {getDaysInMonth().map((day, index) => {
@@ -368,10 +368,10 @@ export default function LeaveManagementPage() {
                 new Date().getFullYear() === currentMonth.getFullYear();
               
               return (
-                <div key={index} className={`min-h-24 p-1 border border-theme rounded ${day ? 'bg-theme-surface-elevated' : ''}`}>
+                <div key={index} className={`min-h-24 p-1 border border-gray-200 dark:border-white/[0.06] rounded ${day ? 'bg-gray-50 dark:bg-white/[0.03]' : ''}`}>
                   {day && (
                     <>
-                      <div className={`text-sm mb-1 ${isToday ? 'w-6 h-6 bg-blue-500 dark:bg-blue-500 rounded-full flex items-center justify-center text-white font-medium' : 'text-theme-secondary'}`}>
+                      <div className={`text-sm mb-1 ${isToday ? 'w-6 h-6 bg-blue-500 dark:bg-blue-500 rounded-full flex items-center justify-center text-white font-medium' : 'text-gray-600 dark:text-white/70'}`}>
                         {day}
                       </div>
                       <div className="space-y-1">
@@ -386,7 +386,7 @@ export default function LeaveManagementPage() {
                           </div>
                         ))}
                         {events.length > 3 && (
-                          <div className="text-xs text-theme-tertiary px-1">+{events.length - 3} more</div>
+                          <div className="text-xs text-gray-500 dark:text-white/50 px-1">+{events.length - 3} more</div>
                         )}
                       </div>
                     </>
@@ -400,15 +400,15 @@ export default function LeaveManagementPage() {
 
       {/* Requests View */}
       {activeView === 'requests' && (
-        <div className="bg-theme-button border border-theme rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden">
           {pendingRequests.length === 0 ? (
             <div className="text-center py-12">
               <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
-              <p className="text-theme-primary font-medium">No pending requests</p>
-              <p className="text-theme-secondary text-sm">All leave requests have been processed</p>
+              <p className="text-gray-900 dark:text-white font-medium">No pending requests</p>
+              <p className="text-gray-600 dark:text-white/70 text-sm">All leave requests have been processed</p>
             </div>
           ) : (
-            <div className="divide-y divide-theme">
+            <div className="divide-y divide-gray-200 dark:divide-white/[0.06]">
               {pendingRequests.map((request) => (
                 <div key={request.id} className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -420,7 +420,7 @@ export default function LeaveManagementPage() {
                       )}
                     </div>
                     <div>
-                      <p className="text-theme-primary font-medium">{request.employee_name}</p>
+                      <p className="text-gray-900 dark:text-white font-medium">{request.employee_name}</p>
                       <div className="flex items-center gap-2 text-sm">
                         <span 
                           className="px-2 py-0.5 rounded text-xs"
@@ -428,13 +428,13 @@ export default function LeaveManagementPage() {
                         >
                           {request.leave_type_name}
                         </span>
-                        <span className="text-theme-secondary">
+                        <span className="text-gray-600 dark:text-white/70">
                           {new Date(request.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                           {request.start_date !== request.end_date && (
                             <> - {new Date(request.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</>
                           )}
                         </span>
-                        <span className="text-theme-tertiary">({request.total_days} day{request.total_days !== 1 ? 's' : ''})</span>
+                        <span className="text-gray-500 dark:text-white/50">({request.total_days} day{request.total_days !== 1 ? 's' : ''})</span>
                       </div>
                     </div>
                   </div>

@@ -162,7 +162,7 @@ export default function TimeOffRequestsPage() {
         <Card className="p-8 bg-white/[0.03] border border-white/[0.06] text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-white mb-2">Manager Access Required</h2>
-          <p className="text-neutral-400">
+          <p className="text-gray-500 dark:text-white/60">
             You need manager permissions to view and approve time-off requests.
           </p>
         </Card>
@@ -186,7 +186,7 @@ export default function TimeOffRequestsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Time Off Requests</h1>
-          <p className="text-neutral-400 mt-1">
+          <p className="text-gray-500 dark:text-white/60 mt-1">
             Review and approve staff availability requests
           </p>
         </div>
@@ -194,7 +194,7 @@ export default function TimeOffRequestsPage() {
         <Link href="/dashboard/people/my-availability">
           <Button
             variant="ghost"
-            className="text-neutral-400 hover:text-white"
+            className="text-gray-500 dark:text-white/60 hover:text-white"
           >
             Back to My Availability
           </Button>
@@ -208,7 +208,7 @@ export default function TimeOffRequestsPage() {
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             filter === 'pending'
               ? 'bg-[#EC4899] text-white'
-              : 'text-neutral-400 hover:text-white'
+              : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
           Pending
@@ -223,7 +223,7 @@ export default function TimeOffRequestsPage() {
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             filter === 'all'
               ? 'bg-[#EC4899] text-white'
-              : 'text-neutral-400 hover:text-white'
+              : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
           All Requests
@@ -237,7 +237,7 @@ export default function TimeOffRequestsPage() {
           <h3 className="text-lg font-semibold text-white mb-2">
             {filter === 'pending' ? 'No Pending Requests' : 'No Requests'}
           </h3>
-          <p className="text-neutral-400">
+          <p className="text-gray-500 dark:text-white/60">
             {filter === 'pending'
               ? 'All caught up! There are no pending time-off requests.'
               : 'No time-off requests have been submitted yet.'}
@@ -283,7 +283,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
     pending: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20',
     approved: 'text-green-400 bg-green-400/10 border-green-400/20',
     rejected: 'text-red-400 bg-red-400/10 border-red-400/20',
-    cancelled: 'text-neutral-400 bg-neutral-400/10 border-neutral-400/20',
+    cancelled: 'text-gray-500 dark:text-white/60 bg-neutral-400/10 border-neutral-400/20',
   };
 
   const handleRejectWithNotes = () => {
@@ -306,7 +306,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <User className="w-5 h-5 text-neutral-400" />
+                <User className="w-5 h-5 text-gray-500 dark:text-white/60" />
               )}
             </div>
 
@@ -341,7 +341,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
                 )}
 
                 {request.reason && (
-                  <div className="mt-2 text-neutral-400 bg-neutral-900/50 rounded-md p-2 text-xs">
+                  <div className="mt-2 text-gray-500 dark:text-white/60 bg-neutral-900/50 rounded-md p-2 text-xs">
                     <strong className="text-neutral-300">Reason:</strong> {request.reason}
                   </div>
                 )}
@@ -393,7 +393,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
               <h2 className="text-xl font-semibold text-white">Reject Request</h2>
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="text-neutral-400 hover:text-white transition-colors"
+                className="text-gray-500 dark:text-white/60 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -407,7 +407,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
               </p>
 
               <div>
-                <label className="text-sm text-neutral-400 block mb-2">
+                <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">
                   Reason for rejection (optional)
                 </label>
                 <textarea
@@ -424,7 +424,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
                   type="button"
                   onClick={() => setShowRejectModal(false)}
                   variant="ghost"
-                  className="flex-1 text-neutral-400"
+                  className="flex-1 text-gray-500 dark:text-white/60"
                 >
                   Cancel
                 </Button>

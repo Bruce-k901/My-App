@@ -182,7 +182,7 @@ export default function OnboardingDocsPage() {
 
   useEffect(() => {
     void load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId])
 
   const counts = useMemo(() => {
@@ -207,7 +207,7 @@ export default function OnboardingDocsPage() {
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -219,8 +219,8 @@ export default function OnboardingDocsPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">Onboarding docs</h1>
-          <p className="text-sm text-white/60">This page is for managers/admins to manage company onboarding documents.</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding docs</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins to manage company onboarding documents.</p>
         </div>
         <Link href="/dashboard/people/onboarding" className="text-sm text-[#EC4899] hover:underline">
           Back to onboarding
@@ -233,11 +233,11 @@ export default function OnboardingDocsPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-white">Onboarding Document Library</h1>
-          <p className="text-sm text-white/60 mt-1">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Document Library</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
             Manage the documents that new starters will receive in their onboarding packs.
           </p>
-          <p className="text-xs text-white/40 mt-1">
+          <p className="text-xs text-gray-900 dark:text-white/40 mt-1">
             💡 For company compliance documents (insurance, HACCP, policies), use the main <strong>Documents</strong> page
           </p>
             <div className="mt-3 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
@@ -265,7 +265,7 @@ export default function OnboardingDocsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => void load()}
-              className="px-3 py-1.5 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+              className="px-3 py-1.5 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
               title="Refresh"
             >
               Refresh
@@ -289,19 +289,19 @@ export default function OnboardingDocsPage() {
       )}
 
       {filterNote && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 text-sm text-white/70">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 text-sm text-gray-900 dark:text-white/70">
           {filterNote}
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs text-white/50 mb-1">Total Documents</div>
-              <div className="text-white font-bold text-2xl">{counts.total}</div>
+              <div className="text-xs text-gray-900 dark:text-white/50 mb-1">Total Documents</div>
+              <div className="text-gray-900 dark:text-white font-bold text-2xl">{counts.total}</div>
             </div>
-            <FileText className="w-8 h-8 text-white/20" />
+            <FileText className="w-8 h-8 text-gray-900 dark:text-white/20" />
           </div>
         </div>
         <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-5">
@@ -333,22 +333,22 @@ export default function OnboardingDocsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading docs…
         </div>
       ) : docs.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <FileText className="w-12 h-12 text-white/30 mx-auto mb-4" />
-          <div className="text-white font-semibold text-lg">No onboarding documents yet</div>
-          <div className="text-white/60 text-sm mt-2 max-w-md mx-auto">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+          <FileText className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
+          <div className="text-gray-900 dark:text-white font-semibold text-lg">No onboarding documents yet</div>
+          <div className="text-gray-900 dark:text-white/60 text-sm mt-2 max-w-md mx-auto">
             Click <strong>"Create starter kit"</strong> above to generate a complete set of recommended onboarding document placeholders.
             You can then upload your own documents to replace them.
           </div>
         </div>
       ) : (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-white/10 text-xs font-medium text-white/50 bg-white/[0.02]">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-gray-300 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-white/50 bg-gray-50 dark:bg-white/[0.02]">
             <div className="col-span-5">Document Name & Description</div>
             <div className="col-span-3">Category</div>
             <div className="col-span-2">Status</div>
@@ -359,18 +359,18 @@ export default function OnboardingDocsPage() {
             {docs.map((d) => {
               const hasFile = Boolean(d.file_path) && !isPlaceholderFilePath(d.file_path)
               return (
-                <div key={d.id} className={`grid grid-cols-12 gap-3 px-5 py-4 items-center hover:bg-white/[0.02] transition-colors ${!hasFile ? 'bg-amber-500/5' : ''}`}>
+                <div key={d.id} className={`grid grid-cols-12 gap-3 px-5 py-4 items-center hover:bg-gray-50 dark:bg-white/[0.02] transition-colors ${!hasFile ? 'bg-yellow-50 dark:bg-amber-500/5' : ''}`}>
                   <div className="col-span-5">
                     <div className="flex items-center gap-2">
                       <FileText className={`w-4 h-4 flex-shrink-0 ${hasFile ? 'text-green-400' : 'text-amber-300'}`} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-white font-medium text-sm">{d.name || 'Document'}</div>
-                        {d.notes && <div className="text-xs text-white/50 mt-1 line-clamp-2">{d.notes}</div>}
+                        <div className="text-gray-900 dark:text-white font-medium text-sm">{d.name || 'Document'}</div>
+                        {d.notes && <div className="text-xs text-gray-900 dark:text-white/50 mt-1 line-clamp-2">{d.notes}</div>}
                       </div>
                     </div>
                   </div>
                   <div className="col-span-3">
-                    <span className="text-xs px-2 py-1 rounded-full bg-white/5 text-white/70 border border-white/10">
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/70 border border-gray-300 dark:border-white/10">
                       {d.category || 'Other'}
                     </span>
                   </div>
@@ -391,7 +391,7 @@ export default function OnboardingDocsPage() {
                     {hasFile && (
                       <button
                         onClick={() => openDoc(d)}
-                        className="px-3 py-1.5 text-sm text-white/80 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center gap-1.5 transition-all"
+                        className="px-3 py-1.5 text-sm text-gray-800 dark:text-white/80 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 rounded-lg flex items-center gap-1.5 transition-all"
                         title="Open and view document"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -406,7 +406,7 @@ export default function OnboardingDocsPage() {
                       }}
                       className={`px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 transition-all ${
                         hasFile 
-                          ? 'text-white/80 bg-white/5 hover:bg-white/10 border border-white/10' 
+                          ? 'text-gray-800 dark:text-white/80 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10' 
                           : 'text-[#EC4899] bg-transparent border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-medium'
                       }`}
                       title={hasFile ? 'Replace this document with a new version' : 'Upload your document to replace this placeholder'}

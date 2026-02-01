@@ -39,7 +39,7 @@ export function ChecklyMobileNav({ onMoreClick }: MobileNavProps = {}) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-neutral-900 border-t border-neutral-800 flex items-center justify-around z-40 lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 flex items-center justify-around z-40 lg:hidden">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = tab.active;
@@ -49,7 +49,7 @@ export function ChecklyMobileNav({ onMoreClick }: MobileNavProps = {}) {
             key={tab.href}
             href={tab.href}
             className={`flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors ${
-              isActive ? 'text-[#EC4899]' : 'text-neutral-400'
+              isActive ? 'text-[#EC4899]' : 'text-gray-500 dark:text-neutral-400'
             }`}
           >
             <Icon className="w-5 h-5" />

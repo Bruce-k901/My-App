@@ -14,7 +14,9 @@ export async function GET(request: NextRequest) {
         *,
         stages:planly_process_stages(
           *,
-          equipment:planly_stage_equipment(*)
+          equipment:planly_stage_equipment(*),
+          bake_group:planly_bake_groups(*),
+          destination_group:planly_destination_groups(*)
         )
       `)
       .order('name');

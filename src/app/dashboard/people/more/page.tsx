@@ -26,7 +26,7 @@ export default function MorePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">More</h1>
-        <p className="text-neutral-400">Additional Teamly features</p>
+        <p className="text-gray-500 dark:text-white/60">Additional Teamly features</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

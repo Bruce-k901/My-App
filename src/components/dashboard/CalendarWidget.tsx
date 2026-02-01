@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { format, addDays, startOfDay, setHours, setMinutes, isSameDay, parseISO } from "date-fns";
+import { format, addDays, startOfDay, startOfWeek, setHours, setMinutes, isSameDay, parseISO } from "date-fns";
 import { Calendar, Clock, Filter, ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -120,9 +120,9 @@ export default function CalendarWidget() {
   // Get user's timezone
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  // Calculate date range (current day + 6 days forward) - memoized to prevent infinite loops
-  const startDate = useMemo(() => startOfDay(currentDate), [currentDate]);
-  const endDate = useMemo(() => addDays(startDate, 6), [startDate]);
+  // Calculate date range (Monday to Sunday of the current week) - memoized to prevent infinite loops
+  const startDate = useMemo(() => startOfWeek(currentDate, { weekStartsOn: 1 }), [currentDate]); // 1 = Monday
+  const endDate = useMemo(() => addDays(startDate, 6), [startDate]); // Sunday
   
   // Create stable date strings for dependency comparison
   const startDateStr = useMemo(() => format(startDate, "yyyy-MM-dd"), [startDate]);
@@ -700,9 +700,12 @@ export default function CalendarWidget() {
           // Store local time (no timezone conversion needed for date/time fields)
           const scheduledAtUTC = scheduledAt; // Keep for compatibility, but not actually UTC
 
+          // Get the task type from task_data, defaulting to "task"
+          const taskType = (task.task_data?.task_type as CalendarItemType) || "task";
+
           const calendarItem: CalendarItem = {
             id: task.id,
-            type: "task",
+            type: taskType,
             title: task.custom_name || task.template?.name || "Untitled Task",
             description: task.task_data?.description || task.template?.description,
             scheduledAt,
@@ -1201,20 +1204,6 @@ export default function CalendarWidget() {
               <div className="text-gray-600 dark:text-gray-400">Loading calendar...</div>
             </div>
           </div>
-        ) : calendarItems.length === 0 ? (
-          <div className="h-[400px] flex items-center justify-center">
-            <div className="text-center">
-              <Calendar className="w-12 h-12 text-gray-500 dark:text-gray-400 mx-auto mb-4" />
-              <div className="text-gray-600 dark:text-gray-400 mb-2">No items scheduled for this week</div>
-              <button
-                onClick={() => handleSlotClick(currentDate, 9)}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#EC4899]/10 to-[#EC4899]/5 dark:from-[#EC4899]/20 dark:to-[#EC4899]/10 text-[#EC4899] border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_16px_rgba(236,72,153,0.8)] hover:scale-105 transition-all duration-200 ease-in-out text-sm font-semibold shadow-md"
-              >
-                <Plus className="w-4 h-4 inline mr-2" />
-                Create New Item
-              </button>
-            </div>
-          </div>
         ) : (
           <WeekView
             startDate={startDate}
@@ -1292,6 +1281,10 @@ function CalendarHeader({
   currentDate,
   onDateChange,
 }: CalendarHeaderProps) {
+  // Calculate Monday of the current week for display
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // 1 = Monday
+  const weekEnd = addDays(weekStart, 6); // Sunday
+
   const filterTypes: Array<{ key: keyof FilterState; label: string; color: string }> = [
     { key: "tasks", label: "Tasks", color: "purple" },
     { key: "meetings", label: "Meetings", color: "blue" },
@@ -1319,81 +1312,84 @@ function CalendarHeader({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#EC4899]/20 to-[#EC4899]/10 dark:from-[#EC4899]/30 dark:to-[#EC4899]/20 border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 shadow-md">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899] dark:text-[#EC4899]" />
+    <div className="flex flex-col gap-3 mb-4">
+      {/* Top row: Title, Navigation, Full Calendar button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#EC4899]/20 to-[#EC4899]/10 dark:from-[#EC4899]/30 dark:to-[#EC4899]/20 border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 shadow-md">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899] dark:text-[#EC4899]" />
+          </div>
+          <div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block font-medium">Mon-Sun weekly view</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block font-medium">7-day calendar view</p>
+
+        <div className="flex items-center gap-2">
+          {/* Week Navigation */}
+          <button
+            onClick={() => navigateWeek("prev")}
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          </button>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white px-3 bg-white/50 dark:bg-white/5 rounded-lg py-1.5 border border-white/10 dark:border-white/10 min-w-[180px] text-center">
+            {format(weekStart, "MMM dd")} - {format(weekEnd, "MMM dd, yyyy")}
+          </span>
+          <button
+            onClick={() => navigateWeek("next")}
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          </button>
+
+          {/* Expand Calendar Button - Icon only */}
+          <button
+            onClick={onExpandClick}
+            className="p-2 rounded-lg bg-[#EC4899]/10 dark:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:bg-[#EC4899]/20 dark:hover:bg-[#EC4899]/30 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_12px_rgba(236,72,153,0.6)] transition-all"
+            title="Full Calendar"
+          >
+            <Calendar className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        {/* Week Navigation */}
-        <button
-          onClick={() => navigateWeek("prev")}
-          className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all shadow-sm hover:shadow-md"
-        >
-          <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-        </button>
-        <span className="text-sm font-semibold text-gray-900 dark:text-white px-3 bg-white/50 dark:bg-white/5 rounded-lg py-1 border border-[#EC4899]/10 dark:border-[#EC4899]/20">
-          {format(currentDate, "MMM dd")} - {format(addDays(currentDate, 6), "MMM dd, yyyy")}
-        </span>
-        <button
-          onClick={() => navigateWeek("next")}
-          className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all shadow-sm hover:shadow-md"
-        >
-          <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-        </button>
-
-        {/* Expand Calendar Button */}
-        <button
-          onClick={onExpandClick}
-          className="px-3 py-2 rounded-lg bg-gradient-to-r from-[#EC4899]/10 to-[#EC4899]/5 dark:from-[#EC4899]/20 dark:to-[#EC4899]/10 text-[#EC4899] border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_16px_rgba(236,72,153,0.8)] hover:scale-105 transition-all duration-200 ease-in-out text-sm font-semibold shadow-md"
-        >
-          <Calendar className="w-4 h-4 inline mr-2" />
-          Full Calendar
-        </button>
-      </div>
-
-      {/* Filter Toggles */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-gray-600 dark:text-gray-400 mr-2">Filters:</span>
+      {/* Bottom row: Filter Toggles */}
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">Filters:</span>
         {filterTypes.map(({ key, label, color }) => {
           const isActive = filters[key];
           const colorClasses: Record<string, { active: string; inactive: string }> = {
             purple: {
-              active: "bg-gradient-to-r from-purple-500/30 to-purple-600/20 dark:from-purple-500/40 dark:to-purple-600/30 text-purple-700 dark:text-purple-200 border-2 border-purple-500/50 dark:border-purple-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-purple-300/50 dark:hover:border-purple-500/30 hover:bg-purple-50/50 dark:hover:bg-purple-500/10",
+              active: "bg-purple-500/20 dark:bg-purple-500/30 text-purple-700 dark:text-purple-200 border-purple-500/50 dark:border-purple-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-purple-400/40 hover:bg-purple-500/10",
             },
             blue: {
-              active: "bg-gradient-to-r from-blue-500/30 to-blue-600/20 dark:from-blue-500/40 dark:to-blue-600/30 text-blue-700 dark:text-blue-200 border-2 border-blue-500/50 dark:border-blue-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-blue-300/50 dark:hover:border-blue-500/30 hover:bg-blue-50/50 dark:hover:bg-blue-500/10",
+              active: "bg-blue-500/20 dark:bg-blue-500/30 text-blue-700 dark:text-blue-200 border-blue-500/50 dark:border-blue-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-blue-400/40 hover:bg-blue-500/10",
             },
             emerald: {
-              active: "bg-gradient-to-r from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 text-emerald-700 dark:text-emerald-200 border-2 border-emerald-500/50 dark:border-emerald-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-emerald-300/50 dark:hover:border-emerald-500/30 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10",
+              active: "bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-700 dark:text-emerald-200 border-emerald-500/50 dark:border-emerald-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-emerald-400/40 hover:bg-emerald-500/10",
             },
             gray: {
-              active: "bg-gradient-to-r from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 text-gray-700 dark:text-gray-200 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-gray-300/50 dark:hover:border-gray-500/30 hover:bg-gray-50/50 dark:hover:bg-gray-500/10",
+              active: "bg-gray-500/20 dark:bg-gray-500/30 text-gray-700 dark:text-gray-200 border-gray-500/50 dark:border-gray-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-gray-400/40 hover:bg-gray-500/10",
             },
             yellow: {
-              active: "bg-gradient-to-r from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 text-yellow-700 dark:text-yellow-200 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-yellow-300/50 dark:hover:border-yellow-500/30 hover:bg-yellow-50/50 dark:hover:bg-yellow-500/10",
+              active: "bg-yellow-500/20 dark:bg-yellow-500/30 text-yellow-700 dark:text-yellow-200 border-yellow-500/50 dark:border-yellow-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-yellow-400/40 hover:bg-yellow-500/10",
             },
             pink: {
-              active: "bg-gradient-to-r from-pink-500/30 to-pink-600/20 dark:from-pink-500/40 dark:to-pink-600/30 text-pink-700 dark:text-pink-200 border-2 border-pink-500/50 dark:border-pink-400/60 shadow-md font-semibold",
-              inactive: "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-2 border-gray-300/30 dark:border-white/10 hover:border-pink-300/50 dark:hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10",
+              active: "bg-pink-500/20 dark:bg-pink-500/30 text-pink-700 dark:text-pink-200 border-pink-500/50 dark:border-pink-400/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-pink-400/40 hover:bg-pink-500/10",
             },
           };
           return (
             <button
               key={key}
               onClick={() => toggleFilter(key)}
-              className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all border ${
                 isActive ? colorClasses[color].active : colorClasses[color].inactive
               }`}
             >
@@ -1887,6 +1883,16 @@ function CalendarModal({
                 <div className="space-y-1">
                   {dayItems.slice(0, 3).map((item) => {
                     const isApprovalTask = item.metadata?.type === 'stock_count_approval' || item.metadata?.source === 'handover';
+                    // Color mapping based on item type
+                    const miniItemColors: Record<CalendarItemType, string> = {
+                      task: "bg-purple-500/20 border-purple-500/30",
+                      meeting: "bg-blue-500/20 border-blue-500/30",
+                      call: "bg-emerald-500/20 border-emerald-500/30",
+                      note: "bg-gray-500/20 border-gray-500/30",
+                      reminder: "bg-yellow-500/20 border-yellow-500/30",
+                      message: "bg-pink-500/20 border-pink-500/30",
+                    };
+                    const itemColorClass = miniItemColors[item.type] || miniItemColors.task;
                     return (
                       <div
                         key={item.id}
@@ -1894,7 +1900,7 @@ function CalendarModal({
                           e.stopPropagation();
                           onItemClick(item);
                         }}
-                        className={`text-xs p-1 rounded bg-purple-500/20 border border-purple-500/30 truncate cursor-pointer hover:opacity-80 ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-white dark:text-white'}`}
+                        className={`text-xs p-1 rounded border truncate cursor-pointer hover:opacity-80 ${itemColorClass} ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-white dark:text-white'}`}
                       >
                         {format(item.scheduledAt, "h:mm a")} {item.title}
                       </div>
@@ -1967,6 +1973,7 @@ function CreateItemModal({
         status: "pending",
         priority: "medium",
         assigned_to_user_id: userId,
+        task_data: { task_type: itemType },
       });
 
       if (error) throw error;

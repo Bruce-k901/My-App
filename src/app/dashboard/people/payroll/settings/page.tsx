@@ -350,7 +350,7 @@ export default function PayrunSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
       </div>
     );
   }
@@ -365,16 +365,16 @@ export default function PayrunSettingsPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Payrun Schedule Settings</h1>
-          <p className="text-neutral-400">Configure flexible payroll period schedules</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payrun Schedule Settings</h1>
+          <p className="text-gray-500 dark:text-white/60">Configure flexible payroll period schedules</p>
         </div>
       </div>
 
       {/* Settings Form */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-6">
+      <div className="bg-white dark:bg-white/[0.03] shadow-sm dark:shadow-none border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 space-y-6">
         {/* Schedule Type */}
         <div className="space-y-2">
-          <Label htmlFor="schedule_type" className="text-white">
+          <Label htmlFor="schedule_type" className="text-gray-900 dark:text-white">
             Pay Period Schedule Type
           </Label>
           <Select
@@ -385,7 +385,7 @@ export default function PayrunSettingsPage() {
             options={scheduleTypeOptions.map(opt => ({ label: `${opt.label} - ${opt.description}`, value: opt.value }))}
             placeholder="Select schedule type"
           />
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-gray-500 dark:text-white/60">
             {scheduleTypeOptions.find(opt => opt.value === schedule.schedule_type)?.description}
           </p>
         </div>
@@ -393,7 +393,7 @@ export default function PayrunSettingsPage() {
         {/* Period Start Configuration */}
         {needsDayOfWeek && (
           <div className="space-y-2">
-            <Label htmlFor="start_day" className="text-white">
+            <Label htmlFor="start_day" className="text-gray-900 dark:text-white">
               Period Starts On (Day of Week)
             </Label>
             <Select
@@ -404,7 +404,7 @@ export default function PayrunSettingsPage() {
               options={dayOptions}
               placeholder="Select day"
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-gray-500 dark:text-white/60">
               The day of the week when each pay period begins
             </p>
           </div>
@@ -412,7 +412,7 @@ export default function PayrunSettingsPage() {
 
         {needsDayOfMonth && (
           <div className="space-y-2">
-            <Label htmlFor="start_date" className="text-white">
+            <Label htmlFor="start_date" className="text-gray-900 dark:text-white">
               Period Starts On (Day of Month)
             </Label>
             <Input
@@ -424,9 +424,9 @@ export default function PayrunSettingsPage() {
               onChange={(e) =>
                 setSchedule({ ...schedule, period_start_date: parseInt(e.target.value) || 1 })
               }
-              className="bg-white/[0.05] border-white/[0.12] text-white"
+              className="bg-white dark:bg-white/[0.05] border-gray-300 dark:border-white/[0.12] text-gray-900 dark:text-white"
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-gray-500 dark:text-white/60">
               Day of month (1-28) when monthly period starts. Leave as 1 for first of month.
             </p>
           </div>
@@ -434,7 +434,7 @@ export default function PayrunSettingsPage() {
 
         {/* Pay Date Type */}
         <div className="space-y-2">
-          <Label htmlFor="pay_date_type" className="text-white">
+          <Label htmlFor="pay_date_type" className="text-gray-900 dark:text-white">
             Pay Date Calculation
           </Label>
           <Select
@@ -445,7 +445,7 @@ export default function PayrunSettingsPage() {
             options={payDateTypeOptions}
             placeholder="Select pay date type"
           />
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-gray-500 dark:text-white/60">
             How to calculate when staff get paid
           </p>
         </div>
@@ -453,7 +453,7 @@ export default function PayrunSettingsPage() {
         {/* Days After Period End (conditional) */}
         {showDaysAfter && (
           <div className="space-y-2">
-            <Label htmlFor="days_after" className="text-white">
+            <Label htmlFor="days_after" className="text-gray-900 dark:text-white">
               Days After Period End
             </Label>
             <Input
@@ -465,9 +465,9 @@ export default function PayrunSettingsPage() {
               onChange={(e) =>
                 setSchedule({ ...schedule, days_after_period_end: parseInt(e.target.value) || 5 })
               }
-              className="bg-white/[0.05] border-white/[0.12] text-white"
+              className="bg-white dark:bg-white/[0.05] border-gray-300 dark:border-white/[0.12] text-gray-900 dark:text-white"
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-gray-500 dark:text-white/60">
               Number of days after period ends when staff get paid
             </p>
           </div>
@@ -475,7 +475,7 @@ export default function PayrunSettingsPage() {
 
         {/* Tax Year Start Date */}
         <div className="space-y-2">
-          <Label htmlFor="tax_year_start" className="text-white">
+          <Label htmlFor="tax_year_start" className="text-gray-900 dark:text-white">
             Tax Year Start Date
           </Label>
           <Input
@@ -485,9 +485,9 @@ export default function PayrunSettingsPage() {
             onChange={(e) =>
               setSchedule({ ...schedule, tax_year_start_date: e.target.value })
             }
-            className="bg-white/[0.05] border-white/[0.12] text-white"
+            className="bg-white dark:bg-white/[0.05] border-gray-300 dark:border-white/[0.12] text-gray-900 dark:text-white"
           />
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-gray-500 dark:text-white/60">
             UK tax year typically starts on 6 April. This is used for holiday accrual calculations and payroll period alignment.
           </p>
         </div>
@@ -502,16 +502,16 @@ export default function PayrunSettingsPage() {
               onChange={(e) =>
                 setSchedule({ ...schedule, auto_generate: e.target.checked })
               }
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899]"
+              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
             />
-            <Label htmlFor="auto_generate" className="text-white cursor-pointer">
+            <Label htmlFor="auto_generate" className="text-gray-900 dark:text-white cursor-pointer">
               Auto-generate payroll runs
             </Label>
           </div>
           
           {schedule.auto_generate && (
             <div className="ml-7 space-y-2">
-              <Label htmlFor="generate_days" className="text-white">
+              <Label htmlFor="generate_days" className="text-gray-900 dark:text-white">
                 Generate X Days Before Pay Date
               </Label>
               <Input
@@ -523,9 +523,9 @@ export default function PayrunSettingsPage() {
                 onChange={(e) =>
                   setSchedule({ ...schedule, generate_days_before: parseInt(e.target.value) || 3 })
                 }
-                className="bg-white/[0.05] border-white/[0.12] text-white"
+                className="bg-white dark:bg-white/[0.05] border-gray-300 dark:border-white/[0.12] text-gray-900 dark:text-white"
               />
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-gray-500 dark:text-white/60">
                 Payroll runs will be automatically created this many days before the pay date
               </p>
             </div>
@@ -533,15 +533,15 @@ export default function PayrunSettingsPage() {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end pt-4 border-t border-white/[0.06]">
+        <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-white/[0.06]">
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+            className="bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all duration-200"
           >
             {saving ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#EC4899] mr-2" />
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400 mr-2" />
                 Saving...
               </>
             ) : (
@@ -556,25 +556,25 @@ export default function PayrunSettingsPage() {
 
       {/* 12-Month Schedule Preview */}
       {schedulePreview.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white dark:bg-white/[0.03] shadow-sm dark:shadow-none border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Calendar className="w-5 h-5 text-[#EC4899]" />
-            <h2 className="text-lg font-semibold text-white">12-Month Schedule Preview</h2>
+            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">12-Month Schedule Preview</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/[0.02]">
+              <thead className="bg-gray-50 dark:bg-white/[0.02]">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Period</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Period Start</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Period End</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Pay Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Tax Year</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400">Days</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Period</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Period Start</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Period End</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Pay Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Tax Year</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60">Days</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                 {schedulePreview.map((period, index) => {
                   const daysDiff = Math.ceil((period.periodEnd.getTime() - period.periodStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
                   const isPast = period.payDate < new Date();
@@ -608,12 +608,12 @@ export default function PayrunSettingsPage() {
                   return (
                     <tr 
                       key={index} 
-                      className={`hover:bg-white/[0.02] ${isPast ? 'opacity-60' : ''}`}
+                      className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] ${isPast ? 'opacity-60' : ''}`}
                     >
-                      <td className="px-4 py-3 text-white text-sm font-medium">
+                      <td className="px-4 py-3 text-gray-900 dark:text-white text-sm font-medium">
                         #{period.periodNumber}
                       </td>
-                      <td className="px-4 py-3 text-white text-sm">
+                      <td className="px-4 py-3 text-gray-900 dark:text-white text-sm">
                         {period.periodStart.toLocaleDateString('en-GB', { 
                           day: 'numeric', 
                           month: 'short', 
@@ -621,7 +621,7 @@ export default function PayrunSettingsPage() {
                           weekday: 'short'
                         })}
                       </td>
-                      <td className="px-4 py-3 text-white text-sm">
+                      <td className="px-4 py-3 text-gray-900 dark:text-white text-sm">
                         {period.periodEnd.toLocaleDateString('en-GB', { 
                           day: 'numeric', 
                           month: 'short', 
@@ -630,7 +630,7 @@ export default function PayrunSettingsPage() {
                         })}
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <span className={`${isPast ? 'text-neutral-500' : 'text-[#EC4899] font-medium'}`}>
+                        <span className={`${isPast ? 'text-neutral-500' : 'text-blue-600 dark:text-blue-400 font-medium'}`}>
                           {period.payDate.toLocaleDateString('en-GB', { 
                             day: 'numeric', 
                             month: 'short', 
@@ -642,10 +642,10 @@ export default function PayrunSettingsPage() {
                           <span className="ml-2 text-xs text-neutral-500">(Past)</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-neutral-400 text-sm">
+                      <td className="px-4 py-3 text-gray-500 dark:text-white/60 text-sm">
                         {taxYear}
                       </td>
-                      <td className="px-4 py-3 text-neutral-400 text-sm">
+                      <td className="px-4 py-3 text-gray-500 dark:text-white/60 text-sm">
                         {daysDiff} days
                       </td>
                     </tr>
@@ -655,7 +655,7 @@ export default function PayrunSettingsPage() {
             </table>
           </div>
           
-          <div className="mt-4 text-xs text-neutral-400">
+          <div className="mt-4 text-xs text-gray-500 dark:text-white/60">
             <p>Total periods shown: {schedulePreview.length}</p>
             {schedule.schedule_type === 'four_weekly' && (
               <p className="mt-1">Note: Four-weekly schedules have 13 periods per year</p>

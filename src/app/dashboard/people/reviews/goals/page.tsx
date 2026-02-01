@@ -69,7 +69,7 @@ export default function GoalsPage() {
       case 'critical': return 'bg-red-500/20 text-red-400 border border-red-500/30';
       case 'high': return 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
       case 'medium': return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
-      default: return 'bg-white/[0.05] text-neutral-400 border border-white/[0.06]';
+      default: return 'bg-white/[0.05] text-gray-500 dark:text-white/60 border border-gray-200 dark:border-white/[0.06]';
     }
   };
 
@@ -78,7 +78,7 @@ export default function GoalsPage() {
       case 'completed': return 'text-green-400';
       case 'overdue': return 'text-red-400';
       case 'due_soon': return 'text-amber-400';
-      default: return 'text-neutral-400';
+      default: return 'text-gray-500 dark:text-white/60';
     }
   };
 
@@ -95,8 +95,8 @@ export default function GoalsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Goals</h1>
-          <p className="text-neutral-400">Track objectives and key results</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Goals</h1>
+          <p className="text-gray-500 dark:text-white/60">Track objectives and key results</p>
         </div>
         <Link
           href="/dashboard/people/reviews/goals/new"
@@ -110,13 +110,13 @@ export default function GoalsPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-4">
         {isManager && (
-          <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
+          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">
             <button
               onClick={() => setViewMode('my')}
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'my' 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-                  : 'bg-white/[0.03] text-neutral-400 hover:text-white'
+                  : 'bg-white dark:bg-white/[0.03] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
               My Goals
@@ -126,7 +126,7 @@ export default function GoalsPage() {
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'team' 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-                  : 'bg-white/[0.03] text-neutral-400 hover:text-white'
+                  : 'bg-white dark:bg-white/[0.03] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
               Team Goals
@@ -142,7 +142,7 @@ export default function GoalsPage() {
               className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                 filter === f 
                   ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-                  : 'bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:text-white'
+                  : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -154,23 +154,23 @@ export default function GoalsPage() {
       {/* Goals List */}
       <div className="space-y-4">
         {goals.length === 0 ? (
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-12 text-center">
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
             <Target className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-            <p className="text-white font-medium">No goals found</p>
-            <p className="text-neutral-400 text-sm mt-1">Create a goal to start tracking your objectives</p>
+            <p className="text-gray-900 dark:text-white font-medium">No goals found</p>
+            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">Create a goal to start tracking your objectives</p>
           </div>
         ) : (
           goals.map((goal) => (
             <div
               key={goal.goal_id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.1] transition-colors"
+              className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-white/[0.1] transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <Link
                       href={`/dashboard/people/reviews/goals/${goal.goal_id}`}
-                      className="text-white font-medium hover:text-[#EC4899] transition-colors"
+                      className="text-gray-900 dark:text-white font-medium hover:text-[#EC4899] transition-colors"
                     >
                       {goal.title}
                     </Link>
@@ -180,7 +180,7 @@ export default function GoalsPage() {
                   </div>
                   
                   {goal.description && (
-                    <p className="text-neutral-400 text-sm mb-3 line-clamp-2">{goal.description}</p>
+                    <p className="text-gray-500 dark:text-white/60 text-sm mb-3 line-clamp-2">{goal.description}</p>
                   )}
                   
                   <div className="flex items-center gap-4 text-sm">
@@ -204,8 +204,8 @@ export default function GoalsPage() {
                 
                 <div className="w-32 flex-shrink-0">
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-neutral-400">Progress</span>
-                    <span className="text-white font-medium">{goal.progress_percentage}%</span>
+                    <span className="text-gray-500 dark:text-white/60">Progress</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{goal.progress_percentage}%</span>
                   </div>
                   <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
                     <div 
@@ -229,7 +229,7 @@ export default function GoalsPage() {
                           className={`flex-1 py-1 text-xs rounded transition-colors ${
                             goal.progress_percentage >= p 
                               ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30' 
-                              : 'bg-white/[0.05] text-neutral-400 hover:bg-white/[0.1] border border-white/[0.06]'
+                              : 'bg-white/[0.05] text-gray-500 dark:text-white/60 hover:bg-white/[0.1] border border-gray-200 dark:border-white/[0.06]'
                           }`}
                         >
                           {p}%

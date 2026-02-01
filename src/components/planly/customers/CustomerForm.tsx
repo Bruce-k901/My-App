@@ -91,7 +91,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         phone: phone.trim() || null,
         address: address.trim() || null,
         postcode: postcode.trim() || null,
-        default_fulfillment: defaultFulfillment,
+        // Note: default_fulfillment UI retained for future use when column is added
         destination_group_id: destinationGroupId || null,
         default_ship_state: defaultShipState,
         delivery_instructions: deliveryInstructions.trim() || null,

@@ -405,11 +405,9 @@ export default function ComplianceMetricsWidget() {
     }
   }, [siteId, companyId])
 
-  // Store the latest callback in a ref to avoid stale closures
+  // Store the latest callback in a ref to avoid stale closures, update inline
   const loadComplianceMetricsRef = useRef(loadComplianceMetrics)
-  useEffect(() => {
-    loadComplianceMetricsRef.current = loadComplianceMetrics
-  }, [loadComplianceMetrics])
+  loadComplianceMetricsRef.current = loadComplianceMetrics
 
   useEffect(() => {
     // Only wait for contextLoading on initial load (before we've loaded successfully)
@@ -438,7 +436,8 @@ export default function ComplianceMetricsWidget() {
     const hasChanged = prevSiteId !== siteId || prevCompanyId !== companyId
     
     // Only proceed if values have actually changed OR if this is the first load
-    if (!hasChanged && hasLoadedRef.current) {
+    // Also skip if contextLoading just changed but values haven't changed
+    if (!hasChanged && hasLoadedRef.current && prevSiteId === siteId && prevCompanyId === companyId) {
       // Only log if we've loaded before (to reduce console spam)
       console.log('⏭️ ComplianceMetricsWidget: No change detected, skipping', { siteId, companyId })
       return
@@ -478,7 +477,8 @@ export default function ComplianceMetricsWidget() {
         contextLoadingHandledRef.current = false // Reset so we wait for context again
       }
     }
-  }, [siteId, companyId, contextLoading]) // Include contextLoading to wait for AppContext to finish loading
+     
+  }, [siteId, companyId, contextLoading]) // Only depend on values, not the callback function to avoid loops
 
   // Show loading state while context is loading or while we're fetching data
   if (contextLoading || (!siteId && !companyId)) {

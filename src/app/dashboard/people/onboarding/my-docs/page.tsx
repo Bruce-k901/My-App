@@ -17,6 +17,7 @@ type Assignment = {
 type Pack = {
   id: string
   name: string
+  staff_type?: 'head_office' | 'site_staff'
   boh_foh: 'FOH' | 'BOH' | 'BOTH'
   pay_type: 'hourly' | 'salaried'
 }
@@ -99,7 +100,7 @@ export default function MyOnboardingDocsPage() {
       if (packIds.length > 0) {
         const { data: packData, error: packErr } = await supabase
           .from('company_onboarding_packs')
-          .select('id, name, boh_foh, pay_type')
+          .select('id, name, staff_type, boh_foh, pay_type')
           .in('id', packIds)
         if (packErr) throw packErr
 
@@ -163,16 +164,20 @@ export default function MyOnboardingDocsPage() {
 
   const acknowledge = async (assignment: Assignment, doc: PackDoc) => {
     const gd = doc.global_documents
-    if (!gd?.id) return
+    if (!gd?.id || !profile?.id || !profile?.company_id) {
+      toast.error('Missing required information')
+      return
+    }
 
     const key = `${assignment.id}:${gd.id}`
     setAckingKey(key)
 
     try {
       const { error } = await supabase.from('employee_document_acknowledgements').insert({
+        company_id: profile.company_id,
         assignment_id: assignment.id,
         global_document_id: gd.id,
-        profile_id: profile?.id,
+        profile_id: profile.id,
       })
 
       if (error) throw error
@@ -189,13 +194,13 @@ export default function MyOnboardingDocsPage() {
 
   useEffect(() => {
     void loadAll()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [profile?.id])
 
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -208,8 +213,8 @@ export default function MyOnboardingDocsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">My Onboarding Documents</h1>
-          <p className="text-sm text-white/60">Review and acknowledge your onboarding documents</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">My Onboarding Documents</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">Review and acknowledge your onboarding documents</p>
         </div>
         <Link href="/dashboard/people" className="text-sm text-[#EC4899] hover:underline">
           Back
@@ -221,15 +226,15 @@ export default function MyOnboardingDocsPage() {
       )}
 
       {loading ? (
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading your documents…
         </div>
       ) : assignments.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <FileText className="w-12 h-12 text-white/30 mx-auto mb-4" />
-          <div className="text-white font-semibold text-lg">No onboarding packs assigned yet</div>
-          <div className="text-white/60 text-sm mt-2">
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+          <FileText className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
+          <div className="text-gray-900 dark:text-white font-semibold text-lg">No onboarding packs assigned yet</div>
+          <div className="text-gray-900 dark:text-white/60 text-sm mt-2">
             Your manager will assign an onboarding pack when you start. Check back soon!
           </div>
         </div>
@@ -244,18 +249,18 @@ export default function MyOnboardingDocsPage() {
             ).length
 
             return (
-              <div key={a.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+              <div key={a.id} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
                 {/* Pack Header */}
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex items-start gap-3">
                     <Package className="w-6 h-6 text-[#EC4899] flex-shrink-0 mt-1" />
                     <div>
-                      <h2 className="text-white font-semibold text-lg">{pack?.name || 'Onboarding Pack'}</h2>
-                      <div className="text-xs text-white/50 mt-1">
+                      <h2 className="text-gray-900 dark:text-white font-semibold text-lg">{pack?.name || 'Onboarding Pack'}</h2>
+                      <div className="text-xs text-gray-900 dark:text-white/50 mt-1">
                         Assigned {new Date(a.sent_at).toLocaleDateString()}
                       </div>
                       {a.message && (
-                        <div className="text-sm text-white/70 mt-2 p-3 bg-white/[0.02] border border-white/[0.05] rounded-lg">
+                        <div className="text-sm text-gray-900 dark:text-white/70 mt-2 p-3 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] rounded-lg">
                           {a.message}
                         </div>
                       )}
@@ -267,7 +272,7 @@ export default function MyOnboardingDocsPage() {
                     <div className="text-2xl font-bold text-[#EC4899]">
                       {totalDocs > 0 ? Math.round((acknowledgedDocs / totalDocs) * 100) : 0}%
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-xs text-gray-900 dark:text-white/50">
                       {acknowledgedDocs}/{totalDocs} acknowledged
                     </div>
                   </div>
@@ -275,7 +280,7 @@ export default function MyOnboardingDocsPage() {
 
                 {/* Progress Bar */}
                 <div className="mb-6">
-                  <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#EC4899] to-[#EC4899]/70 transition-all duration-500"
                       style={{ width: `${totalDocs > 0 ? (acknowledgedDocs / totalDocs) * 100 : 0}%` }}
@@ -285,9 +290,9 @@ export default function MyOnboardingDocsPage() {
 
                 {/* Documents */}
                 <div>
-                  <div className="text-sm text-white/70 mb-3">Documents to Review ({totalDocs})</div>
+                  <div className="text-sm text-gray-900 dark:text-white/70 mb-3">Documents to Review ({totalDocs})</div>
                   {docs.length === 0 ? (
-                    <div className="text-sm text-white/60 text-center py-4">
+                    <div className="text-sm text-gray-900 dark:text-white/60 text-center py-4">
                       No documents found for this pack.
                     </div>
                   ) : (
@@ -301,15 +306,15 @@ export default function MyOnboardingDocsPage() {
                         return (
                           <div
                             key={d.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]"
+                            className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]"
                           >
                             <div className="flex items-center gap-3 flex-1">
                               <FileText
-                                className={`w-5 h-5 flex-shrink-0 ${isAck ? 'text-green-400' : 'text-white/40'}`}
+                                className={`w-5 h-5 flex-shrink-0 ${isAck ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white/40'}`}
                               />
                               <div className="flex-1 min-w-0">
-                                <div className="text-white font-medium">{gd?.name || 'Document'}</div>
-                                <div className="text-xs text-white/50 mt-1">
+                                <div className="text-gray-900 dark:text-white font-medium">{gd?.name || 'Document'}</div>
+                                <div className="text-xs text-gray-900 dark:text-white/50 mt-1">
                                   {gd?.category || 'Uncategorized'}
                                   {gd?.version ? ` • ${gd.version}` : ''}
                                   {!isAvailable ? ' • Not uploaded yet' : ''}
@@ -329,7 +334,7 @@ export default function MyOnboardingDocsPage() {
                               </button>
 
                               {isAck ? (
-                                <div className="flex items-center gap-2 text-green-400 text-sm">
+                                <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
                                   <CheckCircle className="w-4 h-4" />
                                   Acknowledged
                                 </div>
@@ -337,7 +342,7 @@ export default function MyOnboardingDocsPage() {
                                 <button
                                   onClick={() => acknowledge(a, d)}
                                   disabled={!gd?.id || ackingKey === key || !isAvailable}
-                                  className="px-3 py-1.5 bg-white/10 hover:bg-white/15 border border-white/10 text-white rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="px-3 py-1.5 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   {ackingKey === key ? 'Saving…' : "I've Read"}
                                 </button>

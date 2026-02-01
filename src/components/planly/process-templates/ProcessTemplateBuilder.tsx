@@ -43,7 +43,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
   const isEdit = !!templateId;
 
   // Hooks
-  const { template, createStage, updateStage, deleteStage, updateTemplate, refreshTemplate } =
+  const { template, updateTemplate, refreshTemplate } =
     useProcessTemplate(templateId);
   const { createTemplate } = useProcessTemplates(siteId, true);
   const { groups: bakeGroups } = useBakeGroups(siteId);
@@ -354,7 +354,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
     setIsDirty(true);
   };
 
-  // Save handler
+  // Save handler - uses bulk update to avoid sequence conflicts
   const handleSave = async (exitAfter = false) => {
     if (!name.trim()) {
       setError('Template name is required');
@@ -386,63 +386,67 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
         });
       }
 
-      // Process stages for all days
+      // Collect all stages and deleted stage IDs for bulk update
+      // IMPORTANT: sequence must be globally unique within the template (not per day)
+      const allStages: Array<{
+        id?: string;
+        name: string;
+        sequence: number;
+        day_offset: number;
+        duration_hours?: number;
+        is_overnight?: boolean;
+        instructions?: string;
+        bake_group_id?: string;
+        destination_group_id?: string;
+        bake_group_ids?: string[];
+        destination_group_ids?: string[];
+        time_constraint?: string;
+        isNew?: boolean;
+      }> = [];
+      const deletedStageIds: string[] = [];
+
+      // Use a global sequence counter across all days
+      let globalSeq = 1;
+
       for (const day of days) {
-        let seq = 1;
         for (const stage of day.stages) {
           if (stage.isDeleted) {
-            // Delete stage
+            // Collect deleted stage IDs (only real IDs, not temp ones)
             if (stage.id && !stage.id.startsWith('temp-')) {
-              await deleteStage(stage.id);
+              deletedStageIds.push(stage.id);
             }
             continue;
           }
 
-          const stageData = {
-            name: stage.name,
-            sequence: seq,
+          allStages.push({
+            id: stage.id,
+            name: stage.name?.trim() || `Step ${globalSeq}`,
+            sequence: globalSeq,
             day_offset: day.dayOffset,
             duration_hours: stage.duration_hours,
             is_overnight: stage.is_overnight,
-            instructions: stage.instructions || null,
-            bake_group_id: stage.bake_group_id || null,
-            destination_group_id: stage.destination_group_id || null,
+            instructions: stage.instructions || undefined,
+            bake_group_id: stage.bake_group_id || undefined,
+            destination_group_id: stage.destination_group_id || undefined,
             bake_group_ids: stage.bake_group_ids || [],
             destination_group_ids: stage.destination_group_ids || [],
-            time_constraint: stage.time_constraint || null,
-          };
-
-          if (stage.id && !stage.id.startsWith('temp-') && !stage.isNew) {
-            // Update existing stage
-            const updateResult = await updateStage(stage.id, stageData);
-            if (updateResult?.error) {
-              throw new Error(updateResult.error || `Failed to update stage ${stage.name}`);
-            }
-          } else {
-            // Create new stage - use a default name if empty
-            const createData = {
-              ...stageData,
-              name: stageData.name.trim() || `Step ${seq}`,
-            };
-            if (!isEdit && targetTemplateId) {
-              const res = await fetch(`/api/planly/process-templates/${targetTemplateId}/stages`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(createData),
-              });
-              if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.error || 'Failed to create stage');
-              }
-            } else {
-              const createResult = await createStage(createData);
-              if (createResult?.error) {
-                throw new Error(createResult.error || `Failed to create stage ${createData.name}`);
-              }
-            }
-          }
-          seq++;
+            time_constraint: stage.time_constraint || undefined,
+            isNew: stage.isNew,
+          });
+          globalSeq++;
         }
+      }
+
+      // Use bulk update endpoint to save all stages atomically
+      const res = await fetch(`/api/planly/process-templates/${targetTemplateId}/stages`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stages: allStages, deletedStageIds }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to save stages');
       }
 
       refreshTemplate();

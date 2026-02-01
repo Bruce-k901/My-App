@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import AuthLogoHeader from "./AuthLogoHeader";
 
 interface AuthLayoutProps {
@@ -8,6 +8,33 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+  // Force dark mode on auth pages (login, signup, etc.) - light mode should only be available in dashboard
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('dark');
+    root.classList.remove('light');
+    
+    // Also prevent theme changes while on auth pages
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target as HTMLElement;
+          if (target === root && !target.classList.contains('dark')) {
+            // If light class was added, remove it and add dark
+            root.classList.remove('light');
+            root.classList.add('dark');
+          }
+        }
+      });
+    });
+    
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0b0d13]">
       <AuthLogoHeader />

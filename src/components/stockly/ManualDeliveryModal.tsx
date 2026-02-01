@@ -487,7 +487,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
 
             {formData.lines.length === 0 ? (
-              <div className="bg-white/[0.03] border border-neutral-800 rounded-lg p-8 text-center">
+              <div className="bg-white/[0.03] border border-gray-200 dark:border-neutral-800 rounded-lg p-8 text-center">
                 <p className="text-slate-400">No line items added yet</p>
                 <p className="text-sm text-slate-500 mt-2">
                   {!formData.supplier_id
@@ -500,7 +500,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                 {formData.lines.map((line, index) => (
                   <div
                     key={line.id}
-                    className="bg-white/[0.03] border border-neutral-800 rounded-lg p-4"
+                    className="bg-white/[0.03] border border-gray-200 dark:border-neutral-800 rounded-lg p-4"
                   >
                     <div className="grid grid-cols-12 gap-4 items-start">
                       {/* Search/Select Stock Item */}
@@ -526,7 +526,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                                 <button
                                   key={variant.id}
                                   onClick={() => selectProductVariant(index, variant)}
-                                  className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-neutral-800 last:border-b-0"
+                                  className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
                                   <div className="font-medium text-white">{variant.product_name}</div>
                                   {variant.supplier_code && (
@@ -541,7 +541,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                                 <button
                                   key={item.id}
                                   onClick={() => selectStockItem(index, item)}
-                                  className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-neutral-800 last:border-b-0"
+                                  className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
                                   <div className="font-medium text-white">{item.name}</div>
                                   <div className="text-xs text-slate-400">Stock Item</div>
@@ -648,7 +648,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
           </div>
 
           {/* Totals Section */}
-          <div className="bg-white/[0.05] border border-neutral-800 rounded-lg p-4">
+          <div className="bg-white/[0.05] border border-gray-200 dark:border-neutral-800 rounded-lg p-4">
             <div className="flex justify-end">
               <div className="w-full md:w-64 space-y-2">
                 <div className="flex justify-between text-slate-300">
@@ -668,7 +668,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-neutral-800">
+          <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-neutral-800">
             <Button
               onClick={() => handleSave(true)}
               disabled={saving || !formData.supplier_id || formData.lines.length === 0}

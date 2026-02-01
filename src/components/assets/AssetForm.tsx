@@ -188,9 +188,9 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
   if (!isHydrated) {
     return (
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.1]">
           <div className="flex items-center justify-center h-64">
-            <div className="flex items-center gap-3 text-neutral-400">
+            <div className="flex items-center gap-3 text-gray-500 dark:text-neutral-400">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span>Loading form data...</span>
             </div>
@@ -202,13 +202,13 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent 
-        className="max-w-4xl max-h-[90vh] overflow-hidden"
-        style={{ backgroundColor: '#171717', border: '1px solid #404040', minWidth: '900px' }}
+      <DialogContent
+        className="max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.1]"
+        style={{ minWidth: '900px' }}
       >
         {/* Sticky Header */}
-        <div className="sticky top-0 bg-neutral-900 border-b border-neutral-700 p-6 flex justify-between items-center z-10">
-          <DialogTitle className="text-xl font-semibold text-white">
+        <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-700 p-6 flex justify-between items-center z-10">
+          <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Add New Asset
           </DialogTitle>
           <div className="flex gap-2">
@@ -238,7 +238,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
           <form id="asset-form" className="space-y-6">
             {/* Section A: Assignment - Two Columns */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
                 Assignment
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -274,12 +274,12 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
 
             {/* Section B: Identification - Two Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
                 Identification
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Asset Name</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Asset Name</label>
                   <Input
                     value={form.watch('name') || ''}
                     onChange={(e) => form.setValue('name', e.target.value)}
@@ -288,7 +288,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Brand</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Brand</label>
                   <Input
                     value={form.watch('brand') || ''}
                     onChange={(e) => form.setValue('brand', e.target.value)}
@@ -299,7 +299,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Model</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Model</label>
                   <Input
                     value={form.watch('model') || ''}
                     onChange={(e) => form.setValue('model', e.target.value)}
@@ -308,7 +308,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Serial Number</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Serial Number</label>
                   <Input
                     value={form.watch('serial_number') || ''}
                     onChange={(e) => form.setValue('serial_number', e.target.value)}
@@ -321,12 +321,12 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
 
             {/* Section C: Dates - Four Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
                 Important Dates
               </h3>
               <div className="grid grid-cols-4 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Install Date</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Install Date</label>
                   <Input
                     type="date"
                     value={form.watch('install_date') || ''}
@@ -334,7 +334,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Warranty End</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Warranty End</label>
                   <Input
                     type="date"
                     value={form.watch('warranty_end') || ''}
@@ -342,7 +342,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Next Service Date</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Next Service Date</label>
                   <Input
                     type="date"
                     value={form.watch('next_service_date') || ''}
@@ -350,7 +350,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">PPM Frequency</label>
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">PPM Frequency</label>
                   <Tooltip content="Interval between scheduled PPM visits">
                     <Input
                       type="number"
@@ -367,7 +367,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
 
             {/* Section D: Contractor Assignments - Two Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
                 Contractor Assignments
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -402,15 +402,15 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
 
             {/* Section E: Temperature Ranges & Notes */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
                 Temperature & Additional Information
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">
                     Working Temp Min (°C)
                     <Tooltip content="Minimum acceptable operating temperature. Readings below this will trigger warnings.">
-                      <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
+                      <span className="ml-1 text-gray-400 dark:text-neutral-500 cursor-help">ℹ️</span>
                     </Tooltip>
                   </label>
                   <TemperatureInput
@@ -423,10 +423,10 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">
+                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">
                     Working Temp Max (°C)
                     <Tooltip content="Maximum acceptable operating temperature. Readings above this will trigger warnings.">
-                      <span className="ml-1 text-neutral-500 cursor-help">ℹ️</span>
+                      <span className="ml-1 text-gray-400 dark:text-neutral-500 cursor-help">ℹ️</span>
                     </Tooltip>
                   </label>
                   <TemperatureInput
@@ -440,12 +440,12 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                 </div>
               </div>
               <div>
-                <label className="text-sm text-neutral-400 mb-1 block">Notes</label>
+                <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Notes</label>
                 <textarea
                   value={form.watch('notes') || ''}
                   onChange={(e) => form.setValue('notes', e.target.value)}
                   placeholder="Enter any additional notes..."
-                  className="w-full h-24 rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2 resize-none"
+                  className="w-full h-24 rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 resize-none placeholder:text-gray-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                 />
               </div>
             </div>

@@ -33,11 +33,11 @@ export function StocklyMobileNav({ onMoreClick }: StocklyMobileNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800 lg:hidden z-40">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-800 lg:hidden z-40">
       <div className="flex items-center justify-around">
         {mobileNavItems.map((item, index) => {
-          const isActive = item.href 
-            ? (pathname === item.href || 
+          const isActive = item.href
+            ? (pathname === item.href ||
                (item.href !== '/dashboard/stockly' && pathname.startsWith(item.href)))
             : false;
 
@@ -47,7 +47,7 @@ export function StocklyMobileNav({ onMoreClick }: StocklyMobileNavProps) {
               <button
                 key={`more-${index}`}
                 onClick={onMoreClick}
-                className="flex flex-col items-center gap-1 py-3 px-4 text-neutral-500 hover:text-[#10B981] transition-colors"
+                className="flex flex-col items-center gap-1 py-3 px-4 text-gray-400 dark:text-neutral-500 hover:text-[#10B981] transition-colors"
               >
                 <item.icon className="w-5 h-5" />
                 <span className="text-xs">{item.label}</span>
@@ -61,7 +61,7 @@ export function StocklyMobileNav({ onMoreClick }: StocklyMobileNavProps) {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-1 py-3 px-4 ${
-                isActive ? 'text-[#10B981]' : 'text-neutral-500'
+                isActive ? 'text-[#10B981]' : 'text-gray-400 dark:text-neutral-500'
               }`}
             >
               <item.icon className="w-5 h-5" />

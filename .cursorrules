@@ -150,7 +150,95 @@ Stockly pages under `/dashboard/stockly` should use emerald highlights in naviga
 
 **Consistency:**
 - All Stockly components, badges, buttons, and interactive elements use emerald theme
-- All Checkly/Teamly components continue using magenta theme (#EC4899)
+- All Checkly components continue using magenta theme (#EC4899)
+
+### 6.6. TEAMLY MODULE STYLING
+
+Teamly (HR/People module) uses Royal Blue theme to differentiate from other modules:
+
+**Colors:**
+- Primary Light: `#2563eb` (blue-600)
+- Primary Dark: `#60a5fa` (blue-400)
+- Light Mode: `bg-blue-600 hover:bg-blue-700 text-white`
+- Dark Mode: `dark:bg-blue-500 dark:hover:bg-blue-600 text-white`
+
+**Theme Conversion Patterns:**
+
+**Backgrounds:**
+- `bg-[#0f1220]` → `bg-white dark:bg-[#0f1220]`
+- `bg-[#171b2d]` → `bg-gray-50 dark:bg-[#171b2d]`
+- `bg-white/[0.03]` → `bg-gray-50 dark:bg-white/[0.03]`
+- `bg-white/[0.05]` → `bg-white dark:bg-white/[0.05]`
+- `bg-white/[0.06]` → `bg-white dark:bg-white/[0.06]`
+
+**Text:**
+- `text-white` → `text-gray-900 dark:text-white`
+- `text-white/80` → `text-gray-800 dark:text-white/80`
+- `text-white/70` → `text-gray-600 dark:text-white/70`
+- `text-white/60` → `text-gray-600 dark:text-white/60`
+- `text-white/50` → `text-gray-500 dark:text-white/50`
+
+**Borders:**
+- `border-white/[0.06]` → `border-gray-200 dark:border-white/[0.06]`
+- `border-white/[0.1]` → `border-gray-300 dark:border-white/[0.1]`
+
+**Component Examples:**
+```tsx
+// Primary Button
+<button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white">
+  Save
+</button>
+
+// Secondary Button
+<button className="bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1]">
+  Cancel
+</button>
+
+// Cards
+<div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl shadow-sm dark:shadow-none">
+  {/* content */}
+</div>
+
+// Input Fields
+<input className="bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20" />
+
+// Status Badges
+<span className="bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20">
+  Active
+</span>
+
+// Sidebar Navigation (CRITICAL)
+// Only ONE item should be highlighted at a time - use exact pathname matching
+const isActive = pathname === item.href; // NOT pathname.includes()
+// Active: text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium
+// Inactive: text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]
+```
+
+**Status Colors:**
+- Success: `bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400`
+- Error: `bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400`
+- Warning: `bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400`
+- Info: `bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400`
+
+**Navigation:**
+- Teamly pages under `/dashboard/people` should use blue highlights
+- Sidebar: Only exact pathname matches should be highlighted (not `includes()` or `startsWith()`)
+- Active state: `text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium`
+
+**Modals:**
+- Backdrop: `bg-black/30 dark:bg-black/50`
+- Container: `bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.1] rounded-2xl shadow-xl`
+- Header: `border-b border-gray-200 dark:border-white/[0.06]`
+
+**Tables:**
+- Header: `bg-gray-50 dark:bg-white/[0.02] text-gray-500 dark:text-white/60`
+- Row: `border-b border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.02]`
+- Cell: `text-gray-700 dark:text-white/80`
+
+**Consistency:**
+- All Teamly components, badges, buttons, and interactive elements use Royal Blue theme
+- Always provide light mode equivalents for dark-only classes
+- Test in both light and dark modes
 
 ### 7. Multi-Module Schema Compatibility
 **CRITICAL:** Checkly, Stockly, and Teamly are designed to work as:

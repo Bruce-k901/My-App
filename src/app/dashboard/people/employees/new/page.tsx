@@ -12,18 +12,18 @@ export default function AddEmployeeChoicePage() {
   const [showExecutiveModal, setShowExecutiveModal] = useState(false);
   
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13] p-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="text-neutral-400 hover:text-white mb-4 flex items-center gap-2"
+            className="text-gray-500 dark:text-white/60 hover:text-white mb-4 flex items-center gap-2"
           >
             ← Back
           </button>
           <h1 className="text-3xl font-bold text-white mb-2">Add New Employee</h1>
-          <p className="text-neutral-400">Choose the type of employee you want to add</p>
+          <p className="text-gray-500 dark:text-white/60">Choose the type of employee you want to add</p>
         </div>
 
         {/* Two Options */}
@@ -55,19 +55,19 @@ export default function AddEmployeeChoicePage() {
                 <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-purple-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">Quick setup - only essential fields</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">Quick setup - only essential fields</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-purple-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">No site assignment needed</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">No site assignment needed</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-purple-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">Appears in org chart by role</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">Appears in org chart by role</p>
               </div>
             </div>
 
@@ -111,19 +111,19 @@ export default function AddEmployeeChoicePage() {
                 <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-pink-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">Complete employee profile</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">Complete employee profile</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-pink-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">Site assignment & sections (BOH/FOH)</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">Site assignment & sections (BOH/FOH)</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-pink-400 text-xs">✓</span>
                 </div>
-                <p className="text-sm text-neutral-400">Training certificates & compliance</p>
+                <p className="text-sm text-gray-500 dark:text-white/60">Training certificates & compliance</p>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ export default function AddEmployeeChoicePage() {
                   <span><strong className="text-pink-300">Site Employee:</strong> For staff who work at a physical location and need full operational details</span>
                 </li>
               </ul>
-              <p className="text-xs text-neutral-400 mt-3">
+              <p className="text-xs text-gray-500 dark:text-white/60 mt-3">
                 💡 Tip: You can always edit employee details later, so don't worry about choosing wrong!
               </p>
             </div>

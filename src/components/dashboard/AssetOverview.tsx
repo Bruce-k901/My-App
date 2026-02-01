@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Wrench, AlertTriangle, CheckCircle2, Clock, Package } from "lucide-react";
+import { Wrench, AlertTriangle, CheckCircle2, Clock, Package, CalendarCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import Link from "next/link";
@@ -11,6 +11,7 @@ interface AssetSummary {
   needingService: number;
   underWarranty: number;
   overdue: number;
+  serviceBooked: number;
 }
 
 export default function AssetOverview() {
@@ -18,7 +19,8 @@ export default function AssetOverview() {
     total: 0,
     needingService: 0,
     underWarranty: 0,
-    overdue: 0
+    overdue: 0,
+    serviceBooked: 0
   });
   const [loading, setLoading] = useState(true);
   const { companyId } = useAppContext();
@@ -33,7 +35,8 @@ export default function AssetOverview() {
         total: 0,
         needingService: 0,
         underWarranty: 0,
-        overdue: 0
+        overdue: 0,
+        serviceBooked: 0
       });
     }
   }, [companyId]); // Removed loadAssetSummary from deps to prevent infinite loop
@@ -50,7 +53,7 @@ export default function AssetOverview() {
       // Get all assets for the company
       const { data: assets, error } = await supabase
         .from("assets")
-        .select("id, next_service_date, warranty_end")
+        .select("id, next_service_date, warranty_end, ppm_status")
         .eq("company_id", companyId);
 
       if (error) throw error;
@@ -60,7 +63,8 @@ export default function AssetOverview() {
         total: assets?.length || 0,
         needingService: 0,
         underWarranty: 0,
-        overdue: 0
+        overdue: 0,
+        serviceBooked: 0
       };
 
       // If no assets, return immediately with zero summary
@@ -71,11 +75,16 @@ export default function AssetOverview() {
       }
 
       assets.forEach(asset => {
+        // Check if asset has service booked
+        if (asset.ppm_status === 'service_booked') {
+          summary.serviceBooked++;
+        }
+
         // Check if asset needs service soon (within 30 days)
         if (asset.next_service_date) {
           const serviceDate = new Date(asset.next_service_date);
           const daysUntilService = Math.ceil((serviceDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          
+
           if (daysUntilService <= 30 && daysUntilService >= 0) {
             summary.needingService++;
           } else if (daysUntilService < 0) {
@@ -86,7 +95,7 @@ export default function AssetOverview() {
         // Check if asset is under warranty using warranty_end column
         if (asset.warranty_end) {
           const warrantyEndDate = new Date(asset.warranty_end);
-          
+
           if (now <= warrantyEndDate) {
             summary.underWarranty++;
           }
@@ -150,7 +159,7 @@ export default function AssetOverview() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {/* Total Assets */}
         <div className="bg-[rgb(var(--surface))] dark:bg-[rgb(var(--surface))] dark:bg-white/[0.05] border border-[rgb(var(--border-hover))] dark:border-[rgb(var(--border-hover))] dark:border-white/[0.1] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -189,6 +198,26 @@ export default function AssetOverview() {
           </div>
           <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{assetSummary.underWarranty}</div>
           <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] dark:text-white/40 mt-1">Warranty active</div>
+        </div>
+
+        {/* Service Booked */}
+        <div className={`bg-[rgb(var(--surface))] dark:bg-white/[0.05] border rounded-lg p-4 ${
+          assetSummary.serviceBooked > 0
+            ? 'border-cyan-500/40 bg-cyan-500/10'
+            : 'border-[rgb(var(--border-hover))] dark:border-white/[0.1]'
+        }`}>
+          <div className="flex items-center gap-2 mb-2">
+            <CalendarCheck className={`w-4 h-4 ${
+              assetSummary.serviceBooked > 0 ? 'text-cyan-400' : 'text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] dark:text-white/60'
+            }`} />
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] dark:text-white/60">Service Booked</span>
+          </div>
+          <div className={`text-2xl font-bold ${
+            assetSummary.serviceBooked > 0 ? 'text-cyan-400' : 'text-[rgb(var(--text-primary))] dark:text-white'
+          }`}>
+            {assetSummary.serviceBooked}
+          </div>
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-[rgb(var(--text-primary))] dark:text-white/40 mt-1">Awaiting service</div>
         </div>
 
         {/* Overdue */}

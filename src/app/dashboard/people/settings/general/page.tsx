@@ -131,7 +131,7 @@ export default function GeneralSettingsPage() {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
-          <p className="text-white/60">Loading general settings...</p>
+          <p className="text-gray-900 dark:text-white/60">Loading general settings...</p>
         </div>
       </div>
     );
@@ -147,16 +147,16 @@ export default function GeneralSettingsPage() {
         <div>
           <Link
             href="/dashboard/people/settings"
-            className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-4"
+            className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Settings
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
             <Settings className="w-6 h-6 text-[#EC4899]" />
             General Settings
           </h1>
-          <p className="text-neutral-400">
+          <p className="text-gray-500 dark:text-white/60">
             Configure company information, working hours, and general preferences
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function GeneralSettingsPage() {
             disabled={loadingCompany || !companyId}
             loading={loadingCompany}
             variant="outline"
-            className="border-[#EC4899] text-[#EC4899] hover:bg-[#EC4899]/10"
+            className="border-blue-600 dark:border-blue-400 text-[#EC4899] hover:bg-blue-50 dark:hover:bg-blue-500/10"
           >
             <Download className="w-4 h-4 mr-2" />
             Import from Business Details
@@ -184,14 +184,14 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Company Info Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-[#EC4899]" />
           Company Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Company Name</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Company Name</label>
             <Input
               value={formData.company_name || ''}
               onChange={(e) => updateField('company_name', e.target.value)}
@@ -199,7 +199,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Logo URL</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Logo URL</label>
             <Input
               value={formData.company_logo_url || ''}
               onChange={(e) => updateField('company_logo_url', e.target.value)}
@@ -207,7 +207,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Address</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Address</label>
             <Input
               value={formData.company_address || ''}
               onChange={(e) => updateField('company_address', e.target.value)}
@@ -215,7 +215,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">City</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">City</label>
             <Input
               value={formData.company_city || ''}
               onChange={(e) => updateField('company_city', e.target.value)}
@@ -223,7 +223,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Postcode</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Postcode</label>
             <Input
               value={formData.company_postcode || ''}
               onChange={(e) => updateField('company_postcode', e.target.value)}
@@ -231,7 +231,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Country</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Country</label>
             <Input
               value={formData.company_country || ''}
               onChange={(e) => updateField('company_country', e.target.value)}
@@ -239,7 +239,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Phone</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Phone</label>
             <Input
               value={formData.company_phone || ''}
               onChange={(e) => updateField('company_phone', e.target.value)}
@@ -247,7 +247,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Email</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Email</label>
             <Input
               type="email"
               value={formData.company_email || ''}
@@ -256,7 +256,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm text-neutral-400 mb-2">Website</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Website</label>
             <Input
               value={formData.company_website || ''}
               onChange={(e) => updateField('company_website', e.target.value)}
@@ -267,14 +267,14 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Time & Locale Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Clock className="w-5 h-5 text-[#EC4899]" />
           Time & Locale
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Timezone</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Timezone</label>
             <Input
               value={formData.timezone || ''}
               onChange={(e) => updateField('timezone', e.target.value)}
@@ -283,7 +283,7 @@ export default function GeneralSettingsPage() {
             <p className="text-xs text-neutral-500 mt-1">e.g., Europe/London, America/New_York</p>
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Date Format</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Date Format</label>
             <Select
               value={formData.date_format || 'DD/MM/YYYY'}
               onValueChange={(val) => updateField('date_format', val as any)}
@@ -295,7 +295,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Time Format</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Time Format</label>
             <Select
               value={formData.time_format || '24h'}
               onValueChange={(val) => updateField('time_format', val as any)}
@@ -306,7 +306,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Week Start Day</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Week Start Day</label>
             <Select
               value={formData.week_start_day || 'Monday'}
               onValueChange={(val) => updateField('week_start_day', val as any)}
@@ -320,14 +320,14 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Working Hours Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Clock className="w-5 h-5 text-[#EC4899]" />
           Working Hours
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Standard Shift Length (hours)</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Standard Shift Length (hours)</label>
             <Input
               type="number"
               step="0.5"
@@ -339,15 +339,15 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-4">Default Business Hours</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-4">Default Business Hours</label>
             <div className="space-y-3">
               {days.map((day) => {
                 const dayHours = businessHours[day];
                 const dayName = day.charAt(0).toUpperCase() + day.slice(1);
                 return (
-                  <div key={day} className="flex items-center gap-4 p-3 bg-white/[0.02] rounded-lg">
-                    <div className="w-24 text-sm text-white font-medium">{dayName}</div>
-                    <label className="flex items-center gap-2 text-sm text-neutral-400">
+                  <div key={day} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg flex-wrap">
+                    <div className="w-24 text-sm text-gray-900 dark:text-white font-medium flex-shrink-0">{dayName}</div>
+                    <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/60 flex-shrink-0">
                       <input
                         type="checkbox"
                         checked={!dayHours.closed}
@@ -357,19 +357,23 @@ export default function GeneralSettingsPage() {
                       Open
                     </label>
                     {!dayHours.closed && (
-                      <>
-                        <TimePicker
-                          value={dayHours.open || '09:00'}
-                          onChange={(value) => updateBusinessHours(day, { open: value })}
-                          className="w-32"
-                        />
-                        <span className="text-neutral-500">to</span>
-                        <TimePicker
-                          value={dayHours.close || '17:00'}
-                          onChange={(value) => updateBusinessHours(day, { close: value })}
-                          className="w-32"
-                        />
-                      </>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0 min-w-0">
+                          <TimePicker
+                            value={dayHours.open || '09:00'}
+                            onChange={(value) => updateBusinessHours(day, { open: value })}
+                            className="w-full min-w-[140px]"
+                          />
+                        </div>
+                        <span className="text-neutral-500 dark:text-white/60 flex-shrink-0 px-1">to</span>
+                        <div className="flex-shrink-0 min-w-0">
+                          <TimePicker
+                            value={dayHours.close || '17:00'}
+                            onChange={(value) => updateBusinessHours(day, { close: value })}
+                            className="w-full min-w-[140px]"
+                          />
+                        </div>
+                      </div>
                     )}
                   </div>
                 );
@@ -380,14 +384,14 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Pay Periods Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <DollarSign className="w-5 h-5 text-[#EC4899]" />
           Pay Periods
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Pay Period Type</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Pay Period Type</label>
             <Select
               value={formData.pay_period_type || 'monthly'}
               onValueChange={(val) => updateField('pay_period_type', val as any)}
@@ -399,7 +403,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Pay Day</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Pay Day</label>
             <Select
               value={formData.pay_day || 'last_friday'}
               onValueChange={(val) => updateField('pay_day', val as any)}
@@ -414,7 +418,7 @@ export default function GeneralSettingsPage() {
           </div>
           {formData.pay_day === 'specific_day' && (
             <div>
-              <label className="block text-sm text-neutral-400 mb-2">Day of Month (1-31)</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Day of Month (1-31)</label>
               <Input
                 type="number"
                 min="1"
@@ -429,14 +433,14 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Currency Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <DollarSign className="w-5 h-5 text-[#EC4899]" />
           Currency
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Currency Code</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Currency Code</label>
             <Select
               value={formData.currency_code || 'GBP'}
               onValueChange={(val) => {
@@ -460,7 +464,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Currency Symbol</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Currency Symbol</label>
             <Input
               value={formData.currency_symbol || '£'}
               onChange={(e) => updateField('currency_symbol', e.target.value)}
@@ -468,7 +472,7 @@ export default function GeneralSettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-400 mb-2">Currency Format</label>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Currency Format</label>
             <Select
               value={formData.currency_format || 'symbol_before'}
               onValueChange={(val) => updateField('currency_format', val as any)}
@@ -482,13 +486,13 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Fiscal Year Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-[#EC4899]" />
           Fiscal Year
         </h2>
         <div>
-          <label className="block text-sm text-neutral-400 mb-2">Fiscal Year Start Month</label>
+          <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Fiscal Year Start Month</label>
           <Select
             value={String(formData.fiscal_year_start_month || 4)}
             onValueChange={(val) => updateField('fiscal_year_start_month', parseInt(val))}
@@ -514,20 +518,20 @@ export default function GeneralSettingsPage() {
       </div>
 
       {/* Company-Wide Planned Closures Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-[#EC4899]" />
           Company-Wide Planned Closures
         </h2>
-        <p className="text-sm text-neutral-400 mb-4">
+        <p className="text-sm text-gray-500 dark:text-white/60 mb-4">
           Add company-wide closure dates that apply to all sites. These will be displayed alongside site-specific closures.
         </p>
         
         {/* Add New Closure */}
-        <div className="mb-6 p-4 bg-white/[0.02] border border-white/[0.04] rounded-lg">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
             <div>
-              <label className="block text-sm text-neutral-400 mb-2">Start Date</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Start Date</label>
               <DatePicker
                 selected={newClosure.start ? new Date(newClosure.start) : null}
                 onChange={(date: Date | null) => setNewClosure(prev => ({
@@ -535,12 +539,12 @@ export default function GeneralSettingsPage() {
                   start: date ? date.toISOString().split('T')[0] : ''
                 }))}
                 placeholderText="Select start date"
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded text-sm text-gray-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
                 dateFormat="dd/MM/yyyy"
               />
             </div>
             <div>
-              <label className="block text-sm text-neutral-400 mb-2">End Date</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">End Date</label>
               <DatePicker
                 selected={newClosure.end ? new Date(newClosure.end) : null}
                 onChange={(date: Date | null) => setNewClosure(prev => ({
@@ -549,12 +553,12 @@ export default function GeneralSettingsPage() {
                 }))}
                 minDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 placeholderText="Select end date"
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded text-sm text-gray-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
                 dateFormat="dd/MM/yyyy"
               />
             </div>
             <div>
-              <label className="block text-sm text-neutral-400 mb-2">Notes (optional)</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Notes (optional)</label>
               <Input
                 value={newClosure.notes}
                 onChange={(e) => setNewClosure(prev => ({ ...prev, notes: e.target.value }))}
@@ -592,7 +596,7 @@ export default function GeneralSettingsPage() {
             disabled={!newClosure.start || !newClosure.end || createClosure.isPending}
             loading={createClosure.isPending}
             variant="outline"
-            className="border-[#EC4899] text-[#EC4899] hover:bg-[#EC4899]/10"
+            className="border-blue-600 dark:border-blue-400 text-[#EC4899] hover:bg-blue-50 dark:hover:bg-blue-500/10"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Closure
@@ -602,17 +606,17 @@ export default function GeneralSettingsPage() {
         {/* Existing Closures */}
         {loadingClosures ? (
           <div className="text-center py-4">
-            <p className="text-white/60">Loading closures...</p>
+            <p className="text-gray-900 dark:text-white/60">Loading closures...</p>
           </div>
         ) : closures && closures.length > 0 ? (
           <div className="space-y-2">
             {closures.map((closure) => (
               <div
                 key={closure.id}
-                className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/[0.04] rounded-lg"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-lg"
               >
                 <div className="flex-1">
-                  <div className="text-white font-medium">
+                  <div className="text-gray-900 dark:text-white font-medium">
                     {new Date(closure.closure_start).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'short',
@@ -624,7 +628,7 @@ export default function GeneralSettingsPage() {
                     })}
                   </div>
                   {closure.notes && (
-                    <div className="text-sm text-neutral-400 mt-1">{closure.notes}</div>
+                    <div className="text-sm text-gray-500 dark:text-white/60 mt-1">{closure.notes}</div>
                   )}
                 </div>
                 <Button

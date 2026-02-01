@@ -1409,12 +1409,13 @@ function ExpandedEmployeeView({
     }
   };
 
-  const formatCurrency = (value: number | string | null) => {
+  const formatCurrency = (value: number | string | null, isPence: boolean = false) => {
     if (!value && value !== 0) return '—';
     const num = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(num)) return '—';
-    // If the value is likely in pence (large number), convert to pounds
-    const displayValue = num > 1000 ? num / 100 : num;
+    // If isPence is true (like hourly_rate), convert to pounds
+    // Otherwise assume the value is already in pounds
+    const displayValue = isPence ? num / 100 : num;
     return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(displayValue);
   };
 
@@ -1633,7 +1634,7 @@ function ExpandedEmployeeView({
                 { value: 'apprentice', label: 'Apprentice' }
               ]} />
               <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || '—'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate) : '—'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate, true) : '—'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || '—'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               <InfoRow label="Pay Frequency" value={employee.pay_frequency || 'monthly'} fieldName="pay_frequency" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'weekly', label: 'Weekly' },
@@ -1715,7 +1716,7 @@ function ExpandedEmployeeView({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InfoRow label="Annual Leave Allowance (days)" value={employee.annual_leave_allowance?.toString() || '28'} fieldName="annual_leave_allowance" employeeId={employee.id} onUpdate={onUpdate} type="number" />
             </div>
-            <p className="text-xs text-neutral-400 mt-2">UK statutory minimum is 28 days (including bank holidays)</p>
+            <p className="text-xs text-gray-500 dark:text-white/60 mt-2">UK statutory minimum is 28 days (including bank holidays)</p>
           </div>
         )}
 
@@ -1948,7 +1949,7 @@ function InfoRow({
 
   return (
     <div className="flex justify-between items-center py-2 border-b border-theme group">
-      <span className="text-neutral-400 text-sm">{label}</span>
+      <span className="text-gray-500 dark:text-white/60 text-sm">{label}</span>
       <div className="flex items-center gap-2 flex-1 justify-end">
         {isEditing ? (
           <>
@@ -2896,7 +2897,7 @@ function EditEmployeeModal({
                     step="0.5"
                     className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
                   />
-                  <p className="text-xs text-neutral-400 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
+                  <p className="text-xs text-gray-500 dark:text-white/60 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
               </div>
             </div>

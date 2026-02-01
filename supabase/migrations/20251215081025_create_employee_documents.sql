@@ -156,7 +156,8 @@ BEGIN
   -- Storage policies for employee-documents (company-scoped)
   -- We scope by folder[0] = company_id
   -- --------------------------------------------------------------------------
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'objects') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'objects')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
     DROP POLICY IF EXISTS employee_docs_select_company ON storage.objects;
     DROP POLICY IF EXISTS employee_docs_insert_company ON storage.objects;
     DROP POLICY IF EXISTS employee_docs_update_company ON storage.objects;

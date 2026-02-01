@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, AlertCircle, Clock, DollarSign, TrendingUp, TrendingDown, Percent } from 'lucide-react';
+import { Check, AlertCircle, Clock, DollarSign, TrendingUp, TrendingDown, Percent, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -66,13 +66,27 @@ export function DayApprovalPanel({
   const [showReviewModal, setShowReviewModal] = useState<string | null>(null);
   const [reviewReasons, setReviewReasons] = useState<Record<string, ReviewReason[]>>({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  // Check if all days are approved
+  const allDaysApproved = weekDays.length > 0 && weekDays.every(day => {
+    const dateStr = day.toISOString().split('T')[0];
+    return approvals[dateStr]?.status === 'approved';
+  });
+
+  // Auto-collapse when all days become approved
+  useEffect(() => {
+    if (allDaysApproved && !loading) {
+      setIsExpanded(false);
+    }
+  }, [allDaysApproved, loading]);
 
   // Load approvals
   useEffect(() => {
     if (rotaId) {
       loadApprovals();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [rotaId]);
 
   const loadApprovals = async () => {
@@ -155,11 +169,11 @@ export function DayApprovalPanel({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return 'bg-green-500/10 text-green-400 border-green-500/30';
+        return 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20';
       case 'needs_review':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+        return 'bg-yellow-50 dark:bg-amber-500/10 text-yellow-600 dark:text-amber-400 border-yellow-200 dark:border-amber-500/20';
       default:
-        return 'bg-neutral-700/50 text-neutral-400 border-neutral-600';
+        return 'bg-gray-50 dark:bg-white/[0.05] text-gray-600 dark:text-white/70 border-gray-200 dark:border-white/[0.06]';
     }
   };
 
@@ -252,25 +266,60 @@ export function DayApprovalPanel({
 
   if (loading) {
     return (
-      <div className="mt-4 p-4 bg-neutral-900/50 rounded-xl border border-neutral-800">
-        <div className="text-center text-neutral-400">Loading approvals...</div>
+      <div className="mt-4 p-4 bg-white dark:bg-white/[0.05] rounded-lg border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none">
+        <div className="text-center text-gray-600 dark:text-white/70">Loading approvals...</div>
       </div>
     );
   }
 
   return (
-    <div className="mt-4 p-4 bg-neutral-900/50 rounded-xl border border-neutral-800">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <Check className="w-5 h-5 text-[#EC4899]" />
+    <div className={`mt-4 p-4 bg-white dark:bg-white/[0.05] rounded-lg border shadow-sm dark:shadow-none transition-all ${
+      allDaysApproved
+        ? 'border-green-200 dark:border-green-500/30'
+        : 'border-gray-200 dark:border-white/[0.06]'
+    }`}>
+      <div
+        className={`flex items-center justify-between ${isExpanded ? 'mb-4' : ''} ${allDaysApproved ? 'cursor-pointer' : ''}`}
+        onClick={() => allDaysApproved && setIsExpanded(!isExpanded)}
+      >
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          {allDaysApproved ? (
+            <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400" />
+          ) : (
+            <Check className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          )}
           Day-by-Day Approval
+          {allDaysApproved && (
+            <span className="ml-2 px-2.5 py-1 text-xs font-medium bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded-full border border-green-200 dark:border-green-500/30">
+              All Approved
+            </span>
+          )}
         </h3>
-        {!canApprove && (
-          <span className="text-xs text-neutral-400">Only senior managers can approve days</span>
-        )}
+        <div className="flex items-center gap-3">
+          {!canApprove && !allDaysApproved && (
+            <span className="text-xs text-gray-600 dark:text-white/70">Only senior managers can approve days</span>
+          )}
+          {allDaysApproved && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] text-gray-500 dark:text-white/60 transition-colors"
+              aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            >
+              {isExpanded ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
+      {isExpanded && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
         {weekDays.map((day) => {
           const dateStr = day.toISOString().split('T')[0];
           const approval = approvals[dateStr];
@@ -340,14 +389,14 @@ export function DayApprovalPanel({
                     <span className={labourPercent > 35 ? 'text-red-400' : labourPercent > 30 ? 'text-amber-400' : 'text-green-400'}>
                       {labourPercent.toFixed(1)}%
                     </span>
-                    <span className="text-neutral-500 text-[10px]">labour</span>
+                    <span className="text-gray-500 dark:text-white/50 text-[10px]">labour</span>
                   </div>
                 )}
               </div>
 
               {/* Review Notes */}
               {approval?.notes && approval.status === 'needs_review' && (
-                <div className="mb-2 p-2 bg-amber-500/10 rounded text-xs text-amber-400">
+                <div className="mb-2 p-2 bg-yellow-50 dark:bg-amber-500/10 rounded text-xs text-yellow-700 dark:text-amber-400 border border-yellow-200 dark:border-amber-500/20">
                   {approval.notes}
                 </div>
               )}
@@ -359,7 +408,7 @@ export function DayApprovalPanel({
                     <button
                       onClick={() => handleApprove(dateStr)}
                       disabled={processing === dateStr}
-                      className="px-2 py-1.5 text-xs bg-transparent border border-green-500/50 text-green-400 rounded hover:bg-green-500/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1"
+                      className="px-2 py-1.5 text-xs bg-transparent border border-green-200 dark:border-green-500/50 text-green-600 dark:text-green-400 rounded hover:bg-green-50 dark:hover:bg-green-500/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1"
                     >
                       <Check className="w-3 h-3" />
                       Approve
@@ -368,7 +417,7 @@ export function DayApprovalPanel({
                   <button
                     onClick={() => openReviewModal(dateStr)}
                     disabled={processing === dateStr}
-                    className={`px-2 py-1.5 text-xs bg-transparent border border-amber-500/50 text-amber-400 rounded hover:bg-amber-500/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1 ${
+                    className={`px-2 py-1.5 text-xs bg-transparent border border-yellow-200 dark:border-amber-500/50 text-yellow-600 dark:text-amber-400 rounded hover:bg-yellow-50 dark:hover:bg-amber-500/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1 ${
                       status === 'needs_review' ? 'opacity-75' : ''
                     }`}
                     title={status === 'needs_review' ? 'Edit review' : 'Mark for review'}
@@ -381,16 +430,17 @@ export function DayApprovalPanel({
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Review Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-neutral-900 rounded-xl border border-neutral-700 w-full max-w-md p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-gray-200 dark:border-white/[0.1] w-full max-w-md p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {approvals[showReviewModal]?.status === 'needs_review' ? 'Edit Review' : 'Mark Day for Review'}
             </h3>
-            <p className="text-sm text-neutral-400 mb-4">
+            <p className="text-sm text-gray-600 dark:text-white/70 mb-4">
               Please select why this day needs review:
             </p>
             
@@ -398,25 +448,25 @@ export function DayApprovalPanel({
               {(Object.keys(REVIEW_REASON_LABELS) as ReviewReason[]).map((reason) => (
                 <label
                   key={reason}
-                  className="flex items-center gap-2 p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
+                  className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] cursor-pointer border border-gray-200 dark:border-white/[0.06]"
                 >
                   <input
                     type="checkbox"
                     checked={(reviewReasons[showReviewModal] || []).includes(reason)}
                     onChange={() => toggleReviewReason(showReviewModal, reason)}
-                    className="w-4 h-4 rounded border-neutral-600 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-offset-0"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.06] text-blue-600 dark:text-blue-400 focus:ring-blue-500 focus:ring-2"
                   />
-                  <span className="text-sm text-white">{REVIEW_REASON_LABELS[reason]}</span>
+                  <span className="text-sm text-gray-900 dark:text-white">{REVIEW_REASON_LABELS[reason]}</span>
                 </label>
               ))}
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm text-neutral-400 mb-2">Additional notes (optional):</label>
+              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Additional notes (optional):</label>
               <textarea
                 value={reviewNotes[showReviewModal] || ''}
                 onChange={(e) => setReviewNotes({ ...reviewNotes, [showReviewModal]: e.target.value })}
-                className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm"
+                className="w-full p-3 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/40"
                 placeholder="Add any additional context..."
                 rows={3}
               />
@@ -429,14 +479,14 @@ export function DayApprovalPanel({
                   setReviewReasons({ ...reviewReasons, [showReviewModal]: [] });
                   setReviewNotes({ ...reviewNotes, [showReviewModal]: '' });
                 }}
-                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white"
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-gray-300 dark:border-white/[0.1] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleNeedsReview(showReviewModal)}
                 disabled={(reviewReasons[showReviewModal] || []).length === 0 || processing === showReviewModal}
-                className="px-4 py-2 bg-transparent border border-amber-500 text-amber-400 rounded-lg hover:bg-amber-500/10 disabled:opacity-50"
+                className="px-4 py-2 bg-transparent border border-yellow-200 dark:border-amber-500 text-yellow-600 dark:text-amber-400 rounded-lg hover:bg-yellow-50 dark:hover:bg-amber-500/10 disabled:opacity-50 transition-colors"
               >
                 {processing === showReviewModal ? 'Saving...' : 'Mark for Review'}
               </button>

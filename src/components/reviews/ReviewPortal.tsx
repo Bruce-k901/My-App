@@ -216,7 +216,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
         <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
           <div>
             <h1 className="text-2xl font-bold text-white">{review.template?.name || 'Review'}</h1>
-            <p className="text-neutral-400 text-sm mt-1">
+            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">
               {review.employee?.full_name} • {new Date(review.created_at).toLocaleDateString()}
             </p>
           </div>
@@ -245,7 +245,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === tab.id
                   ? 'border-[#EC4899] text-[#EC4899]'
-                  : 'border-transparent text-neutral-400 hover:text-white'
+                  : 'border-transparent text-gray-500 dark:text-white/60 hover:text-white'
               }`}
             >
               <tab.icon className="h-4 w-4" />
@@ -265,7 +265,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'edit' 
                   ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]' 
-                  : 'text-neutral-400 hover:text-white border border-white/[0.06]'
+                  : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
               }`}
             >
               Edit Responses
@@ -275,7 +275,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'compare' 
                   ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]' 
-                  : 'text-neutral-400 hover:text-white border border-white/[0.06]'
+                  : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
               }`}
             >
               Compare & Discuss
@@ -370,7 +370,7 @@ function NotesTab({
                     className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                       notePhase === phase
                         ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
-                        : 'bg-white/[0.05] text-neutral-400 border border-white/[0.06] hover:text-white'
+                        : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border border-white/[0.06] hover:text-white'
                     }`}
                   >
                     {phase.charAt(0).toUpperCase() + phase.slice(1)} Review
@@ -407,14 +407,14 @@ function NotesTab({
             {phase.charAt(0).toUpperCase() + phase.slice(1)} Review Notes ({notes[phase].length})
           </h3>
           {notes[phase].length === 0 ? (
-            <p className="text-neutral-400 text-sm">No notes for this phase</p>
+            <p className="text-gray-500 dark:text-white/60 text-sm">No notes for this phase</p>
           ) : (
             <div className="space-y-3">
               {notes[phase].map((note) => (
                 <div key={note.id} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-neutral-400" />
+                      <User className="h-4 w-4 text-gray-500 dark:text-white/60" />
                       <span className="text-sm text-neutral-300">{note.author?.full_name || 'Unknown'}</span>
                       <span className="text-xs text-neutral-500">
                         {new Date(note.created_at).toLocaleString()}
@@ -572,7 +572,7 @@ function FollowUpsTab({
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h4 className="text-white font-medium">{followUp.title}</h4>
-                    <p className="text-sm text-neutral-400 mt-1">{followUp.description}</p>
+                    <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{followUp.description}</p>
                   </div>
                   <span className={`px-2 py-1 rounded text-xs ${
                     followUp.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
@@ -596,7 +596,7 @@ function FollowUpsTab({
             ))}
           </div>
         ) : (
-          <p className="text-neutral-400 text-sm">No follow-up items yet</p>
+          <p className="text-gray-500 dark:text-white/60 text-sm">No follow-up items yet</p>
         )}
       </div>
     </div>
@@ -631,7 +631,7 @@ function CalendarTab({ review }: { review: ReviewWithDetails }) {
 
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
           <h4 className="text-white font-medium mb-2">Calendar Integration</h4>
-          <p className="text-neutral-400 text-sm">
+          <p className="text-gray-500 dark:text-white/60 text-sm">
             This review appears on the team calendar. All scheduled reviews and review meetings 
             are automatically added to the calendar for visibility across the team.
           </p>

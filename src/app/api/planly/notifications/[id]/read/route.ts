@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();

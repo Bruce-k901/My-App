@@ -90,7 +90,7 @@ export default function PayPeriodSelector({
     <div className="relative">
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-transparent border border-white/[0.06] text-white hover:bg-white/[0.05]"
+        className="bg-transparent border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]"
       >
         <Calendar className="w-4 h-4 mr-2" />
         <span className="text-sm">
@@ -104,21 +104,21 @@ export default function PayPeriodSelector({
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-[#0B0D13] border border-white/[0.06] rounded-lg shadow-xl z-50 p-4">
+        <div className="absolute right-0 top-full mt-2 w-96 bg-white dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-xl z-50 p-4">
           <div className="space-y-4">
             {/* Recent Periods */}
             {schedule && recentPeriods.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-white mb-2">Recent Periods</h3>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Recent Periods</h3>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
                   {recentPeriods.map((period, idx) => (
                     <button
                       key={idx}
                       onClick={() => handlePeriodSelect(period.start, period.end, period.payDate)}
-                      className="w-full text-left px-3 py-2 text-sm text-white/80 hover:bg-white/[0.05] rounded transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-gray-800 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded transition-colors"
                     >
                       {period.label}
-                      <span className="text-xs text-white/40 ml-2">
+                      <span className="text-xs text-gray-500 dark:text-white/40 ml-2">
                         (Pay: {formatDate(period.payDate)})
                       </span>
                     </button>
@@ -128,25 +128,25 @@ export default function PayPeriodSelector({
             )}
 
             {/* Custom Date Range */}
-            <div className="border-t border-white/[0.06] pt-4">
-              <h3 className="text-sm font-medium text-white mb-3">Custom Date Range</h3>
+            <div className="border-t border-gray-200 dark:border-white/[0.06] pt-4">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Custom Date Range</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-white/60 mb-1">Period Start</label>
+                  <label className="block text-xs text-gray-600 dark:text-white/60 mb-1">Period Start</label>
                   <input
                     type="date"
                     value={customStartDate}
                     onChange={(e) => setCustomStartDate(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-3 py-2 text-sm text-white"
+                    className="w-full bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded px-3 py-2 text-sm text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/60 mb-1">Period End</label>
+                  <label className="block text-xs text-gray-600 dark:text-white/60 mb-1">Period End</label>
                   <input
                     type="date"
                     value={customEndDate}
                     onChange={(e) => setCustomEndDate(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-3 py-2 text-sm text-white"
+                    className="w-full bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded px-3 py-2 text-sm text-gray-900 dark:text-white"
                   />
                 </div>
                 <Button
@@ -159,8 +159,8 @@ export default function PayPeriodSelector({
             </div>
 
             {/* Current Period Info */}
-            <div className="border-t border-white/[0.06] pt-4">
-              <div className="text-xs text-white/60 space-y-1">
+            <div className="border-t border-gray-200 dark:border-white/[0.06] pt-4">
+              <div className="text-xs text-gray-600 dark:text-white/60 space-y-1">
                 <div>Pay Date: {formatDate(payDate)}</div>
                 {schedule && (
                   <div>Schedule: {schedule.schedule_type}</div>

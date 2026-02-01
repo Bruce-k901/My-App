@@ -135,32 +135,32 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-transparent shadow-sm dark:shadow-none">
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-magenta-400" />
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
           {currentDate ? currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ""}
         </h2>
-        
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigateMonth('prev')}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             disabled={loading}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 py-1 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-3 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             disabled={loading}
           >
             Today
           </button>
           <button
             onClick={() => navigateMonth('next')}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             disabled={loading}
           >
             <ChevronRight className="h-4 w-4" />
@@ -171,14 +171,14 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-magenta-400"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600 dark:border-cyan-400"></div>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-4">
-          <p className="text-red-400 text-sm">Error loading calendar data: {error}</p>
+        <div className="bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-lg p-4 mb-4">
+          <p className="text-red-600 dark:text-red-400 text-sm">Error loading calendar data: {error}</p>
         </div>
       )}
 
@@ -187,7 +187,7 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-3 text-center text-sm font-medium text-gray-400 border-b border-gray-700">
+            <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
               {day}
             </div>
           ))}
@@ -203,22 +203,22 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
           return (
             <div
               key={index}
-              className={`min-h-[100px] p-2 border border-gray-700 cursor-pointer transition-all duration-200 ${
-                isCurrentMonthDay ? 'bg-gray-800' : 'bg-gray-900'
-              } ${isTodayDate ? 'ring-2 ring-blue-500' : ''} ${
-                isHovered ? 'bg-gray-700 border-gray-600' : ''
-              } ${dayAssets.length === 0 ? 'hover:bg-gray-700' : ''}`}
+              className={`min-h-[100px] p-2 border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                isCurrentMonthDay ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'
+              } ${isTodayDate ? 'ring-2 ring-cyan-500' : ''} ${
+                isHovered ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600' : ''
+              } ${dayAssets.length === 0 ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : ''}`}
               onClick={() => handleDayClick(date, dayAssets)}
               onMouseEnter={() => setHoveredDay(dateKey)}
               onMouseLeave={() => setHoveredDay(null)}
             >
               {/* Date Number */}
               <div className={`text-sm font-medium mb-2 flex items-center justify-between ${
-                isCurrentMonthDay ? 'text-white' : 'text-gray-500'
-              } ${isTodayDate ? 'text-blue-400' : ''}`}>
+                isCurrentMonthDay ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
+              } ${isTodayDate ? 'text-cyan-600 dark:text-cyan-400' : ''}`}>
                 <span>{date.getDate()}</span>
                 {dayAssets.length === 0 && isHovered && isCurrentMonthDay && (
-                  <Plus className="h-3 w-3 text-magenta-400" />
+                  <Plus className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                 )}
               </div>
 
@@ -228,7 +228,7 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
                   const cleanAsset = nullifyUndefined(asset);
                   const { status, color } = getPPMStatus(cleanAsset.next_service_date, cleanAsset.ppm_status);
                   const isOverdue = status === 'overdue';
-                  
+
                   return (
                     <div
                       key={cleanAsset.id}
@@ -243,14 +243,14 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
                       title={`${cleanAsset.name} - ${cleanAsset.site_name} (${status})`}
                     >
                       <div className="truncate font-medium">{cleanAsset.name}</div>
-                      <div className="truncate text-gray-400">{cleanAsset.site_name}</div>
+                      <div className="truncate text-gray-500 dark:text-gray-400">{cleanAsset.site_name}</div>
                     </div>
                   );
                 })}
-                
+
                 {/* Show more indicator */}
                 {dayAssets.length > 3 && (
-                  <div className="text-xs text-gray-400 text-center py-1 hover:text-white transition-colors">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 text-center py-1 hover:text-gray-900 dark:hover:text-white transition-colors">
                     +{dayAssets.length - 3} more
                   </div>
                 )}
@@ -263,22 +263,22 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-700">
+      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#22C55E' }}></div>
-          <span className="text-gray-400">Completed</span>
+          <span className="text-gray-600 dark:text-gray-400">Completed</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#EF4444' }}></div>
-          <span className="text-gray-400">Overdue</span>
+          <span className="text-gray-600 dark:text-gray-400">Overdue</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#F59E0B' }}></div>
-          <span className="text-gray-400">Due Soon</span>
+          <span className="text-gray-600 dark:text-gray-400">Due Soon</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#6B7280' }}></div>
-          <span className="text-gray-400">Upcoming</span>
+          <span className="text-gray-600 dark:text-gray-400">Upcoming</span>
         </div>
       </div>
 

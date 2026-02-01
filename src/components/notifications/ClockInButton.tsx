@@ -104,8 +104,9 @@ export function ClockInButton() {
   // NOW we can do conditional returns - all hooks have been called
   if (loading) {
     return (
-      <div className="px-3 py-2 text-white/60 text-sm">
-        Loading...
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10">
+        <Clock className="w-4 h-4 text-white/40 animate-pulse" />
+        <span className="text-white/60 text-xs md:text-sm hidden sm:inline">Loading...</span>
       </div>
     )
   }
@@ -131,20 +132,22 @@ export function ClockInButton() {
 
     return (
       <>
-        <div className="flex items-center gap-3 px-4 py-2 bg-green-500/20 border border-green-500/50 rounded-lg">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:gap-3 px-2 md:px-4 py-1.5 md:py-2 bg-green-500/20 border border-green-500/50 rounded-lg h-9 md:h-10">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <Clock className="w-4 h-4 text-green-400" />
-            <div className="text-sm">
-              <div className="text-green-400 font-medium">Clocked In</div>
-              <div className="text-white/60 text-xs">Since {duration} ago</div>
+            <div className="text-xs md:text-sm">
+              <span className="text-green-400 font-medium hidden sm:inline">Clocked In</span>
+              <span className="text-green-400 font-medium sm:hidden">In</span>
+              <span className="text-white/60 text-xs ml-1 hidden md:inline">({duration})</span>
             </div>
           </div>
           <button
             onClick={handleClockOutClick}
             type="button"
-            className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm rounded transition-colors cursor-pointer"
+            className="px-2 md:px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs md:text-sm rounded transition-colors cursor-pointer whitespace-nowrap"
           >
-            Clock Out
+            <span className="hidden sm:inline">Clock Out</span>
+            <span className="sm:hidden">Out</span>
           </button>
         </div>
 
@@ -186,17 +189,17 @@ export function ClockInButton() {
       <button
         onClick={handleClockInClick}
         disabled={requestingLocation || !siteId}
-        className="flex items-center gap-2 px-4 py-2 bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/50 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/50 text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-9 md:h-10"
       >
         {requestingLocation ? (
           <>
             <MapPin className="w-4 h-4 animate-pulse" />
-            <span className="text-sm">Getting location...</span>
+            <span className="text-xs md:text-sm hidden sm:inline">Getting location...</span>
           </>
         ) : (
           <>
             <Clock className="w-4 h-4" />
-            <span className="text-sm">Clock In</span>
+            <span className="text-xs md:text-sm whitespace-nowrap">Clock In</span>
           </>
         )}
       </button>

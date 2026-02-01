@@ -56,7 +56,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
           {/* Total Labour Cost */}
           <div className="bg-neutral-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <DollarSign className="w-3.5 h-3.5" />
               Labour Cost
             </div>
@@ -76,7 +76,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
             labourStatus === 'warning' ? 'bg-amber-500/10 border border-amber-500/30' :
             'bg-red-500/10 border border-red-500/30'
           }`}>
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <Target className="w-3.5 h-3.5" />
               Labour %
             </div>
@@ -101,7 +101,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
 
           {/* Total Hours */}
           <div className="bg-neutral-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <Clock className="w-3.5 h-3.5" />
               Scheduled Hours
             </div>
@@ -113,7 +113,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
 
           {/* Predicted Revenue */}
           <div className="bg-neutral-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <TrendingUp className="w-3.5 h-3.5" />
               Predicted Revenue
             </div>
@@ -125,7 +125,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
 
           {/* Staff Scheduled */}
           <div className="bg-neutral-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <Users className="w-3.5 h-3.5" />
               Staff Rostered
             </div>
@@ -141,12 +141,12 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
           <div className={`rounded-lg p-3 ${
             overtimeHours > 0 ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-neutral-800'
           }`}>
-            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-1">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-white/60 text-xs mb-1">
               <TrendingUp className="w-3.5 h-3.5" />
               Overtime
             </div>
             <p className={`text-xl font-bold ${
-              overtimeHours > 0 ? 'text-amber-400' : 'text-neutral-400'
+              overtimeHours > 0 ? 'text-amber-400' : 'text-gray-500 dark:text-white/60'
             }`}>
               {overtimeHours.toFixed(1)}h
             </p>
@@ -168,7 +168,7 @@ export function CostPanel({ rota, staffHours, forecasts, onSetTarget }: CostPane
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white truncate">{staff.full_name}</p>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-neutral-400">
+                        <span className="text-gray-500 dark:text-white/60">
                           {staff.scheduled_hours}h
                         </span>
                         {staff.contracted_hours && (

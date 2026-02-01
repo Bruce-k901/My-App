@@ -23,8 +23,8 @@ export default function WeekSummary({
   
   return (
     <div className={`
-      bg-white/[0.03] border rounded-xl p-6 mt-6
-      ${isLocked ? 'border-green-500/30' : 'border-white/[0.06]'}
+      bg-white dark:bg-white/[0.03] border rounded-xl p-6 mt-6
+      ${isLocked ? 'border-green-200 dark:border-green-500/30' : 'border-gray-200 dark:border-white/[0.06]'}
     `}>
       <h3 className="font-semibold mb-4 flex items-center gap-2">
         {isLocked ? (
@@ -34,46 +34,46 @@ export default function WeekSummary({
           </>
         ) : (
           <>
-            <CheckCircle className="w-5 h-5 text-[#EC4899]" />
+            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Week Summary
           </>
         )}
       </h3>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white/[0.05] rounded-lg p-4">
-          <p className="text-sm text-zinc-400">Total Scheduled</p>
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-white/60">Total Scheduled</p>
           <p className="text-2xl font-bold">{weekData.totalScheduledHours.toFixed(1)}h</p>
         </div>
         
-        <div className="bg-white/[0.05] rounded-lg p-4">
-          <p className="text-sm text-zinc-400">Total Actual</p>
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-white/60">Total Actual</p>
           <p className="text-2xl font-bold">{weekData.totalActualHours.toFixed(1)}h</p>
         </div>
         
-        <div className="bg-white/[0.05] rounded-lg p-4">
-          <p className="text-sm text-zinc-400">Variance</p>
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-white/60">Variance</p>
           <p className={`text-2xl font-bold ${
-            weekData.totalVariance >= 0 ? 'text-green-400' : 'text-red-400'
+            weekData.totalVariance >= 0 ? 'text-green-400' : 'text-red-600 dark:text-red-400'
           }`}>
             {weekData.totalVariance >= 0 ? '+' : ''}{weekData.totalVariance.toFixed(1)}h
           </p>
         </div>
         
-        <div className="bg-white/[0.05] rounded-lg p-4">
-          <p className="text-sm text-zinc-400">Signed Off</p>
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-white/60">Signed Off</p>
           <p className="text-2xl font-bold">
             {weekData.signedOffCount}/{weekData.totalCount}
-            <span className="text-sm text-zinc-400 ml-2">({weekData.percentComplete}%)</span>
+            <span className="text-sm text-gray-500 dark:text-white/60 ml-2">({weekData.percentComplete}%)</span>
           </p>
         </div>
       </div>
       
       {/* Progress bar */}
       <div className="mb-6">
-        <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+        <div className="h-2 bg-gray-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
           <div 
-            className={`h-full transition-all ${allComplete ? 'bg-green-500' : 'bg-[#EC4899]'}`}
+            className={`h-full transition-all ${allComplete ? 'bg-green-500' : 'bg-blue-600 dark:bg-blue-500'}`}
             style={{ width: `${weekData.percentComplete}%` }}
           />
         </div>
@@ -81,11 +81,11 @@ export default function WeekSummary({
       
       {/* Warnings */}
       {hasIssues && !isLocked && (
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-6 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-lg p-4 mb-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-amber-400 font-medium">Attention Required</p>
-            <p className="text-sm text-zinc-400 mt-1">
+            <p className="text-yellow-600 dark:text-yellow-400 font-medium">Attention Required</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
               Some staff have missing attendance records. Please add or adjust their hours before submitting to payroll.
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function WeekSummary({
       {/* Submit button */}
       {canApprove && !isLocked && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-gray-500 dark:text-white/60">
             {allComplete 
               ? 'All hours have been signed off and are ready for payroll.'
               : `${weekData.totalCount - weekData.signedOffCount} entries still pending sign-off.`
@@ -107,9 +107,9 @@ export default function WeekSummary({
             disabled={!allComplete}
             className={`
               flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors
-              ${allComplete 
-                ? 'bg-[#EC4899] hover:bg-[#EC4899]/90 text-white' 
-                : 'bg-white/[0.05] text-zinc-500 cursor-not-allowed'
+              ${allComplete
+                ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-white/[0.05] text-gray-400 dark:text-white/50 cursor-not-allowed'
               }
             `}
           >
@@ -128,7 +128,7 @@ export default function WeekSummary({
               year: 'numeric' 
             })}
           </p>
-          <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1.5 rounded-full">
+          <span className="text-xs bg-green-100 dark:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-full">
             Payroll Complete
           </span>
         </div>

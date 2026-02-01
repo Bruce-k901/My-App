@@ -28,7 +28,7 @@ export function ForecastInput({ date, currentForecast, onSave, onClose }: Foreca
         <span className="text-xs font-medium text-white">Forecast Sales</span>
         <button
           onClick={onClose}
-          className="p-0.5 hover:bg-neutral-700 rounded text-neutral-400 hover:text-white"
+          className="p-0.5 hover:bg-neutral-700 rounded text-gray-500 dark:text-white/60 hover:text-white"
         >
           <X className="w-3 h-3" />
         </button>

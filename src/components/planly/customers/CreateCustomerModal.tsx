@@ -84,7 +84,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
       phone: phone.trim() || undefined,
       address: address.trim() || undefined,
       postcode: postcode.trim() || undefined,
-      default_fulfillment: defaultFulfillment,
+      // Note: default_fulfillment UI retained for future use when column is added
       destination_group_id: destinationGroupId || undefined,
       default_ship_state: defaultShipState,
       delivery_instructions: deliveryInstructions.trim() || undefined,

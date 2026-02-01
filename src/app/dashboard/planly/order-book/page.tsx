@@ -1,40 +1,171 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Calendar } from 'lucide-react';
-import { OrderBook } from '@/components/planly/orders/OrderBook';
+import { Package } from 'lucide-react';
+import { PackingPlanHeader } from '@/components/planly/packing-plan/PackingPlanHeader';
+import { PackingPlanGrid } from '@/components/planly/packing-plan/PackingPlanGrid';
+import { usePackingPlan, PackingPlanData } from '@/hooks/planly/usePackingPlan';
 import { useAppContext } from '@/context/AppContext';
-import { Input } from '@/components/ui/Input';
+import '@/styles/packing-plan-print.css';
 
-export default function OrderBookPage() {
+interface GroupedProducts {
+  id: string;
+  name: string;
+  icon?: string;
+  priority?: number;
+  products: Array<{
+    id: string;
+    name: string;
+    bake_group_id?: string;
+    sort_order?: number;
+  }>;
+}
+
+function buildPackingGrid(data: PackingPlanData) {
+  // Build quantity lookup map
+  const quantityMap = new Map<string, number>();
+  data.orderItems.forEach((item) => {
+    const key = `${item.customer_id}-${item.product_id}`;
+    quantityMap.set(key, (quantityMap.get(key) || 0) + item.quantity);
+  });
+
+  // Group products by bake group
+  const groupedProducts: GroupedProducts[] = data.bakeGroups
+    .map((bg) => ({
+      id: bg.id,
+      name: bg.name,
+      icon: getBakeGroupIcon(bg.name),
+      priority: bg.priority,
+      products: data.products
+        .filter((p) => p.bake_group_id === bg.id)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    }))
+    .filter((g) => g.products.length > 0);
+
+  // Add ungrouped products
+  const ungroupedProducts = data.products.filter((p) => !p.bake_group_id);
+  if (ungroupedProducts.length > 0) {
+    groupedProducts.push({
+      id: 'ungrouped',
+      name: 'Other',
+      icon: '📦',
+      priority: 999,
+      products: ungroupedProducts.sort((a, b) => a.name.localeCompare(b.name)),
+    });
+  }
+
+  return {
+    groupedProducts,
+    customers: data.customers,
+    products: data.products,
+    quantityMap,
+  };
+}
+
+// Map common bake group names to icons
+function getBakeGroupIcon(name: string): string {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('croissant') || lowerName.includes('viennoiserie')) return '🥐';
+  if (lowerName.includes('swirl') || lowerName.includes('danish')) return '🌀';
+  if (lowerName.includes('cookie') || lowerName.includes('biscuit')) return '🍪';
+  if (lowerName.includes('bread') || lowerName.includes('loaf')) return '🍞';
+  if (lowerName.includes('cake') || lowerName.includes('muffin')) return '🧁';
+  if (lowerName.includes('bun')) return '🥯';
+  if (lowerName.includes('tart') || lowerName.includes('pie')) return '🥧';
+  return '📦';
+}
+
+export default function PackingPlanPage() {
   const { siteId } = useAppContext();
   const [deliveryDate, setDeliveryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [transposed, setTransposed] = useState(false);
+
+  const { data, isLoading, error, mutate } = usePackingPlan(deliveryDate, siteId || undefined);
+
+  const gridData = useMemo(() => {
+    if (!data || !data.orderItems || data.orderItems.length === 0) return null;
+    return buildPackingGrid(data);
+  }, [data]);
+
+  const handleRefresh = useCallback(() => {
+    mutate();
+  }, [mutate]);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  const handleTranspose = useCallback(() => {
+    setTransposed((prev) => !prev);
+  }, []);
 
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Please select a site</div>
+        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Order Book</h1>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-[#14B8A6]" />
-          <Input
-            type="date"
-            value={deliveryDate}
-            onChange={(e) => setDeliveryDate(e.target.value)}
-            className="bg-white/[0.03] border-white/[0.06] text-white"
-          />
-        </div>
+    <div className="container mx-auto py-6 space-y-6 packing-plan-container">
+      {/* Screen Header */}
+      <div className="screen-only">
+        <PackingPlanHeader
+          selectedDate={deliveryDate}
+          onDateChange={setDeliveryDate}
+          onRefresh={handleRefresh}
+          onPrint={handlePrint}
+          transposed={transposed}
+          onTranspose={handleTranspose}
+          orderCount={data?.orderCount || 0}
+          isLoading={isLoading}
+        />
       </div>
 
-      <OrderBook deliveryDate={deliveryDate} siteId={siteId} />
+      {/* Print-only Header */}
+      <div className="print-only mb-4">
+        <h1 className="text-xl font-bold text-black">Packing Plan</h1>
+        <p className="text-sm text-gray-600">
+          {format(new Date(deliveryDate), 'EEEE, d MMMM yyyy')}
+        </p>
+        <p className="text-sm text-gray-600">{data?.orderCount || 0} orders</p>
+      </div>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-gray-500 dark:text-white/60">Loading packing plan...</div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-red-500 dark:text-red-400">Error loading packing plan</div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && !error && (!gridData || !data?.orderItems || data.orderItems.length === 0) && (
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-zinc-400">
+          <Package className="h-12 w-12 mb-4 opacity-50" />
+          <p className="text-lg">No orders for {format(new Date(deliveryDate), 'd MMMM yyyy')}</p>
+          <p className="text-sm mt-1">Select a different date or place some orders first</p>
+        </div>
+      )}
+
+      {/* Grid */}
+      {!isLoading && !error && gridData && (
+        <PackingPlanGrid
+          groupedProducts={gridData.groupedProducts}
+          customers={gridData.customers}
+          products={gridData.products}
+          quantityMap={gridData.quantityMap}
+          transposed={transposed}
+        />
+      )}
     </div>
   );
 }

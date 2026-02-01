@@ -408,6 +408,7 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
   const startQuiz = useCallback(
     async (moduleId: string, poolId: string, count: number) => {
       // Check access control for final assessment
+      let dbCourseId: string | null = null;
       if (moduleId === 'final' && profile?.id && course.course_id) {
         setAssignmentCheck({ checking: true, allowed: false });
         
@@ -420,6 +421,7 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
             .maybeSingle();
 
           if (courseData) {
+            dbCourseId = courseData.id;
             const accessCheck = await canAccessFinalAssessment(profile.id, courseData.id);
             
             if (!accessCheck.allowed) {
@@ -454,17 +456,66 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
           toast.error('Error checking course access');
           return;
         }
+      } else {
+        // For non-final quizzes, try to get course ID from database
+        try {
+          const { data: courseData } = await supabase
+            .from('training_courses')
+            .select('id')
+            .or(`code.eq.FS-L2,course_id.eq.${course.course_id}`)
+            .maybeSingle();
+          
+          if (courseData) {
+            dbCourseId = courseData.id;
+          }
+        } catch (error) {
+          console.error('Error fetching course ID:', error);
+        }
       }
 
-      const bundle = modules.find((item) => item.manifest.id === moduleId);
-      if (!bundle) return;
-      const available = bundle.pools[poolId] ?? [];
-      if (available.length === 0) {
-        toast.error(`No questions configured for pool ${poolId}`);
+      // Try to fetch questions from database first
+      let questions: Page[] = [];
+      if (dbCourseId) {
+        try {
+          const response = await fetch(
+            `/api/training/questions?course_id=${dbCourseId}&module_id=${moduleId}&count=${count}&randomize=true`
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.questions && data.questions.length > 0) {
+              questions = data.questions as Page[];
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching questions from database:', error);
+          // Fall through to use hardcoded questions
+        }
+      }
+
+      // Fall back to hardcoded questions if database fetch failed or returned no questions
+      if (questions.length === 0) {
+        const bundle = modules.find((item) => item.manifest.id === moduleId);
+        if (!bundle) {
+          toast.error(`Module ${moduleId} not found`);
+          setCanProceed(true);
+          return;
+        }
+        const available = bundle.pools[poolId] ?? [];
+        if (available.length === 0) {
+          toast.error(`No questions configured for pool ${poolId}`);
+          setCanProceed(true);
+          return;
+        }
+        questions = sliceQuiz(available, count);
+      }
+
+      if (questions.length === 0) {
+        toast.error('No questions available');
         setCanProceed(true);
         return;
       }
-      const questions = sliceQuiz(available, count);
+
       setQuiz({ moduleId, poolId, currentIndex: 0, questions, correctCount: 0, answered: {} });
       setCanProceed(false);
     },

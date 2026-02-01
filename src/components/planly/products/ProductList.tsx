@@ -128,16 +128,58 @@ export function ProductList({ siteId }: ProductListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header - Always visible */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
-        <Button
-          onClick={handleAddNew}
-          className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 bg-gray-50 dark:bg-[#0B0F1A] -mx-4 px-4 pt-2 pb-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
+          <Button
+            onClick={handleAddNew}
+            className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
+
+        {/* Tabs - inside sticky header when content loaded */}
+        {!isLoading && !error && (
+          <>
+            <div className="border-b border-gray-200 dark:border-white/10">
+              <nav className="flex space-x-4" aria-label="Tabs">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
+                        isActive
+                          ? 'border-[#14B8A6] text-[#14B8A6]'
+                          : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Product Modal - for both adding and editing */}
@@ -167,43 +209,6 @@ export function ProductList({ siteId }: ProductListProps) {
       {/* Content - Only show when not loading and no error */}
       {!isLoading && !error && (
         <>
-          {/* Tabs */}
-          <div className="border-b border-gray-200 dark:border-white/10">
-            <nav className="flex space-x-4" aria-label="Tabs">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
-                      isActive
-                        ? 'border-[#14B8A6] text-[#14B8A6]'
-                        : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
-            <Input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
-            />
-          </div>
-
           {/* Products Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredProducts.map((product) => (

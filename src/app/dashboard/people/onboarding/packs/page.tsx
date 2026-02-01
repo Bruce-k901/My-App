@@ -7,11 +7,13 @@ import { supabase } from '@/lib/supabase'
 import { Loader2, Package, FileText, Plus, ChevronDown, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
+import MultiSelect from '@/components/ui/MultiSelect'
 
 type Pack = {
   id: string
   name: string
   description: string | null
+  staff_type: 'head_office' | 'site_staff'
   boh_foh: 'FOH' | 'BOH' | 'BOTH'
   pay_type: 'hourly' | 'salaried'
   is_active: boolean
@@ -73,12 +75,13 @@ export default function OnboardingPacksPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newPackName, setNewPackName] = useState('')
   const [newPackDescription, setNewPackDescription] = useState('')
+  const [newPackStaffType, setNewPackStaffType] = useState<'head_office' | 'site_staff'>('site_staff')
   const [newPackBohFoh, setNewPackBohFoh] = useState<'FOH' | 'BOH' | 'BOTH'>('FOH')
   const [newPackPayType, setNewPackPayType] = useState<'hourly' | 'salaried'>('hourly')
 
-  // Add doc to pack
-  const [addingDoc, setAddingDoc] = useState(false)
-  const [docToAdd, setDocToAdd] = useState<string>('')
+  // Add docs to pack
+  const [addingDocs, setAddingDocs] = useState(false)
+  const [docsToAdd, setDocsToAdd] = useState<string[]>([])
 
   const load = async () => {
     if (!companyId) {
@@ -94,11 +97,16 @@ export default function OnboardingPacksPage() {
       // Load packs
       const { data: packData, error: packErr } = await supabase
         .from('company_onboarding_packs')
-        .select('id, name, description, boh_foh, pay_type, is_active')
+        .select('id, name, description, staff_type, boh_foh, pay_type, is_active')
         .eq('company_id', companyId)
         .order('name')
       if (packErr) throw packErr
-      setPacks((packData || []) as Pack[])
+      // Map staff_type with fallback for existing records
+      const mappedPacks = (packData || []).map((p: any) => ({
+        ...p,
+        staff_type: p.staff_type || 'site_staff',
+      }))
+      setPacks(mappedPacks as Pack[])
 
       // Load pack documents with global document details
       const { data: pdData, error: pdErr } = await supabase
@@ -152,6 +160,7 @@ export default function OnboardingPacksPage() {
         company_id: companyId,
         name: newPackName.trim(),
         description: newPackDescription.trim() || null,
+        staff_type: newPackStaffType,
         boh_foh: newPackBohFoh,
         pay_type: newPackPayType,
         is_active: true,
@@ -162,6 +171,9 @@ export default function OnboardingPacksPage() {
       toast.success('Pack created!')
       setNewPackName('')
       setNewPackDescription('')
+      setNewPackStaffType('site_staff')
+      setNewPackBohFoh('FOH')
+      setNewPackPayType('hourly')
       setShowCreateForm(false)
       await load()
     } catch (e: any) {
@@ -172,31 +184,40 @@ export default function OnboardingPacksPage() {
     }
   }
 
-  const addDocToPack = async () => {
-    if (!selectedPackId || !docToAdd) {
-      toast.error('Please select a document')
+  const addDocsToPack = async () => {
+    if (!selectedPackId || docsToAdd.length === 0) {
+      toast.error('Please select at least one document')
       return
     }
 
-    setAddingDoc(true)
+    setAddingDocs(true)
     try {
-      const { error } = await supabase.from('company_onboarding_pack_documents').insert({
+      const currentPackDocs = packDocs.filter((pd) => pd.pack_id === selectedPackId)
+      const baseSortOrder = currentPackDocs.length
+
+      // Insert all selected documents at once
+      const documentsToInsert = docsToAdd.map((docId, index) => ({
         pack_id: selectedPackId,
-        global_document_id: docToAdd,
+        global_document_id: docId,
         required: true,
-        sort_order: packDocs.filter((pd) => pd.pack_id === selectedPackId).length,
-      })
+        sort_order: baseSortOrder + index,
+      }))
+
+      const { error } = await supabase
+        .from('company_onboarding_pack_documents')
+        .insert(documentsToInsert)
 
       if (error) throw error
 
-      toast.success('Document added to pack!')
-      setDocToAdd('')
+      const count = docsToAdd.length
+      toast.success(`${count} document${count === 1 ? '' : 's'} added to pack!`)
+      setDocsToAdd([])
       await load()
     } catch (e: any) {
-      console.error('Failed to add document:', e)
-      toast.error(`Failed to add document: ${formatUnknownError(e)}`)
+      console.error('Failed to add documents:', e)
+      toast.error(`Failed to add documents: ${formatUnknownError(e)}`)
     } finally {
-      setAddingDoc(false)
+      setAddingDocs(false)
     }
   }
 
@@ -231,13 +252,13 @@ export default function OnboardingPacksPage() {
 
   useEffect(() => {
     if (companyId) void load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId])
 
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -249,8 +270,8 @@ export default function OnboardingPacksPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">Onboarding Packs</h1>
-          <p className="text-sm text-white/60">This page is for managers/admins only.</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Packs</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
         </div>
         <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#EC4899] hover:underline">
           View My Onboarding Docs
@@ -284,13 +305,13 @@ export default function OnboardingPacksPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">Onboarding Packs</h1>
-          <p className="text-sm text-white/60">Create and manage onboarding document packs for different roles</p>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Packs</h1>
+          <p className="text-sm text-gray-900 dark:text-white/60">Create and manage onboarding document packs for different roles</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/dashboard/people/onboarding/company-docs"
-            className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 rounded-lg"
+            className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80 rounded-lg"
           >
             Manage Docs
           </Link>
@@ -305,7 +326,7 @@ export default function OnboardingPacksPage() {
       )}
 
       {loading ? (
-        <div className="flex items-center gap-2 text-neutral-400">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading…
         </div>
@@ -321,31 +342,49 @@ export default function OnboardingPacksPage() {
               Create New Pack
             </button>
           ) : (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Create New Onboarding Pack</h2>
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Onboarding Pack</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">Pack Name *</label>
+                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Pack Name *</label>
                   <input
                     type="text"
                     value={newPackName}
                     onChange={(e) => setNewPackName(e.target.value)}
                     placeholder="e.g., FOH - Hourly Staff"
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">Description</label>
+                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Description</label>
                   <input
                     type="text"
                     value={newPackDescription}
                     onChange={(e) => setNewPackDescription(e.target.value)}
                     placeholder="e.g., For front-of-house hourly employees"
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">BOH/FOH</label>
+                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Staff Type *</label>
+                  <Select
+                    value={newPackStaffType}
+                    onValueChange={(v) => {
+                      setNewPackStaffType(v as 'head_office' | 'site_staff')
+                      // Reset BOH/FOH when switching to head office
+                      if (v === 'head_office') {
+                        setNewPackBohFoh('BOTH')
+                      }
+                    }}
+                    options={[
+                      { label: 'Head Office', value: 'head_office' },
+                      { label: 'Site Staff', value: 'site_staff' },
+                    ]}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">BOH/FOH</label>
                   <Select
                     value={newPackBohFoh}
                     onValueChange={(v) => setNewPackBohFoh(v as 'FOH' | 'BOH' | 'BOTH')}
@@ -355,10 +394,11 @@ export default function OnboardingPacksPage() {
                       { label: 'BOTH', value: 'BOTH' },
                     ]}
                     className="w-full"
+                    disabled={newPackStaffType === 'head_office'}
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">Pay Type</label>
+                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Pay Type</label>
                   <Select
                     value={newPackPayType}
                     onValueChange={(v) => setNewPackPayType(v as 'hourly' | 'salaried')}
@@ -380,7 +420,7 @@ export default function OnboardingPacksPage() {
                 </button>
                 <button
                   onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+                  className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
                 >
                   Cancel
                 </button>
@@ -390,18 +430,18 @@ export default function OnboardingPacksPage() {
 
           {/* Packs List & Editor */}
           {packs.length === 0 ? (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-              <Package className="w-12 h-12 text-white/30 mx-auto mb-4" />
-              <div className="text-white font-semibold text-lg">No onboarding packs yet</div>
-              <div className="text-white/60 text-sm mt-2">
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+              <Package className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
+              <div className="text-gray-900 dark:text-white font-semibold text-lg">No onboarding packs yet</div>
+              <div className="text-gray-900 dark:text-white/60 text-sm mt-2">
                 Create a starter kit or add your first pack to get started
               </div>
             </div>
           ) : (
             <div className="space-y-6">
               {/* Pack List with Expandable Documents */}
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                <h2 className="text-white font-semibold mb-3">Packs ({packs.length})</h2>
+              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+                <h2 className="text-gray-900 dark:text-white font-semibold mb-3">Packs ({packs.length})</h2>
                 <div className="space-y-3">
                   {packs.map((p) => {
                     const packDocsList = packDocs.filter((pd) => pd.pack_id === p.id)
@@ -411,7 +451,7 @@ export default function OnboardingPacksPage() {
                     return (
                       <div
                         key={p.id}
-                        className="border border-white/[0.05] rounded-lg bg-white/[0.02] overflow-hidden"
+                        className="border border-gray-200 dark:border-white/[0.05] rounded-lg bg-gray-50 dark:bg-white/[0.02] overflow-hidden"
                       >
                         {/* Pack Header */}
                         <div className="flex items-center justify-between p-3">
@@ -420,20 +460,20 @@ export default function OnboardingPacksPage() {
                             className="flex-1 flex items-center gap-2 text-left"
                           >
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-white/50 flex-shrink-0" />
+                              <ChevronDown className="w-4 h-4 text-gray-900 dark:text-white/50 flex-shrink-0" />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-white/50 flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-gray-900 dark:text-white/50 flex-shrink-0" />
                             )}
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm text-white">{p.name}</div>
-                              <div className="text-xs text-white/50 mt-0.5">
-                                {p.boh_foh} • {p.pay_type} • {docCount} {docCount === 1 ? 'doc' : 'docs'}
+                              <div className="font-medium text-sm text-gray-900 dark:text-white">{p.name}</div>
+                              <div className="text-xs text-gray-900 dark:text-white/50 mt-0.5">
+                                {p.staff_type === 'head_office' ? 'Head Office' : 'Site Staff'} • {p.staff_type === 'site_staff' ? `${p.boh_foh} • ` : ''}{p.pay_type} • {docCount} {docCount === 1 ? 'doc' : 'docs'}
                               </div>
                             </div>
                           </button>
                           <button
                             onClick={() => setSelectedPackId(p.id)}
-                            className="px-3 py-1.5 rounded text-xs bg-white/10 hover:bg-white/15 border border-white/10 text-white"
+                            className="px-3 py-1.5 rounded text-xs bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
                           >
                             Edit
                           </button>
@@ -441,9 +481,9 @@ export default function OnboardingPacksPage() {
 
                         {/* Expandable Document List */}
                         {isExpanded && (
-                          <div className="border-t border-white/[0.05] p-3 bg-white/[0.02] space-y-2">
+                          <div className="border-t border-gray-200 dark:border-white/[0.05] p-3 bg-gray-50 dark:bg-white/[0.02] space-y-2">
                             {packDocsList.length === 0 ? (
-                              <div className="text-xs text-white/40 text-center py-2">
+                              <div className="text-xs text-gray-900 dark:text-white/40 text-center py-2">
                                 No documents yet
                               </div>
                             ) : (
@@ -452,14 +492,14 @@ export default function OnboardingPacksPage() {
                                 return (
                                   <div
                                     key={pd.id}
-                                    className="flex items-center gap-2 p-2 rounded bg-white/[0.02] border border-white/[0.03]"
+                                    className="flex items-center gap-2 p-2 rounded bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.03]"
                                   >
-                                    <FileText className="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                                    <FileText className="w-3.5 h-3.5 text-gray-900 dark:text-white/40 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                      <div className="text-xs text-white truncate">
+                                      <div className="text-xs text-gray-900 dark:text-white truncate">
                                         {gd?.name || 'Unnamed'}
                                       </div>
-                                      <div className="text-[10px] text-white/40">
+                                      <div className="text-[10px] text-gray-900 dark:text-white/40">
                                         {pd.required ? 'Required' : 'Optional'}
                                       </div>
                                     </div>
@@ -476,55 +516,67 @@ export default function OnboardingPacksPage() {
               </div>
 
               {/* Pack Editor */}
-              <div className="lg:col-span-2 bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+              <div className="lg:col-span-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
                 {selectedPack ? (
                   <>
                     <div className="mb-6">
-                      <h2 className="text-white font-semibold text-lg">{selectedPack.name}</h2>
+                      <h2 className="text-gray-900 dark:text-white font-semibold text-lg">{selectedPack.name}</h2>
                       {selectedPack.description && (
-                        <p className="text-white/60 text-sm mt-1">{selectedPack.description}</p>
+                        <p className="text-gray-900 dark:text-white/60 text-sm mt-1">{selectedPack.description}</p>
                       )}
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/70">
-                          {selectedPack.boh_foh}
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
+                          {selectedPack.staff_type === 'head_office' ? 'Head Office' : 'Site Staff'}
                         </span>
-                        <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/70">
+                        {selectedPack.staff_type === 'site_staff' && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
+                            {selectedPack.boh_foh}
+                          </span>
+                        )}
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
                           {selectedPack.pay_type}
                         </span>
                       </div>
                     </div>
 
-                    {/* Add Document */}
+                    {/* Add Documents */}
                     <div className="mb-6">
-                      <label className="text-sm text-white/70 block mb-2">Add Document to Pack</label>
+                      <label className="text-sm text-gray-900 dark:text-white/70 block mb-2">
+                        Add Documents to Pack
+                        {docsToAdd.length > 0 && (
+                          <span className="ml-2 text-xs text-gray-900 dark:text-white/50">
+                            ({docsToAdd.length} selected)
+                          </span>
+                        )}
+                      </label>
                       <div className="flex gap-2">
-                        <Select
-                          value={docToAdd}
-                          onValueChange={setDocToAdd}
+                        <MultiSelect
+                          value={Array.isArray(docsToAdd) ? docsToAdd : []}
+                          onChange={setDocsToAdd}
                           options={availableDocsToAdd.map((gd) => ({
                             label: gd.name || 'Unnamed',
                             value: gd.id,
                           }))}
-                          placeholder="Select a document…"
+                          placeholder="Select documents to add…"
                           className="flex-1"
                         />
                         <button
-                          onClick={() => void addDocToPack()}
-                          disabled={!docToAdd || addingDoc}
-                          className="px-4 py-2 rounded-lg text-sm bg-white/10 hover:bg-white/15 border border-white/10 text-white disabled:opacity-50"
+                          onClick={() => void addDocsToPack()}
+                          disabled={docsToAdd.length === 0 || addingDocs}
+                          className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {addingDoc ? 'Adding…' : 'Add'}
+                          {addingDocs ? 'Adding…' : docsToAdd.length > 0 ? `Add (${docsToAdd.length})` : 'Add'}
                         </button>
                       </div>
                     </div>
 
                     {/* Documents in Pack */}
                     <div>
-                      <div className="text-sm text-white/70 mb-2">
+                      <div className="text-sm text-gray-900 dark:text-white/70 mb-2">
                         Documents in Pack ({selectedPackDocs.length})
                       </div>
                       {selectedPackDocs.length === 0 ? (
-                        <div className="text-center py-8 text-white/60 text-sm">
+                        <div className="text-center py-8 text-gray-900 dark:text-white/60 text-sm">
                           No documents in this pack yet. Add some above!
                         </div>
                       ) : (
@@ -534,15 +586,15 @@ export default function OnboardingPacksPage() {
                             return (
                               <div
                                 key={pd.id}
-                                className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.05]"
+                                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]"
                               >
                                 <div className="flex items-center gap-3 flex-1">
-                                  <FileText className="w-4 h-4 text-white/40 flex-shrink-0" />
+                                  <FileText className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
                                   <div className="flex-1 min-w-0">
-                                    <div className="text-white text-sm font-medium truncate">
+                                    <div className="text-gray-900 dark:text-white text-sm font-medium truncate">
                                       {gd?.name || 'Unnamed'}
                                     </div>
-                                    <div className="text-xs text-white/50">
+                                    <div className="text-xs text-gray-900 dark:text-white/50">
                                       {gd?.category || 'Uncategorized'} •{' '}
                                       {pd.required ? 'Required' : 'Optional'}
                                     </div>
@@ -551,7 +603,7 @@ export default function OnboardingPacksPage() {
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() => void toggleRequired(pd.id, pd.required)}
-                                    className="px-2 py-1 rounded text-xs bg-white/10 hover:bg-white/15 border border-white/10 text-white"
+                                    className="px-2 py-1 rounded text-xs bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
                                   >
                                     {pd.required ? 'Make Optional' : 'Make Required'}
                                   </button>
@@ -570,7 +622,7 @@ export default function OnboardingPacksPage() {
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-12 text-white/60">Select a pack to edit</div>
+                  <div className="text-center py-12 text-gray-900 dark:text-white/60">Select a pack to edit</div>
                 )}
               </div>
             </div>

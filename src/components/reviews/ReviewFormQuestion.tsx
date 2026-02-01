@@ -46,7 +46,7 @@ export function ReviewFormQuestion({
             {question.is_required && <span className="text-[#EC4899] ml-1">*</span>}
           </Label>
           {question.helper_text && (
-            <p className="text-sm text-neutral-400 mt-1 flex items-center gap-1">
+            <p className="text-sm text-gray-500 dark:text-white/60 mt-1 flex items-center gap-1">
               <HelpCircle className="h-3 w-3" />{question.helper_text}
             </p>
           )}
@@ -149,7 +149,7 @@ function RatingNumericInput({ question, value, onChange, disabled }: {
         <span className="text-2xl font-bold text-[#EC4899] w-12 text-center">{currentValue}</span>
       </div>
       {(question.min_label || question.max_label) && (
-        <div className="flex justify-between text-sm text-neutral-400">
+        <div className="flex justify-between text-sm text-gray-500 dark:text-white/60">
           <span>{question.min_label || min}</span>
           <span>{question.max_label || max}</span>
         </div>
@@ -180,7 +180,7 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
             className={`w-12 h-12 rounded-lg border transition-colors ${
               value === num
                 ? 'bg-[#EC4899]/20 text-[#EC4899] border-[#EC4899]'
-                : 'bg-white/[0.05] text-neutral-400 border-white/[0.06] hover:border-white/[0.1]'
+                : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
             }`}
           >
             {num}
@@ -211,7 +211,7 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
           />
           <div className="flex-1">
             <span className="font-medium text-white">{option.label}</span>
-            {option.description && <p className="text-sm text-neutral-400">{option.description}</p>}
+            {option.description && <p className="text-sm text-gray-500 dark:text-white/60">{option.description}</p>}
           </div>
         </label>
       ))}
@@ -300,7 +300,7 @@ function MultipleChoiceInput({ question, value, onChange, disabled }: {
         );
       })}
       {question.min_selections && (
-        <p className="text-xs text-neutral-400">Select at least {question.min_selections} option{question.min_selections > 1 ? 's' : ''}</p>
+        <p className="text-xs text-gray-500 dark:text-white/60">Select at least {question.min_selections} option{question.min_selections > 1 ? 's' : ''}</p>
       )}
     </div>
   );
@@ -319,7 +319,7 @@ function YesNoInput({ question, value, onChange, disabled }: {
         className={`flex-1 h-12 rounded-lg border transition-colors ${
           value === true
             ? 'bg-green-500/20 text-green-400 border-green-500/30'
-            : 'bg-white/[0.05] text-neutral-400 border-white/[0.06] hover:border-white/[0.1]'
+            : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
         }`}
       >
         Yes
@@ -331,7 +331,7 @@ function YesNoInput({ question, value, onChange, disabled }: {
         className={`flex-1 h-12 rounded-lg border transition-colors ${
           value === false
             ? 'bg-red-500/20 text-red-400 border-red-500/30'
-            : 'bg-white/[0.05] text-neutral-400 border-white/[0.06] hover:border-white/[0.1]'
+            : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
         }`}
       >
         No
@@ -401,7 +401,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
             />
             <div className="flex-1">
               <span className="font-medium text-white">{tier.label}</span>
-              <p className="text-sm text-neutral-400 mt-1">{tier.description}</p>
+              <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{tier.description}</p>
             </div>
           </label>
         ))}
@@ -433,7 +433,7 @@ function SignatureInput({ value, onChange, disabled }: {
   return (
     <div className="space-y-4">
       <div className="p-4 bg-white/[0.03] rounded-lg border border-white/[0.06]">
-        <p className="text-sm text-neutral-400 mb-3">
+        <p className="text-sm text-gray-500 dark:text-white/60 mb-3">
           By typing your name below, you confirm that you have reviewed and agree with the contents of this review.
         </p>
         <Input

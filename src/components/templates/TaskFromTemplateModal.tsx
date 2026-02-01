@@ -19,6 +19,84 @@ import {
 } from './features';
 import TimePicker from '@/components/ui/TimePicker';
 
+/**
+ * Upsert equipment positions when saving checklist
+ * Updates nicknames if they change, creates new positions if needed
+ */
+async function upsertEquipmentPositions(
+  siteId: string,
+  companyId: string,
+  equipmentConfig: Array<{
+    assetId: string;
+    nickname?: string | null;
+    equipment?: string;
+    asset_name?: string;
+  }>
+) {
+  if (!equipmentConfig || equipmentConfig.length === 0) {
+    console.log('⏭️ [POSITIONS] No equipment to upsert');
+    return;
+  }
+
+  console.log('🔧 [POSITIONS] Upserting equipment positions:', equipmentConfig);
+
+  for (const equipment of equipmentConfig) {
+    const assetId = equipment.assetId;
+    const nickname = equipment.nickname || equipment.equipment || equipment.asset_name || null;
+
+    if (!assetId) {
+      console.warn('⚠️ [POSITIONS] Skipping equipment without assetId:', equipment);
+      continue;
+    }
+
+    try {
+      // Check if position exists for this asset at this site
+      const { data: existingPosition } = await supabase
+        .from('site_equipment_positions')
+        .select('id, nickname')
+        .eq('site_id', siteId)
+        .eq('current_asset_id', assetId)
+        .maybeSingle();
+
+      if (existingPosition) {
+        // UPDATE: Asset exists at this site, update nickname if changed
+        if (existingPosition.nickname !== nickname) {
+          await supabase
+            .from('site_equipment_positions')
+            .update({
+              nickname: nickname,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingPosition.id);
+
+          console.log(`✅ [POSITIONS] Updated nickname: ${existingPosition.nickname} → ${nickname}`);
+        } else {
+          console.log(`⏭️ [POSITIONS] Nickname unchanged for ${nickname}`);
+        }
+      } else {
+        // INSERT: New position for this asset at this site
+        const { error: insertError } = await supabase
+          .from('site_equipment_positions')
+          .insert({
+            site_id: siteId,
+            company_id: companyId,
+            current_asset_id: assetId,
+            nickname: nickname,
+            position_type: 'temperature_monitored'
+          });
+
+        if (insertError) {
+          console.error('❌ [POSITIONS] Insert error:', insertError);
+        } else {
+          console.log(`✅ [POSITIONS] Created position ${nickname} (${assetId})`);
+        }
+      }
+    } catch (err) {
+      console.error('❌ [POSITIONS] Error upserting position:', err);
+    }
+  }
+}
+
 interface TaskFromTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -1630,8 +1708,11 @@ export function TaskFromTemplateModal({
         if (equipmentConfig && equipmentConfig.length > 0) {
           siteChecklistData.equipment_config = equipmentConfig;
           console.log('💾 Saving equipment_config:', JSON.stringify(equipmentConfig, null, 2));
+
+          // Upsert positions before saving checklist
+          await upsertEquipmentPositions(effectiveSiteId, companyId, equipmentConfig);
         }
-        
+
         // Add scheduling for weekly/monthly/annual
         if (frequency === 'weekly' && formData.days_of_week) {
           siteChecklistData.days_of_week = formData.days_of_week;

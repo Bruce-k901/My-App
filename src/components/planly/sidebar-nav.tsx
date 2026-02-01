@@ -52,7 +52,7 @@ const navItems: NavItem[] = [
   },
   {
     type: 'link',
-    label: 'Order Book',
+    label: 'Packing Plan',
     href: '/dashboard/planly/order-book',
     icon: NotebookText,
   },

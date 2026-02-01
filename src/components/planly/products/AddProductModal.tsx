@@ -227,7 +227,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                 <div>
                   <Label className="text-gray-700 dark:text-white/80">Select Product *</Label>
                   <p className="text-sm text-gray-500 dark:text-white/50 mb-2">
-                    Choose a product from your Stockly inventory
+                    Choose from your saleable ingredients in Stockly
                   </p>
 
                   {/* Search */}

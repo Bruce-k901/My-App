@@ -93,24 +93,24 @@ export function UpdateCertificateExpiryModal({
             className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
             disabled={saving}
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-4">
           <div>
-            <p className="text-sm text-neutral-400 mb-1">Employee</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Employee</p>
             <p className="text-white font-medium">{employeeName}</p>
           </div>
 
           <div>
-            <p className="text-sm text-neutral-400 mb-1">Course</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Course</p>
             <p className="text-white font-medium">{courseName}</p>
           </div>
 
           <div>
-            <p className="text-sm text-neutral-400 mb-1">Current Expiry Date</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Current Expiry Date</p>
             <p className="text-white">
               {currentExpiryDate
                 ? new Date(currentExpiryDate).toLocaleDateString('en-GB', {
@@ -135,7 +135,7 @@ export function UpdateCertificateExpiryModal({
                 className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
                 disabled={saving}
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/60 pointer-events-none" />
             </div>
             <p className="text-xs text-neutral-500 mt-1">
               Select a future date for the new certificate expiry

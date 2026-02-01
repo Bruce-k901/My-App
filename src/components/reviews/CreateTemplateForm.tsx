@@ -47,9 +47,9 @@ export function CreateTemplateForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
       <div className="space-y-2">
-        <Label className="text-white">Template Name <span className="text-[#EC4899]">*</span></Label>
+        <Label className="text-gray-900 dark:text-white">Template Name <span className="text-blue-600 dark:text-blue-400">*</span></Label>
         <Input
           required
           placeholder="e.g., Q4 Performance Review"
@@ -59,12 +59,12 @@ export function CreateTemplateForm() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Description</Label>
+        <Label className="text-gray-900 dark:text-white">Description</Label>
         <textarea
           placeholder="Brief description of this template's purpose"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899] resize-none"
+          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20 resize-none"
           rows={3}
         />
       </div>
@@ -89,7 +89,7 @@ export function CreateTemplateForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-white">Recommended Duration (minutes)</Label>
+          <Label className="text-gray-900 dark:text-white">Recommended Duration (minutes)</Label>
           <Input
             type="number"
             min="5"
@@ -101,12 +101,12 @@ export function CreateTemplateForm() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Instructions</Label>
+        <Label className="text-gray-900 dark:text-white">Instructions</Label>
         <textarea
           placeholder="Instructions for conducting this review"
           value={formData.instructions}
           onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-          className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899] resize-none"
+          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20 resize-none"
           rows={4}
         />
       </div>
@@ -144,7 +144,7 @@ export function CreateTemplateForm() {
           type="submit"
           variant="primary"
           disabled={isPending}
-          className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-0 shadow-sm dark:shadow-none"
         >
           {isPending ? 'Creating...' : 'Create Template'}
         </Button>

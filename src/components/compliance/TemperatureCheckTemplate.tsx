@@ -844,7 +844,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
 
       {/* Expanded Edit Mode */}
       {isExpanded && (
-        <div className="border-t border-neutral-800 p-6 bg-[#0f1220]">
+        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-[#0f1220]">
           <div className="space-y-6">
               {/* Equipment Selection */}
               <div>
@@ -864,13 +864,13 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                   {equipmentRows.map((row, index) => (
                     <div
                       key={row.id}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-neutral-800 bg-[#141823]"
+                      className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-neutral-800 bg-[#141823]"
                     >
                       {/* Equipment Dropdown */}
                       <select
                         value={row.assetId}
                         onChange={(e) => updateEquipmentRow(row.id, 'assetId', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200"
                       >
                         <option value="">Select equipment...</option>
                         {assets.length === 0 ? (
@@ -890,7 +890,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                         placeholder="Nickname (e.g., Fridge 1, ABC)"
                         value={row.nickname}
                         onChange={(e) => updateEquipmentRow(row.id, 'nickname', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500"
                       />
 
                       {/* Delete Button */}
@@ -928,7 +928,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200"
               >
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -968,7 +968,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
                           ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                          : "border-gray-200 dark:border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
                       }`}
                     >
                       {day.label}
@@ -1012,7 +1012,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                         value={monthlyDay || ''}
                         onChange={(e) => setMonthlyDay(parseInt(e.target.value) || null)}
                         placeholder="Day (1-31)"
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 ml-7"
                       />
                     )}
                     
@@ -1036,7 +1036,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                       <select
                         value={monthlyLastWeekday || 'friday'}
                         onChange={(e) => setMonthlyLastWeekday(e.target.value)}
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 ml-7"
                       >
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
@@ -1070,7 +1070,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200"
                 />
                 <p className="text-xs text-slate-400 mt-2">
                   Tasks will be automatically scheduled for this date {frequency === 'annually' ? 'each year' : frequency === 'biannual' ? 'every 6 months' : 'each quarter'}
@@ -1106,7 +1106,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                     className={`px-4 py-3 rounded-lg border text-center transition-all ${
                       selectedDayParts.includes(part.id)
                         ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                        : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                        : "border-gray-200 dark:border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
                     }`}
                   >
                     <div className="text-sm font-medium">{part.label}</div>
@@ -1146,7 +1146,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Enter step-by-step instructions for completing this task. Include equipment to check, procedures, and corrective actions..."
                 rows={10}
-                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
+                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
               />
               <p className="text-xs text-slate-500 mt-2">
                 These instructions will be displayed to staff when completing the task. Include clear steps, equipment details, and what to do if readings are out of range.
@@ -1154,7 +1154,7 @@ export function TemperatureCheckTemplate({ editTemplateId, onSave }: Temperature
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-neutral-800">
               {editingTemplateId ? (
                 // When editing existing template, show Update button
                 <button

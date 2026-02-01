@@ -9,11 +9,11 @@ export function CalendarPanel() {
 
   return (
     <Sheet open={calendarOpen} onOpenChange={setCalendarOpen}>
-      <SheetContent 
-        side="right" 
-        className="w-full md:w-[90vw] lg:w-[1000px] xl:w-[1200px] p-0 flex flex-col overflow-hidden"
+      <SheetContent
+        side="right"
+        className="w-full md:w-[95vw] lg:w-[1100px] xl:w-[1400px] max-w-[95vw] p-0 flex flex-col overflow-hidden"
       >
-        <SheetHeader className="px-6 py-4 border-b border-white/[0.06] dark:border-white/[0.06]">
+        <SheetHeader className="px-6 py-4 border-b border-white/[0.06] dark:border-white/[0.06] sr-only">
           <SheetTitle className="text-gray-900 dark:text-white">Daily Notes & Actions</SheetTitle>
         </SheetHeader>
         

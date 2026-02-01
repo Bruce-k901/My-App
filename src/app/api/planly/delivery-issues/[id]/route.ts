@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from('planly_delivery_issues')
@@ -46,11 +46,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const { data, error } = await supabase

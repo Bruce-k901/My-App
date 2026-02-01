@@ -10,6 +10,7 @@ import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import AssetOverview from "@/components/dashboard/AssetOverview";
 import ComplianceMetricsWidget from "@/components/dashboard/ComplianceMetricsWidget";
 import DashboardQuickStats from "@/components/dashboard/DashboardQuickStats";
+import CalendarReminderWidget from "@/components/dashboard/CalendarReminderWidget";
 import { useAppContext } from "@/context/AppContext";
 
 export default function DashboardHomePage() {
@@ -61,6 +62,9 @@ export default function DashboardHomePage() {
           <div className="lg:col-span-4 space-y-6">
             {/* Alerts Feed - Prominent placement */}
             <AlertsFeed />
+
+            {/* Calendar Reminders - Service Bookings */}
+            <CalendarReminderWidget />
             
             {/* Quick Actions Card */}
             <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">

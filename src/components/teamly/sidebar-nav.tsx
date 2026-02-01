@@ -188,16 +188,17 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
   
   const hasChildren = item.children && item.children.length > 0;
   
-  // Check if a child is active (but don't highlight parent)
+  // Check if a child is active (exact match or starts with child href + '/')
   const childActive = item.children?.some(
     child => pathname === child.href || (child.href && pathname.startsWith(child.href + '/'))
   );
   
-  // Only highlight parent if it's the exact current page AND no child is active
-  // For items without children, highlight if pathname matches or starts with href
+  // CRITICAL: Only highlight parent if it's the exact current page AND no child is active
+  // For items without children, highlight ONLY on exact match
+  // Also check that pathname doesn't start with item.href + '/' to prevent parent highlighting when on child routes
   const isActive = hasChildren 
     ? (pathname === item.href && !childActive)
-    : (pathname === item.href || (item.href && pathname.startsWith(item.href + '/')))
+    : (pathname === item.href && !pathname.startsWith(item.href + '/'))
 
   return (
     <div>
@@ -211,9 +212,9 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
         }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
           isActive
-            ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400'
-            : 'text-theme-secondary hover:bg-theme-button-hover hover:text-theme-primary'
-        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400' : ''}`}
+            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium'
+            : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-600 dark:before:bg-blue-400' : ''}`}
       >
         <item.icon className="w-5 h-5 flex-shrink-0" />
         <span className="flex-1">{item.label}</span>
@@ -223,7 +224,7 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
           </span>
         )}
         {hasChildren && (
-          <span className="text-theme-tertiary">
+          <span className="text-gray-500 dark:text-white/50">
             {isOpen || childActive ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -236,15 +237,37 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
       {hasChildren && (isOpen || childActive) && (
         <div className="ml-8 mt-1 space-y-1">
           {item.children!.map((child) => {
-            const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
+            // Check if any child has an exact match first
+            const hasExactMatch = item.children!.some(c => pathname === c.href);
+            
+            let isChildActive: boolean;
+            
+            if (hasExactMatch) {
+              // If there's an exact match, only that child should be active
+              isChildActive = pathname === child.href;
+            } else {
+              // No exact match, check for startsWith matches
+              const exactMatch = pathname === child.href;
+              const startsWithMatch = child.href && pathname.startsWith(child.href + '/');
+              
+              // Check if any other child is a more specific match
+              const hasMoreSpecificMatch = item.children!.some(otherChild => {
+                if (otherChild.href === child.href) return false;
+                const otherStartsWith = pathname.startsWith(otherChild.href + '/');
+                return otherStartsWith && otherChild.href.length > child.href.length;
+              });
+              
+              isChildActive = exactMatch || (startsWithMatch && !hasMoreSpecificMatch);
+            }
+            
             return (
               <Link
                 key={child.href}
                 href={child.href}
                 className={`block px-3 py-1.5 rounded text-sm transition-colors relative ${
                   isChildActive
-                    ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-500 dark:before:bg-blue-400'
-                    : 'text-theme-tertiary hover:text-theme-primary'
+                    ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-600 dark:before:bg-blue-400'
+                    : 'text-gray-500 dark:text-white/50 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
                 }`}
               >
                 {child.label}
@@ -270,9 +293,9 @@ export function TeamlySidebar() {
   });
 
   return (
-    <aside className="w-64 bg-theme-surface border-r border-theme flex flex-col h-full" suppressHydrationWarning>
+    <aside className="w-64 bg-white dark:bg-[#0f1220] border-r border-gray-200 dark:border-white/[0.06] flex flex-col h-full" suppressHydrationWarning>
       {/* Header */}
-      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-theme">
+      <div className="px-4 py-5 bg-neutral-900 border-b border-gray-200 dark:border-white/[0.06]">
         <Link href="/dashboard/people" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img
             src="/module_logos/teamly.png"
@@ -290,15 +313,15 @@ export function TeamlySidebar() {
       </nav>
 
       {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-theme">
+      <div className="p-4 border-t border-gray-200 dark:border-white/[0.06]">
         <Link
           href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-theme-secondary hover:bg-theme-button-hover hover:text-theme-primary transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
         >
           <UserCircle className="w-5 h-5" />
           <div className="flex-1 min-w-0">
-            <p className="truncate text-theme-primary">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
+            <p className="truncate text-gray-900 dark:text-white">{profile?.full_name || 'My Profile'}</p>
+            <p className="truncate text-xs text-gray-500 dark:text-white/50">{profile?.position_title || 'Employee'}</p>
           </div>
         </Link>
       </div>

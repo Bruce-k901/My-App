@@ -239,7 +239,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <Label className="text-neutral-400 text-sm">When to use:</Label>
+            <Label className="text-gray-500 dark:text-white/60 text-sm">When to use:</Label>
             <EditableField
               label=""
               value={template.rationale || 'End of probation period (typically 90 days)'}
@@ -254,7 +254,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
             />
           </div>
           <div>
-            <Label className="text-neutral-400 text-sm">Duration:</Label>
+            <Label className="text-gray-500 dark:text-white/60 text-sm">Duration:</Label>
             <EditableField
               label=""
               value={`${template.recommended_duration_minutes || 45}-${(template.recommended_duration_minutes || 45) + 15} minutes`}
@@ -270,7 +270,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
           </div>
         </div>
         <div className="mb-4">
-          <Label className="text-neutral-400 text-sm">Participants:</Label>
+          <Label className="text-gray-500 dark:text-white/60 text-sm">Participants:</Label>
           <p className="text-white mt-1">Manager + Employee</p>
         </div>
         {template.instructions && (
@@ -284,7 +284,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
 
       {/* Template Header Fields - Collapsed by default */}
       <details className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-        <summary className="cursor-pointer text-sm text-neutral-400 hover:text-white">
+        <summary className="cursor-pointer text-sm text-gray-500 dark:text-white/60 hover:text-white">
           Advanced Settings
         </summary>
         <div className="mt-4 space-y-4">
@@ -437,7 +437,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
 
           {showAddSectionMenu && (
             <div className="mt-4 space-y-3">
-              <p className="text-sm text-neutral-400 text-center">Choose who completes this section:</p>
+              <p className="text-sm text-gray-500 dark:text-white/60 text-center">Choose who completes this section:</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                   { mode: 'both_answer', icon: '👥', label: 'Both Answer' },
@@ -610,7 +610,7 @@ function SectionGroup({
           />
         ))
       ) : (
-        <div className="text-center py-8 text-neutral-400">
+        <div className="text-center py-8 text-gray-500 dark:text-white/60">
           <p>No sections yet. Click "Add Section" to get started.</p>
         </div>
       )}
@@ -674,7 +674,7 @@ function EditableSection({
               <h3 className="font-medium text-white">{section.title}</h3>
             </div>
             <div className="ml-11 space-y-1">
-              <div className="flex items-center gap-2 text-sm text-neutral-400">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/60">
                 <span>{modeInfo.icon}</span>
                 <span>{modeInfo.label}</span>
                 <span className="text-neutral-500">•</span>
@@ -695,7 +695,7 @@ function EditableSection({
             )}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-sm text-neutral-400 hover:text-white"
+              className="text-sm text-gray-500 dark:text-white/60 hover:text-white"
             >
               {isExpanded ? 'Hide' : 'Edit'} ▾
             </button>
@@ -734,7 +734,7 @@ function EditableSection({
 
           <div className="space-y-3 mt-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-neutral-400">Questions</h4>
+              <h4 className="text-sm font-medium text-gray-500 dark:text-white/60">Questions</h4>
               <Button
                 size="sm"
                 onClick={() => onAddQuestion(section.id)}

@@ -3,15 +3,18 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  ChevronLeft,
+  ChevronRight,
   Calendar,
   Lock,
   Unlock,
   Check,
-  Send
+  Send,
+  LayoutList,
+  Users
 } from 'lucide-react';
+import WeeklyEmployeeView from './components/WeeklyEmployeeView';
 import { toast } from 'sonner';
 import TimePicker from '@/components/ui/TimePicker';
 
@@ -157,6 +160,7 @@ export default function AttendanceSignOffPage() {
   const [payDate, setPayDate] = useState<Date | null>(null);
   const [locking, setLocking] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+  const [viewMode, setViewMode] = useState<'daily' | 'weekly'>('daily');
 
   // Get week dates (Monday to Sunday)
   const weekDates = useMemo(() => {
@@ -762,7 +766,7 @@ export default function AttendanceSignOffPage() {
     
     // Load the data
     loadWeekData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [selectedSiteId, weekStartStr, companyId]);
 
   // Format time for display
@@ -1561,13 +1565,13 @@ export default function AttendanceSignOffPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13] p-6">
       <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Timesheets</h1>
-            <p className="text-zinc-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Timesheets</h1>
+            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">
               Review and approve staff hours before payroll
             </p>
           </div>
@@ -1576,14 +1580,13 @@ export default function AttendanceSignOffPage() {
             value={selectedSiteId}
             onChange={(e) => setSelectedSiteId(e.target.value)}
             disabled={sites.length === 0 || loading}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] text-white"
-            style={{ color: '#ffffff' }}
+            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] text-gray-900 dark:text-white"
           >
             {sites.length === 0 ? (
-              <option value="" style={{ backgroundColor: '#0B0D13', color: '#ffffff' }}>No sites available</option>
+              <option value="">No sites available</option>
             ) : (
               sites.map(site => (
-                <option key={site.id} value={site.id} style={{ backgroundColor: '#0B0D13', color: '#ffffff' }}>
+                <option key={site.id} value={site.id}>
                   {site.name}
                 </option>
               ))
@@ -1592,70 +1595,107 @@ export default function AttendanceSignOffPage() {
         </div>
         
         {/* Week Navigation */}
-        <div className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6">
+        <div className="flex items-center justify-between bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 mb-6 shadow-sm dark:shadow-none">
           <button
             onClick={goToPrevWeek}
-            className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-gray-600 dark:text-white"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          
+
           <div className="flex items-center gap-3">
-            <Calendar className="w-5 h-5 text-[#EC4899]" />
-            <span className="font-medium">
+            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <span className="font-medium text-gray-900 dark:text-white">
               {weekStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
               {' - '}
-              {new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { 
-                day: 'numeric', 
+              {new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', {
+                day: 'numeric',
                 month: 'short',
                 year: 'numeric'
               })}
             </span>
-            
+
             {isLocked && (
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
+                <span className="flex items-center gap-1 text-xs bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-1 rounded-full">
                   <Lock className="w-3 h-3" />
                   Submitted to Payroll
                 </span>
                 {payDate && (
-                  <span className="text-xs text-neutral-400">
+                  <span className="text-xs text-gray-500 dark:text-white/60">
                     Pay Date: {payDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 )}
               </div>
             )}
           </div>
-          
-          <button
-            onClick={goToNextWeek}
-            className="p-2 hover:bg-white/[0.05] rounded-lg transition-colors"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+
+          <div className="flex items-center gap-2">
+            {/* View Mode Toggle */}
+            <div className="flex bg-gray-100 dark:bg-white/[0.05] rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('daily')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'daily'
+                    ? 'bg-white dark:bg-blue-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white'
+                }`}
+              >
+                <LayoutList className="w-4 h-4" />
+                Daily
+              </button>
+              <button
+                onClick={() => setViewMode('weekly')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'weekly'
+                    ? 'bg-white dark:bg-blue-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                By Employee
+              </button>
+            </div>
+
+            <button
+              onClick={goToNextWeek}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-gray-600 dark:text-white"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-[#EC4899] border-t-transparent rounded-full mx-auto"></div>
-            <p className="text-zinc-400 mt-3">Loading attendance data...</p>
+            <div className="animate-spin w-8 h-8 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full mx-auto"></div>
+            <p className="text-gray-500 dark:text-white/60 mt-3">Loading attendance data...</p>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
-            <p className="text-red-400">{error}</p>
+          <div className="bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 mb-6">
+            <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
-        {/* Days stacked vertically */}
-        {!loading && employees.length > 0 && (
+        {/* Weekly Employee View */}
+        {!loading && employees.length > 0 && viewMode === 'weekly' && (
+          <WeeklyEmployeeView
+            employees={employees}
+            weekDates={weekDates}
+            isLocked={isLocked}
+          />
+        )}
+
+        {/* Days stacked vertically (Daily View) */}
+        {!loading && employees.length > 0 && viewMode === 'daily' && (
           <div className="space-y-6">
             {weekDates.map(({ date, dayName }) => (
-              <div key={date} className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div key={date} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm dark:shadow-none">
                 {/* Day Header */}
-                <div className="bg-white/[0.05] px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
-                  <h3 className="font-semibold">
+                <div className="bg-gray-50 dark:bg-white/[0.05] px-4 py-3 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
                     {dayName} - {new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
                   </h3>
                   
@@ -1688,8 +1728,8 @@ export default function AttendanceSignOffPage() {
                         className={`
                           flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all font-medium
                           ${daySignedOff
-                            ? 'bg-green-500/20 border-green-500 text-green-400 hover:bg-green-500/30'
-                            : 'bg-transparent border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]'
+                            ? 'bg-green-100 dark:bg-green-500/20 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-500/30'
+                            : 'bg-transparent border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]'
                           }
                           ${(!canApprove || isLocked) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         `}
@@ -1710,31 +1750,31 @@ export default function AttendanceSignOffPage() {
                     );
                   })()}
                   {isLocked && isDayFullySignedOff(date) && (
-                    <span className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500 text-green-400">
+                    <span className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-500/20 border border-green-500 text-green-600 dark:text-green-400">
                       <Check className="w-4 h-4" />
                       <span>Day Signed Off</span>
                     </span>
                   )}
                 </div>
-                
+
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-white/[0.05]">
+                    <thead className="bg-gray-50 dark:bg-white/[0.05]">
                       <tr>
-                        <th className="text-left px-4 py-3 font-medium text-zinc-400">Employee</th>
-                        <th className="text-left px-4 py-3 font-medium text-zinc-400">Scheduled Start</th>
-                        <th className="text-left px-4 py-3 font-medium text-zinc-400">Scheduled End</th>
-                        <th className="text-left px-4 py-3 font-medium text-zinc-400">Clock In</th>
-                        <th className="text-left px-4 py-3 font-medium text-zinc-400">Clock Out</th>
-                        <th className="text-center px-4 py-3 font-medium text-zinc-400">Rota'd Hrs</th>
-                        <th className="text-center px-4 py-3 font-medium text-zinc-400">Actual Hrs</th>
-                        <th className="text-center px-4 py-3 font-medium text-zinc-400">Rota'd Cost</th>
-                        <th className="text-center px-4 py-3 font-medium text-zinc-400">Actual Cost</th>
-                        <th className="text-center px-4 py-3 font-medium text-zinc-400 w-20">Sign Off</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Employee</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Scheduled Start</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Scheduled End</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Clock In</th>
+                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Clock Out</th>
+                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Rota'd Hrs</th>
+                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Actual Hrs</th>
+                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Rota'd Cost</th>
+                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Actual Cost</th>
+                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60 w-20">Sign Off</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/[0.06]">
+                    <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                       {employees.map(employee => {
                         const dayData = employee.days[date];
                         if (!dayData) return null;
@@ -1951,13 +1991,13 @@ export default function AttendanceSignOffPage() {
                         }
                         
                         return (
-                          <tr key={employee.staffId} className="hover:bg-white/[0.02]">
+                          <tr key={employee.staffId} className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             {/* Employee Name */}
                             <td className="px-4 py-3">
                               <div>
-                                <p className="font-medium">{employee.staffName}</p>
+                                <p className="font-medium text-gray-900 dark:text-white">{employee.staffName}</p>
                                 {employee.positionTitle && (
-                                  <p className="text-xs text-zinc-500">{employee.positionTitle}</p>
+                                  <p className="text-xs text-gray-500 dark:text-white/50">{employee.positionTitle}</p>
                                 )}
                               </div>
                             </td>
@@ -2012,28 +2052,28 @@ export default function AttendanceSignOffPage() {
                             
                             {/* Day Rota'd Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
                                 {dayRotaHours > 0 ? dayRotaHours.toFixed(2) : '—'}
                               </span>
                             </td>
-                            
+
                             {/* Day Actual Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
                                 {dayActualHours > 0 ? dayActualHours.toFixed(2) : '—'}
                               </span>
                             </td>
-                            
+
                             {/* Day Rota'd Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
                                 {dayRotaCost > 0 ? `£${dayRotaCost.toFixed(2)}` : '—'}
                               </span>
                             </td>
-                            
+
                             {/* Day Actual Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
                                 {dayActualCost > 0 ? `£${dayActualCost.toFixed(2)}` : '—'}
                               </span>
                             </td>
@@ -2052,9 +2092,9 @@ export default function AttendanceSignOffPage() {
                                   disabled={!canApprove || isLocked}
                                   className={`
                                     w-5 h-5 rounded border-2 flex items-center justify-center transition-colors mx-auto
-                                    ${dayData.signedOff 
-                                      ? 'bg-green-500 border-green-500' 
-                                      : 'border-zinc-600 hover:border-[#EC4899]'
+                                    ${dayData.signedOff
+                                      ? 'bg-green-500 border-green-500'
+                                      : 'border-gray-400 dark:border-zinc-600 hover:border-blue-600 dark:hover:border-blue-400'
                                     }
                                     ${(!canApprove || isLocked) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                                   `}
@@ -2063,9 +2103,9 @@ export default function AttendanceSignOffPage() {
                                   {dayData.signedOff && <Check className="w-3 h-3 text-white" />}
                                 </button>
                               ) : dayData.signedOff ? (
-                                <Check className="w-5 h-5 text-green-400 mx-auto" />
+                                <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                               ) : (
-                                <span className="text-zinc-600">—</span>
+                                <span className="text-gray-400 dark:text-white/40">—</span>
                               )}
                             </td>
                           </tr>
@@ -2246,23 +2286,23 @@ export default function AttendanceSignOffPage() {
                   }
                   
                   return (
-                    <div className="bg-white/[0.05] border-t border-white/[0.06] px-4 py-3">
+                    <div className="bg-gray-50 dark:bg-white/[0.05] border-t border-gray-200 dark:border-white/[0.06] px-4 py-3">
                       <div className="grid grid-cols-4 gap-4 text-sm">
                         <div>
-                          <p className="text-zinc-400 text-xs mb-1">Rota'd Hours</p>
-                          <p className="font-semibold">{rotaHours.toFixed(2)}h</p>
+                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Rota'd Hours</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{rotaHours.toFixed(2)}h</p>
                         </div>
                         <div>
-                          <p className="text-zinc-400 text-xs mb-1">Actual Hours</p>
-                          <p className="font-semibold">{actualHours.toFixed(2)}h</p>
+                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Actual Hours</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{actualHours.toFixed(2)}h</p>
                         </div>
                         <div>
-                          <p className="text-zinc-400 text-xs mb-1">Rota'd Cost</p>
-                          <p className="font-semibold">£{rotaCost.toFixed(2)}</p>
+                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Rota'd Cost</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">£{rotaCost.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-zinc-400 text-xs mb-1">Actual Cost</p>
-                          <p className="font-semibold">£{actualCost.toFixed(2)}</p>
+                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Actual Cost</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">£{actualCost.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -2272,9 +2312,9 @@ export default function AttendanceSignOffPage() {
             ))}
             
             {/* Final Sign-Off Button - Always show */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 flex items-center justify-between">
+            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 flex items-center justify-between shadow-sm dark:shadow-none">
               <div>
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-gray-500 dark:text-white/60">
                   {isLocked 
                     ? 'This week has been locked and submitted to payroll.'
                     : allSignedOff 
@@ -2290,14 +2330,14 @@ export default function AttendanceSignOffPage() {
                   className={`
                     flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ease-in-out
                     ${allSignedOff && !locking
-                      ? 'bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] cursor-pointer' 
-                      : 'bg-transparent border border-zinc-600 text-zinc-500 cursor-not-allowed opacity-50'
+                      ? 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] cursor-pointer'
+                      : 'bg-transparent border border-gray-400 dark:border-zinc-600 text-gray-400 dark:text-zinc-500 cursor-not-allowed opacity-50'
                     }
                   `}
                 >
                   {locking ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#EC4899]" />
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400" />
                       Locking...
                     </>
                   ) : (
@@ -2326,8 +2366,8 @@ export default function AttendanceSignOffPage() {
                     onClick={handleUnlockWeek}
                     disabled={unlocking || !canUnlock}
                     className={`
-                      bg-transparent border border-amber-500/50 text-amber-400 
-                      hover:shadow-[0_0_12px_rgba(245,158,11,0.5)] 
+                      bg-transparent border border-amber-500/50 text-amber-600 dark:text-amber-400
+                      hover:shadow-[0_0_12px_rgba(245,158,11,0.5)]
                       transition-all duration-200 px-4 py-2 rounded-lg
                       flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
                     `}

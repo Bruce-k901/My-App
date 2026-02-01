@@ -294,7 +294,7 @@ export function StocklySidebar() {
   return (
     <aside className="w-64 bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col h-full" suppressHydrationWarning>
       {/* Header */}
-      <div className="px-4 py-5 bg-black dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
+      <div className="px-4 py-5 bg-gray-50 dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
         <Link href="/dashboard/stockly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img
             src="/module_logos/stockly.png"

@@ -5,9 +5,9 @@ import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { Thermometer, Download, Filter, X } from "lucide-react";
 import { format, differenceInMinutes } from "date-fns";
-import { Sparklines, SparklinesLine, SparklinesReferenceLine } from "react-sparklines";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import TemperatureSparkline from "@/components/temperature/TemperatureSparkline";
 
 type Asset = {
   id: string;
@@ -35,6 +35,12 @@ type TempLog = {
     email: string | null;
   } | null;
   nickname?: string | null;
+  display_name?: string | null;
+  position?: {
+    id: string;
+    nickname: string | null;
+    position_type?: string | null;
+  } | null;
   asset?: {
     id: string;
     name: string;
@@ -166,18 +172,6 @@ const calculateTimeSinceLastCheck = (
   return null;
 };
 
-// Helper function: Get last N readings for sparkline
-const getRecentReadingsForAsset = (
-  assetId: string,
-  allLogs: TempLog[],
-  count: number = 10
-): number[] => {
-  return allLogs
-    .filter(log => log.asset_id === assetId && log.reading !== null && log.reading !== undefined)
-    .sort((a, b) => new Date(a.recorded_at || a.created_at || '').getTime() - new Date(b.recorded_at || b.created_at || '').getTime())
-    .slice(-count)
-    .map(log => log.reading);
-};
 
 // Helper function: Categorize equipment by temperature type
 const categorizeEquipment = (logs: TempLog[]) => {
@@ -331,6 +325,7 @@ export default function TemperatureLogsPage() {
         .select(`
           id,
           asset_id,
+          position_id,
           reading,
           unit,
           recorded_at,
@@ -338,7 +333,19 @@ export default function TemperatureLogsPage() {
           status,
           notes,
           recorded_by,
-          profiles:recorded_by (full_name, email)
+          profiles:recorded_by (full_name, email),
+          position:site_equipment_positions!position_id (
+            id,
+            nickname,
+            position_type
+          ),
+          asset:assets!asset_id (
+            id,
+            name,
+            working_temp_min,
+            working_temp_max,
+            category
+          )
         `)
         .eq("company_id", companyId)
         .order("recorded_at", { ascending: false })
@@ -360,8 +367,21 @@ export default function TemperatureLogsPage() {
       }
 
       const { data: tempLogsData, error: tempLogsError } = await tempLogsQuery;
+
+      // DEBUG: Log sample record to check position data
+      console.log('🔍 [TEMP LOGS] Query result count:', tempLogsData?.length || 0);
+      console.log('🔍 [TEMP LOGS] Sample record:', tempLogsData?.[0]);
+      console.log('🔍 [TEMP LOGS] Position data:', tempLogsData?.[0]?.position);
+      console.log('🔍 [TEMP LOGS] Asset data:', tempLogsData?.[0]?.asset);
+
       if (!tempLogsError && tempLogsData) {
-        allLogs.push(...(tempLogsData as TempLog[]));
+        // Map the data to include display_name from position or asset
+        const mappedLogs = (tempLogsData as any[]).map(log => ({
+          ...log,
+          nickname: log.position?.nickname || null,
+          display_name: log.position?.nickname || log.asset?.name || 'Unknown Equipment'
+        }));
+        allLogs.push(...(mappedLogs as TempLog[]));
       }
 
       // 2. Load from task_completion_records (where most temperature data is stored)
@@ -724,8 +744,37 @@ export default function TemperatureLogsPage() {
       // Extract nicknames from completion data and task data
       const logsWithNicknames = uniqueLogs.map(log => {
         let nickname: string | null = null;
-        
-        // Try to find nickname from completion records
+
+        // PRIORITY 1: Use position nickname from database join (most reliable)
+        if (log.position?.nickname) {
+          nickname = log.position.nickname;
+          console.log(`✅ [NICKNAME] Using position nickname for ${log.asset_id}: ${nickname}`);
+          return { ...log, nickname, display_name: nickname || log.asset?.name || 'Unknown Equipment' };
+        }
+
+        // PRIORITY 2: Use already-mapped nickname (from initial query mapping)
+        if (log.nickname) {
+          nickname = log.nickname;
+          console.log(`✅ [NICKNAME] Using pre-mapped nickname for ${log.asset_id}: ${nickname}`);
+          return { ...log, nickname, display_name: nickname || log.asset?.name || 'Unknown Equipment' };
+        }
+
+        // Helper to normalize asset ID for comparison
+        const normalizeAssetId = (id: any): string | null => {
+          if (!id) return null;
+          if (typeof id === 'string') return id.trim();
+          if (typeof id === 'object' && id !== null) {
+            return (id.id || id.value || id.assetId || id.asset_id || '').toString().trim();
+          }
+          return String(id).trim();
+        };
+
+        const logAssetId = normalizeAssetId(log.asset_id);
+        if (!logAssetId) {
+          return { ...log, nickname: null };
+        }
+
+        // PRIORITY 3: Try to find nickname from completion records (fallback)
         if (completionRecords) {
           for (const record of completionRecords) {
             const completionData = record.completion_data || {};
@@ -735,8 +784,8 @@ export default function TemperatureLogsPage() {
             // Check equipment_list
             if (completionData.equipment_list && Array.isArray(completionData.equipment_list)) {
               const eq = completionData.equipment_list.find((e: any) => {
-                const eqId = e.asset_id || e.assetId || e.id || e.value;
-                return (typeof eqId === 'string' ? eqId : eqId?.id || eqId?.value) === log.asset_id;
+                const eqId = normalizeAssetId(e.asset_id || e.assetId || e.id || e.value);
+                return eqId === logAssetId;
               });
               if (eq && eq.nickname) {
                 nickname = eq.nickname;
@@ -747,8 +796,8 @@ export default function TemperatureLogsPage() {
             // Check temperatures array
             if (!nickname && completionData.temperatures && Array.isArray(completionData.temperatures)) {
               const temp = completionData.temperatures.find((t: any) => {
-                const tempId = t.assetId || t.asset_id || t.id || t.value;
-                return (typeof tempId === 'string' ? tempId : tempId?.id || tempId?.value) === log.asset_id;
+                const tempId = normalizeAssetId(t.assetId || t.asset_id || t.id || t.value);
+                return tempId === logAssetId;
               });
               if (temp && temp.nickname) {
                 nickname = temp.nickname;
@@ -758,18 +807,38 @@ export default function TemperatureLogsPage() {
             
             // Check task_data temperatures
             if (!nickname && taskData.temperatures && Array.isArray(taskData.temperatures)) {
-              const temp = taskData.temperatures.find((t: any) => t.assetId === log.asset_id);
+              const temp = taskData.temperatures.find((t: any) => {
+                const tempId = normalizeAssetId(t.assetId || t.asset_id || t.id || t.value);
+                return tempId === logAssetId;
+              });
               if (temp && temp.nickname) {
                 nickname = temp.nickname;
                 break;
               }
             }
             
-            // Check task_data equipment_config
+            // Check task_data equipment_config (most reliable source)
             if (!nickname && taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
               const eq = taskData.equipment_config.find((e: any) => {
-                const eqId = e.assetId || e.asset_id || e.id || e.value;
-                return (typeof eqId === 'string' ? eqId : eqId?.id || eqId?.value) === log.asset_id;
+                const eqId = normalizeAssetId(e.assetId || e.asset_id || e.id || e.value);
+                return eqId === logAssetId;
+              });
+              if (eq && eq.nickname) {
+                nickname = eq.nickname;
+                break;
+              }
+            }
+          }
+        }
+        
+        // Also check task_data directly from taskDetailsMap (if task wasn't completed yet)
+        if (!nickname && taskDetailsMap) {
+          for (const [taskId, taskDetails] of taskDetailsMap.entries()) {
+            const taskData = taskDetails.taskData || {};
+            if (taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
+              const eq = taskData.equipment_config.find((e: any) => {
+                const eqId = normalizeAssetId(e.assetId || e.asset_id || e.id || e.value);
+                return eqId === logAssetId;
               });
               if (eq && eq.nickname) {
                 nickname = eq.nickname;
@@ -781,7 +850,8 @@ export default function TemperatureLogsPage() {
         
         return {
           ...log,
-          nickname: nickname || null
+          nickname: nickname || null,
+          display_name: nickname || log.display_name || log.asset?.name || 'Unknown Equipment'
         };
       });
 
@@ -939,8 +1009,52 @@ export default function TemperatureLogsPage() {
             working_temp_min: asset.working_temp_min,
             working_temp_max: asset.working_temp_max
           } : null,
-          temp_min: asset?.working_temp_min ?? null,
-          temp_max: asset?.working_temp_max ?? null,
+          // Get temperature ranges - prioritize from asset, but also check if stored in task data
+          // Some logs might have temp ranges stored directly (from equipment_config)
+          temp_min: (() => {
+            // First try asset
+            if (asset?.working_temp_min !== null && asset?.working_temp_min !== undefined) {
+              return asset.working_temp_min;
+            }
+            // Then try task data equipment_config
+            if (taskDetailsMap) {
+              for (const [taskId, taskDetails] of taskDetailsMap.entries()) {
+                const taskData = taskDetails.taskData || {};
+                if (taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
+                  const eq = taskData.equipment_config.find((e: any) => {
+                    const eqId = typeof e.assetId === 'string' ? e.assetId : (e.assetId?.id || e.assetId?.value || e.asset_id || e.id || '');
+                    return eqId === log.asset_id;
+                  });
+                  if (eq && eq.temp_min !== undefined && eq.temp_min !== null) {
+                    return eq.temp_min;
+                  }
+                }
+              }
+            }
+            return null;
+          })(),
+          temp_max: (() => {
+            // First try asset
+            if (asset?.working_temp_max !== null && asset?.working_temp_max !== undefined) {
+              return asset.working_temp_max;
+            }
+            // Then try task data equipment_config
+            if (taskDetailsMap) {
+              for (const [taskId, taskDetails] of taskDetailsMap.entries()) {
+                const taskData = taskDetails.taskData || {};
+                if (taskData.equipment_config && Array.isArray(taskData.equipment_config)) {
+                  const eq = taskData.equipment_config.find((e: any) => {
+                    const eqId = typeof e.assetId === 'string' ? e.assetId : (e.assetId?.id || e.assetId?.value || e.asset_id || e.id || '');
+                    return eqId === log.asset_id;
+                  });
+                  if (eq && eq.temp_max !== undefined && eq.temp_max !== null) {
+                    return eq.temp_max;
+                  }
+                }
+              }
+            }
+            return null;
+          })(),
           asset_name: asset?.name || null,
           monitorTask: monitorTask || null,
           recorder: profile ? {
@@ -968,10 +1082,22 @@ export default function TemperatureLogsPage() {
       });
 
       if (tempLogsError) {
-        console.error("Error loading from temperature_logs:", tempLogsError);
+        console.error("Error loading from temperature_logs:", {
+          message: tempLogsError?.message,
+          details: tempLogsError?.details,
+          hint: tempLogsError?.hint,
+          code: tempLogsError?.code,
+          fullError: tempLogsError
+        });
       }
       if (completionError) {
-        console.error("Error loading from task_completion_records:", completionError);
+        console.error("Error loading from task_completion_records:", {
+          message: completionError?.message,
+          details: completionError?.details,
+          hint: completionError?.hint,
+          code: completionError?.code,
+          fullError: completionError
+        });
       }
 
       setLogs(uniqueLogs);
@@ -1181,6 +1307,298 @@ export default function TemperatureLogsPage() {
             <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Follow-Ups Required</div>
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.followUps}</div>
           </div>
+        </div>
+
+        {/* Export & Analytics Section */}
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Download className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export & Analytics</h2>
+          </div>
+
+          {/* Export Date Range */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export Start Date</label>
+              <input
+                type="date"
+                value={exportStart}
+                onChange={(e) => setExportStart(e.target.value)}
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export End Date</label>
+              <input
+                type="date"
+                value={exportEnd}
+                onChange={(e) => setExportEnd(e.target.value)}
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                type="button"
+                onClick={exportCsv}
+                className="w-full bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all font-medium flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          {/* Equipment Filters for Graph */}
+          {(() => {
+            const categorizedLogs = categorizeEquipment(enrichedLogs);
+            const uniqueAssets = Array.from(
+              new Map(
+                enrichedLogs.map(log => [
+                  log.asset_id,
+                  {
+                    id: log.asset_id,
+                    nickname: log.nickname,
+                    name: log.asset?.name || log.asset_name
+                  }
+                ])
+              ).values()
+            );
+
+            const getFilteredLogs = () => {
+              let filtered = categorizedLogs[equipmentTypeFilter as keyof typeof categorizedLogs] || [];
+
+              if (selectedAssetFilter !== 'all') {
+                filtered = filtered.filter(log => log.asset_id === selectedAssetFilter);
+              }
+
+              return filtered;
+            };
+
+            const filteredGraphLogs = getFilteredLogs();
+
+            // Prepare data for chart - last 50 readings, sorted by time
+            const chartData = filteredGraphLogs
+              .sort((a, b) => new Date(a.recorded_at || a.created_at || '').getTime() - new Date(b.recorded_at || b.created_at || '').getTime())
+              .slice(-50)
+              .map(log => ({
+                timestamp: format(new Date(log.recorded_at || log.created_at || ''), 'MMM dd HH:mm'),
+                temperature: log.reading,
+                assetName: log.display_name || log.nickname || log.position?.nickname || log.asset?.name || log.asset_name || 'Unknown',
+                assetId: log.asset_id,
+                min: log.temp_min ?? log.asset?.working_temp_min,
+                max: log.temp_max ?? log.asset?.working_temp_max
+              }));
+
+            // Get range for reference lines (if single asset selected)
+            const getRangeLimits = () => {
+              if (selectedAssetFilter !== 'all' && chartData.length > 0) {
+                const firstLog = filteredGraphLogs.find(l => l.asset_id === selectedAssetFilter);
+                if (firstLog) {
+                  const min = firstLog.temp_min ?? firstLog.asset?.working_temp_min;
+                  const max = firstLog.temp_max ?? firstLog.asset?.working_temp_max;
+                  if (min !== null && min !== undefined && max !== null && max !== undefined) {
+                    return {
+                      min: Math.min(min, max),
+                      max: Math.max(min, max)
+                    };
+                  }
+                }
+              }
+              return null;
+            };
+
+            const rangeLimits = getRangeLimits();
+
+            // Get unique assets for the selected equipment type
+            const assetsInType = uniqueAssets.filter(asset => {
+              const assetLogs = enrichedLogs.filter(l => l.asset_id === asset.id);
+              return categorizedLogs[equipmentTypeFilter as keyof typeof categorizedLogs]
+                ?.some(log => log.asset_id === asset.id);
+            });
+
+            return (
+              <>
+                {/* Equipment Filters */}
+                <div className="flex gap-4 mb-6 p-4 bg-gray-50 dark:bg-white/[0.05] rounded-lg">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Equipment Type</label>
+                    <select
+                      value={equipmentTypeFilter}
+                      onChange={(e) => {
+                        setEquipmentTypeFilter(e.target.value);
+                        setSelectedAssetFilter('all'); // Reset asset filter when type changes
+                      }}
+                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    >
+                      <option value="chilled">Chilled (0-8°C)</option>
+                      <option value="frozen">Frozen (&lt;-10°C)</option>
+                      <option value="hot">Hot Hold (&gt;50°C)</option>
+                      <option value="ambient">Ambient (8-50°C)</option>
+                    </select>
+                  </div>
+
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Specific Equipment</label>
+                    <select
+                      value={selectedAssetFilter}
+                      onChange={(e) => setSelectedAssetFilter(e.target.value)}
+                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    >
+                      <option value="all">All Equipment in Type</option>
+                      {assetsInType.map(asset => (
+                        <option key={asset.id} value={asset.id}>
+                          {asset.nickname ? `${asset.nickname} - ${asset.name}` : asset.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Graph */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
+                    Temperature Trend - {equipmentTypeFilter.charAt(0).toUpperCase() + equipmentTypeFilter.slice(1)}
+                    {selectedAssetFilter !== 'all' && ` (${assetsInType.find(a => a.id === selectedAssetFilter)?.nickname || assetsInType.find(a => a.id === selectedAssetFilter)?.name})`}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
+                    Last 50 readings for selected equipment
+                  </p>
+                </div>
+
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={400}>
+                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-white/10" />
+
+                      {/* X Axis - Time */}
+                      <XAxis
+                        dataKey="timestamp"
+                        tick={{ fontSize: 12, fill: 'currentColor' }}
+                        className="text-gray-600 dark:text-white/60"
+                        label={{
+                          value: 'Date & Time',
+                          position: 'insideBottom',
+                          offset: -10,
+                          style: { fontSize: 14, fontWeight: 600, fill: 'currentColor' }
+                        }}
+                      />
+
+                      {/* Y Axis - Temperature */}
+                      <YAxis
+                        tick={{ fontSize: 12, fill: 'currentColor' }}
+                        className="text-gray-600 dark:text-white/60"
+                        label={{
+                          value: 'Temperature (°C)',
+                          angle: -90,
+                          position: 'insideLeft',
+                          style: { fontSize: 14, fontWeight: 600, fill: 'currentColor' }
+                        }}
+                      />
+
+                      {/* Tooltip */}
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          padding: '12px',
+                          color: '#000'
+                        }}
+                        formatter={(value: any) => [`${value}°C`, 'Temperature']}
+                        labelFormatter={(label) => `Time: ${label}`}
+                      />
+
+                      {/* Legend */}
+                      <Legend
+                        verticalAlign="top"
+                        height={36}
+                        wrapperStyle={{ paddingBottom: '20px' }}
+                      />
+
+                      {/* Reference Lines - Only show for single asset */}
+                      {rangeLimits && (
+                        <>
+                          <ReferenceLine
+                            y={rangeLimits.min}
+                            stroke="#3b82f6"
+                            strokeDasharray="5 5"
+                            strokeWidth={2}
+                            label={{
+                              value: `Min (${rangeLimits.min}°C)`,
+                              position: 'left',
+                              fill: '#3b82f6',
+                              fontSize: 12,
+                              fontWeight: 600
+                            }}
+                          />
+                          <ReferenceLine
+                            y={rangeLimits.max}
+                            stroke="#ef4444"
+                            strokeDasharray="5 5"
+                            strokeWidth={2}
+                            label={{
+                              value: `Max (${rangeLimits.max}°C)`,
+                              position: 'left',
+                              fill: '#ef4444',
+                              fontSize: 12,
+                              fontWeight: 600
+                            }}
+                          />
+                        </>
+                      )}
+
+                      {/* Temperature Line - Group by asset if showing multiple */}
+                      {selectedAssetFilter === 'all' ? (
+                        // Multiple assets - different color per asset
+                        (() => {
+                          const colors = ['#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
+                          const assetsInView = Array.from(new Set(chartData.map(d => d.assetId)));
+
+                          return assetsInView.map((assetId, index) => {
+                            const assetData = chartData.filter(d => d.assetId === assetId);
+                            const assetName = assetData[0]?.assetName || 'Unknown';
+
+                            return (
+                              <Line
+                                key={assetId}
+                                type="monotone"
+                                dataKey="temperature"
+                                data={assetData}
+                                stroke={colors[index % colors.length]}
+                                strokeWidth={2}
+                                name={assetName}
+                                dot={{ r: 4 }}
+                                activeDot={{ r: 6 }}
+                              />
+                            );
+                          });
+                        })()
+                      ) : (
+                        // Single asset - one line
+                        <Line
+                          type="monotone"
+                          dataKey="temperature"
+                          stroke="#ec4899"
+                          strokeWidth={3}
+                          name="Temperature"
+                          dot={{ r: 5, fill: '#ec4899' }}
+                          activeDot={{ r: 7 }}
+                        />
+                      )}
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 dark:bg-white/[0.03] rounded-lg">
+                    <div className="text-6xl mb-4">📊</div>
+                    <p className="text-gray-500 dark:text-white/60 text-lg">No data to display</p>
+                    <p className="text-gray-400 dark:text-white/40 text-sm mt-2">
+                      Select a different equipment type or check your filters
+                    </p>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         {/* Filters */}
@@ -1393,7 +1811,6 @@ export default function TemperatureLogsPage() {
                         {/* Log Rows for this day */}
                         {dayGroup.logs.map((log) => {
                           const status = getTemperatureStatus(log.reading, log.temp_min, log.temp_max);
-                          const recentReadings = getRecentReadingsForAsset(log.asset_id, filteredLogs, 10);
                           const timeSince = calculateTimeSinceLastCheck(log, filteredLogs);
                           
                           // Determine equipment category for badge
@@ -1428,7 +1845,7 @@ export default function TemperatureLogsPage() {
                                     )}
                                   </div>
                                   <span className="text-sm text-gray-500 dark:text-white/60">
-                                    {log.asset?.name || log.asset_name || 'Unknown Asset'}
+                                    {log.display_name || log.nickname || log.position?.nickname || log.asset?.name || log.asset_name || 'Unknown Asset'}
                                   </span>
                                 </div>
                               </td>
@@ -1454,99 +1871,35 @@ export default function TemperatureLogsPage() {
                                 </Badge>
                               </td>
                               
-                              {/* Trend Sparkline with Vertical Range Markers */}
+                              {/* Trend Sparkline */}
                               <td className="py-3 px-4">
-                                {recentReadings.length > 1 ? (
-                                  (() => {
-                                    const minTemp = log.temp_min !== undefined && log.temp_min !== null ? log.temp_min : null;
-                                    const maxTemp = log.temp_max !== undefined && log.temp_max !== null ? log.temp_max : null;
-                                    
-                                    const actualMin = minTemp !== null && maxTemp !== null ? Math.min(minTemp, maxTemp) : null;
-                                    const actualMax = minTemp !== null && maxTemp !== null ? Math.max(minTemp, maxTemp) : null;
-                                    
-                                    // Calculate Y positions for vertical range markers
-                                    const dataMin = Math.min(...recentReadings);
-                                    const dataMax = Math.max(...recentReadings);
-                                    const height = 50;
-                                    const margin = 5;
-                                    const chartHeight = height - margin * 2;
-                                    
-                                    const calcYPos = (tempValue: number) => {
-                                      if (dataMax === dataMin) return margin + chartHeight / 2;
-                                      const ratio = (dataMax - tempValue) / (dataMax - dataMin);
-                                      return margin + (ratio * chartHeight);
-                                    };
-                                    
-                                    const topY = actualMax !== null ? calcYPos(actualMax) : null;
-                                    const bottomY = actualMin !== null ? calcYPos(actualMin) : null;
-                                    
+                                {(() => {
+                                  // Only show sparkline if we have asset_id and temperature range defined
+                                  if (!log.asset_id) {
                                     return (
-                                      <div className="relative inline-block" style={{ width: 140, height: 50 }}>
-                                        {/* Sparkline - must render first */}
-                                        <div style={{ position: 'relative', zIndex: 1 }}>
-                                          <Sparklines data={recentReadings} width={140} height={50} margin={5}>
-                                            <SparklinesLine 
-                                              color="#ec4899" 
-                                              style={{ strokeWidth: 3, fill: 'none' }} 
-                                            />
-                                          </Sparklines>
-                                        </div>
-                                        
-                                        {/* SVG overlay for vertical range markers - only left edge */}
-                                        {actualMin !== null && actualMax !== null && topY !== null && bottomY !== null && (
-                                          <svg 
-                                            className="absolute left-0 top-0 pointer-events-none" 
-                                            width="30" 
-                                            height="50"
-                                            style={{ overflow: 'visible', zIndex: 2 }}
-                                          >
-                                            {/* Top range line (max temp) - RED */}
-                                            <line 
-                                              x1="0" 
-                                              y1={topY} 
-                                              x2="10" 
-                                              y2={topY}
-                                              stroke="#ef4444" 
-                                              strokeWidth="2"
-                                            />
-                                            <text 
-                                              x="12" 
-                                              y={topY + 3} 
-                                              fill="#ef4444" 
-                                              fontSize="9" 
-                                              fontWeight="600"
-                                              className="fill-red-600 dark:fill-red-400"
-                                            >
-                                              {actualMax}°
-                                            </text>
-                                            
-                                            {/* Bottom range line (min temp) - BLUE */}
-                                            <line 
-                                              x1="0" 
-                                              y1={bottomY} 
-                                              x2="10" 
-                                              y2={bottomY}
-                                              stroke="#3b82f6" 
-                                              strokeWidth="2"
-                                            />
-                                            <text 
-                                              x="12" 
-                                              y={bottomY + 3} 
-                                              fill="#3b82f6" 
-                                              fontSize="9" 
-                                              fontWeight="600"
-                                              className="fill-blue-600 dark:fill-blue-400"
-                                            >
-                                              {actualMin}°
-                                            </text>
-                                          </svg>
-                                        )}
-                                      </div>
+                                      <span className="text-sm text-gray-400 dark:text-white/40">No asset</span>
                                     );
-                                  })()
-                                ) : (
-                                  <span className="text-sm text-gray-400 dark:text-white/40">Insufficient data</span>
-                                )}
+                                  }
+                                  
+                                  const minTemp = log.temp_min !== undefined && log.temp_min !== null ? log.temp_min : null;
+                                  const maxTemp = log.temp_max !== undefined && log.temp_max !== null ? log.temp_max : null;
+                                  
+                                  if (minTemp === null || maxTemp === null) {
+                                    return (
+                                      <span className="text-sm text-gray-400 dark:text-white/40">No range set</span>
+                                    );
+                                  }
+                                  
+                                  return (
+                                    <TemperatureSparkline
+                                      assetId={log.asset_id}
+                                      minTemp={minTemp}
+                                      maxTemp={maxTemp}
+                                      width={140}
+                                      height={50}
+                                    />
+                                  );
+                                })()}
                               </td>
                               
                               {/* Time Since Last - SIMPLIFIED */}
@@ -1620,298 +1973,6 @@ export default function TemperatureLogsPage() {
               </table>
             </div>
           )}
-        </div>
-
-        {/* Export & Analytics Section */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Download className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export & Analytics</h2>
-          </div>
-          
-          {/* Export Date Range */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export Start Date</label>
-              <input
-                type="date"
-                value={exportStart}
-                onChange={(e) => setExportStart(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export End Date</label>
-              <input
-                type="date"
-                value={exportEnd}
-                onChange={(e) => setExportEnd(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
-              />
-            </div>
-            <div className="flex items-end">
-              <button
-                type="button"
-                onClick={exportCsv}
-                className="w-full bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all font-medium flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Export CSV
-              </button>
-            </div>
-          </div>
-          
-          {/* Equipment Filters for Graph */}
-          {(() => {
-            const categorizedLogs = categorizeEquipment(enrichedLogs);
-            const uniqueAssets = Array.from(
-              new Map(
-                enrichedLogs.map(log => [
-                  log.asset_id,
-                  { 
-                    id: log.asset_id, 
-                    nickname: log.nickname, 
-                    name: log.asset?.name || log.asset_name 
-                  }
-                ])
-              ).values()
-            );
-            
-            const getFilteredLogs = () => {
-              let filtered = categorizedLogs[equipmentTypeFilter as keyof typeof categorizedLogs] || [];
-              
-              if (selectedAssetFilter !== 'all') {
-                filtered = filtered.filter(log => log.asset_id === selectedAssetFilter);
-              }
-              
-              return filtered;
-            };
-            
-            const filteredGraphLogs = getFilteredLogs();
-            
-            // Prepare data for chart - last 50 readings, sorted by time
-            const chartData = filteredGraphLogs
-              .sort((a, b) => new Date(a.recorded_at || a.created_at || '').getTime() - new Date(b.recorded_at || b.created_at || '').getTime())
-              .slice(-50)
-              .map(log => ({
-                timestamp: format(new Date(log.recorded_at || log.created_at || ''), 'MMM dd HH:mm'),
-                temperature: log.reading,
-                assetName: log.nickname || log.asset?.name || log.asset_name || 'Unknown',
-                assetId: log.asset_id,
-                min: log.temp_min ?? log.asset?.working_temp_min,
-                max: log.temp_max ?? log.asset?.working_temp_max
-              }));
-            
-            // Get range for reference lines (if single asset selected)
-            const getRangeLimits = () => {
-              if (selectedAssetFilter !== 'all' && chartData.length > 0) {
-                const firstLog = filteredGraphLogs.find(l => l.asset_id === selectedAssetFilter);
-                if (firstLog) {
-                  const min = firstLog.temp_min ?? firstLog.asset?.working_temp_min;
-                  const max = firstLog.temp_max ?? firstLog.asset?.working_temp_max;
-                  if (min !== null && min !== undefined && max !== null && max !== undefined) {
-                    return {
-                      min: Math.min(min, max),
-                      max: Math.max(min, max)
-                    };
-                  }
-                }
-              }
-              return null;
-            };
-            
-            const rangeLimits = getRangeLimits();
-            
-            // Get unique assets for the selected equipment type
-            const assetsInType = uniqueAssets.filter(asset => {
-              const assetLogs = enrichedLogs.filter(l => l.asset_id === asset.id);
-              return categorizedLogs[equipmentTypeFilter as keyof typeof categorizedLogs]
-                ?.some(log => log.asset_id === asset.id);
-            });
-            
-            return (
-              <>
-                {/* Equipment Filters */}
-                <div className="flex gap-4 mb-6 p-4 bg-gray-50 dark:bg-white/[0.05] rounded-lg">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Equipment Type</label>
-                    <select
-                      value={equipmentTypeFilter}
-                      onChange={(e) => {
-                        setEquipmentTypeFilter(e.target.value);
-                        setSelectedAssetFilter('all'); // Reset asset filter when type changes
-                      }}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
-                    >
-                      <option value="chilled">Chilled (0-8°C)</option>
-                      <option value="frozen">Frozen (&lt;-10°C)</option>
-                      <option value="hot">Hot Hold (&gt;50°C)</option>
-                      <option value="ambient">Ambient (8-50°C)</option>
-                    </select>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Specific Equipment</label>
-                    <select
-                      value={selectedAssetFilter}
-                      onChange={(e) => setSelectedAssetFilter(e.target.value)}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
-                    >
-                      <option value="all">All Equipment in Type</option>
-                      {assetsInType.map(asset => (
-                        <option key={asset.id} value={asset.id}>
-                          {asset.nickname ? `${asset.nickname} - ${asset.name}` : asset.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                
-                {/* Graph */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
-                    Temperature Trend - {equipmentTypeFilter.charAt(0).toUpperCase() + equipmentTypeFilter.slice(1)}
-                    {selectedAssetFilter !== 'all' && ` (${assetsInType.find(a => a.id === selectedAssetFilter)?.nickname || assetsInType.find(a => a.id === selectedAssetFilter)?.name})`}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
-                    Last 50 readings for selected equipment
-                  </p>
-                </div>
-                
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-white/10" />
-                      
-                      {/* X Axis - Time */}
-                      <XAxis 
-                        dataKey="timestamp"
-                        tick={{ fontSize: 12, fill: 'currentColor' }}
-                        className="text-gray-600 dark:text-white/60"
-                        label={{ 
-                          value: 'Date & Time', 
-                          position: 'insideBottom', 
-                          offset: -10,
-                          style: { fontSize: 14, fontWeight: 600, fill: 'currentColor' }
-                        }}
-                      />
-                      
-                      {/* Y Axis - Temperature */}
-                      <YAxis 
-                        tick={{ fontSize: 12, fill: 'currentColor' }}
-                        className="text-gray-600 dark:text-white/60"
-                        label={{ 
-                          value: 'Temperature (°C)', 
-                          angle: -90, 
-                          position: 'insideLeft',
-                          style: { fontSize: 14, fontWeight: 600, fill: 'currentColor' }
-                        }}
-                      />
-                      
-                      {/* Tooltip */}
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          padding: '12px',
-                          color: '#000'
-                        }}
-                        formatter={(value: any) => [`${value}°C`, 'Temperature']}
-                        labelFormatter={(label) => `Time: ${label}`}
-                      />
-                      
-                      {/* Legend */}
-                      <Legend 
-                        verticalAlign="top" 
-                        height={36}
-                        wrapperStyle={{ paddingBottom: '20px' }}
-                      />
-                      
-                      {/* Reference Lines - Only show for single asset */}
-                      {rangeLimits && (
-                        <>
-                          <ReferenceLine 
-                            y={rangeLimits.min} 
-                            stroke="#3b82f6" 
-                            strokeDasharray="5 5"
-                            strokeWidth={2}
-                            label={{ 
-                              value: `Min (${rangeLimits.min}°C)`, 
-                              position: 'left',
-                              fill: '#3b82f6',
-                              fontSize: 12,
-                              fontWeight: 600
-                            }}
-                          />
-                          <ReferenceLine 
-                            y={rangeLimits.max} 
-                            stroke="#ef4444" 
-                            strokeDasharray="5 5"
-                            strokeWidth={2}
-                            label={{ 
-                              value: `Max (${rangeLimits.max}°C)`, 
-                              position: 'left',
-                              fill: '#ef4444',
-                              fontSize: 12,
-                              fontWeight: 600
-                            }}
-                          />
-                        </>
-                      )}
-                      
-                      {/* Temperature Line - Group by asset if showing multiple */}
-                      {selectedAssetFilter === 'all' ? (
-                        // Multiple assets - different color per asset
-                        (() => {
-                          const colors = ['#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
-                          const assetsInView = Array.from(new Set(chartData.map(d => d.assetId)));
-                          
-                          return assetsInView.map((assetId, index) => {
-                            const assetData = chartData.filter(d => d.assetId === assetId);
-                            const assetName = assetData[0]?.assetName || 'Unknown';
-                            
-                            return (
-                              <Line
-                                key={assetId}
-                                type="monotone"
-                                dataKey="temperature"
-                                data={assetData}
-                                stroke={colors[index % colors.length]}
-                                strokeWidth={2}
-                                name={assetName}
-                                dot={{ r: 4 }}
-                                activeDot={{ r: 6 }}
-                              />
-                            );
-                          });
-                        })()
-                      ) : (
-                        // Single asset - one line
-                        <Line
-                          type="monotone"
-                          dataKey="temperature"
-                          stroke="#ec4899"
-                          strokeWidth={3}
-                          name="Temperature"
-                          dot={{ r: 5, fill: '#ec4899' }}
-                          activeDot={{ r: 7 }}
-                        />
-                      )}
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 dark:bg-white/[0.03] rounded-lg">
-                    <div className="text-6xl mb-4">📊</div>
-                    <p className="text-gray-500 dark:text-white/60 text-lg">No data to display</p>
-                    <p className="text-gray-400 dark:text-white/40 text-sm mt-2">
-                      Select a different equipment type or check your filters
-                    </p>
-                  </div>
-                )}
-              </>
-            );
-          })()}
         </div>
         </div>
       </div>

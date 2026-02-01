@@ -179,13 +179,13 @@ export default function CalloutLogsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open':
-        return 'bg-orange-500/10 text-orange-400 border-orange-500/30';
+        return 'bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-500/30';
       case 'closed':
-        return 'bg-green-500/10 text-green-400 border-green-500/30';
+        return 'bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30';
       case 'reopened':
-        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
+        return 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30';
       default:
-        return 'bg-gray-500/10 text-gray-400 border-gray-500/30';
+        return 'bg-gray-100 dark:bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-500/30';
     }
   };
 
@@ -205,26 +205,26 @@ export default function CalloutLogsPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-500/10 text-red-400';
+        return 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400';
       case 'medium':
-        return 'bg-yellow-500/10 text-yellow-400';
+        return 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
       case 'low':
-        return 'bg-green-500/10 text-green-400';
+        return 'bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400';
       default:
-        return 'bg-gray-500/10 text-gray-400';
+        return 'bg-gray-100 dark:bg-gray-500/10 text-gray-600 dark:text-gray-400';
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'reactive':
-        return 'bg-red-500/10 text-red-400';
+        return 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400';
       case 'warranty':
-        return 'bg-blue-500/10 text-blue-400';
+        return 'bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400';
       case 'ppm':
-        return 'bg-green-500/10 text-green-400';
+        return 'bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400';
       default:
-        return 'bg-gray-500/10 text-gray-400';
+        return 'bg-gray-100 dark:bg-gray-500/10 text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -486,8 +486,8 @@ export default function CalloutLogsPage() {
   return (
     <div className="p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-4 sm:mb-6 md:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Callout Logs</h1>
-        <p className="text-sm sm:text-base text-white/60">Track and manage contractor callout logs</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Callout Logs</h1>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-white/60">Track and manage contractor callout logs</p>
       </div>
 
       {/* Filters */}
@@ -496,8 +496,8 @@ export default function CalloutLogsPage() {
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium ${
             filter === 'all'
-              ? 'bg-white/10 border-white/20 text-white'
-              : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06]'
+              ? 'bg-gray-200 dark:bg-white/10 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white'
+              : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
           }`}
         >
           All ({callouts.length})
@@ -506,8 +506,8 @@ export default function CalloutLogsPage() {
           onClick={() => setFilter('open')}
           className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
             filter === 'open'
-              ? 'bg-orange-500/10 border-orange-500/30 text-orange-400'
-              : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06]'
+              ? 'bg-orange-100 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400'
+              : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
           }`}
         >
           <AlertTriangle className="w-4 h-4" />
@@ -517,8 +517,8 @@ export default function CalloutLogsPage() {
           onClick={() => setFilter('closed')}
           className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
             filter === 'closed'
-              ? 'bg-green-500/10 border-green-500/30 text-green-400'
-              : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06]'
+              ? 'bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400'
+              : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
           }`}
         >
           <CheckCircle className="w-4 h-4" />
@@ -528,18 +528,18 @@ export default function CalloutLogsPage() {
 
       {/* Callouts List */}
       {loading ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
-          <div className="text-center text-white/60">Loading callouts...</div>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 shadow-sm dark:shadow-none">
+          <div className="text-center text-gray-500 dark:text-white/60">Loading callouts...</div>
         </div>
       ) : callouts.length === 0 ? (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 shadow-sm dark:shadow-none">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
-              <Wrench className="w-8 h-8 text-pink-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-100 dark:bg-cyan-500/10 mb-4">
+              <Wrench className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">No Callouts Found</h2>
-            <p className="text-white/60 max-w-md mx-auto">
-              {filter === 'all' 
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Callouts Found</h2>
+            <p className="text-gray-600 dark:text-white/60 max-w-md mx-auto">
+              {filter === 'all'
                 ? 'No callouts have been created yet.'
                 : `No ${filter} callouts found.`}
             </p>
@@ -550,12 +550,12 @@ export default function CalloutLogsPage() {
           {callouts.map((callout) => (
             <div
               key={callout.id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.06] transition-colors"
+              className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-colors shadow-sm dark:shadow-none"
             >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-white break-words">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
                       {callout.asset_name || 'Unknown Asset'}
                     </h3>
                     <span className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium border flex items-center gap-1 whitespace-nowrap ${getStatusColor(callout.status)}`}>
@@ -570,7 +570,7 @@ export default function CalloutLogsPage() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm text-white/60 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-white/60 mb-3">
                     {callout.site_name && (
                       <div className="flex items-center gap-2">
                         <Building className="w-4 h-4" />
@@ -597,29 +597,29 @@ export default function CalloutLogsPage() {
 
                   {callout.fault_description && (
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-white/80 mb-1">Fault Description:</p>
-                      <p className="text-sm text-white/60">{callout.fault_description}</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Fault Description:</p>
+                      <p className="text-sm text-gray-600 dark:text-white/60">{callout.fault_description}</p>
                     </div>
                   )}
 
                   {callout.repair_summary && (
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-white/80 mb-1">Repair Summary:</p>
-                      <p className="text-sm text-white/60">{callout.repair_summary}</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Repair Summary:</p>
+                      <p className="text-sm text-gray-600 dark:text-white/60">{callout.repair_summary}</p>
                     </div>
                   )}
 
                   {callout.notes && (
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-white/80 mb-1">Notes:</p>
-                      <p className="text-sm text-white/60">{callout.notes}</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Notes:</p>
+                      <p className="text-sm text-gray-600 dark:text-white/60">{callout.notes}</p>
                     </div>
                   )}
 
                   {/* Documents Section */}
                   {callout.documents && callout.documents.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-white/80 mb-2">Documents:</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-white/80 mb-2">Documents:</p>
                       <div className="flex flex-wrap gap-2">
                         {callout.documents.map((doc, idx) => (
                           <a
@@ -627,11 +627,11 @@ export default function CalloutLogsPage() {
                             href={doc.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/80 hover:bg-white/10 transition-colors"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-700 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                           >
                             <FileText className="w-4 h-4" />
                             <span>{doc.name}</span>
-                            <span className="text-xs text-white/50">({doc.type})</span>
+                            <span className="text-xs text-gray-500 dark:text-white/50">({doc.type})</span>
                           </a>
                         ))}
                       </div>
@@ -640,42 +640,42 @@ export default function CalloutLogsPage() {
 
                   {/* Edit Form */}
                   {editingCallout && editingCallout.id === callout.id ? (
-                    <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-lg space-y-4">
+                    <div className="mt-4 p-4 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-white/80 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
                           Fault Description
                         </label>
                         <textarea
                           value={editingCallout.fault_description}
                           onChange={(e) => setEditingCallout({ ...editingCallout, fault_description: e.target.value })}
-                          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm resize-none"
+                          className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm resize-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                           rows={3}
                           disabled={callout.status === 'closed'}
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-white/80 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
                           Notes
                         </label>
                         <textarea
                           value={editingCallout.notes}
                           onChange={(e) => setEditingCallout({ ...editingCallout, notes: e.target.value })}
-                          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm resize-none"
+                          className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm resize-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                           rows={3}
                         />
                       </div>
 
                       {callout.status === 'open' && (
                         <div>
-                          <label className="block text-sm font-medium text-white/80 mb-1">
-                            Repair Summary <span className="text-red-400">*</span>
-                            <span className="text-xs text-white/50 ml-2">(required to close callout)</span>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                            Repair Summary <span className="text-red-600 dark:text-red-400">*</span>
+                            <span className="text-xs text-gray-500 dark:text-white/50 ml-2">(required to close callout)</span>
                           </label>
                           <textarea
                             value={editingCallout.repair_summary || ''}
                             onChange={(e) => setEditingCallout({ ...editingCallout, repair_summary: e.target.value })}
-                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm resize-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm resize-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                             rows={3}
                             placeholder="Enter repair summary to close this callout..."
                             required
@@ -686,7 +686,7 @@ export default function CalloutLogsPage() {
                       {/* File Uploads */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-white/80 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                             <Upload className="w-4 h-4 inline mr-1" />
                             Upload Worksheet
                           </label>
@@ -697,15 +697,15 @@ export default function CalloutLogsPage() {
                               const file = e.target.files?.[0];
                               if (file) setEditingCallout({ ...editingCallout, worksheet: file });
                             }}
-                            className="w-full text-sm text-white/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"
+                            className="w-full text-sm text-gray-600 dark:text-white/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 dark:file:bg-white/10 file:text-gray-700 dark:file:text-white hover:file:bg-gray-300 dark:hover:file:bg-white/20"
                           />
                           {editingCallout.worksheet && (
-                            <p className="text-xs text-white/60 mt-1">{editingCallout.worksheet.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-white/60 mt-1">{editingCallout.worksheet.name}</p>
                           )}
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-white/80 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                             <Upload className="w-4 h-4 inline mr-1" />
                             Upload Invoice
                           </label>
@@ -716,10 +716,10 @@ export default function CalloutLogsPage() {
                               const file = e.target.files?.[0];
                               if (file) setEditingCallout({ ...editingCallout, invoice: file });
                             }}
-                            className="w-full text-sm text-white/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"
+                            className="w-full text-sm text-gray-600 dark:text-white/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 dark:file:bg-white/10 file:text-gray-700 dark:file:text-white hover:file:bg-gray-300 dark:hover:file:bg-white/20"
                           />
                           {editingCallout.invoice && (
-                            <p className="text-xs text-white/60 mt-1">{editingCallout.invoice.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-white/60 mt-1">{editingCallout.invoice.name}</p>
                           )}
                         </div>
                       </div>
@@ -728,7 +728,7 @@ export default function CalloutLogsPage() {
                       <div className="flex gap-2 justify-end pt-2">
                         <button
                           onClick={cancelEditing}
-                          className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors text-sm"
+                          className="px-4 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-sm"
                           disabled={uploading}
                         >
                           Cancel
@@ -736,7 +736,7 @@ export default function CalloutLogsPage() {
                         <button
                           onClick={handleSaveUpdate}
                           disabled={uploading}
-                          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                          className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {uploading ? 'Saving...' : 'Save Changes'}
                         </button>
@@ -757,7 +757,7 @@ export default function CalloutLogsPage() {
                             });
                             setExpandedCallout(callout.id);
                           }}
-                          className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors text-sm flex items-center gap-2"
+                          className="px-3 py-1.5 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-500/20 transition-colors text-sm flex items-center gap-2"
                         >
                           <XCircle className="w-4 h-4" />
                           Close Callout
@@ -765,7 +765,7 @@ export default function CalloutLogsPage() {
                       )}
                       <button
                         onClick={() => startEditing(callout)}
-                        className="px-3 py-1.5 bg-white/5 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors text-sm flex items-center gap-2"
+                        className="px-3 py-1.5 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-sm flex items-center gap-2"
                       >
                         <Edit2 className="w-4 h-4" />
                         Update
@@ -774,7 +774,7 @@ export default function CalloutLogsPage() {
                   )}
                 </div>
 
-                <div className="text-right text-sm text-white/40">
+                <div className="text-right text-sm text-gray-400 dark:text-white/40">
                   <div className="mb-1">
                     Created: {new Date(callout.created_at).toLocaleString()}
                   </div>
@@ -784,7 +784,7 @@ export default function CalloutLogsPage() {
                     </div>
                   )}
                   {callout.reopened_at && (
-                    <div className="text-yellow-400">
+                    <div className="text-yellow-600 dark:text-yellow-400">
                       Reopened: {new Date(callout.reopened_at).toLocaleString()}
                     </div>
                   )}

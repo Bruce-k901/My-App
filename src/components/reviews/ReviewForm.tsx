@@ -21,7 +21,13 @@ interface ReviewFormProps {
 export function ReviewForm({ review, currentUserId, isEmployee, isManager }: ReviewFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  
+
+  // All hooks must be called before any conditional returns
+  const [localResponses, setLocalResponses] = useState<Record<string, Partial<SaveResponseInput>>>({});
+  const [expandedSections, setExpandedSections] = useState<string[]>(
+    review.template?.sections?.map(s => s.id) || []
+  );
+
   // Handle missing template gracefully
   if (!review.template || !review.template_id) {
     return (
@@ -31,7 +37,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
           <div>
             <h3 className="font-medium text-amber-200 mb-1">Template Not Attached</h3>
             <p className="text-sm text-amber-300/80">
-              {isManager 
+              {isManager
                 ? 'This review does not have a template attached. Please attach a template to proceed.'
                 : 'Your manager is still setting up the review template. Please check back later.'}
             </p>
@@ -40,11 +46,6 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       </div>
     );
   }
-  
-  const [localResponses, setLocalResponses] = useState<Record<string, Partial<SaveResponseInput>>>({});
-  const [expandedSections, setExpandedSections] = useState<string[]>(
-    review.template?.sections?.map(s => s.id) || []
-  );
 
   // Calculate progress based on visible sections and current user's responses only
   const expectedRespondentType = isEmployee ? 'employee' : 'manager';
@@ -161,7 +162,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/people/reviews">
-          <Button variant="ghost" className="text-neutral-400 hover:text-white">
+          <Button variant="ghost" className="text-gray-500 dark:text-white/60 hover:text-white">
             <ArrowLeft className="h-4 w-4 mr-2" />Back
           </Button>
         </Link>
@@ -179,7 +180,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">{review.template?.name || review.title}</h1>
-              <p className="text-neutral-400">{review.employee?.full_name} • {review.employee?.position_title}</p>
+              <p className="text-gray-500 dark:text-white/60">{review.employee?.full_name} • {review.employee?.position_title}</p>
               {review.review_period_start && review.review_period_end && (
                 <p className="text-sm text-neutral-500 mt-1 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
@@ -191,7 +192,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
           <div className="flex flex-col items-end gap-2">
             <StatusBadge status={review.status} />
             {review.manager && (
-              <span className="text-sm text-neutral-400 flex items-center gap-1">
+              <span className="text-sm text-gray-500 dark:text-white/60 flex items-center gap-1">
                 <User className="h-3 w-3" />Manager: {review.manager.full_name}
               </span>
             )}
@@ -200,7 +201,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
 
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-400">Progress</span>
+            <span className="text-sm text-gray-500 dark:text-white/60">Progress</span>
             <span className="text-sm font-medium text-white">{Math.round(progress)}%</span>
           </div>
           <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
@@ -342,7 +343,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
                         </span>
                       )}
                       {sectionMode === 'both_answer' && (
-                        <span className="text-xs bg-neutral-500/20 text-neutral-400 px-2 py-0.5 rounded border border-neutral-500/30">
+                        <span className="text-xs bg-neutral-500/20 text-gray-500 dark:text-white/60 px-2 py-0.5 rounded border border-neutral-500/30">
                           👥 Both Answer
                         </span>
                       )}
@@ -352,7 +353,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
                         </span>
                       )}
                     </div>
-                    {section.description && <p className="text-sm text-neutral-400 mt-0.5">{section.description}</p>}
+                    {section.description && <p className="text-sm text-gray-500 dark:text-white/60 mt-0.5">{section.description}</p>}
                   </div>
                   <div className="flex items-center gap-2">
                     {sectionComplete ? (
@@ -364,7 +365,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
                         <Clock className="h-3 w-3" />In Progress
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 bg-white/[0.05] text-neutral-400 rounded text-xs border border-white/[0.06] flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-white/[0.05] text-gray-500 dark:text-white/60 rounded text-xs border border-white/[0.06] flex items-center gap-1">
                         <Circle className="h-3 w-3" />Not Started
                       </span>
                     )}
@@ -379,7 +380,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
               {isExpanded && (
                 <div className="px-6 pb-6 border-t border-white/[0.06] pt-6">
                   {section.instructions && (
-                    <p className="text-sm text-neutral-400 mb-6 p-3 bg-white/[0.02] rounded-lg">{section.instructions}</p>
+                    <p className="text-sm text-gray-500 dark:text-white/60 mb-6 p-3 bg-white/[0.02] rounded-lg">{section.instructions}</p>
                   )}
                   <ReviewFormSection
                     section={section}
@@ -401,7 +402,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       {review.status !== 'completed' && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 sticky bottom-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-400">
+            <div className="text-sm text-gray-500 dark:text-white/60">
               {Object.keys(localResponses).length > 0 && (
                 <span className="text-amber-400">{Object.keys(localResponses).length} unsaved changes</span>
               )}
@@ -421,7 +422,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       {review.status === 'pending_sign_off' && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
           <h3 className="font-medium text-white mb-2">Sign Off</h3>
-          <p className="text-sm text-neutral-400 mb-4">Review the responses above and sign off to complete this review.</p>
+          <p className="text-sm text-gray-500 dark:text-white/60 mb-4">Review the responses above and sign off to complete this review.</p>
           <div className="flex items-center justify-between">
             <div>
               {review.employee_signed_off && (
@@ -452,14 +453,14 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
 
 function StatusBadge({ status }: { status: string }) {
   const configs: Record<string, { label: string; className: string }> = {
-    draft: { label: 'Draft', className: 'bg-white/[0.05] text-neutral-400' },
+    draft: { label: 'Draft', className: 'bg-white/[0.05] text-gray-500 dark:text-white/60' },
     employee_in_progress: { label: 'Employee In Progress', className: 'bg-amber-500/20 text-amber-400 border border-amber-500/30' },
     employee_complete: { label: 'Employee Complete', className: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
     manager_in_progress: { label: 'Manager In Progress', className: 'bg-purple-500/20 text-purple-400 border border-purple-500/30' },
     manager_complete: { label: 'Manager Complete', className: 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' },
     pending_sign_off: { label: 'Pending Sign-off', className: 'bg-orange-500/20 text-orange-400 border border-orange-500/30' },
     completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border border-green-500/30' },
-    cancelled: { label: 'Cancelled', className: 'bg-white/[0.05] text-neutral-400' },
+    cancelled: { label: 'Cancelled', className: 'bg-white/[0.05] text-gray-500 dark:text-white/60' },
   };
   const config = configs[status] || configs.draft;
   return (

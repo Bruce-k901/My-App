@@ -223,66 +223,18 @@ BEGIN
     LEFT JOIN avg_hours ah ON ah.profile_id = lb.profile_id
     WHERE lb.company_id = p_company_id
       AND lb.year = p_year
-  )
-  SELECT
-    b.id,
-    b.company_id,
-    b.profile_id,
-    COALESCE(b.full_name, 'Unknown')::text,
-    b.email,
-    b.site_id,
-    b.start_date,
-    b.contract_type,
-    b.app_role,
-    CASE
-      -- Rule requested: managers and up are salaried staff
-      WHEN lower(COALESCE(b.app_role, '')) IN ('owner', 'admin', 'manager') THEN 'salaried'
-      ELSE 'hourly'
-    END AS employee_type,
-    b.leave_type_id,
-    COALESCE(b.leave_type_name, 'Annual Leave')::text,
-    COALESCE(b.leave_type_code, 'ANNUAL')::text,
-    COALESCE(b.leave_type_color, '#6B7280')::text,
-    b.year,
-    b.entitled_days,
-    b.carried_over,
-    b.adjustments,
-    b.taken_days,
-    b.pending_days,
-    (b.entitled_days + b.carried_over + b.adjustments - b.taken_days - b.pending_days) AS remaining_days,
-    b.average_hours_13_weeks,
-    -- calculated entitlement (days):
-    -- Salaried: 28 days (Owner/Admin/Manager). Hourly: pro-rata vs a 40hr week using avg hours.
-    CASE
-      WHEN lower(COALESCE(b.app_role, '')) IN ('owner', 'admin', 'manager') THEN 28::numeric
-      WHEN b.average_hours_13_weeks > 0 THEN ROUND((28.0 * (b.average_hours_13_weeks / 40.0))::numeric, 2)
-      ELSE b.entitled_days
-    END AS calculated_entitlement,
-    -- accrued_days: pro-rata from holiday year start (or employment start) to today
-    CASE
-      WHEN CURRENT_DATE < v_hy_start THEN 0::numeric
-      ELSE
-        ROUND(
-          (
-            CASE
-              WHEN lower(COALESCE(b.app_role, '')) IN ('owner', 'admin', 'manager') THEN 28::numeric
-              WHEN b.average_hours_13_weeks > 0 THEN (28.0 * (b.average_hours_13_weeks / 40.0))::numeric
-              ELSE b.entitled_days
-            END
-          )
-          * GREATEST(
-              0::numeric,
-              LEAST(1::numeric,
-                ((CURRENT_DATE - GREATEST(COALESCE(b.start_date, v_hy_start), v_hy_start))::numeric
-                  / NULLIF((v_hy_end - v_hy_start)::numeric, 0::numeric)
-                )
-              )
-            ),
-          2
-        )
-    END AS accrued_days,
-    -- available_days: accrued + carried_over + adjustments - taken - pending
-    (
+  ),
+  calculated AS (
+    SELECT
+      b.*,
+      -- calculated entitlement (days):
+      -- Salaried: 28 days (Owner/Admin/Manager). Hourly: pro-rata vs a 40hr week using avg hours.
+      CASE
+        WHEN lower(COALESCE(b.app_role, '')) IN ('owner', 'admin', 'manager') THEN 28::numeric
+        WHEN b.average_hours_13_weeks > 0 THEN ROUND((28.0 * (b.average_hours_13_weeks / 40.0))::numeric, 2)
+        ELSE b.entitled_days
+      END AS calculated_entitlement,
+      -- accrued_days: pro-rata from holiday year start (or employment start) to today
       CASE
         WHEN CURRENT_DATE < v_hy_start THEN 0::numeric
         ELSE
@@ -304,11 +256,49 @@ BEGIN
               ),
             2
           )
-      END
-      + b.carried_over + b.adjustments - b.taken_days - b.pending_days
+      END AS accrued_days
+    FROM base b
+  )
+  SELECT
+    c.id,
+    c.company_id,
+    c.profile_id,
+    COALESCE(c.full_name, 'Unknown')::text,
+    c.email,
+    c.site_id,
+    c.start_date,
+    c.contract_type,
+    c.app_role,
+    CASE
+      -- Rule requested: managers and up are salaried staff
+      WHEN lower(COALESCE(c.app_role, '')) IN ('owner', 'admin', 'manager') THEN 'salaried'
+      ELSE 'hourly'
+    END AS employee_type,
+    c.leave_type_id,
+    COALESCE(c.leave_type_name, 'Annual Leave')::text,
+    COALESCE(c.leave_type_code, 'ANNUAL')::text,
+    COALESCE(c.leave_type_color, '#6B7280')::text,
+    c.year,
+    c.entitled_days,
+    c.carried_over,
+    c.adjustments,
+    c.taken_days,
+    c.pending_days,
+    -- remaining_days: same as available_days (accrued + carried_over + adjustments - taken - pending)
+    (
+      c.accrued_days
+      + c.carried_over + c.adjustments - c.taken_days - c.pending_days
+    ) AS remaining_days,
+    c.average_hours_13_weeks,
+    c.calculated_entitlement,
+    c.accrued_days,
+    -- available_days: accrued + carried_over + adjustments - taken - pending
+    (
+      c.accrued_days
+      + c.carried_over + c.adjustments - c.taken_days - c.pending_days
     ) AS available_days
-  FROM base b
-  ORDER BY COALESCE(b.full_name, '') ASC;
+  FROM calculated c
+  ORDER BY COALESCE(c.full_name, '') ASC;
 END;
 $$;
 

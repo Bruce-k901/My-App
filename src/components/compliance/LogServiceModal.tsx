@@ -124,6 +124,12 @@ export default function LogServiceModal({
       }
 
       // Create service event
+      console.log('DEBUG - Attempting to insert:', {
+        company_id: companyId,
+        site_id: siteId,
+        user_id: user.id
+      })
+
       const { data: serviceEvent, error: serviceError } = await supabase
         .from('ppm_service_events')
         .insert({
@@ -162,6 +168,24 @@ export default function LogServiceModal({
         .eq('id', assetId)
 
       if (assetError) throw assetError
+
+      // Mark any pending PPM overdue tasks for this asset as completed
+      const { error: taskError } = await supabase
+        .from('checklist_tasks')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          completed_by: user.id
+        })
+        .eq('status', 'pending')
+        .contains('task_data', { source_id: assetId, source_type: 'ppm_overdue' })
+
+      if (taskError) {
+        console.warn('Could not update task status:', taskError)
+        // Don't throw - the service was logged successfully
+      } else {
+        console.log('PPM task marked as completed')
+      }
 
       showToast('PPM service logged successfully', 'success')
       onComplete()

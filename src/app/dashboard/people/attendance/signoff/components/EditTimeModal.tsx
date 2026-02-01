@@ -103,15 +103,15 @@ export default function EditTimeModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.06] rounded-xl w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-[#EC4899]" />
+            <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h3 className="font-semibold">Edit Time Record</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-white/[0.05] rounded">
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -119,12 +119,12 @@ export default function EditTimeModal({
         {/* Content */}
         <div className="p-4 space-y-4">
           <div>
-            <p className="text-sm text-zinc-400 mb-1">Staff Member</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Staff Member</p>
             <p className="font-medium">{record.staffName}</p>
           </div>
           
           <div>
-            <p className="text-sm text-zinc-400 mb-1">Date</p>
+            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Date</p>
             <p className="font-medium">
               {new Date(record.workDate).toLocaleDateString('en-GB', {
                 weekday: 'long',
@@ -136,7 +136,7 @@ export default function EditTimeModal({
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Clock In</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock In</label>
               <TimePicker
                 value={clockIn}
                 onChange={(value) => setClockIn(value)}
@@ -144,7 +144,7 @@ export default function EditTimeModal({
               />
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Clock Out</label>
+              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock Out</label>
               <TimePicker
                 value={clockOut}
                 onChange={(value) => setClockOut(value)}
@@ -154,20 +154,20 @@ export default function EditTimeModal({
           </div>
           
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">
-              Reason for Adjustment <span className="text-red-400">*</span>
+            <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
+              Reason for Adjustment <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g., Staff forgot to clock out, correcting to actual departure time"
               rows={3}
-              className="w-full bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2 resize-none"
+              className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2 resize-none"
             />
           </div>
           
           {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm">
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
               <AlertTriangle className="w-4 h-4" />
               {error}
             </div>
@@ -175,17 +175,17 @@ export default function EditTimeModal({
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
+            className="px-4 py-2 text-sm text-gray-500 dark:text-white/60 hover:text-white transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 text-sm bg-[#EC4899] hover:bg-[#EC4899]/90 rounded-lg disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-lg disabled:opacity-50"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>

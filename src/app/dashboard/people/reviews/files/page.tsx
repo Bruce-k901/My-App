@@ -73,10 +73,10 @@ export default async function EmployeeFilesPage() {
 function FilesSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-8 w-48 bg-white/[0.05] rounded animate-pulse" />
+      <div className="h-8 w-48 bg-gray-100 dark:bg-white/[0.05] rounded animate-pulse" />
       <div className="grid lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1 h-96 bg-white/[0.05] rounded-lg animate-pulse" />
-        <div className="lg:col-span-3 h-96 bg-white/[0.05] rounded-lg animate-pulse" />
+        <div className="lg:col-span-1 h-96 bg-gray-100 dark:bg-white/[0.05] rounded-lg animate-pulse" />
+        <div className="lg:col-span-3 h-96 bg-gray-100 dark:bg-white/[0.05] rounded-lg animate-pulse" />
       </div>
     </div>
   );

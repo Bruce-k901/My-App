@@ -61,7 +61,7 @@ export default function OneOnOnesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">1:1 Meetings</h1>
-          <p className="text-neutral-400">Schedule and track one-on-one conversations</p>
+          <p className="text-gray-500 dark:text-white/60">Schedule and track one-on-one conversations</p>
         </div>
         {isManager && (
           <Link
@@ -81,7 +81,7 @@ export default function OneOnOnesPage() {
           className={`px-4 py-2 rounded-lg text-sm transition-colors ${
             showPast 
               ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
-              : 'bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:text-white'
+              : 'bg-white/[0.03] border border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
           {showPast ? 'Showing All' : 'Upcoming Only'}
@@ -94,7 +94,7 @@ export default function OneOnOnesPage() {
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-12 text-center">
             <Calendar className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
             <p className="text-white font-medium">No 1:1 meetings scheduled</p>
-            <p className="text-neutral-400 text-sm mt-1">
+            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">
               {isManager ? 'Schedule a 1:1 with your team members' : 'Your manager will schedule 1:1s with you'}
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function OneOnOnesPage() {
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-4 mt-1 text-sm text-neutral-400">
+                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-white/60">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         {new Date(meeting.scheduled_date).toLocaleDateString('en-GB', { 

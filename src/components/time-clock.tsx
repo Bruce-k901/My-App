@@ -161,41 +161,41 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
 
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 animate-pulse">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 animate-pulse shadow-sm dark:shadow-none">
         <div className="h-24" />
       </div>
     );
   }
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
       {/* Current Time */}
       <div className="text-center mb-6">
-        <p className="text-4xl font-bold text-white font-mono">
+        <p className="text-4xl font-bold text-gray-900 dark:text-white font-mono">
           {currentTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
         </p>
-        <p className="text-neutral-400 text-sm">
+        <p className="text-gray-500 dark:text-white/60 text-sm">
           {currentTime.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 
       {/* Status Display */}
       {status?.is_clocked_in && (
-        <div className="bg-white/[0.05] rounded-lg p-4 mb-6">
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-neutral-400 text-sm">Time worked</span>
-            <span className="text-2xl font-bold text-white">{getElapsedTime()}</span>
+            <span className="text-gray-500 dark:text-white/60 text-sm">Time worked</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">{getElapsedTime()}</span>
           </div>
-          
+
           {status.break_minutes > 0 && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-neutral-400">Break taken</span>
-              <span className="text-neutral-300">{status.break_minutes} min</span>
+              <span className="text-gray-500 dark:text-white/60">Break taken</span>
+              <span className="text-gray-700 dark:text-white/80">{status.break_minutes} min</span>
             </div>
           )}
-          
+
           {status.is_on_break && (
-            <div className="mt-2 px-3 py-1 bg-amber-500/20 text-amber-400 rounded text-center text-sm border border-amber-500/30">
+            <div className="mt-2 px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded text-center text-sm border border-amber-200 dark:border-amber-500/30">
               On break
             </div>
           )}
@@ -279,7 +279,7 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
 
       {/* Location indicator */}
       {location && (
-        <div className="mt-4 flex items-center justify-center gap-1 text-xs text-neutral-500">
+        <div className="mt-4 flex items-center justify-center gap-1 text-xs text-gray-500 dark:text-white/50">
           <MapPin className="w-3 h-3" />
           Location tracked
         </div>

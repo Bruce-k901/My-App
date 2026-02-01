@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, Sparkles } from "lucide-react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { ContextSwitcher } from "./ContextSwitcher";
@@ -16,6 +16,7 @@ import { BurgerMenu } from "./BurgerMenu";
 import { MobileBurgerMenu } from "@/components/mobile/MobileBurgerMenu";
 import { useAppContext } from "@/context/AppContext";
 import { useSiteContext } from "@/contexts/SiteContext";
+import { usePanelStore } from "@/lib/stores/panel-store";
 
 interface HeaderProps {
   onMobileMenuClick?: () => void;
@@ -31,6 +32,7 @@ export function Header({
   const { role, profile, user, signOut } = useAppContext();
   const siteContext = useSiteContext();
   const pathname = usePathname();
+  const { setAiAssistantOpen } = usePanelStore();
   
   // Detect current module from pathname for color accents
   const getModuleColor = () => {
@@ -153,6 +155,16 @@ export function Header({
 
           {/* Messages */}
           <MessageButton />
+
+          {/* Ask AI Button */}
+          <button
+            onClick={() => setAiAssistantOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#EC4899]/10 border border-[#EC4899]/50 text-[#EC4899] hover:bg-[#EC4899]/20 hover:shadow-[0_0_12px_rgba(236,72,153,0.5)] transition-all h-10"
+            aria-label="Ask AI Assistant"
+          >
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            <span className="font-medium text-sm whitespace-nowrap hidden sm:inline">Ask AI</span>
+          </button>
 
           {/* Burger Menu Button - Desktop only */}
           <button

@@ -28,6 +28,9 @@ export default function MultiSelect({
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement | null>(null);
 
+  // Ensure value is always an array to prevent controlled/uncontrolled warnings
+  const safeValue = React.useMemo(() => Array.isArray(value) ? value : [], [value]);
+
   React.useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (!ref.current) return;
@@ -41,35 +44,38 @@ export default function MultiSelect({
   const getValue = (opt: Option) => (typeof opt === "string" ? opt : opt.value);
 
   const toggleOption = (optionValue: string) => {
-    const newValue = value.includes(optionValue)
-      ? value.filter(v => v !== optionValue)
-      : [...value, optionValue];
+    const newValue = safeValue.includes(optionValue)
+      ? safeValue.filter(v => v !== optionValue)
+      : [...safeValue, optionValue];
     onChange(newValue);
   };
 
-  const removeOption = (optionValue: string) => {
-    onChange(value.filter(v => v !== optionValue));
+  const removeOption = (e: React.MouseEvent, optionValue: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onChange(safeValue.filter(v => v !== optionValue));
   };
 
-  const selectedLabels = value.map(val => {
+  const selectedLabels = safeValue.map(val => {
     const option = options.find(opt => getValue(opt) === val);
     return option ? getLabel(option) : val;
   });
 
   return (
     <div ref={ref} className={cn("relative", className)}>
-      {label && <label className="block text-xs text-slate-400 mb-1">{label}</label>}
+      {label && <label className="block text-xs text-gray-900 dark:text-white/50 mb-1">{label}</label>}
       
       <button
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen((o) => !o)}
         className={cn(
-          "w-full min-h-[44px] rounded-md px-4 py-2 text-left text-white",
-          "bg-white/[0.05] border border-white/[0.1]",
+          "w-full min-h-[44px] rounded-md px-4 py-2 text-left",
+          "bg-gray-100 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1]",
+          "text-gray-900 dark:text-white",
           "transition-all duration-150 ease-in-out",
-          "hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
-          "focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none",
+          "hover:border-blue-400 dark:hover:border-white/20 hover:bg-gray-50 dark:hover:bg-white/[0.07] hover:shadow-[0_0_10px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]",
+          "focus:border-blue-500 dark:focus:border-blue-500 focus:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none",
           disabled && "opacity-50 cursor-not-allowed",
         )}
         aria-haspopup="listbox"
@@ -77,56 +83,61 @@ export default function MultiSelect({
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            {value.length === 0 ? (
-              <span className="text-sm text-white/40">{placeholder}</span>
+            {safeValue.length === 0 ? (
+              <span className="text-sm text-gray-400 dark:text-white/40">{placeholder}</span>
             ) : (
               <div className="flex flex-wrap gap-1">
                 {selectedLabels.map((label, index) => (
                   <span
-                    key={value[index]}
-                    className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-pink-500/20 text-pink-200 rounded border border-pink-500/30"
+                    key={safeValue[index]}
+                    className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-200 rounded border border-blue-300 dark:border-blue-500/30"
                   >
                     {label}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeOption(value[index]);
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => removeOption(e, safeValue[index])}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          removeOption(e, safeValue[index]);
+                        }
                       }}
-                      className="hover:text-pink-100"
+                      className="hover:text-blue-900 dark:hover:text-blue-100 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
                     >
                       <X className="w-3 h-3" />
-                    </button>
+                    </span>
                   </span>
                 ))}
               </div>
             )}
           </div>
-          <span className="text-white/70 ml-2">▾</span>
+          <span className="text-gray-600 dark:text-white/70 ml-2">▾</span>
         </div>
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full rounded-md border border-white/[0.1] bg-[#14161c]/95 backdrop-blur-md shadow-[0_0_14px_rgba(236,72,153,0.25)]">
-          <ul role="listbox" className="max-h-56 overflow-auto py-1">
+        <div className="absolute z-50 mt-2 w-full rounded-md border border-gray-300 dark:border-white/[0.1] bg-white dark:bg-[#14161c]/95 backdrop-blur-md shadow-lg dark:shadow-[0_0_14px_rgba(236,72,153,0.25)]">
+          <ul role="listbox" className="max-h-96 overflow-auto py-1">
             {options.map((opt) => {
               const val = getValue(opt);
               const lbl = getLabel(opt);
-              const isSelected = value.includes(val);
+              const isSelected = safeValue.includes(val);
               return (
                 <li key={val} role="option" aria-selected={isSelected}>
                   <button
                     type="button"
                     className={cn(
                       "w-full text-left px-3 py-2 text-sm flex items-center gap-2",
-                      "text-white hover:bg-white/[0.06]",
-                      isSelected && "bg-white/[0.08]",
+                      "text-gray-900 dark:text-white",
+                      "hover:bg-blue-50 dark:hover:bg-white/[0.06]",
+                      isSelected && "bg-blue-100 dark:bg-white/[0.08]",
                     )}
                     onClick={() => toggleOption(val)}
                   >
                     <div className={cn(
-                      "w-4 h-4 border border-white/30 rounded flex items-center justify-center",
-                      isSelected && "bg-pink-500 border-pink-500"
+                      "w-4 h-4 border border-gray-300 dark:border-white/30 rounded flex items-center justify-center",
+                      isSelected && "bg-blue-600 dark:bg-blue-500 border-blue-600 dark:border-blue-500"
                     )}>
                       {isSelected && (
                         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
