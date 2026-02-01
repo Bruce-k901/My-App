@@ -30,14 +30,14 @@ export function MobileHeader({
     <header className="px-5 pt-4 pb-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-muted-foreground text-sm">{getGreeting()}</p>
-          <h1 className="text-2xl font-bold mt-0.5">{userName}</h1>
-          <div className="flex items-center gap-2 mt-1 text-muted-foreground text-sm">
+          <p className="text-gray-400 text-sm">{getGreeting()}</p>
+          <h1 className="text-2xl font-bold mt-0.5 text-white">{userName}</h1>
+          <div className="flex items-center gap-2 mt-1 text-gray-400 text-sm">
             <MapPin size={14} />
             <span>{siteName}</span>
             {department && (
               <>
-                <span className="text-muted-foreground/50">•</span>
+                <span className="text-gray-600">•</span>
                 <span>{department}</span>
               </>
             )}
@@ -47,16 +47,16 @@ export function MobileHeader({
           onClick={onNotificationClick}
           className={cn(
             "relative p-2 rounded-full",
-            "bg-muted hover:bg-muted/80",
+            "bg-white/5 hover:bg-white/10",
             "transition-colors"
           )}
         >
-          <Bell size={20} />
+          <Bell size={20} className="text-gray-400" />
           {unreadNotifications > 0 && (
             <span className={cn(
               "absolute top-1 right-1 w-2.5 h-2.5",
-              "bg-primary rounded-full",
-              "ring-2 ring-background"
+              "bg-[#FF6B9D] rounded-full",
+              "ring-2 ring-[#0a0a0a]"
             )} />
           )}
         </button>

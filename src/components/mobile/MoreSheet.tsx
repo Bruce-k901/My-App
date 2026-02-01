@@ -51,11 +51,11 @@ export function MoreSheet() {
         onClick={closeMoreSheet}
       />
 
-      {/* Sheet */}
+      {/* Sheet - Dark theme */}
       <div
         className={cn(
           "fixed inset-x-0 bottom-0 z-50",
-          "bg-background rounded-t-3xl",
+          "bg-[#1a1a1f] text-white rounded-t-3xl",
           "max-h-[85vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
           "pb-[env(safe-area-inset-bottom)]"
@@ -63,17 +63,17 @@ export function MoreSheet() {
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
+          <div className="w-10 h-1 bg-white/20 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pb-4 border-b border-border">
-          <h2 className="text-lg font-semibold">Quick Access</h2>
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-white/10">
+          <h2 className="text-lg font-semibold text-white">Quick Access</h2>
           <button
             onClick={closeMoreSheet}
-            className="p-2 -mr-2 rounded-full hover:bg-muted transition-colors"
+            className="p-2 -mr-2 rounded-full hover:bg-white/10 transition-colors"
           >
-            <X size={20} />
+            <X size={20} className="text-gray-400" />
           </button>
         </div>
 
@@ -83,7 +83,7 @@ export function MoreSheet() {
 
             {/* Quick Actions */}
             <section>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Priority Actions
               </h3>
               <QuickActionsGrid section="quick" />
@@ -99,10 +99,10 @@ export function MoreSheet() {
                   >
                     <module.icon size={14} style={{ color: module.color }} />
                   </div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     {module.label}
                   </h3>
-                  <span className="text-xs text-muted-foreground/60">
+                  <span className="text-xs text-gray-600">
                     {module.subtitle}
                   </span>
                 </div>
@@ -111,8 +111,8 @@ export function MoreSheet() {
             ))}
 
             {/* Settings */}
-            <section className="pt-2 border-t border-border">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            <section className="pt-2 border-t border-white/10">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Settings
               </h3>
               <QuickActionsGrid section="settings" />

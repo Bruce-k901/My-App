@@ -16,6 +16,7 @@ import {
   Calendar,
   HelpCircle,
   Settings,
+  Eye,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -27,43 +28,44 @@ interface QuickAction {
   label: string;
   href: string;
   color: string;
-  roles?: string[]; // If specified, only show for these roles
+  roles?: string[];
 }
 
+// Priority Actions - High frequency daily tasks
 const quickActions: QuickAction[] = [
-  // High Priority - Show for all
-  { id: 'clock', icon: Clock, label: 'Clock In/Out', href: '/mobile/clock', color: '#FF6B9D' },
-  { id: 'incident', icon: AlertTriangle, label: 'Incident', href: '/mobile/incident', color: '#f44336' },
-  { id: 'temp', icon: Thermometer, label: 'Temp Check', href: '/checkly/temperatures', color: '#2196F3' },
-  { id: 'checklist', icon: ClipboardList, label: 'Checklists', href: '/checkly/checklists', color: '#4CAF50' },
+  { id: 'clock', icon: Clock, label: 'Clock In/Out', href: '/dashboard/people/attendance', color: '#FF6B9D' },
+  { id: 'incident', icon: AlertTriangle, label: 'Incident', href: '/dashboard/incidents', color: '#f44336' },
+  { id: 'temp', icon: Thermometer, label: 'Temp Check', href: '/dashboard/checklists', color: '#2196F3' },
+  { id: 'checklist', icon: ClipboardList, label: 'Checklists', href: '/dashboard/checklists', color: '#4CAF50' },
 ];
 
+// Module-specific actions
 const moduleActions: Record<string, QuickAction[]> = {
   stockly: [
-    { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/stockly/deliveries/receive', color: '#FF9800' },
-    { id: 'waste', icon: Trash2, label: 'Record Waste', href: '/stockly/waste', color: '#f44336' },
-    { id: 'count', icon: CheckSquare, label: 'Quick Count', href: '/stockly/counts/quick', color: '#9C27B0' },
-    { id: 'stock', icon: Package, label: 'View Stock', href: '/stockly/stock', color: '#607D8B' },
+    { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/dashboard/stockly/deliveries', color: '#FF9800' },
+    { id: 'waste', icon: Trash2, label: 'Record Waste', href: '/dashboard/stockly/waste', color: '#f44336' },
+    { id: 'count', icon: CheckSquare, label: 'Quick Count', href: '/dashboard/stockly/stock-counts', color: '#9C27B0' },
+    { id: 'stock', icon: Eye, label: 'View Stock', href: '/dashboard/stockly/stock-items', color: '#607D8B' },
   ],
   planly: [
-    { id: 'production', icon: ClipboardList, label: 'Production', href: '/planly/production', color: '#FF9800' },
-    { id: 'deliveries', icon: Truck, label: 'Deliveries', href: '/planly/deliveries', color: '#4CAF50' },
+    { id: 'production', icon: ClipboardList, label: 'Production', href: '/dashboard/planly', color: '#FF9800' },
+    { id: 'deliveries', icon: Truck, label: 'Deliveries', href: '/dashboard/planly/delivery-schedule', color: '#4CAF50' },
   ],
   assetly: [
-    { id: 'callout', icon: Wrench, label: 'Place Callout', href: '/assetly/callouts/new', color: '#f44336' },
-    { id: 'assets', icon: Wrench, label: 'View Assets', href: '/assetly/assets', color: '#607D8B' },
+    { id: 'callout', icon: Wrench, label: 'Place Callout', href: '/dashboard/assets/callout-logs', color: '#f44336' },
+    { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#607D8B' },
   ],
   teamly: [
-    { id: 'rota', icon: Calendar, label: 'My Rota', href: '/teamly/rota', color: '#9C27B0' },
-    { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/teamly/leave', color: '#2196F3' },
-    { id: 'directory', icon: Users, label: 'Staff Cards', href: '/teamly/directory', color: '#4CAF50' },
+    { id: 'rota', icon: Calendar, label: 'My Rota', href: '/dashboard/people/schedule', color: '#9C27B0' },
+    { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/dashboard/people/leave/request', color: '#2196F3' },
+    { id: 'directory', icon: Users, label: 'Staff Cards', href: '/dashboard/people/directory', color: '#4CAF50' },
   ],
 };
 
 const settingsActions: QuickAction[] = [
-  { id: 'profile', icon: Users, label: 'My Profile', href: '/settings/profile', color: '#607D8B' },
-  { id: 'help', icon: HelpCircle, label: 'Help', href: '/help', color: '#2196F3' },
-  { id: 'settings', icon: Settings, label: 'Settings', href: '/settings', color: '#607D8B' },
+  { id: 'profile', icon: Users, label: 'My Profile', href: '/dashboard/settings', color: '#607D8B' },
+  { id: 'help', icon: HelpCircle, label: 'Help', href: '/dashboard/help', color: '#2196F3' },
+  { id: 'settings', icon: Settings, label: 'Settings', href: '/dashboard/settings', color: '#607D8B' },
 ];
 
 interface QuickActionsGridProps {
@@ -98,7 +100,7 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
           onClick={() => handleActionClick(action)}
           className={cn(
             "flex flex-col items-center p-3 rounded-xl",
-            "bg-muted/50 hover:bg-muted",
+            "bg-white/5 hover:bg-white/10",
             "transition-all active:scale-95",
             "touch-manipulation"
           )}
@@ -109,7 +111,7 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
           >
             <action.icon size={22} style={{ color: action.color }} />
           </div>
-          <span className="text-[11px] font-medium text-center text-muted-foreground leading-tight">
+          <span className="text-[11px] font-medium text-center text-gray-400 leading-tight">
             {action.label}
           </span>
         </button>
