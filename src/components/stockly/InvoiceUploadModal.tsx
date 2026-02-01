@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
+import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { toast } from 'sonner';
 
 interface Supplier {
@@ -132,6 +132,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
         },
         body: JSON.stringify({
           imageUrl,
+          fileType: file.type,
           supplierId: selectedSupplier,
           companyId,
           siteId,
@@ -185,7 +186,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
             <label className="block text-sm text-slate-300 mb-2">
               Supplier <span className="text-red-400">*</span>
             </label>
-            <Select
+            <SearchableSelect
               value={selectedSupplier}
               onValueChange={setSelectedSupplier}
               options={supplierOptions}

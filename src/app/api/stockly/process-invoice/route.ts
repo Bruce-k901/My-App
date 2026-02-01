@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { imageUrl, supplierId, companyId, siteId } = await request.json();
+    const { imageUrl, fileType, supplierId, companyId, siteId } = await request.json();
 
     if (!imageUrl || !supplierId || !companyId || !siteId) {
       return NextResponse.json(
@@ -214,6 +214,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Determine if this is a PDF based on file type or URL
+    const isPdf = fileType === 'application/pdf' ||
+                  imageUrl.toLowerCase().endsWith('.pdf') ||
+                  imageUrl.toLowerCase().includes('.pdf?');
 
     // Get Supabase client
     const supabase = await createServerSupabaseClient();
@@ -226,15 +231,23 @@ export async function POST(request: NextRequest) {
         {
           role: 'user',
           content: [
+            isPdf
+              ? {
+                  type: 'document' as const,
+                  source: {
+                    type: 'url' as const,
+                    url: imageUrl,
+                  },
+                }
+              : {
+                  type: 'image' as const,
+                  source: {
+                    type: 'url' as const,
+                    url: imageUrl,
+                  },
+                },
             {
-              type: 'image',
-              source: {
-                type: 'url',
-                url: imageUrl,
-              },
-            },
-            {
-              type: 'text',
+              type: 'text' as const,
               text: extractionPrompt,
             },
           ],
@@ -285,16 +298,14 @@ export async function POST(request: NextRequest) {
           : new Date().toISOString().split('T')[0],
         invoice_number: extraction.invoice_number || null,
         invoice_date: extraction.invoice_date || null,
-        delivery_note_number: extraction.delivery_note_number || null,
-        subtotal: extraction.subtotal || null,
-        tax: extraction.tax || null,
-        total: extraction.total || null,
+        subtotal: extraction.subtotal || 0,
+        vat_total: extraction.tax || 0,
+        total: extraction.total || 0,
         ai_processed: true,
         ai_confidence: extraction.confidence || null,
-        ai_extraction: extraction,
-        requires_review: requiresReview,
-        status: requiresReview ? 'pending_review' : 'draft',
-        document_urls: [imageUrl],
+        ai_raw_response: extraction,
+        status: 'draft',
+        invoice_file_path: imageUrl,
       })
       .select()
       .single();
@@ -306,22 +317,23 @@ export async function POST(request: NextRequest) {
 
     // Create delivery lines
     if (matchedLines.length > 0) {
-      const linesToInsert = matchedLines.map((line) => ({
+      const linesToInsert = matchedLines.map((line, index) => ({
         delivery_id: delivery.id,
         product_variant_id: line.product_variant_id || null,
         stock_item_id: line.stock_item_id || null,
+        line_number: index + 1,
         description: line.description,
         supplier_code: line.supplier_code,
-        quantity: line.quantity,
+        quantity_ordered: line.quantity,
+        quantity_received: line.quantity,
+        unit: line.unit || null,
         unit_price: line.unit_price,
         line_total: line.line_total,
         vat_rate: line.vat_rate || 0,
         vat_amount: line.vat_amount || 0,
         line_total_inc_vat: line.line_total_inc_vat || line.line_total,
-        qty_base_units: line.qty_base_units || null,
-        matched_status: line.matched_status,
+        match_status: line.matched_status,
         match_confidence: line.match_confidence,
-        suggested_stock_item: line.suggested_stock_item || null,
       }));
 
       const { error: linesError } = await supabase
@@ -330,8 +342,6 @@ export async function POST(request: NextRequest) {
 
       if (linesError) {
         console.error('Error creating delivery lines:', linesError);
-        // Don't fail the whole request - delivery is created
-        console.warn('Delivery created but lines failed:', linesError);
       }
     }
 

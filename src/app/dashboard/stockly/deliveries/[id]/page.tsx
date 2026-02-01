@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, CheckCircle2, AlertCircle, XCircle, Plus, Search, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -27,7 +27,7 @@ interface ProductVariant {
   id: string;
   stock_item_id: string;
   supplier_code?: string;
-  product_name: string;
+  supplier_description: string;
   stock_item: StockItem;
 }
 
@@ -38,8 +38,7 @@ interface DeliveryLine {
   stock_item_id?: string;
   description: string;
   supplier_code?: string;
-  quantity: number;
-  quantity_ordered?: number;
+  quantity_ordered: number;
   quantity_received?: number;
   quantity_rejected?: number;
   rejection_reason?: string;
@@ -50,9 +49,13 @@ interface DeliveryLine {
   vat_rate?: number;
   vat_amount?: number;
   line_total_inc_vat?: number;
-  matched_status: 'auto_matched' | 'manual_matched' | 'unmatched' | 'new_item';
+  match_status: 'auto_matched' | 'manual_matched' | 'unmatched' | 'new_item';
   match_confidence?: number;
-  suggested_stock_item?: any;
+  suggested_stock_item?: {
+    ingredient_id?: string;
+    name?: string;
+  };
+  rejection_notes?: string;
   product_variant?: ProductVariant;
 }
 
@@ -95,6 +98,7 @@ export default function DeliveryReviewPage() {
   const [saving, setSaving] = useState(false);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+  const [matchingStockItems, setMatchingStockItems] = useState<StockItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [matchingLineId, setMatchingLineId] = useState<string | null>(null);
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
@@ -128,7 +132,7 @@ export default function DeliveryReviewPage() {
             product_variant:product_variants(
               id,
               supplier_code,
-              product_name,
+              supplier_description,
               stock_item:stock_items(id, name)
             )
           )
@@ -150,7 +154,7 @@ export default function DeliveryReviewPage() {
       deliveryData.lines?.forEach(line => {
         states[line.id] = {
           state: 'accept_all' as const,
-          received: line.quantity_received ?? line.quantity,
+          received: line.quantity_received ?? line.quantity_ordered,
           rejected: line.quantity_rejected ?? 0,
           rejection_reason: line.rejection_reason,
           rejection_notes: line.rejection_notes,
@@ -208,23 +212,56 @@ export default function DeliveryReviewPage() {
 
   async function fetchProductVariants(supplierId: string, search?: string) {
     try {
-      let query = supabase
-        .from('product_variants')
-        .select('id, supplier_code, product_name, stock_item_id, stock_item:stock_items(id, name)')
-        .eq('supplier_id', supplierId);
+      // First get the supplier name to search ingredients_library
+      const supplierName = delivery?.supplier?.name;
 
-      if (search) {
-        query = query.or(`product_name.ilike.%${search}%,supplier_code.ilike.%${search}%`);
+      if (!supplierName) {
+        setProductVariants([]);
+        setMatchingStockItems([]);
+        return;
       }
 
-      query = query.limit(20);
+      // Query ingredients_library where supplier matches (text field)
+      const { data: ingredients, error: ingredientsError } = await supabase
+        .from('ingredients_library')
+        .select('id, ingredient_name, supplier, unit, unit_cost, pack_cost, pack_size, sku')
+        .eq('company_id', companyId)
+        .eq('supplier', supplierName)
+        .order('ingredient_name');
 
-      const { data, error } = await query;
-      if (error) throw error;
-      setProductVariants((data || []) as ProductVariant[]);
+      if (ingredientsError) throw ingredientsError;
+
+      let filteredIngredients = ingredients || [];
+
+      // If search term provided, filter the list
+      if (search && search.trim()) {
+        const searchLower = search.toLowerCase();
+        filteredIngredients = filteredIngredients.filter((ing: any) => {
+          const searchText = [
+            ing.ingredient_name || '',
+            ing.sku || '',
+          ].join(' ').toLowerCase();
+          return searchText.includes(searchLower);
+        });
+      }
+
+      // Map to ProductVariant-like structure for compatibility with the UI
+      const mappedVariants = filteredIngredients.map((ing: any) => ({
+        id: ing.id,
+        stock_item_id: ing.id, // Use ingredient id as stock_item_id for now
+        supplier_code: ing.sku || null,
+        supplier_description: ing.ingredient_name,
+        stock_item: {
+          id: ing.id,
+          name: ing.ingredient_name,
+        },
+      }));
+
+      setProductVariants(mappedVariants as ProductVariant[]);
+      setMatchingStockItems([]);
     } catch (error: any) {
-      console.error('Error fetching product variants:', error);
-      toast.error('Failed to load product variants');
+      console.error('Error fetching products:', error);
+      toast.error('Failed to load products');
     }
   }
 
@@ -233,25 +270,94 @@ export default function DeliveryReviewPage() {
       const variant = productVariants.find((v) => v.id === variantId);
       if (!variant) return;
 
+      const ingredientName = variant.stock_item?.name || variant.supplier_description;
+
+      // Update the delivery line - just mark as matched
+      // Store the ingredient reference in rejection_notes as a workaround (no notes column exists)
       const { error } = await supabase
         .from('delivery_lines')
         .update({
-          product_variant_id: variantId,
-          stock_item_id: variant.stock_item_id,
-          matched_status: 'manual_matched',
+          match_status: 'manual_matched',
           match_confidence: 1.0,
+          rejection_notes: `Matched to: ${ingredientName} (ingredient_id: ${variant.id})`,
         })
         .eq('id', lineId);
 
       if (error) throw error;
 
-      toast.success('Line item matched successfully');
+      toast.success(`Matched to: ${ingredientName}`);
       setMatchingLineId(null);
       setSelectedVariantId('');
+      setSearchTerm('');
+      setMatchingStockItems([]);
       await fetchDelivery();
     } catch (error: any) {
       console.error('Error matching line:', error);
       toast.error('Failed to match line item');
+    }
+  }
+
+  // Match line to an existing stock item by creating a new product variant
+  async function matchLineToStockItem(lineId: string, stockItemId: string, line: DeliveryLine) {
+    try {
+      setSaving(true);
+
+      // Get default UOM
+      const { data: uoms } = await supabase
+        .from('uom')
+        .select('id')
+        .or('abbreviation.eq.each,abbreviation.eq.EA,abbreviation.eq.unit')
+        .limit(1);
+
+      const defaultUomId = uoms && uoms.length > 0
+        ? uoms[0].id
+        : (await supabase.from('uom').select('id').limit(1).single()).data?.id;
+
+      if (!defaultUomId) {
+        throw new Error('No UOM found. Please configure units of measure first.');
+      }
+
+      // Create product variant linking the stock item to this supplier
+      const { data: variant, error: variantError } = await supabase
+        .from('product_variants')
+        .insert({
+          stock_item_id: stockItemId,
+          supplier_id: delivery!.supplier_id,
+          supplier_code: line.supplier_code || null,
+          supplier_description: line.description,
+          pack_size: 1,
+          pack_unit_id: defaultUomId,
+          conversion_factor: 1,
+          is_approved: true,
+        })
+        .select()
+        .single();
+
+      if (variantError) throw variantError;
+
+      // Update delivery line
+      const { error: lineError } = await supabase
+        .from('delivery_lines')
+        .update({
+          product_variant_id: variant.id,
+          stock_item_id: stockItemId,
+          match_status: 'manual_matched',
+          match_confidence: 1.0,
+        })
+        .eq('id', lineId);
+
+      if (lineError) throw lineError;
+
+      toast.success('Line matched to stock item');
+      setMatchingLineId(null);
+      setSearchTerm('');
+      setMatchingStockItems([]);
+      await fetchDelivery();
+    } catch (error: any) {
+      console.error('Error matching to stock item:', error);
+      toast.error(error.message || 'Failed to match line item');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -308,8 +414,8 @@ export default function DeliveryReviewPage() {
           stock_item_id: stockItem.id,
           supplier_id: delivery!.supplier_id,
           supplier_code: line.supplier_code || null,
-          product_name: line.description,
-          pack_size: line.quantity,
+          supplier_description: line.description,
+          pack_size: line.quantity_ordered,
           pack_unit_id: defaultUomId,
           conversion_factor: 1, // 1:1 for now, can be updated later
           is_approved: true,
@@ -428,8 +534,9 @@ export default function DeliveryReviewPage() {
     if (!delivery) return;
 
     // Check if all lines are matched
+    // Note: Items are considered matched if matched_status is 'manual_matched' or 'auto_matched'
     const unmatchedLines = delivery.lines?.filter(
-      (l) => !l.product_variant_id || l.matched_status === 'unmatched'
+      (l) => !l.match_status || l.match_status === 'unmatched'
     );
 
     if (unmatchedLines && unmatchedLines.length > 0) {
@@ -443,13 +550,13 @@ export default function DeliveryReviewPage() {
       // Update delivery lines with received/rejected quantities
       for (const line of delivery.lines || []) {
         const state = lineAcceptanceStates[line.id];
-        const received = state?.received ?? line.quantity;
+        const received = state?.received ?? line.quantity_ordered;
         const rejected = state?.rejected ?? 0;
 
         await supabase
           .from('delivery_lines')
           .update({
-            quantity_ordered: line.quantity,
+            quantity_ordered: line.quantity_ordered,
             quantity_received: received,
             quantity_rejected: rejected,
             rejection_reason: state?.rejection_reason || null,
@@ -506,22 +613,37 @@ export default function DeliveryReviewPage() {
     }
   }
 
-  function getMatchStatusIcon(status: string) {
-    switch (status) {
+  function getMatchStatusIcon(status: string | null | undefined) {
+    // Treat null/undefined as 'unmatched'
+    const effectiveStatus = status || 'unmatched';
+
+    const tooltips: Record<string, string> = {
+      auto_matched: 'Automatically matched to existing product',
+      manual_matched: 'Manually matched by user',
+      new_item: 'New stock item created from this line',
+      unmatched: 'Not matched - needs attention',
+    };
+
+    const tooltip = tooltips[effectiveStatus] || 'Unknown status';
+
+    switch (effectiveStatus) {
       case 'auto_matched':
-        return <CheckCircle2 className="text-green-400" size={20} />;
+        return <CheckCircle2 className="text-green-400" size={20} title={tooltip} />;
       case 'manual_matched':
-        return <CheckCircle2 className="text-blue-400" size={20} />;
+        return <CheckCircle2 className="text-blue-400" size={20} title={tooltip} />;
       case 'new_item':
-        return <Plus className="text-purple-400" size={20} />;
+        return <Plus className="text-purple-400" size={20} title={tooltip} />;
       case 'unmatched':
-        return <XCircle className="text-red-400" size={20} />;
+        return <XCircle className="text-red-400" size={20} title={tooltip} />;
       default:
-        return <AlertCircle className="text-amber-400" size={20} />;
+        return <AlertCircle className="text-amber-400" size={20} title={tooltip} />;
     }
   }
 
-  function getMatchStatusBadge(status: string) {
+  function getMatchStatusBadge(status: string | null | undefined) {
+    // Treat null/undefined as 'unmatched'
+    const effectiveStatus = status || 'unmatched';
+
     const styles = {
       auto_matched: 'bg-green-500/20 text-green-400 border-green-500/30',
       manual_matched: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
@@ -539,10 +661,10 @@ export default function DeliveryReviewPage() {
     return (
       <span
         className={`px-2 py-1 rounded text-xs font-medium border ${
-          styles[status as keyof typeof styles] || styles.unmatched
+          styles[effectiveStatus as keyof typeof styles] || styles.unmatched
         }`}
       >
-        {labels[status as keyof typeof labels] || status}
+        {labels[effectiveStatus as keyof typeof labels] || effectiveStatus}
       </span>
     );
   }
@@ -584,8 +706,17 @@ export default function DeliveryReviewPage() {
     );
   }
 
-  const unmatchedLines = delivery.lines?.filter((l) => l.matched_status === 'unmatched') || [];
+  const unmatchedLines = delivery.lines?.filter((l) => !l.match_status || l.match_status === 'unmatched') || [];
   const canConfirm = unmatchedLines.length === 0 && delivery.status !== 'confirmed';
+
+  // Calculate total value of rejected items
+  const rejectedTotal = delivery.lines?.reduce((sum, line) => {
+    const state = lineAcceptanceStates[line.id];
+    const rejectedQty = state?.rejected || 0;
+    const lineTotal = rejectedQty * line.unit_price;
+    const vatAmount = lineTotal * (line.vat_rate || 0) / 100;
+    return sum + lineTotal + vatAmount;
+  }, 0) || 0;
 
   return (
     <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
@@ -726,18 +857,18 @@ export default function DeliveryReviewPage() {
                 {delivery.lines?.map((line) => {
                   const acceptanceState = lineAcceptanceStates[line.id] || {
                     state: 'accept_all' as const,
-                    received: line.quantity,
+                    received: line.quantity_ordered,
                     rejected: 0,
                   };
                   const isPartial = acceptanceState.state === 'partial';
                   
                   return (
-                    <>
-                      <tr key={line.id} className="hover:bg-white/[0.05] transition-colors">
+                    <React.Fragment key={line.id}>
+                      <tr className="hover:bg-white/[0.05] transition-colors">
                         <td className="px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            {getMatchStatusIcon(line.matched_status)}
-                            {getMatchStatusBadge(line.matched_status)}
+                            {getMatchStatusIcon(line.match_status)}
+                            {getMatchStatusBadge(line.match_status)}
                           </div>
                         </td>
                         <td className="px-4 py-4 text-sm text-white">{line.description}</td>
@@ -745,7 +876,7 @@ export default function DeliveryReviewPage() {
                           {line.supplier_code || '—'}
                         </td>
                         <td className="px-4 py-4 text-sm text-white text-right">
-                          Invoiced: {line.quantity}
+                          {line.quantity_ordered}
                         </td>
                         <td className="px-4 py-4 text-sm text-white text-right">
                           {formatCurrency(line.unit_price)}
@@ -764,14 +895,19 @@ export default function DeliveryReviewPage() {
                           </div>
                         </td>
                         <td className="px-4 py-4 text-sm text-slate-300">
-                          {line.product_variant?.stock_item?.name || '—'}
+                          {line.product_variant?.stock_item?.name ||
+                           line.suggested_stock_item?.name ||
+                           (line.rejection_notes?.startsWith('Matched to:') ? line.rejection_notes.split('(')[0].replace('Matched to:', '').trim() : null) ||
+                           '—'}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-right">
-                          {line.matched_status === 'unmatched' && (
+                          {(!line.match_status || line.match_status === 'unmatched') && (
                             <div className="flex items-center justify-end gap-2">
                               <Button
                                 onClick={() => {
                                   setMatchingLineId(line.id);
+                                  setSearchTerm('');
+                                  // Show all products from this supplier
                                   fetchProductVariants(delivery.supplier_id);
                                 }}
                                 variant="outline"
@@ -794,7 +930,7 @@ export default function DeliveryReviewPage() {
                         </td>
                       </tr>
                       {/* Rejection UI Row */}
-                      {line.matched_status !== 'unmatched' && (
+                      {line.match_status && line.match_status !== 'unmatched' && (
                         <tr className="bg-white/[0.02]">
                           <td colSpan={9} className="px-4 py-4">
                             <div className="space-y-3">
@@ -811,14 +947,14 @@ export default function DeliveryReviewPage() {
                                         ...prev,
                                         [line.id]: {
                                           state: 'accept_all',
-                                          received: line.quantity,
+                                          received: line.quantity_ordered,
                                           rejected: 0,
                                         },
                                       }));
                                     }}
                                     className="text-[#EC4899]"
                                   />
-                                  <span className="text-sm text-white">Accept All ({line.quantity})</span>
+                                  <span className="text-sm text-white">Accept All ({line.quantity_ordered})</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                   <input
@@ -830,7 +966,7 @@ export default function DeliveryReviewPage() {
                                         ...prev,
                                         [line.id]: {
                                           state: 'partial',
-                                          received: Math.max(0, line.quantity - 1),
+                                          received: Math.max(0, line.quantity_ordered - 1),
                                           rejected: 1,
                                           rejection_reason: 'damaged',
                                         },
@@ -851,7 +987,7 @@ export default function DeliveryReviewPage() {
                                         [line.id]: {
                                           state: 'reject_all',
                                           received: 0,
-                                          rejected: line.quantity,
+                                          rejected: line.quantity_ordered,
                                           rejection_reason: 'damaged',
                                         },
                                       }));
@@ -873,18 +1009,18 @@ export default function DeliveryReviewPage() {
                                       value={acceptanceState.received}
                                       onChange={(e) => {
                                         const received = parseFloat(e.target.value) || 0;
-                                        const rejected = line.quantity - received;
+                                        const rejected = line.quantity_ordered - received;
                                         setLineAcceptanceStates(prev => ({
                                           ...prev,
                                           [line.id]: {
                                             ...prev[line.id],
-                                            received: Math.max(0, Math.min(line.quantity, received)),
-                                            rejected: Math.max(0, Math.min(line.quantity, rejected)),
+                                            received: Math.max(0, Math.min(line.quantity_ordered, received)),
+                                            rejected: Math.max(0, Math.min(line.quantity_ordered, rejected)),
                                           },
                                         }));
                                       }}
                                       min="0"
-                                      max={line.quantity}
+                                      max={line.quantity_ordered}
                                     />
                                   </div>
                                   <div>
@@ -895,18 +1031,18 @@ export default function DeliveryReviewPage() {
                                       value={acceptanceState.rejected}
                                       onChange={(e) => {
                                         const rejected = parseFloat(e.target.value) || 0;
-                                        const received = line.quantity - rejected;
+                                        const received = line.quantity_ordered - rejected;
                                         setLineAcceptanceStates(prev => ({
                                           ...prev,
                                           [line.id]: {
                                             ...prev[line.id],
-                                            received: Math.max(0, Math.min(line.quantity, received)),
-                                            rejected: Math.max(0, Math.min(line.quantity, rejected)),
+                                            received: Math.max(0, Math.min(line.quantity_ordered, received)),
+                                            rejected: Math.max(0, Math.min(line.quantity_ordered, rejected)),
                                           },
                                         }));
                                       }}
                                       min="0"
-                                      max={line.quantity}
+                                      max={line.quantity_ordered}
                                     />
                                   </div>
                                   <div>
@@ -1001,7 +1137,7 @@ export default function DeliveryReviewPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -1011,7 +1147,12 @@ export default function DeliveryReviewPage() {
 
         {/* Match Modal */}
         {matchingLineId && (
-          <Dialog open={!!matchingLineId} onOpenChange={() => setMatchingLineId(null)}>
+          <Dialog open={!!matchingLineId} onOpenChange={() => {
+            setMatchingLineId(null);
+            setSearchTerm('');
+            setSelectedVariantId('');
+            setMatchingStockItems([]);
+          }}>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold text-white">
@@ -1020,12 +1161,28 @@ export default function DeliveryReviewPage() {
               </DialogHeader>
 
               <div className="space-y-4 mt-4">
+                {/* Show which line we're matching */}
+                {(() => {
+                  const matchingLine = delivery.lines?.find(l => l.id === matchingLineId);
+                  return matchingLine ? (
+                    <div className="bg-white/[0.05] border border-neutral-700 rounded-lg p-3">
+                      <div className="text-xs text-slate-400 mb-1">Matching invoice line:</div>
+                      <div className="text-sm text-white font-medium">{matchingLine.description}</div>
+                      {matchingLine.supplier_code && (
+                        <div className="text-xs text-slate-400 mt-1">Code: {matchingLine.supplier_code}</div>
+                      )}
+                    </div>
+                  ) : null;
+                })()}
+
                 <div>
-                  <label className="block text-sm text-slate-300 mb-2">Search Products</label>
+                  <label className="block text-sm text-slate-300 mb-2">
+                    Products from {delivery.supplier?.name || 'this supplier'} ({productVariants.length})
+                  </label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <Input
-                      placeholder="Search by name or supplier code..."
+                      placeholder="Filter products..."
                       value={searchTerm}
                       onChange={(e) => {
                         setSearchTerm(e.target.value);
@@ -1037,27 +1194,46 @@ export default function DeliveryReviewPage() {
                 </div>
 
                 <div className="max-h-96 overflow-y-auto space-y-2">
-                  {productVariants.map((variant) => (
-                    <button
-                      key={variant.id}
-                      onClick={() => {
-                        matchLineToVariant(matchingLineId, variant.id);
-                      }}
-                      className="w-full text-left p-3 rounded-lg border border-neutral-700 hover:border-[#EC4899] transition-colors bg-white/[0.03]"
-                    >
-                      <div className="font-medium text-white">{variant.product_name}</div>
-                      {variant.supplier_code && (
+                  {productVariants.length > 0 ? (
+                    productVariants.map((variant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => {
+                          matchLineToVariant(matchingLineId, variant.id);
+                        }}
+                        className="w-full text-left p-3 rounded-lg border border-neutral-700 hover:border-[#EC4899] transition-colors bg-white/[0.03]"
+                      >
+                        <div className="font-medium text-white">{variant.stock_item?.name || variant.supplier_description}</div>
                         <div className="text-xs text-slate-400 mt-1">
-                          Code: {variant.supplier_code}
+                          {variant.supplier_description}
+                          {variant.supplier_code && ` • Code: ${variant.supplier_code}`}
                         </div>
-                      )}
-                      {variant.stock_item && (
-                        <div className="text-xs text-slate-300 mt-1">
-                          Stock Item: {variant.stock_item.name}
-                        </div>
-                      )}
-                    </button>
-                  ))}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-slate-400 text-sm">
+                      {searchTerm
+                        ? 'No products match your search. Try a different term or create a new item.'
+                        : `No products found from ${delivery.supplier?.name || 'this supplier'}. Use "Create New" to add one.`
+                      }
+                    </div>
+                  )}
+                </div>
+
+                {/* Cancel button */}
+                <div className="pt-4 border-t border-neutral-800">
+                  <Button
+                    onClick={() => {
+                      setMatchingLineId(null);
+                      setSearchTerm('');
+                      setSelectedVariantId('');
+                      setMatchingStockItems([]);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
             </DialogContent>

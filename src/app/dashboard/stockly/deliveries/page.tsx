@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Calendar, Filter, Eye, Edit2, FileText, ArrowLeft } from 'lucide-react';
+import { Plus, Search, Calendar, Filter, Eye, Edit2, FileText, ArrowLeft, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -209,6 +209,28 @@ export default function DeliveriesPage() {
     ];
   }, [suppliers]);
 
+  async function handleDelete(deliveryId: string) {
+    if (!confirm('Are you sure you want to delete this delivery? This will also delete all line items.')) {
+      return;
+    }
+
+    try {
+      // Delete delivery lines first (cascade should handle this, but being explicit)
+      await supabase.from('delivery_lines').delete().eq('delivery_id', deliveryId);
+
+      // Delete the delivery
+      const { error } = await supabase.from('deliveries').delete().eq('id', deliveryId);
+
+      if (error) throw error;
+
+      toast.success('Delivery deleted');
+      fetchDeliveries();
+    } catch (error: any) {
+      console.error('Error deleting delivery:', error);
+      toast.error('Failed to delete delivery');
+    }
+  }
+
   if (loading && deliveries.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -380,15 +402,26 @@ export default function DeliveriesPage() {
                         {getStatusBadge(delivery.status)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/dashboard/stockly/deliveries/${delivery.id}`);
-                          }}
-                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
-                        >
-                          <Eye size={18} />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/dashboard/stockly/deliveries/${delivery.id}`);
+                            }}
+                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                          >
+                            <Eye size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(delivery.id);
+                            }}
+                            className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
