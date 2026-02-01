@@ -1,0 +1,41 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradPink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff3b8d"/>
+      <stop offset="100%" stop-color="#c2186a"/>
+    </linearGradient>
+    <linearGradient id="gradGreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9be23a"/>
+      <stop offset="100%" stop-color="#25b7a2"/>
+    </linearGradient>
+    <linearGradient id="gradBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4fd3ff"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="gradOrange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd23a"/>
+      <stop offset="100%" stop-color="#ff7a00"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M80 40 H1120 A40 40 0 0 1 1160 80 V240 A40 40 0 0 1 1120 280 H120 A40 40 0 0 1 80 240 Z"
+        fill="none" stroke="#d1d5db" stroke-width="6"/>
+
+  <g transform="translate(120,80)">
+    <rect x="0" y="0" rx="18" ry="18" width="130" height="160" fill="url(#gradPink)" transform="skewX(-10)"/>
+    <rect x="150" y="0" rx="18" ry="18" width="130" height="160" fill="url(#gradGreen)" transform="skewX(-10)"/>
+    <rect x="300" y="0" rx="18" ry="18" width="130" height="160" fill="url(#gradBlue)" transform="skewX(-10)"/>
+    <rect x="450" y="0" rx="18" ry="18" width="130" height="160" fill="url(#gradOrange)" transform="skewX(-10)"/>
+  </g>
+
+  <path d="M760 200c0-55 40-95 95-95s95 40 95 95-40 95-95 95-95-40-95-95z" fill="#4b5563"/>
+
+  <path d="M900 105h40v160h-40zM940 145c40 0 70 25 70 55s-30 55-70 55h-20v-110z" fill="#4b5563"/>
+
+  <path d="M1050 150c-30-20-80-15-80 20c0 55 120 20 120 90c0 55-55 75-110 55"
+        fill="none" stroke="#4b5563" stroke-width="28" stroke-linecap="round"/>
+
+  <rect x="1090" y="105" width="38" height="160" fill="#4b5563"/>
+
+  <path d="M1150 105h40l-55 115v45h-38v-45l-55-115h40l34 75z" fill="#4b5563"/>
+</svg>

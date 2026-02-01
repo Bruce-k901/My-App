@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(exportData, {
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename="checkly-export-${companyId}-${new Date().toISOString().split("T")[0]}.json"`,
+        "Content-Disposition": `attachment; filename="opsly-export-${companyId}-${new Date().toISOString().split("T")[0]}.json"`,
       },
     });
   } catch (error: any) {

@@ -4,14 +4,13 @@ import { useAppContext } from "@/context/AppContext";
 import BusinessDetailsTab from "@/components/organisation/BusinessDetailsTab";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function OrganizationBusinessPage() {
-  // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
+  const { user } = useAppContext();
+  const router = useRouter();
   
-  // 1. Context hooks
-  const { loading: authLoading, user } = useAppContext();
-
   // One-time sync: if user has a profile company_id but no metadata.company_id, sync it
   useEffect(() => {
     async function syncCompanyToMetadata() {
@@ -27,22 +26,26 @@ export default function OrganizationBusinessPage() {
           .single();
 
         if (profile?.company_id) {
-          const { data: company } = await supabase
-            .from("companies")
-            .select("name")
-            .eq("id", profile.company_id)
-            .single();
+          // Use API route to bypass RLS
+          try {
+            const response = await fetch(`/api/company/get?id=${profile.company_id}`);
+            if (response.ok) {
+              const company = await response.json();
+              await supabase.auth.updateUser({
+                data: {
+                  company_id: profile.company_id,
+                  company_name: company?.name || "",
+                },
+              });
 
-          await supabase.auth.updateUser({
-            data: {
-              company_id: profile.company_id,
-              company_name: company?.name || "",
-            },
-          });
-
-          console.log("✅ Synced existing company to metadata");
-          // Refresh to reload context
-          window.location.reload();
+              console.log("✅ Synced existing company to metadata");
+              // Use router.refresh() instead of window.location.reload() to prevent hydration issues
+              router.refresh();
+            }
+          } catch (e) {
+            console.error("Error syncing company to metadata:", e);
+            // non-fatal, continue
+          }
         }
       } catch (e) {
         // non-fatal
@@ -50,14 +53,14 @@ export default function OrganizationBusinessPage() {
     }
 
     syncCompanyToMetadata();
-  }, [user]);
+  }, [user, router]);
 
-  // 2. Early returns ONLY AFTER all hooks
-  if (authLoading) return null;
-
+  // Layout already handles hydration - just render content
   return (
-    <OrgContentWrapper title="">
-      <BusinessDetailsTab />
-    </OrgContentWrapper>
+    <div className="w-full">
+      <OrgContentWrapper title="" suppressHydrationWarning>
+        <BusinessDetailsTab />
+      </OrgContentWrapper>
+    </div>
   );
 }

@@ -88,7 +88,7 @@ Deno.serve(async () => {
     if (s.include_incidents) lines.push(`• Open Incidents: ${openIncidents}`);
     if (s.include_tasks) lines.push(`• Incomplete Tasks: ${incomplete}`);
     if (s.notify_temperature_warnings) lines.push(`• Temperature Warnings (24h): ${tempWarnings}`);
-    lines.push("\nLogin to Checkly for full details.");
+    lines.push("\nLogin to Opsly for full details.");
     const msg = lines.join("\n");
 
     // Insert in-app notification
@@ -119,12 +119,12 @@ Deno.serve(async () => {
                 ${s.include_tasks ? `<li>Incomplete Tasks: <strong>${incomplete}</strong></li>` : ""}
                 ${s.notify_temperature_warnings ? `<li>Temperature Warnings (24h): <strong>${tempWarnings}</strong></li>` : ""}
               </ul>
-              <p style="margin-top:12px; color:#9ca3af">Login to Checkly for full details.</p>
+              <p style="margin-top:12px; color:#9ca3af">Login to Opsly for full details.</p>
             </div>
           </div>`;
         await sendgrid.send({
           to: email,
-          from: "no-reply@checkly.app",
+          from: "no-reply@opsly.app",
           subject: "Daily Compliance Digest",
           text: msg,
           html,

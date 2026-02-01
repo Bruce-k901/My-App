@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const { data: activeShift, error: shiftError } = await supabase
       .from('staff_attendance')
       .select('id, clock_in_time')
-      .eq('user_id', profile.id)
+      .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .order('clock_in_time', { ascending: false })

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
@@ -28,6 +28,15 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Track component mount status
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Note: We redirect only after an explicit successful sign-in to avoid loops
 
@@ -36,6 +45,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isMountedRef.current) return;
+    
     setError("");
     setLoading(true);
 
@@ -50,7 +61,10 @@ export default function LoginPage() {
       console.log("✅ Sign in successful, waiting for session cookie...");
 
       // Wait for session cookie to be readable before navigating to avoid ping-pong
+      // Main login page always goes to main dashboard (/dashboard)
+      // Customer login is separate at /customer/login
       for (let i = 0; i < 10; i++) {
+        if (!isMountedRef.current) return; // Component unmounted, stop processing
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           window.location.href = "/dashboard";
@@ -59,11 +73,16 @@ export default function LoginPage() {
         await new Promise((r) => setTimeout(r, 200));
       }
       // Fallback navigate anyway
-      window.location.href = "/dashboard";
+      if (isMountedRef.current) {
+        window.location.href = "/dashboard";
+      }
     } catch (err: any) {
-      console.error("Login error:", err);
-      setError(err.message || "Failed to sign in");
-      setLoading(false);
+      // Only update state if component is still mounted
+      if (isMountedRef.current) {
+        console.error("Login error:", err);
+        setError(err.message || "Failed to sign in");
+        setLoading(false);
+      }
     }
   };
 
@@ -71,7 +90,7 @@ export default function LoginPage() {
     <AuthLayout>
       <GlassCard className="mx-4 sm:mx-6 md:mx-auto">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-white">
-          Log in to Checkly
+          Log in to Opsly
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">

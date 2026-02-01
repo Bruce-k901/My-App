@@ -206,7 +206,7 @@ export default function StaffSicknessPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/60">Loading staff sickness records...</div>
+        <div className="text-gray-600 dark:text-white/60">Loading staff sickness records...</div>
       </div>
     );
   }
@@ -216,8 +216,8 @@ export default function StaffSicknessPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Staff Sickness & Exclusion Log</h1>
-          <p className="text-white/60 mt-1 text-sm sm:text-base">Record and track staff illness, exclusions, and return-to-work clearance</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Staff Sickness & Exclusion Log</h1>
+          <p className="text-gray-600 dark:text-white/60 mt-1 text-sm sm:text-base">Record and track staff illness, exclusions, and return-to-work clearance</p>
         </div>
         <Button onClick={handleNew} className="flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4 py-2 whitespace-nowrap w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
@@ -228,19 +228,19 @@ export default function StaffSicknessPage() {
       {/* Filters */}
       <div className="flex gap-4 items-center">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
           <input
             type="text"
             placeholder="Search by staff name or symptoms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-pink-500/50"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+          className="px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-pink-500/50"
         >
           <option value="all">All Status</option>
           <option value="active">Active Exclusions</option>
@@ -252,7 +252,7 @@ export default function StaffSicknessPage() {
       {/* Records List */}
       <div className="space-y-4">
         {filteredRecords.length === 0 ? (
-          <div className="text-center py-12 text-white/60">
+          <div className="text-center py-12 text-gray-600 dark:text-white/60">
             {searchTerm || statusFilter !== 'all' 
               ? 'No records match your search' 
               : 'No staff sickness records yet. Click "Log Sickness" to get started.'}
@@ -261,27 +261,27 @@ export default function StaffSicknessPage() {
           filteredRecords.map((record) => (
             <div
               key={record.id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:bg-white/[0.05] transition-colors"
+              className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-red-500/10 rounded-lg">
-                      <UserX className="w-5 h-5 text-red-400" />
+                    <div className="p-2 bg-red-50 dark:bg-red-500/10 rounded-lg">
+                      <UserX className="w-5 h-5 text-red-600 dark:text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-white font-semibold">{record.staff_member_name}</h3>
+                      <h3 className="text-gray-900 dark:text-white font-semibold">{record.staff_member_name}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-xs px-2 py-0.5 rounded ${
-                          record.status === 'active' ? 'bg-red-500/20 text-red-400' :
-                          record.status === 'cleared' ? 'bg-green-500/20 text-green-400' :
-                          'bg-gray-500/20 text-gray-400'
+                          record.status === 'active' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                          record.status === 'cleared' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400' :
+                          'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400'
                         }`}>
                           {record.status === 'active' ? 'Active Exclusion' : 
                            record.status === 'cleared' ? 'Cleared' : 'Closed'}
                         </span>
                         {record.medical_clearance_required && (
-                          <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded">
+                          <span className="text-xs px-2 py-0.5 bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded">
                             Medical Clearance Required
                           </span>
                         )}
@@ -291,34 +291,34 @@ export default function StaffSicknessPage() {
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
                     <div>
-                      <span className="text-white/60">Illness Onset:</span>
-                      <p className="text-white">{new Date(record.illness_onset_date).toLocaleDateString()}</p>
+                      <span className="text-gray-600 dark:text-white/60">Illness Onset:</span>
+                      <p className="text-gray-900 dark:text-white">{new Date(record.illness_onset_date).toLocaleDateString()}</p>
                     </div>
                     <div>
-                      <span className="text-white/60">Exclusion Start:</span>
-                      <p className="text-white">{new Date(record.exclusion_period_start).toLocaleDateString()}</p>
+                      <span className="text-gray-600 dark:text-white/60">Exclusion Start:</span>
+                      <p className="text-gray-900 dark:text-white">{new Date(record.exclusion_period_start).toLocaleDateString()}</p>
                     </div>
                     {record.exclusion_period_end && (
                       <div>
-                        <span className="text-white/60">Exclusion End:</span>
-                        <p className="text-white">{new Date(record.exclusion_period_end).toLocaleDateString()}</p>
+                        <span className="text-gray-600 dark:text-white/60">Exclusion End:</span>
+                        <p className="text-gray-900 dark:text-white">{new Date(record.exclusion_period_end).toLocaleDateString()}</p>
                       </div>
                     )}
                     {record.return_to_work_date && (
                       <div>
-                        <span className="text-white/60">Return to Work:</span>
-                        <p className="text-green-400">{new Date(record.return_to_work_date).toLocaleDateString()}</p>
+                        <span className="text-gray-600 dark:text-white/60">Return to Work:</span>
+                        <p className="text-green-600 dark:text-green-400">{new Date(record.return_to_work_date).toLocaleDateString()}</p>
                       </div>
                     )}
                   </div>
 
                   <div className="mt-3">
-                    <span className="text-white/60 text-sm">Symptoms: </span>
-                    <span className="text-white text-sm">{record.symptoms}</span>
+                    <span className="text-gray-600 dark:text-white/60 text-sm">Symptoms: </span>
+                    <span className="text-gray-900 dark:text-white text-sm">{record.symptoms}</span>
                   </div>
 
                   {record.symptomatic_in_food_areas && (
-                    <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm">
+                    <div className="mt-2 p-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded text-red-700 dark:text-red-400 text-sm">
                       ⚠️ CRITICAL: Staff member was symptomatic in food areas
                     </div>
                   )}
@@ -326,10 +326,10 @@ export default function StaffSicknessPage() {
 
                 <button
                   onClick={() => handleEdit(record)}
-                  className="p-2 hover:bg-white/[0.1] rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.1] rounded-lg transition-colors"
                   title="Edit record"
                 >
-                  <Eye className="w-4 h-4 text-white/60" />
+                  <Eye className="w-4 h-4 text-gray-600 dark:text-white/60" />
                 </button>
               </div>
             </div>

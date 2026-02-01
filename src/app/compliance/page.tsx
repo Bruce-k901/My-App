@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/lib/useUser";
 import { supabase } from "@/lib/supabaseClient";
 import { Thermometer, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -518,11 +519,10 @@ export default function CompliancePage() {
                       <label className="block text-xs text-slate-400 mb-1 capitalize">
                         {dayPart}
                       </label>
-                      <input
-                        type="time"
+                      <TimePicker
                         value={times[index] || "09:00"}
-                        onChange={(e) => updateTime(index, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                        onChange={(value) => updateTime(index, value)}
+                        className="w-full"
                       />
                     </div>
                   ))}

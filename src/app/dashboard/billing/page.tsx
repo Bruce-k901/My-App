@@ -19,8 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import Link from "next/link";
-import PlanSelection from "@/components/billing/PlanSelection";
-import AddonsSelection from "@/components/billing/AddonsSelection";
+import UnifiedPlanSelection from "@/components/billing/UnifiedPlanSelection";
 
 interface Subscription {
   id: string;
@@ -64,7 +63,7 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'plans' | 'addons'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'plan-selection'>('overview');
   const [siteCount, setSiteCount] = useState(0);
   const [purchasedAddons, setPurchasedAddons] = useState<any[]>([]);
   const [totalAddonMonthlyCost, setTotalAddonMonthlyCost] = useState(0);
@@ -116,23 +115,30 @@ export default function BillingPage() {
       
       setSiteCount(finalSiteCount);
 
-      // Load subscription with plan details including pricing_model
+      // Load subscription separately to avoid 406 errors with nested selects
       const { data: subData, error: subError } = await supabase
         .from('company_subscriptions')
-        .select(`
-          *,
-          plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-        `)
+        .select('*')
         .eq('company_id', companyId)
-        .single();
+        .maybeSingle();
 
       if (subError && subError.code !== 'PGRST116') { // PGRST116 = no rows returned
         throw subError;
       }
 
       if (subData) {
-        const currentSubscription = subData as any;
-        setSubscription(currentSubscription);
+        // Load plan details separately
+        const { data: planData } = await supabase
+          .from('subscription_plans')
+          .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+          .eq('id', subData.plan_id)
+          .single();
+
+        const currentSubscription = {
+          ...subData,
+          plan: planData || null,
+        };
+        setSubscription(currentSubscription as any);
         
         // Update subscription site count and auto-assign plan if it changed
         if (currentSubscription.site_count !== finalSiteCount) {
@@ -142,14 +148,20 @@ export default function BillingPage() {
           // Reload subscription data after update to get fresh monthly_amount
           const { data: updatedSub } = await supabase
             .from('company_subscriptions')
-            .select(`
-              *,
-              plan:subscription_plans(id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price)
-            `)
+            .select('*')
             .eq('company_id', companyId)
-            .single();
+            .maybeSingle();
           if (updatedSub) {
-            setSubscription(updatedSub as any);
+            // Reload plan details
+            const { data: updatedPlanData } = await supabase
+              .from('subscription_plans')
+              .select('id, name, display_name, price_per_site_monthly, pricing_model, flat_rate_price')
+              .eq('id', updatedSub.plan_id)
+              .single();
+            setSubscription({
+              ...updatedSub,
+              plan: updatedPlanData || null,
+            } as any);
           }
         }
       }
@@ -258,11 +270,7 @@ export default function BillingPage() {
     }
   }
 
-  function handlePlanChanged() {
-    loadBillingData();
-  }
-
-  function handleAddonChanged() {
+  function handleChanged() {
     loadBillingData();
   }
 
@@ -385,11 +393,11 @@ export default function BillingPage() {
   const needsPlanSelection = !subscription || isTrialExpired || subscription.status === 'expired';
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Billing & Subscription</h1>
-        <p className="text-white/60">Manage your subscription, plans, add-ons, invoices, and data exports</p>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Billing & Subscription</h1>
+        <p className="text-white/60 text-sm sm:text-base">Manage your subscription, plans, add-ons, invoices, and data exports</p>
       </div>
 
       {error && (
@@ -409,12 +417,12 @@ export default function BillingPage() {
               </h3>
               <p className="text-white/80 mb-4">
                 {isTrialExpired
-                  ? 'Your 60-day free trial has ended. Please select a subscription plan to continue using Checkly. You can upgrade or modify your plan at any time.'
+                  ? 'Your 60-day free trial has ended. Please select a subscription plan to continue using Opsly. You can upgrade or modify your plan at any time.'
                   : 'Please select a subscription plan to continue. You can upgrade or modify your plan at any time.'}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => setActiveTab('plans')}
+                  onClick={() => setActiveTab('plan-selection')}
                   className="bg-[#EC4899] text-white hover:bg-[#EC4899]/90"
                 >
                   Choose Your Plan
@@ -445,48 +453,26 @@ export default function BillingPage() {
           Overview
         </button>
         <button
-          onClick={() => setActiveTab('plans')}
+          onClick={() => setActiveTab('plan-selection')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-            activeTab === 'plans'
+            activeTab === 'plan-selection'
               ? 'bg-[#EC4899] text-white'
               : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
           }`}
         >
           <Package className="w-4 h-4" />
-          Plans
-        </button>
-        <button
-          onClick={() => setActiveTab('addons')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-            activeTab === 'addons'
-              ? 'bg-[#EC4899] text-white'
-              : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
-          }`}
-        >
-          <Package className="w-4 h-4" />
-          Add-ons & Offers
+          Plan & Add-ons
         </button>
       </div>
 
-      {/* Plan Selection Tab */}
-      {activeTab === 'plans' && companyId && (
+      {/* Plan & Add-ons Selection Tab */}
+      {activeTab === 'plan-selection' && companyId && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <PlanSelection
+          <UnifiedPlanSelection
             companyId={companyId}
             currentPlanId={subscription?.plan_id || null}
             siteCount={siteCount}
-            onPlanChanged={handlePlanChanged}
-          />
-        </div>
-      )}
-
-      {/* Add-ons Selection Tab */}
-      {activeTab === 'addons' && companyId && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <AddonsSelection
-            companyId={companyId}
-            siteCount={siteCount}
-            onAddonChanged={handleAddonChanged}
+            onChanged={handleChanged}
           />
         </div>
       )}
@@ -495,8 +481,8 @@ export default function BillingPage() {
       {activeTab === 'overview' && (
         <>
           {/* Subscription Status Card */}
-          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-8 shadow-lg">
-        <div className="flex items-start justify-between mb-8">
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
           <div>
             <h2 className="text-3xl font-bold text-white mb-3">Current Subscription</h2>
             {subscription ? (
@@ -867,4 +853,7 @@ export default function BillingPage() {
     </div>
   );
 }
+
+
+
 

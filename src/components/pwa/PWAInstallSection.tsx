@@ -42,7 +42,7 @@ export function PWAInstallSection() {
           <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0" />
           <div className="flex-1">
             <p className="font-medium text-white">App Installed</p>
-            <p className="text-sm text-slate-400">Checkly is installed on your device.</p>
+            <p className="text-sm text-slate-400">Opsly is installed on your device.</p>
           </div>
         </div>
       </div>

@@ -122,13 +122,34 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   };
 
   const [formData, setFormData] = useState<FormData>(() => {
+    // Default values for all required fields to prevent uncontrolled input warnings
+    const defaults: Partial<FormData> = {
+      name: "",
+      address_line1: "",
+      postcode: "",
+      status: "active",
+      general_manager: "",
+      operating_schedule: defaultSchedule,
+      planned_closures: [],
+      gm_name: "",
+      gm_email: "",
+      gm_phone: "",
+      gm_user_id: "",
+    };
+
     // if editing a site with existing schedule
     if (initialData?.operating_schedule && Object.keys(initialData.operating_schedule).length > 0) {
       return {
+        ...defaults,
         ...initialData,
         operating_schedule: { ...defaultSchedule, ...initialData.operating_schedule },
         planned_closures: initialData?.planned_closures ?? [],
-        // Initialize GM fields to empty strings to prevent undefined issues
+        // Ensure all string fields have defaults to prevent undefined
+        name: initialData?.name || "",
+        address_line1: initialData?.address_line1 || "",
+        postcode: initialData?.postcode || "",
+        status: initialData?.status || "active",
+        general_manager: initialData?.general_manager || "",
         gm_name: initialData?.gm_name || "",
         gm_email: initialData?.gm_email || "",
         gm_phone: initialData?.gm_phone || "",
@@ -138,10 +159,16 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
     // if creating a new site
     return {
+      ...defaults,
       ...initialData,
       operating_schedule: defaultSchedule,
       planned_closures: initialData?.planned_closures ?? [],
-      // Initialize GM fields to empty strings to prevent undefined issues
+      // Ensure all string fields have defaults to prevent undefined
+      name: initialData?.name || "",
+      address_line1: initialData?.address_line1 || "",
+      postcode: initialData?.postcode || "",
+      status: initialData?.status || "active",
+      general_manager: initialData?.general_manager || "",
       gm_name: initialData?.gm_name || "",
       gm_email: initialData?.gm_email || "",
       gm_phone: initialData?.gm_phone || "",
@@ -430,47 +457,59 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Fixed handleScheduleChange function as specified in the brief
+  // Auto-populate schedule: Copy from Monday (or first active day) to all other active days
   const handleScheduleChange = (day: string, type: string, field: string, value: string) => {
     setFormData(prev => {
       const updated = structuredClone(prev.operating_schedule);
       (updated[day] as any)[type][field] = value;
 
-      const current = updated[day];
-      const isComplete =
-        current.open.hh &&
-        current.open.mm &&
-        current.close.hh &&
-        current.close.mm;
+      // Find the source day to copy from (Monday first, then first active day)
+      const findSourceDay = () => {
+        // Check Monday first if it's active and has complete times
+        if (updated.Monday?.active && 
+            updated.Monday.open.hh && updated.Monday.open.mm &&
+            updated.Monday.close.hh && updated.Monday.close.mm) {
+          return 'Monday';
+        }
+        
+        // If Monday not available, find the first active day with complete times
+        for (const weekday of WEEKDAYS) {
+          if (updated[weekday]?.active &&
+              updated[weekday].open.hh && updated[weekday].open.mm &&
+              updated[weekday].close.hh && updated[weekday].close.mm) {
+            return weekday;
+          }
+        }
+        
+        return null;
+      };
 
-      // track per-day completion to avoid early copy
-      const copiedDays = prev._copiedDays || {};
+      const sourceDay = findSourceDay();
 
-      if (isComplete && !copiedDays[day]) {
-        for (const key in updated) {
-          if (
-            key !== day &&
-            updated[key].active &&
-            !updated[key].open.hh &&
-            !updated[key].open.mm &&
-            !updated[key].close.hh &&
-            !updated[key].close.mm
-          ) {
-            updated[key].open = { ...current.open };
-            updated[key].close = { ...current.close };
+      // Auto-populate: Copy from source day to all other active days that are empty
+      if (sourceDay) {
+        const sourceTimes = updated[sourceDay];
+        let copiedCount = 0;
+
+        for (const weekday of WEEKDAYS) {
+          // Skip the source day itself
+          if (weekday === sourceDay) continue;
+          
+          // Only copy to active days that are empty
+          if (updated[weekday]?.active &&
+              !updated[weekday].open.hh && !updated[weekday].open.mm &&
+              !updated[weekday].close.hh && !updated[weekday].close.mm) {
+            updated[weekday].open = { ...sourceTimes.open };
+            updated[weekday].close = { ...sourceTimes.close };
+            copiedCount++;
           }
         }
 
-        // Log message outside of setState using setTimeout to avoid render-time state mutation
-        setTimeout(() => {
-          console.log("Copied hours to all active days");
-        }, 0);
-
-        return {
-          ...prev,
-          operating_schedule: updated,
-          _copiedDays: { ...copiedDays, [day]: true },
-        };
+        if (copiedCount > 0) {
+          setTimeout(() => {
+            console.log(`Copied ${sourceDay} times to ${copiedCount} other active day(s)`);
+          }, 0);
+        }
       }
 
       return { ...prev, operating_schedule: updated };
@@ -560,6 +599,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       const cleanedSchedule = normalizeScheduleKeys(formData.operating_schedule);
 
       // Prepare site data for upsert (without planned_closures)
+      // Convert empty strings to null for UUID fields to prevent PostgreSQL errors
+      const gmUserId = formData.gm_user_id?.trim();
       const siteData = {
         ...(formData.id && { id: formData.id }), // Include ID only if editing
         company_id: companyId,
@@ -570,13 +611,19 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         city: formData.city && typeof formData.city === 'string' ? formData.city.trim() : null,
         region: formData.region && typeof formData.region === 'string' ? formData.region.trim() : null,
         status: formData.status,
-        gm_user_id: formData.gm_user_id ? formData.gm_user_id.trim() : null,
+        gm_user_id: gmUserId && gmUserId.length > 0 ? gmUserId : null,
         operating_schedule: cleanedSchedule
       };
 
       console.log("Saving site data:", formData.city, formData.region);
 
       // Upsert site data
+      console.log("Attempting to save site with data:", {
+        company_id: siteData.company_id,
+        name: siteData.name,
+        has_id: !!siteData.id,
+      });
+
       const { data: siteResult, error: siteError } = await supabase
         .from("sites")
         .upsert(siteData, { onConflict: "id" })
@@ -584,7 +631,25 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         .single();
 
       if (siteError) {
-        console.error(`Save failed: ${siteError.message}`);
+        console.error(`Save failed: ${siteError.message}`, {
+          error_code: siteError.code,
+          error_details: siteError.details,
+          error_hint: siteError.hint,
+          siteData: siteData,
+        });
+        
+        // Try to get more info about the user's profile
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, company_id, app_role")
+          .eq("id", (await supabase.auth.getUser()).data.user?.id)
+          .single();
+        
+        console.error("User profile info:", {
+          profileData,
+          profileError,
+        });
+        
         return;
       }
 
@@ -602,8 +667,10 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
 
-      // 2️⃣ When editing, delete existing closures first to avoid duplicates
-      if (mode === "edit" && siteId) {
+      // 2️⃣ Handle closures: Delete existing and insert new ones
+      // Always delete existing closures for this site (both new and edit modes)
+      // This prevents duplicate key violations from the unique constraint
+      if (siteId) {
         const { error: deleteError } = await supabase
           .from("site_closures")
           .delete()
@@ -615,29 +682,41 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
 
-      // 3️⃣ Filter only active closures
+      // 3️⃣ Filter only active closures with valid dates
       const activeClosures = (formData.planned_closures || []).filter(c => c.start && c.end);
 
-      // 4️⃣ If any closures exist, insert them
-      if (activeClosures.length > 0) {
-        const closuresToInsert = activeClosures.map(c => ({
-          site_id: siteId,
-          closure_start: c.start,
-          closure_end: c.end,
-          notes: c.notes || "",
-          is_active: true,
-        }));
+      // 4️⃣ If any closures exist, insert them (after deletion to avoid duplicates)
+      if (activeClosures.length > 0 && siteId) {
+        // Remove duplicates based on start/end dates to prevent unique constraint violations
+        const uniqueClosures = activeClosures.reduce((acc: any[], c) => {
+          const exists = acc.some(existing => 
+            existing.closure_start === c.start && existing.closure_end === c.end
+          );
+          if (!exists) {
+            acc.push({
+              site_id: siteId,
+              closure_start: c.start,
+              closure_end: c.end,
+              notes: c.notes || "",
+              is_active: true,
+            });
+          }
+          return acc;
+        }, []);
 
-        const { error: closureError } = await supabase
-          .from("site_closures")
-          .insert(closuresToInsert);
+        if (uniqueClosures.length > 0) {
+          const { error: closureError } = await supabase
+            .from("site_closures")
+            .insert(uniqueClosures);
 
-        if (closureError) {
-          console.error("Error inserting planned closures:", closureError);
-          console.error("Error details:", JSON.stringify(closureError, null, 2));
-          console.error("Closures to insert:", closuresToInsert);
-        } else {
-          console.log(`Inserted ${closuresToInsert.length} closures for site ${siteId}`);
+          if (closureError) {
+            console.error("Error inserting planned closures:", closureError);
+            console.error("Error details:", JSON.stringify(closureError, null, 2));
+            console.error("Closures to insert:", uniqueClosures);
+            // Don't fail the entire save if closures fail - log and continue
+          } else {
+            console.log(`Inserted ${uniqueClosures.length} closures for site ${siteId}`);
+          }
         }
       } else if (mode === "edit" && siteId) {
         // If no closures in form, ensure all are deleted (already done above)
@@ -660,9 +739,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="relative z-[10000] bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative z-[10000] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-neutral-800">
+        <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
           <h2 className="text-2xl font-semibold text-white">
             {mode === "new" ? "Add New Site" : "Edit Site"}
           </h2>
@@ -683,7 +762,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 </label>
                 <input
                   type="text"
-                  value={formData.name}
+                  value={formData.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                   placeholder="Enter site name"
@@ -739,7 +818,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   type="text"
                   value={formData.city || ""}
                   readOnly
-                  className="bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
                   placeholder="Auto-filled from postcode"
                 />
               </div>
@@ -749,7 +828,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   type="text"
                   value={formData.region || ""}
                   readOnly
-                  className="bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
                   placeholder="Auto-filled from postcode"
                 />
               </div>
@@ -758,7 +837,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
                 <select
-                  value={formData.status}
+                  value={formData.status || "active"}
                   onChange={(e) => handleInputChange("status", e.target.value)}
                   className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
@@ -772,7 +851,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* Management Contact */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {/* Header with Update GM button on the left */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -837,11 +916,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* Operating Schedule */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {mode === "edit" ? (
               <div>
                 <h3 className="text-xl font-semibold mb-3 text-white">Operating Schedule</h3>
-                <div className="border border-neutral-800 rounded-xl p-4">
+                <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
                   <div className="space-y-2">
                     {WEEKDAYS.map((day, index) => {
                       const dayData = formData.operating_schedule[day];
@@ -866,7 +945,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                           <div className="flex items-center gap-2">
                             <span className="text-gray-400 text-sm">Open:</span>
                             <select
-                              value={dayData.open.hh}
+                              value={dayData.open?.hh || ""}
                               onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
                               disabled={!dayData.active}
                               className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -879,7 +958,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                               ))}
                             </select>
                             <select
-                              value={dayData.open.mm}
+                              value={dayData.open?.mm || ""}
                               onChange={(e) => handleScheduleChange(day, "open", "mm", e.target.value)}
                               disabled={!dayData.active}
                               className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -894,7 +973,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                             
                             <span className="text-gray-400 text-sm mx-2">Close:</span>
                             <select
-                              value={dayData.close.hh}
+                              value={dayData.close?.hh || ""}
                               onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
                               disabled={!dayData.active}
                               className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -907,7 +986,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                               ))}
                             </select>
                             <select
-                              value={dayData.close.mm}
+                              value={dayData.close?.mm || ""}
                               onChange={(e) => handleScheduleChange(day, "close", "mm", e.target.value)}
                               disabled={!dayData.active}
                               className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -940,7 +1019,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 </button>
                 
                 {operatingScheduleOpen && (
-                  <div className="border border-neutral-800 rounded-xl p-4">
+                  <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
                     <div className="space-y-2">
                       {WEEKDAYS.map((day, index) => {
                         const dayData = formData.operating_schedule[day];
@@ -965,7 +1044,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                             <div className="flex items-center gap-2">
                               <span className="text-gray-400 text-sm">Open:</span>
                               <select
-                                value={dayData.open.hh}
+                                value={dayData.open?.hh || ""}
                                 onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
                                 disabled={!dayData.active}
                                 className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -978,7 +1057,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                                 ))}
                               </select>
                               <select
-                                  value={dayData.open.mm}
+                                  value={dayData.open?.mm || ""}
                                   onChange={(e) => handleScheduleChange(day, "open", "mm", e.target.value)}
                                   disabled={!dayData.active}
                                   className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -993,7 +1072,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                               
                               <span className="text-gray-400 text-sm mx-2">Close:</span>
                               <select
-                                value={dayData.close.hh}
+                                value={dayData.close?.hh || ""}
                                 onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
                                 disabled={!dayData.active}
                                 className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1006,7 +1085,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                                 ))}
                               </select>
                               <select
-                                  value={dayData.close.mm}
+                                value={dayData.close?.mm || ""}
                                   onChange={(e) => handleScheduleChange(day, "close", "mm", e.target.value)}
                                   disabled={!dayData.active}
                                   className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1030,7 +1109,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           </section>
 
           {/* D. Planned Closures */}
-          <section className="mt-6 border-t border-neutral-800 pt-6">
+          <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             <h3 className="text-xl font-semibold text-white mb-4">Planned Closures</h3>
             
             <div className="flex gap-2 items-center mb-3">
@@ -1041,7 +1120,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   start: date?.toISOString().split("T")[0] || ""
                 }))}
                 placeholderText="Start date"
-                className="bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
                 popperClassName="z-50"
                 calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
               />
@@ -1055,7 +1134,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 minDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 openToDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 placeholderText="End date"
-                className="bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
                 popperClassName="z-50"
                 calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
               />
@@ -1088,13 +1167,13 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 ))}
               </div>
             ) : (
-              <p className="text-neutral-500 text-sm">No planned closures yet.</p>
+              <p className="text-gray-400 dark:text-neutral-500 text-sm">No planned closures yet.</p>
             )}
           </section>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-neutral-800 flex justify-between">
+        <div className="p-6 border-t border-gray-200 dark:border-neutral-800 flex justify-between">
           {/* Delete button - only show in edit mode */}
           {mode === "edit" && onDelete && (
             <button

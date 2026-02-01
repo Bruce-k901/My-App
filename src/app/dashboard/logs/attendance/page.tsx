@@ -54,8 +54,8 @@ export default function AttendanceLogsPage() {
   // Safety check - ensure we have required context (after hooks)
   if (!companyId) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] p-6 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="flex-1 flex items-center justify-center p-6 text-white h-full">
+        <div>Loading...</div>
       </div>
     );
   }
@@ -96,6 +96,16 @@ export default function AttendanceLogsPage() {
 
     try {
       setLoading(true);
+      console.log('🔍 Starting to load attendance...');
+
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current user:', user);
+      if (!user) {
+        console.error('❌ User not authenticated');
+        setLoading(false);
+        return;
+      }
 
       // Calculate date range based on filter
       const now = new Date();
@@ -152,22 +162,45 @@ export default function AttendanceLogsPage() {
 
       // Apply user filter (if manager/admin viewing)
       if (selectedUserId) {
-        query = query.eq('user_id', selectedUserId);
-      } else if (profile?.app_role === 'Staff') {
+        query = query.eq('profile_id', selectedUserId);
+      } else if (profile?.app_role?.toLowerCase() === 'staff') {
         // Staff can only see their own records
-        query = query.eq('user_id', profile.id);
+        query = query.eq('profile_id', profile.id);
       }
+
+      console.log('📊 Executing query with filters:', {
+        companyId,
+        selectedSiteId,
+        selectedUserId,
+        filter,
+        startDateFilter: startDateFilter.toISOString()
+      });
 
       const { data, error } = await query;
 
+      console.log('📊 Query result:', { data: data?.length || 0, error });
+
       if (error) {
-        console.error('Error loading attendance:', error);
+        console.error('❌ Supabase error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        console.error('💥 Full error object:', error);
+        console.error('Error type:', typeof error);
+        console.error('Error keys:', Object.keys(error || {}));
         return;
       }
 
+      console.log('✅ Successfully loaded attendance:', data?.length || 0, 'records');
       setAttendance(data || []);
-    } catch (error) {
-      console.error('Error loading attendance:', error);
+    } catch (error: any) {
+      console.error('💥 Full error object:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error keys:', Object.keys(error || {}));
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
     } finally {
       setLoading(false);
     }
@@ -189,22 +222,22 @@ export default function AttendanceLogsPage() {
     }
   }
 
-  const isManager = profile?.app_role && ['Manager', 'General Manager', 'Admin', 'Owner'].includes(profile.app_role);
+  const isManager = profile?.app_role && ['manager', 'general_manager', 'admin', 'owner'].includes(profile.app_role.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
             {/* <Clock className="w-8 h-8 text-pink-500" /> */}
-            <h1 className="text-3xl font-bold text-white">Attendance Register</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Attendance Register</h1>
           </div>
-          <p className="text-white/60">View clock-in and clock-out records</p>
+          <p className="text-white/60 text-sm sm:text-base">View clock-in and clock-out records</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6 space-y-4">
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 space-y-3 sm:space-y-4">
           <div className="flex flex-wrap gap-4">
             {/* Time Filter */}
             <div>

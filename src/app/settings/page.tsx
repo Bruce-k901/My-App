@@ -12,7 +12,7 @@ import { PWAInstallSection } from '@/components/pwa/PWAInstallSection';
 import Image from 'next/image';
 
 // Use static path instead of import to prevent Next.js preload warning
-const LOGO_FALLBACK_PATH = "/assets/checkly_logo_touching_blocks.svg";
+const LOGO_FALLBACK_PATH = "/favicon.svg";
 
 type ProfileSettings = {
   user_id: string;
@@ -59,7 +59,7 @@ function SettingsInner() {
         const { data } = await supabase
           .from("profile_settings")
           .select("*")
-          .eq("user_id", userId)
+          .eq("profile_id", userId)
           .limit(1);
         const row = data?.[0] as ProfileSettings | undefined;
         setSettings(row ?? defaults);

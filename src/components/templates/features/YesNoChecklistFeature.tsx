@@ -39,21 +39,21 @@ export function YesNoChecklistFeature({
   };
 
   return (
-    <div className="border-t border-white/10 pt-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Yes/No Checklist</h2>
-      <p className="text-sm text-white/60 mb-4">
+    <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Yes/No Checklist</h2>
+      <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
         Answer Yes or No for each item. Selecting "No" will trigger monitor/callout options.
       </p>
       
       <div className="space-y-3">
         {items.map((item, index) => (
-          <div key={index} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+          <div key={index} className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
             <input
               type="text"
               value={item.text}
               onChange={(e) => updateItem(index, e.target.value)}
               placeholder="Enter question/item"
-              className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 mb-3"
+              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 mb-3"
             />
             <div className="flex gap-3">
               <button
@@ -61,8 +61,8 @@ export function YesNoChecklistFeature({
                 onClick={() => updateAnswer(index, 'yes')}
                 className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
                   item.answer === 'yes'
-                    ? 'bg-green-500/20 border-green-500 text-green-400'
-                    : 'bg-[#0f1220] border-neutral-800 text-white hover:border-green-500/50'
+                    ? 'bg-green-50 dark:bg-green-500/20 border-green-500 text-green-600 dark:text-green-400'
+                    : 'bg-white dark:bg-[#0f1220] border-gray-300 dark:border-neutral-800 text-gray-700 dark:text-white hover:border-green-500/50'
                 }`}
               >
                 Yes
@@ -72,8 +72,8 @@ export function YesNoChecklistFeature({
                 onClick={() => updateAnswer(index, 'no')}
                 className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
                   item.answer === 'no'
-                    ? 'bg-red-500/20 border-red-500 text-red-400'
-                    : 'bg-[#0f1220] border-neutral-800 text-white hover:border-red-500/50'
+                    ? 'bg-red-50 dark:bg-red-500/20 border-red-500 text-red-600 dark:text-red-400'
+                    : 'bg-white dark:bg-[#0f1220] border-gray-300 dark:border-neutral-800 text-gray-700 dark:text-white hover:border-red-500/50'
                 }`}
               >
                 No
@@ -81,7 +81,7 @@ export function YesNoChecklistFeature({
               <button
                 type="button"
                 onClick={() => removeItem(index)}
-                className="px-3 py-2 text-red-400 hover:bg-red-500/10 rounded"
+                className="px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
               >
                 Remove
               </button>
@@ -92,7 +92,7 @@ export function YesNoChecklistFeature({
         <button
           type="button"
           onClick={addItem}
-          className="text-sm text-pink-400 hover:text-pink-300"
+          className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 transition-colors"
         >
           + Add Yes/No Question
         </button>

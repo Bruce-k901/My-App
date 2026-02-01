@@ -91,6 +91,23 @@ export default function FirstAidLibraryPage() {
         : parseInt(String(expiryPeriodRaw), 10);
       if (expiryPeriodVal !== null && Number.isNaN(expiryPeriodVal)) { console.error('Validation error: Expiry period must be a number'); return; }
 
+      const currentStockRaw = rowDraft.current_stock;
+      const currentStockVal = currentStockRaw === '' || currentStockRaw === null || currentStockRaw === undefined
+        ? 0
+        : parseFloat(String(currentStockRaw));
+      const parLevelRaw = rowDraft.par_level;
+      const parLevelVal = parLevelRaw === '' || parLevelRaw === null || parLevelRaw === undefined
+        ? null
+        : parseFloat(String(parLevelRaw));
+      const reorderPointRaw = rowDraft.reorder_point;
+      const reorderPointVal = reorderPointRaw === '' || reorderPointRaw === null || reorderPointRaw === undefined
+        ? null
+        : parseFloat(String(reorderPointRaw));
+      const reorderQtyRaw = rowDraft.reorder_qty;
+      const reorderQtyVal = reorderQtyRaw === '' || reorderQtyRaw === null || reorderQtyRaw === undefined
+        ? null
+        : parseFloat(String(reorderQtyRaw));
+
       const payload: any = {
         item_name: trimmedName,
         category: rowDraft.category ?? null,
@@ -103,6 +120,13 @@ export default function FirstAidLibraryPage() {
         storage_requirements: rowDraft.storage_requirements ?? null,
         typical_usage: rowDraft.typical_usage ?? null,
         notes: rowDraft.notes ?? null,
+        // Stockly fields
+        track_stock: rowDraft.track_stock ?? false,
+        current_stock: currentStockVal,
+        par_level: parLevelVal,
+        reorder_point: reorderPointVal,
+        reorder_qty: reorderQtyVal,
+        sku: rowDraft.sku?.trim() || null,
         company_id: companyId, // Always set company_id for new items
       };
 
@@ -196,7 +220,14 @@ export default function FirstAidLibraryPage() {
       pack_size: item.pack_size || '',
       storage_requirements: item.storage_requirements || '',
       typical_usage: item.typical_usage || '',
-      notes: item.notes || ''
+      notes: item.notes || '',
+      // Stockly fields
+      track_stock: item.track_stock ?? false,
+      current_stock: item.current_stock ?? '',
+      par_level: item.par_level ?? '',
+      reorder_point: item.reorder_point ?? '',
+      reorder_qty: item.reorder_qty ?? '',
+      sku: item.sku || ''
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
   };
@@ -223,6 +254,12 @@ export default function FirstAidLibraryPage() {
     'pack_size',
     'storage_requirements',
     'typical_usage',
+    'track_stock',
+    'current_stock',
+    'par_level',
+    'reorder_point',
+    'reorder_qty',
+    'sku',
     'notes'
   ];
 
@@ -246,6 +283,12 @@ export default function FirstAidLibraryPage() {
         pack_size: r.pack_size ?? '',
         storage_requirements: r.storage_requirements ?? '',
         typical_usage: r.typical_usage ?? '',
+        track_stock: r.track_stock ? 'true' : 'false',
+        current_stock: r.current_stock ?? 0,
+        par_level: r.par_level ?? '',
+        reorder_point: r.reorder_point ?? '',
+        reorder_qty: r.reorder_qty ?? '',
+        sku: r.sku ?? '',
         notes: r.notes ?? ''
       };
       return CSV_HEADERS.map(h => escapeCSV(obj[h])).join(',');
@@ -294,6 +337,17 @@ export default function FirstAidLibraryPage() {
       for (const row of rows) {
         const name = row[index['item_name']] ?? '';
         if (!name.trim()) continue;
+        const trackStockRaw = row[index['track_stock']];
+        const trackStockVal = trackStockRaw && (trackStockRaw.trim().toLowerCase() === 'true' || trackStockRaw.trim() === '1');
+        const currentStockRaw = row[index['current_stock']];
+        const currentStockVal = currentStockRaw && currentStockRaw.trim() !== '' ? Number(currentStockRaw) : 0;
+        const parLevelRaw = row[index['par_level']];
+        const parLevelVal = parLevelRaw && parLevelRaw.trim() !== '' ? Number(parLevelRaw) : null;
+        const reorderPointRaw = row[index['reorder_point']];
+        const reorderPointVal = reorderPointRaw && reorderPointRaw.trim() !== '' ? Number(reorderPointRaw) : null;
+        const reorderQtyRaw = row[index['reorder_qty']];
+        const reorderQtyVal = reorderQtyRaw && reorderQtyRaw.trim() !== '' ? Number(reorderQtyRaw) : null;
+        
         prepared.push({
           company_id: companyId,
           item_name: name.trim(),
@@ -306,6 +360,12 @@ export default function FirstAidLibraryPage() {
           pack_size: row[index['pack_size']] ?? null,
           storage_requirements: row[index['storage_requirements']] ?? null,
           typical_usage: row[index['typical_usage']] ?? null,
+          track_stock: trackStockVal,
+          current_stock: currentStockVal,
+          par_level: parLevelVal,
+          reorder_point: reorderPointVal,
+          reorder_qty: reorderQtyVal,
+          sku: row[index['sku']]?.trim() || null,
           notes: row[index['notes']] ?? null,
         });
       }
@@ -337,7 +397,7 @@ export default function FirstAidLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-red-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">First Aid Supplies Library</h1>
               <p className="text-sm text-neutral-400">Manage first aid supplies and equipment</p>
@@ -369,12 +429,18 @@ export default function FirstAidLibraryPage() {
                 pack_size: '',
                 storage_requirements: '',
                 typical_usage: '',
-                notes: ''
+                notes: '',
+                track_stock: false,
+                current_stock: 0,
+                par_level: null,
+                reorder_point: null,
+                reorder_qty: null,
+                sku: ''
               };
               setFirstAidItems(prev => [empty, ...prev]);
               setExpandedRows(prev => new Set(prev).add(tempId));
               setEditingRowId(tempId);
-              setRowDraft({ ...empty, unit_cost: '', expiry_period_months: '', id: undefined });
+              setRowDraft({ ...empty, unit_cost: '', expiry_period_months: '', current_stock: '', par_level: '', reorder_point: '', reorder_qty: '', id: undefined });
               setNewRowIds(prev => new Set(prev).add(tempId));
             }}
             aria-label="Add First Aid Supply"
@@ -444,7 +510,10 @@ export default function FirstAidLibraryPage() {
                           <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.item_name ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, item_name: e.target.value }))} />
                         ) : (
                           <div className="flex items-center gap-2">
-                            {item.item_name}
+                            <span>{item.item_name}</span>
+                            {item.supplier && (
+                              <span className="text-neutral-400 text-sm">• {item.supplier}</span>
+                            )}
                             {isGlobal && <span className="text-xs text-neutral-500 bg-neutral-700 px-2 py-0.5 rounded">Global</span>}
                           </div>
                         )}

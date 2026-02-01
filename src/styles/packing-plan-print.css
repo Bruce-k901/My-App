@@ -1,0 +1,116 @@
+/* Packing Plan Print Styles */
+@media print {
+  /* Hide non-essential elements */
+  nav,
+  header,
+  .no-print,
+  button,
+  [role="navigation"],
+  .sidebar,
+  .mobile-nav,
+  input[type="date"] {
+    display: none !important;
+  }
+
+  /* Reset background colors for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 10pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  /* Container adjustments */
+  .packing-plan-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Table styling for print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #333 !important;
+    padding: 4px 6px !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  /* Group headers */
+  tr.group-header td,
+  tbody tr:has(td[colspan]) td {
+    background: #e0e0e0 !important;
+    font-weight: bold !important;
+  }
+
+  /* Ensure table doesn't break across pages awkwardly */
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Print header visibility */
+  .print-header {
+    display: block !important;
+    margin-bottom: 10mm;
+  }
+
+  .print-header h1 {
+    font-size: 14pt;
+    margin: 0;
+    color: black !important;
+  }
+
+  .print-header .date {
+    font-size: 12pt;
+    color: #666;
+  }
+
+  /* Remove sticky positioning for print */
+  .sticky {
+    position: static !important;
+  }
+
+  /* Screen-only elements */
+  .screen-only {
+    display: none !important;
+  }
+
+  /* Print-only elements */
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Hide print-only elements on screen */
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
+/* Portrait option - add class to body when needed */
+@media print {
+  body.print-portrait {
+    @page {
+      size: A4 portrait;
+    }
+  }
+}

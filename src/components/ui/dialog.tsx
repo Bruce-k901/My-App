@@ -28,12 +28,16 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
     onOpenChange?.(false);
   }, [onOpenChange]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   return (
     <div
+      id="dialog-overlay"
       className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center"
       onMouseDown={handleBackdropClick}
+      style={{ zIndex: 9999 }}
     >
       {/* stopPropagation to prevent backdrop close when clicking inside content */}
       <div onMouseDown={(e) => e.stopPropagation()}>
@@ -44,7 +48,11 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 }
 
 export function DialogContent({ children, className = '', style }: DialogContentProps) {
-  const base = "bg-neutral-900 p-4 sm:p-6 rounded-lg border border-neutral-700 shadow-lg w-full max-w-md max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0";
+  // Only apply default max-w-md if className doesn't specify a max-width
+  // Check for any max-w class (including arbitrary values like max-w-[3600px])
+  const hasCustomMaxWidth = /max-w-/.test(className);
+  const base = `bg-white dark:bg-neutral-900 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-neutral-700 shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0`;
+  // Put className last so custom max-w classes can override base styles
   return (
     <div style={style} className={`${base} ${className}`}>
       {children}
@@ -57,5 +65,23 @@ export function DialogHeader({ children }: DialogHeaderProps) {
 }
 
 export function DialogTitle({ children, className = '' }: DialogTitleProps) {
-  return <h2 className={`text-lg font-semibold text-white ${className}`}>{children}</h2>;
+  return <h2 className={`text-lg font-semibold text-gray-900 dark:text-white ${className}`}>{children}</h2>;
+}
+
+interface DialogDescriptionProps {
+  children: ReactNode;
+  className?: string;
+}
+
+interface DialogFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function DialogDescription({ children, className = '' }: DialogDescriptionProps) {
+  return <p className={`text-sm text-gray-600 dark:text-neutral-400 mt-2 ${className}`}>{children}</p>;
+}
+
+export function DialogFooter({ children, className = '' }: DialogFooterProps) {
+  return <div className={`mt-6 flex justify-end gap-3 ${className}`}>{children}</div>;
 }

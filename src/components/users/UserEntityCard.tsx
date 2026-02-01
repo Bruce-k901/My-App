@@ -2,7 +2,7 @@
 
 import CardHeader from '@/components/ui/CardHeader';
 import { Input, Select } from '@/components/ui';
-import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
+import { Eye, EyeOff, X, Archive, Save, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { components, layout } from '@/styles/uiTokens';
 import '@/styles/globals.css';
@@ -24,6 +24,7 @@ interface UserEntityCardProps {
   siteOptions: any[];
   onArchive: (_userId: string) => void;
   onUnarchive: (_userId: string) => void;
+  onSendInvite?: (_userId: string, _email: string) => void;
 }
 
 export default function UserEntityCard({
@@ -43,6 +44,7 @@ export default function UserEntityCard({
   siteOptions,
   onArchive,
   onUnarchive,
+  onSendInvite,
 }: UserEntityCardProps) {
   const [showPin, setShowPin] = useState(false);
 
@@ -117,12 +119,25 @@ export default function UserEntityCard({
 
               {/* Site */}
               <div>
-                <label className="text-xs text-neutral-400">Site</label>
+                <label className="text-xs text-neutral-400">Site Assignment</label>
                 <Select
-                  value={editForm.home_site}
-                  options={siteOptions}
-                  onValueChange={(val: string) => onEditFormChange({ home_site: val })}
+                  value={editForm.home_site || 'HEAD_OFFICE'}
+                  options={[
+                    { label: '🏢 Head Office (No Site)', value: 'HEAD_OFFICE' },
+                    ...siteOptions
+                  ]}
+                  onValueChange={(val: string) => {
+                    // If "Head Office" is selected, set both site fields to null
+                    if (val === 'HEAD_OFFICE') {
+                      onEditFormChange({ home_site: null, site_id: null });
+                    } else {
+                      onEditFormChange({ home_site: val });
+                    }
+                  }}
                 />
+                <p className="text-xs text-neutral-500 mt-1">
+                  {editForm.home_site ? 'Site-based employee' : 'Head office / Executive'}
+                </p>
               </div>
 
               {/* BOH/FOH */}
@@ -136,6 +151,21 @@ export default function UserEntityCard({
                     { value: "not_specified", label: "Not specified" }
                   ]}
                   onValueChange={(val: string) => onEditFormChange({ boh_foh: val })}
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="text-xs text-neutral-400">Status</label>
+                <Select
+                  value={editForm.status || 'onboarding'}
+                  options={[
+                    { value: "onboarding", label: "🔵 Onboarding" },
+                    { value: "active", label: "✅ Active" },
+                    { value: "inactive", label: "⏸️ Inactive" },
+                    { value: "on_leave", label: "🏖️ On Leave" }
+                  ]}
+                  onValueChange={(val: string) => onEditFormChange({ status: val })}
                 />
               </div>
 
@@ -321,7 +351,7 @@ export default function UserEntityCard({
             </div>
 
             {/* Action Buttons */}
-            <div className={layout.buttonGroup}>
+            <div className="flex flex-wrap items-center gap-2 pt-4">
               <button
                 onClick={onSave}
                 className={components.saveButton}
@@ -336,6 +366,18 @@ export default function UserEntityCard({
                 <X size={18} />
               </button>
 
+              {/* Send Invite button */}
+              {onSendInvite && user.email && (
+                <button
+                  onClick={() => onSendInvite(user.id, user.email)}
+                  className="px-3 py-2 border border-[#EC4899] text-[#EC4899] rounded-md hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 flex items-center gap-2"
+                  title="Send Invitation Email"
+                >
+                  <Mail size={18} />
+                  <span className="text-sm">Send Invite</span>
+                </button>
+              )}
+
               {/* Archive/Restore button */}
               {onUnarchive ? (
                 <button
@@ -348,7 +390,8 @@ export default function UserEntityCard({
               ) : onArchive ? (
                 <button
                   onClick={() => onArchive(user.id)}
-                  className={components.archiveButton}
+                  className="px-3 py-2 border border-[#F97316] text-[#F97316] rounded-md hover:shadow-[0_0_12px_rgba(249,115,22,0.7)] transition-all duration-200"
+                  title="Archive User"
                 >
                   <Archive size={18} />
                 </button>

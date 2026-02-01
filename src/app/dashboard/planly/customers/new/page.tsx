@@ -1,0 +1,35 @@
+'use client';
+
+import { useAppContext } from '@/context/AppContext';
+import { CustomerForm } from '@/components/planly/customers/CustomerForm';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+
+export default function NewCustomerPage() {
+  const { siteId } = useAppContext();
+
+  if (!siteId) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <Link
+          href="/dashboard/planly/customers"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Customers
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add Customer</h1>
+        <p className="text-gray-500 dark:text-white/60">Create a new customer for orders</p>
+      </div>
+      <CustomerForm siteId={siteId} />
+    </div>
+  );
+}

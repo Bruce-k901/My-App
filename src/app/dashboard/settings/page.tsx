@@ -91,16 +91,55 @@ export default function SettingsPage() {
         return;
       }
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("profile_settings")
           .select("*")
           .eq("user_id", userId)
           .limit(1);
+        
+        if (error) {
+          // Extract meaningful error information
+          const errorKeys = error && typeof error === 'object' ? Object.keys(error) : [];
+          const errorInfo = {
+            message: error.message || 'Unknown error',
+            code: error.code || 'NO_CODE',
+            details: error.details || null,
+            hint: error.hint || null,
+            // Check if error object has any properties
+            hasProperties: errorKeys.length > 0,
+            keys: errorKeys,
+            // Stringified version for debugging
+            stringified: JSON.stringify(error),
+            // Raw error for inspection
+            raw: error
+          };
+          
+          // Log error information for debugging
+          // Empty error objects ({}) typically indicate:
+          // - Table doesn't exist (PGRST116)
+          // - RLS policy violation (406)
+          // - Network/connection issue
+          if (errorInfo.hasProperties || errorInfo.message !== 'Unknown error') {
+            console.error('Error loading settings:', errorInfo);
+          } else {
+            // Empty error object - likely table doesn't exist or RLS issue
+            console.warn('Settings query returned empty error object. This may indicate the profile_settings table does not exist or RLS is blocking access. Using defaults.');
+          }
+          // Always use defaults when there's an error - this is safe
+        }
+        
         const row = data?.[0] as ProfileSettings | undefined;
         setSettings(row ?? defaults);
         setLogoUrl(company?.logo_url ?? null);
       } catch (e) {
-        console.error('Error loading settings:', e);
+        // Handle caught errors with better information extraction
+        const errorInfo = e instanceof Error 
+          ? { message: e.message, stack: e.stack, name: e.name }
+          : { error: e, type: typeof e, stringified: JSON.stringify(e) };
+        console.error('Error loading settings:', errorInfo);
+        // Use defaults on error
+        setSettings(defaults);
+        setLogoUrl(company?.logo_url ?? null);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -185,11 +224,32 @@ export default function SettingsPage() {
     try {
       const payload = { ...settings } as any;
       const { error } = await supabase.from("profile_settings").upsert(payload, { onConflict: "user_id" });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       toast.success('Notification settings saved');
     } catch (error: any) {
       console.error('Error saving notifications:', error);
-      toast.error(`Failed to save settings: ${error.message}`);
+      
+      // Handle empty error objects or errors without messages
+      let errorMessage = 'Failed to save settings';
+      if (error) {
+        if (error.message) {
+          errorMessage = `Failed to save settings: ${error.message}`;
+        } else if (error.code) {
+          errorMessage = `Failed to save settings (${error.code})`;
+        } else if (typeof error === 'string') {
+          errorMessage = `Failed to save settings: ${error}`;
+        } else {
+          // Try to extract any useful information from the error
+          const errorStr = JSON.stringify(error);
+          if (errorStr && errorStr !== '{}') {
+            errorMessage = `Failed to save settings: ${errorStr}`;
+          }
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }

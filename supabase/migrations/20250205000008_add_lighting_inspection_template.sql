@@ -1,20 +1,36 @@
 -- ============================================================================
 -- Migration: 20250205000008_add_lighting_inspection_template.sql
 -- Description: Simple weekly lighting inspection - check bulbs, call electrician if needed
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 -- ============================================================================
 
--- Clean up existing template if it exists
-DELETE FROM template_repeatable_labels 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'lighting_inspection');
+-- Clean up existing template if it exists (only if tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Delete repeatable labels if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_repeatable_labels') THEN
+      DELETE FROM template_repeatable_labels 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'lighting_inspection');
+    END IF;
+    
+    -- Delete template fields if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      DELETE FROM template_fields 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'lighting_inspection');
+    END IF;
+    
+    -- Delete template
+    DELETE FROM task_templates 
+    WHERE slug = 'lighting_inspection';
+  END IF;
+END $$;
 
-DELETE FROM template_fields 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'lighting_inspection');
-
-DELETE FROM task_templates 
-WHERE slug = 'lighting_inspection';
-
--- Create simple template
-INSERT INTO task_templates (
+-- Create simple template (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    INSERT INTO task_templates (
   company_id,
   name,
   slug,
@@ -82,68 +98,92 @@ Special Requirements:
 Only replace bulbs if safe to do so; call electrician for any electrical faults',
   NULL,  -- No asset selection
   TRUE,  -- Trigger electrician callout if needed
-  'electrical',
-  TRUE
-);
+      'electrical',
+      TRUE
+    );
+  END IF;
+END $$;
 
--- Add template fields
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'inspection_date', 'date', 'Inspection Date', TRUE, 1, 
-  'Date when lighting inspection was performed.'
-FROM task_templates WHERE slug = 'lighting_inspection';
+-- Add template fields (only if both tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'inspection_date', 'date', 'Inspection Date', TRUE, 1, 
+      'Date when lighting inspection was performed.'
+    FROM task_templates t
+    WHERE t.slug = 'lighting_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'inspection_date');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'inspected_by', 'text', 'Inspected By', TRUE, 2,
-  'Name of person who performed the inspection.'
-FROM task_templates WHERE slug = 'lighting_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'inspected_by', 'text', 'Inspected By', TRUE, 2,
+      'Name of person who performed the inspection.'
+    FROM task_templates t
+    WHERE t.slug = 'lighting_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'inspected_by');
 
--- Overall assessment (triggers callout if "Fail")
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'all_lighting_ok', 'pass_fail', 'All Lighting Operational', TRUE, 20,
-  'PASS if all lighting is working or bulbs replaced. FAIL if electrical issues found - will trigger electrician callout.'
-FROM task_templates WHERE slug = 'lighting_inspection';
+    -- Overall assessment (triggers callout if "Fail")
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'all_lighting_ok', 'pass_fail', 'All Lighting Operational', TRUE, 20,
+      'PASS if all lighting is working or bulbs replaced. FAIL if electrical issues found - will trigger electrician callout.'
+    FROM task_templates t
+    WHERE t.slug = 'lighting_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'all_lighting_ok');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'action_notes', 'text', 'Actions Taken / Notes', FALSE, 21,
-  'Record any bulbs replaced, issues found, or electrician requirements.',
-  'e.g., Replaced 3 bulbs in kitchen, flickering lights in storage room, electrician needed for wiring issue...'
-FROM task_templates WHERE slug = 'lighting_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'action_notes', 'text', 'Actions Taken / Notes', FALSE, 21,
+      'Record any bulbs replaced, issues found, or electrician requirements.',
+      'e.g., Replaced 3 bulbs in kitchen, flickering lights in storage room, electrician needed for wiring issue...'
+    FROM task_templates t
+    WHERE t.slug = 'lighting_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'action_notes');
+  END IF;
+END $$;
 
--- Verification
+-- Verification (only if tables exist)
 DO $$
 DECLARE
   template_record RECORD;
   field_count INTEGER;
 BEGIN
-  SELECT * INTO template_record
-  FROM task_templates 
-  WHERE slug = 'lighting_inspection';
-  
-  SELECT COUNT(*) INTO field_count
-  FROM template_fields
-  WHERE template_id = template_record.id;
-  
-  IF template_record.id IS NOT NULL THEN
-    RAISE NOTICE '✅ Lighting Inspection template created successfully';
-    RAISE NOTICE '   Template ID: %', template_record.id;
-    RAISE NOTICE '   Category: %', template_record.category;
-    RAISE NOTICE '   Evidence types: %', template_record.evidence_types;
-    RAISE NOTICE '   Triggers contractor: %', template_record.triggers_contractor_on_failure;
-    RAISE NOTICE '   Contractor type: %', template_record.contractor_type;
-    RAISE NOTICE '   Template fields: %', field_count;
-    RAISE NOTICE '   ✓ Features: Checklist (9 items) + Pass/Fail + Electrician callout on failure';
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    SELECT * INTO template_record
+    FROM task_templates 
+    WHERE slug = 'lighting_inspection';
     
-    -- Check visibility windows
-    IF template_record.recurrence_pattern IS NOT NULL AND 
-       template_record.recurrence_pattern ? 'visibility_window_days_before' THEN
-      RAISE NOTICE '   ✓ Visibility window: % days before, % days after',
-        template_record.recurrence_pattern->>'visibility_window_days_before',
-        template_record.recurrence_pattern->>'visibility_window_days_after';
-      RAISE NOTICE '   ✓ Grace period: % days',
-        template_record.recurrence_pattern->>'grace_period_days';
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      SELECT COUNT(*) INTO field_count
+      FROM template_fields
+      WHERE template_id = template_record.id;
+    ELSE
+      field_count := 0;
+    END IF;
+  
+    IF template_record.id IS NOT NULL THEN
+      RAISE NOTICE '✅ Lighting Inspection template created successfully';
+      RAISE NOTICE '   Template ID: %', template_record.id;
+      RAISE NOTICE '   Category: %', template_record.category;
+      RAISE NOTICE '   Evidence types: %', template_record.evidence_types;
+      RAISE NOTICE '   Triggers contractor: %', template_record.triggers_contractor_on_failure;
+      RAISE NOTICE '   Contractor type: %', template_record.contractor_type;
+      RAISE NOTICE '   Template fields: %', field_count;
+      RAISE NOTICE '   ✓ Features: Checklist (9 items) + Pass/Fail + Electrician callout on failure';
+      
+      -- Check visibility windows
+      IF template_record.recurrence_pattern IS NOT NULL AND 
+         template_record.recurrence_pattern ? 'visibility_window_days_before' THEN
+        RAISE NOTICE '   ✓ Visibility window: % days before, % days after',
+          template_record.recurrence_pattern->>'visibility_window_days_before',
+          template_record.recurrence_pattern->>'visibility_window_days_after';
+        RAISE NOTICE '   ✓ Grace period: % days',
+          template_record.recurrence_pattern->>'grace_period_days';
+      END IF;
+    ELSE
+      RAISE NOTICE '⚠️ Template not found (may not exist yet)';
     END IF;
   ELSE
-    RAISE WARNING '⚠️ Template creation may have failed. Template not found.';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 

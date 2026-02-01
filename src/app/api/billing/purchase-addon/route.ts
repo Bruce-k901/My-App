@@ -56,30 +56,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Addon is not available" }, { status: 400 });
     }
 
-    // Check if this is a tiered addon (smart sensor or maintenance kit)
+    // Check if this is a tiered addon (smart sensor or asset tags)
     // If so, cancel any existing purchases in the same tier group
-    const isSmartSensor = addon.name.startsWith('smart_sensor_');
+    const isSmartSensorPack = addon.name.startsWith('smart_sensor_pack_');
+    const isSmartSensorSoftware = addon.name.startsWith('smart_sensor_software_');
+    const isSmartSensorOld = addon.name.startsWith('smart_sensor_') && !isSmartSensorPack && !isSmartSensorSoftware;
+    const isAssetTagPack = addon.name.startsWith('asset_tags_pack_');
+    const isAssetTagSoftware = addon.name.startsWith('asset_tags_software_');
     const isMaintenanceKit = addon.name.startsWith('maintenance_kit_');
 
-    if (isSmartSensor || isMaintenanceKit) {
-      // Cancel any existing tiered addons in the same category
-      let tierPrefix = '';
-      if (isSmartSensor) {
-        tierPrefix = 'smart_sensor_';
-      } else if (isMaintenanceKit) {
-        tierPrefix = 'maintenance_kit_';
-      }
-
-      // Find all addons in the same tier group
-      const { data: tierAddons } = await supabase
+    // Cancel existing purchases in the same category
+    if (isSmartSensorPack || isSmartSensorSoftware || isSmartSensorOld) {
+      // Cancel any existing smart sensor purchases (packs or software)
+      const { data: sensorAddons } = await supabase
         .from("subscription_addons")
         .select("id")
-        .like("name", `${tierPrefix}%`);
+        .like("name", "smart_sensor_%");
 
-      if (tierAddons && tierAddons.length > 0) {
-        const tierAddonIds = tierAddons.map(a => a.id);
-
-        // Cancel any active purchases in this tier group
+      if (sensorAddons && sensorAddons.length > 0) {
+        const sensorAddonIds = sensorAddons.map(a => a.id);
         const { error: cancelError } = await supabase
           .from("company_addon_purchases")
           .update({
@@ -89,17 +84,45 @@ export async function POST(req: Request) {
           })
           .eq("company_id", company_id)
           .eq("status", "active")
-          .in("addon_id", tierAddonIds);
+          .in("addon_id", sensorAddonIds);
 
         if (cancelError) {
-          console.error("Error cancelling existing tier addons:", cancelError);
-          // Don't fail the purchase, just log the error
+          console.error("Error cancelling existing sensor addons:", cancelError);
+        }
+      }
+    }
+
+    if (isAssetTagPack || isAssetTagSoftware || isMaintenanceKit) {
+      // Cancel any existing asset tag/maintenance kit purchases
+      const { data: tagAddons } = await supabase
+        .from("subscription_addons")
+        .select("id")
+        .or("name.like.asset_tags_%,name.like.maintenance_kit_%,name.like.maintenance_%");
+
+      if (tagAddons && tagAddons.length > 0) {
+        const tagAddonIds = tagAddons.map(a => a.id);
+        const { error: cancelError } = await supabase
+          .from("company_addon_purchases")
+          .update({
+            status: "cancelled",
+            cancelled_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("company_id", company_id)
+          .eq("status", "active")
+          .in("addon_id", tagAddonIds);
+
+        if (cancelError) {
+          console.error("Error cancelling existing tag addons:", cancelError);
         }
       }
     }
 
     // Check if already purchased (for non-tiered one-time purchases, prevent duplicates)
-    if ((addon.price_type === 'one_time' || addon.price_type === 'per_site_one_time') && !isSmartSensor && !isMaintenanceKit) {
+    // Hardware packs are one-time purchases, but we allow replacing them (handled above)
+    if ((addon.price_type === 'one_time' || addon.price_type === 'per_site_one_time') && 
+        !isSmartSensorPack && !isSmartSensorSoftware && !isSmartSensorOld && 
+        !isAssetTagPack && !isAssetTagSoftware && !isMaintenanceKit) {
       const { data: existing } = await supabase
         .from("company_addon_purchases")
         .select("id")
@@ -159,8 +182,156 @@ export async function POST(req: Request) {
     let unitPrice = addon.price;
     let totalPrice: number;
 
-    // For Smart Sensors: hardware cost (one-time) + monthly management (recurring)
-    if (addon.name.startsWith('smart_sensor_')) {
+    // For Smart Sensor Hardware Packs: one-time purchase
+    if (isSmartSensorPack) {
+      const hardwareCost = addon.hardware_cost || addon.price || 0;
+      unitPrice = hardwareCost;
+      totalPrice = hardwareCost; // Fixed price for the pack
+
+      const insertData: any = {
+        company_id,
+        addon_id,
+        quantity: 1, // Hardware packs are fixed quantity
+        unit_price: unitPrice,
+        total_price: totalPrice,
+        status: "active",
+      };
+
+      if (addon.hardware_cost) {
+        insertData.hardware_cost_total = hardwareCost;
+      }
+
+      const { data: purchase, error: purchaseError } = await supabase
+        .from("company_addon_purchases")
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (purchaseError) {
+        console.error("Error purchasing addon:", purchaseError);
+        return NextResponse.json(
+          { error: `Failed to purchase addon: ${purchaseError.message}` },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ data: purchase });
+    }
+
+    // For Smart Sensor Software Tiers: monthly per site
+    if (isSmartSensorSoftware) {
+      const monthlyCost = addon.monthly_management_cost || addon.price || 0;
+      const monthlyTotal = monthlyCost * finalSiteCount;
+      
+      unitPrice = monthlyCost;
+      totalPrice = monthlyTotal;
+
+      const insertData: any = {
+        company_id,
+        addon_id,
+        quantity: finalSiteCount, // Quantity = number of sites
+        unit_price: unitPrice,
+        total_price: totalPrice,
+        status: "active",
+      };
+
+      if (addon.monthly_management_cost) {
+        insertData.monthly_recurring_cost = monthlyTotal;
+      }
+
+      const { data: purchase, error: purchaseError } = await supabase
+        .from("company_addon_purchases")
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (purchaseError) {
+        console.error("Error purchasing addon:", purchaseError);
+        return NextResponse.json(
+          { error: `Failed to purchase addon: ${purchaseError.message}` },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ data: purchase });
+    }
+
+    // For Asset Tag Packs: one-time purchase
+    if (isAssetTagPack) {
+      const hardwareCost = addon.hardware_cost || addon.price || 0;
+      unitPrice = hardwareCost;
+      totalPrice = hardwareCost; // Fixed price for the pack
+
+      const insertData: any = {
+        company_id,
+        addon_id,
+        quantity: 1, // Tag packs are fixed quantity
+        unit_price: unitPrice,
+        total_price: totalPrice,
+        status: "active",
+      };
+
+      if (addon.hardware_cost) {
+        insertData.hardware_cost_total = hardwareCost;
+      }
+
+      const { data: purchase, error: purchaseError } = await supabase
+        .from("company_addon_purchases")
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (purchaseError) {
+        console.error("Error purchasing addon:", purchaseError);
+        return NextResponse.json(
+          { error: `Failed to purchase addon: ${purchaseError.message}` },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ data: purchase });
+    }
+
+    // For Asset Tags Software Tiers: monthly per site
+    if (isAssetTagSoftware) {
+      const monthlyCost = addon.monthly_management_cost || addon.price || 0;
+      const monthlyTotal = monthlyCost * finalSiteCount;
+      
+      unitPrice = monthlyCost;
+      totalPrice = monthlyTotal;
+
+      const insertData: any = {
+        company_id,
+        addon_id,
+        quantity: finalSiteCount, // Quantity = number of sites
+        unit_price: unitPrice,
+        total_price: totalPrice,
+        status: "active",
+      };
+
+      if (addon.monthly_management_cost) {
+        insertData.monthly_recurring_cost = monthlyTotal;
+      }
+
+      const { data: purchase, error: purchaseError } = await supabase
+        .from("company_addon_purchases")
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (purchaseError) {
+        console.error("Error purchasing addon:", purchaseError);
+        return NextResponse.json(
+          { error: `Failed to purchase addon: ${purchaseError.message}` },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ data: purchase });
+    }
+
+    // For old Smart Sensors (backward compatibility): hardware cost (one-time) + monthly management (recurring)
+    if (isSmartSensorOld) {
       // Calculate hardware cost from per-site quantities if provided, otherwise use average quantity
       let totalSensorQuantity = quantity * finalSiteCount;
       if (per_site_quantities && typeof per_site_quantities === 'object') {

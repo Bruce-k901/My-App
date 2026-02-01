@@ -19,6 +19,7 @@ interface ShiftStatus {
 export default function ClockInOut() {
   const { profile, companyId } = useAppContext();
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [sitesLoaded, setSitesLoaded] = useState(false);
   const [shiftStatus, setShiftStatus] = useState<ShiftStatus>({
     onShift: false,
     siteId: null,
@@ -30,6 +31,33 @@ export default function ClockInOut() {
   const [clockingOut, setClockingOut] = useState(false);
   const [shiftNotes, setShiftNotes] = useState('');
   const [showNotesInput, setShowNotesInput] = useState(false);
+
+  // Auto-select home site (or site_id) when profile loads and user is not on shift
+  // Try immediately, and also after sites are loaded (in case of timing issues)
+  useEffect(() => {
+    if (!shiftStatus.onShift && !selectedSiteId && profile) {
+      // Prefer home_site, fallback to site_id
+      const defaultSiteId = profile?.home_site || profile?.site_id;
+      if (defaultSiteId) {
+        // Try to set immediately - if sites aren't loaded yet, the dropdown will update when they are
+        console.log('🕐 [ClockInOut] Attempting to auto-select site:', defaultSiteId, {
+          home_site: profile?.home_site,
+          site_id: profile?.site_id,
+          sitesLoaded,
+          onShift: shiftStatus.onShift,
+          currentSelected: selectedSiteId
+        });
+        setSelectedSiteId(defaultSiteId);
+      } else {
+        console.warn('🕐 [ClockInOut] No home_site or site_id found in profile:', {
+          profile_id: profile?.id,
+          home_site: profile?.home_site,
+          site_id: profile?.site_id,
+          profile_keys: profile ? Object.keys(profile) : 'no profile'
+        });
+      }
+    }
+  }, [profile?.home_site, profile?.site_id, shiftStatus.onShift, selectedSiteId, profile?.id]);
 
   // Load shift status on mount and periodically
   useEffect(() => {
@@ -78,6 +106,15 @@ export default function ClockInOut() {
           clockInTime: null,
           hoursOnShift: null,
         });
+        // Auto-select home site (or site_id) when not on shift
+        // Only set if not already selected and sites are loaded
+        if (sitesLoaded && !selectedSiteId) {
+          const defaultSiteId = profile?.home_site || profile?.site_id;
+          if (defaultSiteId) {
+            console.log('🕐 [ClockInOut] Auto-selecting site in loadShiftStatus:', defaultSiteId);
+            setSelectedSiteId(defaultSiteId);
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading shift status:', error);
@@ -280,8 +317,16 @@ export default function ClockInOut() {
           <label className="block text-sm text-white/80 mb-2">Site</label>
           <SiteSelector
             value={selectedSiteId}
-            onChange={setSelectedSiteId}
+            onChange={(siteId) => {
+              console.log('🏢 [ClockInOut] Site selected:', siteId);
+              setSelectedSiteId(siteId);
+              if (siteId) setSitesLoaded(true); // Mark sites as loaded when user selects one
+            }}
             placeholder="Select a site..."
+            onSitesLoaded={() => {
+              console.log('🏢 [ClockInOut] Sites loaded callback fired');
+              setSitesLoaded(true);
+            }}
           />
         </div>
 
@@ -291,6 +336,7 @@ export default function ClockInOut() {
           loading={clockingIn}
           variant="primary"
           fullWidth
+          title={!selectedSiteId ? `No site selected. Profile: home_site=${profile?.home_site}, site_id=${profile?.site_id}, sitesLoaded=${sitesLoaded}` : 'Clock in'}
         >
           <LogIn className="w-4 h-4 mr-2" />
           Clock In

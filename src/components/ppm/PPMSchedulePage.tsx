@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, Filter, Plus, List, Calendar } from 'lucide-react';
 import PPMCard from './PPMCard';
 import PPMDrawer from './PPMDrawer';
@@ -9,12 +10,16 @@ import { getPPMStatus } from '@/utils/ppmHelpers';
 import { usePPMRealtime } from '@/hooks/usePPMRealtime';
 import { fetchAllAssets, AssetRecord } from '@/lib/fetchAssets';
 import { useAppContext } from '@/context/AppContext';
+import { useSiteFilter } from '@/hooks/useSiteFilter';
 import { PPMAsset } from '@/types/ppm';
 import { nullifyUndefined } from '@/lib/utils';
 import { generatePPMSchedulesForAllAssets } from '@/lib/ppm/generateSchedules';
 import { toast } from 'sonner';
 
 export default function PPMSchedulePage() {
+  const searchParams = useSearchParams();
+  const assetIdParam = searchParams?.get('asset_id');
+  
   const [assets, setAssets] = useState<PPMAsset[]>([]);
   const [filteredAssets, setFilteredAssets] = useState<PPMAsset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,8 +36,10 @@ export default function PPMSchedulePage() {
   });
   const [sites, setSites] = useState<string[]>([]);
   const [contractors, setContractors] = useState<string[]>([]);
+  const [highlightedAssetId, setHighlightedAssetId] = useState<string | null>(null);
   
   const { profile } = useAppContext();
+  const { selectedSiteId, isAllSites } = useSiteFilter();
   const [generatingSchedules, setGeneratingSchedules] = useState(false);
 
   const handleGenerateSchedules = async () => {
@@ -78,7 +85,13 @@ export default function PPMSchedulePage() {
       console.log("PPM Debug - Company ID:", profile.company_id);
 
       // Fetch assets using the new fetchAllAssets function
-      const assetsData = await fetchAllAssets(profile.company_id);
+      // Note: fetchAllAssets doesn't support site filtering yet, so we filter after fetching
+      let assetsData = await fetchAllAssets(profile.company_id);
+      
+      // Apply site filter if not viewing all sites
+      if (!isAllSites && selectedSiteId && selectedSiteId !== 'all') {
+        assetsData = assetsData.filter(asset => asset.site_id === selectedSiteId);
+      }
 
       console.log("PPM Debug - Assets query result:", assetsData);
 
@@ -132,7 +145,7 @@ export default function PPMSchedulePage() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.company_id]);
+  }, [profile?.company_id, selectedSiteId, isAllSites]);
 
   // Debounced version for realtime updates
   const debouncedFetchPPMData = useCallback(() => {
@@ -162,6 +175,35 @@ export default function PPMSchedulePage() {
   useEffect(() => {
     filterAssets();
   }, [assets, searchTerm, filters]);
+
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (assetIdParam && assets.length > 0) {
+      const asset = assets.find(a => a.id === assetIdParam);
+      if (asset) {
+        // Highlight the asset
+        setHighlightedAssetId(assetIdParam);
+        
+        // Open the drawer for this asset
+        setSelectedAsset(asset);
+        setDrawerOpen(true);
+        
+        // Scroll to the asset after a short delay (only if in list view)
+        if (viewMode === 'list') {
+          setTimeout(() => {
+            const element = document.getElementById(`ppm-asset-${assetIdParam}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Remove highlight after 5 seconds
+              setTimeout(() => {
+                setHighlightedAssetId(null);
+              }, 5000);
+            }
+          }, 500);
+        }
+      }
+    }
+  }, [assetIdParam, assets, viewMode]);
 
   const filterAssets = () => {
     let filtered = assets;
@@ -241,12 +283,12 @@ export default function PPMSchedulePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-700 rounded w-1/4 mx-auto"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mx-auto"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-48 bg-gray-700 rounded-lg"></div>
+              <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -256,10 +298,10 @@ export default function PPMSchedulePage() {
 
   if (!profile?.company_id) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 mb-3 text-gray-500"
+          className="h-12 w-12 mb-3 text-gray-400 dark:text-gray-500"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -271,18 +313,18 @@ export default function PPMSchedulePage() {
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <p className="text-lg font-semibold">No company context</p>
-        <p>Please sign in or complete setup to view PPM assets.</p>
+        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">No company context</p>
+        <p className="text-gray-500 dark:text-gray-400">Please sign in or complete setup to view PPM assets.</p>
       </div>
     );
   }
 
   if (!assets.length && !loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 mb-3 text-gray-500"
+          className="h-12 w-12 mb-3 text-gray-400 dark:text-gray-500"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -294,8 +336,8 @@ export default function PPMSchedulePage() {
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <p className="text-lg font-semibold">No PPM assets found</p>
-        <p>No assets are set up for PPM scheduling yet. Add your first asset to get started.</p>
+        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">No PPM assets found</p>
+        <p className="text-gray-500 dark:text-gray-400">No assets are set up for PPM scheduling yet. Add your first asset to get started.</p>
       </div>
     );
   }
@@ -304,8 +346,8 @@ export default function PPMSchedulePage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-white">PPM Schedule</h1>
-        
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">PPM Schedule</h1>
+
         <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative min-w-[240px]">
@@ -315,24 +357,24 @@ export default function PPMSchedulePage() {
               placeholder="Search assets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
 
           {/* Filter Button */}
-          <button 
+          <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white hover:bg-gray-700 transition-colors h-[42px]"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors h-[42px]"
           >
             <Filter className="w-4 h-4" />
             Filter
           </button>
 
           {/* Generate Schedules Button */}
-          <button 
+          <button
             onClick={handleGenerateSchedules}
             disabled={generatingSchedules}
-            className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+            className="flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generatingSchedules ? (
               <>
@@ -348,19 +390,19 @@ export default function PPMSchedulePage() {
           </button>
 
           {/* Add PPM Button */}
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2.5 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap">
             <Plus className="w-4 h-4" />
             Add PPM
           </button>
 
           {/* View Toggle */}
-          <div className="flex items-center bg-gray-800 border border-gray-700 rounded-lg p-1 h-[42px]">
+          <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-1 h-[42px]">
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
-                viewMode === 'list' 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
-                  : 'text-gray-400 hover:text-white border border-transparent'
+                viewMode === 'list'
+                  ? 'bg-cyan-100 dark:bg-cyan-500/10 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent'
               }`}
             >
               <List className="w-4 h-4" />
@@ -369,9 +411,9 @@ export default function PPMSchedulePage() {
             <button
               onClick={() => setViewMode('calendar')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
-                viewMode === 'calendar' 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
-                  : 'text-gray-400 hover:text-white border border-transparent'
+                viewMode === 'calendar'
+                  ? 'bg-cyan-100 dark:bg-cyan-500/10 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent'
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -384,21 +426,30 @@ export default function PPMSchedulePage() {
       {/* Content */}
       {viewMode === 'list' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredAssets.map((asset) => (
-            <PPMCard
-              key={asset.id}
-              asset={asset}
-              onClick={() => handleCardClick(asset)}
-            />
-          ))}
+          {filteredAssets.map((asset) => {
+            const isHighlighted = highlightedAssetId === asset.id;
+            return (
+              <div
+                key={asset.id}
+                id={`ppm-asset-${asset.id}`}
+                className={isHighlighted ? 'animate-pulse' : ''}
+              >
+                <PPMCard
+                  asset={asset}
+                  onClick={() => handleCardClick(asset)}
+                  highlighted={isHighlighted}
+                />
+              </div>
+            );
+          })}
           {filteredAssets.length === 0 && !loading && (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                <Calendar className="w-8 h-8 text-gray-400" />
+              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                <Calendar className="w-8 h-8 text-gray-500 dark:text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-300 mb-2">No PPM assets found</h3>
-              <p className="text-gray-400 mb-6 max-w-md">
-                {Object.values(filters).some(f => f) 
+              <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No PPM assets found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
+                {Object.values(filters).some(f => f)
                   ? "No assets match your current filters. Try adjusting your search criteria or clearing filters."
                   : "No assets are set up for PPM scheduling yet. Add your first asset to get started."
                 }
@@ -406,7 +457,7 @@ export default function PPMSchedulePage() {
               {Object.values(filters).some(f => f) && (
                 <button
                   onClick={() => setFilters({ site: '', contractor: '', status: '', dateRange: '' })}
-                  className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200"
                 >
                   Clear All Filters
                 </button>
@@ -431,20 +482,20 @@ export default function PPMSchedulePage() {
 
       {/* Filter Drawer */}
       {showFilters && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-50 flex items-start justify-end p-6"
+        <div
+          className="fixed inset-0 bg-black/30 dark:bg-black/60 z-50 flex items-start justify-end p-6"
           onClick={() => setShowFilters(false)}
         >
-          <div 
-            className="w-full max-w-md bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6 space-y-6 mt-16"
+          <div
+            className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-6 space-y-6 mt-16"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Filter PPM Assets</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filter PPM Assets</h3>
               <button
                 onClick={() => setShowFilters(false)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -454,11 +505,11 @@ export default function PPMSchedulePage() {
 
             {/* Site Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Site</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site</label>
               <select
                 value={filters.site}
                 onChange={(e) => setFilters(prev => ({ ...prev, site: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Sites</option>
                 {sites.map(site => (
@@ -469,11 +520,11 @@ export default function PPMSchedulePage() {
 
             {/* Contractor Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Contractor</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contractor</label>
               <select
                 value={filters.contractor}
                 onChange={(e) => setFilters(prev => ({ ...prev, contractor: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Contractors</option>
                 {contractors.map(contractor => (
@@ -484,11 +535,11 @@ export default function PPMSchedulePage() {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Statuses</option>
                 <option value="upcoming">Upcoming</option>
@@ -501,11 +552,11 @@ export default function PPMSchedulePage() {
 
             {/* Date Range Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Date Range</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
               <select
                 value={filters.dateRange}
                 onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Dates</option>
                 <option value="next-7-days">Next 7 Days</option>
@@ -518,7 +569,7 @@ export default function PPMSchedulePage() {
             {/* Clear Filters */}
             <button
               onClick={() => setFilters({ site: '', contractor: '', status: '', dateRange: '' })}
-              className="w-full px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white rounded-lg transition-colors"
             >
               Clear All Filters
             </button>

@@ -40,41 +40,41 @@ export function ChecklistFeature({
   };
 
   return (
-    <div className="border-t border-white/10 pt-6">
-      <h2 className="text-lg font-semibold text-white mb-4">
+    <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Checklist Items {items.length > 0 && `(${items.length})`}
       </h2>
       
       {items.length === 0 ? (
-        <p className="text-sm text-white/60 mb-4">
+        <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
           No checklist items yet. Add items below or they will be auto-populated from the template.
         </p>
       ) : (
-        <p className="text-sm text-green-400 mb-4">
+        <p className="text-sm text-green-600 dark:text-green-400 mb-4">
           ✓ {items.length} checklist item{items.length !== 1 ? 's' : ''} loaded from template
         </p>
       )}
       
       <div className="space-y-2 mb-4">
         {items.map((item, index) => (
-          <div key={index} className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+          <div key={index} className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
             <input
               type="checkbox"
               checked={false}
               readOnly
-              className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-pink-500 accent-pink-500"
             />
             <input
               type="text"
               value={item}
               onChange={(e) => updateItem(index, e.target.value)}
-              className="flex-1 px-3 py-1 rounded bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="flex-1 px-3 py-1 rounded bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               placeholder="Checklist item"
             />
             <button
               type="button"
               onClick={() => removeItem(index)}
-              className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
+              className="px-3 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
             >
               Remove
             </button>
@@ -89,12 +89,12 @@ export function ChecklistFeature({
           onChange={(e) => setNewItem(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && addItem()}
           placeholder="Add new checklist item"
-          className="flex-1 px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+          className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
         />
         <button
           type="button"
           onClick={addItem}
-          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 font-medium"
         >
           Add
         </button>

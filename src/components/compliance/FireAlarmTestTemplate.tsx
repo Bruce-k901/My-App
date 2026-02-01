@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { AlertTriangle, Edit2, X } from "lucide-react";
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -58,7 +59,14 @@ export function FireAlarmTestTemplate({ editTemplateId, onSave }: FireAlarmTestT
       };
       initialize();
     }
-  }, [profile?.company_id, profile?.site_id, editTemplateId]);
+  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (profile?.company_id) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
 
   // Generate default instructions when call points are added (for new templates only)
   useEffect(() => {
@@ -104,7 +112,7 @@ ${validCallPoints.map(cp => {
         setInstructions(defaultInstructions);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [callPointRows, editingTemplateId]);
 
   const loadAssets = async () => {
@@ -118,8 +126,10 @@ ${validCallPoints.map(cp => {
       .eq("archived", false)
       .order("name");
 
-    if (profile.site_id) {
-      query = query.eq("site_id", profile.site_id);
+    // Use selectedSiteId from header if available, otherwise fall back to siteId
+    const effectiveSiteId = selectedSiteId || siteId || profile?.site_id;
+    if (effectiveSiteId) {
+      query = query.eq("site_id", effectiveSiteId);
     }
 
     const { data, error } = await query;
@@ -921,7 +931,7 @@ ${validCallPoints.map(cp => {
       </div>
 
       {isExpanded && (
-        <div className="border-t border-neutral-800 p-6 bg-[#0f1220]">
+        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-[#0f1220]">
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -943,7 +953,7 @@ ${validCallPoints.map(cp => {
                 {callPointRows.map((row, index) => (
                   <div
                     key={row.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-neutral-800 bg-[#141823]"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-neutral-800 bg-[#141823]"
                   >
                     {/* Call Point Name Input */}
                     <input
@@ -951,7 +961,7 @@ ${validCallPoints.map(cp => {
                       placeholder="Call Point Name (e.g., CP1, Main Entrance, Kitchen)"
                       value={row.callPointName}
                       onChange={(e) => updateCallPointRow(row.id, 'callPointName', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500"
                     />
                     
                     {/* Location Input */}
@@ -960,7 +970,7 @@ ${validCallPoints.map(cp => {
                       placeholder="Location (e.g., Ground Floor, Reception)"
                       value={row.location}
                       onChange={(e) => updateCallPointRow(row.id, 'location', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500"
                     />
 
                     {/* Delete Button */}
@@ -995,7 +1005,7 @@ ${validCallPoints.map(cp => {
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200"
               >
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -1035,7 +1045,7 @@ ${validCallPoints.map(cp => {
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
                           ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                          : "border-gray-200 dark:border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
                       }`}
                     >
                       {day.label}
@@ -1077,7 +1087,7 @@ ${validCallPoints.map(cp => {
                         value={monthlyDay || ''}
                         onChange={(e) => setMonthlyDay(parseInt(e.target.value) || null)}
                         placeholder="Day (1-31)"
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 ml-7"
                       />
                     )}
                     
@@ -1101,7 +1111,7 @@ ${validCallPoints.map(cp => {
                       <select
                         value={monthlyLastWeekday || 'friday'}
                         onChange={(e) => setMonthlyLastWeekday(e.target.value)}
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 ml-7"
                       >
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
@@ -1135,7 +1145,7 @@ ${validCallPoints.map(cp => {
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200"
                 />
                 <p className="text-xs text-slate-400 mt-2">
                   Tasks will be automatically scheduled for this date {frequency === 'annually' ? 'each year' : frequency === 'biannual' ? 'every 6 months' : 'each quarter'}
@@ -1171,7 +1181,7 @@ ${validCallPoints.map(cp => {
                     className={`px-4 py-3 rounded-lg border text-center transition-all ${
                       selectedDayParts.includes(part.id)
                         ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                        : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                        : "border-gray-200 dark:border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
                     }`}
                   >
                     <div className="text-sm font-medium">{part.label}</div>
@@ -1190,11 +1200,10 @@ ${validCallPoints.map(cp => {
                     <label className="block text-xs text-slate-400 mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "09:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}
@@ -1210,11 +1219,11 @@ ${validCallPoints.map(cp => {
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Enter step-by-step instructions for completing this task..."
                 rows={10}
-                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
+                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-neutral-800">
               {editingTemplateId ? (
                 <button
                   type="button"

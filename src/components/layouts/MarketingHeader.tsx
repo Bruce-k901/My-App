@@ -18,14 +18,11 @@ export default function MarketingHeader() {
         </>
       }
     >
-            {/* Center navigation: Checkly Features, Why Checkly, Pricing */}
-            <Link href="/checkly-features" className="text-slate-200 hover:text-magenta-400 transition">
-              Checkly Features
+            {/* Center navigation: Product, Pricing */}
+            <Link key="product" href="/product" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
+              Product
             </Link>
-            <Link href="/why-checkly" className="text-slate-200 hover:text-magenta-400 transition">
-              Why Checkly
-            </Link>
-            <Link href="/pricing" className="text-slate-200 hover:text-magenta-400 transition">
+            <Link key="pricing" href="/pricing" className="text-slate-200 hover:text-magenta-400 transition" prefetch={false} suppressHydrationWarning>
               Pricing
             </Link>
     </SharedHeaderBase>

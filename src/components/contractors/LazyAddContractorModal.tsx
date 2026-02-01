@@ -35,8 +35,9 @@ const AddContractorModalSkeleton = () => (
 );
 
 // Dynamically import the actual AddContractorModal component
+// Using a function that returns a promise to prevent caching issues
 const DynamicAddContractorModal = dynamic(
-  () => import('./AddContractorModal'),
+  () => import('./AddContractorModal').then(mod => ({ default: mod.default })),
   {
     loading: () => <AddContractorModalSkeleton />,
     ssr: false,

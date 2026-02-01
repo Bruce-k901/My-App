@@ -28,6 +28,7 @@ import TaskCompletionModal from '@/components/checklists/TaskCompletionModal';
 import { formatDistanceToNow, format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTaskWaste } from '@/hooks/useModuleReferences';
 
 type TaskCompletionRecord = {
   id: string;
@@ -57,6 +58,9 @@ export default function TaskDetailPage() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['details']));
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Get linked waste records for this task
+  const { data: linkedWaste, isLoading: loadingWaste } = useTaskWaste(taskId);
 
   useEffect(() => {
     if (taskId && companyId) {
@@ -348,6 +352,62 @@ export default function TaskDetailPage() {
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Latest Completion Details</h2>
                 <CompletionDetails record={latestCompletion} task={task} />
+              </div>
+            )}
+
+            {/* Linked Waste Records */}
+            {(linkedWaste && linkedWaste.length > 0) && (
+              <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+                <button
+                  onClick={() => toggleSection('waste')}
+                  className="w-full flex items-center justify-between mb-4"
+                >
+                  <h2 className="text-xl font-semibold text-white">
+                    Waste Generated ({linkedWaste.length})
+                  </h2>
+                  {expandedSections.has('waste') ? (
+                    <ChevronUp className="w-5 h-5 text-white/60" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-white/60" />
+                  )}
+                </button>
+
+                {expandedSections.has('waste') && (
+                  <div className="space-y-3">
+                    {linkedWaste.map((ref) => (
+                      <Link
+                        key={ref.link_id}
+                        href={`/dashboard/stockly/waste?id=${ref.target_id}`}
+                        className="block bg-white/[0.05] border border-white/[0.1] rounded-lg p-4 hover:bg-white/[0.08] transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <AlertTriangle className="w-5 h-5 text-orange-400" />
+                              <span className="font-semibold text-white">
+                                Waste Record #{ref.target_id.slice(0, 8)}
+                              </span>
+                              {ref.link_type && (
+                                <span className="px-2 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded text-xs">
+                                  {ref.link_type.replace(/_/g, ' ')}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-white/60">
+                              Linked: {format(new Date(ref.created_at), 'dd MMM yyyy HH:mm')}
+                            </div>
+                            {ref.metadata && Object.keys(ref.metadata).length > 0 && (
+                              <div className="text-xs text-white/40 mt-2">
+                                {ref.metadata.cost && `Cost: £${ref.metadata.cost.toFixed(2)}`}
+                              </div>
+                            )}
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-white/40" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
