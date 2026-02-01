@@ -976,6 +976,25 @@ body:has(.marketing-page) .global-footer {
   scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
 }
 
+/* AI Assistant - Magenta (#EC4899) */
+.assistant-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assistant-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb {
+  background: #ec4899;
+  border-radius: 3px;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #db2777;
+}
+.assistant-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ec4899 transparent;
+}
+
 /* Default dashboard scrollbar (for non-module pages) */
 .dashboard-page main::-webkit-scrollbar {
   width: 6px;

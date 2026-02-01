@@ -47,6 +47,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { captureScreenshot, blobToDataURL } from './ScreenshotCapture';
 import { Camera, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePanelStore } from '@/lib/stores/panel-store';
 
 // ============================================================================
 // TYPES
@@ -157,7 +158,7 @@ interface AIAssistantWidgetProps {
 }
 
 export default function AIAssistantWidget({ position = 'bottom-right', compact = false }: AIAssistantWidgetProps = {}) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { aiAssistantOpen: isOpen, setAiAssistantOpen: setIsOpen } = usePanelStore();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -1175,24 +1176,6 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
   
   const widgetContent = (
     <>
-      {/* Floating Button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className={`${position === 'top-right' 
-            ? 'fixed top-[88px] right-4 lg:right-6 z-[10001]' 
-            : 'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000]'
-          } flex items-center gap-2 ${compact ? 'px-2 py-2' : 'px-3 py-2.5 sm:px-4 sm:py-3'} rounded-full 
-            bg-transparent text-[#EC4899] border border-[#EC4899] shadow-lg 
-            hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] hover:scale-105 
-            transition-all duration-200 ease-in-out`}
-          aria-label="Open AI Assistant"
-        >
-          <Sparkles className={`${compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} />
-          {!compact && <span className="font-medium text-sm sm:text-base">Ask AI</span>}
-        </button>
-      )}
-      
       {/* Chat Panel */}
       {isOpen && (
         <>
@@ -1210,7 +1193,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               ? 'fixed inset-0 sm:inset-auto sm:top-20 sm:right-4' 
               : 'fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6'
             } z-[10000] 
-              w-full sm:w-[400px] h-full sm:h-[600px] sm:max-h-[80vh] 
+              w-full sm:w-[440px] h-full sm:h-[700px] sm:max-h-[85vh] 
               bg-[#0f1220] border-0 sm:border border-white/[0.06] rounded-none sm:rounded-2xl shadow-2xl 
               flex flex-col overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
@@ -1330,7 +1313,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
           <div 
             ref={messagesContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0"
+            className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0 assistant-scrollbar"
           >
             {/* Welcome message if no messages */}
             {messages.length === 0 && (

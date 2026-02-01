@@ -6,7 +6,7 @@ export type LibraryType =
   | 'first_aid'
   | 'products';
 
-export type ModuleTheme = 'checkly' | 'stockly' | 'teamly';
+export type ModuleTheme = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly';
 
 export interface BaseLibraryItem {
   id: string;
