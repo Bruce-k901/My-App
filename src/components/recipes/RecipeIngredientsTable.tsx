@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import debounce from 'lodash/debounce';
+import { formatUnitCost } from '@/lib/utils/libraryHelpers';
 
 interface RecipeIngredient {
   id?: string;
@@ -70,9 +71,15 @@ export function RecipeIngredientsTable({
   const [mounted, setMounted] = useState(false);
   const [calculatedYield, setCalculatedYield] = useState<number | null>(null);
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
+  const [pendingChanges, setPendingChanges] = useState<Map<string, 'new' | 'modified' | 'deleted'>>(new Map());
+  const [isSavingAll, setIsSavingAll] = useState(false);
   const loadControllerRef = useRef<AbortController | null>(null);
   const availableIngredientsLoadedRef = useRef(false);
   const loadingAvailableIngredientsRef = useRef(false);
+
+  // Derived state for UI
+  const hasUnsavedChanges = useMemo(() => pendingChanges.size > 0, [pendingChanges]);
+  const unsavedCount = useMemo(() => pendingChanges.size, [pendingChanges]);
 
   // Load available ingredients - MUST be defined before any useEffect that uses it
   const loadAvailableIngredients = useCallback(async (retryCount = 0) => {
@@ -186,6 +193,20 @@ export function RecipeIngredientsTable({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Warn about unsaved changes when navigating away
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   // Convert quantity from one unit to another using UOM data
   // Accepts unit_id (UUID) or unit_abbreviation (string) for fromUnit
@@ -431,6 +452,8 @@ export function RecipeIngredientsTable({
   useEffect(() => {
     if (!isEditing && recipeId && !isLoadingRef.current && hasLoadedIngredientsRef.current) {
       console.log('🔄 RecipeIngredientsTable: Editing ended, reloading ingredients for:', recipeId);
+      // Clear pending changes when exiting edit mode
+      setPendingChanges(new Map());
       // Small delay to ensure database has updated
       const timeoutId = setTimeout(() => {
         loadIngredients();
@@ -583,18 +606,39 @@ export function RecipeIngredientsTable({
   }, [isEditing, ingredients.length, loading, availableIngredients.length, recipeId, editingId]);
 
   const handleAdd = () => {
+    const tempId = `temp-${Date.now()}`;
     const newIngredient: Partial<RecipeIngredient> = {
-      id: `temp-${Date.now()}`,
+      id: tempId,
       recipe_id: recipeId,
       ingredient_id: null,
       quantity: 0,
       unit_id: null,
       ingredient_unit_cost: 0
     };
-    setIngredients([...ingredients, newIngredient as RecipeIngredient]);
-    setEditingId(newIngredient.id!);
+    setIngredients(prev => [...prev, newIngredient as RecipeIngredient]);
+
+    // Mark as pending new
+    setPendingChanges(prev => new Map(prev).set(tempId, 'new'));
+
+    // Start editing this row
+    setEditingId(tempId);
     setDraft(newIngredient);
   };
+
+  // Mark rows as modified when edited
+  const markAsModified = useCallback((ingredientId: string) => {
+    setPendingChanges(prev => {
+      const next = new Map(prev);
+      // Only mark as modified if it's not already marked as 'new'
+      if (!next.has(ingredientId) || next.get(ingredientId) !== 'new') {
+        // Don't mark temp rows as 'modified' - they're already 'new'
+        if (!ingredientId.startsWith('temp-')) {
+          next.set(ingredientId, 'modified');
+        }
+      }
+      return next;
+    });
+  }, []);
 
   const handleEdit = (ingredient: RecipeIngredient) => {
     setEditingId(ingredient.id);
@@ -872,58 +916,24 @@ export function RecipeIngredientsTable({
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string | undefined) => {
+    if (!id) return;
     if (!confirm('Delete this ingredient from the recipe?')) return;
 
-    try {
-      if (!id.startsWith('temp-')) {
-        const { error } = await supabase
-          .from('recipe_ingredients')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
+    // Mark for deletion (will be processed on Save All)
+    setPendingChanges(prev => {
+      const next = new Map(prev);
+      if (id.startsWith('temp-')) {
+        // Temp rows just get removed immediately (never saved to DB)
+        next.delete(id);
+      } else {
+        next.set(id, 'deleted');
       }
+      return next;
+    });
 
-      setIngredients(prev => prev.filter(ing => ing.id !== id));
-      
-      // Reload ingredients to get accurate state, then update yield
-      await loadIngredients();
-      
-      // Calculate and update yield after deletion
-      const { data: reloadedIngredients } = await supabase
-        .from('recipe_ingredients')
-        .select('quantity, unit_id, unit_abbreviation')
-        .eq('recipe_id', recipeId);
-      
-      if (reloadedIngredients) {
-        // Convert all quantities to recipe's yield unit
-        const totalYield = reloadedIngredients.reduce((sum, ing) => {
-          const qty = parseFloat(String(ing.quantity || 0));
-          if (!qty || !ing.unit_id) return sum;
-          
-          // Convert to recipe's yield unit if available
-          if (yieldUnit) {
-            const convertedQty = convertUnit(qty, ing.unit_id, yieldUnit);
-            return sum + convertedQty;
-          }
-          return sum + qty;
-        }, 0);
-        
-        await supabase
-          .from('recipes')
-          .update({ yield_qty: totalYield })
-          .eq('id', recipeId);
-        
-        setCalculatedYield(totalYield);
-        // Notify parent to refresh recipe data
-        if (onRecipeUpdate) {
-          onRecipeUpdate();
-        }
-      }
-    } catch (error: any) {
-      console.error('Error deleting recipe ingredient:', error);
-    }
+    // Remove from UI immediately
+    setIngredients(prev => prev.filter(ing => ing.id !== id));
   };
 
   const handleCancel = () => {
@@ -932,6 +942,205 @@ export function RecipeIngredientsTable({
     // Remove temp ingredient if it was new
     if (draft?.id?.startsWith('temp-')) {
       setIngredients(prev => prev.filter(ing => ing.id !== draft.id));
+      // Also remove from pending changes
+      setPendingChanges(prev => {
+        const next = new Map(prev);
+        next.delete(draft.id!);
+        return next;
+      });
+    }
+  };
+
+  // Batch save all pending changes
+  const handleSaveAll = async () => {
+    // Collect ALL rows that need saving:
+    // 1. Any temp row (new) that has valid data
+    // 2. Any existing row marked as modified in pendingChanges
+    // 3. Any row marked for deletion in pendingChanges
+
+    const rowsToProcess: Array<{ ingredient: RecipeIngredient; action: 'insert' | 'update' | 'delete' }> = [];
+
+    // Check all ingredients for unsaved new rows
+    ingredients.forEach(ing => {
+      if (!ing.id) return;
+
+      const isTemp = ing.id.startsWith('temp-');
+      const hasValidData = ing.ingredient_id &&
+                           parseFloat(String(ing.quantity || 0)) > 0 &&
+                           ing.unit_id;
+
+      if (isTemp && hasValidData) {
+        // New row with data - needs insert
+        rowsToProcess.push({ ingredient: ing, action: 'insert' });
+      } else if (!isTemp && pendingChanges.get(ing.id) === 'modified') {
+        // Existing row marked as modified - needs update
+        rowsToProcess.push({ ingredient: ing, action: 'update' });
+      }
+    });
+
+    // Check for deletions (rows that were removed from UI but need DB delete)
+    pendingChanges.forEach((changeType, ingredientId) => {
+      if (changeType === 'deleted' && !ingredientId.startsWith('temp-')) {
+        // Need to delete from DB
+        rowsToProcess.push({
+          ingredient: { id: ingredientId } as RecipeIngredient,
+          action: 'delete'
+        });
+      }
+    });
+
+    if (rowsToProcess.length === 0) {
+      toast.info('No changes to save');
+      return;
+    }
+
+    setIsSavingAll(true);
+    const toastId = toast.loading(`Saving ${rowsToProcess.length} ingredient(s)...`);
+
+    const errors: string[] = [];
+    const successCount = { new: 0, modified: 0, deleted: 0 };
+    const savedIds: Map<string, string> = new Map(); // Map temp ID -> real ID
+
+    try {
+      for (const { ingredient, action } of rowsToProcess) {
+
+        // Handle deletions
+        if (action === 'delete') {
+          const { error } = await supabase
+            .from('recipe_ingredients')
+            .delete()
+            .eq('id', ingredient.id);
+
+          if (error) {
+            errors.push(`Failed to delete: ${error.message}`);
+          } else {
+            successCount.deleted++;
+          }
+          continue;
+        }
+
+        // Validate for inserts and updates
+        if (!ingredient.ingredient_id) {
+          errors.push(`Row missing ingredient selection`);
+          continue;
+        }
+
+        const quantity = parseFloat(String(ingredient.quantity || '0'));
+        if (quantity <= 0) {
+          errors.push(`${ingredient.ingredient_name || 'Row'}: quantity must be > 0`);
+          continue;
+        }
+
+        if (!ingredient.unit_id) {
+          errors.push(`${ingredient.ingredient_name || 'Row'}: missing unit`);
+          continue;
+        }
+
+        // Fetch ingredient cost data from library
+        const { data: ingredientData, error: fetchError } = await supabase
+          .from('ingredients_library')
+          .select('unit_cost, pack_cost, pack_size, yield_percent, ingredient_name')
+          .eq('id', ingredient.ingredient_id)
+          .single();
+
+        if (fetchError || !ingredientData) {
+          errors.push(`${ingredient.ingredient_name || 'Row'}: failed to fetch cost data`);
+          continue;
+        }
+
+        // Calculate unit_cost
+        let unitCost = ingredientData.unit_cost;
+        if (!unitCost || unitCost === 0) {
+          const packSize = parseFloat(String(ingredientData.pack_size || '0'));
+          if (ingredientData.pack_cost && packSize > 0) {
+            unitCost = ingredientData.pack_cost / packSize;
+          } else {
+            // Allow save even without cost - just set to 0
+            unitCost = 0;
+            console.warn(`${ingredientData.ingredient_name}: no cost data, setting to 0`);
+          }
+        }
+
+        const yieldPercent = ingredientData.yield_percent || 100;
+        const lineCost = unitCost > 0 ? (unitCost * quantity) / (yieldPercent / 100) : 0;
+
+        const payload = {
+          recipe_id: recipeId,
+          ingredient_id: ingredient.ingredient_id,
+          quantity: quantity,
+          unit_id: ingredient.unit_id,
+          line_cost: lineCost,
+          unit_cost: unitCost,
+          sort_order: ingredient.sort_order ?? ingredients.findIndex(i => i.id === ingredient.id),
+          company_id: companyId,
+        };
+
+        if (action === 'insert') {
+          // Insert new ingredient
+          const { data, error } = await supabase
+            .from('recipe_ingredients')
+            .insert(payload)
+            .select()
+            .single();
+
+          if (error) {
+            errors.push(`${ingredient.ingredient_name || 'Row'}: ${error.message}`);
+          } else {
+            successCount.new++;
+            // Track the mapping from temp ID to real ID
+            if (data?.id && ingredient.id) {
+              savedIds.set(ingredient.id, data.id);
+            }
+          }
+        } else if (action === 'update') {
+          // Update existing ingredient
+          const { error } = await supabase
+            .from('recipe_ingredients')
+            .update(payload)
+            .eq('id', ingredient.id);
+
+          if (error) {
+            errors.push(`${ingredient.ingredient_name || 'Row'}: ${error.message}`);
+          } else {
+            successCount.modified++;
+          }
+        }
+      }
+
+      // Clear pending changes
+      setPendingChanges(new Map());
+
+      // Show result toast
+      const totalSaved = successCount.new + successCount.modified + successCount.deleted;
+
+      if (errors.length === 0) {
+        const parts = [];
+        if (successCount.new > 0) parts.push(`${successCount.new} added`);
+        if (successCount.modified > 0) parts.push(`${successCount.modified} updated`);
+        if (successCount.deleted > 0) parts.push(`${successCount.deleted} deleted`);
+        toast.success(`Saved: ${parts.join(', ')}`, { id: toastId });
+      } else if (totalSaved > 0) {
+        toast.warning(
+          `Saved ${totalSaved} items, ${errors.length} failed: ${errors[0]}`,
+          { id: toastId }
+        );
+      } else {
+        toast.error(`Save failed: ${errors[0]}`, { id: toastId });
+      }
+
+      // Reload to get fresh data with proper IDs and joined fields
+      await loadIngredients();
+
+      // Notify parent to refresh recipe totals
+      if (onRecipeUpdate) {
+        onRecipeUpdate();
+      }
+
+    } catch (err: any) {
+      console.error('Save all error:', err);
+      toast.error(`Save failed: ${err.message}`, { id: toastId });
+    } finally {
+      setIsSavingAll(false);
     }
   };
 
@@ -1013,6 +1222,18 @@ export function RecipeIngredientsTable({
       unitId = matchingUOM?.id || null;
     }
     
+    // Calculate unit cost - use stored unit_cost or calculate from pack_cost/pack_size
+    let calculatedUnitCost = parseFloat(String(selectedIng.unit_cost || 0));
+    const packCost = parseFloat(String(selectedIng.pack_cost || 0));
+    const packSize = parseFloat(String(selectedIng.pack_size || 0));
+    const yieldPercent = parseFloat(String(selectedIng.yield_percent || 100));
+
+    // If unit_cost is 0, calculate from pack_cost/pack_size
+    if ((!calculatedUnitCost || calculatedUnitCost === 0) && packCost > 0 && packSize > 0) {
+      calculatedUnitCost = packCost / packSize;
+      console.log('📊 Calculated unit_cost from pack:', { packCost, packSize, calculatedUnitCost });
+    }
+
     // Update the draft with the selected ingredient, preserving existing quantity
     const updatedDraft: Partial<RecipeIngredient> = {
       id: ingredientId,
@@ -1021,7 +1242,10 @@ export function RecipeIngredientsTable({
       ingredient_name: selectedIng.ingredient_name || '',
       supplier: selectedIng.supplier || '',
       unit_id: unitId,
-      ingredient_unit_cost: parseFloat(String(selectedIng.unit_cost || 0)),
+      ingredient_unit_cost: calculatedUnitCost,
+      pack_cost: packCost || undefined,
+      pack_size: packSize || undefined,
+      yield_percent: yieldPercent,
       is_sub_recipe: selectedIng.is_prep_item || false,
       linked_recipe_id: selectedIng.linked_recipe_id || null,
       quantity: currentIngredient?.quantity || 0 // Preserve existing quantity
@@ -1054,11 +1278,11 @@ export function RecipeIngredientsTable({
     
     // 4. Update the ingredient in the list
     setIngredients(prev => {
-      const updated = prev.map(ing => 
-        ing.id === ingredientId 
-          ? { 
-              ...ing, 
-              ...updatedDraft, 
+      const updated = prev.map(ing =>
+        ing.id === ingredientId
+          ? {
+              ...ing,
+              ...updatedDraft,
               ingredient_name: ingredientName,
               ingredient_id: selectedIng.id
             } as RecipeIngredient
@@ -1067,6 +1291,9 @@ export function RecipeIngredientsTable({
       console.log('📝 Updated ingredients list, row:', updated.find(i => i.id === ingredientId));
       return updated;
     });
+
+    // 4b. Mark as modified for batch save
+    markAsModified(ingredientId);
     
     // 5. Close dropdown after state updates
     setTimeout(() => {
@@ -1187,7 +1414,15 @@ export function RecipeIngredientsTable({
                 const selectedIng = availableIngredients.find(ing => ing.id === ingredient.ingredient_id);
 
                 return (
-                  <tr key={ingredient.id} className="border-t border-theme dark:border-white/[0.06] hover:bg-theme-button dark:hover:bg-white/[0.02]">
+                  <tr
+                    key={ingredient.id}
+                    className={`
+                      border-t border-theme dark:border-white/[0.06]
+                      transition-colors hover:bg-theme-button dark:hover:bg-white/[0.02]
+                      ${pendingChanges.has(ingredient.id!) ? 'bg-amber-500/5 border-l-2 border-l-amber-500' : ''}
+                      ${pendingChanges.get(ingredient.id!) === 'deleted' ? 'opacity-50 line-through' : ''}
+                    `}
+                  >
                     <td className="px-4 py-3 w-[30%]" style={{ position: 'relative', zIndex: showSearchDropdown[ingredient.id] ? 9999 : 'auto' }}>
                       {isEditingThis ? (
                         <div className="relative">
@@ -1534,17 +1769,20 @@ export function RecipeIngredientsTable({
                             // Allow empty string while typing, convert to number when needed
                             const inputValue = e.target.value;
                             const value = inputValue === '' ? '' : (parseFloat(inputValue) || 0);
-                            
+
                             // Update quantity immediately (for UI responsiveness)
-                            setIngredients(prev => prev.map(ing => 
+                            setIngredients(prev => prev.map(ing =>
                               ing.id === ingredient.id ? { ...ing, quantity: value as any } : ing
                             ));
-                            
+
+                            // Mark as modified for batch save
+                            markAsModified(ingredient.id!);
+
                             // Calculate cost after 300ms of no typing (debounced)
                             if (typeof value === 'number' && value > 0) {
                               debouncedCalculateCostRef.current(ingredient.id!, value, ingredient);
                             }
-                            
+
                             // Also update draft if this is the active editing row
                             if (editingId === ingredient.id && draft) {
                               setDraft({ ...draft, quantity: value as any });
@@ -1598,7 +1836,10 @@ export function RecipeIngredientsTable({
                                 ? { ...ing, unit_id: unitId }
                                 : ing
                             ));
-                            
+
+                            // Mark as modified for batch save
+                            markAsModified(ingredient.id!);
+
                             if (editingId === ingredient.id && draft) {
                               setDraft({ ...draft, unit_id: unitId });
                             } else if (isEmpty && editingId !== ingredient.id) {
@@ -1627,9 +1868,11 @@ export function RecipeIngredientsTable({
                           onChange={(e) => {
                             const value = parseFloat(e.target.value) || 0;
                             // Always update the ingredient in the list
-                            setIngredients(prev => prev.map(ing => 
+                            setIngredients(prev => prev.map(ing =>
                               ing.id === ingredient.id ? { ...ing, ingredient_unit_cost: value } : ing
                             ));
+                            // Mark as modified for batch save
+                            markAsModified(ingredient.id!);
                             // Also update draft if this is the active editing row
                             if (editingId === ingredient.id && draft) {
                               setDraft({ ...draft, ingredient_unit_cost: value });
@@ -1650,7 +1893,7 @@ export function RecipeIngredientsTable({
                           placeholder="0.00"
                         />
                       ) : (
-                        <span className="text-emerald-400 text-sm">£{(ingredient.ingredient_unit_cost || 0).toFixed(2)}</span>
+                        <span className="text-emerald-400 text-sm">{formatUnitCost(ingredient.ingredient_unit_cost || 0)}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium w-[12%]">
@@ -1668,46 +1911,20 @@ export function RecipeIngredientsTable({
                     {isEditing && (
                       <td className="px-2 py-3 w-[5%]">
                         <div className="flex items-center justify-center gap-1">
-                          {isEditingThis ? (
-                            <>
-                              <button
-                                onClick={() => handleSave(ingredient)}
-                                disabled={savingIds.has(ingredient.id!)}
-                                className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label="Save"
-                              >
-                                {savingIds.has(ingredient.id!) ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Save className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                onClick={handleCancel}
-                                className="p-1.5 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
-                                aria-label="Cancel"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => handleEdit(ingredient)}
-                                className="p-1.5 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
-                                aria-label="Edit"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(ingredient.id)}
-                                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-colors"
-                                aria-label="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={() => handleEdit(ingredient)}
+                            className="p-1.5 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+                            aria-label="Edit"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(ingredient.id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-colors"
+                            aria-label="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     )}
@@ -1755,13 +1972,38 @@ export function RecipeIngredientsTable({
       </div>
 
       {isEditing && (
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Ingredient
-        </button>
+        <div className="flex items-center justify-between gap-4">
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Ingredient
+          </button>
+
+          {/* Save All button - always visible when editing, disabled when no changes */}
+          <button
+            onClick={handleSaveAll}
+            disabled={isSavingAll || !hasUnsavedChanges}
+            className={`flex items-center gap-2 px-6 py-2 font-medium rounded-lg transition-colors ${
+              hasUnsavedChanges
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {isSavingAll ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                {hasUnsavedChanges ? `Save All (${unsavedCount})` : 'Save All'}
+              </>
+            )}
+          </button>
+        </div>
       )}
     </div>
   );

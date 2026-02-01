@@ -8,7 +8,7 @@ export function GlobalActions() {
   const { setMessagingOpen, setCalendarOpen } = usePanelStore()
 
   return (
-    <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
+    <div className="fixed right-4 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-2 z-40">
       {/* Messaging Button */}
       <button
         onClick={() => setMessagingOpen(true)}

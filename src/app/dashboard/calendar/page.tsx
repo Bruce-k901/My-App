@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { format, addDays, startOfDay, isSameDay } from "date-fns";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import CreateTaskModal, { type ModalContext } from "@/components/tasks/CreateTaskModal";
 import TimePicker from "@/components/ui/TimePicker";
 
@@ -65,8 +67,10 @@ interface CalendarEvent {
 
 export default function ManagerCalendarPage() {
   const { companyId, siteId, userProfile } = useAppContext();
+  const { isMobile } = useIsMobile();
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [mobileSelectedDay, setMobileSelectedDay] = useState<Date>(() => startOfDay(new Date()));
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [tasksFromTable, setTasksFromTable] = useState<any[]>([]); // Tasks from tasks table
@@ -838,6 +842,191 @@ export default function ManagerCalendarPage() {
   const selectedDateReminders = reminders.filter(r => r.date === selectedDate);
   const selectedDateNotes = selectedDate ? notes[selectedDate] || "" : "";
 
+  // ============================================
+  // MOBILE VIEW - Daily Calendar
+  // ============================================
+  if (isMobile) {
+    const mobileDateStr = format(mobileSelectedDay, 'yyyy-MM-dd');
+    const mobileIsToday = isSameDay(mobileSelectedDay, new Date());
+
+    // Get events for mobile selected day
+    const mobileTasks = tasks.filter(t => t.dueDate === mobileDateStr);
+    const mobileTasksFromTable = tasksFromTable.filter(t => t.due_date === mobileDateStr);
+    const mobileReminders = reminders.filter(r => r.date === mobileDateStr);
+    const mobileNotes = notes[mobileDateStr] || "";
+
+    // Group by time of day
+    const allMobileItems = [
+      ...mobileTasks.map(t => ({ ...t, itemType: 'task' as const, time: t.dueTime || '09:00' })),
+      ...mobileTasksFromTable.map(t => ({
+        id: t.id,
+        title: t.task_name || t.checklist_templates?.name || 'Task',
+        itemType: 'tableTask' as const,
+        time: t.due_time || '09:00',
+        status: t.status,
+        metadata: t.metadata
+      })),
+      ...mobileReminders.map(r => ({ ...r, itemType: 'reminder' as const, time: r.time || '09:00' })),
+    ].sort((a, b) => a.time.localeCompare(b.time));
+
+    const morningItems = allMobileItems.filter(i => {
+      const hour = parseInt(i.time?.split(':')[0] || '9');
+      return hour < 12;
+    });
+    const afternoonItems = allMobileItems.filter(i => {
+      const hour = parseInt(i.time?.split(':')[0] || '9');
+      return hour >= 12 && hour < 17;
+    });
+    const eveningItems = allMobileItems.filter(i => {
+      const hour = parseInt(i.time?.split(':')[0] || '9');
+      return hour >= 17;
+    });
+
+    const goToPrevDay = () => setMobileSelectedDay(prev => addDays(prev, -1));
+    const goToNextDay = () => setMobileSelectedDay(prev => addDays(prev, 1));
+    const goToToday = () => setMobileSelectedDay(startOfDay(new Date()));
+
+    const getItemColor = (item: any) => {
+      if (item.itemType === 'reminder') return '#F59E0B';
+      if (item.itemType === 'tableTask') {
+        if (item.status === 'completed') return '#10B981';
+        return '#EC4899';
+      }
+      if (item.priority === 'high') return '#EF4444';
+      if (item.priority === 'medium') return '#F59E0B';
+      return '#3B82F6';
+    };
+
+    const getItemIcon = (item: any) => {
+      if (item.itemType === 'reminder') return Bell;
+      return CheckCircle2;
+    };
+
+    const renderMobileItem = (item: any) => {
+      const Icon = getItemIcon(item);
+      const color = getItemColor(item);
+      const isCompleted = item.status === 'completed';
+
+      return (
+        <div
+          key={item.id}
+          className={`bg-white/5 border border-white/10 rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
+        >
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
+              <Icon size={18} style={{ color }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className={`text-white font-medium ${isCompleted ? 'line-through' : ''}`}>
+                  {item.title}
+                </span>
+                {isCompleted && <CheckCircle2 size={14} className="text-green-400 flex-shrink-0" />}
+              </div>
+              <div className="flex items-center gap-3 mt-2 text-xs text-white/40">
+                <span className="flex items-center gap-1">
+                  <Clock size={12} />
+                  {item.time ? format(new Date(`2000-01-01T${item.time}`), 'h:mm a') : 'All day'}
+                </span>
+                {item.itemType === 'reminder' && <span className="text-amber-400">Reminder</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderTimeSection = (title: string, items: any[]) => {
+      if (items.length === 0) return null;
+      return (
+        <div className="mb-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">{title}</h3>
+          <div className="space-y-3">{items.map(renderMobileItem)}</div>
+        </div>
+      );
+    };
+
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white">
+        {/* Header with date navigation */}
+        <div className="sticky top-0 z-20 bg-[#0a0a0a] border-b border-white/10">
+          <div className="px-4 py-4 flex items-center justify-between">
+            <button onClick={goToPrevDay} className="p-2 rounded-full bg-white/5 active:bg-white/10">
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+            <button onClick={goToToday} className="flex-1 text-center">
+              <div className={`text-lg font-semibold ${mobileIsToday ? 'text-[#EC4899]' : 'text-white'}`}>
+                {format(mobileSelectedDay, 'EEEE')}
+              </div>
+              <div className="text-sm text-white/60">{format(mobileSelectedDay, 'd MMMM yyyy')}</div>
+            </button>
+            <button onClick={goToNextDay} className="p-2 rounded-full bg-white/5 active:bg-white/10">
+              <ChevronRight className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          {/* Quick week view */}
+          <div className="px-4 pb-3 flex items-center gap-1 overflow-x-auto">
+            {Array.from({ length: 7 }, (_, i) => {
+              const day = addDays(startOfDay(new Date()), i - 3);
+              const isSelected = isSameDay(day, mobileSelectedDay);
+              const dayIsToday = isSameDay(day, new Date());
+              return (
+                <button
+                  key={i}
+                  onClick={() => setMobileSelectedDay(day)}
+                  className={`flex-1 min-w-[40px] py-2 px-1 rounded-lg text-center transition-colors ${
+                    isSelected ? 'bg-[#EC4899]/20 border border-[#EC4899]/50' : 'bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <div className={`text-[10px] ${isSelected ? 'text-[#EC4899]' : dayIsToday ? 'text-blue-400' : 'text-white/40'}`}>
+                    {format(day, 'EEE')}
+                  </div>
+                  <div className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-white/70'}`}>
+                    {format(day, 'd')}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-4 py-4 pb-24">
+          {/* Notes for the day */}
+          {mobileNotes && (
+            <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-2">
+                <FileText size={16} />
+                Notes
+              </div>
+              <p className="text-white/70 text-sm whitespace-pre-wrap">{mobileNotes}</p>
+            </div>
+          )}
+
+          {allMobileItems.length === 0 && !mobileNotes ? (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
+              <CalendarDays className="w-12 h-12 text-white/20 mx-auto mb-3" />
+              <p className="text-white/40">No items scheduled</p>
+              <p className="text-white/30 text-sm mt-1">
+                {mobileIsToday ? "You're all clear for today!" : 'Nothing scheduled for this day'}
+              </p>
+            </div>
+          ) : (
+            <>
+              {renderTimeSection('Morning', morningItems)}
+              {renderTimeSection('Afternoon', afternoonItems)}
+              {renderTimeSection('Evening', eveningItems)}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
+  // DESKTOP VIEW
+  // ============================================
   return (
     <div className="w-full -mt-[72px] pt-[72px]">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6">

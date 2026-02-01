@@ -50,27 +50,26 @@ export default function DashboardHomePage() {
         : 'User');
 
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <MobileHeader
           userName={userName}
-          siteName="All Sites"
           unreadNotifications={0}
         />
 
-        <div className="px-5 space-y-6">
+        <div className="px-5 space-y-6 pb-24">
           {/* Quick Actions */}
           <section>
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
               Quick Actions
             </h2>
             <QuickActionsGrid section="quick" />
           </section>
 
-          {/* Today's Summary */}
+          {/* Today's Summary - Simplified for mobile */}
           {!loading && companyId && (
             <section>
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                Today's Summary
+              <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+                Today
               </h2>
               <DashboardQuickStats />
             </section>

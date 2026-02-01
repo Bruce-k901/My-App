@@ -2,15 +2,15 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, CheckSquare, MessageCircle, Calendar, Menu } from 'lucide-react';
+import { Home, CheckSquare, CalendarDays, Users, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 
 const tabs = [
   { id: 'home', icon: Home, label: 'Home', href: '/dashboard' },
   { id: 'tasks', icon: CheckSquare, label: 'Tasks', href: '/dashboard/todays_tasks' },
-  { id: 'messages', icon: MessageCircle, label: 'Msgs', href: '/dashboard/messaging' },
-  { id: 'schedule', icon: Calendar, label: 'Rota', href: '/dashboard/people/schedule' },
+  { id: 'calendar', icon: CalendarDays, label: 'Calendar', href: '/dashboard/calendar' },
+  { id: 'schedule', icon: Users, label: 'Rota', href: '/dashboard/people/schedule' },
   { id: 'more', icon: Menu, label: 'More', href: null }, // Opens sheet, no navigation
 ] as const;
 
@@ -34,7 +34,7 @@ export function BottomTabBar() {
   const getActiveFromPath = () => {
     if (pathname === '/dashboard') return 'home';
     if (pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists')) return 'tasks';
-    if (pathname?.includes('/messaging') || pathname?.includes('/messages')) return 'messages';
+    if (pathname?.includes('/calendar')) return 'calendar';
     if (pathname?.includes('/schedule') || pathname?.includes('/people')) return 'schedule';
     return 'home';
   };
@@ -54,8 +54,7 @@ export function BottomTabBar() {
       <div className="flex items-center justify-around py-2">
         {tabs.map((tab) => {
           const isActive = tab.id === currentActive;
-          const badgeCount = tab.id === 'tasks' ? badges.tasks :
-                            tab.id === 'messages' ? badges.messages : 0;
+          const badgeCount = tab.id === 'tasks' ? badges.tasks : 0;
 
           return (
             <button
