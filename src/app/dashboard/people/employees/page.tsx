@@ -36,6 +36,7 @@ import {
 import type { EmergencyContact } from '@/types/teamly';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface Employee {
   id: string;
@@ -62,6 +63,7 @@ interface Employee {
 export default function EmployeesPage() {
   const router = useRouter();
   const { profile, company } = useAppContext();
+  const { isMobile } = useIsMobile();
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -971,101 +973,111 @@ export default function EmployeesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header - Simplified on mobile */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-theme-primary">Employees</h1>
-          <p className="text-theme-secondary">
-            {stats.active} active employees{stats.onboarding > 0 && `, ${stats.onboarding} onboarding`}
+          <h1 className="text-2xl font-bold text-theme-primary dark:text-white">
+            {isMobile ? 'Staff Directory' : 'Employees'}
+          </h1>
+          <p className="text-theme-secondary dark:text-gray-400">
+            {stats.active} active{!isMobile && stats.onboarding > 0 && `, ${stats.onboarding} onboarding`}
           </p>
         </div>
-        <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary rounded-lg hover:bg-theme-button-hover transition-colors">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-          
-          {/* Add Head Office / Executive Button */}
-          <button
-            onClick={() => setShowExecutiveModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 dark:border-purple-500 text-purple-600 dark:text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] dark:hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
-          >
-            <Briefcase className="w-5 h-5" />
-            <span className="hidden sm:inline">Add Head Office</span>
-            <span className="sm:hidden">Head Office</span>
-          </button>
-          
-          {/* Add Site Employee Button */}
-          <Link
-            href="/dashboard/people/directory/new"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Add Site Employee</span>
-            <span className="sm:hidden">Site Employee</span>
-          </Link>
-        </div>
+        {/* Hide action buttons on mobile */}
+        {!isMobile && (
+          <div className="flex gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary rounded-lg hover:bg-theme-button-hover transition-colors">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+
+            {/* Add Head Office / Executive Button */}
+            <button
+              onClick={() => setShowExecutiveModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 dark:border-purple-500 text-purple-600 dark:text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] dark:hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+            >
+              <Briefcase className="w-5 h-5" />
+              <span className="hidden sm:inline">Add Head Office</span>
+              <span className="sm:hidden">Head Office</span>
+            </button>
+
+            {/* Add Site Employee Button */}
+            <Link
+              href="/dashboard/people/directory/new"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Add Site Employee</span>
+              <span className="sm:hidden">Site Employee</span>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* Filters */}
+      {/* Filters - Search only on mobile */}
       <div className="flex flex-wrap gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
+        <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-md'}`}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary dark:text-gray-400" />
           <input
             type="text"
             placeholder="Search employees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-3 bg-theme-surface-elevated dark:bg-white/5 border border-theme dark:border-white/10 rounded-xl text-theme-primary dark:text-white placeholder-theme-tertiary dark:placeholder-gray-500 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-500"
           />
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
-        >
-          <option value="">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="onboarding">Onboarding</option>
-          <option value="offboarding">Offboarding</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        {/* Hide extra filters on mobile */}
+        {!isMobile && (
+          <>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+            >
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="onboarding">Onboarding</option>
+              <option value="offboarding">Offboarding</option>
+              <option value="inactive">Inactive</option>
+            </select>
 
-        {departments.length > 0 && (
-          <select
-            value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
-          >
-            <option value="">All Departments</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept!}>{dept}</option>
-            ))}
-          </select>
-        )}
+            {departments.length > 0 && (
+              <select
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+                className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+              >
+                <option value="">All Departments</option>
+                {departments.map(dept => (
+                  <option key={dept} value={dept!}>{dept}</option>
+                ))}
+              </select>
+            )}
 
-        {siteNames.length > 0 && (
-          <select
-            value={siteFilter}
-            onChange={(e) => setSiteFilter(e.target.value)}
-            className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
-          >
-            <option value="">All Sites</option>
-            {siteNames.map(site => (
-              <option key={site} value={site!}>{site}</option>
-            ))}
-          </select>
+            {siteNames.length > 0 && (
+              <select
+                value={siteFilter}
+                onChange={(e) => setSiteFilter(e.target.value)}
+                className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+              >
+                <option value="">All Sites</option>
+                {siteNames.map(site => (
+                  <option key={site} value={site!}>{site}</option>
+                ))}
+              </select>
+            )}
+          </>
         )}
       </div>
 
       {/* Results Count */}
-      <p className="text-theme-tertiary text-sm">
+      <p className="text-theme-tertiary dark:text-gray-400 text-sm">
         Showing {filteredEmployees.length} of {employees.length} employees
       </p>
 
-      {/* Employee Grid */}
-      <div className={`grid md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all ${editingEmployee ? 'opacity-30 pointer-events-none' : ''}`}>
+      {/* Employee Grid - Single column on mobile */}
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4 transition-all ${editingEmployee ? 'opacity-30 pointer-events-none' : ''}`}>
         {filteredEmployees.map((employee) => {
           const isExpanded = expandedEmployees.has(employee.id);
           const fullData = expandedEmployeeData.get(employee.id);
@@ -1074,7 +1086,7 @@ export default function EmployeesPage() {
           return (
             <div
               key={employee.id}
-              className={`bg-theme-button border border-theme rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors group relative ${isExpanded ? 'md:col-span-2 lg:col-span-3' : ''}`}
+              className={`bg-theme-button dark:bg-white/[0.03] border border-theme dark:border-white/10 rounded-xl p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors group relative ${isExpanded && !isMobile ? 'md:col-span-2 lg:col-span-3' : ''}`}
             >
               {/* Edit Button, Add to Rota Button, and Expand Button - Positioned absolutely */}
               {!editingEmployee && (

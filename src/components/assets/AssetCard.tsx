@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench } from "lucide-react";
+import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench, Phone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -11,6 +11,7 @@ import CardChevron from "@/components/ui/CardChevron";
 import EditableField from "@/components/ui/EditableField";
 import CalloutModal from "@/components/modals/CalloutModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Asset {
   id: string;
@@ -56,6 +57,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
   const { companyId } = useAppContext();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
+  const { isMobile } = useIsMobile();
 
   // Check if under warranty using warranty_end column
   const isUnderWarranty = () => {
@@ -176,24 +178,25 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
   return (
     <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-      {/* Compact View */}
+      {/* Compact View - Mobile optimized */}
       {!isExpanded && (
         <div className="space-y-2">
           {/* Header with asset info and buttons */}
           <div
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition"
-            role="button"
-            tabIndex={0}
+            onClick={() => !isMobile && setIsExpanded(!isExpanded)}
+            className={`flex ${isMobile ? 'flex-col gap-3' : 'items-center justify-between'} p-3 ${!isMobile && 'cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800/50'} transition`}
+            role={!isMobile ? "button" : undefined}
+            tabIndex={!isMobile ? 0 : undefined}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (!isMobile && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
                 setIsExpanded(!isExpanded);
               }
             }}
           >
-            <div className="flex items-center justify-between flex-1 min-w-0 mr-4">
-              <div className="flex items-center space-x-4">
+            {/* Asset Info */}
+            <div className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} flex-1 min-w-0 ${!isMobile && 'mr-4'}`}>
+              <div className={`flex ${isMobile ? 'flex-col gap-1' : 'items-center space-x-4'}`}>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                   {asset.name || "Unnamed Asset"}
                 </h3>
@@ -204,36 +207,63 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                 )}
               </div>
 
-              <div className="flex items-center space-x-8">
-                <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                  Next Service: {(() => {
-                    const nextService = getNextServiceDate();
-                    return nextService ? nextService.toLocaleDateString() : "Not scheduled";
-                  })()}
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                  Age: {calculateAssetAge(asset.install_date)}
-                </span>
-              </div>
+              {/* Service info - hidden on mobile to save space */}
+              {!isMobile && (
+                <div className="flex items-center space-x-8">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    Next Service: {(() => {
+                      const nextService = getNextServiceDate();
+                      return nextService ? nextService.toLocaleDateString() : "Not scheduled";
+                    })()}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    Age: {calculateAssetAge(asset.install_date)}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCalloutModalOpen(true);
-                }}
-                className="p-1.5 text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 border border-cyan-600 dark:border-cyan-500 rounded transition-colors"
-                title="Log a callout"
-              >
-                <Wrench size={16} />
-              </button>
-              <CardChevron
-                isOpen={isExpanded}
-                onToggle={() => setIsExpanded(!isExpanded)}
-              />
-            </div>
+            {/* Action buttons - Mobile: Full width callout button */}
+            {isMobile ? (
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCalloutModalOpen(true);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-500/10 border border-red-500/50 text-red-500 rounded-xl font-medium transition-colors active:scale-95"
+                >
+                  <Wrench size={18} />
+                  <span>Report Issue / Callout</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsExpanded(true);
+                  }}
+                  className="px-4 py-2.5 bg-white/5 border border-white/10 text-gray-400 rounded-xl transition-colors active:scale-95"
+                >
+                  Details
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCalloutModalOpen(true);
+                  }}
+                  className="p-1.5 text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 border border-cyan-600 dark:border-cyan-500 rounded transition-colors"
+                  title="Log a callout"
+                >
+                  <Wrench size={16} />
+                </button>
+                <CardChevron
+                  isOpen={isExpanded}
+                  onToggle={() => setIsExpanded(!isExpanded)}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
