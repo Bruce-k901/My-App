@@ -58,7 +58,8 @@ export default function IncidentsPage() {
         .eq('company_id', companyId)
         .order('reported_date', { ascending: false });
 
-      if (siteId) {
+      // Only filter by site_id if it's a valid UUID (not "all")
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
 

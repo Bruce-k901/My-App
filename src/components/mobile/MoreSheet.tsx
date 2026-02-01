@@ -9,16 +9,14 @@ import { QuickActionsGrid } from './QuickActionsGrid';
 // Module icons for section headers
 import {
   Package,     // Stockly
-  Calendar,    // Planly
   Wrench,      // Assetly
   Users,       // Teamly
 } from 'lucide-react';
 
 const moduleSections = [
-  { id: 'stockly', label: 'Stockly', subtitle: 'Inventory', icon: Package, color: '#2196F3' },
-  { id: 'planly', label: 'Planly', subtitle: 'Production', icon: Calendar, color: '#FF9800' },
-  { id: 'assetly', label: 'Assetly', subtitle: 'Assets', icon: Wrench, color: '#607D8B' },
-  { id: 'teamly', label: 'Teamly', subtitle: 'People', icon: Users, color: '#9C27B0' },
+  { id: 'stockly', label: 'Stockly', subtitle: 'Inventory', icon: Package, color: '#10B981' },
+  { id: 'assetly', label: 'Assetly', subtitle: 'Assets', icon: Wrench, color: '#0EA5E9' },
+  { id: 'teamly', label: 'Teamly', subtitle: 'People', icon: Users, color: '#8B5CF6' },
 ] as const;
 
 export function MoreSheet() {

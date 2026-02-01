@@ -16,7 +16,15 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [paddingClass, setPaddingClass] = useState('px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16');
   const [showAIWidget, setShowAIWidget] = useState(true);
   const pathname = usePathname();
-  const { isMobile } = useIsMobile();
+  const { isMobile, isHydrated } = useIsMobile();
+
+  // Force dark mode on mobile for consistent theme
+  useEffect(() => {
+    if (isHydrated && isMobile) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [isMobile, isHydrated]);
 
   useEffect(() => {
     // Only compute pathname-dependent values on client after mount

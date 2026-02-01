@@ -8,7 +8,6 @@ import {
   Package,
   AlertTriangle,
   CheckSquare,
-  Truck,
   Wrench,
   ClipboardList,
   Trash2,
@@ -39,26 +38,22 @@ const quickActions: QuickAction[] = [
   { id: 'checklist', icon: ClipboardList, label: 'Checklists', href: '/dashboard/checklists', color: '#4CAF50' },
 ];
 
-// Module-specific actions
+// Module-specific actions (Planly removed from mobile - desktop only)
 const moduleActions: Record<string, QuickAction[]> = {
   stockly: [
-    { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/dashboard/stockly/deliveries', color: '#FF9800' },
+    { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/dashboard/stockly/deliveries', color: '#10B981' },
     { id: 'waste', icon: Trash2, label: 'Record Waste', href: '/dashboard/stockly/waste', color: '#f44336' },
-    { id: 'count', icon: CheckSquare, label: 'Quick Count', href: '/dashboard/stockly/stock-counts', color: '#9C27B0' },
-    { id: 'stock', icon: Eye, label: 'View Stock', href: '/dashboard/stockly/stock-items', color: '#607D8B' },
-  ],
-  planly: [
-    { id: 'production', icon: ClipboardList, label: 'Production', href: '/dashboard/planly', color: '#FF9800' },
-    { id: 'deliveries', icon: Truck, label: 'Deliveries', href: '/dashboard/planly/delivery-schedule', color: '#4CAF50' },
+    { id: 'count', icon: CheckSquare, label: 'Stock Count', href: '/dashboard/stockly/stock-counts', color: '#10B981' },
+    { id: 'stock', icon: Eye, label: 'View Stock', href: '/dashboard/stockly/stock-items', color: '#10B981' },
   ],
   assetly: [
     { id: 'callout', icon: Wrench, label: 'Place Callout', href: '/dashboard/assets/callout-logs', color: '#f44336' },
-    { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#607D8B' },
+    { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#0EA5E9' },
   ],
   teamly: [
-    { id: 'rota', icon: Calendar, label: 'My Rota', href: '/dashboard/people/schedule', color: '#9C27B0' },
-    { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/dashboard/people/leave/request', color: '#2196F3' },
-    { id: 'directory', icon: Users, label: 'Staff Cards', href: '/dashboard/people/directory', color: '#4CAF50' },
+    { id: 'rota', icon: Calendar, label: 'My Rota', href: '/dashboard/people/schedule', color: '#8B5CF6' },
+    { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/dashboard/people/leave/request', color: '#8B5CF6' },
+    { id: 'directory', icon: Users, label: 'Staff Cards', href: '/dashboard/people/directory', color: '#8B5CF6' },
   ],
 };
 
@@ -69,7 +64,7 @@ const settingsActions: QuickAction[] = [
 ];
 
 interface QuickActionsGridProps {
-  section: 'quick' | 'stockly' | 'planly' | 'assetly' | 'teamly' | 'settings';
+  section: 'quick' | 'stockly' | 'assetly' | 'teamly' | 'settings';
   userRole?: string;
 }
 
