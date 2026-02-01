@@ -53,6 +53,7 @@ import {
 import TimePicker from '@/components/ui/TimePicker';
 import { PrintPreviewModal } from '@/components/rota/PrintPreviewModal';
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 // ============================================
 // TYPES
@@ -1700,6 +1701,14 @@ export default function RotaBuilderPage() {
   const siteContext = useSiteContext();
   const searchParams = useSearchParams();
   const mountedRef = useRef(true);
+  const { isMobile } = useIsMobile();
+
+  // Mobile state - selected day for single day view
+  const [mobileSelectedDay, setMobileSelectedDay] = useState<Date>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  });
 
   // Normalize role to a stable "key" format (e.g. "General Manager" -> "general_manager")
   const roleKey = (role || profile?.app_role || '')
@@ -3897,6 +3906,354 @@ export default function RotaBuilderPage() {
     );
   }
 
+  // ============================================
+  // MOBILE VIEW - Single Day Rota
+  // ============================================
+  if (isMobile) {
+    const mobileSelectedDayStr = mobileSelectedDay.toISOString().split('T')[0];
+    const dayShifts = shifts.filter(s => s.shift_date === mobileSelectedDayStr);
+    const isClosed = plannedClosures.some(closure => {
+      if (!closure.closure_start || !closure.closure_end) return false;
+      const startDate = new Date(closure.closure_start);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(closure.closure_end);
+      endDate.setHours(23, 59, 59, 999);
+      return mobileSelectedDay >= startDate && mobileSelectedDay <= endDate;
+    });
+    const isToday = mobileSelectedDay.toDateString() === new Date().toDateString();
+
+    // Helper: get staff member by ID
+    const getStaffMember = (profileId: string | null) => {
+      if (!profileId) return null;
+      return staff.find(s => s.id === profileId);
+    };
+
+    // Navigate to previous day
+    const goToPrevDay = () => {
+      const newDate = new Date(mobileSelectedDay);
+      newDate.setDate(newDate.getDate() - 1);
+      setMobileSelectedDay(newDate);
+
+      // Update week if needed
+      const newDateWeekStart = new Date(newDate);
+      const day = newDateWeekStart.getDay();
+      newDateWeekStart.setDate(newDateWeekStart.getDate() - day + (day === 0 ? -6 : 1));
+      newDateWeekStart.setHours(0, 0, 0, 0);
+      if (newDateWeekStart.getTime() !== weekStarting.getTime()) {
+        setWeekStarting(newDateWeekStart);
+      }
+    };
+
+    // Navigate to next day
+    const goToNextDay = () => {
+      const newDate = new Date(mobileSelectedDay);
+      newDate.setDate(newDate.getDate() + 1);
+      setMobileSelectedDay(newDate);
+
+      // Update week if needed
+      const newDateWeekStart = new Date(newDate);
+      const day = newDateWeekStart.getDay();
+      newDateWeekStart.setDate(newDateWeekStart.getDate() - day + (day === 0 ? -6 : 1));
+      newDateWeekStart.setHours(0, 0, 0, 0);
+      if (newDateWeekStart.getTime() !== weekStarting.getTime()) {
+        setWeekStarting(newDateWeekStart);
+      }
+    };
+
+    // Go to today
+    const goToToday = () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      setMobileSelectedDay(today);
+
+      // Update week if needed
+      const todayWeekStart = new Date(today);
+      const day = todayWeekStart.getDay();
+      todayWeekStart.setDate(todayWeekStart.getDate() - day + (day === 0 ? -6 : 1));
+      todayWeekStart.setHours(0, 0, 0, 0);
+      if (todayWeekStart.getTime() !== weekStarting.getTime()) {
+        setWeekStarting(todayWeekStart);
+      }
+    };
+
+    // Group shifts by section or time
+    const assignedShifts = dayShifts.filter(s => s.profile_id);
+    const openShiftsList = dayShifts.filter(s => !s.profile_id);
+
+    // Calculate totals for the day
+    const totalHours = dayShifts.reduce((sum, s) => sum + getShiftNetHours(s), 0);
+    const totalCost = dayShifts.reduce((sum, s) => sum + (s.estimated_cost || 0), 0) / 100;
+
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-20 bg-[#0a0a0a] border-b border-white/10">
+          {/* Site Selector */}
+          {sites.length > 1 && (
+            <div className="px-4 pt-4 pb-2">
+              <select
+                value={selectedSite || ''}
+                onChange={(e) => setSelectedSite(e.target.value)}
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm"
+              >
+                {sites.map(site => (
+                  <option key={site.id} value={site.id}>{site.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Day Navigation */}
+          <div className="px-4 py-3 flex items-center justify-between">
+            <button
+              onClick={goToPrevDay}
+              className="p-2 rounded-full bg-white/5 active:bg-white/10"
+            >
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+
+            <div className="flex-1 text-center">
+              <button onClick={goToToday} className="inline-flex flex-col items-center">
+                <span className={`text-lg font-semibold ${isToday ? 'text-purple-400' : 'text-white'}`}>
+                  {mobileSelectedDay.toLocaleDateString('en-GB', { weekday: 'long' })}
+                </span>
+                <span className="text-sm text-white/60">
+                  {mobileSelectedDay.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              </button>
+            </div>
+
+            <button
+              onClick={goToNextDay}
+              className="p-2 rounded-full bg-white/5 active:bg-white/10"
+            >
+              <ChevronRight className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          {/* Day Summary */}
+          <div className="px-4 pb-3 flex items-center gap-4 text-xs text-white/60">
+            <div className="flex items-center gap-1">
+              <Users className="w-3.5 h-3.5" />
+              <span>{assignedShifts.length} staff</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{totalHours.toFixed(1)}h</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <PoundSterling className="w-3.5 h-3.5" />
+              <span>£{totalCost.toFixed(0)}</span>
+            </div>
+            {openShiftsList.length > 0 && (
+              <div className="flex items-center gap-1 text-orange-400">
+                <UserX className="w-3.5 h-3.5" />
+                <span>{openShiftsList.length} open</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Day Content */}
+        <div className="px-4 py-4 space-y-4 pb-24">
+          {isClosed ? (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+              <div className="text-red-400 text-lg font-semibold mb-1">🔒 Closed</div>
+              <p className="text-white/60 text-sm">This location is closed on this day</p>
+            </div>
+          ) : dayShifts.length === 0 ? (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+              <div className="text-white/40 text-lg mb-1">No shifts scheduled</div>
+              <p className="text-white/30 text-sm">No shifts have been added for this day yet</p>
+            </div>
+          ) : (
+            <>
+              {/* Assigned Shifts */}
+              {assignedShifts.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Scheduled Staff</h3>
+                  <div className="space-y-2">
+                    {assignedShifts
+                      .sort((a, b) => a.start_time.localeCompare(b.start_time))
+                      .map(shift => {
+                        const staffMember = getStaffMember(shift.profile_id);
+                        const hours = getShiftNetHours(shift);
+                        const isOnLeave = shift.profile_id && leaveRequests.some(leave => {
+                          if (leave.profile_id !== shift.profile_id) return false;
+                          const startDate = new Date(leave.start_date);
+                          const endDate = new Date(leave.end_date);
+                          return mobileSelectedDay >= startDate && mobileSelectedDay <= endDate;
+                        });
+
+                        return (
+                          <div
+                            key={shift.id}
+                            className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3"
+                          >
+                            {/* Color indicator */}
+                            <div
+                              className="w-1 h-12 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: shift.section_color || shift.color || '#EC4899' }}
+                            />
+
+                            {/* Avatar */}
+                            <div className="flex-shrink-0">
+                              {staffMember?.avatar_url ? (
+                                <img
+                                  src={staffMember.avatar_url}
+                                  alt={staffMember.full_name}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 text-sm font-medium">
+                                  {staffMember?.full_name?.charAt(0) || '?'}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-white truncate">
+                                  {staffMember?.full_name || shift.profile_name || 'Unknown'}
+                                </span>
+                                {isOnLeave && (
+                                  <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded">
+                                    On Leave
+                                  </span>
+                                )}
+                                {shift.isFromOtherSite && (
+                                  <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
+                                    @ {shift.otherSiteName}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm text-white/60">
+                                {staffMember?.position_title && (
+                                  <span className="mr-2">{staffMember.position_title}</span>
+                                )}
+                                {shift.section_name && (
+                                  <span className="text-white/40">• {shift.section_name}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Time */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-white font-medium text-sm">
+                                {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                              </div>
+                              <div className="text-white/50 text-xs">
+                                {hours}h
+                                {shift.break_minutes > 0 && ` (${shift.break_minutes}m break)`}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* Open Shifts */}
+              {openShiftsList.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-orange-400/80 uppercase tracking-wider mb-3">
+                    Open Shifts ({openShiftsList.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {openShiftsList
+                      .sort((a, b) => a.start_time.localeCompare(b.start_time))
+                      .map(shift => {
+                        const hours = getShiftNetHours(shift);
+
+                        return (
+                          <div
+                            key={shift.id}
+                            className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-3 flex items-center gap-3"
+                          >
+                            {/* Color indicator */}
+                            <div
+                              className="w-1 h-12 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: shift.section_color || shift.color || '#f59e0b' }}
+                            />
+
+                            {/* Icon */}
+                            <div className="flex-shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                <UserX className="w-5 h-5 text-orange-400" />
+                              </div>
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-orange-400">Open Shift</div>
+                              <div className="text-sm text-white/60">
+                                {shift.role_required || shift.section_name || 'Any role'}
+                              </div>
+                            </div>
+
+                            {/* Time */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-white font-medium text-sm">
+                                {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                              </div>
+                              <div className="text-white/50 text-xs">
+                                {hours}h
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Quick Day Selector - Bottom */}
+        <div className="fixed bottom-20 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur border-t border-white/10 px-4 py-3">
+          <div className="flex items-center justify-between gap-1">
+            {weekDays.map((day) => {
+              const dayStr = day.toISOString().split('T')[0];
+              const isSelected = dayStr === mobileSelectedDayStr;
+              const dayIsToday = day.toDateString() === new Date().toDateString();
+              const dayShiftCount = shifts.filter(s => s.shift_date === dayStr).length;
+
+              return (
+                <button
+                  key={dayStr}
+                  onClick={() => setMobileSelectedDay(day)}
+                  className={`flex-1 py-2 px-1 rounded-lg text-center transition-colors ${
+                    isSelected
+                      ? 'bg-purple-500/20 border border-purple-500/50'
+                      : 'bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <div className={`text-[10px] uppercase ${isSelected ? 'text-purple-400' : dayIsToday ? 'text-blue-400' : 'text-white/50'}`}>
+                    {day.toLocaleDateString('en-GB', { weekday: 'short' })}
+                  </div>
+                  <div className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-white/80'}`}>
+                    {day.getDate()}
+                  </div>
+                  {dayShiftCount > 0 && (
+                    <div className={`text-[9px] ${isSelected ? 'text-purple-300' : 'text-white/40'}`}>
+                      {dayShiftCount}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
+  // DESKTOP VIEW - Weekly Grid
+  // ============================================
   return (
     <div className="rota-print-root h-[calc(100vh-8rem)] flex flex-col">
       <style jsx global>{`
