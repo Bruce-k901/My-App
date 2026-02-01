@@ -11,12 +11,15 @@ import AssetOverview from "@/components/dashboard/AssetOverview";
 import ComplianceMetricsWidget from "@/components/dashboard/ComplianceMetricsWidget";
 import DashboardQuickStats from "@/components/dashboard/DashboardQuickStats";
 import CalendarReminderWidget from "@/components/dashboard/CalendarReminderWidget";
+import { MobileHeader, QuickActionsGrid } from "@/components/mobile";
 import { useAppContext } from "@/context/AppContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function DashboardHomePage() {
   const router = useRouter();
-  const { companyId, siteId, loading, user } = useAppContext();
-  
+  const { companyId, siteId, loading, user, profile } = useAppContext();
+  const { isMobile, isHydrated } = useIsMobile();
+
   // Note: Users should always have a company after signup (created in auth callback)
   // This redirect is a safety net in case something went wrong during signup
   useEffect(() => {
@@ -26,10 +29,58 @@ export default function DashboardHomePage() {
       router.replace('/dashboard/business');
     }
   }, [loading, user, companyId, router]);
-  
+
   // Don't render MetricsGrid if companyId is not available
   const shouldShowMetricsGrid = !loading && companyId;
 
+  // Show loading state while hydrating to prevent flash
+  if (!isHydrated) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-2 border-[#FF6B9D] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Mobile View - Show mobile-optimized dashboard
+  if (isMobile) {
+    const userName = profile?.full_name ||
+      (profile?.first_name && profile?.last_name
+        ? `${profile.first_name} ${profile.last_name}`
+        : 'User');
+
+    return (
+      <div className="min-h-screen bg-background">
+        <MobileHeader
+          userName={userName}
+          siteName="All Sites"
+          unreadNotifications={0}
+        />
+
+        <div className="px-5 space-y-6">
+          {/* Quick Actions */}
+          <section>
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Quick Actions
+            </h2>
+            <QuickActionsGrid section="quick" />
+          </section>
+
+          {/* Today's Summary */}
+          {!loading && companyId && (
+            <section>
+              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Today's Summary
+              </h2>
+              <DashboardQuickStats />
+            </section>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop View
   return (
     <div className="flex flex-col w-full items-center">
       <div className="w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col gap-6 sm:gap-8 text-[rgb(var(--text-primary))] dark:text-white">

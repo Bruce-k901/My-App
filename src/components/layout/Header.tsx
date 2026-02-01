@@ -13,7 +13,6 @@ import { MessageButton } from "./MessageButton";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { ModuleBar } from "./ModuleBar";
 import { BurgerMenu } from "./BurgerMenu";
-import { MobileBurgerMenu } from "@/components/mobile/MobileBurgerMenu";
 import { useAppContext } from "@/context/AppContext";
 import { useSiteContext } from "@/contexts/SiteContext";
 import { usePanelStore } from "@/lib/stores/panel-store";
@@ -201,19 +200,6 @@ export function Header({
         />
       )}
 
-      {/* Mobile Burger Menu - Mobile only */}
-      {mounted && (
-        <MobileBurgerMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-          user={{
-            name: userName,
-            email: userEmail,
-            role: userRole,
-          }}
-          onSignOut={signOut}
-        />
-      )}
     </>
   );
 }

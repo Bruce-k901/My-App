@@ -3,19 +3,23 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
-import { MobileBottomNav } from "@/components/mobile/MobileBottomNav";
+import { MobileNavProvider, BottomTabBar, MoreSheet } from "@/components/mobile";
 import { ChecklySidebar } from "@/components/checkly/sidebar-nav";
 import { StocklySidebar } from "@/components/stockly/sidebar-nav";
 import { TeamlySidebar } from "@/components/teamly/sidebar-nav";
 import { PlanlySidebar } from "@/components/planly/sidebar-nav";
 import { AssetlySidebar } from "@/components/assetly/sidebar-nav";
 import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [paddingClass, setPaddingClass] = useState('px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16');
   const [showAIWidget, setShowAIWidget] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { isMobile } = useIsMobile();
+
+  // Check if we're on the dashboard home page (mobile gets special treatment)
+  const isDashboardHome = pathname === "/dashboard";
 
   useEffect(() => {
     // Only compute pathname-dependent values on client after mount
@@ -43,15 +47,28 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
   const showModuleSidebar = isCheckly || isStockly || isTeamly || isPlanly || isAssetly;
 
+  // Mobile dashboard home gets a special full-screen layout
+  if (isMobile && isDashboardHome) {
+    return (
+      <MobileNavProvider>
+        <div className="min-h-screen bg-background pb-20">
+          {/* Children handles its own layout */}
+          {children}
+
+          {/* Unified Mobile Navigation */}
+          <BottomTabBar />
+          <MoreSheet />
+        </div>
+      </MobileNavProvider>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[rgb(var(--background))] dark:bg-[#0a0a0a]">
-      {/* Header - Fixed at top (includes ModuleBar) */}
-      <Header 
-        onMobileMenuClick={() => setIsMobileMenuOpen(true)}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-      />
-      
+    <MobileNavProvider>
+      <div className="min-h-screen bg-[rgb(var(--background))] dark:bg-[#0a0a0a]">
+        {/* Header - Fixed at top (includes ModuleBar) */}
+        <Header />
+
       <div className="flex">
         {/* Module-specific Sidebars - Only show when inside a module */}
         {showModuleSidebar && (
@@ -83,9 +100,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             )}
           </>
         )}
-        
+
         {/* Main Content */}
-        <main 
+        <main
           className={`flex-1 mt-[112px] bg-[#F5F5F2] dark:bg-transparent ${showModuleSidebar ? 'lg:ml-64' : ''} ${
             isCheckly ? 'checkly-page-scrollbar' :
             isStockly ? 'stockly-page-scrollbar' :
@@ -104,19 +121,15 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
-      
-      {/* Mobile Bottom Navigation - Only show when NOT in a module (modules have their own mobile nav) */}
-      {!showModuleSidebar && (
-        <MobileBottomNav 
-          className="lg:hidden" 
-          onMenuOpen={() => setIsMobileMenuOpen(true)}
-          isBurgerMenuOpen={isMobileMenuOpen}
-        />
-      )}
-      
+
+      {/* Unified Mobile Navigation */}
+      <BottomTabBar />
+      <MoreSheet />
+
       {/* Hide global AI widget on messaging page - it's shown in ConversationHeader instead */}
       {showAIWidget && <AIAssistantWidget />}
-    </div>
+      </div>
+    </MobileNavProvider>
   );
 }
 
