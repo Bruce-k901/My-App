@@ -47,6 +47,11 @@ module.exports = {
         planly: '#8b5cf6',      // Purple
         assetly: '#f59e0b',     // Amber
         msgly: '#06b6d4',       // Cyan
+        // Mobile-specific colors
+        'mobile-primary': '#FF6B9D',
+        'mobile-bg': '#0D0D0F',
+        'mobile-bg-secondary': '#1A1A1F',
+        'mobile-bg-elevated': '#252530',
         // Consistent card styling tokens
         background: "#111827",
         border: "#1F2937",
@@ -71,11 +76,34 @@ module.exports = {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        // Mobile animations
+        mobileSlideUp: {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        mobilePulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        mobileScale: {
+          "0%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)" },
+        },
+        mobileShake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-4px)" },
+          "75%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         dropdownFade: "dropdownFade 0.3s ease-out forwards",
         "fade-in": "fadeIn 0.6s ease-in-out",
         "fade-in-up": "fadeInUp 0.6s ease-in-out",
+        // Mobile animations
+        "mobile-slide-up": "mobileSlideUp 0.3s ease-out forwards",
+        "mobile-pulse": "mobilePulse 2s ease-in-out infinite",
+        "mobile-scale": "mobileScale 0.2s ease-out forwards",
+        "mobile-shake": "mobileShake 0.3s ease-in-out",
       },
       fontVariantNumeric: {
         tabular: 'tabular-nums',
