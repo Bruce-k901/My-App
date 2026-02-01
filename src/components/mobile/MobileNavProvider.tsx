@@ -58,10 +58,30 @@ export function MobileNavProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Default no-op context for components outside the provider
+const defaultContext: MobileNavContextType = {
+  activeTab: 'home',
+  setActiveTab: () => {},
+  isMoreSheetOpen: false,
+  openMoreSheet: () => {},
+  closeMoreSheet: () => {},
+  badges: { tasks: 0, messages: 0 },
+  setBadges: () => {},
+};
+
 export function useMobileNav() {
   const context = useContext(MobileNavContext);
+  // Return default no-op context if used outside provider
+  // This allows components like MessagingPanel to use the hook
+  // even when rendered outside the dashboard layout
+  return context ?? defaultContext;
+}
+
+// Strict version that throws if used outside provider (for components that require it)
+export function useMobileNavStrict() {
+  const context = useContext(MobileNavContext);
   if (!context) {
-    throw new Error('useMobileNav must be used within MobileNavProvider');
+    throw new Error('useMobileNavStrict must be used within MobileNavProvider');
   }
   return context;
 }
