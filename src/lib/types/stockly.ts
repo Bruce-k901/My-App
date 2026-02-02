@@ -136,3 +136,43 @@ export interface Ingredient {
   storage_area_id?: string;
 }
 
+// ============================================================================
+// Price Change Detection Types (Phase 2)
+// ============================================================================
+
+export interface PriceChange {
+  deliveryLineId: string;
+  ingredientId: string;
+  ingredientName: string;
+
+  // Current state
+  currentUnitCost: number;
+  currentPackCost: number;
+  currentPackSize: number;
+
+  // Invoice state
+  invoiceUnitPrice: number; // Price per pack from invoice
+  invoicePackSize: number;   // Pack size extracted from description
+  invoiceUnitCost: number;   // Calculated: invoiceUnitPrice / invoicePackSize
+
+  // Change metrics
+  unitCostChange: number;      // Absolute change in £/unit
+  unitCostChangePercent: number; // Percentage change
+  packCostChange: number;       // Absolute change in £/pack
+
+  // Flags
+  isSignificantChange: boolean;  // > 10%
+  isPriceIncrease: boolean;
+
+  // User decision
+  accepted: boolean;  // Default true, user can uncheck
+
+  // Optional impact preview
+  affectedRecipes?: {
+    recipeId: string;
+    recipeName: string;
+    currentCost: number;
+    newCost: number;
+  }[];
+}
+
