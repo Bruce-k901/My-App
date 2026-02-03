@@ -8,9 +8,11 @@ import Select from '@/components/ui/Select';
 import { fuzzyMatchUnit, normalizeUnitText, type UOM } from '@/lib/utils/unitLookup';
 import { generateSKU, extractPrefix } from '@/lib/utils/skuGenerator';
 import { PrepItemRecipeDialog } from '@/components/PrepItemRecipeDialog';
+import { IngredientHistoryPanel } from '@/components/stockly/IngredientHistoryPanel';
 import { toast } from 'sonner';
 import { StorageArea } from '@/lib/types/stockly';
 import { ensureSupplierExists, ensureSuppliersExist } from '@/lib/utils/supplierPlaceholderFlow';
+import { formatUnitCost } from '@/lib/utils/libraryHelpers';
 
 const INGREDIENT_CATEGORIES = [
   'Meat', 'Fish', 'Vegetables', 'Fruits', 'Dairy', 'Grains', 'Bakery', 'Dry Goods', 'Other'
@@ -89,7 +91,9 @@ export default function IngredientsLibraryPage() {
           online_price,
           track_stock,
           current_stock,
+          par_level,
           reorder_point,
+          reorder_qty,
           low_stock_alert,
           sku,
           storage_area_id,
@@ -111,10 +115,10 @@ export default function IngredientsLibraryPage() {
       let recipesMap: Record<string, any> = {};
       if (prepItemIds.length > 0) {
         // Fetch recipes - only select columns that exist
-        // Note: recipes table uses total_cost and cost_per_portion, and yield_qty (added by migration)
+        // Note: recipes table uses total_cost, cost_per_portion, total_ingredient_cost, and yield_qty
         const { data: recipesData, error: recipesError } = await supabase
           .from('recipes')
-          .select('id, recipe_status, is_active, total_cost, cost_per_portion, yield_qty, yield_unit_id')
+          .select('id, recipe_status, is_active, total_cost, cost_per_portion, total_ingredient_cost, yield_qty, yield_unit_id')
           .in('id', prepItemIds);
         
         if (recipesError) {
@@ -150,7 +154,8 @@ export default function IngredientsLibraryPage() {
           // For prep items, also get recipe cost info
           let recipeCostInfo: any = null;
           if (ingredient.is_prep_item && linkedRecipe) {
-            const recipeCost = parseFloat(linkedRecipe.total_cost || linkedRecipe.cost_per_portion || 0);
+            // Priority: total_ingredient_cost > total_cost > cost_per_portion
+            const recipeCost = parseFloat(linkedRecipe.total_ingredient_cost || linkedRecipe.total_cost || linkedRecipe.cost_per_portion || 0);
             const yieldQty = parseFloat(linkedRecipe.yield_qty || linkedRecipe.yield_quantity || 1);
             
             if (recipeCost > 0 && yieldQty > 0) {
@@ -165,11 +170,16 @@ export default function IngredientsLibraryPage() {
           
           // Use calculated pack cost if available, otherwise use existing unit_cost or recipe cost
           const finalUnitCost = calculatedUnitCostFromPack || ingredient.unit_cost || recipeCostInfo?.unit_cost_from_recipe || null;
-          
+
+          // Calculate stock value: current_stock * unit_cost
+          const currentStock = parseFloat(ingredient.current_stock || 0);
+          const stockValue = finalUnitCost && currentStock > 0 ? currentStock * finalUnitCost : 0;
+
           return {
             ...ingredient,
             linked_recipe: linkedRecipe,
             unit_cost: finalUnitCost,
+            stock_value: stockValue,
             ...recipeCostInfo
           };
         });
@@ -339,9 +349,10 @@ export default function IngredientsLibraryPage() {
       const effectivePackSize = packSize * (yieldPercent / 100);
       if (effectivePackSize > 0) {
         const calculatedUnitCost = packCost / effectivePackSize;
+        // Store with full precision (6 decimal places) to handle small unit costs from large pack sizes
         setRowDraft((prev: any) => ({
           ...prev,
-          unit_cost: calculatedUnitCost.toFixed(2),
+          unit_cost: calculatedUnitCost.toFixed(6),
           unit_cost_auto_calculated: true
         }));
       }
@@ -1109,7 +1120,7 @@ export default function IngredientsLibraryPage() {
                                 <div className="text-sm text-gray-900 dark:text-white">
                                   {item.unit_cost ? (
                                     <span className={item.pack_cost && item.pack_size ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}>
-                                      £{parseFloat(item.unit_cost).toFixed(2)}
+                                      {formatUnitCost(parseFloat(item.unit_cost))}
                                     </span>
                                   ) : (
                                     '-'
@@ -1118,11 +1129,16 @@ export default function IngredientsLibraryPage() {
                               )}
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Pack Size</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Pack Size {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                              </div>
                               {editingRowId === item.id ? (
                                 <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.pack_size ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.pack_size != null ? item.pack_size : '-'}</div>
+                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                  {item.pack_size != null ? item.pack_size : '-'}
+                                  {item.pack_size != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                </div>
                               )}
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
@@ -1207,10 +1223,12 @@ export default function IngredientsLibraryPage() {
                                         checked={rowDraft?.is_prep_item ?? false} 
                                         onChange={(e) => {
                                           const newValue = e.target.checked;
-                                          
+
                                           // If checking the box, show recipe dialog
                                           if (newValue && !rowDraft?.is_prep_item) {
-                                            setSelectedIngredient(item);
+                                            // Merge rowDraft values with item to include user's typed data
+                                            // Keep item.id to preserve the original ingredient ID (rowDraft may have undefined id)
+                                            setSelectedIngredient({ ...item, ...rowDraft, id: item.id });
                                             setShowRecipeDialog(true);
                                           } else {
                                             // Unchecking - update directly
@@ -1295,35 +1313,55 @@ export default function IngredientsLibraryPage() {
                               </p>
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Current Stock</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Current Stock {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                              </div>
                               {editingRowId === item.id ? (
                                 <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.current_stock != null ? item.current_stock : '0'}</div>
+                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                  {item.current_stock != null ? item.current_stock : '0'}
+                                  {item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                </div>
                               )}
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Par Level</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Par Level {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                              </div>
                               {editingRowId === item.id ? (
                                 <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.par_level != null ? item.par_level : '-'}</div>
+                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                  {item.par_level != null ? item.par_level : '-'}
+                                  {item.par_level != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                </div>
                               )}
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Reorder Point</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Reorder Point {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                              </div>
                               {editingRowId === item.id ? (
                                 <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                  {item.reorder_point != null ? item.reorder_point : '-'}
+                                  {item.reorder_point != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                </div>
                               )}
                             </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Reorder Qty</div>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Reorder Qty {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                              </div>
                               {editingRowId === item.id ? (
                                 <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                  {item.reorder_qty != null ? item.reorder_qty : '-'}
+                                  {item.reorder_qty != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                </div>
                               )}
                             </div>
                             {item.low_stock_alert && (
@@ -1477,6 +1515,14 @@ export default function IngredientsLibraryPage() {
                                 <div className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{item.notes || '-'}</div>
                               )}
                             </div>
+
+                            {/* History Panel */}
+                            {companyId && (
+                              <IngredientHistoryPanel
+                                ingredientId={item.id}
+                                companyId={companyId}
+                              />
+                            )}
                           </div>
                           <div className="flex items-center gap-2 mt-4">
                             {editingRowId === item.id ? (
@@ -1528,6 +1574,7 @@ export default function IngredientsLibraryPage() {
           }}
           ingredientId={selectedIngredient.id}
           ingredientName={selectedIngredient.ingredient_name}
+          ingredientData={selectedIngredient}
           companyId={companyId || ''}
           userId={user?.id || ''}
           onRecipeCreated={(recipeId) => {
@@ -1538,6 +1585,19 @@ export default function IngredientsLibraryPage() {
             // Reload ingredients to show updated state
             loadIngredients();
             toast.success('Recipe created! You can now add ingredients to the recipe.');
+          }}
+          onIngredientSaved={(savedIngredient) => {
+            // Update local state to replace temp ingredient with saved one
+            setIngredients((prev: any[]) => prev.map((ing: any) =>
+              ing.id === selectedIngredient.id ? savedIngredient : ing
+            ));
+            setSelectedIngredient(savedIngredient);
+            // Clear temp row tracking
+            setNewRowIds((prev: Set<string>) => {
+              const n = new Set(prev);
+              n.delete(selectedIngredient.id);
+              return n;
+            });
           }}
         />
       )}
