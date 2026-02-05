@@ -14,6 +14,7 @@ import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/tempera
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { calculateTaskTiming } from '@/utils/taskTiming'
+import { useTaskAlerts } from '@/hooks/useTaskAlerts'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -74,6 +75,13 @@ export default function DailyChecklistPage() {
   const [breachLoading, setBreachLoading] = useState(false)
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
+
+  // Enable task due/overdue alerts with sound and vibration
+  useTaskAlerts({
+    tasks,
+    enabled: true,
+    checkIntervalMs: 60000 // Check every minute
+  })
 
   // Format date - use suppressHydrationWarning to prevent mismatch
   // Server and client may format dates slightly differently, but that's OK

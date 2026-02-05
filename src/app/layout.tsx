@@ -11,6 +11,7 @@ import RouteLogger from "@/components/RouteLogger";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
+import { MessageAlertSubscriber } from "@/components/notifications/MessageAlertSubscriber";
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
 import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlobalComponents";
 
@@ -48,14 +49,10 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/web-app-manifest-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/web-app-manifest-512x512.png", sizes: "512x512", type: "image/png" },
+      { url: "/opsly_new_hexstyle_favicon.PNG", type: "image/png" },
     ],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/opsly_new_hexstyle_favicon.PNG", type: "image/png" },
     ],
   },
 };
@@ -64,7 +61,9 @@ export function generateViewport() {
   return {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 5,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
     themeColor: "#10B981",
   };
 }
@@ -247,13 +246,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Opsly" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png?v=3" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/web-app-manifest-512x512.png?v=3" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=3" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3" />
-        <link rel="shortcut icon" href="/favicon.ico?v=3" />
+        <link rel="apple-touch-icon" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
+        <link rel="icon" type="image/png" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
+        <link rel="shortcut icon" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
       </head>
       <body className={`bg-neutral-950 text-white font-sans ${poppins.variable}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
@@ -264,6 +259,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <SuppressConsoleWarnings />
                   <PWAProvider />
                   <NotificationInitializer />
+                  <MessageAlertSubscriber />
                   <RouteLogger />
                   {children}
                   <Footer />

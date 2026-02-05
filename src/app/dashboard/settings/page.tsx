@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon } from 'lucide-react';
 import SiteSelector from '@/components/ui/SiteSelector';
+import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
 
 type ProfileSettings = {
   user_id: string;
@@ -559,21 +560,8 @@ export default function SettingsPage() {
                 </>
               )}
 
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                <div className="flex-1">
-                  <p className="font-medium text-white">Sound / Vibration on New Alerts</p>
-                  <p className="text-sm text-white/60 mt-1">Play a sound and vibrate (mobile) when a new notification arrives</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={settings.sound_vibration}
-                    onChange={(e) => updateSettings("sound_vibration", e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
-                </label>
-              </div>
+              {/* In-App Alert Settings - Uses the AlertSettingsCard component */}
+              <AlertSettingsCard />
             </div>
             <div className="mt-6">
               <Button

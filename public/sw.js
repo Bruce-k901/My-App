@@ -237,33 +237,68 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification event
+// Vibration patterns for different notification types (duration in ms)
+const VIBRATION_PATTERNS = {
+  task: [200, 100, 200],           // buzz-pause-buzz (standard reminder)
+  message: [100, 50, 100],          // quick double-tap (new message)
+  urgent: [300, 100, 300, 100, 500], // long urgent pattern (overdue/critical)
+  default: [200, 100, 200]
+};
+
+// Push notification event - Enhanced with vibration and better actions
 self.addEventListener('push', function(event) {
   console.log('[SW] Push notification received');
-  
+
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Opsly Notification';
+  const notificationType = data.type || 'default'; // task, message, urgent, default
+
+  // Select vibration pattern based on notification type
+  const vibrationPattern = VIBRATION_PATTERNS[notificationType] || VIBRATION_PATTERNS.default;
+
+  // Determine actions based on notification type
+  let actions = [];
+  if (notificationType === 'task') {
+    actions = [
+      { action: 'complete', title: 'Complete Now' },
+      { action: 'snooze', title: 'Snooze 10min' }
+    ];
+  } else if (notificationType === 'message') {
+    actions = [
+      { action: 'reply', title: 'Reply' },
+      { action: 'dismiss', title: 'Dismiss' }
+    ];
+  } else if (notificationType === 'urgent') {
+    actions = [
+      { action: 'view', title: 'View Now' },
+      { action: 'acknowledge', title: 'Acknowledge' }
+    ];
+  } else if (data.url) {
+    actions = [
+      { action: 'open', title: 'View' },
+      { action: 'close', title: 'Close' }
+    ];
+  }
+
+  // Use custom actions if provided
+  if (data.actions && Array.isArray(data.actions)) {
+    actions = data.actions;
+  }
+
   const options = {
-    body: data.message || 'You have a new notification',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    tag: data.id || 'default',
-    requireInteraction: data.urgent || false,
+    body: data.body || data.message || 'You have a new notification',
+    icon: data.icon || '/opsly_new_hexstyle_favicon.PNG',
+    badge: data.badge || '/opsly_new_hexstyle_favicon.PNG',
+    tag: data.tag || data.id || 'default', // Prevents duplicate notifications
+    renotify: true, // Vibrate even if same tag
+    requireInteraction: data.urgent || notificationType === 'urgent' || false, // Stay until dismissed if urgent
+    vibrate: vibrationPattern,
     data: {
       url: data.url || '/notifications',
-      notificationId: data.id
+      notificationId: data.id,
+      type: notificationType
     },
-    actions: data.url ? [
-      {
-        action: 'open',
-        title: 'View',
-        icon: '/icon-192x192.png'
-      },
-      {
-        action: 'close',
-        title: 'Close'
-      }
-    ] : []
+    actions: actions
   };
 
   event.waitUntil(
@@ -271,32 +306,75 @@ self.addEventListener('push', function(event) {
   );
 });
 
-// Notification click event
+// Notification click event - Enhanced with action handling
 self.addEventListener('notificationclick', function(event) {
-  console.log('[SW] Notification clicked');
-  
+  console.log('[SW] Notification clicked, action:', event.action);
+
   event.notification.close();
-  
-  const url = event.notification.data?.url || '/notifications';
-  
-  if (event.action === 'open' || !event.action) {
-    event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true })
-        .then((clientList) => {
-          // Check if app is already open
-          for (let i = 0; i < clientList.length; i++) {
-            const client = clientList[i];
-            if (client.url === url && 'focus' in client) {
-              return client.focus();
-            }
-          }
-          // Open new window if app not open
-          if (clients.openWindow) {
-            return clients.openWindow(url);
-          }
-        })
-    );
+
+  const notificationData = event.notification.data || {};
+  const url = notificationData.url || '/notifications';
+  const notificationType = notificationData.type;
+
+  // Handle dismiss/close actions - just close, don't navigate
+  if (event.action === 'dismiss' || event.action === 'close') {
+    return;
   }
+
+  // Handle snooze action - reschedule notification
+  if (event.action === 'snooze') {
+    // Re-show notification after 10 minutes
+    event.waitUntil(
+      new Promise((resolve) => {
+        setTimeout(() => {
+          self.registration.showNotification(event.notification.title + ' (Snoozed)', {
+            body: event.notification.body,
+            icon: event.notification.icon,
+            badge: event.notification.badge,
+            tag: event.notification.tag + '-snoozed',
+            vibrate: VIBRATION_PATTERNS.task,
+            data: notificationData,
+            actions: [
+              { action: 'complete', title: 'Complete Now' },
+              { action: 'dismiss', title: 'Dismiss' }
+            ]
+          }).then(resolve);
+        }, 10 * 60 * 1000); // 10 minutes
+      })
+    );
+    return;
+  }
+
+  // Handle acknowledge action - just close and mark as seen
+  if (event.action === 'acknowledge') {
+    // Could send a message to the client to mark the notification as acknowledged
+    // For now, just close the notification (already done above)
+    return;
+  }
+
+  // All other actions navigate to the appropriate URL
+  // - open, view, complete, reply all navigate to the url
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if app is already open on any window
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url.includes('/dashboard') && 'focus' in client) {
+            // App is open - focus it and navigate
+            client.focus();
+            if ('navigate' in client) {
+              return client.navigate(url);
+            }
+            return;
+          }
+        }
+        // Open new window if app not open
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
+  );
 });
 
 // Background sync (for offline form submissions)
