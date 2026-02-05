@@ -18,6 +18,7 @@ import {
   ChevronRight,
   UserCircle,
   PlusCircle,
+  Wand2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -43,12 +44,6 @@ const navItems: NavItem[] = [
     type: 'section',
     label: 'PRODUCTION PLANNING',
     icon: Calendar,
-  },
-  {
-    type: 'link',
-    label: 'Tray Packing',
-    href: '/dashboard/planly/tray-packing',
-    icon: Package,
   },
   {
     type: 'link',
@@ -86,15 +81,22 @@ const navItems: NavItem[] = [
     icon: Settings,
   },
   {
+    type: 'link',
+    label: 'Setup Wizard',
+    href: '/dashboard/planly/setup',
+    icon: Wand2,
+  },
+  {
     type: 'parent',
     label: 'Production Settings',
     href: '/dashboard/planly/settings',
     icon: Settings,
     children: [
-      { label: 'Process Templates', href: '/dashboard/planly/settings/process-templates' },
-      { label: 'Bake Groups', href: '/dashboard/planly/settings/bake-groups' },
-      { label: 'Destination Groups', href: '/dashboard/planly/settings/destination-groups' },
+      { label: 'Production Setup', href: '/dashboard/planly/settings/production' },
+      { label: 'Production Timeline', href: '/dashboard/planly/settings/process-templates' },
+      { label: 'Equipment', href: '/dashboard/planly/settings/oven-trays' },
       { label: 'Cutoff Rules', href: '/dashboard/planly/settings/cutoff-rules' },
+      { label: 'Packing & Delivery', href: '/dashboard/planly/settings/destination-groups' },
     ],
   },
   {
