@@ -49,6 +49,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
   const [destinationGroupId, setDestinationGroupId] = useState('');
   const [defaultShipState, setDefaultShipState] = useState<ShipState>('baked');
   const [deliveryInstructions, setDeliveryInstructions] = useState('');
+  const [needsDelivery, setNeedsDelivery] = useState(true);
 
   // Finance tab
   const [minimumOrderValue, setMinimumOrderValue] = useState('');
@@ -88,6 +89,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
       destination_group_id: destinationGroupId || undefined,
       default_ship_state: defaultShipState,
       delivery_instructions: deliveryInstructions.trim() || undefined,
+      needs_delivery: needsDelivery,
       minimum_order_value: minimumOrderValue ? parseFloat(minimumOrderValue) : undefined,
       below_minimum_delivery_charge: belowMinimumCharge ? parseFloat(belowMinimumCharge) : undefined,
       finance_contact_name: financeContactName.trim() || undefined,
@@ -119,6 +121,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
     setDestinationGroupId('');
     setDefaultShipState('baked');
     setDeliveryInstructions('');
+    setNeedsDelivery(true);
     setMinimumOrderValue('');
     setBelowMinimumCharge('');
     setFinanceContactName('');
@@ -279,6 +282,17 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                    <div>
+                      <span className="font-medium text-gray-900 dark:text-white">Requires Delivery</span>
+                      <p className="text-sm text-gray-500 dark:text-white/60">Customer will appear on delivery schedule</p>
+                    </div>
+                    <Switch
+                      checked={needsDelivery}
+                      onChange={setNeedsDelivery}
+                    />
+                  </div>
+
                   <div>
                     <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
                     <div className="mt-2 flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">

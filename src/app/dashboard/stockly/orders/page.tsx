@@ -5,17 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { 
-  Plus, 
-  Search, 
-  Calendar, 
-  Filter, 
-  Eye, 
-  Edit2, 
+import {
+  Plus,
+  Search,
+  Calendar,
+  Filter,
+  Eye,
+  Edit2,
   FileText,
   Loader2,
   Package,
-  ArrowLeft
+  ArrowLeft,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
 interface PurchaseOrder {
@@ -52,6 +54,9 @@ export default function PurchaseOrdersPage() {
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState<PurchaseOrder | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -164,6 +169,52 @@ export default function PurchaseOrdersPage() {
       month: 'short',
       year: 'numeric'
     });
+  };
+
+  const handleDeleteClick = (order: PurchaseOrder) => {
+    setOrderToDelete(order);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!orderToDelete) return;
+
+    setDeleting(true);
+    try {
+      // First delete the order lines
+      const { error: linesError } = await supabase
+        .from('purchase_order_lines')
+        .delete()
+        .eq('purchase_order_id', orderToDelete.id);
+
+      if (linesError) {
+        console.error('Error deleting order lines:', linesError);
+        alert('Failed to delete order lines');
+        return;
+      }
+
+      // Then delete the order itself
+      const { error: orderError } = await supabase
+        .from('purchase_orders')
+        .delete()
+        .eq('id', orderToDelete.id);
+
+      if (orderError) {
+        console.error('Error deleting order:', orderError);
+        alert('Failed to delete order');
+        return;
+      }
+
+      // Update local state
+      setOrders(orders.filter(o => o.id !== orderToDelete.id));
+      setDeleteModalOpen(false);
+      setOrderToDelete(null);
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('Failed to delete order');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -317,18 +368,76 @@ export default function PurchaseOrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/dashboard/stockly/orders/${order.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </Link>
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/dashboard/stockly/orders/${order.id}`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteClick(order)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteModalOpen && orderToDelete && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-[#1a1d24] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Delete Purchase Order
+                </h3>
+              </div>
+              <p className="text-gray-600 dark:text-white/60 mb-6">
+                Are you sure you want to delete order <span className="font-medium text-gray-900 dark:text-white">{orderToDelete.order_number}</span>?
+                This will also delete all order lines. This action cannot be undone.
+              </p>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setDeleteModalOpen(false);
+                    setOrderToDelete(null);
+                  }}
+                  disabled={deleting}
+                  className="px-4 py-2 text-gray-700 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={deleting}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

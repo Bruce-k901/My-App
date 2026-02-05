@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get orders in date range
+    // Get orders in date range for customers who need delivery
     let query = supabase
       .from('planly_orders')
       .select(`
@@ -28,12 +28,14 @@ export async function GET(request: NextRequest) {
           address,
           postcode,
           frozen_only,
+          needs_delivery,
           site_id
         )
       `)
       .gte('delivery_date', startDate)
       .lte('delivery_date', endDate)
-      .eq('status', 'locked');
+      .eq('status', 'confirmed')
+      .eq('customer.needs_delivery', true);
 
     if (siteId) {
       query = query.eq('customer.site_id', siteId);
@@ -53,6 +55,7 @@ export async function GET(request: NextRequest) {
       const customerId = order.customer.id;
       if (!customerMap.has(customerId)) {
         customerMap.set(customerId, {
+          customer_id: customerId,
           contact_name: order.customer.contact_name || '',
           customer_name: order.customer.name || '',
           address: order.customer.address || '',

@@ -3,5 +3,6 @@
 import { redirect } from 'next/navigation';
 
 export default function ProductionSettingsPage() {
-  redirect('/dashboard/planly/settings/process-templates');
+  // Redirect to first settings page in the sidebar order
+  redirect('/dashboard/planly/settings/destination-groups');
 }

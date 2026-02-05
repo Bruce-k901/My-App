@@ -57,13 +57,11 @@ export default function ComplianceMetricsWidget() {
     // Handle "all" sites case - widget needs a specific site
     if (siteId === 'all' || !siteId || !companyId) {
       console.warn('⚠️ ComplianceMetricsWidget: Cannot load - missing siteId or companyId, or "all" sites selected', { siteId, companyId })
-      if (mountedRef.current) {
-        setLoading(false)
-        setTodayStats(null)
-        setRecentCompletions([])
-        setComplianceTrend([])
-        setError(null)
-      }
+      setLoading(false)
+      setTodayStats(null)
+      setRecentCompletions([])
+      setComplianceTrend([])
+      setError(null)
       return
     }
 
@@ -75,10 +73,8 @@ export default function ComplianceMetricsWidget() {
 
     console.log('▶️ ComplianceMetricsWidget: Starting load', { siteId, companyId })
     loadingRef.current = true
-    if (mountedRef.current) {
-      setLoading(true)
-      setError(null)
-    }
+    setLoading(true)
+    setError(null)
 
     try {
       console.log('1️⃣ ComplianceMetricsWidget: Fetching today\'s tasks...')
@@ -113,6 +109,16 @@ export default function ComplianceMetricsWidget() {
 
       if (tasksError) {
         console.error('❌ ComplianceMetricsWidget: Error fetching tasks:', tasksError)
+        // If table doesn't exist or 400 error, show empty state instead of crashing
+        if (tasksError.code === 'PGRST116' || tasksError.code === '42P01' || tasksError.message?.includes('does not exist')) {
+          console.log('checklist_tasks table not available, showing empty state')
+          if (mountedRef.current) {
+            setTodayStats({ total: 0, completed: 0, pending: 0, overdue: 0, critical: 0, criticalCompleted: 0, completionRate: 0, criticalCompletionRate: 0 })
+            setLoading(false)
+          }
+          loadingRef.current = false
+          return
+        }
         throw tasksError
       }
 
@@ -122,28 +128,27 @@ export default function ComplianceMetricsWidget() {
       const completed = todayTasks?.filter(t => t.status === 'completed').length || 0
       const pending = todayTasks?.filter(t => t.status === 'pending' || t.status === 'in_progress').length || 0
       const overdue = todayTasks?.filter(t => {
-        const isOverdue = (t.status === 'pending' || t.status === 'in_progress') && 
+        const isOverdue = (t.status === 'pending' || t.status === 'in_progress') &&
                           t.due_date < today
         return isOverdue
       }).length || 0
       const critical = todayTasks?.filter(t => t.template?.is_critical).length || 0
-      const criticalCompleted = todayTasks?.filter(t => 
+      const criticalCompleted = todayTasks?.filter(t =>
         t.template?.is_critical && t.status === 'completed'
       ).length || 0
 
-      if (mountedRef.current) {
-        setTodayStats({
-          total,
-          completed,
-          pending,
-          overdue,
-          critical,
-          criticalCompleted,
-          completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-          criticalCompletionRate: critical > 0 ? Math.round((criticalCompleted / critical) * 100) : 0
-        })
-        console.log('4️⃣ ComplianceMetricsWidget: Today\'s stats set', { total, completed, pending, overdue })
-      }
+      // Always set state - React handles unmounted components safely
+      setTodayStats({
+        total,
+        completed,
+        pending,
+        overdue,
+        critical,
+        criticalCompleted,
+        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+        criticalCompletionRate: critical > 0 ? Math.round((criticalCompleted / critical) * 100) : 0
+      })
+      console.log('4️⃣ ComplianceMetricsWidget: Today\'s stats set', { total, completed, pending, overdue })
 
       console.log('5️⃣ ComplianceMetricsWidget: Fetching recent completions...')
       // Fetch recent completions (last 5)
@@ -214,10 +219,8 @@ export default function ComplianceMetricsWidget() {
             }
           })
         
-        if (mountedRef.current) {
-          setRecentCompletions(completions)
-          console.log('6️⃣ ComplianceMetricsWidget: Recent completions set', { count: completions.length })
-        }
+        setRecentCompletions(completions)
+        console.log('6️⃣ ComplianceMetricsWidget: Recent completions set', { count: completions.length })
       } else if (recentError) {
         console.warn('⚠️ ComplianceMetricsWidget: Failed to fetch recent completions:', recentError)
       } else {
@@ -259,9 +262,7 @@ export default function ComplianceMetricsWidget() {
           date: entry.score_date,
           score: entry.score || 0
         }))
-        if (mountedRef.current) {
-          setComplianceTrend(trend)
-        }
+        setComplianceTrend(trend)
       } else {
         // Calculate on-the-fly for the last 7 days
         const trend: ComplianceTrend[] = []
@@ -348,24 +349,10 @@ export default function ComplianceMetricsWidget() {
           // Continue with empty trend rather than failing completely
         }
         
-        if (mountedRef.current) {
-          setComplianceTrend(trend)
-          console.log('8️⃣ ComplianceMetricsWidget: Compliance trend set', { trendLength: trend.length })
-        }
-        
-        // Optionally trigger the function to store today's score
-        if (trend.length > 0 && mountedRef.current) {
-          const todayScore = trend[trend.length - 1]
-          // Store today's score via RPC call (if function exists)
-          try {
-            console.log('9️⃣ ComplianceMetricsWidget: Storing compliance score...')
-            await supabase.rpc('compute_site_compliance_score', { target_date: today.toISOString().split('T')[0] })
-            console.log('✅ ComplianceMetricsWidget: Score stored successfully')
-          } catch (err) {
-            // Silently fail - function might not be accessible or might not exist yet
-            console.debug('⚠️ ComplianceMetricsWidget: Could not store compliance score:', err)
-          }
-        }
+        setComplianceTrend(trend)
+        console.log('8️⃣ ComplianceMetricsWidget: Compliance trend set', { trendLength: trend.length })
+
+        // Note: compute_site_compliance_score is service_role only, don't call from client
       }
 
       console.log('✅ ComplianceMetricsWidget: All data loaded successfully')
@@ -379,29 +366,15 @@ export default function ComplianceMetricsWidget() {
         details: err?.details,
         stack: err?.stack
       })
-      if (mountedRef.current) {
-        setError(err.message || 'Failed to load compliance metrics')
-        // If we've had multiple consecutive errors, stop trying to prevent infinite loops
-        if (errorCountRef.current >= 3) {
-          console.error('🛑 ComplianceMetricsWidget: Too many consecutive errors, stopping retries')
-        }
+      setError(err.message || 'Failed to load compliance metrics')
+      // If we've had multiple consecutive errors, stop trying to prevent infinite loops
+      if (errorCountRef.current >= 3) {
+        console.error('🛑 ComplianceMetricsWidget: Too many consecutive errors, stopping retries')
       }
     } finally {
-      // ✅ THIS ALWAYS RUNS - even if there's an error!
-      console.log('🏁 ComplianceMetricsWidget: Finally block executing - clearing loading flag')
       loadingRef.current = false
       hasLoadedRef.current = true // Mark as successfully attempted
-      
-      // Always clear loading state, even if component appears unmounted
-      // React state updates are safe even after unmount (they just get ignored)
-      console.log('🔄 ComplianceMetricsWidget: Calling setLoading(false)...')
       setLoading(false)
-      console.log('✅ ComplianceMetricsWidget: setLoading(false) called, component should re-render')
-      
-      // Double-check mounted state for logging purposes
-      if (!mountedRef.current) {
-        console.warn('⚠️ ComplianceMetricsWidget: Component appears unmounted, but setLoading was called anyway')
-      }
     }
   }, [siteId, companyId])
 
@@ -466,16 +439,14 @@ export default function ComplianceMetricsWidget() {
       console.warn('⚠️ ComplianceMetricsWidget: Skipping load due to error limit', { errorCount: errorCountRef.current })
     } else {
       // If missing required values, ensure loading state is cleared
-      if (mountedRef.current) {
-        console.log('⚠️ ComplianceMetricsWidget: Missing required values', { siteId, companyId, contextLoading })
-        setLoading(false)
-        setTodayStats(null)
-        setRecentCompletions([])
-        setComplianceTrend([])
-        setError(null)
-        hasLoadedRef.current = false // Reset since we didn't successfully load
-        contextLoadingHandledRef.current = false // Reset so we wait for context again
-      }
+      console.log('⚠️ ComplianceMetricsWidget: Missing required values', { siteId, companyId, contextLoading })
+      setLoading(false)
+      setTodayStats(null)
+      setRecentCompletions([])
+      setComplianceTrend([])
+      setError(null)
+      hasLoadedRef.current = false // Reset since we didn't successfully load
+      contextLoadingHandledRef.current = false // Reset so we wait for context again
     }
      
   }, [siteId, companyId, contextLoading]) // Only depend on values, not the callback function to avoid loops

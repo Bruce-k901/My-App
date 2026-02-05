@@ -125,8 +125,8 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
           delivery_date: deliveryDate,
           invoice_number: invoiceNumber || null,
           subtotal: subtotal,
-          vat_amount: vat,
-          total_amount: total,
+          vat_total: vat,
+          total: total,
           status: 'confirmed'
         })
         .select()
@@ -134,18 +134,20 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
       if (deliveryError) throw deliveryError;
 
-      // Create delivery items
+      // Create delivery lines
       const items = lines.map(line => ({
         delivery_id: delivery.id,
         stock_item_id: line.stock_item_id,
         description: line.name,
-        quantity: line.quantity,
+        quantity_ordered: line.quantity,
+        quantity_received: line.quantity,
         unit_price: line.unit_price,
-        total_price: line.total
+        line_total: line.total,
+        match_status: 'matched'
       }));
 
       const { error: itemsError } = await supabase
-        .from('delivery_items')
+        .from('delivery_lines')
         .insert(items);
 
       if (itemsError) throw itemsError;
@@ -184,8 +186,9 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
             movement_type: 'purchase',
             quantity: line.quantity,
             unit_cost: line.unit_price,
-            reference_type: 'delivery',
-            reference_id: delivery.id
+            ref_type: 'delivery',
+            ref_id: delivery.id,
+            to_site_id: siteId
           });
       }
 

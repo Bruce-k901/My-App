@@ -16,6 +16,20 @@ export async function GET(
       return NextResponse.json({ error: 'siteId is required' }, { status: 400 });
     }
 
+    // Get customer's ship state preferences
+    const { data: customer, error: customerError } = await supabase
+      .from('planly_customers')
+      .select('default_ship_state, frozen_only')
+      .eq('id', customerId)
+      .single();
+
+    if (customerError) {
+      console.error('Error fetching customer:', customerError);
+    }
+
+    const customerDefaultShipState = customer?.default_ship_state || 'baked';
+    const customerFrozenOnly = customer?.frozen_only || false;
+
     // Get ALL active, non-archived products for this site with bake groups
     const { data: allProducts, error: productsError } = await supabase
       .from('planly_products')
@@ -67,17 +81,29 @@ export async function GET(
     }
 
     // Build products array with names and bake groups
-    const products = (allProducts || []).map((p: any) => ({
-      id: p.id,
-      name: ingredientNames[p.stockly_product_id] || 'Unknown Product',
-      default_ship_state: p.default_ship_state,
-      can_ship_frozen: p.can_ship_frozen,
-      bake_group: p.bake_group ? {
-        id: p.bake_group.id,
-        name: p.bake_group.name,
-        sort_order: p.bake_group.priority,
-      } : null,
-    }));
+    // Apply customer's ship state preference: frozen_only or default_ship_state
+    const products = (allProducts || []).map((p: any) => {
+      // Determine effective ship state:
+      // 1. If customer is frozen_only, always frozen
+      // 2. If customer default is frozen, use frozen
+      // 3. Otherwise use product's default
+      let effectiveShipState = p.default_ship_state || 'baked';
+      if (customerFrozenOnly || customerDefaultShipState === 'frozen') {
+        effectiveShipState = 'frozen';
+      }
+
+      return {
+        id: p.id,
+        name: ingredientNames[p.stockly_product_id] || 'Unknown Product',
+        default_ship_state: effectiveShipState,
+        can_ship_frozen: p.can_ship_frozen,
+        bake_group: p.bake_group ? {
+          id: p.bake_group.id,
+          name: p.bake_group.name,
+          sort_order: p.bake_group.priority,
+        } : null,
+      };
+    });
 
     // Sort products by bake group sort_order, then by name
     products.sort((a: any, b: any) => {
@@ -129,7 +155,14 @@ export async function GET(
       }
     }
 
-    return NextResponse.json({ products, prices });
+    return NextResponse.json({
+      products,
+      prices,
+      customer: {
+        default_ship_state: customerDefaultShipState,
+        frozen_only: customerFrozenOnly,
+      },
+    });
   } catch (error) {
     console.error('Error in GET /api/planly/customers/[id]/order-history:', error);
     console.error('Stack:', error instanceof Error ? error.stack : 'No stack');

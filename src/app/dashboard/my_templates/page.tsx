@@ -44,11 +44,13 @@ export default function TemplatesPage() {
 
     setLoading(true);
     try {
+      // Fetch user-created templates (is_template_library = false)
+      // Note: We don't filter by is_active because custom templates are saved with is_active=false
+      // to prevent the old cron from auto-creating tasks. The is_active flag is not relevant for display.
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
         .eq('company_id', companyId)
-        .eq('is_active', true)
         .eq('is_template_library', false) // Only show user-created templates, not library templates
         .order('created_at', { ascending: false });
 

@@ -1785,7 +1785,72 @@ export function TaskFromTemplateModal({
             if (error) throw error;
             toast.success(`Task configuration created successfully for ${siteName}!`);
           }
-          
+
+          // ====================================================================
+          // CRITICAL: Save checklist items back to template's recurrence_pattern
+          // This ensures the cron function can populate items for future tasks
+          // ====================================================================
+          if (templateId && (formData.checklistItems?.length > 0 || formData.yesNoChecklistItems?.length > 0)) {
+            try {
+              // First, get the current template's recurrence_pattern
+              const { data: currentTemplate, error: fetchError } = await supabase
+                .from('task_templates')
+                .select('recurrence_pattern')
+                .eq('id', templateId)
+                .single();
+
+              if (!fetchError && currentTemplate) {
+                // Parse existing recurrence_pattern or create new one
+                let existingPattern = currentTemplate.recurrence_pattern || {};
+                if (typeof existingPattern === 'string') {
+                  try {
+                    existingPattern = JSON.parse(existingPattern);
+                  } catch (e) {
+                    existingPattern = {};
+                  }
+                }
+
+                // Prepare checklist items to save
+                let defaultChecklistItems: string[] = [];
+
+                if (formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0) {
+                  // For yes/no checklists, save the text values
+                  defaultChecklistItems = formData.yesNoChecklistItems
+                    .filter((item: any) => item && item.text && item.text.trim().length > 0)
+                    .map((item: any) => item.text.trim());
+                } else if (formData.checklistItems && formData.checklistItems.length > 0) {
+                  // For regular checklists, save the items directly
+                  defaultChecklistItems = formData.checklistItems
+                    .filter((item: string) => item && item.trim().length > 0)
+                    .map((item: string) => item.trim());
+                }
+
+                // Update recurrence_pattern with default_checklist_items
+                if (defaultChecklistItems.length > 0) {
+                  const updatedPattern = {
+                    ...existingPattern,
+                    default_checklist_items: defaultChecklistItems
+                  };
+
+                  const { error: updateError } = await supabase
+                    .from('task_templates')
+                    .update({ recurrence_pattern: updatedPattern })
+                    .eq('id', templateId);
+
+                  if (updateError) {
+                    console.error('Error saving checklist items to template:', updateError);
+                    // Don't fail the whole operation - the site_checklist was created
+                  } else {
+                    console.log('✅ Saved default_checklist_items to template:', defaultChecklistItems);
+                  }
+                }
+              }
+            } catch (templateUpdateError) {
+              console.error('Error updating template with checklist items:', templateUpdateError);
+              // Don't fail the whole operation - the site_checklist was created
+            }
+          }
+
           // Redirect based on source page - go back to where user came from
           // If from compliance page, go back to compliance. If from templates, go back to templates.
           if (sourcePage === 'compliance') {

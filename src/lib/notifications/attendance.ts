@@ -226,7 +226,8 @@ export async function isClockedIn(siteId?: string): Promise<boolean> {
       .order("clock_in_time", { ascending: false })
       .limit(1);
 
-    if (siteId) {
+    // Only filter by site_id if it's a valid UUID (not "all")
+    if (siteId && siteId !== 'all') {
       query = query.eq("site_id", siteId);
     }
 

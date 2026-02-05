@@ -13,6 +13,7 @@ export type IssueType = 'short' | 'damaged' | 'wrong_item' | 'quality';
 export type IssueStatus = 'pending' | 'approved' | 'rejected';
 export type TrayType = 'full' | 'half' | 'ring';
 export type CalendarCategory = 'Tasks' | 'Reminders' | 'Messages';
+export type PrepMethod = 'laminated' | 'frozen' | 'fresh' | 'par_baked';
 
 // ============================================================================
 // PROCESS TEMPLATES
@@ -27,6 +28,8 @@ export interface ProcessTemplate {
   site_id?: string;
   buffer_days_override?: number;
   cutoff_time_override?: string;
+  base_dough_recipe_id?: string | null;
+  production_plan_label?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -34,6 +37,12 @@ export interface ProcessTemplate {
   // Relations
   stages?: ProcessStage[];
   products?: PlanlyProduct[];
+  base_dough_recipe?: {
+    id: string;
+    name: string;
+    yield_quantity: number;
+    yield_unit: string;
+  };
 }
 
 export interface ProcessStage {
@@ -101,10 +110,68 @@ export interface PlanlyBakeGroup {
   site_id: string;
   name: string;
   priority: number; // Used as sort_order
+  capacity_profile?: string | null; // Links to equipment type capacity_profiles label
   is_active: boolean;
   created_at: string;
   updated_at: string;
   // Relations
+  products?: PlanlyProduct[];
+}
+
+// ============================================================================
+// BASE DOUGHS (Production Setup Wizard)
+// ============================================================================
+
+export interface BaseDough {
+  id: string;
+  site_id: string;
+  name: string;
+  recipe_id?: string | null;
+  mix_lead_days: number;
+  // For non-laminated products (batch-based calculation)
+  batch_size_kg?: number | null;
+  units_per_batch?: number | null;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+  updated_by?: string;
+  // Relations
+  recipe?: {
+    id: string;
+    name: string;
+    yield_quantity: number;
+    yield_unit: string;
+  };
+  lamination_styles?: LaminationStyle[];
+  products?: PlanlyProduct[];
+}
+
+// ============================================================================
+// LAMINATION STYLES (Production Setup Wizard)
+// ============================================================================
+
+export interface LaminationStyle {
+  id: string;
+  base_dough_id: string;
+  name: string;
+  recipe_id?: string | null;
+  products_per_sheet: number;
+  laminate_lead_days: number;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+  updated_by?: string;
+  // Relations
+  base_dough?: BaseDough;
+  recipe?: {
+    id: string;
+    name: string;
+    yield_quantity: number;
+    yield_unit: string;
+  };
   products?: PlanlyProduct[];
 }
 
@@ -179,6 +246,7 @@ export interface PlanlyCustomer {
   is_ad_hoc: boolean;
   frozen_only: boolean;
   is_active: boolean;
+  needs_delivery?: boolean; // Defaults to true for delivery schedule
   notes?: string;
   site_id: string;
   created_at: string;
@@ -248,10 +316,24 @@ export interface PlanlyProduct {
   is_new: boolean;
   is_paused: boolean;
   archived_at?: string;
+  // Production planning fields (legacy - processing_group_id)
+  processing_group_id?: string;
+  base_prep_grams_per_unit?: number;
+  equipment_type_id?: string;
+  items_per_equipment?: number;
+  display_order: number;
+  prep_method?: PrepMethod;
+  // NEW: Production setup wizard fields
+  base_dough_id?: string | null;        // For non-laminated products
+  lamination_style_id?: string | null;  // For laminated products
   // Relations
   category?: PlanlyCategory;
   process_template?: ProcessTemplate;
   bake_group?: BakeGroup;
+  processing_group?: ProcessingGroup;
+  base_dough?: BaseDough;
+  lamination_style?: LaminationStyle;
+  equipment_type?: EquipmentType;
   list_prices?: ProductListPrice[];
   // From Stockly/Ingredients Library (joined)
   stockly_product?: {
@@ -261,6 +343,7 @@ export interface PlanlyProduct {
     sku?: string;
     category?: string;
     unit?: string;
+    linked_recipe_id?: string;
   };
 }
 
@@ -586,9 +669,277 @@ export interface ProductionPlanOverride {
   id: string;
   site_id: string;
   production_date: string;
-  ingredient_name: string;
-  override_quantity: number;
+  processing_group_id: string;
+  extra_quantity_kg: number;
   reason?: string;
   created_at: string;
   created_by?: string;
+  // Relations
+  processing_group?: ProcessingGroup;
+}
+
+// ============================================================================
+// EQUIPMENT TYPES (Tray Types)
+// ============================================================================
+
+export interface CapacityProfile {
+  label: string;
+  capacity: number;
+}
+
+export interface EquipmentType {
+  id: string;
+  company_id: string;
+  site_id?: string | null;
+  name: string;
+  default_capacity: number;
+  capacity_profiles?: CapacityProfile[];
+  description?: string | null;
+  display_order: number;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================================
+// PROCESSING GROUPS
+// ============================================================================
+
+export type RoundingMethod = 'up' | 'nearest' | 'exact';
+export type LeftoverHandling = 'preferment' | 'waste' | 'staff_meals' | 'next_batch';
+
+export interface ProcessingGroup {
+  id: string;
+  company_id: string;
+  site_id?: string;
+  name: string;
+  base_prep_recipe_id: string;
+  batch_size_kg: number;
+  units_per_batch: number;
+  rounding_method: RoundingMethod;
+  leftover_handling?: LeftoverHandling;
+  process_template_id?: string;
+  sop_id?: string;
+  description?: string;
+  display_order: number;
+  sheet_yield_kg?: number;
+  lamination_method?: string;
+  laminated_sheet_recipe_id?: string | null;
+  production_plan_label?: string | null;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  process_template?: ProcessTemplate;
+  base_prep_recipe?: {
+    id: string;
+    name: string;
+    yield_quantity: number;
+    yield_unit: string;
+  };
+  laminated_sheet_recipe?: {
+    id: string;
+    name: string;
+    yield_quantity: number;
+    yield_unit: string;
+  };
+  sop?: {
+    id: string;
+    title: string;
+    ref_code?: string;
+  };
+  products?: PlanlyProduct[];
+}
+
+// ============================================================================
+// MIX SHEET TYPES (Production Plan API Responses)
+// ============================================================================
+
+export interface MixSheetIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
+export interface MixSheetProduct {
+  name: string;
+  quantity: number;
+}
+
+export interface LaminationSheetResult {
+  style_id: string;
+  style_name: string;
+  base_dough_id: string;
+  base_dough_name: string;
+  products_per_sheet: number;
+  laminate_lead_days: number;
+  recipe_id: string | null;
+  recipe_name: string | null;
+  total_products: number;
+  sheets_needed: number;
+  ingredients: MixSheetIngredient[];
+  products: MixSheetProduct[];
+}
+
+export interface DoughMixResult {
+  dough_id: string;
+  dough_name: string;
+  mix_lead_days: number;
+  recipe_id: string | null;
+  recipe_name: string | null;
+  total_kg: number;
+  total_batches: number | null;
+  batch_size_kg: number | null;
+  units_per_batch: number | null;
+  ingredients: MixSheetIngredient[];
+  lamination_styles: LaminationSheetResult[];
+  direct_products: MixSheetProduct[];
+}
+
+export interface SheetSummaryStyle {
+  style_name: string;
+  base_dough_name: string;
+  sheets_needed: number;
+  total_products: number;
+  products_per_sheet: number;
+  laminate_lead_days: number;
+}
+
+export interface SheetSummary {
+  total_sheets: number;
+  by_style: SheetSummaryStyle[];
+}
+
+export interface MixSheetResponse {
+  delivery_date: string;
+  mix_day: string;
+  order_summary: {
+    confirmed_orders: number;
+    pending_orders: number;
+    pending_note?: string;
+  };
+  dough_mixes: DoughMixResult[];
+  sheet_summary: SheetSummary | null;
+}
+
+// ============================================================================
+// TRAY LAYOUT TYPES
+// ============================================================================
+
+export interface TrayLayoutItem {
+  product: string;
+  qty: number;
+}
+
+export interface TrayLayoutEquipment {
+  number: number;
+  bake_group: string;
+  bake_group_id: string;
+  items: TrayLayoutItem[];
+  used: number;
+  capacity: number;
+}
+
+export interface TrayLayoutDestinationGroup {
+  destination_group_id: string;
+  destination_group_name: string;
+  bake_deadline?: string;
+  dispatch_time?: string;
+  equipment: TrayLayoutEquipment[];
+  summary: {
+    total_equipment: number;
+    total_items: number;
+    utilization_percent: number;
+  };
+}
+
+export interface TrayLayoutResponse {
+  delivery_date: string;
+  destination_groups: TrayLayoutDestinationGroup[];
+}
+
+// ============================================================================
+// BATCH PRODUCTION TYPES
+// ============================================================================
+
+export interface BatchProductionProduct {
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  processing_group_name: string;
+}
+
+export interface BatchProductionTemplate {
+  template_id: string;
+  template_name: string;
+  lead_time_days: number;
+  stages: {
+    day_offset: number;
+    stage_name: string;
+    sop_name?: string;
+    sop_id?: string;
+  }[];
+  products: BatchProductionProduct[];
+  mix_sheet_recipe_id?: string;
+}
+
+export interface BatchProductionResponse {
+  delivery_date: string;
+  templates: BatchProductionTemplate[];
+}
+
+// ============================================================================
+// PRODUCTION PLAN COMBINED RESPONSE
+// ============================================================================
+
+export interface ProductionPlanResponse {
+  delivery_date: string;
+  working_date?: string;
+  view_mode: 'delivery' | 'working';
+  mix_sheets: MixSheetResponse;
+  batch_production: BatchProductionResponse;
+  tray_layout: TrayLayoutResponse;
+  summary: {
+    total_items: number;
+    total_equipment: number;
+    key_deadlines: {
+      name: string;
+      time: string;
+    }[];
+    last_calculated: string;
+  };
+}
+
+// ============================================================================
+// SETUP WIZARD TYPES
+// ============================================================================
+
+export interface SetupWizardStep {
+  step: number;
+  name: string;
+  complete: boolean;
+  count: number;
+  issues?: string[]; // Specific issues if step is incomplete
+}
+
+export interface SetupWizardStatus {
+  steps: SetupWizardStep[];
+  overall_complete: boolean;
+  next_incomplete_step: number;
+}
+
+// ============================================================================
+// PLANLY BADGE TYPES (Cross-module integration)
+// ============================================================================
+
+export interface PlanlyBadgeData {
+  is_linked: boolean;
+  linked_groups?: string[];
+  configuration_status?: 'ready' | 'incomplete' | 'not_configured';
+  missing_fields?: string[];
+  warning_message?: string;
 }

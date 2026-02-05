@@ -55,6 +55,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
   const [destinationGroupId, setDestinationGroupId] = useState(customer?.destination_group_id || '');
   const [defaultShipState, setDefaultShipState] = useState<ShipState>(customer?.default_ship_state || 'baked');
   const [deliveryInstructions, setDeliveryInstructions] = useState(customer?.delivery_instructions || '');
+  const [needsDelivery, setNeedsDelivery] = useState(customer?.needs_delivery ?? true);
 
   // Finance
   const [minimumOrderValue, setMinimumOrderValue] = useState(customer?.minimum_order_value?.toString() || '');
@@ -95,6 +96,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         destination_group_id: destinationGroupId || null,
         default_ship_state: defaultShipState,
         delivery_instructions: deliveryInstructions.trim() || null,
+        needs_delivery: needsDelivery,
         minimum_order_value: minimumOrderValue ? parseFloat(minimumOrderValue) : null,
         below_minimum_delivery_charge: belowMinimumCharge ? parseFloat(belowMinimumCharge) : null,
         finance_contact_name: financeContactName.trim() || null,
@@ -218,6 +220,17 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Settings</h2>
           <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div>
+                <span className="font-medium text-gray-900 dark:text-white">Requires Delivery</span>
+                <p className="text-sm text-gray-500 dark:text-white/60">Customer will appear on delivery schedule</p>
+              </div>
+              <Switch
+                checked={needsDelivery}
+                onChange={setNeedsDelivery}
+              />
+            </div>
+
             <div>
               <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
               <div className="mt-2 flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">

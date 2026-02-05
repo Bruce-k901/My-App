@@ -47,10 +47,10 @@ interface StockItem {
 }
 
 interface SupplierStockItem {
-  stock_item_id: string;
+  stock_item_id: string | null;
   stock_item_name: string;
   stock_unit: string;
-  product_variant_id: string;
+  product_variant_id: string | null;
   product_name: string;
   supplier_code: string | null;
   current_price: number | null;
@@ -59,12 +59,15 @@ interface SupplierStockItem {
   min_order_qty: number;
   order_multiple: number;
   is_preferred: boolean;
+  // Track library source for creating product_variants
+  library_type?: 'ingredients_library' | 'chemicals_library' | 'first_aid_supplies_library' | 'disposables_library' | 'ppe_library';
+  library_item_id?: string;
 }
 
 interface POItem {
   id?: string;
-  stock_item_id: string;
-  product_variant_id?: string; // For saving
+  stock_item_id: string | null;
+  product_variant_id?: string | null; // For saving
   name: string;
   ordered_quantity: number;
   unit: string;
@@ -72,6 +75,9 @@ interface POItem {
   line_total: number;
   received_quantity: number;
   status: string;
+  // Track library source for creating product_variants
+  library_type?: 'ingredients_library' | 'chemicals_library' | 'first_aid_supplies_library' | 'disposables_library' | 'ppe_library';
+  library_item_id?: string;
 }
 
 interface PurchaseOrder {
@@ -147,13 +153,19 @@ export default function PurchaseOrderDetailPage() {
   }, []);
 
   useEffect(() => {
-    if (companyId && isMountedRef.current) {
-      loadSuppliers();
-      loadStockItems();
+    async function loadData() {
+      if (!companyId || !isMountedRef.current) return;
+
+      // Load suppliers first (needed for dropdown to work)
+      await loadSuppliers();
+      loadStockItems(); // Can run in parallel with loadOrder
+
+      // Only load order after suppliers are loaded
       if (!isNew) {
         loadOrder();
       }
     }
+    loadData();
   }, [companyId, params.id]);
 
   useEffect(() => {
@@ -252,37 +264,42 @@ export default function PurchaseOrderDetailPage() {
       console.log('Supplier name:', supplierName);
 
       // Query all library tables for items with this supplier
-      // Select actual column names, then map to common format in JavaScript
+      // Note: Different libraries have different price column names:
+      //   - ingredients_library: pack_cost (price per pack), unit_cost (per gram)
+      //   - chemicals_library: unit_cost only
+      //   - first_aid_supplies_library: unit_cost only
+      //   - disposables_library: pack_cost only
+      //   - ppe_library: unit_cost only
       const libraryQueries = [
-        // Ingredients Library
+        // Ingredients Library - has both pack_cost and unit_cost
         supabase
           .from('ingredients_library')
-          .select('id, ingredient_name, unit_cost, unit, pack_size, supplier')
+          .select('id, ingredient_name, pack_cost, unit_cost, unit, pack_size, supplier')
           .eq('company_id', companyId)
           .ilike('supplier', supplierName),
-        
-        // Chemicals Library
+
+        // Chemicals Library - only has unit_cost
         supabase
           .from('chemicals_library')
           .select('id, product_name, unit_cost, pack_size, supplier')
           .eq('company_id', companyId)
           .ilike('supplier', supplierName),
-        
-        // First Aid Library
+
+        // First Aid Library - only has unit_cost
         supabase
           .from('first_aid_supplies_library')
           .select('id, item_name, unit_cost, pack_size, supplier')
           .eq('company_id', companyId)
           .ilike('supplier', supplierName),
-        
-        // Disposables Library (uses pack_cost instead of unit_cost)
+
+        // Disposables Library - only has pack_cost
         supabase
           .from('disposables_library')
           .select('id, item_name, pack_cost, pack_size, supplier')
           .eq('company_id', companyId)
           .ilike('supplier', supplierName),
-        
-        // PPE Library
+
+        // PPE Library - only has unit_cost
         supabase
           .from('ppe_library')
           .select('id, item_name, unit_cost, supplier')
@@ -293,31 +310,41 @@ export default function PurchaseOrderDetailPage() {
       // Execute all queries in parallel
       const results = await Promise.all(libraryQueries.map(q => q));
 
+      // Library types in order
+      const libraryTypes: Array<'ingredients_library' | 'chemicals_library' | 'first_aid_supplies_library' | 'disposables_library' | 'ppe_library'> = [
+        'ingredients_library',
+        'chemicals_library',
+        'first_aid_supplies_library',
+        'disposables_library',
+        'ppe_library'
+      ];
+
       // Combine all results
       const allItems: SupplierStockItem[] = [];
-      
+
       results.forEach((result, index) => {
         if (result.error) {
-          console.error(`Error loading library ${index}:`, result.error);
+          console.error(`Error loading library ${libraryTypes[index]}:`, result.error);
           return;
         }
 
+        const libraryType = libraryTypes[index];
         const items = (result.data || []).map((item: any) => {
           // Map different column names to common format
           // ingredients_library uses 'ingredient_name'
           // chemicals_library uses 'product_name'
           // others use 'item_name'
           const itemName = item.ingredient_name || item.product_name || item.item_name || 'Unknown';
-          
-          // Handle different price column names
-          // disposables_library uses 'pack_cost', others use 'unit_cost'
-          const price = item.unit_cost || item.pack_cost || 0;
-          
+
+          // Use pack_cost for ordering (what you pay per pack)
+          // Fall back to unit_cost only if pack_cost is not set
+          const price = item.pack_cost || item.unit_cost || 0;
+
           return {
-            stock_item_id: null, // Libraries don't have stock_item_id
+            stock_item_id: null, // Will be created/found on save
             stock_item_name: itemName,
             stock_unit: item.unit || 'ea',
-            product_variant_id: item.id,
+            product_variant_id: null, // Will be created/found on save
             product_name: itemName,
             supplier_code: null,
             current_price: price,
@@ -325,7 +352,10 @@ export default function PurchaseOrderDetailPage() {
             pack_unit: item.unit || 'ea',
             min_order_qty: 1,
             order_multiple: 1,
-            is_preferred: false
+            is_preferred: false,
+            // Track library source
+            library_type: libraryType,
+            library_item_id: item.id
           };
         });
 
@@ -357,25 +387,72 @@ export default function PurchaseOrderDetailPage() {
     if (!isMountedRef.current) return;
     setLoading(true);
     try {
-      const { data: po } = await supabase
+      // First get the order
+      const { data: po, error: poError } = await supabase
         .from('purchase_orders')
-        .select(`
-          *,
-          purchase_order_lines(
-            id, product_variant_id, quantity_ordered, unit_price, 
-            quantity_received,
-            product_variants(
-              stock_item_id,
-              stock_items(id, name)
-            )
-          )
-        `)
+        .select('*')
         .eq('id', params.id)
         .single();
-      
+
+      if (poError) {
+        console.error('Error loading PO:', poError);
+        return;
+      }
+
+      console.log('Loaded PO:', po);
+
+      // Get lines without nested query (views don't have FK relationships for PostgREST)
+      const { data: lines, error: linesError } = await supabase
+        .from('purchase_order_lines')
+        .select('id, product_variant_id, quantity_ordered, unit_price, quantity_received, line_total')
+        .eq('purchase_order_id', params.id);
+
+      if (linesError) {
+        console.error('Error loading lines:', linesError);
+      }
+
+      console.log('Loaded lines:', lines);
+
+      // Fetch product variants separately for the lines
+      let variantsMap: Record<string, any> = {};
+      if (lines && lines.length > 0) {
+        const variantIds = lines.map((l: any) => l.product_variant_id).filter(Boolean);
+        if (variantIds.length > 0) {
+          const { data: variants } = await supabase
+            .from('product_variants')
+            .select('id, stock_item_id, product_name, pack_size')
+            .in('id', variantIds);
+
+          if (variants) {
+            variantsMap = variants.reduce((acc: Record<string, any>, v: any) => {
+              acc[v.id] = v;
+              return acc;
+            }, {});
+          }
+          console.log('Loaded variants:', variants);
+        }
+      }
+
       if (!isMountedRef.current) return;
-      
+
       if (po && isMountedRef.current) {
+        const orderItems = (lines || []).map((item: any) => {
+          const variant = variantsMap[item.product_variant_id];
+          return {
+            id: item.id,
+            stock_item_id: variant?.stock_item_id || null,
+            product_variant_id: item.product_variant_id,
+            name: variant?.product_name || 'Unknown',
+            ordered_quantity: item.quantity_ordered,
+            unit: 'ea',
+            unit_price: item.unit_price || 0,
+            line_total: item.line_total || (item.quantity_ordered * (item.unit_price || 0)),
+            received_quantity: item.quantity_received || 0,
+            status: 'pending'
+          };
+        });
+
+        console.log('Mapped items:', orderItems);
         setOrder({
           id: po.id,
           order_number: po.order_number,
@@ -387,18 +464,7 @@ export default function PurchaseOrderDetailPage() {
           tax: po.tax || 0,
           total: po.total || 0,
           notes: po.notes,
-          items: (po.purchase_order_lines || []).map((item: any) => ({
-            id: item.id,
-            stock_item_id: item.product_variants?.stock_item_id || '',
-            product_variant_id: item.product_variant_id,
-            name: item.product_variants?.stock_items?.name || item.product_variants?.product_name || 'Unknown',
-            ordered_quantity: item.quantity_ordered,
-            unit: 'ea', // Default unit
-            unit_price: item.unit_price || 0,
-            line_total: item.quantity_ordered * (item.unit_price || 0),
-            received_quantity: item.quantity_received || 0,
-            status: 'pending'
-          }))
+          items: orderItems
         });
 
         // Load supplier items for this order's supplier
@@ -415,18 +481,96 @@ export default function PurchaseOrderDetailPage() {
     }
   }
 
-  async function findProductVariant(stockItemId: string, supplierId: string): Promise<string | null> {
+  async function findProductVariant(stockItemId: string | null, supplierId: string): Promise<string | null> {
+    if (!stockItemId) return null;
     const { data } = await supabase
       .from('product_variants')
       .select('id')
       .eq('stock_item_id', stockItemId)
       .eq('supplier_id', supplierId)
-      .eq('is_approved', true)
+      .eq('is_active', true)
       .order('is_preferred', { ascending: false })
       .limit(1)
       .single();
-    
+
     return data?.id || null;
+  }
+
+  // Helper function to get or create product variant for a library item
+  async function getOrCreateProductVariant(
+    supplierId: string,
+    itemName: string,
+    libraryItemId: string | null,
+    libraryType: string | null,
+    unitPrice: number
+  ): Promise<string | null> {
+    try {
+      // Try to find existing variant by supplier and name
+      const { data: existingVariant } = await supabase
+        .from('product_variants')
+        .select('id')
+        .eq('supplier_id', supplierId)
+        .eq('product_name', itemName)
+        .maybeSingle();
+
+      if (existingVariant) {
+        return existingVariant.id;
+      }
+
+      // Get or create stock_item first (if library item provided)
+      let stockItemId: string | null = null;
+
+      if (libraryItemId && libraryType) {
+        const { data: existingStockItem } = await supabase
+          .from('stock_items')
+          .select('id')
+          .eq('library_item_id', libraryItemId)
+          .eq('library_type', libraryType)
+          .maybeSingle();
+
+        if (existingStockItem) {
+          stockItemId = existingStockItem.id;
+        } else {
+          const { data: newStockItem, error: stockError } = await supabase
+            .from('stock_items')
+            .insert({
+              company_id: companyId,
+              name: itemName,
+              library_item_id: libraryItemId,
+              library_type: libraryType,
+              track_stock: true,
+            })
+            .select('id')
+            .single();
+
+          if (stockError) throw stockError;
+          stockItemId = newStockItem.id;
+        }
+      }
+
+      // MINIMAL INSERT - ONLY columns that exist in the schema
+      const { data: variant, error: variantError } = await supabase
+        .from('product_variants')
+        .insert({
+          stock_item_id: stockItemId,
+          supplier_id: supplierId,
+          product_name: itemName,
+          pack_size: '1',
+          unit_price: unitPrice,
+          is_preferred: false,
+          is_active: true,
+        })
+        .select('id')
+        .single();
+
+      if (variantError) throw variantError;
+      console.log('Created stock_item and product_variant:', itemName, variant.id);
+      return variant.id;
+
+    } catch (error: any) {
+      console.error('Error creating stock_item/product_variant:', error.message);
+      return null;
+    }
   }
 
 
@@ -569,19 +713,20 @@ export default function PurchaseOrderDetailPage() {
     // Validate quantity against min_order_qty and order_multiple
     const minQty = item.min_order_qty || 1;
     const multiple = item.order_multiple || 1;
-    
+
     if (quantity < minQty) {
       quantity = minQty;
     }
-    
+
     // Round to nearest multiple
     if (multiple > 1) {
       quantity = Math.round(quantity / multiple) * multiple;
     }
 
-    // Check if item already exists in order
+    // Check if item already exists in order (by library_item_id or product_variant_id)
     const existingIndex = order.items.findIndex(
-      i => i.product_variant_id === item.product_variant_id
+      i => (item.library_item_id && i.library_item_id === item.library_item_id) ||
+           (item.product_variant_id && i.product_variant_id === item.product_variant_id)
     );
 
     if (quantity > 0) {
@@ -606,7 +751,10 @@ export default function PurchaseOrderDetailPage() {
           unit_price: unitPrice,
           line_total: lineTotal,
           received_quantity: 0,
-          status: 'pending'
+          status: 'pending',
+          // Track library source for creating product_variants on save
+          library_type: item.library_type,
+          library_item_id: item.library_item_id
         };
         
         const newItems = [...order.items, newItem];
@@ -621,7 +769,8 @@ export default function PurchaseOrderDetailPage() {
 
   function getItemQuantity(item: SupplierStockItem): number {
     const existingItem = order.items.find(
-      i => i.product_variant_id === item.product_variant_id
+      i => (item.library_item_id && i.library_item_id === item.library_item_id) ||
+           (item.product_variant_id && i.product_variant_id === item.product_variant_id)
     );
     return existingItem?.ordered_quantity || 0;
   }
@@ -691,18 +840,26 @@ export default function PurchaseOrderDetailPage() {
           .eq('purchase_order_id', poId);
       }
       
-      // Find product variants for each item and insert
+      // Get or create product variants for each item and insert
       const itemsToInsert = [];
+      const skippedItems: string[] = [];
+
       for (const item of order.items) {
-        let variantId = item.product_variant_id;
+        // Get or create a valid product_variant_id
+        const variantId = await getOrCreateProductVariant(
+          order.supplier_id,
+          item.name,
+          item.library_item_id || null,
+          item.library_type || null,
+          item.unit_price
+        );
+
         if (!variantId) {
-          variantId = await findProductVariant(item.stock_item_id, order.supplier_id);
-          if (!variantId) {
-            console.error(`No product variant found for stock_item ${item.stock_item_id} and supplier ${order.supplier_id}`);
-            continue;
-          }
+          console.error(`Could not get/create product variant for: ${item.name}`);
+          skippedItems.push(item.name);
+          continue;
         }
-        
+
         itemsToInsert.push({
           purchase_order_id: poId,
           product_variant_id: variantId,
@@ -711,11 +868,23 @@ export default function PurchaseOrderDetailPage() {
           line_total: item.line_total
         });
       }
-      
+
+      if (skippedItems.length > 0) {
+        console.warn('Skipped items (no product variant):', skippedItems);
+      }
+
       if (itemsToInsert.length > 0) {
-        await supabase
+        const { error: linesError } = await supabase
           .from('purchase_order_lines')
           .insert(itemsToInsert);
+
+        if (linesError) {
+          console.error('Error inserting order lines:', linesError);
+          throw new Error(`Failed to save order items: ${linesError.message}`);
+        }
+      } else if (order.items.length > 0) {
+        // All items were skipped - this is an error
+        throw new Error('Could not save any items. Please check the console for details.');
       }
       
       // Update totals (try public wrapper first, then stockly)
@@ -911,12 +1080,67 @@ export default function PurchaseOrderDetailPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Items</h2>
             </div>
             
-            {!order.supplier_id ? (
-              <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
-                <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-white/40 text-sm">Select a supplier to view available items</p>
+            {/* Show existing order items FIRST for existing orders */}
+            {!isNew && order.items.length > 0 && (
+              <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/10">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                  Ordered Items ({order.items.length})
+                </h3>
+                <div className="space-y-2">
+                  {/* Header */}
+                  <div className="grid grid-cols-12 gap-3 pb-2 border-b border-gray-200 dark:border-white/10 text-xs font-medium text-gray-600 dark:text-white/60">
+                    <div className="col-span-5">Item</div>
+                    <div className="col-span-2 text-center">Quantity</div>
+                    <div className="col-span-2 text-right">Unit Price</div>
+                    <div className="col-span-2 text-right">Line Total</div>
+                    <div className="col-span-1"></div>
+                  </div>
+                  {order.items.map((item, idx) => (
+                    <div
+                      key={item.id || idx}
+                      className="grid grid-cols-12 gap-3 items-center py-3 px-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg"
+                    >
+                      <div className="col-span-5">
+                        <p className="text-gray-900 dark:text-white font-medium text-sm">{item.name}</p>
+                      </div>
+                      <div className="col-span-2 text-center">
+                        <span className="text-gray-900 dark:text-white font-medium">{item.ordered_quantity}</span>
+                        <span className="text-gray-500 dark:text-white/40 text-xs ml-1">{item.unit}</span>
+                      </div>
+                      <div className="col-span-2 text-right text-gray-900 dark:text-white">
+                        £{item.unit_price.toFixed(2)}
+                      </div>
+                      <div className="col-span-2 text-right text-gray-900 dark:text-white font-medium">
+                        £{item.line_total.toFixed(2)}
+                      </div>
+                      <div className="col-span-1 text-right">
+                        {canEdit && (
+                          <button
+                            onClick={() => removeItem(idx)}
+                            className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ) : loadingSupplierItems ? (
+            )}
+
+            {/* Supplier catalog for adding items */}
+            {canEdit && (
+              <>
+                {!isNew && order.items.length > 0 && (
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Add More Items</h3>
+                )}
+                {!order.supplier_id ? (
+                  <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+                    <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
+                    <p className="text-gray-600 dark:text-white/40 text-sm">Select a supplier to view available items</p>
+                  </div>
+                ) : loadingSupplierItems ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 animate-spin" />
                 <span className="ml-2 text-gray-600 dark:text-white/60">Loading items...</span>
@@ -940,11 +1164,14 @@ export default function PurchaseOrderDetailPage() {
                 {/* Items List */}
                 {supplierItems.map((item) => {
                   const quantity = getItemQuantity(item);
-                  const existingItem = order.items.find(i => i.product_variant_id === item.product_variant_id);
-                  
+                  const existingItem = order.items.find(
+                    i => (item.library_item_id && i.library_item_id === item.library_item_id) ||
+                         (item.product_variant_id && i.product_variant_id === item.product_variant_id)
+                  );
+
                   return (
-                    <div 
-                      key={item.product_variant_id} 
+                    <div
+                      key={item.library_item_id || item.product_variant_id || item.product_name}
                       className={`grid grid-cols-12 gap-3 items-center py-3 px-2 rounded-lg transition-colors ${
                         quantity > 0 
                           ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20' 
@@ -1021,39 +1248,7 @@ export default function PurchaseOrderDetailPage() {
                 })}
               </div>
             )}
-
-            {/* Selected Items Summary */}
-            {order.items.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/10">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Order Items ({order.items.length})</h3>
-                <div className="space-y-2">
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900 dark:text-white font-medium">{item.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-white/40">
-                          {item.ordered_quantity} {item.unit} × £{item.unit_price.toFixed(2)} = £{item.line_total.toFixed(2)}
-                        </p>
-                      </div>
-                      {canEdit && (
-                        <button
-                          onClick={() => {
-                            const supplierItem = supplierItems.find(si => si.product_variant_id === item.product_variant_id);
-                            if (supplierItem) {
-                              handleQuantityChange(supplierItem, 0);
-                            } else {
-                              removeItem(idx);
-                            }
-                          }}
-                          className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 ml-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              </>
             )}
           </div>
 

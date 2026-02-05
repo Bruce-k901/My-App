@@ -1,116 +1,369 @@
-/* Packing Plan Print Styles */
+/* ============================================= */
+/* Planly Production Plan - Print Styles        */
+/* ============================================= */
+
+/* Vertical text for rotated headers (used on screen and print) */
+.vertical-text {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  display: inline-block;
+}
+
 @media print {
-  /* Hide non-essential elements */
+  /* ===== FORCE LIGHT THEME ===== */
+  body,
+  * {
+    background-color: white !important;
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ===== PAGE SETUP - Minimal margins, maximize paper ===== */
+  @page {
+    margin: 0.5cm;
+    size: A4 landscape;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* ===== HIDE ALL UI CHROME ===== */
   nav,
   header,
-  .no-print,
+  aside,
+  footer,
   button,
+  [class*="header"],
+  [class*="Header"],
+  [class*="footer"],
+  [class*="Footer"],
+  [class*="nav"],
+  [class*="Nav"],
+  [class*="sidebar"],
+  [class*="Sidebar"],
+  [class*="ask-ai"],
+  [class*="AskAi"],
+  [class*="clock"],
+  [class*="Clock"],
+  [class*="fab"],
+  [class*="overlay"],
   [role="navigation"],
-  .sidebar,
-  .mobile-nav,
-  input[type="date"] {
+  [role="banner"],
+  input,
+  select,
+  textarea,
+  .print\:hidden,
+  .no-print,
+  .tsqd-open-btn-container,
+  .tsqd-parent-container,
+  [class*="devtools"],
+  [class*="Devtools"],
+  [class*="ReactQuery"] {
     display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
 
-  /* Reset background colors for printing */
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 10pt;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  /* Page setup */
-  @page {
-    size: A4 landscape;
-    margin: 10mm;
-  }
-
-  /* Container adjustments */
-  .packing-plan-container {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: none !important;
-  }
-
-  /* Table styling for print */
-  table {
+  /* ===== MAIN CONTENT - Center & maximize ===== */
+  main {
     width: 100% !important;
-    border-collapse: collapse !important;
-    font-size: 9pt !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0.5cm !important;
   }
 
-  th,
-  td {
-    border: 1px solid #333 !important;
-    padding: 4px 6px !important;
+  /* ===== PRINT HEADER ===== */
+  .print-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 0.3cm !important;
+    padding-bottom: 0.2cm !important;
+    border-bottom: 1.5pt solid black !important;
     background: white !important;
     color: black !important;
-  }
-
-  th {
-    background: #f0f0f0 !important;
-    font-weight: bold !important;
-  }
-
-  /* Group headers */
-  tr.group-header td,
-  tbody tr:has(td[colspan]) td {
-    background: #e0e0e0 !important;
-    font-weight: bold !important;
-  }
-
-  /* Ensure table doesn't break across pages awkwardly */
-  tr {
-    page-break-inside: avoid;
-  }
-
-  /* Print header visibility */
-  .print-header {
-    display: block !important;
-    margin-bottom: 10mm;
+    page-break-after: avoid !important;
   }
 
   .print-header h1 {
-    font-size: 14pt;
-    margin: 0;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    margin: 0 !important;
     color: black !important;
   }
 
-  .print-header .date {
-    font-size: 12pt;
-    color: #666;
+  .print-header span,
+  .print-header p {
+    font-size: 11pt !important;
+    color: #333 !important;
+    margin: 0 !important;
   }
 
-  /* Remove sticky positioning for print */
+  /* ===== TABLE STYLES ===== */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 10pt !important;
+    background: white !important;
+    page-break-before: avoid !important;
+    border: 1.5pt solid #333 !important;
+  }
+
+  /* ===== COLUMN HEADERS - Larger text ===== */
+  th,
+  thead td {
+    background: #f0f0f0 !important;
+    color: black !important;
+    font-weight: 700 !important;
+    border: 1pt solid #333 !important;
+    padding: 4px 6px !important;
+    text-align: center !important;
+    vertical-align: bottom !important;
+    font-size: 10pt !important;
+  }
+
+  /* Header row - taller for vertical text */
+  thead tr {
+    height: auto !important;
+    min-height: 50px !important;
+  }
+
+  /* Product column header - wider, left aligned */
+  th:first-child,
+  thead td:first-child {
+    width: 100px !important;
+    min-width: 100px !important;
+    text-align: left !important;
+    padding-left: 6px !important;
+  }
+
+  /* Customer/tray columns */
+  th:not(:first-child):not(:last-child) {
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+  }
+
+  /* Vertical text in headers */
+  th .vertical-text,
+  [style*="vertical-lr"] {
+    writing-mode: vertical-lr !important;
+    transform: rotate(180deg) !important;
+    white-space: nowrap !important;
+    font-size: 9pt !important;
+    display: inline-block !important;
+  }
+
+  /* First column header - horizontal text */
+  th:first-child .vertical-text {
+    writing-mode: horizontal-tb !important;
+    transform: none !important;
+  }
+
+  /* ===== DATA CELLS ===== */
+  td {
+    background: white !important;
+    color: black !important;
+    border: 1pt solid #666 !important;
+    padding: 3px 4px !important;
+    text-align: center !important;
+    font-size: 9pt !important;
+  }
+
+  /* ===== PRODUCT/CUSTOMER NAMES - Larger text ===== */
+  tbody td:first-child {
+    text-align: left !important;
+    font-weight: 600 !important;
+    font-size: 10pt !important;
+    background: #fafafa !important;
+    padding-left: 6px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    border-right: 1.5pt solid #333 !important;
+  }
+
+  /* ===== GROUP HEADER ROWS ===== */
+  tr.group-header td,
+  tbody tr td[colspan] {
+    background: #e8e8e8 !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    font-size: 9pt !important;
+    text-align: left !important;
+    padding: 4px 8px !important;
+    color: #0d7377 !important;
+    border-top: 1.5pt solid #333 !important;
+  }
+
+  /* ===== ALTERNATING ROWS ===== */
+  tbody
+    tr:nth-child(even):not(.group-header):not(:last-child)
+    td:not([colspan]):not(:first-child):not(:last-child) {
+    background: #f5f5f5 !important;
+  }
+
+  /* ===== PREVENT ROW BREAKS ===== */
+  tr {
+    page-break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  /* ===== TOTALS ROW ===== */
+  tfoot tr,
+  tbody tr:last-child {
+    background: #e8e8e8 !important;
+  }
+
+  tfoot td,
+  tbody tr:last-child td {
+    background: #e8e8e8 !important;
+    font-weight: bold !important;
+    border: 1pt solid #333 !important;
+    border-top: 1.5pt solid #333 !important;
+  }
+
+  /* ===== TOTALS COLUMN ===== */
+  th:last-child,
+  td:last-child {
+    background: #e8e8e8 !important;
+    font-weight: bold !important;
+    border-left: 1.5pt solid #333 !important;
+  }
+
+  /* Grand total cell (bottom-right) */
+  tfoot td:last-child,
+  tbody tr:last-child td:last-child {
+    background: #d8d8d8 !important;
+    font-weight: bold !important;
+  }
+
+  /* ===== PAGE BREAKS ===== */
+  /* Page break AFTER packing plan - ensures it's alone on page 1 */
+  .print\:page-break-after-always {
+    display: block !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Keep tray layout WITH prep cards (no break before) */
+  .tray-confirmation-grid {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  /* Prep card grid - avoid internal breaks */
+  .ws-root > .grid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print\:block,
+  .print\:flex {
+    display: flex !important;
+  }
+
+  /* ===== OVERFLOW - Make visible ===== */
+  .overflow-x-auto,
+  .overflow-y-auto,
+  .overflow-auto {
+    overflow: visible !important;
+  }
+
+  /* ===== GRIDS ===== */
+  .grid {
+    display: grid !important;
+    gap: 0.2cm !important;
+  }
+
+  .print\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .print\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .print\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  /* ===== TRAY + CONFIRMATION: 2/3 + 1/3 ===== */
+  .tray-confirmation-grid {
+    grid-template-columns: 2fr 1fr !important;
+    gap: 0.3cm !important;
+  }
+
+  /* ===== SEPARATOR BORDERS ===== */
+  .border-r-2 {
+    border-right-width: 1.5pt !important;
+    border-right-color: #333 !important;
+  }
+
+  /* ===== STICKY - Make static for print ===== */
   .sticky {
     position: static !important;
   }
 
-  /* Screen-only elements */
-  .screen-only {
-    display: none !important;
+  /* ===== SECTION CARDS ===== */
+  .ws-section {
+    background: white !important;
+    border: 1.5pt solid #333 !important;
+    color: black !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 0.2cm !important;
+    padding: 0.3cm !important;
   }
 
-  /* Print-only elements */
-  .print-only {
-    display: block !important;
+  .ws-section > div:first-child {
+    margin-bottom: 0.2cm !important;
+    padding-bottom: 0.1cm !important;
+    border-bottom: 1pt solid #666 !important;
   }
-}
 
-/* Hide print-only elements on screen */
-@media screen {
-  .print-only {
-    display: none !important;
+  .ws-section h3 {
+    font-size: 11pt !important;
+    font-weight: 700 !important;
+    color: black !important;
   }
-}
 
-/* Portrait option - add class to body when needed */
-@media print {
-  body.print-portrait {
-    @page {
-      size: A4 portrait;
-    }
+  /* ===== ACCENT COLORS ===== */
+  .text-teal-600,
+  .text-teal-700 {
+    color: #0d7377 !important;
+  }
+
+  .bg-teal-50 {
+    background: #e6f7f7 !important;
+  }
+
+  .bg-blue-50,
+  .bg-blue-100 {
+    background: #e0f0ff !important;
   }
 }

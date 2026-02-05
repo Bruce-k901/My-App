@@ -307,14 +307,14 @@ export default function ProcessTemplatesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Process Templates</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Production Timeline</h1>
           <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
-            Define multi-day production workflows for your products
+            Define your multi-day production workflows. The production plan uses this to tell you what to do and when.
           </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-4 w-4 mr-2" />
-          Create Template
+          Create Timeline
         </Button>
       </div>
 

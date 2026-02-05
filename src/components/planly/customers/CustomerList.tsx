@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -15,6 +15,7 @@ import {
   Lock,
   KeyRound,
   Loader2,
+  Truck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -180,6 +181,11 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
   const [isArchiving, setIsArchiving] = useState(false);
   const [isSendingInvite, setIsSendingInvite] = useState(false);
 
+  // Sync formData when customer prop changes (e.g., after save/refresh)
+  useEffect(() => {
+    setFormData(customer);
+  }, [customer]);
+
   const isArchived = !!(customer as any).archived_at;
   const hasPortalAccess = !!(customer as any).portal_enabled;
   const hasBeenInvited = !!(customer as any).portal_invited_at;
@@ -204,11 +210,14 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
           below_minimum_delivery_charge: formData.below_minimum_delivery_charge || null,
           is_ad_hoc: formData.is_ad_hoc,
           frozen_only: formData.frozen_only,
+          needs_delivery: formData.needs_delivery ?? true,
           portal_enabled: (formData as any).portal_enabled || false,
         }),
       });
 
       if (response.ok) {
+        const updatedCustomer = await response.json();
+        setFormData(updatedCustomer); // Update local state immediately
         setIsEditing(false);
         onRefresh();
       } else {
@@ -374,6 +383,21 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                       Frozen
                     </span>
                   )}
+                  {(customer.needs_delivery ?? true) && (
+                    <Link
+                      href="/dashboard/planly/delivery-schedule"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs px-2 py-0.5 rounded bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1 hover:bg-teal-100 dark:hover:bg-teal-500/20 transition-colors"
+                    >
+                      <Truck className="w-3 h-3" />
+                      Delivery
+                    </Link>
+                  )}
+                  {!(customer.needs_delivery ?? true) && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
+                      Collection
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -449,6 +473,34 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                         </p>
                       )}
                     </div>
+                  </div>
+                </div>
+
+                {/* Delivery Status Section */}
+                <div className="border-t border-gray-200 dark:border-white/10 pt-4">
+                  <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-2">
+                    Delivery Status
+                  </p>
+                  <div className="flex items-center gap-4">
+                    {(customer.needs_delivery ?? true) ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1">
+                          <Truck className="w-3 h-3" />
+                          Requires Delivery
+                        </span>
+                        <Link
+                          href="/dashboard/planly/delivery-schedule"
+                          className="text-sm text-[#14B8A6] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          View Schedule →
+                        </Link>
+                      </div>
+                    ) : (
+                      <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
+                        Collection Only
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -848,6 +900,17 @@ function EditCustomerForm({
           />
           <Label htmlFor="frozen_only" className="text-sm text-gray-700 dark:text-white/80">
             Frozen only (this customer only receives frozen products)
+          </Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="needs_delivery"
+            checked={data.needs_delivery ?? true}
+            onCheckedChange={(checked) => onChange({ ...data, needs_delivery: checked as boolean })}
+          />
+          <Label htmlFor="needs_delivery" className="text-sm text-gray-700 dark:text-white/80">
+            Requires delivery (appears on delivery schedule)
           </Label>
         </div>
 

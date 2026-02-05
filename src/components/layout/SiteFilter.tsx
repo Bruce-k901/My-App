@@ -158,6 +158,12 @@ export function SiteFilter() {
 
   const buttonRect = buttonRef.current?.getBoundingClientRect();
 
+  // Don't render until mounted to prevent hydration mismatch
+  // This component depends on client-side state (company, profile) that may differ from server
+  if (!mounted) {
+    return null;
+  }
+
   // Don't show if no company is selected
   if (!company?.id) {
     return null;

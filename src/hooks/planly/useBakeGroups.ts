@@ -33,6 +33,7 @@ export function useBakeGroups(siteId?: string) {
   const updateGroup = async (groupId: string, updates: {
     name?: string;
     priority?: number;
+    capacity_profile?: string | null;
   }) => {
     const res = await fetch(`/api/planly/bake-groups/${groupId}`, {
       method: 'PUT',

@@ -223,7 +223,17 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
       // Use shared utility to determine features from template config
       const templateFeatures = getTemplateFeatures(editingTemplate);
-      
+
+      // Debug: Log evidence_types and detected features
+      console.log('📋 Loading template for editing:', {
+        templateId: editingTemplate.id,
+        templateName: editingTemplate.name,
+        evidence_types: editingTemplate.evidence_types,
+        evidence_types_type: typeof editingTemplate.evidence_types,
+        is_array: Array.isArray(editingTemplate.evidence_types),
+        detectedFeatures: templateFeatures
+      });
+
       setFeatures({
         monitorCallout: templateFeatures.monitorCallout,
         checklist: templateFeatures.checklist,
@@ -476,6 +486,19 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         passFail: features.passFail,
         yesNoChecklist: features.yesNoChecklist,
         checklist: features.checklist,
+      });
+
+      // Debug: Log the features being saved
+      console.log('💾 Saving template with features:', {
+        selectedFeatures: {
+          tempLogs: features.tempLogs,
+          photoEvidence: features.photoEvidence,
+          passFail: features.passFail,
+          yesNoChecklist: features.yesNoChecklist,
+          checklist: features.checklist,
+        },
+        evidenceTypes: evidenceTypes,
+        evidenceTypesLength: evidenceTypes.length,
       });
 
       // Prepare dayparts array - use selected dayparts, ensure it's always an array

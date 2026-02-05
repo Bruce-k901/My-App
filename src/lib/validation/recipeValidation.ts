@@ -9,7 +9,7 @@
 
 export interface RecipeIngredient {
   id?: string;
-  stock_item_id?: string;
+  ingredient_id?: string;
   sub_recipe_id?: string;
   quantity: number;
   unit: string;
@@ -114,8 +114,8 @@ export function validateRecipeData(
     } else {
       // Validate each ingredient
       data.ingredients.forEach((ing, index) => {
-        // Must have either stock_item_id or sub_recipe_id
-        if (!ing.stock_item_id && !ing.sub_recipe_id) {
+        // Must have either ingredient_id or sub_recipe_id
+        if (!ing.ingredient_id && !ing.sub_recipe_id) {
           errors.push({
             field: `ingredients[${index}]`,
             severity: 'error',
@@ -125,7 +125,7 @@ export function validateRecipeData(
         }
 
         // Cannot have both
-        if (ing.stock_item_id && ing.sub_recipe_id) {
+        if (ing.ingredient_id && ing.sub_recipe_id) {
           errors.push({
             field: `ingredients[${index}]`,
             severity: 'error',

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { CheckCircle2, Loader2, AlertCircle, Filter, X, ChevronDown } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import CompletedTaskCard from '@/components/checklists/CompletedTaskCard';
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types';
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template';
+import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming';
 
 type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
   completion_record?: {
@@ -17,6 +18,11 @@ type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
     completed_by: string
     duration_seconds?: number | null
   } | null
+  completed_by_profile?: {
+    id: string
+    full_name: string | null
+    email: string | null
+  } | null
 }
 
 export default function CompletedTasksPage() {
@@ -24,6 +30,12 @@ export default function CompletedTasksPage() {
   const [completedTasks, setCompletedTasks] = useState<CompletedTaskWithRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDebugInfo, setShowDebugInfo] = useState(false); // Debug info should be hidden by default
+
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCompletedBy, setSelectedCompletedBy] = useState<string>('all');
+  const [selectedIssueFilter, setSelectedIssueFilter] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Define fetchCompletedTasks with useCallback to avoid dependency issues
   const fetchCompletedTasks = useCallback(async () => {
@@ -195,9 +207,9 @@ export default function CompletedTasksPage() {
       // Staff and managers should see all tasks they have access to based on site
       console.log('🔍 Showing all completed tasks (template-based, monitoring, calendar, etc.)');
 
-      // Order by updated_at (most recently updated first) - this works for both completed and missed tasks
-      // updated_at is set when task status changes, so it's reliable for sorting
-      query = query.order('updated_at', { ascending: false });
+      // Order by completed_at (most recently completed first)
+      // This ensures the most recent completions appear at the top
+      query = query.order('completed_at', { ascending: false, nullsFirst: false });
 
       console.log('📤 Executing main query...');
       let { data: tasks, error } = await query;
@@ -535,13 +547,206 @@ export default function CompletedTasksPage() {
     };
   }, [fetchCompletedTasks]);
 
+  // Extract unique categories and users for filter dropdowns
+  const filterOptions = useMemo(() => {
+    const categories = new Set<string>();
+    const users = new Map<string, string>(); // id -> name
+
+    completedTasks.forEach((task) => {
+      // Extract category from template
+      const category = task.template?.category;
+      if (category) {
+        categories.add(category);
+      }
+
+      // Extract completed by user
+      const userId = task.completed_by || task.completion_record?.completed_by;
+      const userName = task.completed_by_profile?.full_name || task.completed_by_profile?.email;
+      if (userId && userName) {
+        users.set(userId, userName);
+      }
+    });
+
+    return {
+      categories: Array.from(categories).sort(),
+      users: Array.from(users.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name))
+    };
+  }, [completedTasks]);
+
+  // Filter tasks based on selected filters
+  const filteredTasks = useMemo(() => {
+    return completedTasks.filter((task) => {
+      // Category filter
+      if (selectedCategory !== 'all') {
+        const taskCategory = task.template?.category;
+        if (taskCategory !== selectedCategory) {
+          return false;
+        }
+      }
+
+      // Completed by filter
+      if (selectedCompletedBy !== 'all') {
+        const taskCompletedBy = task.completed_by || task.completion_record?.completed_by;
+        if (taskCompletedBy !== selectedCompletedBy) {
+          return false;
+        }
+      }
+
+      // Issues filter
+      if (selectedIssueFilter !== 'all') {
+        const isMissed = task.status === 'missed';
+        const completedAt = task.completed_at || task.completion_record?.completed_at;
+        const isLate = completedAt ? isCompletedLate(task, completedAt) : false;
+        const isOutsideWindow = completedAt ? isCompletedOutsideWindow(task, completedAt) : false;
+        const hasIssue = isMissed || isLate || isOutsideWindow;
+
+        switch (selectedIssueFilter) {
+          case 'with_issues':
+            if (!hasIssue) return false;
+            break;
+          case 'missed':
+            if (!isMissed) return false;
+            break;
+          case 'late':
+            if (!isLate) return false;
+            break;
+          case 'outside_window':
+            if (!isOutsideWindow) return false;
+            break;
+          case 'no_issues':
+            if (hasIssue) return false;
+            break;
+        }
+      }
+
+      return true;
+    });
+  }, [completedTasks, selectedCategory, selectedCompletedBy, selectedIssueFilter]);
+
+  // Count active filters
+  const activeFilterCount = [
+    selectedCategory !== 'all',
+    selectedCompletedBy !== 'all',
+    selectedIssueFilter !== 'all'
+  ].filter(Boolean).length;
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedCategory('all');
+    setSelectedCompletedBy('all');
+    setSelectedIssueFilter('all');
+  };
+
   return (
     <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Completed Tasks</h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View all completed and missed task records</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Completed Tasks</h1>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View all completed and missed task records</p>
+        </div>
+
+        {/* Filter Toggle Button */}
+        {completedTasks.length > 0 && (
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+              showFilters || activeFilterCount > 0
+                ? 'bg-pink-500/10 border-pink-500/30 text-pink-500'
+                : 'bg-[rgb(var(--surface))] border-[rgb(var(--border))] text-[rgb(var(--text-secondary))] hover:border-[rgb(var(--border-hover))]'
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="bg-pink-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+            <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          </button>
+        )}
       </div>
+
+      {/* Filters Panel */}
+      {showFilters && completedTasks.length > 0 && (
+        <div className="mt-4 p-4 bg-[rgb(var(--surface))] dark:bg-white/[0.02] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg">
+          <div className="flex flex-wrap gap-4">
+            {/* Category Filter */}
+            <div className="flex-1 min-w-[200px]">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+                Task Type
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              >
+                <option value="all">All Types</option>
+                {filterOptions.categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Completed By Filter */}
+            <div className="flex-1 min-w-[200px]">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+                Completed By
+              </label>
+              <select
+                value={selectedCompletedBy}
+                onChange={(e) => setSelectedCompletedBy(e.target.value)}
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              >
+                <option value="all">All Users</option>
+                {filterOptions.users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Issues Filter */}
+            <div className="flex-1 min-w-[200px]">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+                Status
+              </label>
+              <select
+                value={selectedIssueFilter}
+                onChange={(e) => setSelectedIssueFilter(e.target.value)}
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              >
+                <option value="all">All Tasks</option>
+                <option value="with_issues">With Issues</option>
+                <option value="missed">Missed Tasks</option>
+                <option value="late">Completed Late</option>
+                <option value="outside_window">Outside Time Window</option>
+                <option value="no_issues">No Issues</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filters & Clear */}
+          {activeFilterCount > 0 && (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                Showing {filteredTasks.length} of {completedTasks.length} tasks
+              </span>
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 text-sm text-pink-500 hover:text-pink-400 transition-colors"
+              >
+                <X className="w-3 h-3" />
+                Clear filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Debug Info - HIDDEN (removed per user request) */}
       {false && showDebugInfo && (
@@ -567,9 +772,20 @@ export default function CompletedTasksPage() {
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No completed tasks yet</p>
           <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">Completed and missed tasks will appear here</p>
         </div>
+      ) : filteredTasks.length === 0 ? (
+        <div className="mt-8 text-center py-12">
+          <Filter className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No tasks match your filters</p>
+          <button
+            onClick={clearFilters}
+            className="text-pink-500 hover:text-pink-400 text-sm transition-colors"
+          >
+            Clear all filters
+          </button>
+        </div>
       ) : (
         <div className="mt-8 space-y-4">
-          {completedTasks.map((task) => (
+          {filteredTasks.map((task) => (
             <CompletedTaskCard
               key={task.id}
               task={task}

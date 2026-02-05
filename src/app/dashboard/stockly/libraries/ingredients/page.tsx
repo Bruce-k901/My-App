@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { StorageArea } from '@/lib/types/stockly';
 import { ensureSupplierExists, ensureSuppliersExist } from '@/lib/utils/supplierPlaceholderFlow';
 import { formatUnitCost } from '@/lib/utils/libraryHelpers';
+import { PlanlyBadgeInline } from '@/components/planly/PlanlyBadge';
+import { usePlanlyBadgeStatusBulk } from '@/hooks/planly/usePlanlyBadgeStatus';
 
 const INGREDIENT_CATEGORIES = [
   'Meat', 'Fish', 'Vegetables', 'Fruits', 'Dairy', 'Grains', 'Bakery', 'Dry Goods', 'Other'
@@ -450,6 +452,7 @@ export default function IngredientsLibraryPage() {
         ? null
         : parseFloat(String(onlinePriceRaw));
       
+      // Build payload with only core fields that definitely exist
       const payload: any = {
         ingredient_name: trimmedName,
         category: rowDraft.category ?? null,
@@ -460,7 +463,7 @@ export default function IngredientsLibraryPage() {
         pack_size: packSizeVal,
         pack_cost: packCostVal,
         notes: rowDraft.notes ?? null,
-        // Stockly fields
+        // Core Stockly fields
         track_stock: rowDraft.track_stock ?? false,
         current_stock: currentStockVal,
         par_level: parLevelVal,
@@ -472,16 +475,16 @@ export default function IngredientsLibraryPage() {
         costing_method: rowDraft.costing_method || 'average',
         is_prep_item: rowDraft.is_prep_item ?? false,
         is_purchasable: rowDraft.is_purchasable ?? true,
-        // Sales channels (replacing is_saleable)
-        is_retail_saleable: rowDraft.is_retail_saleable ?? false,
-        is_wholesale_saleable: rowDraft.is_wholesale_saleable ?? false,
-        is_online_saleable: rowDraft.is_online_saleable ?? false,
-        retail_price: retailPriceVal,
-        wholesale_price: wholesalePriceVal,
-        online_price: onlinePriceVal,
-        storage_area_id: rowDraft.storage_area_id || null,
         company_id: companyId,
       };
+      // Only add optional columns if they have values (columns may not exist in all DBs)
+      if (rowDraft.is_retail_saleable) payload.is_retail_saleable = true;
+      if (rowDraft.is_wholesale_saleable) payload.is_wholesale_saleable = true;
+      if (rowDraft.is_online_saleable) payload.is_online_saleable = true;
+      if (retailPriceVal !== null) payload.retail_price = retailPriceVal;
+      if (wholesalePriceVal !== null) payload.wholesale_price = wholesalePriceVal;
+      if (onlinePriceVal !== null) payload.online_price = onlinePriceVal;
+      if (rowDraft.storage_area_id) payload.storage_area_id = rowDraft.storage_area_id;
       // Track previous is_prep_item state for update operations
       let previousIsPrepItem = false;
       if (!newRowIds.has(id)) {
@@ -490,20 +493,56 @@ export default function IngredientsLibraryPage() {
       }
 
       if (newRowIds.has(id)) {
-        const { data, error, status, statusText } = await supabase
+        let { data, error, status, statusText } = await supabase
           .from('ingredients_library')
           .insert(payload)
           .select('*')
           .single();
+
+        // If 400 error (unknown column), retry with only core fields
+        if (error && status === 400) {
+          console.warn('Insert failed with 400, retrying with core fields only...');
+          const corePayload = {
+            ingredient_name: trimmedName,
+            category: rowDraft.category ?? null,
+            allergens: allergensVal,
+            unit: rowDraft.unit ?? null,
+            unit_cost: finalUnitCost,
+            supplier: supplierVal,
+            pack_size: packSizeVal,
+            pack_cost: packCostVal,
+            notes: rowDraft.notes ?? null,
+            company_id: companyId,
+          };
+          const retryResult = await supabase
+            .from('ingredients_library')
+            .insert(corePayload)
+            .select('*')
+            .single();
+          data = retryResult.data;
+          error = retryResult.error;
+          status = retryResult.status;
+          statusText = retryResult.statusText;
+        }
+
         if (error) {
-          console.error('Supabase insert error (ingredients_library)', { error, status, statusText, payload });
+          console.error('Supabase insert error (ingredients_library)', {
+            error,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+            status,
+            statusText,
+            payload
+          });
           throw error;
         }
         console.info('Ingredient added');
-        
+
         // Recipe creation is now handled by PrepItemRecipeDialog
         // No automatic recipe creation here - user chooses via dialog
-        
+
         setIngredients(prev => prev.map((ing: any) => ing.id === id ? data : ing));
         setNewRowIds(prev => { const n = new Set(prev); n.delete(id); return n; });
         setExpandedRows(prev => { const n = new Set(prev); n.delete(id); return n; });
@@ -513,13 +552,48 @@ export default function IngredientsLibraryPage() {
         await loadIngredients();
       } else {
         const { company_id: _omitCompanyId, ...updatePayload } = payload;
-        const { error, status, statusText } = await supabase
+        let { error, status, statusText } = await supabase
           .from('ingredients_library')
           .update(updatePayload)
           .eq('id', id)
           .eq('company_id', companyId);
+
+        // If 400 error (unknown column), retry with only core fields
+        if (error && status === 400) {
+          console.warn('Update failed with 400, retrying with core fields only...');
+          const corePayload = {
+            ingredient_name: trimmedName,
+            category: rowDraft.category ?? null,
+            allergens: allergensVal,
+            unit: rowDraft.unit ?? null,
+            unit_cost: finalUnitCost,
+            supplier: supplierVal,
+            pack_size: packSizeVal,
+            pack_cost: packCostVal,
+            notes: rowDraft.notes ?? null,
+          };
+          const retryResult = await supabase
+            .from('ingredients_library')
+            .update(corePayload)
+            .eq('id', id)
+            .eq('company_id', companyId);
+          error = retryResult.error;
+          status = retryResult.status;
+          statusText = retryResult.statusText;
+        }
+
         if (error) {
-          console.error('Supabase update error (ingredients_library)', { error, status, statusText, updatePayload, id });
+          console.error('Supabase update error (ingredients_library)', {
+            error,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+            status,
+            statusText,
+            updatePayload,
+            id
+          });
           throw error;
         }
         console.info('Ingredient updated');
@@ -911,6 +985,13 @@ export default function IngredientsLibraryPage() {
     });
   }, [ingredients, debouncedSearchQuery, filterCategory]);
 
+  // Get Planly badge status for all ingredients
+  const ingredientIds = useMemo(() =>
+    ingredients.map((ing: any) => ing.id).filter(Boolean),
+    [ingredients]
+  );
+  const { statusMap: planlyStatusMap } = usePlanlyBadgeStatusBulk(ingredientIds);
+
   return (
     <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -1055,6 +1136,13 @@ export default function IngredientsLibraryPage() {
                                   )}
                                 </>
                               )}
+                              {/* Planly Badge - shows if ingredient is linked to Planly */}
+                              {planlyStatusMap[item.id]?.is_linked && (
+                                <PlanlyBadgeInline
+                                  isLinked={true}
+                                  status={planlyStatusMap[item.id]?.configuration_status}
+                                />
+                              )}
                             </div>
                           )}
                         </td>
@@ -1086,6 +1174,69 @@ export default function IngredientsLibraryPage() {
                         <tr className="border-t border-gray-200 dark:border-white/[0.06]">
                           <td colSpan={4} className="px-4 py-4 bg-gray-50 dark:bg-white/[0.02]">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Stock Management Section - Full Width at Top */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-2">Stock Management</div>
+                              <div className="flex flex-wrap gap-6">
+                                {/* Track Stock */}
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={editingRowId === item.id ? (rowDraft?.track_stock ?? false) : (item.track_stock ?? false)}
+                                    onChange={(e) => {
+                                      if (editingRowId === item.id) {
+                                        setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }));
+                                      }
+                                    }}
+                                    disabled={editingRowId !== item.id}
+                                    style={{ accentColor: '#10B981' }}
+                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                  />
+                                  <span className="text-sm text-gray-900 dark:text-white">Track Stock</span>
+                                </label>
+                                {/* Prep Item */}
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={editingRowId === item.id ? (rowDraft?.is_prep_item ?? false) : (item.is_prep_item ?? false)}
+                                    onChange={(e) => {
+                                      if (editingRowId === item.id) {
+                                        if (e.target.checked) {
+                                          // Show recipe dialog when checking prep item
+                                          setSelectedIngredient(item);
+                                          setShowRecipeDialog(true);
+                                        } else {
+                                          setRowDraft((d: any) => ({ ...d, is_prep_item: false }));
+                                        }
+                                      }
+                                    }}
+                                    disabled={editingRowId !== item.id}
+                                    style={{ accentColor: '#10B981' }}
+                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                  />
+                                  <span className="text-sm text-gray-900 dark:text-white">Prep Item</span>
+                                  {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
+                                    <span className="text-xs text-amber-600 dark:text-amber-400">(costs from recipe)</span>
+                                  )}
+                                </label>
+                                {/* Purchasable */}
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={editingRowId === item.id ? (rowDraft?.is_purchasable ?? true) : (item.is_purchasable ?? true)}
+                                    onChange={(e) => {
+                                      if (editingRowId === item.id) {
+                                        setRowDraft((d: any) => ({ ...d, is_purchasable: e.target.checked }));
+                                      }
+                                    }}
+                                    disabled={editingRowId !== item.id}
+                                    style={{ accentColor: '#10B981' }}
+                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                  />
+                                  <span className="text-sm text-gray-900 dark:text-white">Purchasable</span>
+                                </label>
+                              </div>
+                            </div>
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
                               <div className="text-xs text-gray-500 dark:text-white/40">Supplier</div>
                               {editingRowId === item.id ? (
@@ -1094,26 +1245,27 @@ export default function IngredientsLibraryPage() {
                                 <div className="text-sm text-gray-900 dark:text-white font-medium">{item.supplier || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
+                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
                               <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
                                 Unit Cost
                                 {(item.pack_cost && item.pack_size) && (
                                   <span className="ml-2 text-emerald-600 dark:text-emerald-400 text-[10px]">(from pack)</span>
                                 )}
-                                {item.is_prep_item && item.unit_cost_from_recipe && (
-                                  <span className="ml-2 text-emerald-600 dark:text-emerald-400 text-[10px]">(from recipe)</span>
+                                {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
+                                  <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(set by recipe)</span>
                                 )}
-                                {editingRowId === item.id && rowDraft?.unit_cost_auto_calculated && (
+                                {editingRowId === item.id && rowDraft?.unit_cost_auto_calculated && !rowDraft?.is_prep_item && (
                                   <span className="ml-2 text-emerald-600 dark:text-emerald-400 text-[10px]">(Auto-calculated)</span>
                                 )}
                               </div>
                               {editingRowId === item.id ? (
-                                <input 
-                                  type="number" 
-                                  step="0.01" 
-                                  className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" 
-                                  value={rowDraft?.unit_cost ?? ''} 
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+                                  value={rowDraft?.unit_cost ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value, unit_cost_auto_calculated: false }))}
+                                  disabled={rowDraft?.is_prep_item}
                                   readOnly={rowDraft?.unit_cost_auto_calculated}
                                 />
                               ) : (
@@ -1128,12 +1280,22 @@ export default function IngredientsLibraryPage() {
                                 </div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
+                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
                               <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
                                 Pack Size {item.unit && <span className="text-emerald-500">({item.unit})</span>}
+                                {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
+                                  <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(N/A for prep)</span>
+                                )}
                               </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.pack_size ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))} />
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+                                  value={rowDraft?.pack_size ?? ''}
+                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))}
+                                  disabled={rowDraft?.is_prep_item}
+                                />
                               ) : (
                                 <div className="text-sm text-gray-900 dark:text-white font-medium">
                                   {item.pack_size != null ? item.pack_size : '-'}
@@ -1141,10 +1303,22 @@ export default function IngredientsLibraryPage() {
                                 </div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Pack Cost</div>
+                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
+                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                                Pack Cost
+                                {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
+                                  <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(N/A for prep)</span>
+                                )}
+                              </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.pack_cost ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_cost: e.target.value }))} />
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+                                  value={rowDraft?.pack_cost ?? ''}
+                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_cost: e.target.value }))}
+                                  disabled={rowDraft?.is_prep_item}
+                                />
                               ) : (
                                 <div className="text-sm text-gray-900 dark:text-white font-medium">{item.pack_cost != null ? `£${item.pack_cost}` : '-'}</div>
                               )}
@@ -1192,87 +1366,7 @@ export default function IngredientsLibraryPage() {
                                 </div>
                               )}
                             </div>
-                            
-                            {/* Stockly Fields Section */}
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs font-semibold text-gray-700 dark:text-white/80 mb-2 uppercase">Stock Management</div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                <div className="flex items-center gap-2">
-                                  {editingRowId === item.id ? (
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Track Stock</span>
-                                    </label>
-                                  ) : (
-                                    <label className="flex items-center gap-2">
-                                      <div className="relative w-4 h-4">
-                                        <input type="checkbox" checked={item.track_stock ?? false} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.track_stock ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                          {item.track_stock && <Check size={12} className="text-white" />}
-                                        </div>
-                                      </div>
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Track Stock</span>
-                                    </label>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {editingRowId === item.id ? (
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                      <input 
-                                        type="checkbox" 
-                                        checked={rowDraft?.is_prep_item ?? false} 
-                                        onChange={(e) => {
-                                          const newValue = e.target.checked;
 
-                                          // If checking the box, show recipe dialog
-                                          if (newValue && !rowDraft?.is_prep_item) {
-                                            // Merge rowDraft values with item to include user's typed data
-                                            // Keep item.id to preserve the original ingredient ID (rowDraft may have undefined id)
-                                            setSelectedIngredient({ ...item, ...rowDraft, id: item.id });
-                                            setShowRecipeDialog(true);
-                                          } else {
-                                            // Unchecking - update directly
-                                            setRowDraft((d: any) => ({ ...d, is_prep_item: newValue }));
-                                          }
-                                        }} 
-                                        style={{ accentColor: '#10B981' }} 
-                                        className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" 
-                                      />
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Prep Item</span>
-                                    </label>
-                                  ) : (
-                                    <label className="flex items-center gap-2">
-                                      <div className="relative w-4 h-4">
-                                        <input type="checkbox" checked={item.is_prep_item ?? false} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_prep_item ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                          {item.is_prep_item && <Check size={12} className="text-white" />}
-                                        </div>
-                                      </div>
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Prep Item</span>
-                                    </label>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {editingRowId === item.id ? (
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.is_purchasable ?? true} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_purchasable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Purchasable</span>
-                                    </label>
-                                  ) : (
-                                    <label className="flex items-center gap-2">
-                                      <div className="relative w-4 h-4">
-                                        <input type="checkbox" checked={item.is_purchasable ?? true} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_purchasable ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                          {item.is_purchasable && <Check size={12} className="text-white" />}
-                                        </div>
-                                      </div>
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Purchasable</span>
-                                    </label>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            
                             <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
                               <div className="text-xs text-gray-500 dark:text-white/40 mb-1">SKU</div>
                               {editingRowId === item.id ? (

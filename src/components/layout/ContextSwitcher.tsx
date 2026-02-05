@@ -107,6 +107,12 @@ export function ContextSwitcher() {
     }
   }, [isOpen]);
 
+  // Don't render until mounted to prevent hydration mismatch
+  // This component depends on client-side state (profile, companies) that may differ from server
+  if (!mounted) {
+    return null;
+  }
+
   // Don't show if user only has access to one company (unless they're platform admin)
   if (!loading && companies.length <= 1 && !profile?.is_platform_admin) {
     return null;

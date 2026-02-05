@@ -129,25 +129,17 @@ export function ExpandableRecipeCard({
       });
 
       if (error) {
-        console.error('Error loading audit trail:', error);
-        // Don't show error toast if function doesn't exist yet (migrations not run)
-        if (error.code === '42883' || error.message?.includes('does not exist')) {
-          console.warn('Audit trail function not available - migrations may not be run yet');
-          setAuditTrail([]);
-          return;
-        }
-        toast.error('Failed to load recipe history');
+        // Silently handle all audit trail errors - it's not critical functionality
+        // Common causes: function doesn't exist, new recipe with no history, 400 errors
+        console.warn('Audit trail not available:', error.code, error.message);
         setAuditTrail([]);
         return;
       }
 
       setAuditTrail(data || []);
     } catch (err: any) {
-      console.error('Exception loading audit trail:', err);
-      // Don't show error if it's a function not found error
-      if (!err?.message?.includes('does not exist') && !err?.code === '42883') {
-        toast.error('Failed to load recipe history');
-      }
+      // Silently handle exceptions - audit trail is non-critical
+      console.warn('Audit trail load failed:', err?.message);
       setAuditTrail([]);
     } finally {
       setLoadingHistory(false);
@@ -485,6 +477,16 @@ export function ExpandableRecipeCard({
             </>
           ) : (
             <>
+              {/* View SOP link - visible when SOP exists */}
+              {linkedSOPId && (
+                <Link
+                  href={`/dashboard/sops/view/${linkedSOPId}`}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors text-sm flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  View SOP
+                </Link>
+              )}
               <button
                 onClick={onEdit}
                 className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
@@ -800,32 +802,71 @@ export function ExpandableRecipeCard({
             {isEditing ? (
               <div className="flex justify-between items-center pt-4 border-t border-theme dark:border-neutral-700">
                 <div className="flex gap-2">
-                  {/* SOP Management Button */}
-                  {recipe.linked_sop_id ? (
+                  {/* SOP Management Button - Always visible */}
+                  {linkedSOPId ? (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={async () => {
-                        // Handle SOP update
                         await handleUpdateSOP();
                       }}
+                      disabled={updatingSOP}
                       className="gap-2"
                     >
-                      <FileText className="h-4 w-4" />
-                      Update Linked SOP
+                      {updatingSOP ? (
+                        <>
+                          <Clock className="h-4 w-4 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="h-4 w-4" />
+                          Update SOP
+                        </>
+                      )}
                     </Button>
                   ) : (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        // Handle SOP creation
                         setShowSopDialog(true);
                       }}
                       className="gap-2"
                     >
                       <Plus className="h-4 w-4" />
                       Create SOP
+                    </Button>
+                  )}
+
+                  {/* Complete & Save - for draft recipes */}
+                  {recipe.recipe_status === 'draft' && (
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('recipes')
+                          .update({
+                            recipe_status: 'active',
+                            is_active: true
+                          })
+                          .eq('id', recipe.id);
+
+                        if (error) {
+                          toast.error('Failed to update recipe');
+                          return;
+                        }
+
+                        setShowSopDialog(true);
+                        if (onRecipeUpdate) {
+                          onRecipeUpdate();
+                        }
+                      }}
+                      disabled={finalising || saving}
+                      className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Complete & Save
                     </Button>
                   )}
                 </div>
@@ -849,6 +890,7 @@ export function ExpandableRecipeCard({
                     onClick={() => {
                       handleSave();
                     }}
+                    disabled={saving}
                     className="bg-emerald-600 hover:bg-emerald-700"
                   >
                     <Save className="h-4 w-4 mr-2" />
@@ -857,7 +899,19 @@ export function ExpandableRecipeCard({
                 </div>
               </div>
             ) : (
-              <div className="flex justify-end gap-2 pt-4 border-t border-theme dark:border-neutral-700">
+              <div className="flex justify-between items-center gap-2 pt-4 border-t border-theme dark:border-neutral-700">
+                {/* View SOP link - visible when SOP exists */}
+                <div>
+                  {linkedSOPId && (
+                    <Link
+                      href={`/dashboard/sops/view/${linkedSOPId}`}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors text-sm"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View SOP
+                    </Link>
+                  )}
+                </div>
                 <Button
                   variant="outline"
                   size="sm"

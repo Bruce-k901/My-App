@@ -20,9 +20,11 @@ interface PrepItemRecipeDialogProps {
   onClose: () => void;
   ingredientId: string;
   ingredientName: string;
+  ingredientData?: any; // Full ingredient data for saving temp ingredients
   companyId: string;
   userId: string;
   onRecipeCreated?: (recipeId: string) => void;
+  onIngredientSaved?: (savedIngredient: any) => void; // Callback when ingredient is saved
 }
 
 export function PrepItemRecipeDialog({
@@ -30,9 +32,11 @@ export function PrepItemRecipeDialog({
   onClose,
   ingredientId,
   ingredientName,
+  ingredientData,
   companyId,
   userId,
   onRecipeCreated,
+  onIngredientSaved,
 }: PrepItemRecipeDialogProps) {
   const [isChecking, setIsChecking] = useState(true);
   const [existingRecipe, setExistingRecipe] = useState<any>(null);
@@ -56,6 +60,13 @@ export function PrepItemRecipeDialog({
     setError(null);
 
     try {
+      // If this is a temp/unsaved ingredient or undefined, skip DB checks - no recipe can exist yet
+      if (!ingredientId || ingredientId.startsWith('temp-')) {
+        setExistingRecipe(null);
+        setIsChecking(false);
+        return;
+      }
+
       // Check if ingredient already has linked recipe
       const { data: ingredient } = await supabase
         .from('ingredients_library')
@@ -100,11 +111,51 @@ export function PrepItemRecipeDialog({
     setError(null);
 
     try {
-      // Get ingredient details for recipe creation
+      let realIngredientId = ingredientId;
+
+      // If this is a temp/unsaved ingredient, save it first
+      if (ingredientId.startsWith('temp-')) {
+        if (!ingredientData) {
+          throw new Error('Ingredient data required to save new ingredient');
+        }
+
+        // Save the ingredient first
+        const { data: savedIngredient, error: saveError } = await supabase
+          .from('ingredients_library')
+          .insert({
+            company_id: companyId,
+            ingredient_name: ingredientData.ingredient_name || ingredientName,
+            supplier: ingredientData.supplier || null,
+            pack_cost: ingredientData.pack_cost || null,
+            pack_size: ingredientData.pack_size || null,
+            unit: ingredientData.unit || null,
+            base_unit_id: ingredientData.base_unit_id || null,
+            yield_percent: ingredientData.yield_percent || 100,
+            is_prep_item: true,
+            category: ingredientData.category || null,
+            allergens: ingredientData.allergens || null,
+            storage_area_id: ingredientData.storage_area_id || null,
+          })
+          .select()
+          .single();
+
+        if (saveError || !savedIngredient) {
+          throw new Error(`Failed to save ingredient: ${saveError?.message || 'Unknown error'}`);
+        }
+
+        realIngredientId = savedIngredient.id;
+
+        // Notify parent that ingredient was saved (so they can update their state)
+        if (onIngredientSaved) {
+          onIngredientSaved(savedIngredient);
+        }
+      }
+
+      // Now get ingredient details using the real ID
       const { data: ingredient } = await supabase
         .from('ingredients_library')
         .select('ingredient_name, base_unit_id')
-        .eq('id', ingredientId)
+        .eq('id', realIngredientId)
         .single();
 
       if (!ingredient) {
@@ -122,7 +173,7 @@ export function PrepItemRecipeDialog({
           name: ingredient.ingredient_name,
           code: recipeCode,
           recipe_type: 'prep',
-          output_ingredient_id: ingredientId,
+          output_ingredient_id: realIngredientId, // Use real ID
           yield_qty: 1,
           yield_unit_id: ingredient.base_unit_id || null,
           total_cost: 0,
@@ -145,7 +196,7 @@ export function PrepItemRecipeDialog({
               name: ingredient.ingredient_name,
               code: retryCode,
               recipe_type: 'prep',
-              output_ingredient_id: ingredientId,
+              output_ingredient_id: realIngredientId,
               yield_qty: 1,
               yield_unit_id: ingredient.base_unit_id || null,
               total_cost: 0,
@@ -155,22 +206,22 @@ export function PrepItemRecipeDialog({
             })
             .select()
             .single();
-          
+
           if (retryError) throw retryError;
-          
+
           // Link recipe back to ingredient
           await supabase
             .from('ingredients_library')
-            .update({ 
+            .update({
               linked_recipe_id: retryRecipe.id,
-              is_prep_item: true 
+              is_prep_item: true
             })
-            .eq('id', ingredientId);
+            .eq('id', realIngredientId);
 
           if (onRecipeCreated) {
             onRecipeCreated(retryRecipe.id);
           }
-          
+
           toast.success('Recipe created successfully!');
           onClose();
           return;
@@ -181,11 +232,11 @@ export function PrepItemRecipeDialog({
       // Link recipe back to ingredient
       await supabase
         .from('ingredients_library')
-        .update({ 
+        .update({
           linked_recipe_id: recipe.id,
-          is_prep_item: true 
+          is_prep_item: true
         })
-        .eq('id', ingredientId);
+        .eq('id', realIngredientId);
 
       // Callback with recipe ID
       if (onRecipeCreated) {
@@ -238,17 +289,62 @@ export function PrepItemRecipeDialog({
   const handleSkip = async () => {
     // User wants to mark as prep item but not create/link recipe yet
     try {
+      let realIngredientId = ingredientId;
+
+      // If this is a temp/unsaved ingredient, save it first
+      if (ingredientId.startsWith('temp-')) {
+        if (!ingredientData) {
+          throw new Error('Ingredient data required to save new ingredient');
+        }
+
+        // Save the ingredient first
+        const { data: savedIngredient, error: saveError } = await supabase
+          .from('ingredients_library')
+          .insert({
+            company_id: companyId,
+            ingredient_name: ingredientData.ingredient_name || ingredientName,
+            supplier: ingredientData.supplier || null,
+            pack_cost: ingredientData.pack_cost || null,
+            pack_size: ingredientData.pack_size || null,
+            unit: ingredientData.unit || null,
+            base_unit_id: ingredientData.base_unit_id || null,
+            yield_percent: ingredientData.yield_percent || 100,
+            is_prep_item: true,
+            category: ingredientData.category || null,
+            allergens: ingredientData.allergens || null,
+            storage_area_id: ingredientData.storage_area_id || null,
+          })
+          .select()
+          .single();
+
+        if (saveError || !savedIngredient) {
+          throw new Error(`Failed to save ingredient: ${saveError?.message || 'Unknown error'}`);
+        }
+
+        realIngredientId = savedIngredient.id;
+
+        // Notify parent that ingredient was saved
+        if (onIngredientSaved) {
+          onIngredientSaved(savedIngredient);
+        }
+
+        toast.success('Ingredient saved and marked as prep item');
+        onClose();
+        return;
+      }
+
+      // For existing ingredients, just update the flag
       await supabase
         .from('ingredients_library')
         .update({ is_prep_item: true })
-        .eq('id', ingredientId);
-      
+        .eq('id', realIngredientId);
+
       toast.success('Ingredient marked as prep item');
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating ingredient:', err);
-      setError('Failed to update ingredient');
-      toast.error('Failed to update ingredient');
+      setError(err.message || 'Failed to update ingredient');
+      toast.error(err.message || 'Failed to update ingredient');
     }
   };
 

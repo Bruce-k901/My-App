@@ -10,7 +10,6 @@ import {
   NotebookText,
   FileText,
   MapPin,
-  DollarSign,
   Settings,
   Users,
   Tag,
@@ -68,12 +67,6 @@ const navItems: NavItem[] = [
     label: 'Delivery Schedule',
     href: '/dashboard/planly/delivery-schedule',
     icon: MapPin,
-  },
-  {
-    type: 'link',
-    label: 'Monthly Sales by Site',
-    href: '/dashboard/planly/monthly-sales',
-    icon: DollarSign,
   },
   {
     type: 'section',

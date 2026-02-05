@@ -3,7 +3,14 @@
 import useSWR, { mutate } from 'swr';
 import { ProductionPlan } from '@/types/planly';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(data.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+};
 
 export function useProductionPlan(date?: string, siteId?: string) {
   const params = new URLSearchParams();

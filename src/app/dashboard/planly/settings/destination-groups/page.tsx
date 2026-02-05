@@ -300,14 +300,14 @@ export default function DestinationGroupsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Destination Groups</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Packing & Delivery</h1>
           <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
-            Define delivery routes and on-site destinations with bake deadlines and dispatch times
+            Set up your delivery routes and dispatch times. The production plan uses this to group orders and split tray layouts by timing.
           </p>
         </div>
         <Button onClick={openCreateModal} className="bg-[#14B8A6] hover:bg-[#0D9488] text-white">
           <Plus className="h-4 w-4 mr-2" />
-          Create Group
+          Add Destination
         </Button>
       </div>
 

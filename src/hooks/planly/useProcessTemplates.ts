@@ -19,6 +19,8 @@ export function useProcessTemplates(siteId?: string, includeMasters = false) {
     name: string;
     description?: string;
     is_master?: boolean;
+    base_dough_recipe_id?: string;
+    production_plan_label?: string;
   }) => {
     const res = await fetch('/api/planly/process-templates', {
       method: 'POST',
@@ -39,6 +41,8 @@ export function useProcessTemplates(siteId?: string, includeMasters = false) {
       name?: string;
       description?: string;
       is_active?: boolean;
+      base_dough_recipe_id?: string | null;
+      production_plan_label?: string | null;
     }
   ) => {
     const res = await fetch(`/api/planly/process-templates/${templateId}`, {
@@ -93,6 +97,8 @@ export function useProcessTemplate(templateId?: string) {
     name?: string;
     description?: string;
     is_active?: boolean;
+    base_dough_recipe_id?: string | null;
+    production_plan_label?: string | null;
   }) => {
     if (!templateId) return null;
 

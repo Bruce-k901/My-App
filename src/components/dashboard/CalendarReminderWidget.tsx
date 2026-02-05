@@ -10,12 +10,12 @@ interface CalendarReminder {
   id: string;
   asset_id: string;
   asset_name?: string;
-  callout_id?: string;
+  task_id?: string;
   reminder_date: string;
   reminder_type: string;
   title: string;
-  description?: string;
-  dismissed: boolean;
+  notes?: string;
+  status: string;
 }
 
 export default function CalendarReminderWidget() {
@@ -42,48 +42,65 @@ export default function CalendarReminderWidget() {
         .select(`
           id,
           asset_id,
-          callout_id,
+          task_id,
           reminder_date,
           reminder_type,
           title,
-          description,
-          dismissed,
-          assets(name)
+          notes,
+          status
         `)
         .eq('company_id', companyId)
-        .eq('dismissed', false)
+        .neq('status', 'dismissed')
         .gte('reminder_date', today)
         .lte('reminder_date', nextWeekStr)
         .order('reminder_date', { ascending: true })
         .limit(5);
 
-      // Filter by site if selected
-      if (siteId) {
+      // Filter by site if selected (skip if "all" is selected)
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
 
       const { data, error } = await query;
 
       if (error) {
-        // If table doesn't exist, just show empty state
-        if (error.code === 'PGRST116' || error.message?.includes('does not exist')) {
+        // If table doesn't exist or any query error, just show empty state
+        if (error.code === 'PGRST116' || error.message?.includes('does not exist') || error.code === '42P01') {
           console.log('calendar_reminders table not available');
           setReminders([]);
           return;
         }
-        throw error;
+        // For any other error (including 400), log and show empty state
+        console.warn('calendar_reminders query error:', error);
+        setReminders([]);
+        return;
+      }
+
+      // Fetch asset names separately if we have reminders with asset_ids
+      const assetIds = [...new Set((data || []).map((r: any) => r.asset_id).filter(Boolean))];
+      let assetsMap = new Map<string, string>();
+
+      if (assetIds.length > 0) {
+        const { data: assetsData } = await supabase
+          .from('assets')
+          .select('id, name')
+          .in('id', assetIds);
+
+        if (assetsData) {
+          assetsData.forEach((a: any) => assetsMap.set(a.id, a.name));
+        }
       }
 
       const transformedReminders = (data || []).map((r: any) => ({
         id: r.id,
         asset_id: r.asset_id,
-        asset_name: r.assets?.name || 'Unknown Asset',
-        callout_id: r.callout_id,
+        asset_name: assetsMap.get(r.asset_id) || 'Unknown Asset',
+        task_id: r.task_id,
         reminder_date: r.reminder_date,
         reminder_type: r.reminder_type,
         title: r.title,
-        description: r.description,
-        dismissed: r.dismissed
+        notes: r.notes,
+        status: r.status
       }));
 
       setReminders(transformedReminders);
@@ -107,7 +124,7 @@ export default function CalendarReminderWidget() {
     try {
       await supabase
         .from('calendar_reminders')
-        .update({ dismissed: true })
+        .update({ status: 'dismissed' })
         .eq('id', reminderId);
 
       // Remove from local state

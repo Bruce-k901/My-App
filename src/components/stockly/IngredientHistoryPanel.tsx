@@ -58,9 +58,17 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
   const [stockItemId, setStockItemId] = useState<string | null>(null);
   const [ingredientUnit, setIngredientUnit] = useState<string>('');
 
+  // Check if this is a valid saved ingredient (not a temp ID)
+  const isValidId = ingredientId && !ingredientId.startsWith('temp-') &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ingredientId);
+
   useEffect(() => {
-    loadHistory();
-  }, [ingredientId, companyId]);
+    if (isValidId) {
+      loadHistory();
+    } else {
+      setLoading(false);
+    }
+  }, [ingredientId, companyId, isValidId]);
 
   async function loadHistory() {
     setLoading(true);
@@ -76,20 +84,20 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
         setIngredientUnit(ingredient.unit);
       }
 
-      // First, find the stock_item_id for this ingredient
+      // First, find the stock_item_id for this ingredient (via public.stock_items view)
       const { data: stockItem, error: stockItemError } = await supabase
         .from('stock_items')
         .select('id')
         .eq('library_item_id', ingredientId)
         .eq('library_type', 'ingredients_library')
-        .single();
+        .maybeSingle();
 
       let movements: StockMovement[] = [];
 
       if (stockItem && !stockItemError) {
         setStockItemId(stockItem.id);
 
-        // Fetch stock movements for this stock item
+        // Fetch stock movements for this stock item (via public.stock_movements view)
         const { data: movementsData, error: movementsError } = await supabase
           .from('stock_movements')
           .select('id, movement_type, quantity, unit_cost, total_cost, notes, recorded_at, recorded_by, ref_type')
@@ -102,7 +110,7 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
         }
       }
 
-      // Fetch price history for this ingredient (from ingredient_price_history)
+      // Fetch price history for this ingredient (via public.ingredient_price_history view)
       const { data: priceData, error: priceError } = await supabase
         .from('ingredient_price_history')
         .select('id, old_unit_cost, new_unit_cost, old_pack_cost, new_pack_cost, change_percent, source, recorded_at, recorded_by, notes')
@@ -153,6 +161,11 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
   const getMovementConfig = (type: string) => {
     return MOVEMENT_TYPE_CONFIG[type] || { label: type, icon: Package, color: 'text-gray-500' };
   };
+
+  // Don't render anything for unsaved ingredients
+  if (!isValidId) {
+    return null;
+  }
 
   if (loading) {
     return (

@@ -10,6 +10,8 @@ import { useStocklyProducts } from '@/hooks/planly/useStocklyProducts';
 import { useCategories } from '@/hooks/planly/useCategories';
 import { useBakeGroups } from '@/hooks/planly/useBakeGroups';
 import { useProcessTemplates } from '@/hooks/planly/useProcessTemplates';
+import { useProcessingGroups } from '@/hooks/planly/useProcessingGroups';
+import { useEquipmentTypes } from '@/hooks/planly/useEquipmentTypes';
 import { cn } from '@/lib/utils';
 import { mutate } from 'swr';
 import type { ShipState, TrayType, PlanlyProduct } from '@/types/planly';
@@ -34,6 +36,8 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
   const { data: categories } = useCategories(siteId);
   const { data: bakeGroups } = useBakeGroups(siteId);
   const { data: processTemplates } = useProcessTemplates(siteId);
+  const { processingGroups } = useProcessingGroups(siteId, { includeCompanyWide: true });
+  const { equipmentTypes } = useEquipmentTypes(siteId, { includeCompanyWide: true });
 
   const [activeTab, setActiveTab] = useState<TabId>('product');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +57,12 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
   const [trayType, setTrayType] = useState<TrayType>('full');
   const [canShipFrozen, setCanShipFrozen] = useState(true);
   const [defaultShipState, setDefaultShipState] = useState<ShipState>('baked');
+  // Opsly production fields
+  const [processingGroupId, setProcessingGroupId] = useState('');
+  const [basePrepGramsPerUnit, setBasePrepGramsPerUnit] = useState('');
+  const [equipmentTypeId, setEquipmentTypeId] = useState('');
+  const [itemsPerEquipment, setItemsPerEquipment] = useState('');
+  const [displayOrder, setDisplayOrder] = useState('');
 
   // Pricing tab
   const [isVatable, setIsVatable] = useState(true);
@@ -99,6 +109,12 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
         vat_rate: isVatable ? parseFloat(vatRate) || 20 : null,
         is_active: true,
         site_id: siteId,
+        // Opsly production fields
+        processing_group_id: processingGroupId || null,
+        base_prep_grams_per_unit: basePrepGramsPerUnit ? parseFloat(basePrepGramsPerUnit) : null,
+        equipment_type_id: equipmentTypeId || null,
+        items_per_equipment: itemsPerEquipment ? parseInt(itemsPerEquipment) : null,
+        display_order: displayOrder ? parseInt(displayOrder) : null,
       };
 
       const res = await fetch('/api/planly/products', {
@@ -157,6 +173,12 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
     setSearchQuery('');
     setActiveTab('product');
     setError(null);
+    // Reset Opsly production fields
+    setProcessingGroupId('');
+    setBasePrepGramsPerUnit('');
+    setEquipmentTypeId('');
+    setItemsPerEquipment('');
+    setDisplayOrder('');
     onClose();
   };
 
@@ -339,107 +361,214 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
 
             {/* Production Tab */}
             {activeTab === 'production' && (
-              <div className="space-y-4">
-                {/* Process Template */}
-                <div>
-                  <Label className="text-gray-700 dark:text-white/80">Process Template</Label>
-                  <select
-                    value={processTemplateId}
-                    onChange={(e) => setProcessTemplateId(e.target.value)}
-                    className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
-                  >
-                    <option value="" className="bg-white dark:bg-neutral-900">No template</option>
-                    {(processTemplates || []).map((template: any) => (
-                      <option key={template.id} value={template.id} className="bg-white dark:bg-neutral-900">
-                        {template.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Bake Group */}
-                <div>
-                  <Label className="text-gray-700 dark:text-white/80">Bake Group</Label>
-                  <select
-                    value={bakeGroupId}
-                    onChange={(e) => setBakeGroupId(e.target.value)}
-                    className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
-                  >
-                    <option value="" className="bg-white dark:bg-neutral-900">No bake group</option>
-                    {(bakeGroups || []).map((group: any) => (
-                      <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
-                        {group.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Tray Settings */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-gray-700 dark:text-white/80">Items Per Tray</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={itemsPerTray}
-                      onChange={(e) => setItemsPerTray(e.target.value)}
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-                    />
+              <div className="space-y-6">
+                {/* Production Planning Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-white/10">
+                    <span className="text-sm font-medium text-gray-700 dark:text-white/80">Production Planning (Opsly)</span>
                   </div>
+
+                  {/* Processing Group */}
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Tray Type</Label>
+                    <Label className="text-gray-700 dark:text-white/80">Processing Group</Label>
+                    <p className="text-xs text-gray-500 dark:text-white/50 mb-1">
+                      Group products that share the same base prep for batch calculations
+                    </p>
                     <select
-                      value={trayType}
-                      onChange={(e) => setTrayType(e.target.value as TrayType)}
-                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      value={processingGroupId}
+                      onChange={(e) => setProcessingGroupId(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
                     >
-                      <option value="full" className="bg-white dark:bg-neutral-900">Full</option>
-                      <option value="half" className="bg-white dark:bg-neutral-900">Half</option>
-                      <option value="ring" className="bg-white dark:bg-neutral-900">Ring</option>
+                      <option value="" className="bg-white dark:bg-neutral-900">No processing group</option>
+                      {processingGroups.map((group) => (
+                        <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
+                          {group.name} ({group.batch_size_kg}kg batch / {group.units_per_batch} units)
+                        </option>
+                      ))}
                     </select>
                   </div>
-                </div>
 
-                {/* Ship State */}
-                <div>
-                  <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
-                  <div className="mt-2 flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="shipState"
-                        checked={defaultShipState === 'baked'}
-                        onChange={() => setDefaultShipState('baked')}
-                        className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
-                      />
-                      <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="shipState"
-                        checked={defaultShipState === 'frozen'}
-                        onChange={() => setDefaultShipState('frozen')}
-                        className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
-                      />
-                      <span className="text-gray-900 dark:text-white">Frozen</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Can Ship Frozen */}
-                <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={canShipFrozen}
-                    onChange={(e) => setCanShipFrozen(e.target.checked)}
-                    className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
-                  />
+                  {/* Base Prep Grams Per Unit */}
                   <div>
-                    <span className="font-medium text-gray-900 dark:text-white">Can Ship Frozen</span>
-                    <p className="text-sm text-gray-500 dark:text-white/60">This product can be shipped in frozen state</p>
+                    <Label className="text-gray-700 dark:text-white/80">Base Prep per Unit (grams)</Label>
+                    <p className="text-xs text-gray-500 dark:text-white/50 mb-1">
+                      How many grams of base prep dough/mix per finished unit
+                    </p>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={basePrepGramsPerUnit}
+                      onChange={(e) => setBasePrepGramsPerUnit(e.target.value)}
+                      placeholder="e.g., 80 for a croissant"
+                      className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                    />
                   </div>
-                </label>
+
+                  {/* Equipment Type & Items Per Equipment */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-gray-700 dark:text-white/80">Equipment Type</Label>
+                      <select
+                        value={equipmentTypeId}
+                        onChange={(e) => setEquipmentTypeId(e.target.value)}
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      >
+                        <option value="" className="bg-white dark:bg-neutral-900">No equipment</option>
+                        {equipmentTypes.map((type) => (
+                          <option key={type.id} value={type.id} className="bg-white dark:bg-neutral-900">
+                            {type.name} (default: {type.default_capacity})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 dark:text-white/80">Items Per Equipment</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={itemsPerEquipment}
+                        onChange={(e) => setItemsPerEquipment(e.target.value)}
+                        placeholder="Override default"
+                        className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+                        Leave blank to use equipment default
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Display Order */}
+                  <div>
+                    <Label className="text-gray-700 dark:text-white/80">Display Order</Label>
+                    <p className="text-xs text-gray-500 dark:text-white/50 mb-1">
+                      Order in which products appear in tray layouts (lower = first)
+                    </p>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={displayOrder}
+                      onChange={(e) => setDisplayOrder(e.target.value)}
+                      placeholder="e.g., 10"
+                      className="w-32 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Existing Production Settings */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-white/10">
+                    <span className="text-sm font-medium text-gray-700 dark:text-white/80">Process & Baking</span>
+                  </div>
+
+                  {/* Process Template */}
+                  <div>
+                    <Label className="text-gray-700 dark:text-white/80">Process Template</Label>
+                    <select
+                      value={processTemplateId}
+                      onChange={(e) => setProcessTemplateId(e.target.value)}
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                    >
+                      <option value="" className="bg-white dark:bg-neutral-900">No template</option>
+                      {(processTemplates || []).map((template: any) => (
+                        <option key={template.id} value={template.id} className="bg-white dark:bg-neutral-900">
+                          {template.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Bake Group */}
+                  <div>
+                    <Label className="text-gray-700 dark:text-white/80">Bake Group</Label>
+                    <select
+                      value={bakeGroupId}
+                      onChange={(e) => setBakeGroupId(e.target.value)}
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                    >
+                      <option value="" className="bg-white dark:bg-neutral-900">No bake group</option>
+                      {(bakeGroups || []).map((group: any) => (
+                        <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
+                          {group.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Tray Settings */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-gray-700 dark:text-white/80">Items Per Tray</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={itemsPerTray}
+                        onChange={(e) => setItemsPerTray(e.target.value)}
+                        className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 dark:text-white/80">Tray Type</Label>
+                      <select
+                        value={trayType}
+                        onChange={(e) => setTrayType(e.target.value as TrayType)}
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      >
+                        <option value="full" className="bg-white dark:bg-neutral-900">Full</option>
+                        <option value="half" className="bg-white dark:bg-neutral-900">Half</option>
+                        <option value="ring" className="bg-white dark:bg-neutral-900">Ring</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shipping Settings */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-white/10">
+                    <span className="text-sm font-medium text-gray-700 dark:text-white/80">Shipping</span>
+                  </div>
+
+                  {/* Ship State */}
+                  <div>
+                    <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
+                    <div className="mt-2 flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="shipState"
+                          checked={defaultShipState === 'baked'}
+                          onChange={() => setDefaultShipState('baked')}
+                          className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                        />
+                        <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="shipState"
+                          checked={defaultShipState === 'frozen'}
+                          onChange={() => setDefaultShipState('frozen')}
+                          className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                        />
+                        <span className="text-gray-900 dark:text-white">Frozen</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Can Ship Frozen */}
+                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={canShipFrozen}
+                      onChange={(e) => setCanShipFrozen(e.target.checked)}
+                      className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    />
+                    <div>
+                      <span className="font-medium text-gray-900 dark:text-white">Can Ship Frozen</span>
+                      <p className="text-sm text-gray-500 dark:text-white/60">This product can be shipped in frozen state</p>
+                    </div>
+                  </label>
+                </div>
               </div>
             )}
 

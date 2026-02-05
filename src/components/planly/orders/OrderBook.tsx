@@ -16,7 +16,7 @@ export function OrderBook({ deliveryDate, siteId }: OrderBookProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Loading order book...</div>
+        <div className="text-gray-500 dark:text-white/60">Loading order book...</div>
       </div>
     );
   }
@@ -24,7 +24,7 @@ export function OrderBook({ deliveryDate, siteId }: OrderBookProps) {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-400">Error loading order book</div>
+        <div className="text-red-600 dark:text-red-400">Error loading order book</div>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export function OrderBook({ deliveryDate, siteId }: OrderBookProps) {
   if (!orderBook || !orderBook.orders || orderBook.orders.length === 0) {
     return (
       <Card className="p-6">
-        <div className="text-center py-8 text-white/60">
+        <div className="text-center py-8 text-gray-500 dark:text-white/60">
           No orders for {format(new Date(deliveryDate), 'd MMMM yyyy')}
         </div>
       </Card>
@@ -44,10 +44,10 @@ export function OrderBook({ deliveryDate, siteId }: OrderBookProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Order Book - {format(new Date(deliveryDate), 'd MMMM yyyy')}
         </h2>
-        <div className="text-white/60 text-sm">
+        <div className="text-gray-500 dark:text-white/60 text-sm">
           {orderBook.orders.length} {orderBook.orders.length === 1 ? 'order' : 'orders'}
         </div>
       </div>
@@ -56,30 +56,30 @@ export function OrderBook({ deliveryDate, siteId }: OrderBookProps) {
         <Card key={order.customer_id} className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-white">{order.customer_name}</h3>
-              <div className="text-sm text-white/60">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{order.customer_name}</h3>
+              <div className="text-sm text-gray-500 dark:text-white/60">
                 {order.products.length} {order.products.length === 1 ? 'product' : 'products'}
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-white">£{order.total_value.toFixed(2)}</div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">£{order.total_value.toFixed(2)}</div>
               {order.is_locked && (
-                <div className="text-xs text-amber-400 mt-1">Locked</div>
+                <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">Locked</div>
               )}
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-4 mt-4">
+          <div className="border-t border-gray-200 dark:border-white/10 pt-4 mt-4">
             <div className="space-y-2">
               {order.products.map((product, idx) => (
                 <div key={idx} className="flex items-center justify-between text-sm">
-                  <div className="text-white">
+                  <div className="text-gray-900 dark:text-white">
                     {product.product_name} × {product.quantity}
                   </div>
-                  <div className="text-white/60">
+                  <div className="text-gray-500 dark:text-white/60">
                     £{product.unit_price.toFixed(2)} each
                     {product.is_locked && (
-                      <span className="ml-2 text-amber-400">🔒</span>
+                      <span className="ml-2 text-amber-600 dark:text-amber-400">🔒</span>
                     )}
                   </div>
                 </div>

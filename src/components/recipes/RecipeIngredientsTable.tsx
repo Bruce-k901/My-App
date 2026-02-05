@@ -77,9 +77,39 @@ export function RecipeIngredientsTable({
   const availableIngredientsLoadedRef = useRef(false);
   const loadingAvailableIngredientsRef = useRef(false);
 
-  // Derived state for UI
-  const hasUnsavedChanges = useMemo(() => pendingChanges.size > 0, [pendingChanges]);
-  const unsavedCount = useMemo(() => pendingChanges.size, [pendingChanges]);
+  // Derived state for UI - check both pendingChanges AND temp rows with valid data
+  const hasUnsavedChanges = useMemo(() => {
+    // Check if there are pending changes in the Map
+    if (pendingChanges.size > 0) return true;
+
+    // Also check for temp rows with valid data (ingredient_id, quantity > 0, unit_id)
+    // This handles auto-initialized rows that weren't added to pendingChanges
+    const tempRowsWithData = ingredients.filter(ing =>
+      ing.id?.startsWith('temp-') &&
+      ing.ingredient_id &&
+      parseFloat(String(ing.quantity || 0)) > 0 &&
+      ing.unit_id
+    );
+    return tempRowsWithData.length > 0;
+  }, [pendingChanges, ingredients]);
+
+  const unsavedCount = useMemo(() => {
+    // Count pending changes
+    let count = pendingChanges.size;
+
+    // Also count temp rows with valid data that aren't already in pendingChanges
+    ingredients.forEach(ing => {
+      if (ing.id?.startsWith('temp-') &&
+          !pendingChanges.has(ing.id) &&
+          ing.ingredient_id &&
+          parseFloat(String(ing.quantity || 0)) > 0 &&
+          ing.unit_id) {
+        count++;
+      }
+    });
+
+    return count;
+  }, [pendingChanges, ingredients]);
 
   // Load available ingredients - MUST be defined before any useEffect that uses it
   const loadAvailableIngredients = useCallback(async (retryCount = 0) => {
@@ -629,10 +659,15 @@ export function RecipeIngredientsTable({
   const markAsModified = useCallback((ingredientId: string) => {
     setPendingChanges(prev => {
       const next = new Map(prev);
-      // Only mark as modified if it's not already marked as 'new'
-      if (!next.has(ingredientId) || next.get(ingredientId) !== 'new') {
-        // Don't mark temp rows as 'modified' - they're already 'new'
-        if (!ingredientId.startsWith('temp-')) {
+      // For temp rows (including auto-initialized ones): mark as 'new' if not already tracked
+      if (ingredientId.startsWith('temp-')) {
+        if (!next.has(ingredientId)) {
+          next.set(ingredientId, 'new');
+        }
+        // If already marked as 'new', keep it that way
+      } else {
+        // For existing rows: mark as 'modified' if not already marked as 'new'
+        if (!next.has(ingredientId) || next.get(ingredientId) !== 'new') {
           next.set(ingredientId, 'modified');
         }
       }
@@ -1433,9 +1468,9 @@ export function RecipeIngredientsTable({
                               // If searchQueries exists (even if empty string), use it; otherwise fallback
                               searchQueries[ingredient.id] !== undefined
                                 ? searchQueries[ingredient.id]
-                                : (editingId === ingredient.id && draft?.ingredient_name) ?? 
-                                  ingredient.ingredient_name ?? 
-                                  ''
+                                : (editingId === ingredient.id && draft?.ingredient_name)
+                                  ? draft.ingredient_name
+                                  : ingredient.ingredient_name ?? ''
                             }
                             onChange={(e) => {
                               const value = e.target.value;
@@ -1893,7 +1928,19 @@ export function RecipeIngredientsTable({
                           placeholder="0.00"
                         />
                       ) : (
-                        <span className="text-emerald-400 text-sm">{formatUnitCost(ingredient.ingredient_unit_cost || 0)}</span>
+                        (() => {
+                          // Display yield-adjusted unit cost so Total = UnitCost × Qty makes sense
+                          const rawUnitCost = ingredient.ingredient_unit_cost || 0;
+                          const yieldPercent = ingredient.yield_percent || 100;
+                          const effectiveUnitCost = yieldPercent > 0 && yieldPercent < 100
+                            ? rawUnitCost / (yieldPercent / 100)
+                            : rawUnitCost;
+                          return (
+                            <span className="text-emerald-400 text-sm" title={yieldPercent < 100 ? `Raw: ${formatUnitCost(rawUnitCost)} (${yieldPercent}% yield)` : undefined}>
+                              {formatUnitCost(effectiveUnitCost)}
+                            </span>
+                          );
+                        })()
                       )}
                     </td>
                     <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium w-[12%]">

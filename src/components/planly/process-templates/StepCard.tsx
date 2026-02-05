@@ -91,7 +91,7 @@ export function StepCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'bg-white/[0.02] border border-white/[0.06] rounded-lg overflow-hidden',
+        'bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden',
         isDragging && 'ring-2 ring-[#14B8A6]/50'
       )}
     >
@@ -99,7 +99,7 @@ export function StepCard({
       <div className="p-3">
         {/* Top Row: Drag Handle, Sequence, Name, Chevron */}
         <div
-          className="flex items-center gap-2 cursor-pointer hover:bg-white/[0.02] transition-colors -m-3 p-3 mb-0"
+          className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.02] transition-colors -m-3 p-3 mb-0"
           onClick={onToggle}
         >
           {/* Drag Handle */}
@@ -107,19 +107,19 @@ export function StepCard({
             {...attributes}
             {...listeners}
             onClick={(e) => e.stopPropagation()}
-            className="p-1 rounded hover:bg-white/[0.05] text-white/40 hover:text-white/60 cursor-grab active:cursor-grabbing shrink-0"
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-white/[0.05] text-gray-400 dark:text-white/40 hover:text-gray-500 dark:hover:text-white/60 cursor-grab active:cursor-grabbing shrink-0"
           >
             <GripVertical className="h-4 w-4" />
           </button>
 
           {/* Sequence Number */}
-          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/[0.05] text-xs font-medium text-white/60 shrink-0">
+          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-white/[0.05] text-xs font-medium text-gray-500 dark:text-white/60 shrink-0">
             {stage.sequence}
           </div>
 
           {/* Step Name */}
           <div className="flex-1 min-w-0">
-            <span className={cn('text-sm font-medium leading-tight', stage.name ? 'text-white' : 'text-white/40 italic')}>
+            <span className={cn('text-sm font-medium leading-tight', stage.name ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-white/40 italic')}>
               {stage.name || 'Untitled step'}
             </span>
           </div>
@@ -127,20 +127,20 @@ export function StepCard({
           {/* Time/Overnight Badges - Keep inline for quick scanning */}
           <div className="flex items-center gap-1.5 shrink-0">
             {stage.time_constraint && (
-              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/60">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-white/[0.05] text-gray-500 dark:text-white/60">
                 <Clock className="h-3 w-3" />
                 {stage.time_constraint}
               </span>
             )}
             {stage.is_overnight && (
-              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20">
                 <Moon className="h-3 w-3" />
               </span>
             )}
           </div>
 
           {/* Expand/Collapse */}
-          <div className="text-white/40 shrink-0">
+          <div className="text-gray-400 dark:text-white/40 shrink-0">
             {isExpanded ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
@@ -152,15 +152,15 @@ export function StepCard({
         {/* Group Tags - Compact Layout Below */}
         <div className="ml-[3.25rem] mt-2 space-y-1">
           {isAllGroups ? (
-            <p className="text-xs text-white/40 italic">
+            <p className="text-xs text-gray-400 dark:text-white/40 italic">
               Applies to all groups
             </p>
           ) : (
             <>
               {hasBakeGroups && (
                 <div className="flex items-center gap-1.5">
-                  <Flame className="w-3 h-3 text-orange-400 shrink-0" />
-                  <span className="text-xs text-white/60">
+                  <Flame className="w-3 h-3 text-orange-500 dark:text-orange-400 shrink-0" />
+                  <span className="text-xs text-gray-500 dark:text-white/60">
                     {bakeGroupText}
                   </span>
                 </div>
@@ -168,8 +168,8 @@ export function StepCard({
 
               {hasDestGroups && (
                 <div className="flex items-center gap-1.5">
-                  <Package className="w-3 h-3 text-blue-400 shrink-0" />
-                  <span className="text-xs text-white/60">
+                  <Package className="w-3 h-3 text-blue-500 dark:text-blue-400 shrink-0" />
+                  <span className="text-xs text-gray-500 dark:text-white/60">
                     {destGroupText}
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export function StepCard({
 
       {/* Expanded Editor */}
       {isExpanded && (
-        <div className="border-t border-white/[0.06] bg-white/[0.01] px-3 py-3">
+        <div className="border-t border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.01] px-3 py-3">
           <StepEditor
             stage={stage}
             bakeGroups={bakeGroups}

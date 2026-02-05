@@ -16,44 +16,47 @@ type SelectProps = {
   disabled?: boolean;
 };
 
-export default function Select({ 
-  label, 
-  value, 
-  options = [], 
-  onValueChange, 
-  placeholder = "Select...", 
-  className, 
-  disabled 
+export default function Select({
+  label,
+  value,
+  options = [],
+  onValueChange,
+  placeholder = "Select...",
+  className,
+  disabled
 }: SelectProps) {
   const getLabel = (opt: Option) => (typeof opt === "string" ? opt : opt.label);
   const getValue = (opt: Option) => (typeof opt === "string" ? opt : opt.value);
-  
+
   // Safety check: ensure options is always an array
   const safeOptions = options || [];
 
-  // Normalize value - use undefined for empty values to let Radix handle placeholder
-  // Radix UI Select doesn't allow empty string values for Select.Item
-  // IMPORTANT: value must be consistent - never switch between undefined and string
-  const normalizedValue = React.useMemo(() => {
-    // If value was explicitly set, always return string (even if empty initially)
-    // This prevents controlled/uncontrolled switching
-    if (value === undefined || value === null) {
-      return undefined; // Only undefined if never set
-    }
-    // Always return string to maintain controlled state
-    const stringValue = String(value);
-    // Return undefined only for empty strings to show placeholder
-    // But maintain consistency - if it was set to "", keep it as undefined
-    return stringValue === '' ? undefined : stringValue;
+  // ALWAYS use internal state to maintain controlled behavior
+  // This prevents the "switching from uncontrolled to controlled" warning
+  // by ensuring the component is always controlled from mount
+  const [internalValue, setInternalValue] = React.useState<string | undefined>(
+    value !== undefined && value !== null && value !== '' ? String(value) : undefined
+  );
+
+  // Sync internal state with prop changes
+  React.useEffect(() => {
+    const newValue = value !== undefined && value !== null && value !== '' ? String(value) : undefined;
+    setInternalValue(newValue);
   }, [value]);
+
+  // Handle value change - update internal state and notify parent
+  const handleValueChange = React.useCallback((newValue: string) => {
+    setInternalValue(newValue);
+    onValueChange(newValue);
+  }, [onValueChange]);
   
   return (
     <div className={cn("relative", className)}>
       {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-1">{label}</label>}
       
-      <SelectPrimitive.Root 
-        value={normalizedValue}
-        onValueChange={onValueChange} 
+      <SelectPrimitive.Root
+        value={internalValue}
+        onValueChange={handleValueChange}
         disabled={disabled}
       >
         <SelectPrimitive.Trigger

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   Package, Sparkles, PauseCircle, Truck, Snowflake,
-  Loader2, X, Search, Settings, DollarSign
+  Loader2, X, Search, Settings, DollarSign, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -13,9 +13,11 @@ import Switch from '@/components/ui/Switch';
 import { useCategories } from '@/hooks/planly/useCategories';
 import { useBakeGroups } from '@/hooks/planly/useBakeGroups';
 import { useProcessTemplates } from '@/hooks/planly/useProcessTemplates';
+import { useProcessingGroups } from '@/hooks/planly/useProcessingGroups';
+import { useEquipmentTypes } from '@/hooks/planly/useEquipmentTypes';
 import { cn } from '@/lib/utils';
 import { mutate } from 'swr';
-import type { PlanlyProduct, TrayType, ShipState } from '@/types/planly';
+import type { PlanlyProduct, ShipState } from '@/types/planly';
 
 interface ProductModalProps {
   siteId: string;
@@ -46,6 +48,11 @@ export function ProductModal({
   const { data: categories } = useCategories(siteId);
   const { data: bakeGroups } = useBakeGroups(siteId);
   const { data: processTemplates } = useProcessTemplates(siteId);
+  const { processingGroups, isLoading: processingGroupsLoading } = useProcessingGroups(siteId, { includeCompanyWide: true });
+  const { equipmentTypes } = useEquipmentTypes(siteId, { includeCompanyWide: true });
+
+  // Debug: Log processing groups data
+  console.log('[ProductModal] siteId:', siteId, 'processingGroups:', processingGroups?.length, 'loading:', processingGroupsLoading);
 
   // Form state - Product tab
   const [stocklyProductId, setStocklyProductId] = useState('');
@@ -59,9 +66,14 @@ export function ProductModal({
   const [processTemplateId, setProcessTemplateId] = useState('');
   const [bakeGroupId, setBakeGroupId] = useState('');
   const [itemsPerTray, setItemsPerTray] = useState('12');
-  const [trayType, setTrayType] = useState<TrayType>('full');
   const [canShipFrozen, setCanShipFrozen] = useState(true);
   const [defaultShipState, setDefaultShipState] = useState<ShipState>('baked');
+  // Opsly production fields
+  const [processingGroupId, setProcessingGroupId] = useState('');
+  const [basePrepGramsPerUnit, setBasePrepGramsPerUnit] = useState('');
+  const [equipmentTypeId, setEquipmentTypeId] = useState('');
+  const [itemsPerEquipment, setItemsPerEquipment] = useState('');
+  const [displayOrder, setDisplayOrder] = useState('');
 
   // Form state - Pricing tab
   const [isVatable, setIsVatable] = useState(true);
@@ -74,6 +86,7 @@ export function ProductModal({
   const [stocklyProducts, setStocklyProducts] = useState<StocklyProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Get product name helper
   const getProductName = (product: PlanlyProduct) => {
@@ -95,11 +108,16 @@ export function ProductModal({
       setProcessTemplateId(editingProduct.process_template_id || '');
       setBakeGroupId(editingProduct.bake_group_id || '');
       setItemsPerTray(String(editingProduct.items_per_tray || 12));
-      setTrayType(editingProduct.tray_type || 'full');
       setCanShipFrozen(editingProduct.can_ship_frozen ?? true);
       setDefaultShipState(editingProduct.default_ship_state || 'baked');
       setIsVatable(editingProduct.is_vatable ?? true);
       setVatRate(String(editingProduct.vat_rate || 20));
+      // Opsly production fields
+      setProcessingGroupId(editingProduct.processing_group_id || '');
+      setBasePrepGramsPerUnit(editingProduct.base_prep_grams_per_unit ? String(editingProduct.base_prep_grams_per_unit) : '');
+      setEquipmentTypeId(editingProduct.equipment_type_id || '');
+      setItemsPerEquipment(editingProduct.items_per_equipment ? String(editingProduct.items_per_equipment) : '');
+      setDisplayOrder(editingProduct.display_order ? String(editingProduct.display_order) : '');
 
       // Load current list price if available
       const currentPrice = editingProduct.list_prices?.[0]?.list_price;
@@ -127,7 +145,6 @@ export function ProductModal({
     setProcessTemplateId('');
     setBakeGroupId('');
     setItemsPerTray('12');
-    setTrayType('full');
     setCanShipFrozen(true);
     setDefaultShipState('baked');
     setIsVatable(true);
@@ -135,6 +152,12 @@ export function ProductModal({
     setListPrice('');
     setSearchQuery('');
     setError(null);
+    // Reset Opsly production fields
+    setProcessingGroupId('');
+    setBasePrepGramsPerUnit('');
+    setEquipmentTypeId('');
+    setItemsPerEquipment('');
+    setDisplayOrder('');
   };
 
   const loadStocklyProducts = async () => {
@@ -172,12 +195,17 @@ export function ProductModal({
         process_template_id: processTemplateId || null,
         bake_group_id: bakeGroupId || null,
         items_per_tray: parseInt(itemsPerTray) || 12,
-        tray_type: trayType,
         can_ship_frozen: canShipFrozen,
         default_ship_state: defaultShipState,
         is_vatable: isVatable,
         vat_rate: isVatable ? parseFloat(vatRate) || 20 : null,
         is_active: true,
+        // Opsly production fields
+        processing_group_id: processingGroupId || null,
+        base_prep_grams_per_unit: basePrepGramsPerUnit ? parseFloat(basePrepGramsPerUnit) : null,
+        equipment_type_id: equipmentTypeId || null,
+        items_per_equipment: itemsPerEquipment ? parseInt(itemsPerEquipment) : null,
+        display_order: displayOrder ? parseInt(displayOrder) : null,
       };
 
       const url = isEditing
@@ -404,22 +432,61 @@ export function ProductModal({
                 <h3 className="font-medium text-gray-900 dark:text-white">Production Settings</h3>
               </div>
               <div className="space-y-4">
-                {/* Process Template */}
+                {/* Processing Group (Essential) */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Process Template</Label>
+                  <Label className="text-gray-700 dark:text-white/80">
+                    Processing Group
+                    {processingGroupsLoading && <span className="ml-2 text-xs text-gray-400">(loading...)</span>}
+                    {!processingGroupsLoading && processingGroups.length === 0 && (
+                      <span className="ml-2 text-xs text-amber-500">(none configured)</span>
+                    )}
+                  </Label>
                   <select
-                    value={processTemplateId}
-                    onChange={(e) => setProcessTemplateId(e.target.value)}
+                    value={processingGroupId}
+                    onChange={(e) => setProcessingGroupId(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    disabled={processingGroupsLoading}
                   >
-                    <option value="">No template</option>
-                    {(processTemplates || []).map((t: any) => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
+                    <option value="">
+                      {processingGroupsLoading
+                        ? 'Loading...'
+                        : processingGroups.length === 0
+                          ? 'No processing groups available'
+                          : 'Select processing group'}
+                    </option>
+                    {processingGroups.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.name}
+                        {g.process_template?.name ? ` (${g.process_template.name})` : ''}
+                      </option>
                     ))}
                   </select>
+                  <p className="text-xs text-gray-500 dark:text-white/40">
+                    Links this product to a dough/prep recipe for batch calculations
+                    {processingGroups.length === 0 && !processingGroupsLoading && (
+                      <span className="text-amber-500"> — Create groups in Settings → Dough & Prep</span>
+                    )}
+                  </p>
                 </div>
 
-                {/* Bake Group */}
+                {/* Base Prep Per Unit (Essential) */}
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-white/80">Base Prep/Unit (g)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={basePrepGramsPerUnit}
+                    onChange={(e) => setBasePrepGramsPerUnit(e.target.value)}
+                    placeholder="e.g., 80"
+                    className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-white/40">
+                    Grams of dough/prep needed per finished unit
+                  </p>
+                </div>
+
+                {/* Bake Group (Essential) */}
                 <div className="space-y-2">
                   <Label className="text-gray-700 dark:text-white/80">Bake Group</Label>
                   <select
@@ -434,31 +501,92 @@ export function ProductModal({
                   </select>
                 </div>
 
-                {/* Tray Settings */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-white/80">Items/Tray</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={itemsPerTray}
-                      onChange={(e) => setItemsPerTray(e.target.value)}
-                      className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-white/80">Tray Type</Label>
-                    <select
-                      value={trayType}
-                      onChange={(e) => setTrayType(e.target.value as TrayType)}
-                      className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
-                    >
-                      <option value="full">Full</option>
-                      <option value="half">Half</option>
-                      <option value="ring">Ring</option>
-                    </select>
-                  </div>
+                {/* Items/Tray (Essential) */}
+                <div className="space-y-2">
+                  <Label className="text-gray-700 dark:text-white/80">Items/Tray</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={itemsPerTray}
+                    onChange={(e) => setItemsPerTray(e.target.value)}
+                    className="w-24 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                  />
                 </div>
+
+                {/* Advanced Settings Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/70 transition-colors"
+                >
+                  {showAdvanced ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                  {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
+                </button>
+
+                {/* Advanced Settings (Collapsed by default) */}
+                {showAdvanced && (
+                  <div className="space-y-4 pt-2 border-t border-gray-200 dark:border-white/10">
+                    {/* Process Template */}
+                    <div className="space-y-2">
+                      <Label className="text-gray-700 dark:text-white/80">Process Template</Label>
+                      <select
+                        value={processTemplateId}
+                        onChange={(e) => setProcessTemplateId(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                      >
+                        <option value="">No template</option>
+                        {(processTemplates || []).map((t: any) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Equipment Type & Items */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-white/80">Equipment Type</Label>
+                        <select
+                          value={equipmentTypeId}
+                          onChange={(e) => setEquipmentTypeId(e.target.value)}
+                          className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                        >
+                          <option value="">None</option>
+                          {equipmentTypes.map((t) => (
+                            <option key={t.id} value={t.id}>{t.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-white/80">Items/Equipment</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={itemsPerEquipment}
+                          onChange={(e) => setItemsPerEquipment(e.target.value)}
+                          placeholder="Default"
+                          className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Display Order */}
+                    <div className="space-y-2">
+                      <Label className="text-gray-700 dark:text-white/80">Display Order</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={displayOrder}
+                        onChange={(e) => setDisplayOrder(e.target.value)}
+                        placeholder="e.g., 10"
+                        className="w-24 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

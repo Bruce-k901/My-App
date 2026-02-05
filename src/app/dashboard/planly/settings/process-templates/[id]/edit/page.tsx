@@ -14,8 +14,8 @@ export default function EditProcessTemplatePage({ params }: EditProcessTemplateP
 
   if (!siteId) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] bg-[#0B0F1A]">
-        <div className="text-white/60">Please select a site</div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
       </div>
     );
   }

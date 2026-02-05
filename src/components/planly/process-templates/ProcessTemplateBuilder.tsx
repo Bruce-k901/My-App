@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 import {
   DndContext,
   closestCenter,
@@ -17,7 +18,7 @@ import {
   arrayMove,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { ArrowLeft, Loader2, Plus, Save, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Save, AlertTriangle, ChefHat } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -27,7 +28,17 @@ import { StageFormData } from './StepEditor';
 import { useProcessTemplate, useProcessTemplates } from '@/hooks/planly/useProcessTemplates';
 import { useBakeGroups } from '@/hooks/planly/useBakeGroups';
 import { useDestinationGroups } from '@/hooks/planly/useDestinationGroups';
+import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+interface Recipe {
+  id: string;
+  name: string;
+  yield_quantity: number;
+  yield_unit: string;
+}
 
 interface ProcessTemplateBuilderProps {
   templateId?: string;
@@ -41,6 +52,7 @@ function generateId(): string {
 export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBuilderProps) {
   const router = useRouter();
   const isEdit = !!templateId;
+  const { companyId } = useAppContext();
 
   // Hooks
   const { template, updateTemplate, refreshTemplate } =
@@ -49,9 +61,18 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
   const { groups: bakeGroups } = useBakeGroups(siteId);
   const { data: destinationGroups } = useDestinationGroups(siteId);
 
+  // Fetch recipes for base dough selection
+  const { data: recipesData } = useSWR<Recipe[]>(
+    companyId ? `/api/planly/base-prep-recipes?companyId=${companyId}` : null,
+    fetcher
+  );
+  const recipes = Array.isArray(recipesData) ? recipesData : [];
+
   // Local state
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [baseDoughRecipeId, setBaseDoughRecipeId] = useState<string | null>(null);
+  const [productionPlanLabel, setProductionPlanLabel] = useState('');
   const [days, setDays] = useState<DayFormData[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -77,6 +98,8 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
     if (isEdit && template && !isInitialized) {
       setName(template.name);
       setDescription(template.description || '');
+      setBaseDoughRecipeId(template.base_dough_recipe_id || null);
+      setProductionPlanLabel(template.production_plan_label || '');
 
       if (template.stages && template.stages.length > 0) {
         const minOffset = Math.min(...template.stages.map((s) => s.day_offset));
@@ -373,6 +396,8 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
           site_id: siteId,
           name: name.trim(),
           description: description.trim() || undefined,
+          base_dough_recipe_id: baseDoughRecipeId || undefined,
+          production_plan_label: productionPlanLabel.trim() || undefined,
         });
         if (!created?.id) {
           throw new Error('Failed to create template');
@@ -383,6 +408,8 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
         await updateTemplate({
           name: name.trim(),
           description: description.trim() || undefined,
+          base_dough_recipe_id: baseDoughRecipeId || null,
+          production_plan_label: productionPlanLabel.trim() || null,
         });
       }
 
@@ -491,15 +518,15 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0F1A] flex flex-col">
       {/* Header */}
-      <div className="border-b border-white/[0.06] bg-white/[0.02]">
+      <div className="border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard/planly/settings/process-templates"
-                className="p-2 rounded-lg hover:bg-white/[0.05] text-white/60 hover:text-white transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
@@ -511,7 +538,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                     setIsDirty(true);
                   }}
                   placeholder="Template name..."
-                  className="text-xl font-semibold bg-transparent border-none text-white placeholder:text-white/30 focus:ring-0 px-0"
+                  className="text-xl font-semibold bg-transparent border-none text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:ring-0 px-0"
                 />
                 <Input
                   value={description}
@@ -520,13 +547,50 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                     setIsDirty(true);
                   }}
                   placeholder="Optional description..."
-                  className="text-sm bg-transparent border-none text-white/60 placeholder:text-white/30 focus:ring-0 px-0 mt-1"
+                  className="text-sm bg-transparent border-none text-gray-500 dark:text-white/60 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:ring-0 px-0 mt-1"
                 />
+                <div className="flex items-center gap-4 mt-3">
+                  <div className="flex items-center gap-2">
+                    <ChefHat className="h-4 w-4 text-gray-400 dark:text-white/40" />
+                    <select
+                      value={baseDoughRecipeId || ''}
+                      onChange={(e) => {
+                        setBaseDoughRecipeId(e.target.value || null);
+                        setIsDirty(true);
+                      }}
+                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-md text-gray-700 dark:text-white/80 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#14B8A6]/50"
+                    >
+                      <option value="">Select base dough recipe...</option>
+                      {recipes.map((recipe) => (
+                        <option key={recipe.id} value={recipe.id}>
+                          {recipe.name} ({recipe.yield_quantity} {recipe.yield_unit})
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-gray-400 dark:text-white/40">(for Dough Mix calculations)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={productionPlanLabel}
+                      onChange={(e) => {
+                        setProductionPlanLabel(e.target.value);
+                        setIsDirty(true);
+                      }}
+                      placeholder="Production plan label..."
+                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-700 dark:text-white/80 placeholder:text-gray-400 dark:placeholder:text-white/30 w-48 px-2 py-1"
+                    />
+                    {productionPlanLabel && (
+                      <span className="text-xs text-[#14B8A6]">
+                        → "Dough Mix - {productionPlanLabel}"
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               {isDirty && (
-                <span className="text-sm text-white/40 flex items-center gap-1.5">
+                <span className="text-sm text-gray-400 dark:text-white/40 flex items-center gap-1.5">
                   <AlertTriangle className="h-4 w-4" />
                   Unsaved changes
                 </span>
@@ -535,7 +599,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                 variant="outline"
                 onClick={() => handleSave(false)}
                 disabled={isSaving}
-                className="bg-white/[0.03] border-white/[0.06] text-white hover:bg-white/[0.05]"
+                className="bg-gray-100 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/[0.05]"
               >
                 {isSaving ? (
                   <>
@@ -614,9 +678,9 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                 onClick={handleAddDay}
                 className={cn(
                   'flex-shrink-0 w-48 min-h-[300px] rounded-lg',
-                  'border-2 border-dashed border-white/[0.1] hover:border-white/[0.2]',
+                  'border-2 border-dashed border-gray-300 dark:border-white/[0.1] hover:border-gray-400 dark:hover:border-white/[0.2]',
                   'flex flex-col items-center justify-center gap-2',
-                  'text-white/40 hover:text-white/60 transition-colors'
+                  'text-gray-400 dark:text-white/40 hover:text-gray-500 dark:hover:text-white/60 transition-colors'
                 )}
               >
                 <Plus className="h-8 w-8" />
@@ -626,8 +690,8 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
 
             <DragOverlay>
               {activeId && (
-                <div className="bg-white/[0.05] border border-[#14B8A6]/50 rounded-lg p-3 shadow-xl opacity-80">
-                  <span className="text-white text-sm">Moving step...</span>
+                <div className="bg-white dark:bg-white/[0.05] border border-[#14B8A6]/50 rounded-lg p-3 shadow-xl opacity-80">
+                  <span className="text-gray-900 dark:text-white text-sm">Moving step...</span>
                 </div>
               )}
             </DragOverlay>

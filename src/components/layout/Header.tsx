@@ -92,8 +92,8 @@ export function Header({
 
   return (
     <>
-      <header 
-        className="h-16 bg-blue-50 dark:bg-[#1a1a1a] border-b border-blue-200 dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-0 left-0 right-0 z-40"
+      <header
+        className="h-16 bg-blue-50 dark:bg-[#1a1a1a] border-b border-blue-200 dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-0 left-0 right-0 z-40 print:hidden"
         style={moduleColor ? {
           borderBottomColor: moduleColor === '#EC4899' ? 'rgba(236, 72, 153, 0.3)' :
                              moduleColor === '#10B981' ? 'rgba(16, 185, 129, 0.3)' :

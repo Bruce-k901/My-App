@@ -1,13 +1,26 @@
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { Package } from 'lucide-react';
 import { PackingPlanHeader } from '@/components/planly/packing-plan/PackingPlanHeader';
 import { PackingPlanGrid } from '@/components/planly/packing-plan/PackingPlanGrid';
 import { usePackingPlan, PackingPlanData } from '@/hooks/planly/usePackingPlan';
 import { useAppContext } from '@/context/AppContext';
 import '@/styles/packing-plan-print.css';
+
+// Safe date formatting helper
+function safeFormatDate(dateString: string, formatStr: string, fallback: string = 'Invalid date'): string {
+  try {
+    const date = parseISO(dateString);
+    if (isValid(date)) {
+      return format(date, formatStr);
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 interface GroupedProducts {
   id: string;
@@ -109,9 +122,9 @@ export default function PackingPlanPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6 packing-plan-container">
+    <div className="container mx-auto py-6 space-y-6 packing-plan-container print-content">
       {/* Screen Header */}
-      <div className="screen-only">
+      <div className="print:hidden">
         <PackingPlanHeader
           selectedDate={deliveryDate}
           onDateChange={setDeliveryDate}
@@ -124,13 +137,11 @@ export default function PackingPlanPage() {
         />
       </div>
 
-      {/* Print-only Header */}
-      <div className="print-only mb-4">
-        <h1 className="text-xl font-bold text-black">Packing Plan</h1>
-        <p className="text-sm text-gray-600">
-          {format(new Date(deliveryDate), 'EEEE, d MMMM yyyy')}
-        </p>
-        <p className="text-sm text-gray-600">{data?.orderCount || 0} orders</p>
+      {/* Print-only Header - single line layout */}
+      <div className="hidden print:flex print-header">
+        <h1>Packing Plan</h1>
+        <span>{safeFormatDate(deliveryDate, 'EEEE, d MMMM yyyy')}</span>
+        <span>{data?.orderCount || 0} orders</span>
       </div>
 
       {/* Loading State */}
@@ -148,16 +159,16 @@ export default function PackingPlanPage() {
       )}
 
       {/* Empty State */}
-      {!isLoading && !error && (!gridData || !data?.orderItems || data.orderItems.length === 0) && (
+      {!isLoading && !error && (!gridData || !data?.orderItems || data.orderItems.length === 0 || !gridData?.customers || gridData.customers.length === 0) && (
         <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-zinc-400">
           <Package className="h-12 w-12 mb-4 opacity-50" />
-          <p className="text-lg">No orders for {format(new Date(deliveryDate), 'd MMMM yyyy')}</p>
+          <p className="text-lg">No orders for {safeFormatDate(deliveryDate, 'd MMMM yyyy')}</p>
           <p className="text-sm mt-1">Select a different date or place some orders first</p>
         </div>
       )}
 
       {/* Grid */}
-      {!isLoading && !error && gridData && (
+      {!isLoading && !error && gridData && gridData.customers.length > 0 && (
         <PackingPlanGrid
           groupedProducts={gridData.groupedProducts}
           customers={gridData.customers}

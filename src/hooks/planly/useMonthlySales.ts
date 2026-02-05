@@ -1,6 +1,14 @@
 import useSWR from 'swr';
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const error = new Error('Failed to fetch monthly sales') as Error & { status: number };
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+};
 
 export function useMonthlySales(year: number, month: number, siteId?: string) {
   const params = new URLSearchParams();

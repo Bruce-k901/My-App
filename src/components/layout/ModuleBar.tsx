@@ -95,7 +95,7 @@ export function ModuleBar() {
   const pathname = usePathname();
 
   return (
-    <div className="h-14 bg-blue-50 dark:bg-[#1a1a1a] border-b border-[rgb(var(--border))] dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-16 left-0 right-0 z-30">
+    <div className="h-14 bg-blue-50 dark:bg-[#1a1a1a] border-b border-[rgb(var(--border))] dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-16 left-0 right-0 z-30 print:hidden">
       <div className="flex items-center gap-2 overflow-x-auto">
         {modules.map((module) => {
           const Icon = module.icon;

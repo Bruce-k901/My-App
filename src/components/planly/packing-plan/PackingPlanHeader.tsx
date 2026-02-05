@@ -1,9 +1,9 @@
 'use client';
 
+import { useRef } from 'react';
 import { RefreshCw, Printer, ArrowLeftRight, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import { format, addDays, subDays } from 'date-fns';
+import { format, addDays, subDays, isValid, parseISO } from 'date-fns';
 
 interface PackingPlanHeaderProps {
   selectedDate: string;
@@ -16,6 +16,32 @@ interface PackingPlanHeaderProps {
   isLoading?: boolean;
 }
 
+// Safe date formatting helper
+function safeFormatDate(dateString: string, formatStr: string): string {
+  try {
+    const date = parseISO(dateString);
+    if (isValid(date)) {
+      return format(date, formatStr);
+    }
+    return dateString;
+  } catch {
+    return dateString;
+  }
+}
+
+// Safe date navigation
+function safeNavigateDate(dateString: string, days: number): string {
+  try {
+    const date = parseISO(dateString);
+    if (isValid(date)) {
+      return format(days > 0 ? addDays(date, days) : subDays(date, Math.abs(days)), 'yyyy-MM-dd');
+    }
+    return format(new Date(), 'yyyy-MM-dd');
+  } catch {
+    return format(new Date(), 'yyyy-MM-dd');
+  }
+}
+
 export function PackingPlanHeader({
   selectedDate,
   onDateChange,
@@ -26,6 +52,14 @@ export function PackingPlanHeader({
   orderCount,
   isLoading,
 }: PackingPlanHeaderProps) {
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCalendarClick = () => {
+    // Open the native date picker
+    dateInputRef.current?.showPicker?.();
+    dateInputRef.current?.focus();
+  };
+
   return (
     <div className="space-y-4">
       {/* Top row */}
@@ -38,27 +72,54 @@ export function PackingPlanHeader({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onDateChange(format(subDays(new Date(selectedDate), 1), 'yyyy-MM-dd'))}
+              onClick={() => onDateChange(safeNavigateDate(selectedDate, -1))}
               className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2"
               title="Previous day"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-[#14B8A6]" />
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => onDateChange(e.target.value)}
-                className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
-              />
+            {/* Calendar button and date display */}
+            <div className="flex items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCalendarClick}
+                className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2 rounded-r-none border-r-0"
+                title="Open calendar"
+              >
+                <Calendar className="h-4 w-4 text-[#14B8A6]" />
+              </Button>
+
+              {/* Date display with day of week */}
+              <div className="relative">
+                <input
+                  ref={dateInputRef}
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => {
+                    const newDate = e.target.value;
+                    if (newDate && !isNaN(new Date(newDate).getTime())) {
+                      onDateChange(newDate);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                />
+                <div
+                  onClick={handleCalendarClick}
+                  className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 dark:border-white/10 rounded-r-md bg-white dark:bg-white/[0.03] cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5"
+                >
+                  <span className="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                    {safeFormatDate(selectedDate, 'EEE, dd/MM/yyyy')}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onDateChange(format(addDays(new Date(selectedDate), 1), 'yyyy-MM-dd'))}
+              onClick={() => onDateChange(safeNavigateDate(selectedDate, 1))}
               className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2"
               title="Next day"
             >
