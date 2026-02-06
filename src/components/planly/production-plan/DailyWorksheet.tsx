@@ -17,11 +17,14 @@ import { format, addDays, subDays } from 'date-fns';
 import {
   ChevronLeft,
   ChevronRight,
-  Printer,
+  Download,
   RefreshCw,
   Loader2,
 } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
 import { Button } from '@/components/ui/Button';
+import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';
+import { useSiteContext } from '@/contexts/SiteContext';
 
 // ─── Fixed bake group order ─────────────────────────────────────────────
 // This ensures consistent product ordering across all sections
@@ -127,6 +130,7 @@ interface Props { siteId: string; initialDate?: Date; }
 // ─── Component ──────────────────────────────────────────────────────────
 
 export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
+  const { getCurrentSiteName } = useSiteContext();
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [planToday, setPlanToday] = useState<PlanRes | null>(null);
   const [planTomorrow, setPlanTomorrow] = useState<PlanRes | null>(null);
@@ -135,6 +139,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   const [mixSheetDayAfter, setMixSheetDayAfter] = useState<MixSheetRes | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Date strings for API calls
   const todayStr = format(selectedDate, 'yyyy-MM-dd');
@@ -505,12 +510,103 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   const hasOrdersTomorrow = planTomorrow?.delivery_orders && planTomorrow.delivery_orders.length > 0;
   const hasAnyData = hasOrdersToday || hasOrdersTomorrow;
 
-  // Date displays
-  const todayDisplay = format(selectedDate, 'dd-MMM');
-  const tomorrowDisplay = format(addDays(selectedDate, 1), 'dd-MMM');
-  const dayAfterDisplay = format(addDays(selectedDate, 2), 'dd-MMM');
+  // Date displays - include day name for clarity when printing
+  const todayDisplay = format(selectedDate, 'EEEE dd-MMM');
+  const tomorrowDisplay = format(addDays(selectedDate, 1), 'EEEE dd-MMM');
+  const dayAfterDisplay = format(addDays(selectedDate, 2), 'EEEE dd-MMM');
   const todayDayName = format(selectedDate, 'EEEE');
   const tomorrowDayName = format(addDays(selectedDate, 1), 'EEEE');
+
+  // ── PDF Download Handler ────────────────────────────────────────────
+
+  const handleDownloadPDF = async () => {
+    if (isGeneratingPDF) return;
+
+    setIsGeneratingPDF(true);
+    try {
+      // Convert packing data (Map → array format)
+      const packingData = packing ? {
+        customers: packing.customers,
+        products: packing.products.map(p => ({
+          name: p.name,
+          bg: p.bg,
+          quantities: packing.customers.map(c => ({
+            customer: c,
+            qty: p.byCust.get(c) || 0,
+            isFrozen: p.frozenCustomers?.has(c) || false,
+          })),
+          total: p.total,
+        })),
+        colTotals: packing.customers.map(c => ({
+          customer: c,
+          total: packing.colTotals.get(c) || 0,
+        })),
+        grand: packing.grand,
+      } : null;
+
+      // Convert tray grids (Map → array format)
+      const trayGridsData = trayGrids?.map(dg => ({
+        name: dg.name,
+        dispatch: dg.dispatch,
+        trayNums: dg.trayNums,
+        products: dg.products.map(prodName => ({
+          name: prodName,
+          bg: dg.productBG.get(prodName) || '',
+          trayQuantities: dg.trayNums.map(tn => ({
+            trayNum: tn,
+            qty: dg.grid.get(prodName)?.get(tn) || 0,
+          })).filter(tq => tq.qty > 0),
+        })),
+        totalItems: dg.totalItems,
+      })) || null;
+
+      // Convert xcheck data (Map → array format)
+      const xcheckData = xcheck ? {
+        dests: xcheck.dests,
+        products: [...xcheck.productMap.values()].map(p => ({
+          name: p.name,
+          bg: p.bg,
+          destQuantities: xcheck.dests.map(d => ({
+            dest: d,
+            qty: p.byDest.get(d) || 0,
+          })),
+          total: p.total,
+        })),
+        grand: xcheck.grand,
+      } : null;
+
+      const blob = await pdf(
+        <ProductionPlanPDF
+          siteName={getCurrentSiteName()}
+          date={todayStr}
+          dateLabels={{
+            today: todayDisplay,
+            tomorrow: tomorrowDisplay,
+            dayAfter: dayAfterDisplay,
+          }}
+          packing={packingData}
+          doughSheets={doughSheets}
+          cookies={cookies}
+          doughMix={doughMix}
+          trayGrids={trayGridsData}
+          xcheck={xcheckData}
+        />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `daily-worksheet-${todayStr}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   // ── Loading / Error ─────────────────────────────────────────────────
 
@@ -550,8 +646,18 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={loadData}><RefreshCw className="h-4 w-4" /></Button>
-          <Button size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print
+          <Button size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF || loading}>
+            {isGeneratingPDF ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -571,18 +677,17 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 1: PACKING PLAN — TODAY's delivery orders
               ═══════════════════════════════════════════════════════════════ */}
-          <Sec title="Packing Plan" sub={packing ? `${planToday!.delivery_orders.length} orders | ${packing.grand} items` : ''}>
+          <Sec title="Packing Plan" sub={packing ? `${planToday!.delivery_orders.length} orders | ${packing.grand} items — for ${todayDisplay}` : ''}>
             {packing ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse whitespace-nowrap border border-gray-300 dark:border-white/20">
+                <table className="w-full text-xs border-collapse border border-gray-300 dark:border-white/20 table-fixed">
                   <thead>
-                    <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5 print:h-[55px]">
-                      <th className="text-left py-0.5 px-1.5 text-gray-700 dark:text-white/70 font-bold sticky left-0 bg-gray-100 dark:bg-gray-800 z-10 min-w-[120px] print:min-w-[90px] border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Product</th>
+                    <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
+                      <th className="text-left py-0.5 px-1.5 text-gray-700 dark:text-white/70 font-bold sticky left-0 bg-gray-100 dark:bg-gray-800 z-10 w-[140px] print:w-[100px] border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Product</th>
                       {packing.customers.map(c => (
-                        <th key={c} className="py-0 px-0.5 text-gray-700 dark:text-white/70 font-semibold text-center min-w-[28px] print:min-w-[22px] border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px]"
-                            style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', height: '55px' }}>{c}</th>
+                        <th key={c} className="py-1 px-1 text-gray-700 dark:text-white/70 font-semibold text-center border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] align-bottom leading-tight whitespace-normal">{c}</th>
                       ))}
-                      <th className="text-center py-0.5 px-1 text-teal-600 dark:text-teal-400 font-bold min-w-[36px] print:min-w-[28px] border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 text-[10px] print:text-[8px]">Tot</th>
+                      <th className="text-center py-0.5 px-1 text-teal-600 dark:text-teal-400 font-bold w-[45px] print:w-[35px] border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 text-[10px] print:text-[8px]">Tot</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -876,7 +981,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                           </tr>
                           {/* Tray number header row */}
                           <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
-                            <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[100px] print:min-w-[80px]">Product</th>
+                            <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[130px] print:min-w-[90px]">Product</th>
                             {trayGrids.map((dg, di) => (
                               dg.trayNums.map((tn, ti) => (
                                 <th key={`${dg.name}-${tn}`}
@@ -957,9 +1062,9 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                       <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
                         <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[80px] print:min-w-[60px]">Product</th>
                         {xcheck.dests.map(d => (
-                          <th key={d} className="text-center py-1 px-1 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px]">{d.replace(' Bake', '').slice(0, 8)}</th>
+                          <th key={d} className="text-center py-1 px-2 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] min-w-[70px] print:min-w-[55px]">{d.replace(' Bake', '')}</th>
                         ))}
-                        <th className="text-center py-1 px-1.5 text-teal-600 dark:text-teal-400 font-bold border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20">Tot</th>
+                        <th className="text-center py-1 px-1.5 text-teal-600 dark:text-teal-400 font-bold border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 min-w-[40px]">Tot</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -993,7 +1098,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                               <td className={`py-0.5 px-1.5 text-gray-900 dark:text-white font-medium border-r-2 border-gray-400 dark:border-white/30 whitespace-normal text-[10px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}`}>{prodName}</td>
                               {xcheck.dests.map(d => {
                                 const q = p?.byDest.get(d) || 0;
-                                return <td key={d} className={`text-center py-0.5 px-1 tabular-nums border-r border-gray-300 dark:border-white/20 ${q > 0 ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-300 dark:text-white/20'}`}>{q > 0 ? q : ''}</td>;
+                                return <td key={d} className={`text-center py-0.5 px-2 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px] ${q > 0 ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-300 dark:text-white/20'}`}>{q > 0 ? q : ''}</td>;
                               })}
                               <td className="text-center py-0.5 px-1.5 text-teal-600 dark:text-teal-400 font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10">{total > 0 ? total : ''}</td>
                             </tr>
@@ -1006,7 +1111,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                             <td className="py-1 px-1.5 text-gray-900 dark:text-white border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Totals</td>
                             {xcheck.dests.map(d => {
                               const t = [...xcheck.productMap.values()].reduce((s, p) => s + (p.byDest.get(d) || 0), 0);
-                              return <td key={d} className="text-center py-1 px-1 text-gray-700 dark:text-white/90 tabular-nums border-r border-gray-300 dark:border-white/20">{t}</td>;
+                              return <td key={d} className="text-center py-1 px-2 text-gray-700 dark:text-white/90 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px]">{t}</td>;
                             })}
                             <td className="text-center py-1 px-1.5 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-100 dark:bg-teal-900/30">{xcheck.grand}</td>
                           </tr>
