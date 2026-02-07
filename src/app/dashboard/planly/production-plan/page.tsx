@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
-  Printer,
+  Download,
   Lock,
   Calendar,
   Package,
@@ -19,6 +19,8 @@ import {
   Truck,
   AlertCircle,
 } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
+import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import StyledSelect, { StyledOption } from '@/components/ui/StyledSelect';
@@ -26,6 +28,7 @@ import { useProductionPlan, getDateRange, formatDateDisplay, getTodayString } fr
 import { useMixSheet } from '@/hooks/planly/useMixSheet';
 import { useTrayLayout } from '@/hooks/planly/useTrayLayout';
 import { useAppContext } from '@/context/AppContext';
+import { useSiteContext } from '@/contexts/SiteContext';
 import {
   ProductionPlan,
   DeliveryOrderSummary,
@@ -162,7 +165,7 @@ function DailyBookSection({ orders, date }: { orders?: DeliveryOrderSummary[]; d
 
   if (!orders || orders.length === 0) {
     return (
-      <CollapsibleSection title="Daily Book" icon={Package} badge={0}>
+      <CollapsibleSection title={`Daily Book for ${formatDateDisplay(date)}`} icon={Package} badge={0}>
         <p className="text-gray-500 dark:text-white/50">No deliveries scheduled for this date</p>
       </CollapsibleSection>
     );
@@ -170,7 +173,7 @@ function DailyBookSection({ orders, date }: { orders?: DeliveryOrderSummary[]; d
 
   return (
     <CollapsibleSection
-      title={`Daily Book - ${formatDateDisplay(date)}`}
+      title={`Daily Book for ${formatDateDisplay(date)}`}
       icon={Package}
       badge={productRows.reduce((sum, r) => sum + r.total, 0)}
     >
@@ -247,16 +250,25 @@ function MixSheetSection({
   sheetSummary,
   orderSummary,
   isLoading,
+  selectedDate,
 }: {
   doughMixes: DoughMixResult[];
   mixDay?: string;
   sheetSummary?: SheetSummary | null;
   orderSummary?: { confirmed_orders: number; pending_orders: number; pending_note?: string };
   isLoading: boolean;
+  selectedDate: string;
 }) {
+  // Compute tomorrow's date for the title
+  const tomorrow = useMemo(() => {
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split('T')[0];
+  }, [selectedDate]);
+
   if (isLoading) {
     return (
-      <CollapsibleSection title="Mix Sheets" icon={Scale}>
+      <CollapsibleSection title={`Mix Sheets for ${formatDateDisplay(tomorrow)}`} icon={Scale}>
         <div className="flex items-center justify-center py-8">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400 mr-2" />
           <span className="text-gray-500 dark:text-white/50">Loading mix sheets...</span>
@@ -267,7 +279,7 @@ function MixSheetSection({
 
   if (!doughMixes || doughMixes.length === 0) {
     return (
-      <CollapsibleSection title="Mix Sheets" icon={Scale} badge={0}>
+      <CollapsibleSection title={`Dough Sheets for ${formatDateDisplay(tomorrow)}`} icon={Scale} badge={0}>
         <p className="text-gray-500 dark:text-white/50">No mix sheets required for this date</p>
       </CollapsibleSection>
     );
@@ -275,7 +287,7 @@ function MixSheetSection({
 
   return (
     <CollapsibleSection
-      title={`Mix Sheets${mixDay ? ` - ${mixDay}` : ''}`}
+      title={`Dough Sheets for ${formatDateDisplay(tomorrow)}`}
       icon={Scale}
       badge={doughMixes.length}
     >
@@ -475,13 +487,22 @@ function MixSheetSection({
 function TrayLayoutSection({
   destinationGroups,
   isLoading,
+  selectedDate,
 }: {
   destinationGroups: TrayLayoutDestinationGroup[];
   isLoading: boolean;
+  selectedDate: string;
 }) {
+  // Compute tomorrow's date for the title
+  const tomorrow = useMemo(() => {
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split('T')[0];
+  }, [selectedDate]);
+
   if (isLoading) {
     return (
-      <CollapsibleSection title="Tray Layout" icon={LayoutGrid}>
+      <CollapsibleSection title={`Tray Layout for ${formatDateDisplay(tomorrow)}`} icon={LayoutGrid}>
         <div className="flex items-center justify-center py-8">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400 mr-2" />
           <span className="text-gray-500 dark:text-white/50">Loading tray layout...</span>
@@ -492,7 +513,7 @@ function TrayLayoutSection({
 
   if (!destinationGroups || destinationGroups.length === 0) {
     return (
-      <CollapsibleSection title="Tray Layout" icon={LayoutGrid} badge={0}>
+      <CollapsibleSection title={`Tray Layout for ${formatDateDisplay(tomorrow)}`} icon={LayoutGrid} badge={0}>
         <p className="text-gray-500 dark:text-white/50">No tray layouts required for this date</p>
       </CollapsibleSection>
     );
@@ -503,7 +524,7 @@ function TrayLayoutSection({
 
   return (
     <CollapsibleSection
-      title="Tray Layout"
+      title={`Tray Layout for ${formatDateDisplay(tomorrow)}`}
       icon={LayoutGrid}
       badge={`${totalEquipment} trays`}
     >
@@ -595,14 +616,14 @@ function ProductionTasksSection({ tasks, date }: { tasks?: ProductionTask[]; dat
 
   if (!tasks || tasks.length === 0) {
     return (
-      <CollapsibleSection title="Production Tasks" icon={Clock} badge={0}>
+      <CollapsibleSection title={`Production Tasks for ${formatDateDisplay(date)}`} icon={Clock} badge={0}>
         <p className="text-gray-500 dark:text-white/50">No production tasks for this date</p>
       </CollapsibleSection>
     );
   }
 
   return (
-    <CollapsibleSection title="Production Tasks" icon={Clock} badge={tasks.length}>
+    <CollapsibleSection title={`Production Tasks for ${formatDateDisplay(date)}`} icon={Clock} badge={tasks.length}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {Array.from(taskGroups.entries()).map(([stageName, stageTasks]) => {
           // Aggregate quantities by product
@@ -736,7 +757,9 @@ function CookieLayoutSection({ cookies }: { cookies?: CookieRequirement[] }) {
 // Main Page Component
 export default function ProductionPlanPage() {
   const { siteId } = useAppContext();
+  const { getCurrentSiteName } = useSiteContext();
   const [selectedDate, setSelectedDate] = useState(getTodayString());
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const { plan, isLoading: planLoading, error: planError } = useProductionPlan(selectedDate, siteId);
   const { mixSheet, isLoading: mixSheetLoading } = useMixSheet(selectedDate, siteId);
@@ -762,8 +785,101 @@ export default function ProductionPlanPage() {
     setSelectedDate(getTodayString());
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    if (isGeneratingPDF) return;
+
+    setIsGeneratingPDF(true);
+    try {
+      // Convert delivery orders to packing format
+      const packingData = plan?.delivery_orders ? (() => {
+        type Row = { name: string; bg: string; byCust: Map<string, number>; total: number };
+        const rows = new Map<string, Row>();
+        const custs = new Set<string>();
+
+        for (const order of plan.delivery_orders) {
+          custs.add(order.customer_name);
+          for (const l of order.lines) {
+            if (!rows.has(l.product_name)) {
+              rows.set(l.product_name, { name: l.product_name, bg: l.bake_group_name || 'Other', byCust: new Map(), total: 0 });
+            }
+            const r = rows.get(l.product_name)!;
+            r.byCust.set(order.customer_name, (r.byCust.get(order.customer_name) || 0) + l.quantity);
+            r.total += l.quantity;
+          }
+        }
+
+        const custList = [...custs].sort();
+        const prodList = [...rows.values()].sort((a, b) => a.bg.localeCompare(b.bg) || a.name.localeCompare(b.name));
+        const colTotals = new Map<string, number>();
+        custList.forEach(c => {
+          let t = 0; prodList.forEach(p => t += p.byCust.get(c) || 0);
+          colTotals.set(c, t);
+        });
+        const grand = prodList.reduce((s, p) => s + p.total, 0);
+
+        return {
+          customers: custList,
+          products: prodList.map(p => ({
+            name: p.name,
+            bg: p.bg,
+            quantities: custList.map(c => ({ customer: c, qty: p.byCust.get(c) || 0 })),
+            total: p.total,
+          })),
+          colTotals: custList.map(c => ({ customer: c, total: colTotals.get(c) || 0 })),
+          grand,
+        };
+      })() : null;
+
+      // Convert tray layout to grid format
+      const trayGridsData = trayLayout?.destination_groups?.map(dg => {
+        const productInfo = new Map<string, string>();
+        for (const tray of dg.equipment) {
+          for (const item of tray.items) {
+            if (!productInfo.has(item.product)) {
+              productInfo.set(item.product, tray.bake_group);
+            }
+          }
+        }
+
+        return {
+          name: dg.destination_group_name,
+          dispatch: dg.dispatch_time || undefined,
+          trayNums: dg.equipment.map(t => t.number),
+          products: [...productInfo.entries()].map(([name, bg]) => ({
+            name,
+            bg,
+            trayQuantities: dg.equipment
+              .map(t => ({ trayNum: t.number, qty: t.items.find(i => i.product === name)?.qty || 0 }))
+              .filter(tq => tq.qty > 0),
+          })),
+          totalItems: dg.summary.total_items,
+        };
+      }) || null;
+
+      const blob = await pdf(
+        <ProductionPlanPDF
+          siteName={getCurrentSiteName()}
+          date={selectedDate}
+          packing={packingData}
+          doughSheets={mixSheet?.sheet_summary}
+          doughMix={mixSheet?.dough_mixes}
+          trayGrids={trayGridsData}
+        />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `production-plan-${selectedDate}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   if (!siteId) {
@@ -815,10 +931,19 @@ export default function ProductionPlanPage() {
           </div>
         )}
 
-        {/* Print Button */}
-        <Button onClick={handlePrint} className="gap-2">
-          <Printer className="h-4 w-4" />
-          Print
+        {/* Download PDF Button */}
+        <Button onClick={handleDownloadPDF} disabled={isGeneratingPDF || isLoading} className="gap-2">
+          {isGeneratingPDF ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Download className="h-4 w-4" />
+              Download PDF
+            </>
+          )}
         </Button>
       </div>
 
@@ -841,12 +966,14 @@ export default function ProductionPlanPage() {
           sheetSummary={mixSheet?.sheet_summary}
           orderSummary={mixSheet?.order_summary}
           isLoading={mixSheetLoading}
+          selectedDate={selectedDate}
         />
 
         {/* Section 3: Tray Layout (Opsly) */}
         <TrayLayoutSection
           destinationGroups={trayLayout?.destination_groups || []}
           isLoading={trayLayoutLoading}
+          selectedDate={selectedDate}
         />
 
         {/* Section 4: Production Tasks */}

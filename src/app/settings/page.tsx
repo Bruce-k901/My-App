@@ -80,7 +80,7 @@ function SettingsInner() {
     try {
       // Upsert the row (insert or update)
       const payload = { ...settings } as any;
-      const { error } = await supabase.from("profile_settings").upsert(payload, { onConflict: "user_id" });
+      const { error } = await supabase.from("profile_settings").upsert(payload, { onConflict: "profile_id" });
       if (error) throw new Error(error.message);
       showToast("Settings saved", "success");
     } catch (e: any) {

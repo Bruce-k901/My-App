@@ -8,15 +8,17 @@ import { QuickActionsGrid } from './QuickActionsGrid';
 
 // Module icons for section headers
 import {
-  Package,     // Stockly
-  Wrench,      // Assetly
-  Users,       // Teamly
+  Package,        // Stockly
+  Wrench,         // Assetly
+  Users,          // Teamly
+  MessageSquare,  // Msgly
 } from 'lucide-react';
 
 const moduleSections = [
   { id: 'stockly', label: 'Stockly', subtitle: 'Inventory', icon: Package, color: '#10B981' },
   { id: 'assetly', label: 'Assetly', subtitle: 'Assets', icon: Wrench, color: '#0EA5E9' },
   { id: 'teamly', label: 'Teamly', subtitle: 'People', icon: Users, color: '#8B5CF6' },
+  { id: 'msgly', label: 'Msgly', subtitle: 'Messaging', icon: MessageSquare, color: '#F59E0B' },
 ] as const;
 
 export function MoreSheet() {
@@ -54,7 +56,7 @@ export function MoreSheet() {
         className={cn(
           "fixed inset-x-0 bottom-0 z-50",
           "bg-[#1a1a1f] text-white rounded-t-3xl",
-          "max-h-[85vh] overflow-hidden",
+          "max-h-[80vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
           "pb-[env(safe-area-inset-bottom)]"
         )}
@@ -76,7 +78,7 @@ export function MoreSheet() {
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto max-h-[calc(85vh-80px)] overscroll-contain">
+        <div className="overflow-y-auto max-h-[calc(80vh-80px)] overscroll-contain">
           <div className="px-5 py-4 space-y-6">
 
             {/* Quick Actions */}

@@ -16,6 +16,8 @@ import {
   HelpCircle,
   Settings,
   Eye,
+  MessageSquare,
+  Send,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,12 +32,11 @@ interface QuickAction {
   roles?: string[];
 }
 
-// Priority Actions - High frequency daily tasks
+// Priority Actions - High frequency daily tasks (Checklists removed - Tasks tab covers this)
 const quickActions: QuickAction[] = [
   { id: 'clock', icon: Clock, label: 'Clock In/Out', href: '/dashboard/people/attendance', color: '#FF6B9D' },
   { id: 'incident', icon: AlertTriangle, label: 'Incident', href: '/dashboard/incidents', color: '#f44336' },
   { id: 'temp', icon: Thermometer, label: 'Temp Check', href: '/dashboard/checklists', color: '#2196F3' },
-  { id: 'checklist', icon: ClipboardList, label: 'Checklists', href: '/dashboard/checklists', color: '#4CAF50' },
 ];
 
 // Module-specific actions (Planly removed from mobile - desktop only)
@@ -51,9 +52,14 @@ const moduleActions: Record<string, QuickAction[]> = {
     { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#0EA5E9' },
   ],
   teamly: [
-    { id: 'rota', icon: Calendar, label: 'My Rota', href: '/dashboard/people/schedule', color: '#8B5CF6' },
     { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/dashboard/people/leave/request', color: '#8B5CF6' },
     { id: 'directory', icon: Users, label: 'Staff Cards', href: '/dashboard/people/directory', color: '#8B5CF6' },
+    { id: 'contractors', icon: Wrench, label: 'Contractors', href: '/dashboard/people/contractors', color: '#8B5CF6' },
+    { id: 'suppliers', icon: Package, label: 'Suppliers', href: '/dashboard/stockly/suppliers', color: '#10B981' },
+  ],
+  msgly: [
+    { id: 'messages', icon: MessageSquare, label: 'Messages', href: '/dashboard/messaging', color: '#F59E0B' },
+    { id: 'new-message', icon: Send, label: 'New Message', href: '/dashboard/messaging?new=true', color: '#F59E0B' },
   ],
 };
 
@@ -64,7 +70,7 @@ const settingsActions: QuickAction[] = [
 ];
 
 interface QuickActionsGridProps {
-  section: 'quick' | 'stockly' | 'assetly' | 'teamly' | 'settings';
+  section: 'quick' | 'stockly' | 'assetly' | 'teamly' | 'msgly' | 'settings';
   userRole?: string;
 }
 

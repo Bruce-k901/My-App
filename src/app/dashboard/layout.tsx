@@ -57,9 +57,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (isMobile) {
     return (
       <MobileNavProvider>
-        <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+        <div className="dashboard-page bg-[#0a0a0a] text-white pb-20">
           {/* No desktop header on mobile - pages handle their own headers */}
-          <main className="min-h-screen">
+          <main>
             {children}
           </main>
 

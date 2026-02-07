@@ -31,19 +31,11 @@ export default function ArchivedRAsPage() {
           .select('*')
           .eq('company_id', companyId)
           .eq('status', 'Archived')
-          .order('updated_at', { ascending: false });
+          .order('archived_at', { ascending: false, nullsFirst: false });
         
         if (error) throw error;
-        
-        // Filter to show only 001 versions (original versions)
-        const archived001Versions = (allArchived || []).filter((ra: any) => {
-          // Check if ref_code ends with -001 or version_number is 1 (if column exists)
-          const endsWith001 = ra.ref_code.match(/-001$/);
-          const isVersion1 = ra.version_number === 1 || ra.version_number === undefined;
-          return endsWith001 || isVersion1;
-        });
-        
-        setRAs(archived001Versions);
+
+        setRAs(allArchived || []);
       } catch (error) {
         console.error('Error loading archived RAs:', error);
         const errorMessage = error?.message || 'Unknown error occurred';
@@ -58,7 +50,7 @@ export default function ArchivedRAsPage() {
     };
 
     loadRAs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [companyId]);
 
   const handleEditRA = (ra: any) => {
@@ -75,7 +67,7 @@ export default function ArchivedRAsPage() {
       setRestoringId(raId);
       const { error } = await supabase
         .from('risk_assessments')
-        .update({ status: 'Draft' })
+        .update({ status: 'Draft', archived_at: null, archived_by: null })
         .eq('id', raId)
         .eq('company_id', companyId);
 
@@ -84,17 +76,17 @@ export default function ArchivedRAsPage() {
       // Remove from local state
       setRAs(prev => prev.filter(ra => ra.id !== raId));
 
-      showToast({ 
-        title: 'RA restored', 
-        description: 'RA has been moved back to active RAs', 
-        type: 'success' 
+      showToast({
+        title: 'RA restored',
+        description: 'RA has been moved back to active RAs',
+        type: 'success'
       });
     } catch (error: any) {
       console.error('Error restoring RA:', error);
-      showToast({ 
-        title: 'Error restoring RA', 
-        description: error.message || 'Failed to restore RA', 
-        type: 'error' 
+      showToast({
+        title: 'Error restoring RA',
+        description: error.message || 'Failed to restore RA',
+        type: 'error'
       });
     } finally {
       setRestoringId(null);

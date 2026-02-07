@@ -1,15 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye } from 'lucide-react';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye, ShieldAlert, Utensils, MessageSquareWarning, UserX } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { EmergencyIncidentModal } from '@/components/incidents/EmergencyIncidentModal';
+import { FoodPoisoningIncidentModal } from '@/components/incidents/FoodPoisoningIncidentModal';
+import { CustomerComplaintModal } from '@/components/incidents/CustomerComplaintModal';
 import { IncidentReportViewer } from '@/components/incidents/IncidentReportViewer';
 import { downloadIncidentReportPDF } from '@/lib/incident-report-pdf';
 import Select from '@/components/ui/Select';
+
+type IncidentType = 'accident' | 'food_poisoning' | 'customer_complaint' | 'staff_sickness';
+
+const INCIDENT_TABS: { id: IncidentType; label: string; icon: React.ElementType; description: string; color: string }[] = [
+  { id: 'accident', label: 'Accidents', icon: ShieldAlert, description: 'Workplace accidents & emergencies', color: 'text-red-500' },
+  { id: 'food_poisoning', label: 'Food Poisoning', icon: Utensils, description: 'Food poisoning investigations', color: 'text-orange-500' },
+  { id: 'customer_complaint', label: 'Complaints', icon: MessageSquareWarning, description: 'Customer complaints & feedback', color: 'text-yellow-500' },
+  { id: 'staff_sickness', label: 'Staff Sickness', icon: UserX, description: 'Staff illness & exclusion records', color: 'text-purple-500' },
+];
 
 interface Incident {
   id: string;
@@ -26,30 +37,50 @@ interface Incident {
 
 export default function IncidentsPage() {
   const { companyId, siteId } = useAppContext();
+  const [activeTab, setActiveTab] = useState<IncidentType>('accident');
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [isIncidentModalOpen, setIsIncidentModalOpen] = useState(false);
+  const [isAccidentModalOpen, setIsAccidentModalOpen] = useState(false);
+  const [isFoodPoisoningModalOpen, setIsFoodPoisoningModalOpen] = useState(false);
+  const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [viewingIncident, setViewingIncident] = useState<Incident | null>(null);
 
   useEffect(() => {
     fetchIncidents();
-  }, [companyId, siteId]);
+  }, [companyId, siteId, activeTab]);
 
   async function fetchIncidents() {
+    // Staff sickness uses a different table, so skip fetching for that tab
+    if (activeTab === 'staff_sickness') {
+      setIncidents([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      
+
       if (!companyId) {
         console.warn('No company ID available');
         setIncidents([]);
         return;
       }
-      
+
+      // Map tab to incident types in database
+      const incidentTypeMap: Record<string, string[]> = {
+        accident: ['emergency', 'accident', 'injury', 'near_miss'],
+        food_poisoning: ['food_poisoning'],
+        customer_complaint: ['customer_complaint', 'complaint'],
+      };
+
+      const incidentTypes = incidentTypeMap[activeTab] || [];
+
       // Fetch incidents - try with sites relationship first
       // If relationship query fails, we'll fetch sites separately
       let query = supabase
@@ -57,6 +88,11 @@ export default function IncidentsPage() {
         .select('*')
         .eq('company_id', companyId)
         .order('reported_date', { ascending: false });
+
+      // Filter by incident type if not showing all
+      if (incidentTypes.length > 0) {
+        query = query.in('incident_type', incidentTypes);
+      }
 
       // Only filter by site_id if it's a valid UUID (not "all")
       if (siteId && siteId !== 'all') {
@@ -212,6 +248,27 @@ export default function IncidentsPage() {
     }
   };
 
+  const handleReportIncident = () => {
+    switch (activeTab) {
+      case 'accident':
+        setIsAccidentModalOpen(true);
+        break;
+      case 'food_poisoning':
+        setIsFoodPoisoningModalOpen(true);
+        break;
+      case 'customer_complaint':
+        setIsComplaintModalOpen(true);
+        break;
+      case 'staff_sickness':
+        // Navigate to staff sickness page
+        window.location.href = '/dashboard/incidents/staff-sickness';
+        break;
+    }
+  };
+
+  const getActiveTabInfo = () => INCIDENT_TABS.find(tab => tab.id === activeTab) || INCIDENT_TABS[0];
+  const activeTabInfo = getActiveTabInfo();
+
   return (
     <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
       <div className="max-w-7xl mx-auto p-6">
@@ -225,87 +282,134 @@ export default function IncidentsPage() {
             <p className="text-gray-600 dark:text-white/60">Track and manage safety incidents and accidents</p>
           </div>
           <Button
-            onClick={() => setIsIncidentModalOpen(true)}
+            onClick={handleReportIncident}
             className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Report Incident
+            {activeTab === 'staff_sickness' ? 'Log Sickness' : 'Report Incident'}
           </Button>
         </div>
 
-        {/* Filters and Search */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
-              <input
-                type="text"
-                placeholder="Search incidents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <Select
-              value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value)}
-              placeholder="All Statuses"
-              options={[
-                { label: 'All Statuses', value: 'all' },
-                { label: 'Open', value: 'open' },
-                { label: 'Investigating', value: 'investigating' },
-                { label: 'Resolved', value: 'resolved' },
-                { label: 'Closed', value: 'closed' },
-              ]}
-              className="w-full md:w-[180px]"
-            />
-
-            {/* Severity Filter */}
-            <Select
-              value={severityFilter}
-              onValueChange={(value) => setSeverityFilter(value)}
-              placeholder="All Severities"
-              options={[
-                { label: 'All Severities', value: 'all' },
-                { label: 'Critical', value: 'critical' },
-                { label: 'High', value: 'high' },
-                { label: 'Medium', value: 'medium' },
-                { label: 'Low', value: 'low' },
-                { label: 'Near Miss', value: 'near_miss' },
-                { label: 'Minor', value: 'minor' },
-                { label: 'Moderate', value: 'moderate' },
-                { label: 'Major', value: 'major' },
-                { label: 'Fatality', value: 'fatality' },
-              ]}
-              className="w-full md:w-[180px]"
-            />
+        {/* Incident Type Tabs */}
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-2 mb-6">
+          <div className="flex flex-wrap gap-2">
+            {INCIDENT_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
+                    isActive
+                      ? 'bg-[#EC4899]/10 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border border-[#EC4899]/30 dark:border-pink-500/30'
+                      : 'text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? tab.color : ''}`} />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
+          <p className="text-sm text-gray-500 dark:text-white/40 mt-2 px-2">
+            {activeTabInfo.description}
+          </p>
         </div>
 
-        {/* Incidents List */}
-        {loading ? (
+        {/* Filters and Search - Hide for staff sickness tab */}
+        {activeTab !== 'staff_sickness' && (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+                <input
+                  type="text"
+                  placeholder={`Search ${activeTabInfo.label.toLowerCase()}...`}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                />
+              </div>
+
+              {/* Status Filter */}
+              <Select
+                value={statusFilter}
+                onValueChange={(value) => setStatusFilter(value)}
+                placeholder="All Statuses"
+                options={[
+                  { label: 'All Statuses', value: 'all' },
+                  { label: 'Open', value: 'open' },
+                  { label: 'Investigating', value: 'investigating' },
+                  { label: 'Resolved', value: 'resolved' },
+                  { label: 'Closed', value: 'closed' },
+                ]}
+                className="w-full md:w-[180px]"
+              />
+
+              {/* Severity Filter */}
+              <Select
+                value={severityFilter}
+                onValueChange={(value) => setSeverityFilter(value)}
+                placeholder="All Severities"
+                options={[
+                  { label: 'All Severities', value: 'all' },
+                  { label: 'Critical', value: 'critical' },
+                  { label: 'High', value: 'high' },
+                  { label: 'Medium', value: 'medium' },
+                  { label: 'Low', value: 'low' },
+                  { label: 'Near Miss', value: 'near_miss' },
+                  { label: 'Minor', value: 'minor' },
+                  { label: 'Moderate', value: 'moderate' },
+                  { label: 'Major', value: 'major' },
+                  { label: 'Fatality', value: 'fatality' },
+                ]}
+                className="w-full md:w-[180px]"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Staff Sickness Tab - Redirect to dedicated page */}
+        {activeTab === 'staff_sickness' ? (
+          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-12 text-center">
+            <UserX className="w-16 h-16 text-purple-400 dark:text-purple-400/60 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Staff Sickness & Exclusion Log</h3>
+            <p className="text-gray-600 dark:text-white/60 mb-6">
+              Track staff illness, exclusion periods, and return-to-work clearance in the dedicated sickness log.
+            </p>
+            <Button
+              onClick={() => window.location.href = '/dashboard/incidents/staff-sickness'}
+              className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
+            >
+              <UserX className="w-4 h-4 mr-2" />
+              Open Sickness Log
+            </Button>
+          </div>
+        ) : loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-white/60">Loading incidents...</p>
+            <p className="text-gray-600 dark:text-white/60">Loading {activeTabInfo.label.toLowerCase()}...</p>
           </div>
         ) : filteredIncidents.length === 0 ? (
           <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-12 text-center">
-            <AlertTriangle className="w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No incidents found</h3>
+            {(() => {
+              const Icon = activeTabInfo.icon;
+              return <Icon className={`w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4`} />;
+            })()}
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No {activeTabInfo.label.toLowerCase()} found</h3>
             <p className="text-gray-600 dark:text-white/60 mb-6">
               {searchTerm || statusFilter !== 'all' || severityFilter !== 'all'
                 ? 'Try adjusting your filters'
-                : 'No incidents have been reported yet'}
+                : `No ${activeTabInfo.label.toLowerCase()} have been reported yet`}
             </p>
             {!searchTerm && statusFilter === 'all' && severityFilter === 'all' && (
               <Button
-                onClick={() => setIsIncidentModalOpen(true)}
+                onClick={handleReportIncident}
                 className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Report First Incident
+                Report First {activeTab === 'customer_complaint' ? 'Complaint' : 'Incident'}
               </Button>
             )}
           </div>
@@ -378,17 +482,42 @@ export default function IncidentsPage() {
         )}
       </div>
 
-      {/* Emergency Incident Modal */}
+      {/* Accident/Emergency Incident Modal */}
       <EmergencyIncidentModal
-        isOpen={isIncidentModalOpen}
+        isOpen={isAccidentModalOpen}
         onClose={() => {
-          setIsIncidentModalOpen(false);
+          setIsAccidentModalOpen(false);
           setSelectedIncident(null);
         }}
         onComplete={(incidentId) => {
-          // Refresh incidents list
           fetchIncidents();
-          toast.success('Incident report created and follow-up tasks generated');
+          toast.success('Accident report created and follow-up tasks generated');
+        }}
+      />
+
+      {/* Food Poisoning Incident Modal */}
+      <FoodPoisoningIncidentModal
+        isOpen={isFoodPoisoningModalOpen}
+        onClose={() => {
+          setIsFoodPoisoningModalOpen(false);
+          setSelectedIncident(null);
+        }}
+        onComplete={(incidentId) => {
+          fetchIncidents();
+          toast.success('Food poisoning report created');
+        }}
+      />
+
+      {/* Customer Complaint Modal */}
+      <CustomerComplaintModal
+        isOpen={isComplaintModalOpen}
+        onClose={() => {
+          setIsComplaintModalOpen(false);
+          setSelectedIncident(null);
+        }}
+        onComplete={(incidentId) => {
+          fetchIncidents();
+          toast.success('Customer complaint logged and follow-up tasks generated');
         }}
       />
 

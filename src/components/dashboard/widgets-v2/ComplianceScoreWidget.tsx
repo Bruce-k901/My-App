@@ -1,0 +1,174 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { WidgetCard } from '../WidgetCard';
+import { supabase } from '@/lib/supabase';
+
+interface ComplianceScoreWidgetProps {
+  siteId: string;
+  companyId: string;
+}
+
+/**
+ * ComplianceScoreWidget - Shows compliance score ring with percentage
+ */
+export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceScoreWidgetProps) {
+  const [score, setScore] = useState<number | null>(null);
+  const [change, setChange] = useState<number>(0);
+  const [failedCount, setFailedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
+
+    async function fetchCompliance() {
+      try {
+        // Get current week's tasks
+        const startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+        let query = supabase
+          .from('checklist_tasks')
+          .select('id, status')
+          .eq('company_id', companyId)
+          .gte('due_date', startOfWeek.toISOString().split('T')[0])
+          .lt('due_date', endOfWeek.toISOString().split('T')[0]);
+
+        if (siteId && siteId !== 'all') {
+          query = query.eq('site_id', siteId);
+        }
+
+        const { data: tasks, error } = await query;
+
+        if (error) {
+          if (error.code === '42P01') {
+            console.debug('checklist_tasks table not available');
+            setLoading(false);
+            return;
+          }
+          throw error;
+        }
+
+        const total = tasks?.length || 0;
+        const completed = tasks?.filter((t: any) => t.status === 'completed').length || 0;
+        const failed = tasks?.filter((t: any) => t.status !== 'completed').length || 0;
+
+        setTotalCount(total);
+        setFailedCount(failed);
+
+        if (total > 0) {
+          const calculatedScore = Math.round((completed / total) * 100);
+          setScore(calculatedScore);
+          // TODO: Calculate actual week-over-week change
+          setChange(-2); // Placeholder
+        } else {
+          setScore(null);
+        }
+      } catch (err) {
+        console.error('Error fetching compliance:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCompliance();
+  }, [companyId, siteId]);
+
+  // Compliance ring component
+  const ComplianceRing = ({ value }: { value: number }) => {
+    const r = 34;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (value / 100) * circ;
+    const color = value >= 90 ? '#34D399' : value >= 70 ? '#60A5FA' : '#F472B6';
+
+    return (
+      <div className="relative w-20 h-20">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle
+            cx="40"
+            cy="40"
+            r={r}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="5"
+          />
+          <circle
+            cx="40"
+            cy="40"
+            r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={circ}
+            strokeDashoffset={offset}
+            transform="rotate(-90 40 40)"
+            className="transition-all duration-1000"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xl font-bold" style={{ color }}>
+            {value}%
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+        <div className="animate-pulse flex gap-4">
+          <div className="w-20 h-20 rounded-full bg-white/5" />
+          <div className="space-y-2 flex-1">
+            <div className="h-3 bg-white/5 rounded w-20" />
+            <div className="h-3 bg-white/5 rounded w-16" />
+          </div>
+        </div>
+      </WidgetCard>
+    );
+  }
+
+  if (score === null) {
+    return (
+      <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+        <div className="text-center py-4">
+          <div className="text-white/40 text-xs">No compliance data yet</div>
+          <a
+            href="/dashboard/todays_tasks"
+            className="text-fuchsia-400 text-xs hover:underline mt-1 inline-block"
+          >
+            Complete a checklist →
+          </a>
+        </div>
+      </WidgetCard>
+    );
+  }
+
+  return (
+    <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+      <div className="flex items-center gap-4">
+        <ComplianceRing value={score} />
+        <div>
+          <div className="text-[10.5px] text-white/40 mb-0.5">This week</div>
+          <div
+            className={`text-[10.5px] ${change >= 0 ? 'text-emerald-400' : 'text-blue-400'}`}
+          >
+            {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% from last week
+          </div>
+          <div className="text-[10px] text-white/40 mt-1.5">
+            {failedCount} of {totalCount} checks failed
+          </div>
+        </div>
+      </div>
+    </WidgetCard>
+  );
+}

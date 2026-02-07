@@ -1834,24 +1834,29 @@ export default function ManagerCalendarPage() {
       {/* Floating Action Button (FAB) for quick task creation */}
       <button
         onClick={() => {
-          setModalContext({ source: 'manual' });
+          setModalContext({
+            source: 'manual',
+            preSelectedDate: selectedDate ? new Date(selectedDate) : new Date()
+          });
           setCreateTaskModalOpen(true);
         }}
         className="
-          fixed bottom-8 right-8
+          fixed z-40
           w-14 h-14
           rounded-full
-          bg-[#EC4899] hover:bg-[#EC4899]/80
+          bg-[#FF6B9D] hover:bg-[#FF6B9D]/80
           shadow-lg hover:shadow-xl
           flex items-center justify-center
           text-white
           transition-all duration-200
-          z-50
+          active:scale-95 touch-manipulation
+          right-5 lg:right-8
+          bottom-[calc(6rem+env(safe-area-inset-bottom))] lg:bottom-8
         "
         aria-label="Create task"
         title="Create task, meeting, call, or note"
       >
-        <Plus className="w-6 h-6" />
+        <Plus className="w-7 h-7" />
       </button>
     </div>
   );

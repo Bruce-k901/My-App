@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-type TabId = 'home' | 'tasks' | 'messages' | 'schedule' | 'more';
+type TabId = 'home' | 'tasks' | 'calendar' | 'schedule' | 'more';
 
 interface MobileNavContextType {
   activeTab: TabId;

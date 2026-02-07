@@ -30,145 +30,87 @@ export const SIDEBAR_MENUS = {
   ]
 }
 
-// Burger menu sections
+// Burger menu sections - Slimmed down to 12 items across 4 sections
 export const BURGER_MENU_SECTIONS: MenuSection[] = [
   {
     id: 'organization',
     label: 'ORGANIZATION',
     items: [
-      { id: 'sites', label: 'Sites', path: '/dashboard/sites' },
-      { id: 'documents', label: 'Documents', path: '/dashboard/documents' },
-      { id: 'users', label: 'Users & Roles', path: '/dashboard/users' },
-      { id: 'companies', label: 'Companies & Brands', path: '/settings/companies' },
-      { id: 'business-setup', label: 'Business Setup', path: '/dashboard/business' },
-      { id: 'setup-guide', label: 'Setup Guide', path: '/dashboard/organization/onboarding' },
-      { id: 'emergency-contacts', label: 'Emergency Contacts', path: '/dashboard/organization/emergency-contacts' },
-      { id: 'training-matrix', label: 'Training Matrix', path: '/dashboard/training' },
+      { id: 'sites', label: 'Sites', path: '/dashboard/sites', icon: 'MapPin' },
+      { id: 'users', label: 'Users & Roles', path: '/dashboard/users', icon: 'Users' },
+      { id: 'companies', label: 'Companies & Brands', path: '/settings/companies', icon: 'Building2' },
+      { id: 'business-setup', label: 'Business Setup', path: '/dashboard/business', icon: 'Target' },
+      { id: 'documents', label: 'Documents', path: '/dashboard/documents', icon: 'FileText' },
     ]
   },
   {
     id: 'workspace',
     label: 'WORKSPACE',
     items: [
-      { id: 'messages', label: 'Messages', path: '/dashboard/messaging' },
-      { id: 'reports', label: 'Reports', path: '/dashboard/reports' },
-      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report' },
-      { id: 'archive', label: 'Archive Center', path: '/dashboard/archive' },
-    ]
-  },
-  {
-    id: 'tasks',
-    label: 'TASKS',
-    items: [
-      { id: 'todays-tasks', label: "Today's Tasks", path: '/dashboard/todays_tasks' },
-      { id: 'incidents', label: 'Incidents', path: '/dashboard/incidents' },
-    ]
-  },
-  {
-    id: 'modules',
-    label: 'MODULES',
-    items: [
-      { id: 'checkly', label: 'Checkly', path: '/dashboard' },
-      { id: 'assetly', label: 'Assetly', path: '/dashboard/assets' },
-      { id: 'teamly', label: 'Teamly', path: '/dashboard/people' },
-      { id: 'stockly', label: 'Stockly', path: '/dashboard/stockly' },
-      { id: 'planly', label: 'Planly', path: '/dashboard/planly' },
+      { id: 'reports', label: 'Reports', path: '/dashboard/reports', icon: 'BarChart3' },
+      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report', icon: 'ShieldCheck' },
+      { id: 'archive', label: 'Archive Center', path: '/dashboard/archive', icon: 'Archive' },
     ]
   },
   {
     id: 'settings',
     label: 'SETTINGS',
     items: [
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'billing', label: 'Billing & Plan', path: '/dashboard/billing' },
-      { id: 'help', label: 'Help & Support', path: '/dashboard/support' }
+      { id: 'settings', label: 'Settings', path: '/dashboard/settings', icon: 'Settings' },
+      { id: 'billing', label: 'Billing & Plan', path: '/dashboard/billing', icon: 'CreditCard' },
     ]
   },
   {
     id: 'account',
     label: 'ACCOUNT',
     items: [
-      { id: 'profile', label: 'My Profile', path: '/dashboard/settings' },
-      { id: 'password', label: 'Change Password', path: '/dashboard/settings' },
-      { id: 'signout', label: 'Sign Out', path: '/' }
+      { id: 'profile', label: 'My Profile', path: '/dashboard/profile', icon: 'User' },
+      { id: 'signout', label: 'Sign Out', path: '/', icon: 'LogOut' },
     ]
   }
 ]
 
 // Role-based menu filtering
+// - admin: All 4 sections (Organization, Workspace, Settings, Account)
+// - manager: Workspace, Settings (minus Billing), Account
+// - team: Workspace (Reports, EHO Readiness, Archive Center), Account
 export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSection[] => {
   const allSections = [...BURGER_MENU_SECTIONS]
-  
+
   if (role === 'admin') {
+    // Admin sees everything
     return allSections
   }
-  
+
   if (role === 'manager') {
-    return allSections.map(section => {
-      if (section.id === 'organization') {
-        return {
-          ...section,
-          items: section.items.filter(item => 
-            ['sites', 'documents', 'users', 'companies', 'business-setup', 'setup-guide', 'emergency-contacts', 'training-matrix'].includes(item.id)
-          )
+    // Manager: Workspace, Settings (minus Billing), Account
+    return allSections
+      .filter(section => ['workspace', 'settings', 'account'].includes(section.id))
+      .map(section => {
+        if (section.id === 'settings') {
+          return {
+            ...section,
+            items: section.items.filter(item => item.id !== 'billing')
+          }
         }
-      }
+        return section
+      })
+  }
+
+  // Team role: Workspace (Reports, EHO Readiness, Archive Center), Account
+  return allSections
+    .filter(section => ['workspace', 'account'].includes(section.id))
+    .map(section => {
       if (section.id === 'workspace') {
         return {
           ...section,
           items: section.items.filter(item =>
-            ['messages', 'reports', 'eho-readiness', 'archive'].includes(item.id)
+            ['reports', 'eho-readiness', 'archive'].includes(item.id)
           )
         }
       }
-      // Settings section - no filter, show all (billing, settings, help)
       return section
     })
-  }
-  
-  // Team role - minimal access
-  return allSections.map(section => {
-    // Organization section - show limited items for team role
-    if (section.id === 'organization') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['setup-guide', 'documents'].includes(item.id) // Team can access setup guide and documents
-        )
-      }
-    }
-    if (section.id === 'workspace') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['messages'].includes(item.id)
-        )
-      }
-    }
-    if (section.id === 'tasks') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['todays-tasks'].includes(item.id)
-        )
-      }
-    }
-    if (section.id === 'modules') {
-      return {
-        ...section,
-        items: []
-      }
-    }
-    if (section.id === 'settings') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['settings', 'billing', 'help'].includes(item.id)
-        )
-      }
-    }
-    return section
-  }).filter(section => section.items.length > 0)
 }
 
 // Tab types

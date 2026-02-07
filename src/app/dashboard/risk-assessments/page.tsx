@@ -307,59 +307,29 @@ export default function RiskAssessmentsPage() {
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          if (!confirm('Archive this Risk Assessment? The original version (001) will be moved to archived RAs.')) return;
+                          if (!confirm('Archive this Risk Assessment? It will be moved to archived RAs.')) return;
 
                           try {
                             setArchivingId(assessment.id);
-                            
-                            // Find the current RA to get its ref_code base
-                            const { data: currentRA, error: fetchError } = await supabase
-                              .from('risk_assessments')
-                              .select('ref_code, parent_id')
-                              .eq('id', assessment.id)
-                              .eq('company_id', companyId)
-                              .single();
 
-                            if (fetchError) throw fetchError;
-                            if (!currentRA) throw new Error('RA not found');
-
-                            // Extract base pattern from ref_code (e.g., RA-GEN-BESH-002 -> RA-GEN-BESH)
-                            const refCode = currentRA.ref_code;
-                            const baseMatch = refCode.match(/^(.+)-\d+$/);
-                            const basePattern = baseMatch ? baseMatch[1] : refCode;
-
-                            // Find the original 001 version (version_number = 1 or ref_code ends with -001)
-                            const { data: originalVersion, error: findError } = await supabase
-                              .from('risk_assessments')
-                              .select('id')
-                              .eq('company_id', companyId)
-                              .like('ref_code', `${basePattern}-001`)
-                              .eq('version_number', 1)
-                              .maybeSingle();
-
-                            if (findError) throw findError;
-
-                            // Archive the original 001 version if found, otherwise archive current
-                            const versionToArchive = originalVersion?.id || assessment.id;
-
+                            // Archive the RA - set both status and archived_at for proper tracking
                             const { error } = await supabase
                               .from('risk_assessments')
-                              .update({ status: 'Archived' })
-                              .eq('id', versionToArchive)
+                              .update({
+                                status: 'Archived',
+                                archived_at: new Date().toISOString()
+                              })
+                              .eq('id', assessment.id)
                               .eq('company_id', companyId);
 
                             if (error) throw error;
 
-                            // Remove from local state (remove all versions of this RA base)
-                            setRiskAssessments(prev => prev.filter(ra => {
-                              const raBaseMatch = ra.ref_code.match(/^(.+)-\d+$/);
-                              const raBasePattern = raBaseMatch ? raBaseMatch[1] : ra.ref_code;
-                              return raBasePattern !== basePattern;
-                            }));
+                            // Remove from local state
+                            setRiskAssessments(prev => prev.filter(ra => ra.id !== assessment.id));
 
                             showToast({
                               title: 'RA archived',
-                              description: 'Original version (001) has been moved to archived RAs',
+                              description: 'Risk Assessment has been moved to archived RAs',
                               type: 'success'
                             });
                           } catch (error: any) {

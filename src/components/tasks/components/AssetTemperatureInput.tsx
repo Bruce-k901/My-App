@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Thermometer, AlertCircle, Clock, Phone, X } from 'lucide-react';
+import { NumericKeyboard } from '@/components/ui/NumericKeyboard';
 
 interface PlacedAction {
   action: 'monitor' | 'callout';
@@ -43,6 +44,23 @@ export function AssetTemperatureInput({
   const [monitorDuration, setMonitorDuration] = useState(60);
   const [calloutNotes, setCalloutNotes] = useState('');
 
+  // Mobile keyboard state
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Mobile detection: touch support AND small screen
+  useEffect(() => {
+    const checkMobile = () => {
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(hasTouch && isSmallScreen);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Sync with external value changes
   useEffect(() => {
     setTempValue(value?.toString() || '');
@@ -50,16 +68,90 @@ export function AssetTemperatureInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setTempValue(newValue);
-
-    if (newValue === '' || newValue === '-') {
-      onChange(assetId, null);
-    } else {
-      const num = parseFloat(newValue);
-      if (!isNaN(num)) {
-        onChange(assetId, num);
+    // Allow negative numbers, decimals, and empty string
+    if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
+      setTempValue(newValue);
+      if (newValue === '' || newValue === '-') {
+        onChange(assetId, null);
+      } else {
+        const num = parseFloat(newValue);
+        if (!isNaN(num)) {
+          onChange(assetId, num);
+        }
       }
     }
+  };
+
+  // Keyboard handlers for mobile NumericKeyboard
+  const handleKeyPress = (key: string) => {
+    let newValue = '';
+    if (key === '-') {
+      // Toggle minus sign
+      if (tempValue.startsWith('-')) {
+        newValue = tempValue.slice(1);
+      } else {
+        newValue = '-' + tempValue;
+      }
+    } else if (key === '.') {
+      // Only allow one decimal point
+      if (!tempValue.includes('.')) {
+        newValue = tempValue + '.';
+      } else {
+        return; // Don't add if already exists
+      }
+    } else {
+      newValue = tempValue + key;
+    }
+
+    // Validate and update
+    if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
+      setTempValue(newValue);
+      if (newValue !== '' && newValue !== '-') {
+        const num = parseFloat(newValue);
+        if (!isNaN(num)) {
+          onChange(assetId, num);
+        }
+      } else {
+        onChange(assetId, null);
+      }
+    }
+    inputRef.current?.focus();
+  };
+
+  const handleBackspace = () => {
+    if (tempValue.length > 0) {
+      const newValue = tempValue.slice(0, -1);
+      setTempValue(newValue);
+      if (newValue === '' || newValue === '-') {
+        onChange(assetId, null);
+      } else {
+        const num = parseFloat(newValue);
+        if (!isNaN(num)) {
+          onChange(assetId, num);
+        }
+      }
+    }
+    inputRef.current?.focus();
+  };
+
+  const handleInputFocus = () => {
+    if (isMobile) {
+      setShowKeyboard(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    // Delay to allow keyboard clicks to register
+    setTimeout(() => {
+      const keyboardElement = document.querySelector('[data-numeric-keyboard]');
+      if (keyboardElement && keyboardElement.contains(document.activeElement)) {
+        inputRef.current?.focus();
+        return;
+      }
+      if (document.activeElement !== inputRef.current) {
+        setShowKeyboard(false);
+      }
+    }, 150);
   };
 
   // Check if current value is out of range
@@ -127,18 +219,22 @@ export function AssetTemperatureInput({
 
         <div className="flex items-center gap-2 flex-shrink-0">
           <input
-            type="number"
-            inputMode="decimal"
-            step="0.1"
+            ref={inputRef}
+            type="text"
+            inputMode={isMobile && showKeyboard ? 'none' : 'decimal'}
+            pattern="-?[0-9]*\.?[0-9]*"
             value={tempValue}
             onChange={handleChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             disabled={disabled}
             placeholder="--"
-            className={`w-20 px-3 py-2 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors text-sm text-center ${
+            className={`w-20 px-3 py-2 bg-white/[0.03] border rounded-lg text-white placeholder-neutral-500 focus:outline-none transition-colors text-center ${
               isOutOfRange
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-white/[0.06] focus:border-blue-500'
             }`}
+            style={{ fontSize: isMobile ? '16px' : '14px' }}
           />
           <span className="text-sm text-neutral-400">°C</span>
         </div>
@@ -283,6 +379,15 @@ export function AssetTemperatureInput({
             </div>
           )}
         </div>
+      )}
+
+      {/* Mobile numeric keyboard with minus button for freezer temps */}
+      {isMobile && (
+        <NumericKeyboard
+          onKeyPress={handleKeyPress}
+          onBackspace={handleBackspace}
+          isVisible={showKeyboard}
+        />
       )}
     </div>
   );

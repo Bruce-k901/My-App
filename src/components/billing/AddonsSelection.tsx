@@ -1147,7 +1147,7 @@ export default function AddonsSelection({
                     </div>
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
                       <p className="text-xs font-semibold text-white mb-1">3. Link</p>
-                      <p className="text-xs text-gray-300">Connect tags to assets in Checkly</p>
+                      <p className="text-xs text-gray-300">Connect tags to assets in Opsly</p>
                     </div>
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
                       <p className="text-xs font-semibold text-white mb-1">4. Scan</p>

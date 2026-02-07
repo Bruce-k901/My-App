@@ -37,8 +37,8 @@ export default function SOPsArchivePage() {
         .from('sop_entries')
         .select('*')
         .eq('company_id', companyId)
-        .not('archived_at', 'is', null)
-        .order('archived_at', { ascending: false });
+        .eq('status', 'Archived')
+        .order('archived_at', { ascending: false, nullsFirst: false });
 
       if (error) throw error;
       setSops(data || []);
@@ -56,7 +56,7 @@ export default function SOPsArchivePage() {
     try {
       const { error } = await supabase
         .from('sop_entries')
-        .update({ archived_at: null, archived_by: null })
+        .update({ status: 'Published', archived_at: null, archived_by: null })
         .eq('id', id);
       
       if (error) throw error;

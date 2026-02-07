@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, Sparkles } from "lucide-react";
+import { Menu, Search, Sparkles, Calendar } from "lucide-react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { ContextSwitcher } from "./ContextSwitcher";
@@ -31,7 +31,7 @@ export function Header({
   const { role, profile, user, signOut } = useAppContext();
   const siteContext = useSiteContext();
   const pathname = usePathname();
-  const { setAiAssistantOpen } = usePanelStore();
+  const { setAiAssistantOpen, setCalendarOpen } = usePanelStore();
   
   // Detect current module from pathname for color accents
   const getModuleColor = () => {
@@ -40,9 +40,21 @@ export function Header({
     if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return '#0284C7'; // Sky blue
     if (pathname?.startsWith('/dashboard/planly')) return '#14B8A6'; // Teal
     if (pathname?.startsWith('/dashboard/forecastly')) return '#7C3AED'; // Purple
-    if (pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || 
-        pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || 
+    if (pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') ||
+        pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') ||
         pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments')) return '#EC4899'; // Magenta
+    // Burger menu pages - Navy blue
+    if (pathname?.startsWith('/dashboard/sites') ||
+        pathname?.startsWith('/dashboard/users') ||
+        pathname?.startsWith('/settings/companies') ||
+        pathname?.startsWith('/dashboard/business') ||
+        pathname?.startsWith('/dashboard/documents') ||
+        pathname?.startsWith('/dashboard/reports') ||
+        pathname?.startsWith('/dashboard/eho-report') ||
+        pathname?.startsWith('/dashboard/archive') ||
+        pathname?.startsWith('/dashboard/settings') ||
+        pathname?.startsWith('/dashboard/billing') ||
+        pathname?.startsWith('/dashboard/profile')) return '#1E40AF'; // Navy blue
     return null; // Default - no module color
   };
   
@@ -100,7 +112,8 @@ export function Header({
                              moduleColor === '#2563EB' ? 'rgba(37, 99, 235, 0.3)' :
                              moduleColor === '#0284C7' ? 'rgba(2, 132, 199, 0.3)' :
                              moduleColor === '#14B8A6' ? 'rgba(20, 184, 166, 0.3)' :
-                             moduleColor === '#7C3AED' ? 'rgba(124, 58, 237, 0.3)' : undefined
+                             moduleColor === '#7C3AED' ? 'rgba(124, 58, 237, 0.3)' :
+                             moduleColor === '#1E40AF' ? 'rgba(30, 64, 175, 0.3)' : undefined
         } : {}}
       >
         {/* Left Section */}
@@ -154,6 +167,15 @@ export function Header({
 
           {/* Messages */}
           <MessageButton />
+
+          {/* Calendar Button */}
+          <button
+            onClick={() => setCalendarOpen(true)}
+            className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/50 text-teal-500 hover:bg-teal-500/20 hover:shadow-[0_0_12px_rgba(20,184,166,0.5)] transition-all"
+            aria-label="Open Calendar"
+          >
+            <Calendar className="w-4 h-4" />
+          </button>
 
           {/* Ask AI Button */}
           <button

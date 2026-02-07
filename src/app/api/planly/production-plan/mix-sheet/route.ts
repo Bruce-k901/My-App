@@ -365,7 +365,7 @@ export async function GET(request: NextRequest) {
         mix_lead_days: dough.mix_lead_days,
         recipe_id: dough.recipe_id,
         recipe_name: dough.recipe?.name || null,
-        total_kg: Math.round(totalKg * 100) / 100,
+        total_kg: Math.ceil(totalKg), // Round up to nearest whole kg
         total_batches: totalBatches,
         batch_size_kg: dough.batch_size_kg ? Number(dough.batch_size_kg) : null,
         units_per_batch: dough.units_per_batch,

@@ -337,8 +337,22 @@ try {
 
   if (ppmTemplate) {
     for (const asset of ppmAssets || []) {
+      // ✅ Check if a pending/in_progress PPM task already exists for this asset
+      const { data: existingPpmTask } = await supabase
+        .from("checklist_tasks")
+        .select("id")
+        .eq("task_data->>source_type", "ppm_overdue")
+        .eq("task_data->>source_id", asset.id)
+        .in("status", ["pending", "in_progress"])
+        .limit(1);
+
+      if (existingPpmTask && existingPpmTask.length > 0) {
+        console.log("PPM: Skipping duplicate for:", asset.name, asset.id);
+        continue;
+      }
+
       const isOverdue = new Date(asset.next_service_date) < today;
-      const taskName = isOverdue 
+      const taskName = isOverdue
         ? `OVERDUE PPM: ${asset.name}`
         : `PPM Due Soon: ${asset.name}`;
 

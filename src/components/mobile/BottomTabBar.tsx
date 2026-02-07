@@ -35,7 +35,7 @@ export function BottomTabBar() {
     if (pathname === '/dashboard') return 'home';
     if (pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists')) return 'tasks';
     if (pathname?.includes('/calendar')) return 'calendar';
-    if (pathname?.includes('/schedule') || pathname?.includes('/people')) return 'schedule';
+    if (pathname?.includes('/people/schedule')) return 'schedule';
     return 'home';
   };
 

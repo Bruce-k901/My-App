@@ -196,59 +196,29 @@ function SOPsListContent() {
   };
 
   const handleArchiveSOP = async (sopId: string) => {
-    if (!confirm('Archive this SOP? The original version (001) will be moved to archived SOPs.')) return;
+    if (!confirm('Archive this SOP? It will be moved to archived SOPs.')) return;
 
     try {
       setArchivingId(sopId);
-      
-      // Find the current SOP to get its ref_code base
-      const { data: currentSOP, error: fetchError } = await supabase
-        .from('sop_entries')
-        .select('ref_code, parent_id')
-        .eq('id', sopId)
-        .eq('company_id', companyId)
-        .single();
 
-      if (fetchError) throw fetchError;
-      if (!currentSOP) throw new Error('SOP not found');
-
-      // Extract base pattern from ref_code (e.g., PREP-BESH-002 -> PREP-BESH)
-      const refCode = currentSOP.ref_code;
-      const baseMatch = refCode.match(/^(.+)-\d+$/);
-      const basePattern = baseMatch ? baseMatch[1] : refCode;
-
-      // Find the original 001 version (version_number = 1 or ref_code ends with -001)
-      const { data: originalVersion, error: findError } = await supabase
-        .from('sop_entries')
-        .select('id')
-        .eq('company_id', companyId)
-        .like('ref_code', `${basePattern}-001`)
-        .eq('version_number', 1)
-        .maybeSingle();
-
-      if (findError) throw findError;
-
-      // Archive the original 001 version if found, otherwise archive current
-      const versionToArchive = originalVersion?.id || sopId;
-
+      // Archive the SOP - set both status and archived_at for proper tracking
       const { error } = await supabase
         .from('sop_entries')
-        .update({ status: 'Archived' })
-        .eq('id', versionToArchive)
+        .update({
+          status: 'Archived',
+          archived_at: new Date().toISOString()
+        })
+        .eq('id', sopId)
         .eq('company_id', companyId);
 
       if (error) throw error;
 
-      // Remove from local state (remove all versions of this SOP base)
-      setSops(prev => prev.filter(sop => {
-        const sopBaseMatch = sop.ref_code.match(/^(.+)-\d+$/);
-        const sopBasePattern = sopBaseMatch ? sopBaseMatch[1] : sop.ref_code;
-        return sopBasePattern !== basePattern;
-      }));
+      // Remove from local state
+      setSops(prev => prev.filter(sop => sop.id !== sopId));
 
       showToast({
         title: 'SOP archived',
-        description: 'Original version (001) has been moved to archived SOPs',
+        description: 'SOP has been moved to archived SOPs',
         type: 'success'
       });
     } catch (error: any) {
@@ -415,7 +385,10 @@ function SOPsListContent() {
                                 <span className="hidden sm:inline">Edit</span>
                               </button>
                               <button
-                                onClick={() => handleArchiveSOP(sop.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleArchiveSOP(sop.id);
+                                }}
                                 disabled={archivingId === sop.id}
                                 className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 dark:border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] dark:hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                                 title="Archive SOP"

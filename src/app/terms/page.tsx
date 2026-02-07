@@ -104,8 +104,8 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">8. Termination</h2>
           <p className="text-gray-300 mb-3">
-            <strong className="text-white">Cancellation by You:</strong> You can cancel your subscription by providing 
-            60 days written notice via email to billing@checkly.app. Your subscription will remain active during the 
+            <strong className="text-white">Cancellation by You:</strong> You can cancel your subscription by providing
+            60 days written notice via email to billing@opsly.app. Your subscription will remain active during the
             notice period, and you will be invoiced for this period.
           </p>
           <p className="text-gray-300 mb-3">

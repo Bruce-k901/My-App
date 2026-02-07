@@ -48,10 +48,12 @@ import {
   TrendingUp,
   Bell,
   Check,
-  Printer,
+  Download,
+  Loader2,
 } from 'lucide-react';
 import TimePicker from '@/components/ui/TimePicker';
-import { PrintPreviewModal } from '@/components/rota/PrintPreviewModal';
+import { pdf } from '@react-pdf/renderer';
+import { RotaPDF } from '@/lib/pdf/templates/RotaPDF';
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
@@ -1771,7 +1773,7 @@ export default function RotaBuilderPage() {
   const [approvingRota, setApprovingRota] = useState(false);
   const [publishingRota, setPublishingRota] = useState(false);
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const actionsMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Close actions dropdown on outside click / escape
@@ -3197,6 +3199,92 @@ export default function RotaBuilderPage() {
     return `${weekStarting.getDate()} ${weekStarting.toLocaleDateString('en-GB', { month: 'short' })} - ${end.getDate()} ${end.toLocaleDateString('en-GB', { month: 'short' })}`;
   };
 
+  const handleDownloadPDF = useCallback(async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const siteName = sites.find((s) => s.id === selectedSite)?.name || 'Unknown Site';
+      const weekStartStr = weekStarting.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+      // Convert staff data to RotaPDF format
+      const staffForPDF = assignmentStaff.map((person) => {
+        const shiftsForPDF = DAYS.map((dayAbbrev, dayIndex) => {
+          const dateObj = weekDays[dayIndex];
+          const dateStr = dateObj.toISOString().split('T')[0];
+          const personShifts = shifts.filter(
+            (s) => s.profile_id === person.id && s.shift_date === dateStr
+          );
+
+          if (personShifts.length === 0) {
+            const isOnLeave = isStaffOnLeave(person.id, dateStr);
+            return {
+              day: dayAbbrev,
+              isOff: isOnLeave,
+            };
+          }
+
+          // Take the first shift for display (or combine if multiple)
+          const firstShift = personShifts[0];
+          return {
+            day: dayAbbrev,
+            startTime: firstShift.start_time,
+            endTime: firstShift.end_time,
+            isOff: false,
+          };
+        });
+
+        const totalHours = weeklyHoursByProfile.get(person.id) || 0;
+
+        return {
+          name: person.full_name,
+          role: person.position_title || '',
+          shifts: shiftsForPDF,
+          totalHours: Math.round(totalHours * 10) / 10,
+        };
+      });
+
+      // Calculate daily totals
+      const dailyTotals = DAYS.map((dayAbbrev, dayIndex) => {
+        const dateObj = weekDays[dayIndex];
+        const dateStr = dateObj.toISOString().split('T')[0];
+        const dayShifts = shifts.filter((s) => s.shift_date === dateStr && s.profile_id);
+        const uniqueStaff = new Set(dayShifts.map((s) => s.profile_id));
+        const totalHours = dayShifts.reduce((sum, s) => sum + getShiftNetHours(s), 0);
+
+        return {
+          day: dayAbbrev,
+          staffCount: uniqueStaff.size,
+          totalHours: Math.round(totalHours * 10) / 10,
+        };
+      });
+
+      const blob = await pdf(
+        <RotaPDF
+          siteName={siteName}
+          weekStarting={weekStartStr}
+          staff={staffForPDF}
+          dailyTotals={dailyTotals}
+        />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeSiteName = siteName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      const weekDateStr = weekStarting.toISOString().split('T')[0];
+      link.download = `rota-${safeSiteName}-${weekDateStr}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  }, [assignmentStaff, shifts, weekDays, weeklyHoursByProfile, weekStarting, sites, selectedSite, isStaffOnLeave, getShiftNetHours]);
+
   // ============================================
   // ACTIONS
   // ============================================
@@ -4470,13 +4558,18 @@ export default function RotaBuilderPage() {
                   role="menuitem"
                   onClick={() => {
                     setActionsMenuOpen(false);
-                    setShowPrintPreview(true);
+                    handleDownloadPDF();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+                  disabled={isGeneratingPDF}
+                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
                 >
                   <span className="flex items-center gap-2">
-                    <Printer className="w-4 h-4" />
-                    Print
+                    {isGeneratingPDF ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    {isGeneratingPDF ? 'Generating…' : 'Download PDF'}
                   </span>
                 </button>
 
@@ -5192,178 +5285,6 @@ export default function RotaBuilderPage() {
           onSaveDay={handleSaveForecast}
           onClose={() => setShowForecastModal(false)}
         />
-      )}
-
-      {showPrintPreview && (
-        <PrintPreviewModal
-          isOpen={showPrintPreview}
-          onClose={() => setShowPrintPreview(false)}
-          onPrint={() => window.print()}
-        >
-          <div className="rota-print-root">
-            {/* Header */}
-            <div className="mb-4 pb-4 border-b border-gray-300">
-              <h1 className="text-2xl font-bold mb-2">Weekly Rota</h1>
-              <div className="text-sm text-gray-600">
-                <div><strong>Site:</strong> {sites.find((s) => s.id === selectedSite)?.name || '—'}</div>
-                <div><strong>Week:</strong> {formatWeekRange()}</div>
-                {rota && <div><strong>Status:</strong> {rota.status}</div>}
-              </div>
-            </div>
-
-            {/* Rota Grid - matching app layout - using table for print header repetition */}
-            <table className="rota-print-grid w-full border-collapse">
-              {/* Header Row - will repeat on each page when printing */}
-              <thead className="rota-print-header-row">
-              <tr className="border-b-2 border-gray-400 font-semibold bg-gray-100">
-                <th className="w-[200px] px-2 py-2 border-r border-gray-300 text-left">Team</th>
-                <th className="w-[60px] px-2 py-2 border-r border-gray-300 text-center">Hours</th>
-                {weekDays.map((d) => {
-                  const ds = d.toISOString().split('T')[0];
-                  const isClosed = isDateClosed(ds);
-                  const f = forecasts[ds];
-                  const summary =
-                    (f?.target_hours && f.target_hours > 0)
-                      ? `Target ${f.target_hours}h`
-                      : (f?.predicted_revenue && f.predicted_revenue > 0)
-                        ? `£${(f.predicted_revenue / 100).toFixed(0)}`
-                        : '';
-                  return (
-                    <th key={ds} className={`px-2 py-2 border-r border-gray-300 text-xs text-left ${isClosed ? 'bg-red-50' : ''}`}>
-                      <div className={isClosed ? 'text-red-600' : ''}>
-                        {d.toLocaleDateString('en-GB', { weekday: 'short' })} {d.getDate()}
-                        {isClosed && ' 🔒'}
-                      </div>
-                      {summary && !isClosed && <div className="text-[10px] text-gray-600 mt-0.5">{summary}</div>}
-                      {isClosed && <div className="text-[10px] text-red-600 mt-0.5">Closed</div>}
-                    </th>
-                  );
-                })}
-              </tr>
-              </thead>
-
-              {/* Staff Rows */}
-              <tbody className="rota-print-body-row">
-              {rosterItemsForPeopleView.map((item, idx) => {
-                if (item.type === 'divider') {
-                  return (
-                    <tr key={`div-${item.sectionId}-${idx}`} className="rota-print-row border-b border-gray-300 bg-gray-50">
-                      <td colSpan={9} className="px-2 py-1.5 border-r border-gray-300 font-semibold text-sm" style={{ borderLeft: `4px solid ${item.color}` }}>
-                        {item.name}
-                      </td>
-                    </tr>
-                  );
-                }
-
-                const person = assignmentStaff.find((s) => s.id === item.staffId);
-                if (!person) return null;
-                const weeklyHours = weeklyHoursByProfile.get(person.id) || 0;
-
-                return (
-                  <tr key={person.id} className="rota-print-row rota-print-staff-row border-b border-gray-200">
-                    {/* Name cell */}
-                    <td className="px-2 py-2 border-r border-gray-300 bg-gray-50">
-                      <div className="font-medium text-sm">{person.full_name}</div>
-                      {person.position_title && (
-                        <div className="text-xs text-gray-600">{person.position_title}</div>
-                      )}
-                    </td>
-                    {/* Hours cell */}
-                    <td className="px-2 py-2 border-r border-gray-300 text-center text-sm">
-                      {weeklyHours.toFixed(1)}h
-                    </td>
-                    {/* Day cells */}
-                    {weekDays.map((d) => {
-                      const ds = d.toISOString().split('T')[0];
-                      const isClosed = isDateClosed(ds);
-                      const isOnLeave = isStaffOnLeave(person.id, ds);
-                      const personShifts = shifts
-                        .filter((s) => s.profile_id === person.id && s.shift_date === ds)
-                        .slice()
-                        .sort((a, b) => a.start_time.localeCompare(b.start_time));
-
-                      return (
-                        <td
-                          key={`${person.id}-${ds}`}
-                          className={`px-1.5 py-1.5 border-r border-gray-300 min-h-[40px] text-xs ${
-                            isClosed ? 'bg-red-50 opacity-60' : isOnLeave ? 'bg-blue-50' : ''
-                          }`}
-                        >
-                          <div className="space-y-1">
-                            {personShifts.map((s) => (
-                              <div
-                                key={s.id}
-                                className="px-1.5 py-0.5 rounded border-l-2 text-[10px]"
-                                style={{ borderLeftColor: s.color || '#EC4899' }}
-                              >
-                                <div className="font-medium">
-                                  {formatTime(s.start_time)}–{formatTime(s.end_time)}
-                                </div>
-                                <div className="text-gray-600">
-                                  {getShiftNetHours(s).toFixed(1)}h
-                                  {s.isFromOtherSite && s.otherSiteName && ` @ ${s.otherSiteName}`}
-                                </div>
-                              </div>
-                            ))}
-                            {personShifts.length === 0 && (
-                              <div className={`text-[10px] ${isOnLeave ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>
-                                {isOnLeave ? '🏖️ Leave' : ''}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-              </tbody>
-
-              {/* Open Shifts Row */}
-              <tfoot>
-              <tr className="rota-print-row border-b-2 border-gray-400 bg-amber-50">
-                <td className="px-2 py-2 border-r border-gray-300 font-semibold text-sm text-amber-700">
-                  Open shifts
-                </td>
-                <td className="px-2 py-2 border-r border-gray-300"></td>
-                {weekDays.map((d) => {
-                  const ds = d.toISOString().split('T')[0];
-                  const isClosed = isDateClosed(ds);
-                  const open = shifts
-                    .filter((s) => !s.profile_id && s.shift_date === ds && !s.role_required?.includes('TRIAL'))
-                    .slice()
-                    .sort((a, b) => a.start_time.localeCompare(b.start_time));
-
-                  return (
-                    <td
-                      key={`open-${ds}`}
-                      className={`px-1.5 py-1.5 border-r border-gray-300 min-h-[40px] text-xs ${
-                        isClosed ? 'bg-red-50 opacity-60' : ''
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        {open.map((s) => (
-                          <div
-                            key={s.id}
-                            className="px-1.5 py-0.5 rounded border-l-2 border-dashed border-gray-400 text-[10px]"
-                          >
-                            <div className="font-medium text-gray-700">
-                              {formatTime(s.start_time)}–{formatTime(s.end_time)}
-                            </div>
-                            <div className="text-gray-600">
-                              {getShiftNetHours(s).toFixed(1)}h • {s.role_required || 'Unassigned'}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-              </tfoot>
-            </table>
-          </div>
-        </PrintPreviewModal>
       )}
 
     </div>

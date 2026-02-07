@@ -626,11 +626,11 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Reports & Analytics</h1>
-          <p className="text-sm sm:text-base text-white/60">Drill down into compliance, assets, and operational performance</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Reports & Analytics</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-600 dark:text-white/60">Drill down into compliance, assets, and operational performance</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.1] rounded-lg text-white text-xs sm:text-sm transition-colors flex items-center gap-2">
+          <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 dark:bg-gray-100 dark:bg-white/[0.05] hover:bg-gray-200 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-700 dark:text-white text-xs sm:text-sm transition-colors flex items-center gap-2">
             <Download className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Export Report</span>
             <span className="sm:hidden">Export</span>
@@ -639,26 +639,26 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-4">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-white/60" />
-          <span className="text-sm text-white/60">Date Range:</span>
+          <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-600 dark:text-white/60" />
+          <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-white/60">Date Range:</span>
         </div>
         <input
           type="date"
           value={dateRange.start}
           onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-          className="px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+          className="px-3 py-2 bg-gray-50 dark:bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
         />
-        <span className="text-white/60">to</span>
+        <span className="text-gray-500 dark:text-gray-600 dark:text-white/60">to</span>
         <input
           type="date"
           value={dateRange.end}
           onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-          className="px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+          className="px-3 py-2 bg-gray-50 dark:bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
         />
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm text-white/60">Site:</span>
+          <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-white/60">Site:</span>
           <SiteSelector
             value={selectedSiteId || ""}
             onChange={(id) => setSelectedSiteId(id)}
@@ -669,7 +669,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 sm:gap-2 border-b border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-white/[0.1] overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -680,8 +680,8 @@ export default function ReportsPage() {
               className={`
                 px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap
                 ${isActive
-                  ? "border-pink-500 text-pink-400"
-                  : "border-transparent text-white/60 hover:text-white/80"
+                  ? "border-blue-700 dark:border-blue-500 text-blue-700 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-600 dark:text-white/60 hover:text-gray-700 dark:hover:text-gray-700 dark:text-white/80"
                 }
               `}
             >
@@ -731,27 +731,27 @@ export default function ReportsPage() {
 }
 
 // Asset Performance Component
-function AssetPerformanceSection({ 
-  performance, 
-  loading 
-}: { 
-  performance: AssetPerformance | null; 
+function AssetPerformanceSection({
+  performance,
+  loading
+}: {
+  performance: AssetPerformance | null;
   loading: boolean;
 }) {
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-pink-400 animate-spin" />
-        <span className="ml-3 text-white/60">Loading asset performance...</span>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-blue-700 dark:text-blue-400 animate-spin" />
+        <span className="ml-3 text-gray-600 dark:text-gray-600 dark:text-white/60">Loading asset performance...</span>
       </div>
     );
   }
 
   if (!performance) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-        <Package className="w-12 h-12 text-white/40 mx-auto mb-4" />
-        <p className="text-white/60">No asset data available for the selected period</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+        <Package className="w-12 h-12 text-gray-400 dark:text-gray-400 dark:text-white/40 mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-gray-600 dark:text-white/60">No asset data available for the selected period</p>
       </div>
     );
   }
@@ -791,9 +791,9 @@ function AssetPerformanceSection({
       </div>
 
       {/* Health Score */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Asset Health Score</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Asset Health Score</h3>
           <span className={`text-2xl font-bold ${
             healthScore >= 80 ? "text-green-400" :
             healthScore >= 60 ? "text-yellow-400" :
@@ -802,7 +802,7 @@ function AssetPerformanceSection({
             {healthScore}%
           </span>
         </div>
-        <div className="w-full bg-white/[0.05] rounded-full h-3">
+        <div className="w-full bg-gray-100 dark:bg-white/[0.05] rounded-full h-3">
           <div
             className={`h-3 rounded-full transition-all ${
               healthScore >= 80 ? "bg-green-500" :
@@ -816,22 +816,22 @@ function AssetPerformanceSection({
 
       {/* Category Breakdown */}
       {Object.keys(performance.byCategory).length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Assets by Category</h3>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Assets by Category</h3>
           <div className="space-y-3">
             {Object.entries(performance.byCategory)
               .sort((a, b) => b[1] - a[1])
               .map(([category, count]) => (
                 <div key={category} className="flex items-center justify-between">
-                  <span className="text-white/80">{category}</span>
+                  <span className="text-gray-700 dark:text-white/80">{category}</span>
                   <div className="flex items-center gap-3">
-                    <div className="w-32 bg-white/[0.05] rounded-full h-2">
+                    <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
                         className="bg-pink-500 h-2 rounded-full"
                         style={{ width: `${(count / performance.total) * 100}%` }}
                       />
                     </div>
-                    <span className="text-white font-semibold w-12 text-right">{count}</span>
+                    <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{count}</span>
                   </div>
                 </div>
               ))}
@@ -852,18 +852,18 @@ function TaskPerformanceSection({
 }) {
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-pink-400 animate-spin" />
-        <span className="ml-3 text-white/60">Loading task performance...</span>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+        <span className="ml-3 text-gray-600 dark:text-white/60">Loading task performance...</span>
       </div>
     );
   }
 
   if (!performance) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-        <ClipboardCheck className="w-12 h-12 text-white/40 mx-auto mb-4" />
-        <p className="text-white/60">No task data available for the selected period</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+        <ClipboardCheck className="w-12 h-12 text-gray-400 dark:text-white/40 mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-white/60">No task data available for the selected period</p>
       </div>
     );
   }
@@ -905,9 +905,9 @@ function TaskPerformanceSection({
       </div>
 
       {/* Completion Rate */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Overall Completion Rate</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Overall Completion Rate</h3>
           <span className={`text-3xl font-bold ${
             performance.completionRate >= 90 ? "text-green-400" :
             performance.completionRate >= 70 ? "text-yellow-400" :
@@ -916,7 +916,7 @@ function TaskPerformanceSection({
             {performance.completionRate}%
           </span>
         </div>
-        <div className="w-full bg-white/[0.05] rounded-full h-4">
+        <div className="w-full bg-gray-100 dark:bg-white/[0.05] rounded-full h-4">
           <div
             className={`h-4 rounded-full transition-all ${
               performance.completionRate >= 90 ? "bg-green-500" :
@@ -930,15 +930,15 @@ function TaskPerformanceSection({
 
       {/* Category Breakdown */}
       {Object.keys(performance.byCategory).length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Performance by Category</h3>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Performance by Category</h3>
           <div className="space-y-4">
             {Object.entries(performance.byCategory)
               .sort((a, b) => b[1].rate - a[1].rate)
               .map(([category, data]) => (
                 <div key={category}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white/80 font-medium">{category}</span>
+                    <span className="text-gray-700 dark:text-white/80 font-medium">{category}</span>
                     <span className={`text-sm font-semibold ${
                       data.rate >= 90 ? "text-green-400" :
                       data.rate >= 70 ? "text-yellow-400" :
@@ -947,7 +947,7 @@ function TaskPerformanceSection({
                       {data.rate}% ({data.completed}/{data.total})
                     </span>
                   </div>
-                  <div className="w-full bg-white/[0.05] rounded-full h-2">
+                  <div className="w-full bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${
                         data.rate >= 90 ? "bg-green-500" :
@@ -965,13 +965,13 @@ function TaskPerformanceSection({
 
       {/* Trend Chart */}
       {performance.trend.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Completion Trend</h3>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Completion Trend</h3>
           <div className="space-y-2">
             {performance.trend.slice(-14).map((day) => (
               <div key={day.date} className="flex items-center gap-4">
-                <span className="text-sm text-white/60 w-24">{format(new Date(day.date), "MMM dd")}</span>
-                <div className="flex-1 bg-white/[0.05] rounded-full h-6 relative">
+                <span className="text-sm text-gray-600 dark:text-white/60 w-24">{format(new Date(day.date), "MMM dd")}</span>
+                <div className="flex-1 bg-gray-100 dark:bg-white/[0.05] rounded-full h-6 relative">
                   <div
                     className={`h-6 rounded-full ${
                       day.rate >= 90 ? "bg-green-500" :
@@ -1003,18 +1003,18 @@ function TemperatureComplianceSection({
 }) {
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-pink-400 animate-spin" />
-        <span className="ml-3 text-white/60">Loading temperature compliance...</span>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+        <span className="ml-3 text-gray-600 dark:text-white/60">Loading temperature compliance...</span>
       </div>
     );
   }
 
   if (!compliance) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-        <Thermometer className="w-12 h-12 text-white/40 mx-auto mb-4" />
-        <p className="text-white/60">No temperature data available for the selected period</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+        <Thermometer className="w-12 h-12 text-gray-400 dark:text-white/40 mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-white/60">No temperature data available for the selected period</p>
       </div>
     );
   }
@@ -1050,9 +1050,9 @@ function TemperatureComplianceSection({
       </div>
 
       {/* Compliance Rate */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Temperature Compliance Rate</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Temperature Compliance Rate</h3>
           <span className={`text-3xl font-bold ${
             compliance.complianceRate >= 95 ? "text-green-400" :
             compliance.complianceRate >= 85 ? "text-yellow-400" :
@@ -1061,7 +1061,7 @@ function TemperatureComplianceSection({
             {compliance.complianceRate}%
           </span>
         </div>
-        <div className="w-full bg-white/[0.05] rounded-full h-4">
+        <div className="w-full bg-gray-100 dark:bg-white/[0.05] rounded-full h-4">
           <div
             className={`h-4 rounded-full transition-all ${
               compliance.complianceRate >= 95 ? "bg-green-500" :
@@ -1075,14 +1075,14 @@ function TemperatureComplianceSection({
 
       {/* Site Breakdown */}
       {compliance.bySite.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Compliance by Site</h3>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Compliance by Site</h3>
           <div className="space-y-3">
             {compliance.bySite
               .sort((a, b) => b.complianceRate - a.complianceRate)
               .map((site) => (
                 <div key={site.siteId} className="flex items-center justify-between">
-                  <span className="text-white/80">{site.siteName}</span>
+                  <span className="text-gray-700 dark:text-white/80">{site.siteName}</span>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className={`text-sm font-semibold ${
@@ -1096,7 +1096,7 @@ function TemperatureComplianceSection({
                         <div className="text-xs text-red-400">{site.breaches} breaches</div>
                       )}
                     </div>
-                    <div className="w-32 bg-white/[0.05] rounded-full h-2">
+                    <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${
                           site.complianceRate >= 95 ? "bg-green-500" :
@@ -1126,18 +1126,18 @@ function IncidentSummarySection({
 }) {
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-pink-400 animate-spin" />
-        <span className="ml-3 text-white/60">Loading incident summary...</span>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+        <span className="ml-3 text-gray-600 dark:text-white/60">Loading incident summary...</span>
       </div>
     );
   }
 
   if (!summary) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-        <AlertTriangle className="w-12 h-12 text-white/40 mx-auto mb-4" />
-        <p className="text-white/60">No incident data available for the selected period</p>
+      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
+        <AlertTriangle className="w-12 h-12 text-gray-400 dark:text-white/40 mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-white/60">No incident data available for the selected period</p>
       </div>
     );
   }
@@ -1180,22 +1180,22 @@ function IncidentSummarySection({
 
       {/* Site Breakdown */}
       {summary.bySite.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Incidents by Site</h3>
+        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Incidents by Site</h3>
           <div className="space-y-3">
             {summary.bySite
               .sort((a, b) => b.count - a.count)
               .map((site) => (
                 <div key={site.siteId} className="flex items-center justify-between">
-                  <span className="text-white/80">{site.siteName}</span>
+                  <span className="text-gray-700 dark:text-white/80">{site.siteName}</span>
                   <div className="flex items-center gap-3">
-                    <div className="w-32 bg-white/[0.05] rounded-full h-2">
+                    <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
                         className="bg-red-500 h-2 rounded-full"
                         style={{ width: `${(site.count / summary.total) * 100}%` }}
                       />
                     </div>
-                    <span className="text-white font-semibold w-12 text-right">{site.count}</span>
+                    <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{site.count}</span>
                   </div>
                 </div>
               ))}
@@ -1224,19 +1224,19 @@ function MetricCard({
     yellow: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
     red: "bg-red-500/20 text-red-400 border-red-500/30",
     orange: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    gray: "bg-white/5 text-white/60 border-white/10",
+    gray: "bg-white/5 text-gray-600 dark:text-white/60 border-white/10",
   };
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
       <div className="flex items-center gap-3 mb-2">
         <div className={`p-2 rounded-lg border ${colorClasses[color]}`}>
           <Icon className="w-4 h-4" />
         </div>
-        <span className="text-sm text-white/60">{label}</span>
+        <span className="text-sm text-gray-600 dark:text-white/60">{label}</span>
       </div>
       <div className={`text-2xl font-bold ${
-        color === "gray" ? "text-white/60" : 
+        color === "gray" ? "text-gray-600 dark:text-white/60" : 
         color === "blue" ? "text-blue-400" :
         color === "green" ? "text-green-400" :
         color === "yellow" ? "text-yellow-400" :

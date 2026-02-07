@@ -51,7 +51,17 @@
       "Bash(grep:*)",
       "Bash(docker exec:*)",
       "Bash(docker ps:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run lint:*)",
+      "Bash(node check-triggers.js:*)",
+      "Bash(node scripts/check-stock-data.js:*)",
+      "Bash(npx tsx:*)",
+      "Bash(cmd /c \"type C:\\\\Users\\\\bruce\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-bruce-my-app\\\\tasks\\\\b1c03f7.output\")",
+      "Bash(npm test:*)",
+      "Bash(supabase db diff:*)",
+      "Bash(git push:*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)"
     ]
   }
 }

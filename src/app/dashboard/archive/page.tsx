@@ -169,8 +169,20 @@ export default function ArchiveCenterPage() {
       if (['assets', 'tasks'].includes(activeTab)) {
         data = await loadTableArchives(activeTab)
       }
-      // Compliance archives (compliance_archive table)
-      else if (['sops', 'risk_assessments', 'documents', 'certificates'].includes(activeTab)) {
+      // SOPs - query from sop_entries table with status='Archived'
+      else if (activeTab === 'sops') {
+        data = await loadSOPArchives()
+      }
+      // Risk Assessments - query from risk_assessments table with status='Archived'
+      else if (activeTab === 'risk_assessments') {
+        data = await loadRAArchives()
+      }
+      // Documents - query from global_documents table with is_archived=true
+      else if (activeTab === 'documents') {
+        data = await loadDocumentArchives()
+      }
+      // Certificates - query from compliance_archive table (legacy)
+      else if (activeTab === 'certificates') {
         data = await loadComplianceArchives(activeTab)
       }
 
@@ -181,6 +193,94 @@ export default function ArchiveCenterPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Load archived Documents from global_documents table
+  const loadDocumentArchives = async (): Promise<ArchiveItem[]> => {
+    const { data, error } = await supabase
+      .from('global_documents')
+      .select('*')
+      .eq('company_id', companyId)
+      .eq('is_archived', true)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      // If is_archived column doesn't exist, return empty array
+      if (error.message?.includes('is_archived') || error.code === 'PGRST204') {
+        console.warn('is_archived column not found in global_documents')
+        return []
+      }
+      throw error
+    }
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.name || 'Unnamed Document',
+      type: 'documents' as ArchiveType,
+      archived_at: item.created_at,
+      archived_by: 'Unknown',
+      category: item.category,
+      version: item.version,
+      file_path: item.file_path,
+      can_restore: true,
+      metadata: item
+    }))
+  }
+
+  // Load archived Risk Assessments from risk_assessments table
+  const loadRAArchives = async (): Promise<ArchiveItem[]> => {
+    const { data, error } = await supabase
+      .from('risk_assessments')
+      .select(`
+        *,
+        profiles:archived_by(full_name)
+      `)
+      .eq('company_id', companyId)
+      .eq('status', 'Archived')
+      .order('archived_at', { ascending: false, nullsFirst: false })
+
+    if (error) throw error
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.title || 'Unnamed RA',
+      type: 'risk_assessments' as ArchiveType,
+      archived_at: item.archived_at || item.updated_at,
+      archived_by: item.archived_by || 'Unknown',
+      archived_by_name: item.profiles?.full_name,
+      category: item.template_type === 'coshh' ? 'COSHH' : 'General',
+      version: item.version_number ? `v${item.version_number}` : undefined,
+      can_restore: true,
+      metadata: item
+    }))
+  }
+
+  // Load archived SOPs from sop_entries table
+  const loadSOPArchives = async (): Promise<ArchiveItem[]> => {
+    const { data, error } = await supabase
+      .from('sop_entries')
+      .select(`
+        *,
+        profiles:archived_by(full_name)
+      `)
+      .eq('company_id', companyId)
+      .eq('status', 'Archived')
+      .order('archived_at', { ascending: false, nullsFirst: false })
+
+    if (error) throw error
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.title || 'Unnamed SOP',
+      type: 'sops' as ArchiveType,
+      archived_at: item.archived_at || item.updated_at,
+      archived_by: item.archived_by || 'Unknown',
+      archived_by_name: item.profiles?.full_name,
+      category: item.category,
+      version: item.version_number ? `v${item.version_number}` : undefined,
+      can_restore: true,
+      metadata: item
+    }))
   }
 
   // Load from tables with archived=true
@@ -299,23 +399,59 @@ export default function ArchiveCenterPage() {
     }
 
     try {
-      const tableMap = {
-        assets: 'assets',
-        tasks: 'tasks'
+      // Handle SOPs separately
+      if (item.type === 'sops') {
+        const { error } = await supabase
+          .from('sop_entries')
+          .update({
+            status: 'Published',
+            archived_at: null,
+            archived_by: null
+          })
+          .eq('id', item.id)
+
+        if (error) throw error
       }
+      // Handle Risk Assessments
+      else if (item.type === 'risk_assessments') {
+        const { error } = await supabase
+          .from('risk_assessments')
+          .update({
+            status: 'Draft',
+            archived_at: null,
+            archived_by: null
+          })
+          .eq('id', item.id)
 
-      const table = tableMap[item.type as keyof typeof tableMap]
+        if (error) throw error
+      }
+      // Handle Documents
+      else if (item.type === 'documents') {
+        const { error } = await supabase
+          .from('global_documents')
+          .update({ is_archived: false })
+          .eq('id', item.id)
 
-      const { error } = await supabase
-        .from(table)
-        .update({
-          archived: false,
-          archived_at: null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', item.id)
+        if (error) throw error
+      } else {
+        const tableMap = {
+          assets: 'assets',
+          tasks: 'tasks'
+        }
 
-      if (error) throw error
+        const table = tableMap[item.type as keyof typeof tableMap]
+
+        const { error } = await supabase
+          .from(table)
+          .update({
+            archived: false,
+            archived_at: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', item.id)
+
+        if (error) throw error
+      }
 
       // Refresh list
       await loadArchiveItems()

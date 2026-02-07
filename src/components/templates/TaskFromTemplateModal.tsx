@@ -893,10 +893,49 @@ export function TaskFromTemplateModal({
       const equipmentConfig = existingSiteChecklist.equipment_config || [];
       
       // Extract asset IDs for selectedAssets (array of strings)
-      const selectedAssets = Array.isArray(equipmentConfig) 
+      const selectedAssets = Array.isArray(equipmentConfig)
         ? equipmentConfig.map((eq: any) => eq.assetId || eq).filter(Boolean)
         : [];
-      
+
+      // CRITICAL FIX: Load checklist items from template's recurrence_pattern
+      // Parse recurrence_pattern if it's a string
+      let recurrencePattern = templateData.recurrence_pattern;
+      if (typeof recurrencePattern === 'string') {
+        try {
+          recurrencePattern = JSON.parse(recurrencePattern);
+        } catch (e) {
+          console.error('Failed to parse recurrence_pattern:', e);
+          recurrencePattern = null;
+        }
+      }
+
+      const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
+      const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
+
+      // Convert to yes/no format if yes_no_checklist is enabled
+      const loadedYesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
+        ? defaultChecklistItems.map((item: any) => ({
+            text: typeof item === 'string' ? item : (item.text || item.label || ''),
+            answer: null as 'yes' | 'no' | null
+          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0)
+        : [];
+
+      // Regular checklist items (only if yes_no_checklist is NOT enabled)
+      const loadedChecklistItems = !hasYesNoChecklist && Array.isArray(defaultChecklistItems)
+        ? defaultChecklistItems.map((item: any) =>
+            typeof item === 'string' ? item : (item.text || item.label || '')
+          ).filter((item: string) => item && item.trim().length > 0)
+        : [];
+
+      console.log('📋 Loading checklist items for site_checklist edit:', {
+        templateId: templateData.id,
+        hasRecurrencePattern: !!recurrencePattern,
+        defaultChecklistItemsCount: defaultChecklistItems.length,
+        hasYesNoChecklist,
+        checklistItemsCount: loadedChecklistItems.length,
+        yesNoChecklistItemsCount: loadedYesNoChecklistItems.length
+      });
+
       // Build temperatures array from equipment_config (includes nicknames and temp ranges)
       const temperatures = Array.isArray(equipmentConfig)
         ? equipmentConfig
@@ -925,8 +964,8 @@ export function TaskFromTemplateModal({
         daypart: daypartsArray[0]?.daypart || dayparts[0] || '',
         dayparts: daypartsArray,
         priority: 'medium', // Not used for configurations
-        checklistItems: [],
-        yesNoChecklistItems: [],
+        checklistItems: loadedChecklistItems, // Load from template's recurrence_pattern
+        yesNoChecklistItems: loadedYesNoChecklistItems, // Load from template's recurrence_pattern
         temperatures: temperatures, // Load temperatures with nicknames and temp ranges
         photos: [],
         passFailStatus: '',

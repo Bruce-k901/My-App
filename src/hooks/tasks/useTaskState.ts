@@ -100,9 +100,16 @@ export function useTaskState(
 
     const evidenceTypes = template.evidence_types || [];
 
+    // CRITICAL FIX: Match the logic in template-features.ts
+    // - Regular checklist uses 'text_note' evidence type (NOT 'checklist')
+    // - Yes/No checklist uses 'yes_no_checklist' evidence type
+    // - If yes_no_checklist is present, regular checklist should be false
+    const hasTextNote = evidenceTypes.includes('text_note') || evidenceTypes.includes('checklist');
+    const hasYesNoChecklist = evidenceTypes.includes('yes_no_checklist');
+
     const features = {
-      checklist: evidenceTypes.includes('checklist'),
-      yesNoChecklist: evidenceTypes.includes('yes_no_checklist'),
+      checklist: hasTextNote && !hasYesNoChecklist,
+      yesNoChecklist: hasYesNoChecklist,
       temperature: evidenceTypes.includes('temperature'),
       photoEvidence: evidenceTypes.includes('photo'),
       passFailChecks: evidenceTypes.includes('pass_fail'),
