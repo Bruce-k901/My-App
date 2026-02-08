@@ -370,7 +370,7 @@ export function MessageInput({
 
       await supabase.from('messaging_messages').insert({
         channel_id: conversationId,
-        sender_id: user.id,
+        sender_profile_id: user.id,
         sender_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
         content: fileToUpload.name,
         message_type: messageType,

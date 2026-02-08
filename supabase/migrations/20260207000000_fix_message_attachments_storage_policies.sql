@@ -1,15 +1,21 @@
 -- ============================================================================
--- Create Storage Bucket for Message Attachments
--- Description: Sets up Supabase Storage bucket and policies for messaging
+-- Migration: Fix Storage Policies for message_attachments bucket
+-- Description: Storage policies referenced old table names (conversation_participants, messages)
+--              which no longer exist. Updates to use messaging_channel_members and messaging_messages.
 -- ============================================================================
 
--- Create the storage bucket
+-- Drop old policies that reference non-existent tables
+DROP POLICY IF EXISTS "Users can upload message attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view message attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete own message attachments" ON storage.objects;
+
+-- Ensure the bucket exists
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'message_attachments',
   'message_attachments',
-  true, -- Public bucket for easier access
-  10485760, -- 10MB file size limit
+  true,
+  10485760, -- 10MB
   ARRAY[
     'image/jpeg',
     'image/png',
